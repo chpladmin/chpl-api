@@ -12,6 +12,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -33,6 +34,7 @@ import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.domain.ActivityEvent;
 import gov.healthit.chpl.domain.UserActivity;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -52,7 +54,7 @@ public class ActivityManagerTest extends TestCase {
 	@Autowired
 	private ActivityManager activityManager;
 	
-	private static JWTAuthenticatedUser adminUser;
+	private static JWTAuthenticatedUser adminUser, acbUser, atlUser;
 	
 	@Rule
     @Autowired
@@ -66,6 +68,20 @@ public class ActivityManagerTest extends TestCase {
 		adminUser.setLastName("Administrator");
 		adminUser.setSubjectName("admin");
 		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+		
+		acbUser = new JWTAuthenticatedUser();
+        acbUser.setFirstName("Test");
+        acbUser.setId(3L);
+        acbUser.setLastName("User3");
+        acbUser.setSubjectName("testUser3");
+        acbUser.getPermissions().add(new GrantedPermission("ROLE_ACB"));
+
+        atlUser = new JWTAuthenticatedUser();
+        atlUser.setFirstName("ATL");
+        atlUser.setId(3L);
+        atlUser.setLastName("User");
+        atlUser.setSubjectName("atlUser");
+        atlUser.getPermissions().add(new GrantedPermission("ROLE_ATL"));
 	}
 	
 	@Test
@@ -192,17 +208,55 @@ public class ActivityManagerTest extends TestCase {
 	
     @Test
     @Transactional
-    public void testGetActivityForAcbsUnauthenticated() 
+    public void testGetActivityForAcbsAsAdmin() 
             throws JsonParseException, IOException, EntityRetrievalException {
-        Long objectId = 1L;
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
         Calendar start = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         start.set(2015, 9, 1, 0, 0);
         Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         end.set(2015, 9, 20, 0, 0);
-        
+        CertificationBodyDTO acb = new CertificationBodyDTO();
+        acb.setId(-1L);
+        List<CertificationBodyDTO> acbs = new ArrayList<CertificationBodyDTO>();
+        acbs.add(acb);
         List<ActivityEvent> events = activityManager.getAcbActivity(
-                false, objectId, start.getTime(), end.getTime());
+                acbs, start.getTime(), end.getTime());
         assertEquals(0, events.size());
+    }
+    
+    @Test
+    @Transactional
+    public void testGetActivityForAcbsAsAcbAdmin() 
+            throws JsonParseException, IOException, EntityRetrievalException {
+        SecurityContextHolder.getContext().setAuthentication(acbUser);
+        Calendar start = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        start.set(2015, 9, 1, 0, 0);
+        Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        end.set(2015, 9, 20, 0, 0);
+        CertificationBodyDTO acb = new CertificationBodyDTO();
+        acb.setId(-1L);
+        List<CertificationBodyDTO> acbs = new ArrayList<CertificationBodyDTO>();
+        acbs.add(acb);
+        List<ActivityEvent> events = activityManager.getAcbActivity(
+                acbs, start.getTime(), end.getTime());
+        assertEquals(0, events.size());
+    }
+    
+    @Test(expected=AccessDeniedException.class)
+    @Transactional
+    public void testGetActivityForAcbsAsAtlAdmin() 
+            throws JsonParseException, IOException, EntityRetrievalException {
+        SecurityContextHolder.getContext().setAuthentication(atlUser);
+        Calendar start = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        start.set(2015, 9, 1, 0, 0);
+        Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        end.set(2015, 9, 20, 0, 0);
+        CertificationBodyDTO acb = new CertificationBodyDTO();
+        acb.setId(-1L);
+        List<CertificationBodyDTO> acbs = new ArrayList<CertificationBodyDTO>();
+        acbs.add(acb);
+        activityManager.getAcbActivity(
+                acbs, start.getTime(), end.getTime());
     }
 	   
 	@Test
@@ -285,30 +339,33 @@ public class ActivityManagerTest extends TestCase {
 		
 		assertEquals(1, events2.size());
 	}
-	
+
 	@Test
-	@Transactional
-	public void testGetActivityForUser() throws JsonParseException, IOException{
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		List<ActivityEvent> eventsForUser = activityManager.getActivityForUser(1L);
-		assertEquals(5, eventsForUser.size());
-	}
+    @Transactional
+    public void testGetActivityForUserInDateRange() throws JsonParseException, IOException{
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        List<ActivityEvent> eventsForUser = activityManager.getActivityForUserInDateRange(
+                1L, new Date(0), new Date());
+        assertEquals(5, eventsForUser.size());
+    }
 	
-	@Test
-	@Transactional
-	public void testGetActivityByUser() throws JsonParseException, IOException, UserRetrievalException {
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		List<UserActivity> eventsForUser = activityManager.getActivityByUser();
-		
-		List<UserActivity> forUser = new ArrayList<UserActivity>();
-		
-		for (UserActivity activity : eventsForUser){
-			if(activity.getUser().getUserId().equals(1L)){
-				forUser.add(activity);
-			}
-		}
-		assertEquals(5, forUser.get(0).getEvents().size());
-	}
+	@Test(expected=AccessDeniedException.class)
+    @Transactional
+    public void testGetActivityForUserInDateRangeAcbAdmin() throws JsonParseException, IOException{
+        SecurityContextHolder.getContext().setAuthentication(acbUser);
+        List<ActivityEvent> eventsForUser = activityManager.getActivityForUserInDateRange(
+                1L, new Date(0), new Date());
+        assertEquals(5, eventsForUser.size());
+    }
+	
+	@Test(expected=AccessDeniedException.class)
+    @Transactional
+    public void testGetActivityForUserInDateRangeAtlAdmin() throws JsonParseException, IOException{
+        SecurityContextHolder.getContext().setAuthentication(atlUser);
+        List<ActivityEvent> eventsForUser = activityManager.getActivityForUserInDateRange(
+                1L, new Date(0), new Date());
+        assertEquals(5, eventsForUser.size());
+    }
 	
 	/**
 	 * Given the API call is made for /activity/user_activities?start=milliValue?end=milliValue

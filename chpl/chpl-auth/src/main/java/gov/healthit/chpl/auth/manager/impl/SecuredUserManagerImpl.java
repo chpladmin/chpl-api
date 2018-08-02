@@ -104,6 +104,10 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
 		return userDAO.findAll();
 	}
 	
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB', 'ROLE_ATL', 'ROLE_CMS_STAFF')")
+	public List<UserDTO> getUsersWithPermission(String permissionName) {
+	    return userDAO.getUsersWithPermission(permissionName);
+	}
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB') or hasPermission(#id, 'gov.healthit.chpl.auth.dto.UserDTO', admin)")
 	public UserDTO getById(Long id) throws UserRetrievalException{

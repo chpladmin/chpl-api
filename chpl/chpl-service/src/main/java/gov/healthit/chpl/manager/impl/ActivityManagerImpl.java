@@ -2,9 +2,7 @@ package gov.healthit.chpl.manager.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,7 +10,6 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +28,6 @@ import gov.healthit.chpl.auth.json.User;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
-import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.domain.ActivityEvent;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.ProductActivityEvent;
@@ -40,23 +36,16 @@ import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
-import gov.healthit.chpl.manager.CertificationBodyManager;
-import gov.healthit.chpl.manager.TestingLabManager;
 import gov.healthit.chpl.util.JSONUtils;
 
-@Service
+@Service("activityManager")
 public class ActivityManagerImpl implements ActivityManager {
     private static final Logger LOGGER = LogManager.getLogger(ActivityManagerImpl.class);
 
-    @Autowired private CertificationBodyManager acbManager;
-    @Autowired private TestingLabManager atlManager;
-    @Autowired private PendingCertifiedProductDAO pcpDao;
-    @Autowired private UserDAO userDao;
     @Autowired
     ActivityDAO activityDAO;
 
@@ -236,30 +225,6 @@ public class ActivityManagerImpl implements ActivityManager {
     }
 
     /**
-     * get all announcement activity; restricted to logged in users
-     */
-    @Override
-    @Transactional
-    @PreAuthorize("isAuthenticated()")
-    public List<ActivityEvent> getAnnouncementActivity(Date startDate,
-            Date endDate) throws JsonParseException, IOException {
-        return getActivityForConcept(ActivityConcept.ACTIVITY_CONCEPT_ANNOUNCEMENT, 
-                startDate, endDate);
-    }
-    
-    /**
-     * get all activity for a specific announcement id; restricted to logged in users
-     */
-    @Override
-    @Transactional
-    @PreAuthorize("isAuthenticated()")
-    public List<ActivityEvent> getAnnouncementActivity(Long id, Date startDate,
-            Date endDate) throws JsonParseException, IOException {
-        return getActivityForObject(ActivityConcept.ACTIVITY_CONCEPT_ANNOUNCEMENT, 
-                id, startDate, endDate);
-    }
-    
-    /**
      * Get activity only for public announcements.
      * This will return activity where the isPublic flag is true on both the
      * original and updated data.
@@ -308,48 +273,13 @@ public class ActivityManagerImpl implements ActivityManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
-    public List<ActivityEvent> getAcbActivity(boolean showDeleted, Date startDate,
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public List<ActivityEvent> getAllAcbActivity(boolean showDeleted, Date startDate,
             Date endDate) throws JsonParseException, IOException {
-
-        List<ActivityDTO> acbActivity = null;
-        if(Util.isUserRoleAdmin()) {
-            acbActivity = activityDAO.findByConcept(
+        List<ActivityDTO> acbActivity = activityDAO.findByConcept(
                 showDeleted, ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, startDate, endDate);
-        } else if(Util.isUserRoleAcbAdmin()){
-            List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser(showDeleted);
-            acbActivity = activityDAO.findAcbActivity(allowedAcbs, startDate, endDate);
-        }
 
         List<ActivityEvent> events = new ArrayList<ActivityEvent>();
-        for (ActivityDTO dto : acbActivity) {
-            ActivityEvent event = getActivityEventFromDTO(dto);
-            events.add(event);
-        }
-        return events;
-    }
-
-    @Override
-    @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or "
-            + "(hasRole('ROLE_ACB') and "
-            + "hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', read) or "
-            + "hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-    public List<ActivityEvent> getAcbActivity(boolean showDeleted, Long acbId, Date startDate,
-            Date endDate) throws JsonParseException, IOException, EntityRetrievalException {
-        List<ActivityDTO> acbActivity = null;
-        if(Util.isUserRoleAdmin()) {
-            acbActivity = activityDAO.findByObjectId(
-                showDeleted, acbId, ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, startDate, endDate);
-        } else if(Util.isUserRoleAcbAdmin()) {
-            CertificationBodyDTO foundAcb = acbManager.getById(acbId);
-            List<CertificationBodyDTO> acbToQuery = new ArrayList<CertificationBodyDTO>(1);
-            acbToQuery.add(foundAcb);
-            acbActivity = activityDAO.findAcbActivity(acbToQuery, startDate, endDate);
-        }
-        
-        List<ActivityEvent> events = new ArrayList<ActivityEvent>();
-
         for (ActivityDTO dto : acbActivity) {
             ActivityEvent event = getActivityEventFromDTO(dto);
             events.add(event);
@@ -359,20 +289,13 @@ public class ActivityManagerImpl implements ActivityManager {
     
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ATL')")
-    public List<ActivityEvent> getAtlActivity(boolean showDeleted, Date startDate,
-            Date endDate) throws JsonParseException, IOException {
-        List<ActivityDTO> atlActivity = null;
-        if(Util.isUserRoleAdmin()) {
-            atlActivity = activityDAO.findByConcept(
-                showDeleted, ActivityConcept.ACTIVITY_CONCEPT_ATL, startDate, endDate);
-        } else if(Util.isUserRoleAtlAdmin()){
-            List<TestingLabDTO> allowedAtls = atlManager.getAllForUser(showDeleted);
-            atlActivity = activityDAO.findAtlActivity(allowedAtls, startDate, endDate);
-        }
-        
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
+    public List<ActivityEvent> getAcbActivity(List<CertificationBodyDTO> acbs, 
+            Date startDate, Date endDate) throws JsonParseException, IOException {
+
+        List<ActivityDTO> acbActivity = activityDAO.findAcbActivity(acbs, startDate, endDate);
         List<ActivityEvent> events = new ArrayList<ActivityEvent>();
-        for (ActivityDTO dto : atlActivity) {
+        for (ActivityDTO dto : acbActivity) {
             ActivityEvent event = getActivityEventFromDTO(dto);
             events.add(event);
         }
@@ -381,25 +304,45 @@ public class ActivityManagerImpl implements ActivityManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or "
-            + "(hasRole('ROLE_ATL') and "
-            + "hasPermission(#atlId, 'gov.healthit.chpl.dto.TestingLabDTO', read) or "
-            + "hasPermission(#atlId, 'gov.healthit.chpl.dto.TestingLabDTO', admin))")
-    public List<ActivityEvent> getAtlActivity(boolean showDeleted, Long atlId, Date startDate,
-            Date endDate) throws JsonParseException, IOException, EntityRetrievalException {
-        List<ActivityDTO> atlActivity = null;
-        if(Util.isUserRoleAdmin()) {
-            atlActivity = activityDAO.findByObjectId(
-                showDeleted, atlId, ActivityConcept.ACTIVITY_CONCEPT_ATL, startDate, endDate);
-        } else if(Util.isUserRoleAtlAdmin()) {
-            TestingLabDTO foundAtl = atlManager.getById(atlId);
-            List<TestingLabDTO> altToQuery = new ArrayList<TestingLabDTO>(1);
-            altToQuery.add(foundAtl);
-            atlActivity = activityDAO.findAtlActivity(altToQuery, startDate, endDate);
-        }
-        
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public List<ActivityEvent> getAllAtlActivity(boolean showDeleted, Date startDate,
+            Date endDate) throws JsonParseException, IOException {
+        List<ActivityDTO> atlActivity = activityDAO.findByConcept(
+                showDeleted, ActivityConcept.ACTIVITY_CONCEPT_ATL, startDate, endDate);
+
         List<ActivityEvent> events = new ArrayList<ActivityEvent>();
         for (ActivityDTO dto : atlActivity) {
+            ActivityEvent event = getActivityEventFromDTO(dto);
+            events.add(event);
+        }
+        return events;
+    }
+    
+    @Override
+    @Transactional
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ATL')")
+    public List<ActivityEvent> getAtlActivity(List<TestingLabDTO> atls, Date startDate,
+            Date endDate) throws JsonParseException, IOException {
+        List<ActivityDTO> atlActivity = activityDAO.findAtlActivity(atls, startDate, endDate);
+
+        List<ActivityEvent> events = new ArrayList<ActivityEvent>();
+        for (ActivityDTO dto : atlActivity) {
+            ActivityEvent event = getActivityEventFromDTO(dto);
+            events.add(event);
+        }
+        return events;
+    }
+    
+    @Override
+    @Transactional
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public List<ActivityEvent> getAllPendingListingActivity(Date startDate,
+            Date endDate) throws JsonParseException, IOException {
+        List<ActivityDTO> pendingListingActivity = activityDAO.findByConcept(false,
+                    ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, startDate, endDate);
+
+        List<ActivityEvent> events = new ArrayList<ActivityEvent>();
+        for (ActivityDTO dto : pendingListingActivity) {
             ActivityEvent event = getActivityEventFromDTO(dto);
             events.add(event);
         }
@@ -409,16 +352,10 @@ public class ActivityManagerImpl implements ActivityManager {
     @Override
     @Transactional
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
-    public List<ActivityEvent> getPendingListingActivity(Date startDate,
-            Date endDate) throws JsonParseException, IOException {
-        List<ActivityDTO> pendingListingActivity = null;
-        if(Util.isUserRoleAdmin()) {
-            pendingListingActivity = activityDAO.findByConcept(false,
-                    ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, startDate, endDate);
-        } else if(Util.isUserRoleAcbAdmin()) {
-            List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser(true);
-            pendingListingActivity = activityDAO.findPendingListingActivity(allowedAcbs, startDate, endDate);
-        }
+    public List<ActivityEvent> getPendingListingActivityByAcb(List<CertificationBodyDTO> acbs,
+            Date startDate, Date endDate) throws JsonParseException, IOException {
+        List<ActivityDTO> pendingListingActivity = 
+                activityDAO.findPendingListingActivity(acbs, startDate, endDate);
         
         List<ActivityEvent> events = new ArrayList<ActivityEvent>();
         for (ActivityDTO dto : pendingListingActivity) {
@@ -433,24 +370,9 @@ public class ActivityManagerImpl implements ActivityManager {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     public List<ActivityEvent> getPendingListingActivity(Long pendingListingId, 
             Date startDate, Date endDate) throws JsonParseException, IOException, EntityRetrievalException {
-        List<ActivityDTO> pendingListingActivity = null;
-        if(Util.isUserRoleAdmin()) {
-            pendingListingActivity = activityDAO.findByObjectId(false, pendingListingId,
-                    ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, 
-                    startDate, endDate);
-        } else if(Util.isUserRoleAcbAdmin()) {
-            PendingCertifiedProductDTO pendingListing = pcpDao.findById(pendingListingId, true);
-            if(pendingListing != null) {
-                //try to get the listing's acb to make sure this user has access to it
-                CertificationBodyDTO foundAcb = acbManager.getById(pendingListing.getCertificationBodyId());
-                if(foundAcb != null) {
-                    //get activity for this pending listing
-                    pendingListingActivity = activityDAO.findPendingListingActivity(
-                            pendingListing.getId(), startDate, endDate);
-                }
-            }
-        }
-        
+        List<ActivityDTO> pendingListingActivity = activityDAO.findPendingListingActivity(
+                pendingListingId, startDate, endDate);
+
         List<ActivityEvent> events = new ArrayList<ActivityEvent>();
         for (ActivityDTO dto : pendingListingActivity) {
             ActivityEvent event = getActivityEventFromDTO(dto);
@@ -461,17 +383,19 @@ public class ActivityManagerImpl implements ActivityManager {
 
     @Override
     @Transactional
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public List<ActivityEvent> getAllUserActivity(Date startDate, Date endDate)
+            throws JsonParseException, IOException {
+        return getActivityForConcept(ActivityConcept.ACTIVITY_CONCEPT_USER, startDate, endDate);
+    }
+
+    @Override
+    @Transactional
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB', 'ROLE_ATL', 'ROLE_CMS_STAFF')")
-    public List<ActivityEvent> getUserActivity(Date startDate,
-            Date endDate) throws JsonParseException, IOException {
-        List<ActivityDTO> userActivity = null;
-        if(Util.isUserRoleAdmin()) {
-            userActivity = activityDAO.findByConcept(false, 
-                    ActivityConcept.ACTIVITY_CONCEPT_USER, startDate, endDate);
-        } else {
-            Collection<Long> allowedUserIds = getAllowedUsersForActivitySearch();
-            userActivity = activityDAO.findUserActivity(allowedUserIds, startDate, endDate);
-        }
+    public List<ActivityEvent> getUserActivity(Set<Long> userIds, 
+            Date startDate, Date endDate) throws JsonParseException, IOException {
+        List<ActivityDTO> userActivity = 
+                activityDAO.findUserActivity(userIds, startDate, endDate);
 
         List<ActivityEvent> events = new ArrayList<ActivityEvent>();
         for (ActivityDTO dto : userActivity) {
@@ -479,29 +403,6 @@ public class ActivityManagerImpl implements ActivityManager {
             events.add(event);
         }
         return events;
-    }
-    
-    @Override
-    @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB', 'ROLE_ATL', 'ROLE_CMS_STAFF')")
-    public List<ActivityEvent> getUserActivity(Long userId, 
-            Date startDate, Date endDate) throws JsonParseException, IOException {
-        List<ActivityEvent> userActivity = null;
-        if(Util.isUserRoleAdmin()) {
-            userActivity = getActivityForObject(ActivityConcept.ACTIVITY_CONCEPT_USER, 
-                userId, startDate, endDate);
-        } else {
-            //make sure this user has permission to get activity for this user id
-            Collection<Long> allowedUserIds = getAllowedUsersForActivitySearch();
-            if(allowedUserIds.contains(userId)) {
-                userActivity = getActivityForObject(ActivityConcept.ACTIVITY_CONCEPT_USER, 
-                        userId, startDate, endDate);
-            } else {
-                throw new AccessDeniedException(null);
-            }
-        }
-        
-        return userActivity;
     }
 
     @Override
@@ -513,35 +414,6 @@ public class ActivityManagerImpl implements ActivityManager {
         dto.setDeleted(true);
         activityDAO.update(dto);
 
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
-    public List<UserActivity> getActivityByUser() throws JsonParseException, IOException, UserRetrievalException {
-
-        Map<Long, List<ActivityDTO>> activity = activityDAO.findAllByUser();
-        List<UserActivity> userActivities = new ArrayList<UserActivity>();
-
-        for (Map.Entry<Long, List<ActivityDTO>> userEntry : activity.entrySet()) {
-            UserDTO activityUser = userEntry.getValue().get(0).getUser();
-            if (activityUser != null) {
-                User userObj = new User(activityUser);
-
-                List<ActivityEvent> userActivityEvents = new ArrayList<ActivityEvent>();
-
-                for (ActivityDTO userEventDTO : userEntry.getValue()) {
-                    ActivityEvent event = getActivityEventFromDTO(userEventDTO);
-                    userActivityEvents.add(event);
-                }
-
-                UserActivity userActivity = new UserActivity();
-                userActivity.setUser(userObj);
-                userActivity.setEvents(userActivityEvents);
-                userActivities.add(userActivity);
-            }
-        }
-        return userActivities;
     }
 
     @Override
@@ -577,20 +449,6 @@ public class ActivityManagerImpl implements ActivityManager {
     @Override
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
-    public List<ActivityEvent> getActivityForUser(Long userId) throws JsonParseException, IOException {
-
-        List<ActivityEvent> userActivityEvents = new ArrayList<ActivityEvent>();
-
-        for (ActivityDTO userEventDTO : activityDAO.findByUserId(userId)) {
-            ActivityEvent event = getActivityEventFromDTO(userEventDTO);
-            userActivityEvents.add(event);
-        }
-        return userActivityEvents;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
     public List<ActivityEvent> getActivityForUserInDateRange(Long userId, Date startDate, Date endDate)
             throws JsonParseException, IOException {
 
@@ -603,41 +461,6 @@ public class ActivityManagerImpl implements ActivityManager {
         return userActivityEvents;
     }
 
-    private Collection<Long> getAllowedUsersForActivitySearch() {
-        Set<Long> allowedUserIds = new HashSet<Long>();
-        //user can see their own activity
-        allowedUserIds.add(Util.getCurrentUser().getId());
-        
-        //user can see activity for other users in the same acb
-        if(Util.isUserRoleAcbAdmin()) {
-            List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser(false);
-            for(CertificationBodyDTO acb : allowedAcbs) {
-                List<UserDTO> acbUsers = acbManager.getAllUsersOnAcb(acb);
-                for(UserDTO user : acbUsers) {
-                    allowedUserIds.add(user.getId());
-                }
-            }
-        }
-        //user can see activity for other users in the same atl
-        if(Util.isUserRoleAtlAdmin()) {
-            List<TestingLabDTO> allowedAtls = atlManager.getAllForUser(false);
-            for(TestingLabDTO atl : allowedAtls) {
-                List<UserDTO> atlUsers = atlManager.getAllUsersOnAtl(atl);
-                for(UserDTO user : atlUsers) {
-                    allowedUserIds.add(user.getId());
-                }
-            }
-        }
-        //user can see activity for other users with role cms_staff
-        if(Util.isUserRoleCmsStaff()) {
-            List<UserDTO> cmsStaffUsers = userDao.getUsersWithPermission("ROLE_CMS_STAFF");
-            for(UserDTO user : cmsStaffUsers) {
-                allowedUserIds.add(user.getId());
-            }
-        }
-        return allowedUserIds;
-    }
-    
     private ActivityEvent getActivityEventFromDTO(ActivityDTO dto) throws JsonParseException, IOException {
         ActivityEvent event = null;
         if (dto.getConcept() == ActivityConcept.ACTIVITY_CONCEPT_PRODUCT) {
