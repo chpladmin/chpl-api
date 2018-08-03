@@ -33,9 +33,6 @@ public interface ActivityManager {
             Object newData, Date timestamp)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
 
-    List<ActivityEvent> getAllActivityInDateRange(boolean showDeleted, Date startDate, Date endDate)
-            throws JsonParseException, IOException;
-
     List<ActivityEvent> getActivityForObject(ActivityConcept concept, Long objectId,
             Date startDate, Date endDate) throws JsonParseException, IOException;
 

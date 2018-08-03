@@ -83,21 +83,6 @@ import gov.healthit.chpl.domain.concept.ActivityConcept;
                      "AND (a.activity_date >= :startDate) " +
                      "AND (a.activity_date <= :endDate)",
                      resultClass = ActivityEntity.class
-            ),
-    @NamedNativeQuery(
-            name = "getConceptActivityByIdsAndDate",
-            query = "SELECT * " + 
-                    "FROM " + BaseDAOImpl.SCHEMA_NAME + ".activity a " +
-                    "LEFT OUTER JOIN " + BaseDAOImpl.SCHEMA_NAME + ".user u " +
-                        "ON a.last_modified_user = u.user_id " +
-                    "WHERE a.activity_object_concept_id = :conceptId "  +
-                    "AND ( " +
-                        "cast(a.original_data as json)->>'id' IN (:ids) " +
-                        "OR cast(a.new_data as json)->>'id' IN (:ids) " + 
-                     ")" +
-                     "AND (a.activity_date >= :startDate) " +
-                     "AND (a.activity_date <= :endDate)",
-                     resultClass = ActivityEntity.class
             )
 })
 public class ActivityEntity {
