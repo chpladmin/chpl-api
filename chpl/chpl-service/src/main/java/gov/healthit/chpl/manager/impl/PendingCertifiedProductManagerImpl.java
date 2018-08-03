@@ -83,10 +83,19 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
     @Override
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB')")
-    public PendingCertifiedProductDetails getById(final List<CertificationBodyDTO> userAcbs, final Long id)
+    public PendingCertifiedProductDetails getById(final List<CertificationBodyDTO> userAcbs, 
+            final Long id) throws EntityRetrievalException, AccessDeniedException {
+            return getById(userAcbs, id, false);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB')")
+    public PendingCertifiedProductDetails getById(final List<CertificationBodyDTO> userAcbs, 
+            final Long id, final boolean includeDeleted)
             throws EntityRetrievalException, AccessDeniedException {
 
-        PendingCertifiedProductDTO pendingCp = pcpDao.findById(id, false);
+        PendingCertifiedProductDTO pendingCp = pcpDao.findById(id, includeDeleted);
         boolean userHasAcbPermissions = false;
         for (CertificationBodyDTO acb : userAcbs) {
             if (acb.getId() != null && pendingCp.getCertificationBodyId() != null

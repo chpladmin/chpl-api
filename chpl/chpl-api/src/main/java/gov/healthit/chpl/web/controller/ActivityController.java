@@ -522,8 +522,9 @@ public class ActivityController {
             @RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end)
             throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
-        List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
-        pcpManager.getById(acbs, id); // returns 404 if bad id
+        List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser(false);
+        //pcpManager will return 404 if the user is not allowed to access it b/c of acb permissions
+        PendingCertifiedProductDetails pendingListing = pcpManager.getById(allowedAcbs, id, true);
 
         //if one of start of end is provided then the other must also be provided.
         //if neither is provided then query all dates
@@ -547,9 +548,6 @@ public class ActivityController {
         if(Util.isUserRoleAdmin()) {
             return activityManager.getPendingListingActivity(id, startDate, endDate);
         }
-        List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser(false);
-        //pcpManager will return 404 if the user is not allowed to access it b/c of acb permissions
-        PendingCertifiedProductDetails pendingListing = pcpManager.getById(allowedAcbs, id);
         return activityManager.getPendingListingActivity(pendingListing.getId(), startDate, endDate);
     }
 
@@ -846,6 +844,17 @@ public class ActivityController {
         return events;
     }
 
+    private List<ActivityEvent> getActivityEventsForCorrectiveActionPlans(Date startDate, Date endDate)
+            throws JsonParseException, IOException {
+        LOGGER.info("User " + Util.getUsername() + " requested corrective action plan activity between " + startDate
+                + " and " + endDate);
+    
+        List<ActivityEvent> events = null;
+        events = getActivityEventsForConcept(ActivityConcept.ACTIVITY_CONCEPT_CORRECTIVE_ACTION_PLAN, startDate, endDate);
+    
+        return events;
+    }
+
     private List<ActivityEvent> getActivityEventsForVersions(Long id, Date startDate, Date endDate)
             throws JsonParseException, IOException {
 
@@ -876,17 +885,6 @@ public class ActivityController {
         List<ActivityEvent> events = null;
         ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT;
         events = getActivityEventsForConcept(concept, startDate, endDate);
-
-        return events;
-    }
-
-    private List<ActivityEvent> getActivityEventsForCorrectiveActionPlans(Date startDate, Date endDate)
-            throws JsonParseException, IOException {
-        LOGGER.info("User " + Util.getUsername() + " requested corrective action plan activity between " + startDate
-                + " and " + endDate);
-
-        List<ActivityEvent> events = null;
-        events = getActivityEventsForConcept(ActivityConcept.ACTIVITY_CONCEPT_CORRECTIVE_ACTION_PLAN, startDate, endDate);
 
         return events;
     }
