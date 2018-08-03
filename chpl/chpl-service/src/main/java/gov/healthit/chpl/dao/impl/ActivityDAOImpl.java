@@ -243,15 +243,10 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
     @Override
     public List<ActivityDTO> findPendingListingActivity(Long pendingListingId, 
             Date startDate, Date endDate) {
-        Query query = entityManager.createNamedQuery("getPendingListingActivityByIdAndDate",
-                ActivityEntity.class);
-        query.setParameter("conceptId", ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT.getId());
-        query.setParameter("pendingListingId", pendingListingId.toString());
-        query.setParameter("startDate", startDate);
-        query.setParameter("endDate", endDate);
+        List<ActivityEntity> entities = getEntitiesByObjectId(true, pendingListingId, 
+                ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, startDate, endDate);
 
         List<ActivityDTO> results = new ArrayList<ActivityDTO>();
-        List<ActivityEntity> entities = query.getResultList();
         for (ActivityEntity entity : entities) {
             ActivityDTO result = new ActivityDTO(entity);
             results.add(result);

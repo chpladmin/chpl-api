@@ -111,27 +111,6 @@ public class ActivityControllerTest {
 		assertEquals(0, cp2ActivityEvents.size());
 	}
 	
-	@Transactional
-    @Test(expected=IllegalArgumentException.class)
-    public void testStartDateRequired() throws EntityRetrievalException, EntityCreationException, IOException, ValidationException{
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-        activityController.activityForACBs(System.currentTimeMillis(), null, false);
-    }
-	
-	@Transactional
-    @Test(expected=IllegalArgumentException.class)
-    public void testEndDateRequired() throws EntityRetrievalException, EntityCreationException, IOException, ValidationException{
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-        activityController.activityForACBs(null, System.currentTimeMillis(), false);
-    }
-	
-	@Transactional
-    @Test(expected=IllegalArgumentException.class)
-    public void testStartAndEndDateRequired() throws EntityRetrievalException, EntityCreationException, IOException, ValidationException{
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-        activityController.activityForACBs(null, null, false);
-    }
-	
 	/** 
 	 * GIVEN a user is looking at activity
 	 * WHEN they try to search for more than configurable days (set to 60)
