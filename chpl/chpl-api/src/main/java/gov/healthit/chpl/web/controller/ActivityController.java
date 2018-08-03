@@ -98,8 +98,8 @@ public class ActivityController {
                     + "Those users are allowed to see activity for all certification bodies including that have been deleted. "
                     + "The default behavior is to show activity for non-deleted ACBs.")
     @RequestMapping(value = "/acbs", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ActivityEvent> activityForACBs(@RequestParam(required = true) Long start, 
-            @RequestParam(required = true) Long end,
+    public List<ActivityEvent> activityForACBs(@RequestParam Long start, 
+            @RequestParam Long end,
             @RequestParam(value = "showDeleted", required = false, defaultValue = "false") boolean showDeleted)
             throws JsonParseException, IOException, ValidationException {
 
