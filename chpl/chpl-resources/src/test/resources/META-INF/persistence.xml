@@ -131,6 +131,7 @@
         <class>gov.healthit.chpl.entity.questionableActivity.QuestionableActivityProductEntity</class>
         <class>gov.healthit.chpl.entity.questionableActivity.QuestionableActivityTriggerEntity</class>
         <class>gov.healthit.chpl.entity.questionableActivity.QuestionableActivityVersionEntity</class>
+        <class>gov.healthit.chpl.entity.scheduler.InheritanceErrorsReportEntity</class>
         <class>gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity</class>
         <class>gov.healthit.chpl.entity.search.CertifiedProductListingSearchResultEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.NonconformityTypeStatisticsEntity</class>

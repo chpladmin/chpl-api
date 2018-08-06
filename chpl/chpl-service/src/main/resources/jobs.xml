@@ -181,5 +181,25 @@
             </job-data-map>
         </job>
 
+        <!-- Inheritance Report data creator -->
+        <job>
+            <name>inheritanceErrorsReportCreator</name>
+            <group>systemJobs</group>
+            <description>Generates the inheritance errors data</description>
+            <job-class>gov.healthit.chpl.scheduler.job.InheritanceErrorsReportCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+        <trigger>
+            <cron>
+                <name>generateInheritanceErrorsReport</name>
+                <group>inheritanceErrorsReportTrigger</group>
+                <job-name>inheritanceErrorsReportCreator</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 */2 * * * ?</cron-expression>
+                <!-- <cron-expression>0 3 1 * * ?</cron-expression> <!- At 0103 UTC every day -->
+            </cron>
+        </trigger>
     </schedule>
 </job-scheduling-data>

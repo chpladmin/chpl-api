@@ -172,7 +172,7 @@ public class JobConfig {
         executor.setCorePoolSize(10);
         executor.setMaxPoolSize(20);
         //executor.setQueueCapacity(11);
-        executor.setThreadNamePrefix("chartDataThread");
+        executor.setThreadNamePrefix("jobDataThread");
         executor.initialize();
         return executor;
     }

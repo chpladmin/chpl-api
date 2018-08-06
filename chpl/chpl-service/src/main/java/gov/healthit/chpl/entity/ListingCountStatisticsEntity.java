@@ -55,7 +55,7 @@ public class ListingCountStatisticsEntity implements Serializable {
     @JoinColumn(name = "certification_status_id", insertable = false, updatable = false)
     private CertificationStatusEntity certificationStatus;
 
-   @Basic(optional = false)
+    @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)
     private Date creationDate;
 

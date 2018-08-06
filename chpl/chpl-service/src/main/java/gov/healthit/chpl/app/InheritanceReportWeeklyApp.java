@@ -12,6 +12,8 @@ import java.util.Set;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -33,6 +35,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 @Component("inheritanceReportWeeklyApp")
 public class InheritanceReportWeeklyApp extends NotificationEmailerReportApp {
     private InvalidInheritanceCsvPresenter presenter;
+    private static final Logger LOGGER = LogManager.getLogger(InheritanceReportWeeklyApp.class);
 
     public InheritanceReportWeeklyApp() {
     }
@@ -54,10 +57,13 @@ public class InheritanceReportWeeklyApp extends NotificationEmailerReportApp {
         List<RecipientWithSubscriptionsDTO> allAcbRecipientSubscriptions = app.getNotificationDAO()
                 .getAllNotificationMappingsForType(permissions,
                         NotificationTypeConcept.ONC_ACB_WEEKLY_ICS_FAMILY_ERRORS, acbs);
+        LOGGER.info("Acb count: {} oncRecipient count: {} acbRecipientCount: {}", acbs.size(),
+                oncRecipientSubscriptions.size(), allAcbRecipientSubscriptions.size());
 
         if (oncRecipientSubscriptions.size() > 0 || allAcbRecipientSubscriptions.size() > 0) {
             // Get full set of data to send in ONC email
             List<CertifiedProductSearchDetails> allCertifiedProductDetails = app.getAllCertifiedProductSearchDetails();
+            LOGGER.info("Listing count {}",  allCertifiedProductDetails.size());
             CertifiedProductDownloadResponse allCps = new CertifiedProductDownloadResponse();
             allCps.setListings(allCertifiedProductDetails);
             // Get Certification-specific set of data to send in emails
