@@ -8,6 +8,7 @@ jwtExpirationTimeMinutesInTheFuture=30
 jwtNotBeforeMinutesInThePast=4
 keyLocation=C:\\CHPL\\keys\\JSONRsaJoseJWebKeyTest.txt
 jobThresholdDays=7
+maxActivityRangeInDays=500
 
 testDbUser=openchpl
 testDbPassword=

@@ -339,6 +339,30 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		}
 		return new UserDTO(userEntity);
 	}
+	
+	/**
+	 * 
+	 * @param permissionName the ROLE_SOMETHING that we care about
+	 * @return
+	 */
+	@Override
+    public List<UserDTO> getUsersWithPermission(String permissionName) {
+	    String hql = "SELECT u " +
+	            "FROM UserEntity u " +
+	            "JOIN FETCH u.permissionMappings userPermissionMap " +
+	            "JOIN FETCH userPermissionMap.permission permission " +
+	            "WHERE permission.authority = :permissionName";
+	    Query query = entityManager.createQuery(hql);
+	    query.setParameter("permissionName", permissionName);
+	    List<UserEntity> usersWithPermission = query.getResultList();
+	    List<UserDTO> results = new ArrayList<UserDTO>();
+	    if(usersWithPermission != null && usersWithPermission.size() > 0) {
+	        for(UserEntity result : usersWithPermission) {
+	            results.add(new UserDTO(result));
+	        }
+	    }
+        return results;
+    }
 
 	@Override
 	@Transactional
