@@ -2,6 +2,8 @@ package gov.healthit.chpl.manager;
 
 import java.util.List;
 
+import org.springframework.security.access.AccessDeniedException;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.user.UserRetrievalException;
@@ -22,7 +24,7 @@ public interface AnnouncementManager {
 
     List<AnnouncementDTO> getAll();
 
-    AnnouncementDTO getById(Long id) throws EntityRetrievalException;
+    AnnouncementDTO getById(Long id) throws EntityRetrievalException, AccessDeniedException;
 
     AnnouncementDTO getById(Long announcementId, boolean includeDeleted) throws EntityRetrievalException;
 

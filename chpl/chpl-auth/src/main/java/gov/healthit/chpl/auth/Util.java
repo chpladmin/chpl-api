@@ -72,6 +72,19 @@ public class Util {
 		}
 		return false;
 	}
+	
+	public static boolean isUserRoleAtlAdmin() {
+        User user = getCurrentUser();
+        if (user == null) {
+            return false;
+        }
+        for (GrantedPermission perm : user.getPermissions()) {
+            if (perm.getAuthority().equals(Authority.ROLE_ATL)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 	public static User getCurrentUser() {
 

@@ -20,6 +20,7 @@ import org.springframework.oxm.Marshaller;
 import org.springframework.oxm.castor.CastorMarshaller;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -36,6 +37,7 @@ import gov.healthit.chpl.registration.APIKeyAuthenticationFilter;
 @Configuration
 @EnableWebMvc
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableAsync
 @EnableAspectJAutoProxy
 @EnableScheduling

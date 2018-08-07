@@ -15,7 +15,7 @@ public interface AnnouncementDAO {
 
     List<AnnouncementDTO> findAll(boolean isLoggedIn);
 
-    AnnouncementDTO getById(Long id, boolean isLoggedIn) throws EntityRetrievalException;
+    AnnouncementDTO getById(Long id, boolean includeDeleted) throws EntityRetrievalException;
 
     AnnouncementDTO update(AnnouncementDTO contact, boolean includeDeleted) throws EntityRetrievalException;
 
