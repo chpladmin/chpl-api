@@ -1,6 +1,7 @@
 package gov.healthit.chpl.dao.impl;
 
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -26,8 +27,12 @@ import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.ActivityDAO;
+import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.ActivityDTO;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import junit.framework.TestCase;
@@ -46,6 +51,11 @@ public class ActivityDaoTest extends TestCase {
 	@Autowired
 	private ActivityDAO activityDAO;
 	
+	@Autowired
+	private CertificationBodyDAO acbDao;
+	
+	@Autowired
+    private TestingLabDAO atlDao;
 	
 	private static JWTAuthenticatedUser adminUser;
 	
@@ -184,83 +194,64 @@ public class ActivityDaoTest extends TestCase {
 		assertEquals((long) dto.getId(), -1L);
 		
 	}
+
+	@Test
+    @Transactional
+    public void testFindPublicAnnouncementActivityNativeSqlWorks(){
+        
+        List<ActivityDTO> results = activityDAO.findPublicAnnouncementActivity(new Date(0L), new Date());
+        assertEquals(0, results.size());
+    }
 	
 	@Test
-	@Transactional
-	public void testFindAll(){
-		
-		List<ActivityDTO> results = activityDAO.findAll(false);
-		assertEquals(7, results.size());
-	}
+    @Transactional
+    public void testFindPublicAnnouncementByIdActivityNativeSqlWorks(){
+        
+        List<ActivityDTO> results = activityDAO.findPublicAnnouncementActivityById(1L, new Date(0L), new Date());
+        assertEquals(0, results.size());
+    }
 	
 	@Test
-	@Transactional
-	public void testFindOne_userExists(){
-		
-		List<ActivityDTO> results = activityDAO.findAll(false);
-		assertTrue(results.size() > 0);
-		ActivityDTO result = results.get(1);
-		assertNotNull(result.getUser());
-		assertNotNull(result.getUser().getFirstName());
-		assertNotNull(result.getUser().getLastName());
-	}
+    @Transactional
+    public void testFindAcbActivityNativeSqlWorks(){
+        List<CertificationBodyDTO> allAcbs = acbDao.findAll(false);
+        List<ActivityDTO> results = activityDAO.findAcbActivity(allAcbs, new Date(0L), new Date());
+        assertEquals(0, results.size());
+    }
+
+	@Test
+    @Transactional
+    public void testFindAtlActivityNativeSqlWorks(){
+        List<TestingLabDTO> atllAtls = atlDao.findAll(false);
+        List<ActivityDTO> results = activityDAO.findAtlActivity(atllAtls, new Date(0L), new Date());
+        assertEquals(0, results.size());
+    }
 	
 	@Test
-	@Transactional
-	public void testFindByObjectId(){
-		
-		List<ActivityDTO> results = activityDAO.findByObjectId(false, 1L, ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT);
-		assertEquals(4, results.size());
-		
-	}
+    @Transactional
+    public void testFindPendingListingActivityNativeSqlWorks(){
+        List<ActivityDTO> results = activityDAO.findPendingListingActivity(1L, new Date(0L), new Date());
+        assertEquals(0, results.size());
+    }
 	
 	@Test
-	@Transactional
-	public void testFindByConcept(){
-		
-		List<ActivityDTO> results = activityDAO.findByConcept(false, ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT);
-		assertEquals(4, results.size());
-		for(ActivityDTO dto : results){
-			assertEquals(dto.getConcept(), ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT);
-		}
-		
-		List<ActivityDTO> developerResults = activityDAO.findByConcept(false, ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER);
-		assertEquals(0, developerResults.size());
-		
-	}
+    @Transactional
+    public void testFindPendingListingActivityByAcbNativeSqlWorks(){
+        List<CertificationBodyDTO> allAcbs = acbDao.findAll(false);
+        List<ActivityDTO> results = activityDAO.findPendingListingActivity(allAcbs, new Date(0L), new Date());
+        assertEquals(0, results.size());
+    }
 	
 	@Test
-	@Transactional
-	public void testFindAllInLastNDays() throws EntityCreationException, EntityRetrievalException{
-		
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		Date fiveDaysAgo = new Date(1489699376931L - (5*24*60*60*1000)); // 3/16/2017 in millis - 5 days in millis
-		List<ActivityDTO> results = activityDAO.findAllInDateRange(false, fiveDaysAgo, new Date(1489699376931L));
-		assertEquals(2,results.size());
-		
-		List<ActivityDTO> results2 = activityDAO.findAllInDateRange(false, null, new Date());
-		assertEquals(7 ,results2.size());
-		
-		ActivityDTO recent = new ActivityDTO();
-		recent.setActivityDate(new Date());
-		recent.setActivityObjectId(100L);
-		recent.setConcept(ActivityConcept.ACTIVITY_CONCEPT_ATL);
-		recent.setDescription("Description");
-		recent.setOriginalData("Original");
-		recent.setNewData("New");
-		
-		ActivityDTO created = activityDAO.create(recent);
-		
-		List<ActivityDTO> results3 = activityDAO.findAllInDateRange(false, fiveDaysAgo, new Date());
-		assertEquals(3, results3.size());
-		activityDAO.delete(created.getId());
-		ActivityDTO deleted = activityDAO.getById(created.getId());
-		assertNull(deleted);
-		
-		SecurityContextHolder.getContext().setAuthentication(null);
-		
-	}
-	
+    @Transactional
+    public void testFindUserActivityNativeSqlWorks(){
+	    List<Long> userIds = new ArrayList<Long>();
+	    userIds.add(-1L);
+	    userIds.add(-2L);
+        List<ActivityDTO> results = activityDAO.findUserActivity(userIds, new Date(0L), new Date());
+        assertEquals(0, results.size());
+    }
+
 	@Test
 	@Transactional
 	public void testFindByObjectIdInLastNDays() throws EntityCreationException, EntityRetrievalException{

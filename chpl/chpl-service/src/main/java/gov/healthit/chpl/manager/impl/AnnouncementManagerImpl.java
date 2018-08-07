@@ -3,7 +3,11 @@ package gov.healthit.chpl.manager.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ApplicationObjectSupport;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +32,8 @@ public class AnnouncementManagerImpl extends ApplicationObjectSupport implements
 
     @Autowired
     private ActivityManager activityManager;
+    
+    @Autowired private MessageSource messageSource;
 
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -80,14 +86,22 @@ public class AnnouncementManagerImpl extends ApplicationObjectSupport implements
     }
 
     @Transactional(readOnly = true)
-    public AnnouncementDTO getById(Long id) throws EntityRetrievalException {
-        boolean isLoggedIn = Util.getCurrentUser() == null ? false : true;
-        return announcementDAO.getById(id, isLoggedIn);
+    public AnnouncementDTO getById(Long id) throws EntityRetrievalException, AccessDeniedException {
+        return getById(id, false);
     }
 
     @Transactional(readOnly = true)
-    public AnnouncementDTO getById(Long id, boolean includeDeleted) throws EntityRetrievalException {
-        return announcementDAO.getByIdToUpdate(id, includeDeleted);
+    public AnnouncementDTO getById(Long id, boolean includeDeleted) 
+            throws EntityRetrievalException, AccessDeniedException {
+        AnnouncementDTO result =  announcementDAO.getById(id, includeDeleted);
+        boolean isLoggedIn = Util.getCurrentUser() == null ? false : true;
+        if(result.getIsPublic().booleanValue() == false && !isLoggedIn) {
+            String msg = String.format(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("announcement.accessDenied"), 
+                    LocaleContextHolder.getLocale()), id);
+            throw new AccessDeniedException(msg);
+        }
+        return result;
     }
 
     public void setAnnouncementDAO(final AnnouncementDAO announcementDAO) {

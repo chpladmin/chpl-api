@@ -8,7 +8,6 @@ import javax.persistence.Query;
 
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +26,7 @@ public class AnnouncementDAOImpl extends BaseDAOImpl implements AnnouncementDAO 
         AnnouncementEntity entity = null;
         try {
             if (dto.getId() != null) {
-                entity = this.getEntityById(dto.getId(), true);
+                entity = this.getEntityById(dto.getId(), false);
             }
         } catch (final EntityRetrievalException e) {
             throw new EntityCreationException(e);
@@ -92,7 +91,7 @@ public class AnnouncementDAOImpl extends BaseDAOImpl implements AnnouncementDAO 
     @Transactional
     public AnnouncementDTO update(AnnouncementDTO dto, boolean includeDeleted) throws EntityRetrievalException {
 
-        AnnouncementEntity entity = getEntityByIdToUpdate(dto.getId(), includeDeleted);
+        AnnouncementEntity entity = getEntityById(dto.getId(), includeDeleted);
         if (entity == null) {
             throw new EntityRetrievalException(
                     "Cannot update entity with id " + dto.getId() + ". Entity does not exist.");
@@ -190,8 +189,8 @@ public class AnnouncementDAOImpl extends BaseDAOImpl implements AnnouncementDAO 
 
     }
 
-    public AnnouncementDTO getById(Long announcementId, boolean isLoggedIn) throws EntityRetrievalException {
-        AnnouncementEntity entity = getEntityById(announcementId, isLoggedIn);
+    public AnnouncementDTO getById(Long announcementId, boolean includeDeleted) throws EntityRetrievalException {
+        AnnouncementEntity entity = getEntityById(announcementId, includeDeleted);
 
         AnnouncementDTO dto = null;
         if (entity != null) {
@@ -203,7 +202,7 @@ public class AnnouncementDAOImpl extends BaseDAOImpl implements AnnouncementDAO 
 
     public AnnouncementDTO getByIdToUpdate(Long announcementId, boolean includeDeleted)
             throws EntityRetrievalException {
-        AnnouncementEntity entity = getEntityByIdToUpdate(announcementId, includeDeleted);
+        AnnouncementEntity entity = getEntityById(announcementId, includeDeleted);
 
         AnnouncementDTO dto = null;
         if (entity != null) {
@@ -243,77 +242,26 @@ public class AnnouncementDAOImpl extends BaseDAOImpl implements AnnouncementDAO 
         return result;
     }
 
-    private AnnouncementEntity getEntityById(Long entityId, boolean isLoggedIn) throws EntityRetrievalException {
+    private AnnouncementEntity getEntityById(Long entityId,  boolean includeDeleted) throws EntityRetrievalException {
 
         List<AnnouncementEntity> results = null;
         AnnouncementEntity entity = null;
-        Query query = null;
-
-        if (isLoggedIn) {
-            query = entityManager
-                    .createQuery("from AnnouncementEntity" + " where deleted = false AND (announcement_id = :entityid)"
-                            + " AND (start_date <= now() AND end_date > now())", AnnouncementEntity.class);
-            query.setParameter("entityid", entityId);
-            results = query.getResultList();
-            if (results == null || results.size() == 0) {
-                String msg = String.format(messageSource.getMessage(
-                        new DefaultMessageSourceResolvable("announcement.notFound"), LocaleContextHolder.getLocale()));
-                throw new EntityRetrievalException(msg);
-            } else {
-                entity = results.get(0);
-            }
-        } else {
-            query = entityManager
-                    .createQuery("from AnnouncementEntity" + " where deleted = false AND (announcement_id = :entityid)"
-                            + " AND (start_date <= now() AND end_date > now())", AnnouncementEntity.class);
-            query.setParameter("entityid", entityId);
-            results = query.getResultList();
-            if (results == null || results.size() == 0) {
-                String msg = String.format(messageSource.getMessage(
-                        new DefaultMessageSourceResolvable("announcement.notFound"), LocaleContextHolder.getLocale()));
-                throw new EntityRetrievalException(msg);
-            } else {
-                AnnouncementEntity ret = results.get(0);
-                boolean isPublic = ret.getIsPublic();
-                if (isPublic) {
-                    entity = ret;
-                } else {
-                    throw new AccessDeniedException("Only logged in member can see non-public announcements.");
-                }
-            }
+        String hql = "SELECT a "
+                + "FROM AnnouncementEntity a "
+                + "WHERE (a.id = :entityid) ";
+        if(!includeDeleted) {
+            hql += " AND a.deleted = false ";
         }
-
-        return entity;
-    }
-
-    private AnnouncementEntity getEntityByIdToUpdate(Long entityId, boolean includeDeleted)
-            throws EntityRetrievalException {
-
-        List<AnnouncementEntity> results = null;
-        AnnouncementEntity entity = null;
-        Query query = null;
-
-        if (includeDeleted) {
-            query = entityManager.createQuery("from AnnouncementEntity" + " where (announcement_id = :entityid)",
-                    AnnouncementEntity.class);
-            query.setParameter("entityid", entityId);
-            results = query.getResultList();
-            if (results.size() == 0) {
-                throw new EntityRetrievalException("There is no announcement with that id");
-            } else {
-                entity = results.get(0);
-            }
+        Query query = entityManager
+                .createQuery(hql, AnnouncementEntity.class);
+        query.setParameter("entityid", entityId);
+        results = query.getResultList();
+        if (results == null || results.size() == 0) {
+            String msg = String.format(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("announcement.notFound"), LocaleContextHolder.getLocale()));
+            throw new EntityRetrievalException(msg);
         } else {
-            query = entityManager.createQuery(
-                    "from AnnouncementEntity" + " where deleted = false AND (announcement_id = :entityid)",
-                    AnnouncementEntity.class);
-            query.setParameter("entityid", entityId);
-            results = query.getResultList();
-            if (results.size() == 0) {
-                throw new EntityRetrievalException("There is no announcement with that id");
-            } else {
-                entity = results.get(0);
-            }
+            entity = results.get(0);
         }
 
         return entity;
