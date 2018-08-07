@@ -51,14 +51,25 @@ public class SchedulerManagerImpl implements SchedulerManager {
 
         TriggerKey triggerId = triggerKey(createTriggerName(trigger), createTriggerGroup(trigger));
         JobKey jobId = jobKey(trigger.getJob().getName(), trigger.getJob().getGroup());
-
-        Trigger qzTrigger = newTrigger()
-                .withIdentity(triggerId)
-                .startNow()
-                .forJob(jobId)
-                .usingJobData("email", trigger.getEmail())
-                .withSchedule(cronSchedule(trigger.getCronSchedule()))
-                .build();
+        Trigger qzTrigger = null;
+        if (trigger.getJob().getJobDataMap().getBooleanValue("acbSpecific")) {
+            qzTrigger = newTrigger()
+                    .withIdentity(triggerId)
+                    .startNow()
+                    .forJob(jobId)
+                    .usingJobData("email", trigger.getEmail())
+                    .usingJobData("acb", trigger.getAcb())
+                    .withSchedule(cronSchedule(trigger.getCronSchedule()))
+                    .build();
+        } else {
+            qzTrigger = newTrigger()
+                    .withIdentity(triggerId)
+                    .startNow()
+                    .forJob(jobId)
+                    .usingJobData("email", trigger.getEmail())
+                    .withSchedule(cronSchedule(trigger.getCronSchedule()))
+                    .build();
+        }
         scheduler.scheduleJob(qzTrigger);
 
         ChplTrigger newTrigger = new ChplTrigger((CronTrigger) scheduler.getTrigger(triggerId));
@@ -97,14 +108,26 @@ public class SchedulerManagerImpl implements SchedulerManager {
     public ChplTrigger updateTrigger(final ChplTrigger trigger) throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
         Trigger oldTrigger  = scheduler.getTrigger(triggerKey(trigger.getName(), trigger.getGroup()));
-
-        Trigger qzTrigger = newTrigger()
-                .withIdentity(oldTrigger.getKey())
-                .startNow()
-                .forJob(oldTrigger.getJobKey())
-                .usingJobData(oldTrigger.getJobDataMap())
-                .withSchedule(cronSchedule(trigger.getCronSchedule()))
-                .build();
+        Trigger qzTrigger = null;
+ 
+        if (trigger.getJob().getJobDataMap().getBooleanValue("acbSpecific")) {
+            qzTrigger = newTrigger()
+                    .withIdentity(oldTrigger.getKey())
+                    .startNow()
+                    .forJob(oldTrigger.getJobKey())
+                    .usingJobData(oldTrigger.getJobDataMap())
+                    .usingJobData("acb", trigger.getAcb())
+                    .withSchedule(cronSchedule(trigger.getCronSchedule()))
+                    .build();
+        } else { 
+            qzTrigger = newTrigger()
+                    .withIdentity(oldTrigger.getKey())
+                    .startNow()
+                    .forJob(oldTrigger.getJobKey())
+                    .usingJobData(oldTrigger.getJobDataMap())
+                    .withSchedule(cronSchedule(trigger.getCronSchedule()))
+                    .build();
+        }
         scheduler.rescheduleJob(oldTrigger.getKey(), qzTrigger);
 
         ChplTrigger newTrigger = getChplTrigger(qzTrigger.getKey());
@@ -117,7 +140,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
      * will need to be added to the list.
      */
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ACB')")
     public List<ChplJob> getAllJobs() throws SchedulerException {
         List<ChplJob> jobs = new ArrayList<ChplJob>();
         Scheduler scheduler = getScheduler();

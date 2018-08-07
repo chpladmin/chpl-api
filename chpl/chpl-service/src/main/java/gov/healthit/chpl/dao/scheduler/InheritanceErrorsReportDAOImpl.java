@@ -39,6 +39,7 @@ public class InheritanceErrorsReportDAOImpl extends BaseDAOImpl implements Inher
             if (!entity.getDeleted()) {
                 entity.setDeleted(true);
                 entityManager.merge(entity);
+                entityManager.flush();
             }
         }
     }

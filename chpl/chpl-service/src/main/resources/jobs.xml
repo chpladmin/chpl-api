@@ -198,8 +198,33 @@
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
                 <cron-expression>0 */2 * * * ?</cron-expression>
-                <!-- <cron-expression>0 3 1 * * ?</cron-expression> <!- At 0103 UTC every day -->
+                <!-- <cron-expression>0 3 1 * * ?</cron-expression> <!- At 
+                    0103 UTC every day -->
             </cron>
         </trigger>
+
+        <!-- Inheritance Report data emailer -->
+        <job>
+            <name>Inherited Certification Status Errors Report</name>
+            <group>chplJobs</group>
+            <description>Sends the ICS errors report</description>
+            <job-class>gov.healthit.chpl.scheduler.job.InheritanceErrorsReportEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ACB</value>
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>DAILY</value>
+                </entry>
+                <entry>
+                    <key>acbSpecific</key>
+                    <value>true</value>
+                </entry>
+            </job-data-map>
+        </job>
     </schedule>
 </job-scheduling-data>
