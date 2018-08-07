@@ -644,7 +644,7 @@ public class ActivityController {
     @ApiOperation(value = "Get auditable data about all CHPL user accounts",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
     @RequestMapping(value = "/users", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ATL', 'ROLE_ACB')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ATL', 'ROLE_ACB', 'ROLE_CMS_STAFF', 'ROLE_ONC_STAFF')")
     public List<ActivityEvent> activityForUsers(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
@@ -660,7 +660,7 @@ public class ActivityController {
     @ApiOperation(value = "Get auditable data about a specific CHPL user account.",
             notes = "A start and end date may optionally be provided to limit activity results.")
     @RequestMapping(value = "/users/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ATL', 'ROLE_ACB')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ATL', 'ROLE_ACB', 'ROLE_CMS_STAFF', 'ROLE_ONC_STAFF')")
     public List<ActivityEvent> activityForUsers(@PathVariable("id") Long id,
             @RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end)
@@ -816,6 +816,13 @@ public class ActivityController {
         if(Util.isUserRoleCmsStaff()) {
             List<UserDTO> cmsStaffUsers = userManager.getUsersWithPermission("ROLE_CMS_STAFF");
             for(UserDTO user : cmsStaffUsers) {
+                allowedUserIds.add(user.getId());
+            }
+        }
+      //user can see activity for other users with role onc_staff
+        if(Util.isUserRoleOncStaff()) {
+            List<UserDTO> oncStaffUsers = userManager.getUsersWithPermission("ROLE_ONC_STAFF");
+            for(UserDTO user : oncStaffUsers) {
                 allowedUserIds.add(user.getId());
             }
         }
