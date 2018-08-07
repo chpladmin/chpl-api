@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.scheduler.InheritanceErrorsReportDTO;
@@ -32,6 +33,7 @@ public class InheritanceErrorsReportDAOImpl extends BaseDAOImpl implements Inher
     }
 
     @Override
+    @Transactional
     public void deleteAll() {
         List<InheritanceErrorsReportEntity> entities = this.findAllEntities();
 
@@ -45,6 +47,7 @@ public class InheritanceErrorsReportDAOImpl extends BaseDAOImpl implements Inher
     }
 
     @Override
+    @Transactional
     public InheritanceErrorsReportEntity create(final InheritanceErrorsReportDTO dto)
             throws EntityCreationException, EntityRetrievalException {
         InheritanceErrorsReportEntity entity = new InheritanceErrorsReportEntity();
@@ -56,6 +59,8 @@ public class InheritanceErrorsReportDAOImpl extends BaseDAOImpl implements Inher
         entity.setAcb(dto.getAcb());
         entity.setUrl(dto.getUrl());
         entity.setReason(dto.getReason());
+        entity.setDeleted(false);
+        entity.setLastModifiedUser(getUserId(SYSTEM_USER_ID));
 
         entityManager.persist(entity);
         entityManager.flush();

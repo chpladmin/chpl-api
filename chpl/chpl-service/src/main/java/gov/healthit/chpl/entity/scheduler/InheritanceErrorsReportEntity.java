@@ -55,6 +55,10 @@ public class InheritanceErrorsReportEntity {
     @Column(name = "deleted")
     private Boolean deleted;
 
+    @Basic(optional = false)
+    @Column(name="last_modified_user")
+    private Long lastModifiedUser;
+
     public Long getId() {
         return id;
     }
@@ -125,5 +129,13 @@ public class InheritanceErrorsReportEntity {
 
     public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
+
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
     }
 }
