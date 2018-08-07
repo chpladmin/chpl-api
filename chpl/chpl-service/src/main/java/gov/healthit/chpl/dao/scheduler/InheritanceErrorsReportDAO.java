@@ -3,7 +3,6 @@ package gov.healthit.chpl.dao.scheduler;
 import java.util.List;
 
 import gov.healthit.chpl.dto.scheduler.InheritanceErrorsReportDTO;
-import gov.healthit.chpl.entity.scheduler.InheritanceErrorsReportEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
@@ -27,10 +26,9 @@ public interface InheritanceErrorsReportDAO {
     /**
      * Inserts the data in the InheritanceErrorsReportDTO into the inheritance_errors_report table.
      * @param dto InheritanceErrorsReportDTO object populated with the data to be inserted.
-     * @return InheritanceErrorsReportEntity representing the data that was inserted
      * @throws EntityCreationException when the data could not be inserted
      * @throws EntityRetrievalException when the newly created record cannot be retrieved
      */
-    InheritanceErrorsReportEntity create(InheritanceErrorsReportDTO dto)
+    void create(List<InheritanceErrorsReportDTO> dto)
             throws EntityCreationException, EntityRetrievalException;
 }

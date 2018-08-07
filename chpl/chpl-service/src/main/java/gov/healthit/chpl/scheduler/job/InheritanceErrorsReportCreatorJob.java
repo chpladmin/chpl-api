@@ -22,8 +22,6 @@ import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.util.StringUtils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dao.scheduler.InheritanceErrorsReportDAO;
 import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
@@ -113,15 +111,13 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
     }
 
     private void saveInheritanceErrorsReport(final List<InheritanceErrorsReportDTO> items) {
-        for (InheritanceErrorsReportDTO item : items) {
-            try {
-                inheritanceErrorsReportDAO.create(item);
-            } catch (EntityCreationException | EntityRetrievalException e) {
-                LOGGER.error("Unable to save Inheritance Errors Report {} with error message {}",
-                        item.toString(), e.getLocalizedMessage());
-            } finally {
-                context.close();
-            }
+        try {
+            inheritanceErrorsReportDAO.create(items);
+        } catch (EntityCreationException | EntityRetrievalException e) {
+            LOGGER.error("Unable to save Inheritance Errors Report {} with error message {}",
+                    items.toString(), e.getLocalizedMessage());
+        } finally {
+            context.close();
         }
     }
 
@@ -180,15 +176,7 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
             final List<CertifiedProductFlatSearchResult> certifiedProducts) {
         List<CertifiedProductFlatSearchResult> results = new ArrayList<CertifiedProductFlatSearchResult>();
         for (CertifiedProductFlatSearchResult result : certifiedProducts) {
-            if (result.getEdition().equalsIgnoreCase(EDITION_2015)
-                    && (result.getId().longValue() == 8877
-                    || result.getId().longValue() == 8878
-                    || result.getId().longValue() == 8959
-                    || result.getId().longValue() == 8960
-                    || result.getId().longValue() == 8968
-                    || result.getId().longValue() == 8978
-                    || result.getId().longValue() == 9356
-                            )) {
+            if (result.getEdition().equalsIgnoreCase(EDITION_2015)) {
                 results.add(result);
             }
         }

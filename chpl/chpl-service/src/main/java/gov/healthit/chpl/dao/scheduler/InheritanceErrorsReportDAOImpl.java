@@ -48,23 +48,23 @@ public class InheritanceErrorsReportDAOImpl extends BaseDAOImpl implements Inher
 
     @Override
     @Transactional
-    public InheritanceErrorsReportEntity create(final InheritanceErrorsReportDTO dto)
+    public void create(final List<InheritanceErrorsReportDTO> dtos)
             throws EntityCreationException, EntityRetrievalException {
-        InheritanceErrorsReportEntity entity = new InheritanceErrorsReportEntity();
+        for (InheritanceErrorsReportDTO dto : dtos) {
+            InheritanceErrorsReportEntity entity = new InheritanceErrorsReportEntity();
+            entity.setChplProductNumber(dto.getChplProductNumber());
+            entity.setDeveloper(dto.getDeveloper());
+            entity.setProduct(dto.getProduct());
+            entity.setVersion(dto.getVersion());
+            entity.setAcb(dto.getAcb());
+            entity.setUrl(dto.getUrl());
+            entity.setReason(dto.getReason());
+            entity.setDeleted(false);
+            entity.setLastModifiedUser(getUserId(SYSTEM_USER_ID));
 
-        entity.setChplProductNumber(dto.getChplProductNumber());
-        entity.setDeveloper(dto.getDeveloper());
-        entity.setProduct(dto.getProduct());
-        entity.setVersion(dto.getVersion());
-        entity.setAcb(dto.getAcb());
-        entity.setUrl(dto.getUrl());
-        entity.setReason(dto.getReason());
-        entity.setDeleted(false);
-        entity.setLastModifiedUser(getUserId(SYSTEM_USER_ID));
-
-        entityManager.persist(entity);
+            entityManager.persist(entity);
+        }
         entityManager.flush();
-        return entity;
     }
 
     private List<InheritanceErrorsReportEntity> findAllEntities() {

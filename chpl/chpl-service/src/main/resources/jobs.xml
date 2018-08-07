@@ -197,9 +197,7 @@
                 <job-name>inheritanceErrorsReportCreator</job-name>
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 */2 * * * ?</cron-expression>
-                <!-- <cron-expression>0 3 1 * * ?</cron-expression> <!- At 
-                    0103 UTC every day -->
+                <cron-expression>0 30 2 * * ?</cron-expression> <!-- At 0230 UTC every day -->
             </cron>
         </trigger>
 

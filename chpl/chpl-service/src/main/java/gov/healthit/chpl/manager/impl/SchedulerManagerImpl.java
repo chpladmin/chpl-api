@@ -20,6 +20,7 @@ import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.TriggerKey;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -45,49 +46,57 @@ public class SchedulerManagerImpl implements SchedulerManager {
     private ChplSchedulerReference chplScheduler;
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ACB')")
     public ChplTrigger createTrigger(final ChplTrigger trigger) throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
 
         TriggerKey triggerId = triggerKey(createTriggerName(trigger), createTriggerGroup(trigger));
         JobKey jobId = jobKey(trigger.getJob().getName(), trigger.getJob().getGroup());
-        Trigger qzTrigger = null;
-        if (trigger.getJob().getJobDataMap().getBooleanValue("acbSpecific")) {
-            qzTrigger = newTrigger()
-                    .withIdentity(triggerId)
-                    .startNow()
-                    .forJob(jobId)
-                    .usingJobData("email", trigger.getEmail())
-                    .usingJobData("acb", trigger.getAcb())
-                    .withSchedule(cronSchedule(trigger.getCronSchedule()))
-                    .build();
-        } else {
-            qzTrigger = newTrigger()
-                    .withIdentity(triggerId)
-                    .startNow()
-                    .forJob(jobId)
-                    .usingJobData("email", trigger.getEmail())
-                    .withSchedule(cronSchedule(trigger.getCronSchedule()))
-                    .build();
-        }
-        scheduler.scheduleJob(qzTrigger);
+        if (doesUserHavePermissionToJob(scheduler.getJobDetail(jobId))) {
+            Trigger qzTrigger = null;
+            if (trigger.getJob().getJobDataMap().getBooleanValue("acbSpecific")) {
+                qzTrigger = newTrigger()
+                        .withIdentity(triggerId)
+                        .startNow()
+                        .forJob(jobId)
+                        .usingJobData("email", trigger.getEmail())
+                        .usingJobData("acb", trigger.getAcb())
+                        .withSchedule(cronSchedule(trigger.getCronSchedule()))
+                        .build();
+            } else {
+                qzTrigger = newTrigger()
+                        .withIdentity(triggerId)
+                        .startNow()
+                        .forJob(jobId)
+                        .usingJobData("email", trigger.getEmail())
+                        .withSchedule(cronSchedule(trigger.getCronSchedule()))
+                        .build();
+            }
+            scheduler.scheduleJob(qzTrigger);
 
-        ChplTrigger newTrigger = new ChplTrigger((CronTrigger) scheduler.getTrigger(triggerId));
-        return newTrigger;
+            ChplTrigger newTrigger = new ChplTrigger((CronTrigger) scheduler.getTrigger(triggerId));
+            return newTrigger;
+        } else {
+            throw new AccessDeniedException("Can not create this trigger");
+        }
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ACB')")
     public void deleteTrigger(final String triggerGroup, final String triggerName)
             throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
         TriggerKey triggerKey = triggerKey(triggerName, triggerGroup);
 
-        scheduler.unscheduleJob(triggerKey);
+        if (doesUserHavePermissionToJob(scheduler.getJobDetail(scheduler.getTrigger(triggerKey).getJobKey()))) {
+            scheduler.unscheduleJob(triggerKey);
+        } else {
+            throw new AccessDeniedException("Can not update this trigger");
+        }
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ACB')")
     public List<ChplTrigger> getAllTriggers() throws SchedulerException {
         ArrayList<ChplTrigger> triggers = new ArrayList<ChplTrigger>();
         Scheduler scheduler = getScheduler();
@@ -95,8 +104,11 @@ public class SchedulerManagerImpl implements SchedulerManager {
             // enumerate each trigger in group
             for (TriggerKey triggerKey : scheduler.getTriggerKeys(groupEquals(group))) {
                 if (scheduler.getTrigger(triggerKey).getJobKey().getGroup().equalsIgnoreCase("chplJobs")) {
-                    ChplTrigger newTrigger = getChplTrigger(triggerKey);
-                    triggers.add(newTrigger);
+                    if (doesUserHavePermissionToJob(
+                            scheduler.getJobDetail(scheduler.getTrigger(triggerKey).getJobKey()))) {
+                        ChplTrigger newTrigger = getChplTrigger(triggerKey);
+                        triggers.add(newTrigger);
+                    }
                 }
             }
         }
@@ -104,34 +116,37 @@ public class SchedulerManagerImpl implements SchedulerManager {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ACB')")
     public ChplTrigger updateTrigger(final ChplTrigger trigger) throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
-        Trigger oldTrigger  = scheduler.getTrigger(triggerKey(trigger.getName(), trigger.getGroup()));
+        Trigger oldTrigger = scheduler.getTrigger(triggerKey(trigger.getName(), trigger.getGroup()));
         Trigger qzTrigger = null;
- 
-        if (trigger.getJob().getJobDataMap().getBooleanValue("acbSpecific")) {
-            qzTrigger = newTrigger()
-                    .withIdentity(oldTrigger.getKey())
-                    .startNow()
-                    .forJob(oldTrigger.getJobKey())
-                    .usingJobData(oldTrigger.getJobDataMap())
-                    .usingJobData("acb", trigger.getAcb())
-                    .withSchedule(cronSchedule(trigger.getCronSchedule()))
-                    .build();
-        } else { 
-            qzTrigger = newTrigger()
-                    .withIdentity(oldTrigger.getKey())
-                    .startNow()
-                    .forJob(oldTrigger.getJobKey())
-                    .usingJobData(oldTrigger.getJobDataMap())
-                    .withSchedule(cronSchedule(trigger.getCronSchedule()))
-                    .build();
-        }
-        scheduler.rescheduleJob(oldTrigger.getKey(), qzTrigger);
+        if (doesUserHavePermissionToJob(scheduler.getJobDetail(oldTrigger.getJobKey()))) {
+            if (trigger.getJob().getJobDataMap().getBooleanValue("acbSpecific")) {
+                qzTrigger = newTrigger()
+                        .withIdentity(oldTrigger.getKey())
+                        .startNow()
+                        .forJob(oldTrigger.getJobKey())
+                        .usingJobData(oldTrigger.getJobDataMap())
+                        .usingJobData("acb", trigger.getAcb())
+                        .withSchedule(cronSchedule(trigger.getCronSchedule()))
+                        .build();
+            } else {
+                qzTrigger = newTrigger()
+                        .withIdentity(oldTrigger.getKey())
+                        .startNow()
+                        .forJob(oldTrigger.getJobKey())
+                        .usingJobData(oldTrigger.getJobDataMap())
+                        .withSchedule(cronSchedule(trigger.getCronSchedule()))
+                        .build();
+            }
+            scheduler.rescheduleJob(oldTrigger.getKey(), qzTrigger);
 
-        ChplTrigger newTrigger = getChplTrigger(qzTrigger.getKey());
-        return newTrigger;
+            ChplTrigger newTrigger = getChplTrigger(qzTrigger.getKey());
+            return newTrigger;
+        } else {
+            throw new AccessDeniedException("Can not update this trigger");
+        }
     }
 
     /* (non-Javadoc)
@@ -158,22 +173,26 @@ public class SchedulerManagerImpl implements SchedulerManager {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ACB')")
     public ChplJob updateJob(final ChplJob job) throws SchedulerException {
         Scheduler scheduler = getScheduler();
         JobKey jobId = jobKey(job.getName(), job.getGroup());
         JobDetail oldJob = scheduler.getJobDetail(jobId);
-        JobDetail newJob = newJob(oldJob.getJobClass())
-                .withIdentity(jobId)
-                .withDescription(oldJob.getDescription())
-                .usingJobData(job.getJobDataMap())
-                .storeDurably(oldJob.isDurable())
-                .requestRecovery(oldJob.requestsRecovery())
-                .build();
+        if (doesUserHavePermissionToJob(oldJob)) {
+            JobDetail newJob = newJob(oldJob.getJobClass())
+                    .withIdentity(jobId)
+                    .withDescription(oldJob.getDescription())
+                    .usingJobData(job.getJobDataMap())
+                    .storeDurably(oldJob.isDurable())
+                    .requestRecovery(oldJob.requestsRecovery())
+                    .build();
 
-        scheduler.addJob(newJob, true);
-        ChplJob newChplJob = new ChplJob(newJob);
-        return newChplJob;
+            scheduler.addJob(newJob, true);
+            ChplJob newChplJob = new ChplJob(newJob);
+            return newChplJob;
+        } else {
+            throw new AccessDeniedException("Can not update this job");
+        }
     }
 
     private Scheduler getScheduler() throws SchedulerException {
