@@ -650,6 +650,9 @@ public class ActivityController {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
+        if(Util.isUserRoleAdmin()) {
+            return activityManager.getAllUserActivity(startDate, endDate);
+        }
         Set<Long> userIdsToSearch = getAllowedUsersForActivitySearch();
         return activityManager.getUserActivity(userIdsToSearch, startDate, endDate);
     }
