@@ -88,10 +88,13 @@ public class SearchViewController {
     private static final Logger LOGGER = LogManager.getLogger(SearchViewController.class);
 
     @ApiOperation(value = "Download the entire CHPL as XML.",
-            notes = "Once per day, the entire certified product listing is written out to an XML "
-                    + "file on the CHPL servers. This method allows any user to download that XML file. "
-                    + "It is formatted in such a way that users may import it into Microsoft Excel or any other XML "
-                    + "tool of their choosing.")
+            notes = "Once per day, the entire certified product listing is "
+                    + "written out to XML files on the CHPL servers, one for each "
+                    + "certification edition. This method allows any user to download "
+                    + "that XML file. It is formatted in such a way that users may import "
+                    + "it into Microsoft Excel or any other XML tool of their choosing. To download "
+                    + "any one of the XML files, append ‘&edition=year’ to the end of the query string "
+                    + "(e.g., &edition=2015). A separate query is required to download each of the XML files.")
     @RequestMapping(value = "/download", method = RequestMethod.GET, produces = "application/xml")
     public void download(@RequestParam(value = "edition", required = false) String edition,
             @RequestParam(value = "format", defaultValue = "xml", required = false) String format,

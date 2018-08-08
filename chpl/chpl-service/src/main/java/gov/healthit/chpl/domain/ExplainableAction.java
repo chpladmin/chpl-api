@@ -1,6 +1,11 @@
 package gov.healthit.chpl.domain;
 
+/**
+ * Interface for actions that can be explained.
+ * @author alarned
+ *
+ */
 public interface ExplainableAction {
-    public String getReason();
-    public void setReason(String reason);
+    String getReason();
+    void setReason(String reason);
 }

@@ -1,5 +1,22 @@
 package gov.healthit.chpl.web.controller;
 
+import gov.healthit.chpl.app.chartdata.ExperienceType;
+import gov.healthit.chpl.domain.ParticipantGenderStatistics;
+import gov.healthit.chpl.domain.SedParticipantStatisticsCount;
+import gov.healthit.chpl.dto.ParticipantGenderStatisticsDTO;
+import gov.healthit.chpl.dto.SedParticipantStatisticsCountDTO;
+import gov.healthit.chpl.manager.StatisticsManager;
+import gov.healthit.chpl.web.controller.results.CriterionProductStatisticsResult;
+import gov.healthit.chpl.web.controller.results.IncumbentDevelopersStatisticsResult;
+import gov.healthit.chpl.web.controller.results.ListingCountStatisticsResult;
+import gov.healthit.chpl.web.controller.results.NonconformityTypeStatisticsResult;
+import gov.healthit.chpl.web.controller.results.ParticipantAgeStatisticsResult;
+import gov.healthit.chpl.web.controller.results.ParticipantEducationStatisticsResult;
+import gov.healthit.chpl.web.controller.results.ParticipantExperienceStatisticsResult;
+import gov.healthit.chpl.web.controller.results.SedParticipantStatisticsCountResults;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,24 +25,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.healthit.chpl.app.chartdata.ExperienceType;
-import gov.healthit.chpl.domain.ParticipantGenderStatistics;
-import gov.healthit.chpl.domain.SedParticipantStatisticsCount;
-import gov.healthit.chpl.dto.ParticipantGenderStatisticsDTO;
-import gov.healthit.chpl.dto.SedParticipantStatisticsCountDTO;
-import gov.healthit.chpl.manager.StatisticsManager;
-import gov.healthit.chpl.web.controller.results.ListingCountStatisticsResult;
-import gov.healthit.chpl.web.controller.results.CriterionProductStatisticsResult;
-import gov.healthit.chpl.web.controller.results.IncumbentDevelopersStatisticsResult;
-import gov.healthit.chpl.web.controller.results.ParticipantAgeStatisticsResult;
-import gov.healthit.chpl.web.controller.results.ParticipantEducationStatisticsResult;
-import gov.healthit.chpl.web.controller.results.ParticipantExperienceStatisticsResult;
-import gov.healthit.chpl.web.controller.results.SedParticipantStatisticsCountResults;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-
 /**
  * The StatisticsController is used to return data that can be used to charting.
+ * 
  * @author TYoung
  *
  */
@@ -39,12 +41,27 @@ public class StatisticsController {
 
     /**
      * Retrieves and returns the Listing counts.
+     * 
+     * @return a JSON representation of an NonconformityTypeStatisticsResult
+     *         object
+     */
+    @ApiOperation(value = "Get count of nonconformities by criteria.", notes = "Retrieves and returns the counts.")
+    @RequestMapping(value = "/nonconformity_criteria_count", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    public NonconformityTypeStatisticsResult getNonconformityCountByCriteria() {
+        NonconformityTypeStatisticsResult response = new NonconformityTypeStatisticsResult();
+        response.setNonconformityStatisticsResult(statisticsManager.getAllNonconformitiesByCriterion());
+        return response;
+    }
+
+    /**
+     * Retrieves and returns the Listing counts.
+     * 
      * @return a JSON representation of an ListingCountStatisticsResult object
      */
     @ApiOperation(value = "Get count of Developers and Products with listings.",
             notes = "Retrieves and returns the counts.")
-    @RequestMapping(value = "/listing_count", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/listing_count", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public ListingCountStatisticsResult getListingCountStatistics() {
         ListingCountStatisticsResult response = new ListingCountStatisticsResult();
         response.setStatisticsResult(statisticsManager.getListingCountStatisticsResult());
@@ -53,7 +70,9 @@ public class StatisticsController {
 
     /**
      * Retrieves and returns the Criterion/Product counts.
-     * @return a JSON representation of a CriterionProductStatisticsResult object
+     * 
+     * @return a JSON representation of a CriterionProductStatisticsResult
+     *         object
      */
     @ApiOperation(value = "Get count of Criteria certified to by unique Product.",
             notes = "Retrieves and returns the Criterion/Product counts.")
@@ -67,7 +86,9 @@ public class StatisticsController {
 
     /**
      * Retrieves and returns the Incumbent Developer counts.
-     * @return a JSON representation of an IncumbentDevelopersStatisticsResult object
+     * 
+     * @return a JSON representation of an IncumbentDevelopersStatisticsResult
+     *         object
      */
     @ApiOperation(value = "Get count of new vs. incumbent Developers.",
             notes = "Retrieves and returns counts grouped by Edition.")
@@ -81,7 +102,9 @@ public class StatisticsController {
 
     /**
      * Retrieves and returns the SED/Participant counts.
-     * @return a JSON representation of a SedParticipantStatisticsCountResults object
+     * 
+     * @return a JSON representation of a SedParticipantStatisticsCountResults
+     *         object
      */
     @ApiOperation(value = "Get all Sed/Participant counts.",
             notes = "Retrieves and returns the SED/Participant counts.")
@@ -92,10 +115,9 @@ public class StatisticsController {
         List<SedParticipantStatisticsCountDTO> sedParticipantStatisticsCountDTOs = statisticsManager
                 .getAllSedParticipantCounts();
         if (sedParticipantStatisticsCountDTOs != null) {
-            for (SedParticipantStatisticsCountDTO sedParticipantStatisticsCountDTO
-                    : sedParticipantStatisticsCountDTOs) {
-                results.getSedParticipantStatisticsCounts()
-                        .add(new SedParticipantStatisticsCount(sedParticipantStatisticsCountDTO));
+            for (SedParticipantStatisticsCountDTO sedParticipantStatisticsCountDTO : sedParticipantStatisticsCountDTOs) {
+                results.getSedParticipantStatisticsCounts().add(
+                        new SedParticipantStatisticsCount(sedParticipantStatisticsCountDTO));
             }
         }
         return results;
@@ -103,6 +125,7 @@ public class StatisticsController {
 
     /**
      * Retrieves and returns the SED/Participant/Gender counts.
+     * 
      * @return a JSON representation of a ParticipantGenderStatistics object
      */
     @ApiOperation(value = "Get all Sed/Participant/Gender counts.",
@@ -116,6 +139,7 @@ public class StatisticsController {
 
     /**
      * Retrieves and returns the SED/Participant/Age counts.
+     * 
      * @return a JSON representation of a ParticipantAgeStatisticsResult object
      */
     @ApiOperation(value = "Get all Sed/Participant/Age counts.",
@@ -130,7 +154,9 @@ public class StatisticsController {
 
     /**
      * Retrieves and returns the SED/Participant/Education counts.
-     * @return a JSON representation of a ParticipantEducationStatisticsResult object
+     * 
+     * @return a JSON representation of a ParticipantEducationStatisticsResult
+     *         object
      */
     @ApiOperation(value = "Get all Sed/Participant/Education counts.",
             notes = "Retrieves and returns the SED/Participant/Education counts.")
@@ -144,7 +170,9 @@ public class StatisticsController {
 
     /**
      * Retrieves and returns the SED/Participant/Professional Experience counts.
-     * @return a JSON representation of a ParticipantExperienceStatisticsResult object
+     * 
+     * @return a JSON representation of a ParticipantExperienceStatisticsResult
+     *         object
      */
     @ApiOperation(value = "Get all Sed/Participant/Professional Experience counts.",
             notes = "Retrieves and returns the SED/Participant/Preofessional Experience counts.")
@@ -152,14 +180,16 @@ public class StatisticsController {
             produces = "application/json; charset=utf-8")
     public @ResponseBody ParticipantExperienceStatisticsResult getParticipantProfessionalExperienceStatistics() {
         ParticipantExperienceStatisticsResult response = new ParticipantExperienceStatisticsResult();
-        response.setParticipantExperienceStatistics(
-                statisticsManager.getParticipantExperienceStatisticsResult(ExperienceType.PROFESSIONAL_EXPERIENCE));
+        response.setParticipantExperienceStatistics(statisticsManager
+                .getParticipantExperienceStatisticsResult(ExperienceType.PROFESSIONAL_EXPERIENCE));
         return response;
     }
 
     /**
      * Retrieves and returns the SED/Participant/Computer Experience counts.
-     * @return a JSON representation of a ParticipantExperienceStatisticsResult object
+     * 
+     * @return a JSON representation of a ParticipantExperienceStatisticsResult
+     *         object
      */
     @ApiOperation(value = "Get all Sed/Participant/Computer Experience counts.",
             notes = "Retrieves and returns the SED/Participant/Computer Experience counts.")
@@ -167,14 +197,16 @@ public class StatisticsController {
             produces = "application/json; charset=utf-8")
     public @ResponseBody ParticipantExperienceStatisticsResult getParticipantComputerExperienceStatistics() {
         ParticipantExperienceStatisticsResult response = new ParticipantExperienceStatisticsResult();
-        response.setParticipantExperienceStatistics(
-                statisticsManager.getParticipantExperienceStatisticsResult(ExperienceType.COMPUTER_EXPERIENCE));
+        response.setParticipantExperienceStatistics(statisticsManager
+                .getParticipantExperienceStatisticsResult(ExperienceType.COMPUTER_EXPERIENCE));
         return response;
     }
 
     /**
      * Retrieves and returns the SED/Participant/Product Experience counts.
-     * @return a JSON representation of a ParticipantExperienceStatisticsResult object
+     * 
+     * @return a JSON representation of a ParticipantExperienceStatisticsResult
+     *         object
      */
     @ApiOperation(value = "Get all Sed/Participant/Product Experience counts.",
             notes = "Retrieves and returns the SED/Participant/Product Experience counts.")
@@ -182,8 +214,8 @@ public class StatisticsController {
             produces = "application/json; charset=utf-8")
     public @ResponseBody ParticipantExperienceStatisticsResult getParticipantProductExperienceStatistics() {
         ParticipantExperienceStatisticsResult response = new ParticipantExperienceStatisticsResult();
-        response.setParticipantExperienceStatistics(
-                statisticsManager.getParticipantExperienceStatisticsResult(ExperienceType.PRODUCT_EXPERIENCE));
+        response.setParticipantExperienceStatistics(statisticsManager
+                .getParticipantExperienceStatisticsResult(ExperienceType.PRODUCT_EXPERIENCE));
         return response;
     }
 }

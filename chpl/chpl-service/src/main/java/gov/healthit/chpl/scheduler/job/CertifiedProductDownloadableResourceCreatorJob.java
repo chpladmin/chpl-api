@@ -25,8 +25,8 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
-import gov.healthit.chpl.scheduler.QuartzCertifiedProductSearchDetailsAsync;
 import gov.healthit.chpl.scheduler.JobConfig;
+import gov.healthit.chpl.scheduler.SchedulerCertifiedProductSearchDetailsAsync;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProduct2014CsvPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductCsvPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductXmlPresenter;
@@ -94,7 +94,7 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
             final List<CertifiedProductDetailsDTO> listings) throws Exception {
 
         List<Future<CertifiedProductSearchDetails>> futures = new ArrayList<Future<CertifiedProductSearchDetails>>();
-        QuartzCertifiedProductSearchDetailsAsync cpsdAsync = getCertifiedProductDetailsAsyncRetrievalHelper();
+        SchedulerCertifiedProductSearchDetailsAsync cpsdAsync = getCertifiedProductDetailsAsyncRetrievalHelper();
 
         for (CertifiedProductDetailsDTO currListing : listings) {
             try {
@@ -205,10 +205,10 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         return file;
     }
 
-    private QuartzCertifiedProductSearchDetailsAsync getCertifiedProductDetailsAsyncRetrievalHelper()
+    private SchedulerCertifiedProductSearchDetailsAsync getCertifiedProductDetailsAsyncRetrievalHelper()
             throws BeansException {
-        return (QuartzCertifiedProductSearchDetailsAsync)
-                getApplicationContext().getBean("quartzCertifiedProductSearchDetailsAsync");
+        return (SchedulerCertifiedProductSearchDetailsAsync)
+                getApplicationContext().getBean("schedulerCertifiedProductSearchDetailsAsync");
     }
 
     private CertifiedProductDetailsManager getCertifiedProductDetailsManager() throws BeansException {

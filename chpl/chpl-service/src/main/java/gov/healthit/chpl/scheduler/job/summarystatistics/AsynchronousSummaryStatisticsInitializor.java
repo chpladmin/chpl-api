@@ -1,4 +1,4 @@
-package gov.healthit.chpl.app.statistics;
+package gov.healthit.chpl.scheduler.job.summarystatistics;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -10,9 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.dao.statistics.DeveloperStatisticsDAO;
+import gov.healthit.chpl.dao.statistics.ListingStatisticsDAO;
+import gov.healthit.chpl.dao.statistics.SurveillanceStatisticsDAO;
 import gov.healthit.chpl.domain.DateRange;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyAltTestStatistics;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
@@ -23,13 +26,22 @@ import gov.healthit.chpl.domain.statistics.Statistics;
  * @author alarned
  *
  */
-@Repository("asynchronousStatisticsInitializor")
+@Component("asynchronousSummaryStatisticsInitializor")
 @EnableAsync
-public class AsynchronousStatisticsInitializor {
-    private static final Logger LOGGER = LogManager.getLogger(AsynchronousStatisticsInitializor.class);
+public class AsynchronousSummaryStatisticsInitializor {
+    private static final Logger LOGGER = LogManager.getLogger(AsynchronousSummaryStatisticsInitializor.class);
     @Autowired
-    private AsynchronousStatistics asyncStats;
+    private AsynchronousSummaryStatistics asyncStats;
+    
+    @Autowired
+    private DeveloperStatisticsDAO developerStatisticsDAO;
+    
+    @Autowired
+    private ListingStatisticsDAO listingStatisticsDAO;
 
+    @Autowired
+    private SurveillanceStatisticsDAO surveillanceStatisticsDAO;
+    
     /**
      * Actual call to get the statistics.
      * @param dateRange range to find statistics in
@@ -65,52 +77,52 @@ public class AsynchronousStatisticsInitializor {
         Future<List<CertifiedBodyAltTestStatistics>> totalListingsWithCertifiedBodyAndAlternativeTestMethods = null;
 
         if (dateRange == null) {
-            totalActive2014Listings = asyncStats.getTotalActive2014Listings(dateRange);
-            totalActive2015Listings = asyncStats.getTotalActive2015Listings(dateRange);
-            totalActiveListingsByCertifiedBody = asyncStats.getTotalActiveListingsByCertifiedBody(dateRange);
-            totalDevelopersWithActive2014Listings = asyncStats.getTotalDevelopersWithActive2014Listings(dateRange);
-            totalDevelopersWithActive2015Listings = asyncStats.getTotalDevelopersWithActive2015Listings(dateRange);
-            totalCPListingsEachYearByCertifiedBody = asyncStats.getTotalCPListingsEachYearByCertifiedBody(dateRange);
+            totalActive2014Listings = asyncStats.getTotalActive2014Listings(listingStatisticsDAO, dateRange);
+            totalActive2015Listings = asyncStats.getTotalActive2015Listings(listingStatisticsDAO, dateRange);
+            totalActiveListingsByCertifiedBody = asyncStats.getTotalActiveListingsByCertifiedBody(listingStatisticsDAO, dateRange);
+            totalDevelopersWithActive2014Listings = asyncStats.getTotalDevelopersWithActive2014Listings(developerStatisticsDAO, dateRange);
+            totalDevelopersWithActive2015Listings = asyncStats.getTotalDevelopersWithActive2015Listings(developerStatisticsDAO, dateRange);
+            totalCPListingsEachYearByCertifiedBody = asyncStats.getTotalCPListingsEachYearByCertifiedBody(listingStatisticsDAO, dateRange);
             totalCPListingsEachYearByCertifiedBodyAndCertificationStatus = asyncStats
-                    .getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(dateRange);
-            totalCPs2014Listings = asyncStats.getTotalCPs2014Listings(dateRange);
-            totalCPs2015Listings = asyncStats.getTotalCPs2015Listings(dateRange);
-            totalCPsSuspended2014Listings = asyncStats.getTotalCPsSuspended2014Listings(dateRange);
-            totalCPsSuspended2015Listings = asyncStats.getTotalCPsSuspended2015Listings(dateRange);
-            totalListingsWithAlternateTestMethods = asyncStats.getTotalListingsWithAlternateTestMethods();
+                    .getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(listingStatisticsDAO, dateRange);
+            totalCPs2014Listings = asyncStats.getTotalCPs2014Listings(listingStatisticsDAO, dateRange);
+            totalCPs2015Listings = asyncStats.getTotalCPs2015Listings(listingStatisticsDAO, dateRange);
+            totalCPsSuspended2014Listings = asyncStats.getTotalCPsSuspended2014Listings(listingStatisticsDAO, dateRange);
+            totalCPsSuspended2015Listings = asyncStats.getTotalCPsSuspended2015Listings(listingStatisticsDAO, dateRange);
+            totalListingsWithAlternateTestMethods = asyncStats.getTotalListingsWithAlternateTestMethods(listingStatisticsDAO);
             totalListingsWithCertifiedBodyAndAlternativeTestMethods
-            = asyncStats.getTotalListingsWithCertifiedBodyAndAlternativeTestMethods();
+            = asyncStats.getTotalListingsWithCertifiedBodyAndAlternativeTestMethods(listingStatisticsDAO);
         }
 
         // developers
-        Future<Long> totalDevelopers = asyncStats.getTotalDevelopers(dateRange);
-        Future<Long> totalDevelopersWith2014Listings = asyncStats.getTotalDevelopersWith2014Listings(dateRange);
+        Future<Long> totalDevelopers = asyncStats.getTotalDevelopers(developerStatisticsDAO, dateRange);
+        Future<Long> totalDevelopersWith2014Listings = asyncStats.getTotalDevelopersWith2014Listings(developerStatisticsDAO, dateRange);
 
         Future<List<CertifiedBodyStatistics>> totalDevelopersByCertifiedBodyWithListingsEachYear = asyncStats
-                .getTotalDevelopersByCertifiedBodyWithListingsEachYear(dateRange);
+                .getTotalDevelopersByCertifiedBodyWithListingsEachYear(developerStatisticsDAO, dateRange);
         Future<List<CertifiedBodyStatistics>> totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear
-        = asyncStats.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(dateRange);
-        Future<Long> totalDeveloperswith2015Listings = asyncStats.getTotalDevelopersWith2015Listings(dateRange);
+        = asyncStats.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(developerStatisticsDAO, dateRange);
+        Future<Long> totalDeveloperswith2015Listings = asyncStats.getTotalDevelopersWith2015Listings(developerStatisticsDAO, dateRange);
 
         // listings
-        Future<Long> totalCertifiedProducts = asyncStats.getTotalCertifiedProducts(dateRange);
+        Future<Long> totalCertifiedProducts = asyncStats.getTotalCertifiedProducts(listingStatisticsDAO, dateRange);
 
-        Future<Long> totalCPsActive2014Listings = asyncStats.getTotalCPsActive2014Listings(dateRange);
+        Future<Long> totalCPsActive2014Listings = asyncStats.getTotalCPsActive2014Listings(listingStatisticsDAO, dateRange);
 
-        Future<Long> totalCPsActive2015Listings = asyncStats.getTotalCPsActive2015Listings(dateRange);
+        Future<Long> totalCPsActive2015Listings = asyncStats.getTotalCPsActive2015Listings(listingStatisticsDAO, dateRange);
 
-        Future<Long> totalCPsActiveListings = asyncStats.getTotalCPsActiveListings(dateRange);
-        Future<Long> totalListings = asyncStats.getTotalListings(dateRange);
-        Future<Long> total2014Listings = asyncStats.getTotal2014Listings(dateRange);
-        Future<Long> total2015Listings = asyncStats.getTotal2015Listings(dateRange);
-        Future<Long> total2011Listings = asyncStats.getTotal2011Listings(dateRange);
+        Future<Long> totalCPsActiveListings = asyncStats.getTotalCPsActiveListings(listingStatisticsDAO, dateRange);
+        Future<Long> totalListings = asyncStats.getTotalListings(listingStatisticsDAO, dateRange);
+        Future<Long> total2014Listings = asyncStats.getTotal2014Listings(listingStatisticsDAO, dateRange);
+        Future<Long> total2015Listings = asyncStats.getTotal2015Listings(listingStatisticsDAO, dateRange);
+        Future<Long> total2011Listings = asyncStats.getTotal2011Listings(listingStatisticsDAO, dateRange);
         // surveillance
-        Future<Long> totalSurveillanceActivities = asyncStats.getTotalSurveillanceActivities(dateRange);
-        Future<Long> totalOpenSurveillanceActivities = asyncStats.getTotalOpenSurveillanceActivities(dateRange);
-        Future<Long> totalClosedSurveillanceActivities = asyncStats.getTotalClosedSurveillanceActivities(dateRange);
-        Future<Long> totalNonConformities = asyncStats.getTotalNonConformities(dateRange);
-        Future<Long> totalOpenNonConformities = asyncStats.getTotalOpenNonconformities(dateRange);
-        Future<Long> totalClosedNonConformities = asyncStats.getTotalClosedNonconformities(dateRange);
+        Future<Long> totalSurveillanceActivities = asyncStats.getTotalSurveillanceActivities(surveillanceStatisticsDAO, dateRange);
+        Future<Long> totalOpenSurveillanceActivities = asyncStats.getTotalOpenSurveillanceActivities(surveillanceStatisticsDAO, dateRange);
+        Future<Long> totalClosedSurveillanceActivities = asyncStats.getTotalClosedSurveillanceActivities(surveillanceStatisticsDAO, dateRange);
+        Future<Long> totalNonConformities = asyncStats.getTotalNonConformities(surveillanceStatisticsDAO, dateRange);
+        Future<Long> totalOpenNonConformities = asyncStats.getTotalOpenNonconformities(surveillanceStatisticsDAO, dateRange);
+        Future<Long> totalClosedNonConformities = asyncStats.getTotalClosedNonconformities(surveillanceStatisticsDAO, dateRange);
 
         if (dateRange == null) {
             stats.setTotalActive2014Listings(totalActive2014Listings.get());
@@ -136,7 +148,7 @@ public class AsynchronousStatisticsInitializor {
 
         stats.setTotalDevelopersByCertifiedBodyWithListingsEachYear(
                 totalDevelopersByCertifiedBodyWithListingsEachYear.get());
-        stats.setTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(
+        stats.setTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear(
                 totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear.get());
         stats.setTotalDevelopersWith2015Listings(totalDeveloperswith2015Listings.get());
 

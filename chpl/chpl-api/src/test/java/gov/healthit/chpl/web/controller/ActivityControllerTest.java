@@ -1,6 +1,6 @@
 package gov.healthit.chpl.web.controller;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -34,6 +35,7 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.domain.ActivityEvent;
+import gov.healthit.chpl.domain.UserActivity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -46,10 +48,9 @@ import gov.healthit.chpl.exception.ValidationException;
     DbUnitTestExecutionListener.class })
 @DatabaseSetup("classpath:data/testData.xml") 
 public class ActivityControllerTest {
-	private static JWTAuthenticatedUser adminUser;
-	
+	private static JWTAuthenticatedUser adminUser, acbUser, atlUser;
+
 	@Autowired Environment env;
-	
 	@Autowired ActivityController activityController;
 	
 	@Rule
@@ -64,6 +65,20 @@ public class ActivityControllerTest {
 		adminUser.setLastName("Administrator");
 		adminUser.setSubjectName("admin");
 		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+		
+		acbUser = new JWTAuthenticatedUser();
+        acbUser.setFirstName("Test");
+        acbUser.setId(3L);
+        acbUser.setLastName("User3");
+        acbUser.setSubjectName("testUser3");
+        acbUser.getPermissions().add(new GrantedPermission("ROLE_ACB"));
+
+        atlUser = new JWTAuthenticatedUser();
+        atlUser.setFirstName("ATL");
+        atlUser.setId(3L);
+        atlUser.setLastName("User");
+        atlUser.setSubjectName("atlUser");
+        atlUser.getPermissions().add(new GrantedPermission("ROLE_ATL"));
 	}
 	
 	/** 
@@ -78,12 +93,22 @@ public class ActivityControllerTest {
 		// Note: certification_criterion_id="59" has testTool="true", number 170.315 (h)(1) and title "Direct Project"
 		Long cpId = 1L; // this CP has ics_code = "1" & associated certification_result_id = 8 with certification_criterion_id="59"
 		Long cpId2 = 10L; // this CP has ics_code = "0" & associated certification_result_id = 9 with certification_criterion_id="59"
+        
+		List<ActivityEvent> cpActivityEvents = activityController.
+		        activityForCertifiedProductById(cpId, null, null);
+		assertEquals(4, cpActivityEvents.size());
 		
-		List<ActivityEvent> cpActivityEvents = activityController.activityForCertifiedProductById(cpId, null, null);
-		assertTrue(cpActivityEvents.size() == 4);
-		
-		List<ActivityEvent> cp2ActivityEvents = activityController.activityForCertifiedProductById(cpId2, null, null);
-		assertTrue(cp2ActivityEvents.size() == 0);
+		Calendar start = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        start.set(2015, 9, 1, 0, 0);
+        Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        end.set(2015, 9, 20, 0, 0);
+        List<ActivityEvent> cpActivityEventsInDates = activityController.
+                activityForCertifiedProductById(cpId, start.getTimeInMillis(), end.getTimeInMillis());
+        assertEquals(3, cpActivityEventsInDates.size());
+        
+		List<ActivityEvent> cp2ActivityEvents = activityController.
+		        activityForCertifiedProductById(cpId2, null, null);
+		assertEquals(0, cp2ActivityEvents.size());
 	}
 	
 	/** 
@@ -94,7 +119,7 @@ public class ActivityControllerTest {
 	 * @throws ValidationException 
 	 */
 	@Transactional
-	@Test(expected=ValidationException.class)
+	@Test(expected=IllegalArgumentException.class)
 	public void test_dateValidation_outOfRangeThrowsException() throws EntityRetrievalException, EntityCreationException, IOException, ValidationException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
@@ -114,7 +139,8 @@ public class ActivityControllerTest {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		Calendar calEnd = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		Calendar calStart = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-		Integer maxActivityRangeInDays = Integer.getInteger(env.getProperty("maxActivityRangeInDays"), 60);
+		Integer maxActivityRangeInDays = Integer.getInteger(
+		        env.getProperty("maxActivityRangeInDays"), ActivityController.DEFAULT_MAX_ACTIVITY_RANGE_DAYS);
 		calStart.add(Calendar.DATE, -maxActivityRangeInDays + 1);
 		activityController.activityForACBs(calStart.getTimeInMillis(), calEnd.getTimeInMillis(), false);
 	}
@@ -128,12 +154,12 @@ public class ActivityControllerTest {
 	 */
 	@Transactional
 	@Test
-	public void test_dateValidation_allowsSixtyDays() throws EntityRetrievalException, EntityCreationException, IOException, ValidationException{
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
+	public void test_dateValidation_allowsMaxActivityRangeDays() throws EntityRetrievalException, EntityCreationException, IOException, ValidationException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		Calendar calEnd = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		Calendar calStart = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-		Integer maxActivityRangeInDays = Integer.getInteger(env.getProperty("maxActivityRangeInDays"), 60);
+		Integer maxActivityRangeInDays = Integer.getInteger(
+		        env.getProperty("maxActivityRangeInDays"), ActivityController.DEFAULT_MAX_ACTIVITY_RANGE_DAYS);
 		calStart.add(Calendar.DATE, -maxActivityRangeInDays);
 		activityController.activityForACBs(calStart.getTimeInMillis(), calEnd.getTimeInMillis(), false);
 	}
@@ -146,13 +172,12 @@ public class ActivityControllerTest {
 	 * @throws ValidationException 
 	 */
 	@Transactional
-	@Test(expected=ValidationException.class)
-	public void test_dateValidation_ExceptionForSixtyOneDays() throws EntityRetrievalException, EntityCreationException, IOException, ValidationException{
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
+	@Test(expected=IllegalArgumentException.class)
+	public void test_dateValidation_ExceptionForMaxDateRangePlusOneDays() throws EntityRetrievalException, EntityCreationException, IOException, ValidationException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		Calendar calEnd = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		Calendar calStart = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-		calStart.add(Calendar.DATE, -61);
+		calStart.add(Calendar.DATE, (ActivityController.DEFAULT_MAX_ACTIVITY_RANGE_DAYS+1)*-1);
 		activityController.activityForACBs(calStart.getTimeInMillis(), calEnd.getTimeInMillis(), false);
 	}
 	
@@ -164,15 +189,15 @@ public class ActivityControllerTest {
 	 * @throws ValidationException 
 	 */
 	@Transactional
-	@Test(expected=ValidationException.class)
+	@Test(expected=IllegalArgumentException.class)
 	public void test_dateValidation_startDateAfterEndDate() throws EntityRetrievalException, EntityCreationException, IOException, ValidationException{
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		Calendar calEnd = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		Calendar calStart = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		calStart.add(Calendar.DATE, 20);
 		activityController.activityForACBs(calStart.getTimeInMillis(), calEnd.getTimeInMillis(), false);
 	}
+
 	
 	@Transactional
 	@Test(expected=EntityRetrievalException.class)
@@ -181,6 +206,32 @@ public class ActivityControllerTest {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		activityController.activityForACBById(-100L, null, null, false);
 	}
+	
+	@Transactional
+    @Test
+    public void testGetAcbActivityAsAdmin() 
+        throws EntityRetrievalException, IOException, ValidationException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        List<ActivityEvent> userActivity = activityController.activityForACBById(-1L, null, null, false);
+        assertEquals(0, userActivity.size());
+    }
+	
+	@Transactional
+    @Test
+    public void testGetAcbActivityAsAcbUser() 
+        throws EntityRetrievalException, IOException, ValidationException {
+        SecurityContextHolder.getContext().setAuthentication(acbUser);
+        List<ActivityEvent> userActivity = activityController.activityForACBById(-1L, null, null, false);
+        assertEquals(0, userActivity.size());
+    }
+	
+	@Transactional
+    @Test(expected=AccessDeniedException.class)
+    public void testGetAcbActivityAsAtlUser() 
+        throws EntityRetrievalException, IOException, ValidationException {
+        SecurityContextHolder.getContext().setAuthentication(atlUser);
+        activityController.activityForACBById(-1L, null, null, false);
+    }
 	
 	@Transactional
 	@Test(expected=EntityRetrievalException.class)
@@ -203,6 +254,10 @@ public class ActivityControllerTest {
 	public void testGetCertificationActivityWithBadId() 
 		throws EntityRetrievalException, IOException, ValidationException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		Calendar start = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        start.set(2015, 9, 1, 0, 0);
+        Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        end.set(2015, 9, 20, 0, 0);
 		activityController.activityForCertificationById(-100L, null, null);
 	}
 	
@@ -211,6 +266,10 @@ public class ActivityControllerTest {
 	public void testGetListingActivityWithBadId() 
 		throws EntityRetrievalException, IOException, ValidationException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		Calendar start = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        start.set(2015, 9, 1, 0, 0);
+        Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        end.set(2015, 9, 20, 0, 0);
 		activityController.activityForCertifiedProductById(-100L, null, null);
 	}
 	
@@ -219,6 +278,10 @@ public class ActivityControllerTest {
 	public void testGetDeveloperActivityWithBadId() 
 		throws EntityRetrievalException, IOException, ValidationException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		Calendar start = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        start.set(2015, 9, 1, 0, 0);
+        Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        end.set(2015, 9, 20, 0, 0);
 		activityController.activityForDeveloperById(-100L, null, null);
 	}
 	
@@ -227,6 +290,10 @@ public class ActivityControllerTest {
 	public void testGetPendingListingActivityWithBadId() 
 		throws EntityRetrievalException, IOException, ValidationException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		Calendar start = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        start.set(2015, 9, 1, 0, 0);
+        Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        end.set(2015, 9, 20, 0, 0);
 		activityController.activityForPendingCertifiedProductById(-100L, null, null);
 	}
 	
@@ -235,7 +302,11 @@ public class ActivityControllerTest {
 	public void testGetProductActivityWithBadId() 
 		throws EntityRetrievalException, IOException, ValidationException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		activityController.activityForProducts(-100L, null, null);
+		Calendar start = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        start.set(2015, 9, 1, 0, 0);
+        Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        end.set(2015, 9, 20, 0, 0);
+		activityController.activityForProducts(-100L, start.getTimeInMillis(), end.getTimeInMillis());
 	}
 	
 	@Transactional
@@ -243,7 +314,11 @@ public class ActivityControllerTest {
 	public void testGetUserActivityWithBadId() 
 		throws UserRetrievalException, IOException, ValidationException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		activityController.activityForUsers(-100L, null, null);
+		Calendar start = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        start.set(2015, 9, 1, 0, 0);
+        Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        end.set(2015, 9, 20, 0, 0);
+		activityController.activityForUsers(-100L, start.getTimeInMillis(), end.getTimeInMillis());
 	}
 	
 	@Transactional
@@ -255,11 +330,68 @@ public class ActivityControllerTest {
 	}
 	
 	@Transactional
+    @Test
+    public void testGetActivityByUsersAsAdmin() 
+        throws UserRetrievalException, IOException, ValidationException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        List<UserActivity> userActivity = activityController.activityByUser(
+                1504224000000L, 1504424000000L);
+        assertEquals(0, userActivity.size());
+    }
+	
+	@Transactional
+    @Test(expected=AccessDeniedException.class)
+    public void testGetActivityByUsersAsAcbAdmin() 
+        throws UserRetrievalException, IOException, ValidationException {
+        SecurityContextHolder.getContext().setAuthentication(acbUser);
+        activityController.activityByUser(1504224000000L, 1504424000000L);
+    }
+	
+	@Transactional
+    @Test(expected=AccessDeniedException.class)
+    public void testGetActivityByUsersAsAtlAdmin() 
+        throws UserRetrievalException, IOException, ValidationException {
+        SecurityContextHolder.getContext().setAuthentication(acbUser);
+        activityController.activityByUser(1504224000000L, 1504424000000L);
+    }
+	
+	@Transactional
+    @Test
+    public void testGetActivityByUserIdAsAdmin() 
+        throws UserRetrievalException, IOException, ValidationException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        List<ActivityEvent> userActivity = activityController.activityByUser(1L, null, null);
+        assertEquals(5, userActivity.size());
+    }
+	
+	@Transactional
+    @Test(expected=AccessDeniedException.class)
+    public void testGetActivityByUserIdAsAcbAdmin() 
+        throws UserRetrievalException, IOException, ValidationException {
+        SecurityContextHolder.getContext().setAuthentication(acbUser);
+        List<ActivityEvent> userActivity = activityController.activityByUser(1L, null, null);
+        assertEquals(5, userActivity.size());
+    }
+	
+	@Transactional
+    @Test(expected=AccessDeniedException.class)
+    public void testGetActivityByUserIdAsAtlAdmin() 
+        throws UserRetrievalException, IOException, ValidationException {
+        SecurityContextHolder.getContext().setAuthentication(atlUser);
+        List<ActivityEvent> userActivity = activityController.activityByUser(1L, null, null);
+        assertEquals(5, userActivity.size());
+    }
+	
+	@Transactional
 	@Test(expected=EntityRetrievalException.class)
 	public void testGetVersionActivityWithBadId() 
 		throws EntityRetrievalException, IOException, ValidationException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		activityController.activityForVersions(-100L, null, null);
+		Calendar start = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        start.set(2015, 9, 1, 0, 0);
+        Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        end.set(2015, 9, 20, 0, 0);
+		activityController.activityForVersions(-100L, start.getTimeInMillis(), end.getTimeInMillis());
 	}
 	
 	@Test
