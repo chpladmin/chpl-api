@@ -1,8 +1,12 @@
 package gov.healthit.chpl.validation.listing;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2014.AmbulatoryCompleteRequiredCriteriaReviewer;
 
 /**
@@ -10,13 +14,21 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.edition2014.Ambulato
  * @author kekey
  *
  */
-@Component
+@Component("ambulatoryComplete2014PendingListingValidator")
 public class AmbulatoryComplete2014PendingListingValidator extends AmbulatoryModular2014PendingListingValidator {
 
-    @Autowired AmbulatoryCompleteRequiredCriteriaReviewer criteriaReviewer;
-    
-    public AmbulatoryComplete2014PendingListingValidator() {
-        super();
-        getReviewers().add(criteriaReviewer);
+    @Autowired
+    @Qualifier("pendingAmbulatoryCompleteRequiredCriteriaReviewer")
+    private AmbulatoryCompleteRequiredCriteriaReviewer criteriaReviewer;
+
+    private List<Reviewer> reviewers;
+
+    @Override
+    public List<Reviewer> getReviewers() {
+        if(reviewers == null) {
+            reviewers = super.getReviewers();
+            reviewers.add(criteriaReviewer);
+        }
+        return reviewers;
     }
 }

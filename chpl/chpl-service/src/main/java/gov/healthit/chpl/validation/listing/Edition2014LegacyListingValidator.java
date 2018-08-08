@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.validation.listing.reviewer.CertificationDateReviewer;
@@ -24,33 +25,58 @@ import gov.healthit.chpl.validation.listing.reviewer.legacy.LegacyTestToolReview
  */
 @Component
 public class Edition2014LegacyListingValidator extends Validator {
-    @Autowired protected DeveloperStatusReviewer devStatusReviewer;
-    @Autowired protected UnsupportedCharacterReviewer unsupportedCharacterReviewer;
-    @Autowired protected FieldLengthReviewer fieldLengthReviewer;
-    @Autowired protected RequiredData2014Reviewer requiredFieldReviewer;
-    @Autowired protected CertificationStatusReviewer certStatusReviewer;
-    @Autowired protected CertificationDateReviewer certDateReviewer;
-    @Autowired protected UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer;
-    @Autowired protected LegacyTestToolReviewer ttReviewer;
-    @Autowired protected TestFunctionalityReviewer tfReviewer;
+    @Autowired 
+    @Qualifier("developerStatusReviewer")
+    private DeveloperStatusReviewer devStatusReviewer;
+
+    @Autowired 
+    @Qualifier("unsupportedCharacterReviewer")
+    private UnsupportedCharacterReviewer unsupportedCharacterReviewer;
+
+    @Autowired 
+    @Qualifier("fieldLengthReviewer")
+    private FieldLengthReviewer fieldLengthReviewer;
+
+    @Autowired 
+    @Qualifier("requiredData2014Reviewer")
+    private RequiredData2014Reviewer requiredFieldReviewer;
+
+    @Autowired 
+    @Qualifier("certificationStatusReviewer")
+    private CertificationStatusReviewer certStatusReviewer;
+
+    @Autowired 
+    @Qualifier("certificationDateReviewer")
+    private CertificationDateReviewer certDateReviewer;
+
+    @Autowired 
+    @Qualifier("unattestedCriteriaWithDataReviewer")
+    private UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer;
+
+    @Autowired 
+    @Qualifier("legacyTestToolReviewer")
+    private LegacyTestToolReviewer ttReviewer;
+    
+    @Autowired 
+    @Qualifier("testFunctionalityReviewer")
+    private TestFunctionalityReviewer tfReviewer;
 
     private List<Reviewer> reviewers;
 
-    public Edition2014LegacyListingValidator() {
-        reviewers = new ArrayList<Reviewer>();
-        reviewers.add(devStatusReviewer);
-        reviewers.add(unsupportedCharacterReviewer);
-        reviewers.add(fieldLengthReviewer);
-        reviewers.add(requiredFieldReviewer);
-        reviewers.add(certStatusReviewer);
-        reviewers.add(certDateReviewer);
-        reviewers.add(unattestedCriteriaWithDataReviewer);
-        reviewers.add(ttReviewer);
-        reviewers.add(tfReviewer);
-    }
-
     @Override
     public List<Reviewer> getReviewers() {
+        if(reviewers == null) {
+            reviewers = new ArrayList<Reviewer>();
+            reviewers.add(devStatusReviewer);
+            reviewers.add(unsupportedCharacterReviewer);
+            reviewers.add(fieldLengthReviewer);
+            reviewers.add(requiredFieldReviewer);
+            reviewers.add(certStatusReviewer);
+            reviewers.add(certDateReviewer);
+            reviewers.add(unattestedCriteriaWithDataReviewer);
+            reviewers.add(ttReviewer);
+            reviewers.add(tfReviewer);
+        }
         return reviewers;
     }
 }

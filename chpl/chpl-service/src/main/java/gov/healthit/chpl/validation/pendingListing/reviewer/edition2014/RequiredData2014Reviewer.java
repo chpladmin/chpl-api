@@ -11,7 +11,7 @@ import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.pendingListing.reviewer.RequiredDataReviewer;
 
-@Component
+@Component("pendingRequiredData2014Reviewer")
 public class RequiredData2014Reviewer extends RequiredDataReviewer {
     @Autowired private ErrorMessageUtil msgUtil;
     @Autowired private CertificationResultRules certRules;

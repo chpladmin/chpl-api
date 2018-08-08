@@ -8,7 +8,7 @@ import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
 
-@Component
+@Component("pendingAmbulatoryCompleteRequiredCriteriaReviewer")
 public class AmbulatoryCompleteRequiredCriteriaReviewer implements Reviewer {
     private static final String[] REQUIRED_CRITERIA = {
             "170.314 (a)(2)", "170.314 (a)(3)", "170.314 (a)(4)", "170.314 (a)(5)", "170.314 (a)(6)", "170.314 (a)(7)",

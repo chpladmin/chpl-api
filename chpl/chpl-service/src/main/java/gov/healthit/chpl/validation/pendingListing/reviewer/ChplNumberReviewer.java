@@ -30,7 +30,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
-@Component
+@Component("pendingChplNumberReviewer")
 public class ChplNumberReviewer implements Reviewer {
     @Autowired private CertifiedProductDAO cpDao;
     @Autowired private TestingLabDAO atlDao;

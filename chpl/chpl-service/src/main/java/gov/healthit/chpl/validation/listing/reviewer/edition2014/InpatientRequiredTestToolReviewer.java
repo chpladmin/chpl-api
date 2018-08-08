@@ -9,7 +9,7 @@ import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ValidationUtils;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
-@Component
+@Component("inpatientRequiredTestToolReviewer")
 public class InpatientRequiredTestToolReviewer implements Reviewer {
     private static final String[] TEST_TOOL_CHECK_CERTS = {
             "170.314 (g)(1)", "170.314 (g)(2)"

@@ -13,7 +13,7 @@ import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.validation.listing.reviewer.RequiredDataReviewer;
 
-@Component
+@Component("requiredData2014Reviewer")
 public class RequiredData2014Reviewer extends RequiredDataReviewer {
 
     private static final String[] G3_COMPLEMENTARY_CERTS = {

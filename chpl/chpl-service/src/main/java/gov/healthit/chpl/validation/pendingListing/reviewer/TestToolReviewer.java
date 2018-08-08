@@ -11,7 +11,7 @@ import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 
-@Component
+@Component("pendingTestToolReviewer")
 public class TestToolReviewer implements Reviewer {
     @Autowired TestToolDAO testToolDao;
     @Autowired private ChplProductNumberUtil productNumUtil;

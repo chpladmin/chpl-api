@@ -8,7 +8,7 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
-@Component
+@Component("ambulatoryCompleteRequiredCriteriaReviewer")
 public class AmbulatoryCompleteRequiredCriteriaReviewer implements Reviewer {
     private static final String[] REQUIRED_CRITERIA = {
             "170.314 (a)(2)", "170.314 (a)(3)", "170.314 (a)(4)", "170.314 (a)(5)", "170.314 (a)(6)", "170.314 (a)(7)",

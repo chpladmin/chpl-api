@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
-@Component
+@Component("certificationDateReviewer")
 public class CertificationDateReviewer implements Reviewer {
     @Autowired private ErrorMessageUtil msgUtil;
     

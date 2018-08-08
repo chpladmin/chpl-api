@@ -3,6 +3,7 @@ package gov.healthit.chpl.validation.pendingListing.reviewer;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -23,13 +24,21 @@ import gov.healthit.chpl.dto.TestFunctionalityDTO;
  * @author kekey
  *
  */
-@Component
+@Component("pendingTestFunctionalityReviewer")
 public class TestFunctionalityReviewer implements Reviewer {
+
+    @Autowired
     private TestFunctionalityDAO testFunctionalityDAO;
+
+    @Autowired
     private CertificationCriterionDAO certificationCriterionDAO;
+
+    @Autowired
     private MessageSource messageSource;
+
+    @Autowired
     private PracticeTypeDAO practiceTypeDAO;
-    
+
     @Override
     public void review(PendingCertifiedProductDTO listing) {
         if (listing.getCertificationCriterion() != null) {

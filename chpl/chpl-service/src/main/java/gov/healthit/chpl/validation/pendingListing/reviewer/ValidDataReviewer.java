@@ -9,7 +9,7 @@ import gov.healthit.chpl.dto.PendingCertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 
-@Component
+@Component("pendingValidDataReviewer")
 public class ValidDataReviewer implements Reviewer {
     
     @Override

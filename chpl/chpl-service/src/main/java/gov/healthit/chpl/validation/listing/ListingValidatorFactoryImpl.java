@@ -3,6 +3,7 @@ package gov.healthit.chpl.validation.listing;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -26,35 +27,58 @@ public class ListingValidatorFactoryImpl implements ListingValidatorFactory {
     
     //pending listing validators (for upload)
     @Autowired
+    @Qualifier("ambulatoryModular2014PendingListingValidator")
     private AmbulatoryModular2014PendingListingValidator ambulatoryModularPendingValidator;
+
     @Autowired
+    @Qualifier("ambulatoryComplete2014PendingListingValidator")
     private AmbulatoryComplete2014PendingListingValidator ambulatoryCompletePendingValidator;
+
     @Autowired
+    @Qualifier("inpatientModular2014PendingListingValidator")
     private InpatientModular2014PendingListingValidator inpatientModularPendingValidator;
+
     @Autowired
+    @Qualifier("inpatientComplete2014PendingListingValidator")
     private InpatientComplete2014PendingListingValidator inpatientCompletePendingValidator;
+
     @Autowired
     private Edition2015PendingListingValidator pending2015Validator;
-    
+
     //legacy validators (for update of CHP- listings)
     @Autowired
+    @Qualifier("ambulatoryModular2014LegacyListingValidator")
     private AmbulatoryModular2014LegacyListingValidator ambulatoryModularLegacyValidator;
+
     @Autowired
+    @Qualifier("ambulatoryComplete2014LegacyListingValidator")
     private AmbulatoryComplete2014LegacyListingValidator ambulatoryCompleteLegacyValidator;
+
     @Autowired
+    @Qualifier("inpatientModular2014LegacyListingValidator")
     private InpatientModular2014LegacyListingValidator inpatientModularLegacyValidator;
+    
     @Autowired
+    @Qualifier("inpatientComplete2014LegacyListingValidator")
     private InpatientComplete2014LegacyListingValidator inpatientCompleteLegacyValidator;
     
     //listing validators (for update of listings with new-style IDs)
     @Autowired
+    @Qualifier("ambulatoryModular2014ListingValidator")
     private AmbulatoryModular2014ListingValidator ambulatoryModularValidator;
+
     @Autowired
+    @Qualifier("ambulatoryComplete2014ListingValidator")
     private AmbulatoryComplete2014ListingValidator ambulatoryCompleteValidator;
+
     @Autowired
+    @Qualifier("inpatientModular2014ListingValidator")
     private InpatientModular2014ListingValidator inpatientModularValidator;
+
     @Autowired
+    @Qualifier("inpatientComplete2014ListingValidator")
     private InpatientComplete2014ListingValidator inpatientCompleteValidator;
+    
     @Autowired
     private Edition2015ListingValidator edition2015Validator;
 

@@ -1,8 +1,12 @@
 package gov.healthit.chpl.validation.listing;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.AmbulatoryG1G2RequiredData2014Reviewer;
 
 /**
@@ -11,13 +15,21 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2014.AmbulatoryG1G2R
  * @author kekey
  *
  */
-@Component
+@Component("ambulatoryModular2014LegacyListingValidator")
 public class AmbulatoryModular2014LegacyListingValidator extends Edition2014LegacyListingValidator {
 
-    @Autowired AmbulatoryG1G2RequiredData2014Reviewer g1g2Reviewer;
-    
-    public AmbulatoryModular2014LegacyListingValidator() {
-        super();
-        getReviewers().add(g1g2Reviewer);
+    @Autowired 
+    @Qualifier("ambulatoryG1G2RequiredData2014Reviewer")
+    AmbulatoryG1G2RequiredData2014Reviewer g1g2Reviewer;
+
+    private List<Reviewer> reviewers;
+
+    @Override
+    public List<Reviewer> getReviewers() {
+        if(reviewers == null) {
+            reviewers = super.getReviewers();
+            reviewers.add(g1g2Reviewer);
+        }
+        return reviewers;
     }
 }

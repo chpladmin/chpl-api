@@ -36,7 +36,7 @@ import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 import gov.healthit.chpl.validation.pendingListing.reviewer.RequiredDataReviewer;
 
-@Component
+@Component("pendingRequiredData2015Reviewer")
 public class RequiredData2015Reviewer extends RequiredDataReviewer {
     private static final String[] A_RELATED_CERTS = {
             "170.315 (d)(1)", "170.315 (d)(2)", "170.315 (d)(3)", "170.315 (d)(4)", "170.315 (d)(5)", "170.315 (d)(6)",

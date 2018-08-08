@@ -15,7 +15,7 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
-@Component
+@Component("testFunctionalityReviewer")
 public class TestFunctionalityReviewer implements Reviewer {
     private static final String EDITION_2014 = "2014";
     

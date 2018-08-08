@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
-@Component
+@Component("pendingFieldLengthReviewer")
 public class FieldLengthReviewer implements Reviewer {
     @Autowired private ErrorMessageUtil msgUtil;
     @Autowired private MessageSource messageSource;

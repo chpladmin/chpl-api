@@ -15,7 +15,7 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
-@Component
+@Component("chplNumberReviewer")
 public class ChplNumberReviewer implements Reviewer {
     @Autowired private CertifiedProductDAO cpDao;
     @Autowired private ErrorMessageUtil msgUtil;

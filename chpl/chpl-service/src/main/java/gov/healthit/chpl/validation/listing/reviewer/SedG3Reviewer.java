@@ -7,7 +7,7 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
-@Component
+@Component("sedG3Reviewer")
 public class SedG3Reviewer implements Reviewer {
     private static final String G3_2014 = "170.314 (g)(3)";
     private static final String G3_2015 = "170.315 (g)(3)";

@@ -9,7 +9,7 @@ import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
-@Component
+@Component("pendingRequiredDataReviewer")
 public class RequiredDataReviewer implements Reviewer {
     private static final String G3_2014 = "170.314 (g)(3)";
     private static final String G3_2015 = "170.315 (g)(3)";

@@ -10,7 +10,7 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
-@Component
+@Component("fieldLengthReviewer")
 public class FieldLengthReviewer implements Reviewer {
     @Autowired private ErrorMessageUtil msgUtil;
     @Autowired private MessageSource messageSource;

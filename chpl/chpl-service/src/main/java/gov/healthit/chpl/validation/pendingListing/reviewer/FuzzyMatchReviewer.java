@@ -21,7 +21,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.manager.FuzzyChoicesManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
-@Component
+@Component("pendingFuzzyMatchReviewer")
 public class FuzzyMatchReviewer implements Reviewer {
     private static final Logger LOGGER = LogManager.getLogger(FuzzyMatchReviewer.class);
     @Autowired private FuzzyChoicesManager fuzzyChoicesManager;

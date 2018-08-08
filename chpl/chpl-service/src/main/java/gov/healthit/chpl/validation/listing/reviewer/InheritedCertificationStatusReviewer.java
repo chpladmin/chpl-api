@@ -15,7 +15,7 @@ import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
-@Component
+@Component("icsReviewer")
 public class InheritedCertificationStatusReviewer implements Reviewer {
     @Autowired private CertifiedProductSearchDAO searchDao;
     @Autowired private ListingGraphDAO inheritanceDao;

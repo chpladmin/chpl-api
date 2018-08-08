@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.validation.listing.reviewer.CertificationDateReviewer;
@@ -27,38 +28,72 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredData201
  */
 @Component
 public class Edition2015ListingValidator extends Validator {
-    @Autowired protected ChplNumberReviewer chplNumberReviewer;
-    @Autowired protected DeveloperStatusReviewer devStatusReviewer;
-    @Autowired protected UnsupportedCharacterReviewer unsupportedCharacterReviewer;
-    @Autowired protected FieldLengthReviewer fieldLengthReviewer;
-    @Autowired protected RequiredData2015Reviewer requiredDataReviewer;
-    @Autowired protected SedG3Reviewer sedG3Reviewer;
-    @Autowired protected CertificationStatusReviewer certStatusReviewer;
-    @Autowired protected CertificationDateReviewer certDateReviewer;
-    @Autowired protected UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer;
-    @Autowired protected TestToolReviewer ttReviewer;
-    @Autowired protected TestFunctionalityReviewer tfReviewer;
-    @Autowired protected InheritedCertificationStatusReviewer icsReviewer;
-    
+    @Autowired
+    @Qualifier("chplNumberReviewer")
+    private ChplNumberReviewer chplNumberReviewer;
+
+    @Autowired 
+    @Qualifier("developerStatusReviewer")
+    private DeveloperStatusReviewer devStatusReviewer;
+
+    @Autowired 
+    @Qualifier("unsupportedCharacterReviewer")
+    private UnsupportedCharacterReviewer unsupportedCharacterReviewer;
+
+    @Autowired 
+    @Qualifier("fieldLengthReviewer")
+    private FieldLengthReviewer fieldLengthReviewer;
+
+    @Autowired 
+    @Qualifier("requiredData2015Reviewer")
+    private RequiredData2015Reviewer requiredDataReviewer;
+
+    @Autowired 
+    @Qualifier("sedG3Reviewer")
+    private SedG3Reviewer sedG3Reviewer;
+
+    @Autowired 
+    @Qualifier("certificationStatusReviewer")
+    private CertificationStatusReviewer certStatusReviewer;
+
+    @Autowired 
+    @Qualifier("certificationDateReviewer")
+    private CertificationDateReviewer certDateReviewer;
+
+    @Autowired 
+    @Qualifier("unattestedCriteriaWithDataReviewer")
+    private UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer;
+
+    @Autowired 
+    @Qualifier("testToolReviewer")
+    private TestToolReviewer ttReviewer;
+
+    @Autowired 
+    @Qualifier("testFunctionalityReviewer")
+    private TestFunctionalityReviewer tfReviewer;
+
+    @Autowired 
+    @Qualifier("icsReviewer")
+    private InheritedCertificationStatusReviewer icsReviewer;
+
     private List<Reviewer> reviewers;
 
-    public Edition2015ListingValidator() {
-        reviewers = new ArrayList<Reviewer>();
-        reviewers.add(chplNumberReviewer);
-        reviewers.add(devStatusReviewer);
-        reviewers.add(unsupportedCharacterReviewer);
-        reviewers.add(fieldLengthReviewer);
-        reviewers.add(requiredDataReviewer);
-        reviewers.add(sedG3Reviewer);
-        reviewers.add(certStatusReviewer);
-        reviewers.add(certDateReviewer);
-        reviewers.add(unattestedCriteriaWithDataReviewer);
-        reviewers.add(icsReviewer);
-        reviewers.add(ttReviewer);
-        reviewers.add(tfReviewer);
-    }
-
     public List<Reviewer> getReviewers() {
+        if(reviewers == null) {
+            reviewers = new ArrayList<Reviewer>();
+            reviewers.add(chplNumberReviewer);
+            reviewers.add(devStatusReviewer);
+            reviewers.add(unsupportedCharacterReviewer);
+            reviewers.add(fieldLengthReviewer);
+            reviewers.add(requiredDataReviewer);
+            reviewers.add(sedG3Reviewer);
+            reviewers.add(certStatusReviewer);
+            reviewers.add(certDateReviewer);
+            reviewers.add(unattestedCriteriaWithDataReviewer);
+            reviewers.add(icsReviewer);
+            reviewers.add(ttReviewer);
+            reviewers.add(tfReviewer);
+        }
         return reviewers;
     }
 }

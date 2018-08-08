@@ -8,7 +8,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
-@Component
+@Component("ambulatoryG1G2RequiredData2014Reviewer")
 public class AmbulatoryG1G2RequiredData2014Reviewer implements Reviewer {
     private static final String[] G1_COMPLEMENTARY_CERTS = {
             "170.314 (a)(1)", "170.314 (a)(3)", "170.314 (a)(4)", "170.314 (a)(5)", "170.314 (a)(6)", "170.314 (a)(7)",

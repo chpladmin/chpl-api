@@ -21,7 +21,7 @@ import gov.healthit.chpl.dto.PendingTestTaskDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 
-@Component
+@Component("pendingUnsupportedCharacterReviewer")
 public class UnsupportedCharacterReviewer implements Reviewer {
     
     @Autowired ErrorMessageUtil msgUtil;

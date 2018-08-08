@@ -8,7 +8,7 @@ import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
-@Component
+@Component("pendingUnattestedCriteriaWithDataReviewer")
 public class UnattestedCriteriaWithDataReviewer implements Reviewer {
     
     @Autowired ErrorMessageUtil msgUtil;

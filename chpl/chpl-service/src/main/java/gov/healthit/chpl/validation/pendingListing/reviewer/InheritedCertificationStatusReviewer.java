@@ -21,7 +21,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
  * @author kekey
  *
  */
-@Component
+@Component("pendingIcsReviewer")
 public class InheritedCertificationStatusReviewer implements Reviewer {
     @Autowired private CertifiedProductSearchDAO searchDao;
     @Autowired private ListingGraphDAO inheritanceDao;

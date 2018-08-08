@@ -22,7 +22,7 @@ import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 
-@Component
+@Component("unsupportedCharacterReviewer")
 public class UnsupportedCharacterReviewer implements Reviewer {
     
     @Autowired ErrorMessageUtil msgUtil;

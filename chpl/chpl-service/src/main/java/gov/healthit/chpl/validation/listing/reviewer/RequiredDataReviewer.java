@@ -9,7 +9,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
-@Component
+@Component("requiredDataReviewer")
 public class RequiredDataReviewer implements Reviewer {
     @Autowired protected ErrorMessageUtil msgUtil;
     @Autowired protected CertificationResultRules certRules;

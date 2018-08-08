@@ -11,7 +11,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
-@Component
+@Component("legacyTestToolReviewer")
 public class LegacyTestToolReviewer implements Reviewer {
     @Autowired TestToolDAO testToolDao;
     
