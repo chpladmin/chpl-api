@@ -43,7 +43,6 @@ public class CqmResultDetailsXmlGenerator extends XmlGenerator {
                 }
                 sw.writeEndElement();
             }
-<<<<<<< HEAD
             if (detail.getAllVersions() != null) {
                 sw.writeStartElement("allVersions");
                 for (String version : detail.getAllVersions()) {
@@ -52,10 +51,6 @@ public class CqmResultDetailsXmlGenerator extends XmlGenerator {
                 sw.writeEndElement();
             }
             CqmResultCertificationXmlGenerator.add(detail.getCriteria(), "criteriaList", sw);
-=======
-            createSimpleElement(detail.getTitle(), "title", sw);
-            createSimpleElement(detail.getTypeId(), "typeId", sw);
->>>>>>> holding
             sw.writeEndElement();
         }
     }
