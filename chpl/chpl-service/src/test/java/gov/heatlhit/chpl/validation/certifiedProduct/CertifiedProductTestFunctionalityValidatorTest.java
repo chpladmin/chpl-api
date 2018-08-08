@@ -41,7 +41,7 @@ import gov.healthit.chpl.dto.PendingCertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
-import gov.healthit.chpl.validation.certifiedProduct.CertifiedtProductTestFunctionalityValidator;
+import gov.healthit.chpl.validation.listing.reviewer.TestFunctionalityReviewer;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
@@ -62,7 +62,10 @@ public class CertifiedProductTestFunctionalityValidatorTest {
     private PracticeTypeDAO practiceTypeDAO;
     
     @InjectMocks
-    private CertifiedtProductTestFunctionalityValidator certifiedProductTestFunctionalityValidator;
+    private TestFunctionalityReviewer tfReviewer;
+    
+    @InjectMocks
+    private gov.healthit.chpl.validation.pendingListing.reviewer.TestFunctionalityReviewer pendingTfReviewer;
     
     @Before
     public void setup() {
@@ -103,10 +106,10 @@ public class CertifiedProductTestFunctionalityValidatorTest {
         certResults.add(certResult);
         listing.getCertificationResults().add(certResult);
         
-        Set<String> errors = certifiedProductTestFunctionalityValidator.getTestFunctionalityValidationErrors(listing);
+        tfReviewer.review(listing);
         
-        assertFalse(doesTestFunctionalityPracticeTypeErrorMessageExist(errors));
-        assertFalse(doesTestFunctionalityCriterionErrorMessageExist(errors));
+        assertFalse(doesTestFunctionalityPracticeTypeErrorMessageExist(listing.getErrorMessages()));
+        assertFalse(doesTestFunctionalityCriterionErrorMessageExist(listing.getErrorMessages()));
     }
     
     @Transactional
@@ -132,10 +135,10 @@ public class CertifiedProductTestFunctionalityValidatorTest {
         certResults.add(certResult);
         listing.getCertificationCriterion().add(certResult);
         
-        Set<String> errors = certifiedProductTestFunctionalityValidator.getTestFunctionalityValidationErrors(listing);
+        pendingTfReviewer.review(listing);
         
-        assertFalse(doesTestFunctionalityPracticeTypeErrorMessageExist(errors));
-        assertFalse(doesTestFunctionalityCriterionErrorMessageExist(errors));
+        assertFalse(doesTestFunctionalityPracticeTypeErrorMessageExist(listing.getErrorMessages()));
+        assertFalse(doesTestFunctionalityCriterionErrorMessageExist(listing.getErrorMessages()));
     }
     
     
@@ -165,9 +168,9 @@ public class CertifiedProductTestFunctionalityValidatorTest {
         certResults.add(certResult);
         listing.getCertificationResults().add(certResult);
         
-        Set<String> errors = certifiedProductTestFunctionalityValidator.getTestFunctionalityValidationErrors(listing);
+        tfReviewer.review(listing);
         
-        assertTrue(doesTestFunctionalityPracticeTypeErrorMessageExist(errors));
+        assertTrue(doesTestFunctionalityPracticeTypeErrorMessageExist(listing.getErrorMessages()));
     }
     
        
@@ -195,9 +198,9 @@ public class CertifiedProductTestFunctionalityValidatorTest {
         certResults.add(certResult);
         listing.getCertificationCriterion().add(certResult);
         
-        Set<String> errors = certifiedProductTestFunctionalityValidator.getTestFunctionalityValidationErrors(listing);
+        pendingTfReviewer.review(listing);
         
-        assertTrue(doesTestFunctionalityPracticeTypeErrorMessageExist(errors));
+        assertTrue(doesTestFunctionalityPracticeTypeErrorMessageExist(listing.getErrorMessages()));
     }
 
     //Case 3: An invalid test functionality based on certifcation criterion
@@ -224,9 +227,9 @@ public class CertifiedProductTestFunctionalityValidatorTest {
         certResults.add(certResult);
         listing.getCertificationResults().add(certResult);
         
-        Set<String> errors = certifiedProductTestFunctionalityValidator.getTestFunctionalityValidationErrors(listing);
+        tfReviewer.review(listing);
         
-        assertTrue(doesTestFunctionalityCriterionErrorMessageExist(errors));
+        assertTrue(doesTestFunctionalityCriterionErrorMessageExist(listing.getErrorMessages()));
     }
     
     @Transactional
@@ -252,9 +255,9 @@ public class CertifiedProductTestFunctionalityValidatorTest {
         certResults.add(certResult);
         listing.getCertificationCriterion().add(certResult);
         
-        Set<String> errors = certifiedProductTestFunctionalityValidator.getTestFunctionalityValidationErrors(listing);
+        pendingTfReviewer.review(listing);
         
-        assertTrue(doesTestFunctionalityCriterionErrorMessageExist(errors));
+        assertTrue(doesTestFunctionalityCriterionErrorMessageExist(listing.getErrorMessages()));
     }
     
     private Boolean doesTestFunctionalityPracticeTypeErrorMessageExist(Set<String> errorMessages) {

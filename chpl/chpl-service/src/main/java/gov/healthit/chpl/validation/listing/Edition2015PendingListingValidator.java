@@ -25,7 +25,7 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.Required
  *
  */
 @Component
-public class Edition2015PendingListingValidator {
+public class Edition2015PendingListingValidator extends PendingValidator {
     @Autowired ChplNumberReviewer chplNumberReviewer;
     @Autowired CertificationDateReviewer certDateReviewer;
     @Autowired FuzzyMatchReviewer fuzzyMatchReviewer;

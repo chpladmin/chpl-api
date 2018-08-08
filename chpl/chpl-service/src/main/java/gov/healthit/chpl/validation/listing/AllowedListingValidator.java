@@ -14,7 +14,7 @@ import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
  *
  */
 @Component
-public class AllowedListingValidator {
+public class AllowedListingValidator extends Validator {
 
     private List<Reviewer> reviewers;
 

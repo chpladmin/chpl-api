@@ -31,8 +31,9 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
-import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidator;
-import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFactory;
+import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
+import gov.healthit.chpl.validation.listing.PendingValidator;
+import gov.healthit.chpl.validation.listing.Validator;
 
 /**
  * Tests certified product sed+g3 mismatch rule
@@ -58,7 +59,7 @@ public class CertifiedProductSedMismatchValidationTest {
     public UnitTestRules cacheInvalidationRule;
 
     @Autowired
-    CertifiedProductValidatorFactory validatorFactory;
+    ListingValidatorFactory validatorFactory;
 
     private static JWTAuthenticatedUser adminUser;
     private static final long ADMIN_ID = -2L;
@@ -96,7 +97,7 @@ public class CertifiedProductSedMismatchValidationTest {
 
         pendingListing.setCertificationCriterion(pendingCertResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        PendingValidator validator = validatorFactory.getValidator(pendingListing);
         if (validator != null) {
             validator.validate(pendingListing);
         }
@@ -124,7 +125,7 @@ public class CertifiedProductSedMismatchValidationTest {
 
         pendingListing.setCertificationCriterion(pendingCertResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        PendingValidator validator = validatorFactory.getValidator(pendingListing);
         if (validator != null) {
             validator.validate(pendingListing);
         }
@@ -148,7 +149,7 @@ public class CertifiedProductSedMismatchValidationTest {
         pendingCertResults.add(sedCertResult);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        PendingValidator validator = validatorFactory.getValidator(pendingListing);
         if (validator != null) {
             validator.validate(pendingListing);
         }
@@ -170,7 +171,7 @@ public class CertifiedProductSedMismatchValidationTest {
         pendingCertResults.add(sedCertResult);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        PendingValidator validator = validatorFactory.getValidator(pendingListing);
         if (validator != null) {
             validator.validate(pendingListing);
         }
@@ -193,7 +194,7 @@ public class CertifiedProductSedMismatchValidationTest {
         pendingCertResults.add(pendingCertResult);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        PendingValidator validator = validatorFactory.getValidator(pendingListing);
         if (validator != null) {
             validator.validate(pendingListing);
         }
@@ -216,7 +217,7 @@ public class CertifiedProductSedMismatchValidationTest {
         pendingCertResults.add(pendingCertResult);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        PendingValidator validator = validatorFactory.getValidator(pendingListing);
         if (validator != null) {
             validator.validate(pendingListing);
         }
@@ -241,7 +242,7 @@ public class CertifiedProductSedMismatchValidationTest {
         certResults.add(sedCertResult);
         listing.setCertificationResults(certResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        Validator validator = validatorFactory.getValidator(listing);
         if (validator != null) {
             validator.validate(listing);
         }
@@ -267,7 +268,7 @@ public class CertifiedProductSedMismatchValidationTest {
         certResults.add(sedCertResult);
         listing.setCertificationResults(certResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        Validator validator = validatorFactory.getValidator(listing);
         if (validator != null) {
             validator.validate(listing);
         }
@@ -293,7 +294,7 @@ public class CertifiedProductSedMismatchValidationTest {
         certResults.add(sedCertResult);
         listing.setCertificationResults(certResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        Validator validator = validatorFactory.getValidator(listing);
         if (validator != null) {
             validator.validate(listing);
         }
@@ -316,7 +317,7 @@ public class CertifiedProductSedMismatchValidationTest {
         certResults.add(sedCertResult);
         listing.setCertificationResults(certResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        Validator validator = validatorFactory.getValidator(listing);
         if (validator != null) {
             validator.validate(listing);
         }
@@ -338,7 +339,7 @@ public class CertifiedProductSedMismatchValidationTest {
         certResults.add(sedCertResult);
         listing.setCertificationResults(certResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        Validator validator = validatorFactory.getValidator(listing);
         if (validator != null) {
             validator.validate(listing);
         }
@@ -360,7 +361,7 @@ public class CertifiedProductSedMismatchValidationTest {
         certResults.add(sedCertResult);
         listing.setCertificationResults(certResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        Validator validator = validatorFactory.getValidator(listing);
         if (validator != null) {
             validator.validate(listing);
         }
@@ -383,7 +384,7 @@ public class CertifiedProductSedMismatchValidationTest {
         certResults.add(certResult);
         listing.setCertificationResults(certResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        Validator validator = validatorFactory.getValidator(listing);
         if (validator != null) {
             validator.validate(listing);
         }
@@ -406,7 +407,7 @@ public class CertifiedProductSedMismatchValidationTest {
         certResults.add(certResult);
         listing.setCertificationResults(certResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        Validator validator = validatorFactory.getValidator(listing);
         if (validator != null) {
             validator.validate(listing);
         }
@@ -429,7 +430,7 @@ public class CertifiedProductSedMismatchValidationTest {
         certResults.add(certResult);
         listing.setCertificationResults(certResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        Validator validator = validatorFactory.getValidator(listing);
         if (validator != null) {
             validator.validate(listing);
         }

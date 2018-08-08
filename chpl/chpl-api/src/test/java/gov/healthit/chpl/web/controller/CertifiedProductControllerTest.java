@@ -72,8 +72,8 @@ import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.exception.ObjectsMissingValidationException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidator;
-import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFactory;
+import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
+import gov.healthit.chpl.validation.listing.PendingValidator;
 import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -98,7 +98,7 @@ public class CertifiedProductControllerTest {
     TestToolDAO ttDao;
 
     @Autowired
-    CertifiedProductValidatorFactory validatorFactory;
+    ListingValidatorFactory validatorFactory;
 
     private static JWTAuthenticatedUser adminUser;
     private static final long ADMIN_ID = -2L;
@@ -452,7 +452,7 @@ public class CertifiedProductControllerTest {
         pcpDTO.setIcs(false); // Inherited Status = product.getIcs();
         pcpDTO.setUniqueId("15.07.07.2642.IC04.36.00.1.160402");
         pcpDTO.setPracticeType("Ambulatory");
-        CertifiedProductValidator validator = validatorFactory.getValidator(pcpDTO);
+        PendingValidator validator = validatorFactory.getValidator(pcpDTO);
         if (validator != null) {
             validator.validate(pcpDTO);
         }
@@ -825,7 +825,7 @@ public class CertifiedProductControllerTest {
         pcpDTO.setIcs(false); // Inherited Status = product.getIcs();
         pcpDTO.setUniqueId("15.07.07.2642.IC04.36.00.1.160402");
         pcpDTO.setPracticeType("Ambulatory");
-        CertifiedProductValidator validator = validatorFactory.getValidator(pcpDTO);
+        PendingValidator validator = validatorFactory.getValidator(pcpDTO);
         if (validator != null) {
             validator.validate(pcpDTO);
         }
@@ -924,7 +924,7 @@ public class CertifiedProductControllerTest {
         pcpDTO.setIcs(false); // Inherited Status = product.getIcs();
         pcpDTO.setUniqueId("15.07.07.2642.IC04.36.00.1.160402");
         pcpDTO.setPracticeType("Ambulatory");
-        CertifiedProductValidator validator = validatorFactory.getValidator(pcpDTO);
+        PendingValidator validator = validatorFactory.getValidator(pcpDTO);
         if (validator != null) {
             validator.validate(pcpDTO);
         }
@@ -1023,7 +1023,7 @@ public class CertifiedProductControllerTest {
         pcpDTO.setIcs(false); // Inherited Status = product.getIcs();
         pcpDTO.setUniqueId("15.07.07.2642.IC04.36.00.1.160402");
         pcpDTO.setPracticeType("Ambulatory");
-        CertifiedProductValidator validator = validatorFactory.getValidator(pcpDTO);
+        PendingValidator validator = validatorFactory.getValidator(pcpDTO);
         if (validator != null) {
             validator.validate(pcpDTO);
         }

@@ -46,8 +46,9 @@ import gov.healthit.chpl.dto.PendingCertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidator;
-import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFactory;
+import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
+import gov.healthit.chpl.validation.listing.PendingValidator;
+import gov.healthit.chpl.validation.listing.Validator;
 
 /**
  * Tests of the Certified Product validator.
@@ -101,7 +102,7 @@ public class CertifiedProductValidationTest {
     MacraMeasureDAO mmDao;
 
     @Autowired
-    CertifiedProductValidatorFactory validatorFactory;
+    ListingValidatorFactory validatorFactory;
 
     private static JWTAuthenticatedUser adminUser;
     private static final long ADMIN_ID = -2L;
@@ -135,7 +136,7 @@ public class CertifiedProductValidationTest {
         pendingCertResults.add(pendingCertResult);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        PendingValidator validator = validatorFactory.getValidator(pendingListing);
         if (validator != null) {
             validator.validate(pendingListing);
         }
@@ -159,7 +160,7 @@ public class CertifiedProductValidationTest {
         pendingCertResults.add(pendingCertResult);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        PendingValidator validator = validatorFactory.getValidator(pendingListing);
         if (validator != null) {
             validator.validate(pendingListing);
         }
@@ -182,7 +183,7 @@ public class CertifiedProductValidationTest {
         pendingCertResults.add(pendingCertResult);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        PendingValidator validator = validatorFactory.getValidator(pendingListing);
         if (validator != null) {
             validator.validate(pendingListing);
         }
@@ -205,7 +206,7 @@ public class CertifiedProductValidationTest {
         pendingCertResults.add(pendingCertResult);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        PendingValidator validator = validatorFactory.getValidator(pendingListing);
         if (validator != null) {
             validator.validate(pendingListing);
         }
@@ -229,7 +230,7 @@ public class CertifiedProductValidationTest {
         pendingCertResults.add(pendingCertResult);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        PendingValidator validator = validatorFactory.getValidator(pendingListing);
         if (validator != null) {
             validator.validate(pendingListing);
         }
@@ -254,7 +255,7 @@ public class CertifiedProductValidationTest {
         pendingCertResults.add(pendingCertResult);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        PendingValidator validator = validatorFactory.getValidator(pendingListing);
         if (validator != null) {
             validator.validate(pendingListing);
         }
@@ -280,7 +281,7 @@ public class CertifiedProductValidationTest {
         pendingCertResults.add(pendingCertResult);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        PendingValidator validator = validatorFactory.getValidator(pendingListing);
         if (validator != null) {
             validator.validate(pendingListing);
         }
@@ -301,7 +302,7 @@ public class CertifiedProductValidationTest {
         pendingCertResults.add(pendingCertResult);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        PendingValidator validator = validatorFactory.getValidator(pendingListing);
         if (validator != null) {
             validator.validate(pendingListing);
         }
@@ -325,7 +326,7 @@ public class CertifiedProductValidationTest {
         pendingCertResults.add(pendingCertResult);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        PendingValidator validator = validatorFactory.getValidator(pendingListing);
         if (validator != null) {
             validator.validate(pendingListing);
         }
@@ -359,7 +360,7 @@ public class CertifiedProductValidationTest {
         pendingCertResults.add(pendingCertResultD9);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        PendingValidator validator = validatorFactory.getValidator(pendingListing);
         if (validator != null) {
             validator.validate(pendingListing);
         }
@@ -393,7 +394,7 @@ public class CertifiedProductValidationTest {
         pendingCertResults.add(pendingCertResultD9);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        PendingValidator validator = validatorFactory.getValidator(pendingListing);
         if (validator != null) {
             validator.validate(pendingListing);
         }
@@ -417,7 +418,7 @@ public class CertifiedProductValidationTest {
         pendingCertResults.add(pendingCertResult);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        PendingValidator validator = validatorFactory.getValidator(pendingListing);
         if (validator != null) {
             validator.validate(pendingListing);
         }
@@ -439,7 +440,7 @@ public class CertifiedProductValidationTest {
         pendingCertResults.add(pendingCertResult);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        PendingValidator validator = validatorFactory.getValidator(pendingListing);
         if (validator != null) {
             validator.validate(pendingListing);
         }
@@ -461,7 +462,7 @@ public class CertifiedProductValidationTest {
         pendingCertResults.add(pendingCertResult);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        PendingValidator validator = validatorFactory.getValidator(pendingListing);
         if (validator != null) {
             validator.validate(pendingListing);
         }
@@ -489,7 +490,7 @@ public class CertifiedProductValidationTest {
         pendingCertResults.add(pendingCertResultD2);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        PendingValidator validator = validatorFactory.getValidator(pendingListing);
         if (validator != null) {
             validator.validate(pendingListing);
         }
@@ -517,7 +518,7 @@ public class CertifiedProductValidationTest {
         pendingCertResults.add(pendingCertResultD10);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        PendingValidator validator = validatorFactory.getValidator(pendingListing);
         if (validator != null) {
             validator.validate(pendingListing);
         }
@@ -545,7 +546,7 @@ public class CertifiedProductValidationTest {
         pendingCertResults.add(pendingCertResultD10);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        PendingValidator validator = validatorFactory.getValidator(pendingListing);
         if (validator != null) {
             validator.validate(pendingListing);
         }
@@ -572,7 +573,7 @@ public class CertifiedProductValidationTest {
         pendingCertResults.add(pendingCertResult);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        PendingValidator validator = validatorFactory.getValidator(pendingListing);
         if (validator != null) {
             validator.validate(pendingListing);
         }
@@ -604,7 +605,7 @@ public class CertifiedProductValidationTest {
         sed.getUcdProcesses().add(ucdProcess);
         listing.setSed(sed);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        Validator validator = validatorFactory.getValidator(listing);
         if (validator != null) {
             validator.validate(listing);
         }
@@ -627,7 +628,7 @@ public class CertifiedProductValidationTest {
         certResults.add(certResult);
         listing.setCertificationResults(certResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        Validator validator = validatorFactory.getValidator(listing);
         if (validator != null) {
             validator.validate(listing);
         }
@@ -651,7 +652,7 @@ public class CertifiedProductValidationTest {
         certResults.add(certResult);
         listing.setCertificationResults(certResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        Validator validator = validatorFactory.getValidator(listing);
         if (validator != null) {
             validator.validate(listing);
         }
@@ -674,7 +675,7 @@ public class CertifiedProductValidationTest {
         certResults.add(certResult);
         listing.setCertificationResults(certResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        Validator validator = validatorFactory.getValidator(listing);
         if (validator != null) {
             validator.validate(listing);
         }
@@ -697,7 +698,7 @@ public class CertifiedProductValidationTest {
         certResults.add(certResult);
         listing.setCertificationResults(certResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        Validator validator = validatorFactory.getValidator(listing);
         if (validator != null) {
             validator.validate(listing);
         }
@@ -720,7 +721,7 @@ public class CertifiedProductValidationTest {
         certResults.add(certResult);
         listing.setCertificationResults(certResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        Validator validator = validatorFactory.getValidator(listing);
         if (validator != null) {
             validator.validate(listing);
         }
@@ -747,7 +748,7 @@ public class CertifiedProductValidationTest {
         certResults.add(certResult);
         listing.setCertificationResults(certResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        Validator validator = validatorFactory.getValidator(listing);
         if (validator != null) {
             validator.validate(listing);
         }
@@ -775,7 +776,7 @@ public class CertifiedProductValidationTest {
         certResults.add(certResult);
         listing.setCertificationResults(certResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        Validator validator = validatorFactory.getValidator(listing);
         if (validator != null) {
             validator.validate(listing);
         }
@@ -796,7 +797,7 @@ public class CertifiedProductValidationTest {
         certResults.add(certResult);
         listing.setCertificationResults(certResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        Validator validator = validatorFactory.getValidator(listing);
         if (validator != null) {
             validator.validate(listing);
         }
@@ -820,7 +821,7 @@ public class CertifiedProductValidationTest {
         certResults.add(certResult);
         listing.setCertificationResults(certResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        Validator validator = validatorFactory.getValidator(listing);
         if (validator != null) {
             validator.validate(listing);
         }
@@ -854,7 +855,7 @@ public class CertifiedProductValidationTest {
         certResults.add(certResultD9);
         listing.setCertificationResults(certResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        Validator validator = validatorFactory.getValidator(listing);
         if (validator != null) {
             validator.validate(listing);
         }
@@ -888,7 +889,7 @@ public class CertifiedProductValidationTest {
         certResults.add(certResultD9);
         listing.setCertificationResults(certResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        Validator validator = validatorFactory.getValidator(listing);
         if (validator != null) {
             validator.validate(listing);
         }
@@ -912,7 +913,7 @@ public class CertifiedProductValidationTest {
         certResults.add(certResult);
         listing.setCertificationResults(certResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        Validator validator = validatorFactory.getValidator(listing);
         if (validator != null) {
             validator.validate(listing);
         }
@@ -934,7 +935,7 @@ public class CertifiedProductValidationTest {
         certResults.add(certResult);
         listing.setCertificationResults(certResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        Validator validator = validatorFactory.getValidator(listing);
         if (validator != null) {
             validator.validate(listing);
         }
@@ -956,7 +957,7 @@ public class CertifiedProductValidationTest {
         certResults.add(certResult);
         listing.setCertificationResults(certResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        Validator validator = validatorFactory.getValidator(listing);
         if (validator != null) {
             validator.validate(listing);
         }
@@ -984,7 +985,7 @@ public class CertifiedProductValidationTest {
         certResults.add(certResultD2);
         listing.setCertificationResults(certResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        Validator validator = validatorFactory.getValidator(listing);
         if (validator != null) {
             validator.validate(listing);
         }
@@ -1012,7 +1013,7 @@ public class CertifiedProductValidationTest {
         certResults.add(certResultD10);
         listing.setCertificationResults(certResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        Validator validator = validatorFactory.getValidator(listing);
         if (validator != null) {
             validator.validate(listing);
         }
@@ -1040,7 +1041,7 @@ public class CertifiedProductValidationTest {
         certResults.add(certResultD10);
         listing.setCertificationResults(certResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        Validator validator = validatorFactory.getValidator(listing);
         if (validator != null) {
             validator.validate(listing);
         }
@@ -1064,7 +1065,7 @@ public class CertifiedProductValidationTest {
         pendingCertResults.add(pendingCertResult2);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        PendingValidator validator = validatorFactory.getValidator(pendingListing);
         if (validator != null) {
             validator.validate(pendingListing);
         }
@@ -1086,7 +1087,7 @@ public class CertifiedProductValidationTest {
         pendingCertResults.add(pendingCertResult2);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        PendingValidator validator = validatorFactory.getValidator(pendingListing);
         if (validator != null) {
             validator.validate(pendingListing);
         }
@@ -1116,7 +1117,7 @@ public class CertifiedProductValidationTest {
         pendingCertResults.add(pendingCertResult2);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        PendingValidator validator = validatorFactory.getValidator(pendingListing);
         if (validator != null) {
             validator.validate(pendingListing);
         }
@@ -1146,7 +1147,7 @@ public class CertifiedProductValidationTest {
         pendingCertResults.add(pendingCertResult2);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        PendingValidator validator = validatorFactory.getValidator(pendingListing);
         if (validator != null) {
             validator.validate(pendingListing);
         }
@@ -1168,7 +1169,7 @@ public class CertifiedProductValidationTest {
         certResults.add(certResult2);
         listing.setCertificationResults(certResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        Validator validator = validatorFactory.getValidator(listing);
         if (validator != null) {
             validator.validate(listing);
         }
@@ -1190,7 +1191,7 @@ public class CertifiedProductValidationTest {
         certResults.add(certResult2);
         listing.setCertificationResults(certResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        Validator validator = validatorFactory.getValidator(listing);
         if (validator != null) {
             validator.validate(listing);
         }
@@ -1219,7 +1220,7 @@ public class CertifiedProductValidationTest {
         certResults.add(certResult2);
         listing.setCertificationResults(certResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        Validator validator = validatorFactory.getValidator(listing);
         if (validator != null) {
             validator.validate(listing);
         }
@@ -1248,7 +1249,7 @@ public class CertifiedProductValidationTest {
         certResults.add(certResult2);
         listing.setCertificationResults(certResults);
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        Validator validator = validatorFactory.getValidator(listing);
         if (validator != null) {
             validator.validate(listing);
         }

@@ -112,7 +112,7 @@ public class ChplNumberReviewer implements Reviewer {
         }
     }
     
-    private boolean validateUniqueId(final String chplProductNumber) {
+    public boolean validateUniqueId(final String chplProductNumber) {
         try {
             CertifiedProductDetailsDTO dup = cpDao.getByChplUniqueId(chplProductNumber);
             if (dup != null) {
@@ -123,7 +123,7 @@ public class ChplNumberReviewer implements Reviewer {
         return true;
     }
     
-    private void updateChplProductNumber(final CertifiedProductSearchDetails product, final int productNumberIndex,
+    public void updateChplProductNumber(final CertifiedProductSearchDetails product, final int productNumberIndex,
             final String newValue) {
         String[] uniqueIdParts = product.getChplProductNumber().split("\\.");
         if (uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
@@ -143,7 +143,7 @@ public class ChplNumberReviewer implements Reviewer {
         }
     }
 
-    private boolean validateProductCodeCharacters(final String chplProductNumber) {
+    public boolean validateProductCodeCharacters(final String chplProductNumber) {
         String[] uniqueIdParts = chplProductNumber.split("\\.");
         if (uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
 
@@ -157,7 +157,7 @@ public class ChplNumberReviewer implements Reviewer {
         return true;
     }
 
-    private boolean validateVersionCodeCharacters(final String chplProductNumber) {
+    public boolean validateVersionCodeCharacters(final String chplProductNumber) {
         String[] uniqueIdParts = chplProductNumber.split("\\.");
         if (uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
 
@@ -171,7 +171,7 @@ public class ChplNumberReviewer implements Reviewer {
         return true;
     }
 
-    private boolean validateIcsCodeCharacters(final String chplProductNumber) {
+    public boolean validateIcsCodeCharacters(final String chplProductNumber) {
         String[] uniqueIdParts = chplProductNumber.split("\\.");
         if (uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
             // validate that these pieces match up with data
@@ -184,7 +184,7 @@ public class ChplNumberReviewer implements Reviewer {
         return true;
     }
 
-    private boolean validateAdditionalSoftwareCodeCharacters(final String chplProductNumber) {
+    public boolean validateAdditionalSoftwareCodeCharacters(final String chplProductNumber) {
         String[] uniqueIdParts = chplProductNumber.split("\\.");
         if (uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
             // validate that these pieces match up with data
@@ -196,7 +196,7 @@ public class ChplNumberReviewer implements Reviewer {
         return true;
     }
 
-    private boolean validateCertifiedDateCodeCharacters(final String chplProductNumber) {
+    public boolean validateCertifiedDateCodeCharacters(final String chplProductNumber) {
         String[] uniqueIdParts = chplProductNumber.split("\\.");
         if (uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
             // validate that these pieces match up with data
