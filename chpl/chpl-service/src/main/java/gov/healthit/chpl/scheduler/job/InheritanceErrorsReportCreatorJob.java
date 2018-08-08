@@ -216,14 +216,14 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
     private String breaksIcsRules(final CertifiedProductSearchDetails listing) {
         String uniqueId = listing.getChplProductNumber();
         String[] uniqueIdParts = uniqueId.split("\\.");
-        if (uniqueIdParts == null || uniqueIdParts.length != CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
+        if (uniqueIdParts.length != CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
             return null;
         }
         String icsCodePart = uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX];
         try {
-            Integer icsCode = new Integer(icsCodePart);
+            Integer icsCode = Integer.valueOf(icsCodePart);
             boolean hasIcs = icsCode.intValue() == 1
-                    || (listing.getIcs() != null && listing.getIcs().getInherits() == Boolean.TRUE);
+                    || (listing.getIcs() != null && listing.getIcs().getInherits().booleanValue());
 
             // check if listing has ICS but no family ties
             if (hasIcs && (listing.getIcs() == null || listing.getIcs().getParents() == null
@@ -244,7 +244,7 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
 
                 Integer largestIcs = listingGraphDAO.getLargestIcs(parentIds);
                 int expectedIcsCode = largestIcs.intValue() + 1;
-                if (largestIcs != null && icsCode.intValue() != expectedIcsCode) {
+                if (icsCode.intValue() != expectedIcsCode) {
                     String existing = (icsCode.toString().length() == 1 ? "0" : "") + icsCode.toString();
                     String expected = (expectedIcsCode < MIN_NUMBER_TO_NOT_NEED_PREFIX ? "0" : "") + expectedIcsCode;
                     return String.format(

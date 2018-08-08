@@ -56,7 +56,7 @@ public class InheritanceErrorsReportEntity {
     private Boolean deleted;
 
     @Basic(optional = false)
-    @Column(name="last_modified_user")
+    @Column(name = "last_modified_user")
     private Long lastModifiedUser;
 
     public Long getId() {

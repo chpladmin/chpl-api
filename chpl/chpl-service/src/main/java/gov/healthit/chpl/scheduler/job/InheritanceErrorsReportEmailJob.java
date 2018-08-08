@@ -2,9 +2,11 @@ package gov.healthit.chpl.scheduler.job;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -96,29 +98,32 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
     private File getOutputFile(final List<InheritanceErrorsReportDTO> errors) {
         String reportFilename = props.getProperty("inheritanceReportEmailWeeklyFileName");
         File temp = null;
-        FileWriter writer = null;
+        OutputStreamWriter writer = null;
         CSVPrinter csvPrinter = null;
         try {
             temp = File.createTempFile(reportFilename, ".csv");
             temp.deleteOnExit();
-            writer = new FileWriter(temp);
+            writer = new OutputStreamWriter(
+                    new FileOutputStream(temp),
+                    Charset.forName("UTF-8").newEncoder()
+                    );
             csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL);
             csvPrinter.printRecord(getHeaderRow());
             for (InheritanceErrorsReportDTO error : errors) {
                 List<String> rowValue = generateRowValue(error);
-                if (rowValue != null) {
-                    csvPrinter.printRecord(rowValue);
-                }
-            }
+                csvPrinter.printRecord(rowValue);            }
         } catch (IOException e) {
             LOGGER.error(e);
         } finally {
             try {
-                csvPrinter.flush();
-
-                csvPrinter.close();
-                writer.flush();
-                writer.close();
+                if (csvPrinter != null) {
+                    csvPrinter.flush();
+                    csvPrinter.close();
+                }
+                if (writer != null) {
+                    writer.flush();
+                    writer.close();
+                }
             } catch (IOException e) {
                 LOGGER.error(e);
             }
@@ -138,7 +143,7 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
         return result;
     }
 
-    private List<String> generateRowValue(InheritanceErrorsReportDTO data) {
+    private List<String> generateRowValue(final InheritanceErrorsReportDTO data) {
         List<String> result = new ArrayList<String>();
         result.add(data.getChplProductNumber());
         result.add(data.getDeveloper());
@@ -150,7 +155,7 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
         return result;
     }
 
-    private String createHtmlEmailBody(int numRecords, String noContentMsg) throws IOException {
+    private String createHtmlEmailBody(final int numRecords, final String noContentMsg) throws IOException {
         String htmlMessage = "";
         if (numRecords == 0) {
             htmlMessage = noContentMsg;
