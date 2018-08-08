@@ -41,6 +41,7 @@ import gov.healthit.chpl.dto.PendingCertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.reviewer.TestFunctionalityReviewer;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -60,6 +61,9 @@ public class CertifiedProductTestFunctionalityValidatorTest {
     
     @Spy
     private PracticeTypeDAO practiceTypeDAO;
+    
+    @Spy
+    private ErrorMessageUtil msgUtil;
     
     @InjectMocks
     private TestFunctionalityReviewer tfReviewer;
@@ -212,7 +216,11 @@ public class CertifiedProductTestFunctionalityValidatorTest {
                 .thenReturn(getTestFunctionalityId_7());
         Mockito.when(certificationCriterionDAO.getByNameAndYear(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
                 .thenReturn(getCertificationCriterion_a7());
-        
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.testFunctionalityCriterionMismatch"),
+                ArgumentMatchers.anyString()))
+                .thenReturn("In Criteria 170.314 (a)(6), Test Functionality something is for "
+                        + "Criteria other and is not valid for Criteria 170.314 (a)(6).");
+
         CertifiedProductSearchDetails listing = createListing("2014");
         List<CertificationResult> certResults = new ArrayList<CertificationResult>();
         CertificationResult certResult = createCertResult("170.314 (a)(6)");

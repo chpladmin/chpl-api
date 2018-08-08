@@ -15,10 +15,10 @@ import gov.healthit.chpl.validation.listing.reviewer.FieldLengthReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.InheritedCertificationStatusReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.SedG3Reviewer;
-import gov.healthit.chpl.validation.listing.reviewer.TestFunctionalityReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestToolReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnattestedCriteriaWithDataReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnsupportedCharacterReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.ValidDataReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredData2015Reviewer;
 
 /**
@@ -48,6 +48,10 @@ public class Edition2015ListingValidator extends Validator {
     @Qualifier("requiredData2015Reviewer")
     private RequiredData2015Reviewer requiredDataReviewer;
 
+    @Autowired
+    @Qualifier("validDataReviewer")
+    private ValidDataReviewer validDataReviewer;
+
     @Autowired 
     @Qualifier("sedG3Reviewer")
     private SedG3Reviewer sedG3Reviewer;
@@ -69,10 +73,6 @@ public class Edition2015ListingValidator extends Validator {
     private TestToolReviewer ttReviewer;
 
     @Autowired 
-    @Qualifier("testFunctionalityReviewer")
-    private TestFunctionalityReviewer tfReviewer;
-
-    @Autowired 
     @Qualifier("icsReviewer")
     private InheritedCertificationStatusReviewer icsReviewer;
 
@@ -86,13 +86,13 @@ public class Edition2015ListingValidator extends Validator {
             reviewers.add(unsupportedCharacterReviewer);
             reviewers.add(fieldLengthReviewer);
             reviewers.add(requiredDataReviewer);
+            reviewers.add(validDataReviewer);
             reviewers.add(sedG3Reviewer);
             reviewers.add(certStatusReviewer);
             reviewers.add(certDateReviewer);
             reviewers.add(unattestedCriteriaWithDataReviewer);
             reviewers.add(icsReviewer);
             reviewers.add(ttReviewer);
-            reviewers.add(tfReviewer);
         }
         return reviewers;
     }

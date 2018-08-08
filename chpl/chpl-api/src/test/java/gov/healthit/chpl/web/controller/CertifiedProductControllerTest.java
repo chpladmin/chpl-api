@@ -538,7 +538,7 @@ public class CertifiedProductControllerTest {
         cr.setG1Success(false);
         cr.setG2Success(false);
         cr.setGap(null);
-        cr.setNumber("170.314 (g)(4)");
+        cr.setNumber("170.315 (g)(4)");
         cr.setPrivacySecurityFramework("Approach 1 Approach 2"); // bad value
         cr.setSed(null);
         cr.setSuccess(true);
@@ -604,7 +604,7 @@ public class CertifiedProductControllerTest {
             assertNotNull(e);
             Boolean hasError = false;
             for (String error : e.getErrorMessages()){
-                if (error.startsWith("Certification 170.314 (g)(4) contains Privacy and Security Framework")){
+                if (error.startsWith("Certification 170.315 (g)(4) contains Privacy and Security Framework")){
                     hasError = true;
                 }
             }

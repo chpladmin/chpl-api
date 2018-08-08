@@ -15,6 +15,7 @@ import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestFunctionalityReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnattestedCriteriaWithDataReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnsupportedCharacterReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.ValidDataReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.RequiredData2014Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.legacy.LegacyTestToolReviewer;
 
@@ -40,6 +41,10 @@ public class Edition2014LegacyListingValidator extends Validator {
     @Autowired 
     @Qualifier("requiredData2014Reviewer")
     private RequiredData2014Reviewer requiredFieldReviewer;
+
+    @Autowired
+    @Qualifier("validDataReviewer")
+    private ValidDataReviewer validDataReviewer;
 
     @Autowired 
     @Qualifier("certificationStatusReviewer")
@@ -71,6 +76,7 @@ public class Edition2014LegacyListingValidator extends Validator {
             reviewers.add(unsupportedCharacterReviewer);
             reviewers.add(fieldLengthReviewer);
             reviewers.add(requiredFieldReviewer);
+            reviewers.add(validDataReviewer);
             reviewers.add(certStatusReviewer);
             reviewers.add(certDateReviewer);
             reviewers.add(unattestedCriteriaWithDataReviewer);
