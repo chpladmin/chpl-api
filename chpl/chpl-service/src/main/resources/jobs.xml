@@ -195,7 +195,7 @@
         <job>
             <name>ONC Inherited Certification Status Errors Report</name>
             <group>chplJobs</group>
-            <description>Sends the ICS errors report</description>
+            <description>Sends an error report for all Listings breaking ICS rules</description>
             <job-class>gov.healthit.chpl.scheduler.job.InheritanceErrorsReportEmailJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
@@ -213,7 +213,7 @@
         <job>
             <name>ONC-ACB Inherited Certification Status Errors Report</name>
             <group>chplJobs</group>
-            <description>Sends the ICS errors report</description>
+            <description>Sends an error report for all Listings breaking ICS rules, by specific ACB</description>
             <job-class>gov.healthit.chpl.scheduler.job.InheritanceErrorsReportEmailJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
