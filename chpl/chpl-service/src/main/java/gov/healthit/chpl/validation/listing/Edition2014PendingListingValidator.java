@@ -6,17 +6,17 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.validation.pendingListing.review.Reviewer;
-import gov.healthit.chpl.validation.pendingListing.review.TestFunctionalityReviewer;
-import gov.healthit.chpl.validation.pendingListing.review.UnattestedCriteriaWithDataReviewer;
-import gov.healthit.chpl.validation.pendingListing.review.TestToolReviewer;
-import gov.healthit.chpl.validation.pendingListing.review.CertificationDateReviewer;
-import gov.healthit.chpl.validation.pendingListing.review.ChplNumberReviewer;
-import gov.healthit.chpl.validation.pendingListing.review.FieldLengthReviewer;
-import gov.healthit.chpl.validation.pendingListing.review.FuzzyMatchReviewer;
-import gov.healthit.chpl.validation.pendingListing.review.UnsupportedCharacterReviewer;
-import gov.healthit.chpl.validation.pendingListing.review.ValidDataReviewer;
-import gov.healthit.chpl.validation.pendingListing.review.edition2014.RequiredData2014Reviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.CertificationDateReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.ChplNumberReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.FieldLengthReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.FuzzyMatchReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.TestFunctionalityReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.TestToolReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.UnattestedCriteriaWithDataReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.UnsupportedCharacterReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.ValidDataReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.edition2014.RequiredData2014Reviewer;
 
 /**
  * Validation interface for listings in the pending stage of upload to the CHPL.

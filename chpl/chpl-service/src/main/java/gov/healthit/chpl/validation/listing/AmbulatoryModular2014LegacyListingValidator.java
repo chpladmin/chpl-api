@@ -3,7 +3,7 @@ package gov.healthit.chpl.validation.listing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.validation.listing.review.edition2014.AmbulatoryG1G2RequiredData2014Reviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2014.AmbulatoryG1G2RequiredData2014Reviewer;
 
 /**
  * Validation interface for a 2014 Edition Ambulatory Modular EHR listing

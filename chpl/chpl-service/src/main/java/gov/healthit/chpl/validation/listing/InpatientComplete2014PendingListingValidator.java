@@ -3,7 +3,7 @@ package gov.healthit.chpl.validation.listing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.validation.pendingListing.review.edition2014.InpatientCompleteRequiredCriteriaReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.edition2014.InpatientCompleteRequiredCriteriaReviewer;
 
 @Component
 public class InpatientComplete2014PendingListingValidator extends InpatientModular2014PendingListingValidator {

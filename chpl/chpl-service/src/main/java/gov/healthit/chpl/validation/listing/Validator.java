@@ -3,7 +3,7 @@ package gov.healthit.chpl.validation.listing;
 import java.util.List;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.validation.listing.review.Reviewer;
+import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
 public abstract class Validator {
     

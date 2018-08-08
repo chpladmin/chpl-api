@@ -3,7 +3,7 @@ package gov.healthit.chpl.validation.listing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.validation.pendingListing.review.edition2014.AmbulatoryCompleteRequiredCriteriaReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.edition2014.AmbulatoryCompleteRequiredCriteriaReviewer;
 
 /**
  * Validate a pending ambulatory complete 2014 listing

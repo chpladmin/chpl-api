@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.validation.listing.review.Reviewer;
+import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
 /**
  * A concrete validation implementation that does not check for any errors.

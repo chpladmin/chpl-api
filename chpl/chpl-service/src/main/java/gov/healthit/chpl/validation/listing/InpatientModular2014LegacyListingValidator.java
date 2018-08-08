@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.validation.listing.review.Reviewer;
-import gov.healthit.chpl.validation.listing.review.edition2014.InpatientG1G2RequiredData2014Reviewer;
+import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2014.InpatientG1G2RequiredData2014Reviewer;
 
 @Component
 public class InpatientModular2014LegacyListingValidator extends Edition2014ListingValidator {
