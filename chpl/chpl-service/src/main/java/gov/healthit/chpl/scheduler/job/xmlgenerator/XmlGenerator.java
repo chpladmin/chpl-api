@@ -52,11 +52,7 @@ public class XmlGenerator {
     
     public static void createSimpleElement(Date value, String nodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (value != null) {
-<<<<<<< HEAD
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
-=======
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
->>>>>>> holding
             sw.writeStartElement(nodeName);
             sw.writeCharacters(sdf.format(value));
             sw.writeEndElement();
