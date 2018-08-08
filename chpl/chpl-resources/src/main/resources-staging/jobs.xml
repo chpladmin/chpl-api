@@ -11,10 +11,10 @@
         </delete-job>
     </pre-processing-commands>
     <schedule>
+        <!-- Cache status age notification -->
         <job>
             <name>Cache Status Age</name>
             <group>chplJobs</group>
-
             <description>Allow subscribers to get notifications if the cache has become "too old".</description>
             <job-class>gov.healthit.chpl.scheduler.job.CacheStatusAgeJob</job-class>
             <durability>true</durability>
@@ -30,29 +30,27 @@
                 </entry>
             </job-data-map>
         </job>
-        <job>
-            <name>Summary Statistics Email</name>
-            <group>chplJobs</group>
-            <description>Sends the Summary Statistics Report</description>
-            <job-class>gov.healthit.chpl.scheduler.job.summarystatistics.SummaryStatisticsEmailJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-            <job-data-map>
-                <entry>
-                    <key>authorities</key>
-                    <value>ROLE_ADMIN</value> <!-- Semi-colon delimited string -->
-                </entry>
-                <entry>
-                    <key>frequency</key>
-                    <value>DAILY</value>
-                </entry>
-                
-            </job-data-map>
-        </job>
+        <trigger>
+            <cron>
+                <name>amore@ainq_com</name>
+                <group>CacheStatusAgeTrigger</group>
+                <job-name>Cache Status Age</job-name>
+                <job-group>chplJobs</job-group>
+                <job-data-map>
+                    <entry>
+                        <key>email</key>
+                        <value>amore@ainq.com</value>
+                    </entry>
+                </job-data-map>
+                <cron-expression>0 10 * * * ?</cron-expression>
+            </cron>
+        </trigger>
+
+
+        <!-- Download file generation: 2015, 2014, 2011 -->
         <job>
             <name>downloadFileJob2015</name>
             <group>systemJobs</group>
-
             <description>Generate download files for 2015.</description>
             <job-class>gov.healthit.chpl.scheduler.job.CertifiedProductDownloadableResourceCreatorJob</job-class>
             <durability>true</durability>
@@ -64,10 +62,20 @@
                 </entry>
             </job-data-map>
         </job>
+        <trigger>
+            <cron>
+                <name>generate2015</name>
+                <group>downloadFileTrigger</group>
+                <job-name>downloadFileJob2015</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 30 4 * * ?</cron-expression> <!-- At 0430 UTC every day -->
+            </cron>
+        </trigger>
+
         <job>
             <name>downloadFileJob2014</name>
             <group>systemJobs</group>
-
             <description>Generate download files for 2014.</description>
             <job-class>gov.healthit.chpl.scheduler.job.CertifiedProductDownloadableResourceCreatorJob</job-class>
             <durability>true</durability>
@@ -79,10 +87,20 @@
                 </entry>
             </job-data-map>
         </job>
+        <trigger>
+            <cron>
+                <name>generate2014</name>
+                <group>downloadFileTrigger</group>
+                <job-name>downloadFileJob2014</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 35 4 * * ?</cron-expression> <!-- At 0435 UTC every day -->
+            </cron>
+        </trigger>
+
         <job>
             <name>downloadFileJob2011</name>
             <group>systemJobs</group>
-
             <description>Generate download files for 2011.</description>
             <job-class>gov.healthit.chpl.scheduler.job.CertifiedProductDownloadableResourceCreatorJob</job-class>
             <durability>true</durability>
@@ -94,7 +112,18 @@
                 </entry>
             </job-data-map>
         </job>
-        
+        <trigger>
+            <cron>
+                <name>generate2011</name>
+                <group>downloadFileTrigger</group>
+                <job-name>downloadFileJob2011</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
+                <cron-expression>0 45 4 ? JAN,APR,JUL,OCT 7#1</cron-expression> <!-- At 0445 UTC on the first Saturday of the quarter -->
+            </cron>
+        </trigger>
+
+        <!-- Summary statistics generator -->
         <job>
             <name>summaryStatisticsCreator</name>
             <group>systemJobs</group>
@@ -109,37 +138,6 @@
                 </entry>
             </job-data-map>
         </job>
-        
-        <trigger>
-            <cron>
-                <name>generate2015</name>
-                <group>downloadFileTrigger</group>
-                <job-name>downloadFileJob2015</job-name>
-                <job-group>systemJobs</job-group>
-                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 3 1 * * ?</cron-expression> <!-- At 0103 UTC every day -->
-            </cron>
-        </trigger>
-        <trigger>
-            <cron>
-                <name>generate2014</name>
-                <group>downloadFileTrigger</group>
-                <job-name>downloadFileJob2014</job-name>
-                <job-group>systemJobs</job-group>
-                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 2 1 * * ?</cron-expression> <!-- At 0102 UTC every day -->
-            </cron>
-        </trigger>
-        <trigger>
-            <cron>
-                <name>generate2011</name>
-                <group>downloadFileTrigger</group>
-                <job-name>downloadFileJob2011</job-name>
-                <job-group>systemJobs</job-group>
-                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
-                <cron-expression>0 1 1 ? JAN,APR,JUL,OCT 7#1</cron-expression> <!-- At 0101 UTC on the first Saturday of the quarter -->
-            </cron>
-        </trigger>
         <trigger>
             <cron>
                 <name>generateSummaryStatistics</name>
@@ -147,24 +145,52 @@
                 <job-name>summaryStatisticsCreator</job-name>
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 0 3 1/1 * ? *</cron-expression> 
+                <cron-expression>0 3 1 * * ?</cron-expression> <!-- At 0103 UTC every day -->
             </cron>
         </trigger>
-        
-        <trigger>
-            <cron>
-                <name>amore@ainq_com</name>
-                <group>CacheStatusAgeTrigger</group>
-                <job-name>Cache Status Age</job-name>
-                <job-group>chplJobs</job-group>
-                <job-data-map>
-                    <entry>
-                        <key>email</key>
-                        <value>amore@ainq.com</value>
-                    </entry>
-                </job-data-map>
-                <cron-expression>0 10 10 * * ?</cron-expression>
-            </cron>
-        </trigger>
+
+        <!-- Summary statistics emailer -->
+        <job>
+            <name>Summary Statistics Email</name>
+            <group>chplJobs</group>
+            <description>Sends the Summary Statistics Report</description>
+            <job-class>gov.healthit.chpl.scheduler.job.summarystatistics.SummaryStatisticsEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN</value> <!-- Semi-colon delimited string -->
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>DAILY</value><!-- NEEDS TO BE DAILY -->
+                </entry>
+            </job-data-map>
+        </job>
+
+        <!-- Job fired when developer ban notification needs to happen -->
+        <job>
+            <name>Trigger Developer Ban Notification</name>
+            <group>chplJobs</group>
+            <description>Send warnings to subscribers when an ONC-ACB has changed status of a listing to a state that might warrant a Developer Ban.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.TriggerDeveloperBanJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN</value> <!-- Semi-colon delimited string -->
+                </entry>
+                <entry>
+                    <key>email</key>
+                    <value>amore@ainq.com</value>
+                </entry>
+                <entry>
+                    <key>editableJobFields</key>
+                    <value>email-Subscribers</value>
+                </entry>
+            </job-data-map>
+        </job>
     </schedule>
 </job-scheduling-data>

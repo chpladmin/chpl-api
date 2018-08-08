@@ -21,8 +21,8 @@ public class ProductOwnerXmlGenerator extends XmlGenerator {
     public static void add(ProductOwner po, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (po != null) {
             sw.writeStartElement(rootNodeName);
-            createSimpleElement(po.getId(), "id", sw);
             DeveloperXmlGenerator.addDeveloper(po.getDeveloper(), "developer", sw);
+            createSimpleElement(po.getId(), "id", sw);
             createSimpleElement(po.getTransferDate(), "transferDate", sw);
             sw.writeEndElement();
         }

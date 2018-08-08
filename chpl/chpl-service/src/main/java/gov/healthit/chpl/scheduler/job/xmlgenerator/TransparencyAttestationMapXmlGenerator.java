@@ -9,7 +9,7 @@ import gov.healthit.chpl.domain.TransparencyAttestationMap;
 
 public class TransparencyAttestationMapXmlGenerator extends XmlGenerator {
     public static void add(List<TransparencyAttestationMap> list, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
-        if (list != null) {
+        if (list != null && list.size() > 0) {
             sw.writeStartElement(rootNodeName);
             for (TransparencyAttestationMap map : list) {
                 add(map, "transparencyAttestationMap", sw);

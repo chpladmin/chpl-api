@@ -55,4 +55,12 @@ public interface SchedulerManager {
      * @throws SchedulerException is thrown
      */
     List<ChplJob> getAllJobs() throws SchedulerException;
+
+    /**
+     * Update job with new data.
+     * @param job old job
+     * @return updated job
+     * @throws SchedulerException if scheduler has issues
+     */
+    ChplJob updateJob(ChplJob job) throws SchedulerException;
 }

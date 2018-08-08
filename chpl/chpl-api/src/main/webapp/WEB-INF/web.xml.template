@@ -67,4 +67,16 @@
   		<filter-name>apiKeyAuthenticationFilter</filter-name>
   		<url-pattern>/*</url-pattern>
 	</filter-mapping>
+<<<<<<< HEAD:chpl/chpl-api/src/main/webapp/WEB-INF/web.xml
+=======
+
+    <filter>
+        <filter-name>javamelody</filter-name>
+        <filter-class>net.bull.javamelody.MonitoringFilter</filter-class>
+        <init-param>
+            <param-name>authorized-users</param-name>
+            <param-value>user1:pwd1, user2:pwd2</param-value>
+        </init-param>
+    </filter>
+>>>>>>> holding:chpl/chpl-api/src/main/webapp/WEB-INF/web.xml.template
 </web-app>

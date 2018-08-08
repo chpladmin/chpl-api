@@ -21,15 +21,14 @@ public class SurveillanceXmlGenerator extends XmlGenerator {
     public static void add(Surveillance surveillance, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (surveillance != null) {
             sw.writeStartElement(rootNodeName);;
-            createSimpleElement(surveillance.getId(), "id", sw);
-            createSimpleElement(surveillance.getFriendlyId(), "friendlyId", sw);
             CertifiedProductXmlGenerator.add(surveillance.getCertifiedProduct(), "certifiedProduct", sw);
-            createSimpleElement(surveillance.getStartDate(), "startDate", sw);
             createSimpleElement(surveillance.getEndDate(), "endDate", sw);
-            createSimpleElement(surveillance.getStartDate(), "startDate", sw);
-            SurveillanceTypeXmlGenerator.addSurveillanceType(surveillance.getType(), "type", sw);
+            createSimpleElement(surveillance.getFriendlyId(), "friendlyId", sw);
+            createSimpleElement(surveillance.getId(), "id", sw);
             createSimpleElement(surveillance.getRandomizedSitesUsed(), "randomizedSitesUsed", sw);
             SurveillanceRequirementXmlGenerator.add(surveillance.getRequirements(), "surveilledRequirements", sw);
+            createSimpleElement(surveillance.getStartDate(), "startDate", sw);
+            SurveillanceTypeXmlGenerator.addSurveillanceType(surveillance.getType(), "type", sw);
             sw.writeEndElement();
         }
     }

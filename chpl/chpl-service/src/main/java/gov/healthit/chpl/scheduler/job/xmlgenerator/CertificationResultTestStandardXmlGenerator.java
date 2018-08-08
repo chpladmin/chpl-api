@@ -22,8 +22,8 @@ public class CertificationResultTestStandardXmlGenerator extends XmlGenerator {
         if (standard != null) {
             sw.writeStartElement(rootNodeName);
             createSimpleElement(standard.getId(), "id", sw);
-            createSimpleElement(standard.getTestStandardId(), "testStandardId", sw);
             createSimpleElement(standard.getTestStandardDescription(), "testStandardDescription", sw);
+            createSimpleElement(standard.getTestStandardId(), "testStandardId", sw);
             createSimpleElement(standard.getTestStandardName(), "testStandardName", sw);
             sw.writeEndElement();
         }

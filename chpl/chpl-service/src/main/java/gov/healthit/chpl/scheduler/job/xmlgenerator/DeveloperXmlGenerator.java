@@ -8,16 +8,15 @@ import gov.healthit.chpl.domain.Developer;
 public class DeveloperXmlGenerator extends XmlGenerator{
     public static void addDeveloper(Developer dev, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         sw.writeStartElement(rootNodeName);
-        createSimpleElement(dev.getDeveloperId(), "developerId", sw);
-        createSimpleElement(dev.getDeveloperCode(), "developerCode", sw);
-        createSimpleElement(dev.getName(), "name", sw);
-        createSimpleElement(dev.getWebsite(), "website", sw);
         AddressXmlGenerator.addAddress(dev.getAddress(), "address", sw);
         ContactXmlGenerator.addContact(dev.getContact(),"contact", sw);
-        TransparencyAttestationMapXmlGenerator.add(dev.getTransparencyAttestations(), rootNodeName, sw);
-        DeveloperStatusEventXmlGenerator.add(dev.getStatusEvents(), "statusEvents", sw);
+        createSimpleElement(dev.getDeveloperCode(), "developerCode", sw);
+        createSimpleElement(dev.getDeveloperId(), "developerId", sw);
+        createSimpleElement(dev.getName(), "name", sw);
         DeveloperStatusXmlGenerator.add(dev.getStatus(), "status", sw);
+        DeveloperStatusEventXmlGenerator.add(dev.getStatusEvents(), "statusEvents", sw);
+        TransparencyAttestationMapXmlGenerator.add(dev.getTransparencyAttestations(), "transparencyAttestations", sw);
+        createSimpleElement(dev.getWebsite(), "website", sw);
         sw.writeEndElement();
-        
     }
 }

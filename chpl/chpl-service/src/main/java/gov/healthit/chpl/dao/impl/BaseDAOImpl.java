@@ -9,7 +9,8 @@ import org.springframework.context.MessageSource;
 import gov.healthit.chpl.auth.Util;
 
 public class BaseDAOImpl {
-
+    public static final String SCHEMA_NAME = "openchpl";
+    
     @PersistenceContext
     protected EntityManager entityManager;
     @Autowired

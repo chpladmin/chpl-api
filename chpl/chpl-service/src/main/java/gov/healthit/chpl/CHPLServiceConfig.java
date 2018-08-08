@@ -30,6 +30,7 @@ import org.springframework.oxm.castor.CastorMarshaller;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
@@ -45,6 +46,7 @@ import gov.healthit.chpl.job.MeaningfulUseUploadJob;
 @EnableWebMvc
 @EnableTransactionManagement(proxyTargetClass = true)
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableAsync
 @EnableAspectJAutoProxy
 @EnableScheduling

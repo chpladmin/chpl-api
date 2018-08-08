@@ -21,13 +21,13 @@ public class CertificationResultAdditionalSoftwareXmlGenerator extends XmlGenera
     public static void add(CertificationResultAdditionalSoftware software, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (software != null) {
             sw.writeStartElement(rootNodeName);
-            createSimpleElement(software.getId(), "id", sw);
-            createSimpleElement(software.getName(), "name", sw);
-            createSimpleElement(software.getVersion(), "version", sw);
             createSimpleElement(software.getCertifiedProductId(), "certifiedProductId", sw);
             createSimpleElement(software.getCertifiedProductNumber(), "certifiedProductNumber", sw);
-            createSimpleElement(software.getJustification(), "justification", sw);
             createSimpleElement(software.getGrouping(), "grouping", sw);
+            createSimpleElement(software.getId(), "id", sw);
+            createSimpleElement(software.getJustification(), "justification", sw);
+            createSimpleElement(software.getName(), "name", sw);
+            createSimpleElement(software.getVersion(), "version", sw);
             sw.writeEndElement();
         }
     }

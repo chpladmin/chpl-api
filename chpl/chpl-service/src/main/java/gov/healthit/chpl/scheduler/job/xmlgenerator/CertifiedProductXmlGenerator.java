@@ -21,11 +21,11 @@ public class CertifiedProductXmlGenerator extends XmlGenerator {
     public static void add(CertifiedProduct cp, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (cp != null) {
             sw.writeStartElement(rootNodeName);
-            createSimpleElement(cp.getId(), "id", sw);
-            createSimpleElement(cp.getChplProductNumber(), "chplProductNumber", sw);
-            createSimpleElement(cp.getLastModifiedDate(), "lastModifiedDate", sw);
-            createSimpleElement(cp.getEdition(), "edition", sw);
             createSimpleElement(cp.getCertificationDate(), "certificationDate", sw);
+            createSimpleElement(cp.getChplProductNumber(), "chplProductNumber", sw);
+            createSimpleElement(cp.getEdition(), "edition", sw);
+            createSimpleElement(cp.getId(), "id", sw);
+            createSimpleElement(cp.getLastModifiedDate(), "lastModifiedDate", sw);
             sw.writeEndElement();
         }
     }

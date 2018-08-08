@@ -87,14 +87,14 @@ public class ListingTest extends TestCase {
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ACB"));
     }
-    
+
     @Test
     @Transactional
     @Rollback
     public void testUpdate2011ListingIncludesReason() throws
-        EntityCreationException, EntityRetrievalException,
-        ValidationException, InvalidArgumentsException, JsonProcessingException,
-        MissingReasonException, IOException {
+    EntityCreationException, EntityRetrievalException,
+    ValidationException, InvalidArgumentsException, JsonProcessingException,
+    MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final long cpId = 3L;
@@ -103,7 +103,6 @@ public class ListingTest extends TestCase {
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(cpId);
         listing.setAcbCertificationId("NEWACBCERTIFICATIONID");
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setBanDeveloper(false);
         updateRequest.setListing(listing);
         updateRequest.setReason("unit test");
         cpController.updateCertifiedProduct(updateRequest);
@@ -128,9 +127,9 @@ public class ListingTest extends TestCase {
     @Transactional
     @Rollback
     public void testUpdate2011ListingWithoutReason() throws
-        EntityCreationException, EntityRetrievalException,
-        ValidationException, InvalidArgumentsException, JsonProcessingException,
-        MissingReasonException, IOException {
+    EntityCreationException, EntityRetrievalException,
+    ValidationException, InvalidArgumentsException, JsonProcessingException,
+    MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final long cpId = 3L;
@@ -139,7 +138,6 @@ public class ListingTest extends TestCase {
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(cpId);
         listing.setAcbCertificationId("NEWACBCERTIFICATIONID");
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setBanDeveloper(false);
         updateRequest.setListing(listing);
         cpController.updateCertifiedProduct(updateRequest);
         Date afterActivity = new Date();
@@ -161,9 +159,9 @@ public class ListingTest extends TestCase {
     @Transactional
     @Rollback
     public void testUpdateCertificationStatusIncludesReason() throws
-        EntityCreationException, EntityRetrievalException,
-        ValidationException, InvalidArgumentsException, JsonProcessingException,
-        MissingReasonException, IOException {
+    EntityCreationException, EntityRetrievalException,
+    ValidationException, InvalidArgumentsException, JsonProcessingException,
+    MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date();
@@ -185,7 +183,6 @@ public class ListingTest extends TestCase {
         listing.setCertificationEvents(events);
 
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setBanDeveloper(false);
         updateRequest.setListing(listing);
         updateRequest.setReason("unit test");
         cpController.updateCertifiedProduct(updateRequest);
@@ -211,9 +208,9 @@ public class ListingTest extends TestCase {
     @Transactional
     @Rollback
     public void testUpdateCertificationStatus() throws
-        EntityCreationException, EntityRetrievalException,
-        ValidationException, InvalidArgumentsException, JsonProcessingException,
-        MissingReasonException, IOException {
+    EntityCreationException, EntityRetrievalException,
+    ValidationException, InvalidArgumentsException, JsonProcessingException,
+    MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date();
@@ -235,7 +232,6 @@ public class ListingTest extends TestCase {
         listing.setCertificationEvents(events);
 
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setBanDeveloper(false);
         updateRequest.setListing(listing);
         cpController.updateCertifiedProduct(updateRequest);
         Date afterActivity = new Date();
@@ -259,9 +255,9 @@ public class ListingTest extends TestCase {
     @Transactional
     @Rollback
     public void testUpdateCertificationStatusDate() throws
-        EntityCreationException, EntityRetrievalException,
-        ValidationException, InvalidArgumentsException, JsonProcessingException,
-        MissingReasonException, IOException {
+    EntityCreationException, EntityRetrievalException,
+    ValidationException, InvalidArgumentsException, JsonProcessingException,
+    MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date();
@@ -281,7 +277,6 @@ public class ListingTest extends TestCase {
         listing.setCertificationEvents(events);
 
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setBanDeveloper(false);
         updateRequest.setListing(listing);
         cpController.updateCertifiedProduct(updateRequest);
         Date afterActivity = new Date();
@@ -307,9 +302,9 @@ public class ListingTest extends TestCase {
     @Transactional
     @Rollback
     public void testUpdateCertificationStatusHistoryDate() throws
-        EntityCreationException, EntityRetrievalException,
-        ValidationException, InvalidArgumentsException, JsonProcessingException,
-        MissingReasonException, IOException {
+    EntityCreationException, EntityRetrievalException,
+    ValidationException, InvalidArgumentsException, JsonProcessingException,
+    MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final long dateDifference = 1000L;
@@ -331,7 +326,6 @@ public class ListingTest extends TestCase {
         listing.setCertificationEvents(events);
 
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setBanDeveloper(false);
         updateRequest.setListing(listing);
         cpController.updateCertifiedProduct(updateRequest);
         Date afterActivity = new Date();
@@ -356,9 +350,9 @@ public class ListingTest extends TestCase {
     @Transactional
     @Rollback
     public void testUpdateCertificationStatusHistoryStatus() throws
-        EntityCreationException, EntityRetrievalException,
-        ValidationException, InvalidArgumentsException, JsonProcessingException,
-        MissingReasonException, IOException {
+    EntityCreationException, EntityRetrievalException,
+    ValidationException, InvalidArgumentsException, JsonProcessingException,
+    MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final long statusId = 4L;
@@ -381,7 +375,6 @@ public class ListingTest extends TestCase {
         listing.setCertificationEvents(events);
 
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setBanDeveloper(false);
         updateRequest.setListing(listing);
         cpController.updateCertifiedProduct(updateRequest);
         Date afterActivity = new Date();
@@ -392,7 +385,7 @@ public class ListingTest extends TestCase {
         assertEquals(1, activities.size());
         QuestionableActivityListingDTO activity = activities.get(0);
         assertEquals(1, activity.getListingId().longValue());
-        
+
         String timezoneDisplayDst = TimeZone.getDefault().getDisplayName(true, TimeZone.SHORT);
         assertEquals("[Withdrawn by Developer (Sun Sep 20 13:14:00 " + timezoneDisplayDst + " 2015)]", activity.getBefore());
         assertEquals("[Withdrawn by ONC-ACB (Sun Sep 20 13:14:00 " + timezoneDisplayDst + " 2015)]", activity.getAfter());
@@ -407,9 +400,9 @@ public class ListingTest extends TestCase {
     @Transactional
     @Rollback
     public void testAddCqm() throws
-        EntityCreationException, EntityRetrievalException,
-        ValidationException, InvalidArgumentsException, JsonProcessingException,
-        MissingReasonException, IOException {
+    EntityCreationException, EntityRetrievalException,
+    ValidationException, InvalidArgumentsException, JsonProcessingException,
+    MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final long cms82Id = 60L;
@@ -424,7 +417,6 @@ public class ListingTest extends TestCase {
         addedCqm.setSuccessVersions(successVersions);
         listing.getCqmResults().add(addedCqm);
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setBanDeveloper(false);
         updateRequest.setListing(listing);
         cpController.updateCertifiedProduct(updateRequest);
         Date afterActivity = new Date();
@@ -442,14 +434,14 @@ public class ListingTest extends TestCase {
 
         SecurityContextHolder.getContext().setAuthentication(null);
     }
-    
+
     @Test
     @Transactional
     @Rollback
     public void testRemoveCqmIncludesReason() throws
-        EntityCreationException, EntityRetrievalException,
-        ValidationException, InvalidArgumentsException, JsonProcessingException,
-        MissingReasonException, IOException {
+    EntityCreationException, EntityRetrievalException,
+    ValidationException, InvalidArgumentsException, JsonProcessingException,
+    MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date();
@@ -462,7 +454,6 @@ public class ListingTest extends TestCase {
         }
 
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setBanDeveloper(false);
         updateRequest.setListing(listing);
         updateRequest.setReason("unit test");
         cpController.updateCertifiedProduct(updateRequest);
@@ -487,9 +478,9 @@ public class ListingTest extends TestCase {
     @Transactional
     @Rollback
     public void testRemoveCqmWithoutReason() throws
-        EntityCreationException, EntityRetrievalException,
-        ValidationException, InvalidArgumentsException, JsonProcessingException,
-        MissingReasonException, IOException {
+    EntityCreationException, EntityRetrievalException,
+    ValidationException, InvalidArgumentsException, JsonProcessingException,
+    MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date();
@@ -502,7 +493,6 @@ public class ListingTest extends TestCase {
         }
 
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setBanDeveloper(false);
         updateRequest.setListing(listing);
         cpController.updateCertifiedProduct(updateRequest);
         Date afterActivity = new Date();
@@ -524,7 +514,7 @@ public class ListingTest extends TestCase {
     @Transactional
     @Rollback
     public void testAddCriteria() throws EntityCreationException, EntityRetrievalException, ValidationException,
-            InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException {
+    InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final int critId = 4;
@@ -536,7 +526,6 @@ public class ListingTest extends TestCase {
             }
         }
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setBanDeveloper(false);
         updateRequest.setListing(listing);
         cpController.updateCertifiedProduct(updateRequest);
         Date afterActivity = new Date();
@@ -559,8 +548,8 @@ public class ListingTest extends TestCase {
     @Transactional
     @Rollback
     public void testRemoveCriteriaIncludesReason() throws EntityCreationException,
-        EntityRetrievalException, ValidationException,
-        InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException {
+    EntityRetrievalException, ValidationException,
+    InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date();
@@ -571,7 +560,6 @@ public class ListingTest extends TestCase {
             }
         }
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setBanDeveloper(false);
         updateRequest.setListing(listing);
         updateRequest.setReason("unit test");
         cpController.updateCertifiedProduct(updateRequest);
@@ -596,8 +584,8 @@ public class ListingTest extends TestCase {
     @Transactional
     @Rollback
     public void testRemoveCriteriaWithoutReason() throws EntityCreationException,
-        EntityRetrievalException, ValidationException,
-        InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException {
+    EntityRetrievalException, ValidationException,
+    InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date();
@@ -608,7 +596,6 @@ public class ListingTest extends TestCase {
             }
         }
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setBanDeveloper(false);
         updateRequest.setListing(listing);
         cpController.updateCertifiedProduct(updateRequest);
         Date afterActivity = new Date();

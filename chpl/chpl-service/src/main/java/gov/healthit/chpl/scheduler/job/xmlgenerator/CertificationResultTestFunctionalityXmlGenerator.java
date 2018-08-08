@@ -21,10 +21,10 @@ public class CertificationResultTestFunctionalityXmlGenerator extends XmlGenerat
     public static void add(CertificationResultTestFunctionality test, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (test != null) {
             sw.writeStartElement(rootNodeName);
+           createSimpleElement(test.getDescription(), "description", sw);
             createSimpleElement(test.getId(), "id", sw);
-            createSimpleElement(test.getTestFunctionalityId(), "testFunctionalityid", sw);
-            createSimpleElement(test.getDescription(), "description", sw);
             createSimpleElement(test.getName(), "name", sw);
+            createSimpleElement(test.getTestFunctionalityId(), "testFunctionalityid", sw);
             createSimpleElement(test.getYear(), "year", sw);
             sw.writeEndElement();
         }

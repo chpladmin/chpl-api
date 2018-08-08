@@ -25,7 +25,8 @@ public interface UserDAO {
 	public UserDTO getById(Long userId) throws UserRetrievalException;
 	
 	public UserDTO getByName(String uname) throws UserRetrievalException;
-		
+	public List<UserDTO> getUsersWithPermission(String permissionName);
+	
 	public void addPermission(String uname, String authority) throws UserPermissionRetrievalException, UserRetrievalException;
 	
 	public void removePermission(String uname, String authority) throws UserRetrievalException, UserPermissionRetrievalException;

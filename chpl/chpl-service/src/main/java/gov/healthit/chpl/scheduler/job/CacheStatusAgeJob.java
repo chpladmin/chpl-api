@@ -14,6 +14,8 @@ import java.util.regex.Pattern;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -26,6 +28,7 @@ import gov.healthit.chpl.auth.SendMailUtil;
  *
  */
 public class CacheStatusAgeJob implements Job {
+    private static final Logger LOGGER = LogManager.getLogger(CacheStatusAgeJob.class);
     private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
     private Properties properties = null;
 
@@ -85,7 +88,13 @@ public class CacheStatusAgeJob implements Job {
             if (!ageMatcher.find()) {
                 return false;
             }
-            long age = Long.parseLong(ageMatcher.group(1));
+            long age;
+            try {
+                age = Long.parseLong(ageMatcher.group(1));
+            } catch (NumberFormatException nfe) {
+                LOGGER.error("Unable to parse cache status age", nfe);
+                age = -1;
+            }
             return (age > Long.parseLong(properties.getProperty("cacheStatusMaxAge")));
         } finally {
             in.close();

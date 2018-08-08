@@ -19,6 +19,9 @@ import gov.healthit.chpl.exception.ObjectMissingValidationException;
 public interface PendingCertifiedProductManager {
     PendingCertifiedProductDetails getById(List<CertificationBodyDTO> userAcbs, Long id)
             throws EntityNotFoundException, EntityRetrievalException, AccessDeniedException;
+    public PendingCertifiedProductDetails getById(final List<CertificationBodyDTO> userAcbs, 
+            final Long id, final boolean includeDeleted)
+            throws EntityRetrievalException, AccessDeniedException;
 
     List<PendingCertifiedProductDTO> getPendingCertifiedProductsByAcb(Long acbId);
 

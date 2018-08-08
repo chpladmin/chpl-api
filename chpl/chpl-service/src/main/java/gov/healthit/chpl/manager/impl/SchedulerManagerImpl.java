@@ -1,6 +1,7 @@
 package gov.healthit.chpl.manager.impl;
 
 import static org.quartz.CronScheduleBuilder.cronSchedule;
+import static org.quartz.JobBuilder.newJob;
 import static org.quartz.JobKey.jobKey;
 import static org.quartz.TriggerBuilder.newTrigger;
 import static org.quartz.TriggerKey.triggerKey;
@@ -37,6 +38,7 @@ import gov.healthit.chpl.scheduler.ChplSchedulerReference;
  */
 @Service
 public class SchedulerManagerImpl implements SchedulerManager {
+
     private static final String AUTHORITY_DELIMITER = ";";
 
     @Autowired
@@ -130,6 +132,25 @@ public class SchedulerManagerImpl implements SchedulerManager {
             }
         }
         return jobs;
+    }
+
+    @Override
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    public ChplJob updateJob(final ChplJob job) throws SchedulerException {
+        Scheduler scheduler = getScheduler();
+        JobKey jobId = jobKey(job.getName(), job.getGroup());
+        JobDetail oldJob = scheduler.getJobDetail(jobId);
+        JobDetail newJob = newJob(oldJob.getJobClass())
+                .withIdentity(jobId)
+                .withDescription(oldJob.getDescription())
+                .usingJobData(job.getJobDataMap())
+                .storeDurably(oldJob.isDurable())
+                .requestRecovery(oldJob.requestsRecovery())
+                .build();
+
+        scheduler.addJob(newJob, true);
+        ChplJob newChplJob = new ChplJob(newJob);
+        return newChplJob;
     }
 
     private Scheduler getScheduler() throws SchedulerException {

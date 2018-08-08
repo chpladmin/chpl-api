@@ -21,16 +21,21 @@ public class CqmResultDetailsXmlGenerator extends XmlGenerator {
     public static void add(CQMResultDetails detail, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (detail != null) {
             sw.writeStartElement(rootNodeName);
-            createSimpleElement(detail.getId(), "id", sw);
-            createSimpleElement(detail.getNumber(), "number", sw);
+            if (detail.getAllVersions() != null) {
+                sw.writeStartElement("allVersions");
+                for (String version : detail.getAllVersions()) {
+                    createSimpleElement(version, "version", sw);
+                }
+                sw.writeEndElement();
+            }
             createSimpleElement(detail.getCmsId(), "cmsId", sw);
-            createSimpleElement(detail.getTitle(), "title", sw);
+            CqmResultCertificationXmlGenerator.add(detail.getCriteria(), "criteriaList", sw);
             createSimpleElement(detail.getDescription(), "description", sw);
-            createSimpleElement(detail.getNqfNumber(), "nqfNumber", sw);
-            createSimpleElement(detail.getTypeId(), "typeId", sw);
             createSimpleElement(detail.getDomain(), "domain", sw);
-            createSimpleElement(detail.isSuccess(), "success", sw);
             createSimpleElement(detail.getId(), "id", sw);
+            createSimpleElement(detail.getNqfNumber(), "nqfNumber", sw);
+            createSimpleElement(detail.getNumber(), "number", sw);
+            createSimpleElement(detail.isSuccess(), "success", sw);
             if (detail.getSuccessVersions() != null) {
                 sw.writeStartElement("successVersions");
                 for (String version : detail.getSuccessVersions()) {
@@ -38,6 +43,7 @@ public class CqmResultDetailsXmlGenerator extends XmlGenerator {
                 }
                 sw.writeEndElement();
             }
+<<<<<<< HEAD
             if (detail.getAllVersions() != null) {
                 sw.writeStartElement("allVersions");
                 for (String version : detail.getAllVersions()) {
@@ -46,6 +52,10 @@ public class CqmResultDetailsXmlGenerator extends XmlGenerator {
                 sw.writeEndElement();
             }
             CqmResultCertificationXmlGenerator.add(detail.getCriteria(), "criteriaList", sw);
+=======
+            createSimpleElement(detail.getTitle(), "title", sw);
+            createSimpleElement(detail.getTypeId(), "typeId", sw);
+>>>>>>> holding
             sw.writeEndElement();
         }
     }
