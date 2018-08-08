@@ -23,12 +23,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplTrigger;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.scheduler.ChplSchedulerReference;
 
@@ -44,6 +47,9 @@ public class SchedulerManagerImpl implements SchedulerManager {
 
     @Autowired
     private ChplSchedulerReference chplScheduler;
+
+    @Autowired
+    private CertificationBodyManager acbManager;
 
     @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ACB')")
@@ -72,7 +78,12 @@ public class SchedulerManagerImpl implements SchedulerManager {
                         .withSchedule(cronSchedule(trigger.getCronSchedule()))
                         .build();
             }
-            scheduler.scheduleJob(qzTrigger);
+
+            if (doesUserHavePermissionToTrigger(qzTrigger)) {
+                scheduler.scheduleJob(qzTrigger);
+            } else {
+                throw new AccessDeniedException("Can not create this trigger");
+            }
 
             ChplTrigger newTrigger = new ChplTrigger((CronTrigger) scheduler.getTrigger(triggerId));
             return newTrigger;
@@ -88,7 +99,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
         Scheduler scheduler = getScheduler();
         TriggerKey triggerKey = triggerKey(triggerName, triggerGroup);
 
-        if (doesUserHavePermissionToJob(scheduler.getJobDetail(scheduler.getTrigger(triggerKey).getJobKey()))) {
+        if (doesUserHavePermissionToTrigger(scheduler.getTrigger(triggerKey))) {
             scheduler.unscheduleJob(triggerKey);
         } else {
             throw new AccessDeniedException("Can not update this trigger");
@@ -104,8 +115,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
             // enumerate each trigger in group
             for (TriggerKey triggerKey : scheduler.getTriggerKeys(groupEquals(group))) {
                 if (scheduler.getTrigger(triggerKey).getJobKey().getGroup().equalsIgnoreCase("chplJobs")) {
-                    if (doesUserHavePermissionToJob(
-                            scheduler.getJobDetail(scheduler.getTrigger(triggerKey).getJobKey()))) {
+                    if (doesUserHavePermissionToTrigger(scheduler.getTrigger(triggerKey))) {
                         ChplTrigger newTrigger = getChplTrigger(triggerKey);
                         triggers.add(newTrigger);
                     }
@@ -121,7 +131,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
         Scheduler scheduler = getScheduler();
         Trigger oldTrigger = scheduler.getTrigger(triggerKey(trigger.getName(), trigger.getGroup()));
         Trigger qzTrigger = null;
-        if (doesUserHavePermissionToJob(scheduler.getJobDetail(oldTrigger.getJobKey()))) {
+        if (doesUserHavePermissionToTrigger(oldTrigger)) {
             if (trigger.getJob().getJobDataMap().getBooleanValue("acbSpecific")) {
                 qzTrigger = newTrigger()
                         .withIdentity(oldTrigger.getKey())
@@ -221,13 +231,36 @@ public class SchedulerManagerImpl implements SchedulerManager {
                     }
                 }
             }
-
         } else {
             //If no authorities are present, we assume there are no permissions on the job
             //and everyone has access
             return true;
         }
         //At this point we have fallen through all of the logic, and the user does not have the appropriate rights
+        return false;
+    }
+
+    private Boolean doesUserHavePermissionToTrigger(final Trigger trigger) throws SchedulerException {
+        // first check user has permission on job
+        if (doesUserHavePermissionToJob(getScheduler().getJobDetail(trigger.getJobKey()))) {
+            if (!StringUtils.isEmpty(trigger.getJobDataMap().getString("acb"))) {
+                // get acbs user has access to
+                List<CertificationBodyDTO> validAcbs = acbManager.getAllForUser(false);
+                for (String acb : trigger.getJobDataMap().getString("acb").split("\u263A")) {
+                    boolean found = false;
+                    for (CertificationBodyDTO validAcb : validAcbs) {
+                        if (acb.equalsIgnoreCase(validAcb.getName())) {
+                            found = true;
+                        }
+                    }
+                    if (!found) {
+                        return false;
+                    }
+                }
+            }
+            // if not acb specific no need to check acbs
+            return true;
+        }
         return false;
     }
 
@@ -238,6 +271,10 @@ public class SchedulerManagerImpl implements SchedulerManager {
     }
 
     private String createTriggerName(final ChplTrigger trigger) {
-        return trigger.getEmail().replaceAll("\\.",  "_");
+        String name = trigger.getEmail().replaceAll("\\.",  "_");
+        if (!StringUtils.isEmpty(trigger.getAcb())) {
+            name += trigger.getAcb();
+        }
+        return name;
     }
 }

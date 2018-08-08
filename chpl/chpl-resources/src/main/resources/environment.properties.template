@@ -61,9 +61,10 @@ oversightEmailAcbWeeklyHtmlMessage=<h3>ONC-ACB Weekly Surveillance Report</h3>
 
 #inheritance report weekly email properties
 inheritanceReportEmailWeeklySubject=Weekly ICS Validation Report (LOCAL)
-inheritanceReportEmailWeeklyHtmlMessage=<h3>Weekly ICS Validation Report</h3>
+inheritanceReportEmailWeeklyHtmlMessage=<h3>ONC Weekly ICS Validation Report</h3>
 inheritanceReportEmailWeeklyFileName=inheritance-validation-weekly-report.csv
 inheritanceReportEmailWeeklyNoContent=<p>No listings were found that do not meet ICS requirements.</p>
+inheritanceReportEmailAcbWeeklyHtmlMessage=<h3>ONC-ACB Weekly ICS Validation Report</h3>
 
 #cache status maximum age email properties
 cacheStatusMaxAge=3600000

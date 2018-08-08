@@ -61,7 +61,12 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
         }
         String to = jobContext.getMergedJobDataMap().getString("email");
         String subject = props.getProperty("inheritanceReportEmailWeeklySubject");
-        String htmlMessage = props.getProperty("inheritanceReportEmailWeeklyHtmlMessage");
+        String htmlMessage;
+        if (jobContext.getMergedJobDataMap().getBoolean("acbSpecific")) {
+            htmlMessage = props.getProperty("inheritanceReportEmailAcbWeeklyHtmlMessage");
+        } else {
+            htmlMessage = props.getProperty("inheritanceReportEmailWeeklyHtmlMessage");
+        }
         SendMailUtil mailUtil = new SendMailUtil();
         try {
             htmlMessage += createHtmlEmailBody(errors.size(), props.getProperty("oversightEmailWeeklyNoContent"));
@@ -76,10 +81,14 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
     private List<InheritanceErrorsReportDTO> getAppropriateErrors(final JobExecutionContext jobContext) {
         List<InheritanceErrorsReportDTO> allErrors = inheritanceErrorsReportDAO.findAll();
         List<InheritanceErrorsReportDTO> errors = new ArrayList<InheritanceErrorsReportDTO>();
-        for (InheritanceErrorsReportDTO error : allErrors) {
-            if (jobContext.getMergedJobDataMap().getString("acb").indexOf(error.getAcb()) > -1) {
-                errors.add(error);
+        if (jobContext.getMergedJobDataMap().getBooleanValue("acbSpecific")) {
+            for (InheritanceErrorsReportDTO error : allErrors) {
+                if (jobContext.getMergedJobDataMap().getString("acb").indexOf(error.getAcb()) > -1) {
+                    errors.add(error);
+                }
             }
+        } else {
+            errors.addAll(allErrors);
         }
         return errors;
     }
@@ -88,7 +97,8 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
         String reportFilename = props.getProperty("inheritanceReportEmailWeeklyFileName");
         File temp = null;
         FileWriter writer = null;
-        CSVPrinter csvPrinter = null;try {
+        CSVPrinter csvPrinter = null;
+        try {
             temp = File.createTempFile(reportFilename, ".csv");
             temp.deleteOnExit();
             writer = new FileWriter(temp);
@@ -149,7 +159,7 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
         }
         return htmlMessage;
     }
-   
+
     @Override
     protected void initiateSpringBeans(final AbstractApplicationContext context) throws IOException {
         setInheritanceErrorsReportDAO((InheritanceErrorsReportDAO) context.getBean("inheritanceErrorsReportDAO"));

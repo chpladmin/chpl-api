@@ -4,16 +4,6 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.quartz-scheduler.org/xml/JobSchedulingData http://www.quartz-scheduler.org/xml/job_scheduling_data_2_0.xsd"
     version="2.0">
-    <pre-processing-commands>
-        <delete-job>
-            <name>cacheStatusAgeJob</name>
-            <group>chplJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>triggerDeveloperBan</name>
-            <group>chplJobs</group>
-        </delete-job>
-    </pre-processing-commands>
     <schedule>
         <!-- Cache status age notification -->
         <job>
@@ -203,7 +193,25 @@
 
         <!-- Inheritance Report data emailer -->
         <job>
-            <name>Inherited Certification Status Errors Report</name>
+            <name>ONC Inherited Certification Status Errors Report</name>
+            <group>chplJobs</group>
+            <description>Sends the ICS errors report</description>
+            <job-class>gov.healthit.chpl.scheduler.job.InheritanceErrorsReportEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN</value>
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>DAILY</value>
+                </entry>
+            </job-data-map>
+        </job>
+        <job>
+            <name>ONC-ACB Inherited Certification Status Errors Report</name>
             <group>chplJobs</group>
             <description>Sends the ICS errors report</description>
             <job-class>gov.healthit.chpl.scheduler.job.InheritanceErrorsReportEmailJob</job-class>
