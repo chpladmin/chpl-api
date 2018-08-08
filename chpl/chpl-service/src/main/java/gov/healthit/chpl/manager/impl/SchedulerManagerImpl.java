@@ -115,7 +115,8 @@ public class SchedulerManagerImpl implements SchedulerManager {
             // enumerate each trigger in group
             for (TriggerKey triggerKey : scheduler.getTriggerKeys(groupEquals(group))) {
                 if (scheduler.getTrigger(triggerKey).getJobKey().getGroup().equalsIgnoreCase("chplJobs")) {
-                    if (doesUserHavePermissionToTrigger(scheduler.getTrigger(triggerKey))) {
+                    if (doesUserHavePermissionToTrigger(scheduler.getTrigger(triggerKey))
+                            && getScheduler().getTrigger(triggerKey) instanceof CronTrigger) {
                         ChplTrigger newTrigger = getChplTrigger(triggerKey);
                         triggers.add(newTrigger);
                     }
