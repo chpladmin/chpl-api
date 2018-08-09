@@ -25,8 +25,8 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
-import gov.healthit.chpl.scheduler.SchedulerCertifiedProductSearchDetailsAsync;
 import gov.healthit.chpl.scheduler.JobConfig;
+import gov.healthit.chpl.scheduler.SchedulerCertifiedProductSearchDetailsAsync;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProduct2014CsvPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductCsvPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductXmlPresenter;
@@ -95,14 +95,19 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
 
         List<Future<CertifiedProductSearchDetails>> futures = new ArrayList<Future<CertifiedProductSearchDetails>>();
         SchedulerCertifiedProductSearchDetailsAsync cpsdAsync = getCertifiedProductDetailsAsyncRetrievalHelper();
-
+        
+        int i = 0;
         for (CertifiedProductDetailsDTO currListing : listings) {
+            i++;
             try {
                 futures.add(cpsdAsync.getCertifiedProductDetail(currListing.getId(),
                         getCertifiedProductDetailsManager()));
             } catch (EntityRetrievalException e) {
                 LOGGER.error("Could not retrieve certified product details for id: " + currListing.getId(), e);
             }
+            
+            if (i > 1000) 
+                break;
         }
         return futures;
     }

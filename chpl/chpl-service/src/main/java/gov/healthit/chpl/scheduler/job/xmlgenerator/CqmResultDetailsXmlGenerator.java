@@ -43,14 +43,8 @@ public class CqmResultDetailsXmlGenerator extends XmlGenerator {
                 }
                 sw.writeEndElement();
             }
-            if (detail.getAllVersions() != null) {
-                sw.writeStartElement("allVersions");
-                for (String version : detail.getAllVersions()) {
-                    createSimpleElement(version, "version", sw);
-                }
-                sw.writeEndElement();
-            }
-            CqmResultCertificationXmlGenerator.add(detail.getCriteria(), "criteriaList", sw);
+            createSimpleElement(detail.getTitle(), "title", sw);
+            createSimpleElement(detail.getTypeId(), "typeId", sw);
             sw.writeEndElement();
         }
     }

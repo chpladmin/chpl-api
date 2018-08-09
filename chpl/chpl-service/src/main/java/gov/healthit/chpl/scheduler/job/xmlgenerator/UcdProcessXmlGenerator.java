@@ -23,10 +23,10 @@ public class UcdProcessXmlGenerator extends XmlGenerator {
     public static void add(UcdProcess process, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (process != null) {
             sw.writeStartElement(rootNodeName);
+            CertificationCriterionXmlGenerator.add(new ArrayList<CertificationCriterion>(process.getCriteria()), "criteria", sw);
+            createSimpleElement(process.getDetails(), "details", sw);
             createSimpleElement(process.getId(), "id", sw);
             createSimpleElement(process.getName(), "name", sw);
-            createSimpleElement(process.getDetails(), "details", sw);
-            CertificationCriterionXmlGenerator.add(new ArrayList<CertificationCriterion>(process.getCriteria()), "criteria", sw);
             sw.writeEndElement();
         }
     }

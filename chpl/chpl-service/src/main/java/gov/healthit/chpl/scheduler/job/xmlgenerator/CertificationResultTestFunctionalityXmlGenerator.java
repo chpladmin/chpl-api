@@ -24,7 +24,7 @@ public class CertificationResultTestFunctionalityXmlGenerator extends XmlGenerat
            createSimpleElement(test.getDescription(), "description", sw);
             createSimpleElement(test.getId(), "id", sw);
             createSimpleElement(test.getName(), "name", sw);
-            createSimpleElement(test.getTestFunctionalityId(), "testFunctionalityid", sw);
+            createSimpleElement(test.getTestFunctionalityId(), "testFunctionalityId", sw);
             createSimpleElement(test.getYear(), "year", sw);
             sw.writeEndElement();
         }

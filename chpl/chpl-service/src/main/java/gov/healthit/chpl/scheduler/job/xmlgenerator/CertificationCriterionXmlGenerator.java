@@ -21,12 +21,12 @@ public class CertificationCriterionXmlGenerator extends XmlGenerator {
     public static void add(CertificationCriterion criterion, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (criterion != null) {
             sw.writeStartElement(rootNodeName);
+            createSimpleElement(criterion.getCertificationEdition(), "certificationEdition", sw);
+            createSimpleElement(criterion.getCertificationEditionId(), "certificationEditionId", sw);
+            createSimpleElement(criterion.getDescription(), "description", sw);
             createSimpleElement(criterion.getId(), "id", sw);
             createSimpleElement(criterion.getNumber(), "number", sw);
             createSimpleElement(criterion.getTitle(), "title", sw);
-            createSimpleElement(criterion.getCertificationEditionId(), "certificationEditionId", sw);
-            createSimpleElement(criterion.getCertificationEdition(), "certificationEdition", sw);
-            createSimpleElement(criterion.getDescription(), "description", sw);
             sw.writeEndElement();
         }
     }

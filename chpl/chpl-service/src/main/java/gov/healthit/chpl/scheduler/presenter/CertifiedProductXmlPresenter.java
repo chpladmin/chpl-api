@@ -1,7 +1,11 @@
 package gov.healthit.chpl.scheduler.presenter;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
@@ -11,7 +15,7 @@ import org.apache.logging.log4j.Logger;
 
 import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
 import gov.healthit.chpl.scheduler.job.DownloadableResourceCreatorJob;
-import gov.healthit.chpl.scheduler.job.xmlgenerator.CertifiedProductSerchDetailsXmlGenerator;
+import gov.healthit.chpl.scheduler.job.xmlgenerator.CertifiedProductSearchDetailsXmlGenerator;
 
 /**
  * Present objects as XML file.
@@ -24,25 +28,29 @@ public class CertifiedProductXmlPresenter implements CertifiedProductPresenter {
     @Override
     public int presentAsFile(final File file, final CertifiedProductDownloadResponse cpList) {
         try {
-            FileWriter fw = null;
-            XMLStreamWriter writer = null;
+            Writer writer = null;
+            XMLStreamWriter streamWriter = null;
             try {
                 XMLOutputFactory factory = XMLOutputFactory.newInstance();
-                fw = new FileWriter(file);
-                writer = factory.createXMLStreamWriter(fw);
-                writer.writeStartDocument();
-                CertifiedProductSerchDetailsXmlGenerator.add(cpList.getListings(), "listings", writer);
-                writer.writeEndDocument();
+                writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
+                streamWriter = factory.createXMLStreamWriter(writer);
+                //writer = new IndentingXMLStreamWriter(factory.createXMLStreamWriter(fw));
+                streamWriter.writeStartDocument("UTF-8", "1.0");
+                streamWriter.writeStartElement("ns2:results");
+                streamWriter.writeNamespace("ns2", "http://chpl.healthit.gov/listings");
+                CertifiedProductSearchDetailsXmlGenerator.add(cpList.getListings(), "listings", streamWriter);
+                streamWriter.writeEndElement();
+                streamWriter.writeEndDocument();
                                 
             } catch(Exception e) {
                 e.printStackTrace();
                 LOGGER.error(e);
             } finally {
+                if (streamWriter != null) {
+                    streamWriter.close();
+                }
                 if (writer != null) {
                     writer.close();
-                }
-                if (fw != null) {
-                    fw.close();
                 }
             }
         } catch (Exception e) {

@@ -126,7 +126,6 @@
                 </entry>
             </job-data-map>
         </job>
-<<<<<<< HEAD
         
         <trigger>
             <cron>
@@ -145,7 +144,7 @@
                 <job-name>downloadFileJob2014</job-name>
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 15 13/4 ? * * *</cron-expression> <!-- At 0102 UTC every day -->
+                <cron-expression>0 22 16 ? * * *</cron-expression> 
             </cron>
         </trigger>
         <trigger>
@@ -158,8 +157,6 @@
                 <cron-expression>0 1 1 ? JAN,APR,JUL,OCT 7#1</cron-expression> <!-- At 0101 UTC on the first Saturday of the quarter -->
             </cron>
         </trigger>
-=======
->>>>>>> holding
         <trigger>
             <cron>
                 <name>generateSummaryStatistics</name>
