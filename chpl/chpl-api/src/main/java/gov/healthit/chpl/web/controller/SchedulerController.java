@@ -120,10 +120,10 @@ public class SchedulerController {
      */
     @ApiOperation(value = "Update a given job")
     @RequestMapping(value = "/jobs", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
-    public @ResponseBody ScheduleJobsResults updateJob(@RequestBody(required = true)
+    public @ResponseBody ChplJobsResults updateJob(@RequestBody(required = true)
     final ChplJob job) throws SchedulerException {
         ChplJob result = schedulerManager.updateJob(job);
-        ScheduleJobsResults results = new ScheduleJobsResults();
+        ChplJobsResults results = new ChplJobsResults();
         results.getResults().add(result);
         return results;
     }
