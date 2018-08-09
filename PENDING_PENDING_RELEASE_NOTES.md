@@ -10,5 +10,9 @@ _Date TBD_
   * Added new Quartz job to gather and store Summary Statistics
   * Added new user schedulable job that sends the Summary Statistics Email
   * Added new endpoint for retrieving all jobs that user has permission to schedule
+* Migrate "ICS errors report" to Quartz
+  * Added new Quartz job to gather and store ICS error data
+  * Added new user schedulable job that sends the Summary Statistics Email
+  * Updated manager to support ACB specific Jobs
 
 ---
