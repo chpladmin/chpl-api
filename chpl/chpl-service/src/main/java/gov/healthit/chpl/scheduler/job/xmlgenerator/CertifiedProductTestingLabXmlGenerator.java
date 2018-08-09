@@ -22,8 +22,8 @@ public class CertifiedProductTestingLabXmlGenerator extends XmlGenerator {
         if (tl != null) {
             sw.writeStartElement(rootNodeName);
             createSimpleElement(tl.getId(), "id", sw);
-            createSimpleElement(tl.getTestingLabId(), "testingLabId", sw);
             createSimpleElement(tl.getTestingLabCode(), "testingLabCode", sw);
+            createSimpleElement(tl.getTestingLabId(), "testingLabId", sw);
             createSimpleElement(tl.getTestingLabName(), "testingLabName", sw);
             sw.writeEndElement();
         }

@@ -96,18 +96,13 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         List<Future<CertifiedProductSearchDetails>> futures = new ArrayList<Future<CertifiedProductSearchDetails>>();
         SchedulerCertifiedProductSearchDetailsAsync cpsdAsync = getCertifiedProductDetailsAsyncRetrievalHelper();
         
-        int i = 0;
         for (CertifiedProductDetailsDTO currListing : listings) {
-            i++;
             try {
                 futures.add(cpsdAsync.getCertifiedProductDetail(currListing.getId(),
                         getCertifiedProductDetailsManager()));
             } catch (EntityRetrievalException e) {
                 LOGGER.error("Could not retrieve certified product details for id: " + currListing.getId(), e);
             }
-            
-            if (i > 1000) 
-                break;
         }
         return futures;
     }

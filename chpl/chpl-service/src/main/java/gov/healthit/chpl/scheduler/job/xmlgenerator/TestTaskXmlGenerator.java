@@ -24,24 +24,23 @@ public class TestTaskXmlGenerator extends XmlGenerator {
     public static void add(TestTask task, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (task != null) {
             sw.writeStartElement(rootNodeName);
-            createSimpleElement(task.getId(), "id", sw);
-            createSimpleElement(task.getUniqueId(), "uniqueId", sw);
+            CertificationCriterionXmlGenerator.add(new ArrayList<CertificationCriterion>(task.getCriteria()), "criteria", sw);
             createSimpleElement(task.getDescription(), "description", sw);
-            createSimpleElement(task.getTaskSuccessAverage(), "taskSuccessAverage", sw);
-            createSimpleElement(task.getTaskSuccessStddev(), "taskSuccessStddev", sw);
-            createSimpleElement(task.getTaskPathDeviationObserved(), "taskPathDeviationObserved", sw);
-            createSimpleElement(task.getTaskPathDeviationOptimal(), "taskPathDeviationOptimal", sw);
-            createSimpleElement(task.getTaskTimeAvg(), "taskTimeAvg", sw);
-            createSimpleElement(task.getTaskTimeStddev(), "taskTimeStddev", sw);
-            createSimpleElement(task.getTaskTimeDeviationObservedAvg(), "taskTimeDeviationObservedAvg", sw);
-            createSimpleElement(task.getTaskTimeDeviationOptimalAvg(), "taskTimeDeviationOptimalAvg", sw);
+            createSimpleElement(task.getId(), "id", sw);
             createSimpleElement(task.getTaskErrors(), "taskErrors", sw);
             createSimpleElement(task.getTaskErrorsStddev(), "taskErrorsStddev", sw);
-            createSimpleElement(task.getTaskRatingScale(), "taskRatingScale", sw);
+            createSimpleElement(task.getTaskPathDeviationObserved(), "taskPathDeviationObserved", sw);
+            createSimpleElement(task.getTaskPathDeviationOptimal(), "taskPathDeviationOptimal", sw);
             createSimpleElement(task.getTaskRating(), "taskRating", sw);
+            createSimpleElement(task.getTaskRatingScale(), "taskRatingScale", sw);
             createSimpleElement(task.getTaskRatingStddev(), "taskRatingStddev", sw);
-            CertificationCriterionXmlGenerator.add(new ArrayList<CertificationCriterion>(task.getCriteria()), "criteria", sw);
+            createSimpleElement(task.getTaskSuccessAverage(), "taskSuccessAverage", sw);
+            createSimpleElement(task.getTaskSuccessStddev(), "taskSuccessStddev", sw);
+            createSimpleElement(task.getTaskTimeDeviationObservedAvg(), "taskTimeDeviationObservedAvg", sw);
+            createSimpleElement(task.getTaskTimeDeviationOptimalAvg(), "taskTimeDeviationOptimalAvg", sw);
+            createSimpleElement(task.getTaskTimeStddev(), "taskTimeStddev", sw);
             TestParticipantXmlGenerator.add(new ArrayList<TestParticipant>(task.getTestParticipants()), "participants", sw);
+            createSimpleElement(task.getUniqueId(), "uniqueId", sw);
             sw.writeEndElement();
         }
     }

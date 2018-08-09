@@ -21,11 +21,11 @@ public class CertifiedProductQmsStandardXmlGenerator extends XmlGenerator {
 public static void add(CertifiedProductQmsStandard standard, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (standard != null) {
             sw.writeStartElement(rootNodeName);
+            createSimpleElement(standard.getApplicableCriteria(), "applicableCriteria", sw);
             createSimpleElement(standard.getId(), "id", sw);
+            createSimpleElement(standard.getQmsModification(), "qmsModification", sw);
             createSimpleElement(standard.getQmsStandardId(), "qmsStandardId", sw);
             createSimpleElement(standard.getQmsStandardName(), "qmsStandardName", sw);
-            createSimpleElement(standard.getQmsModification(), "qmsModification", sw);
-            createSimpleElement(standard.getApplicableCriteria(), "applicableCriteria", sw);
             sw.writeEndElement();
         }
     }

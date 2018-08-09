@@ -21,11 +21,11 @@ public class MacraMeasureXmlGenerator extends XmlGenerator {
     public static void add(MacraMeasure measure, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (measure != null) {
             sw.writeStartElement(rootNodeName);
-            createSimpleElement(measure.getId(), "id", sw);
-            CertificationCriterionXmlGenerator.add(measure.getCriteria(), "criteria", sw);
             createSimpleElement(measure.getAbbreviation(), "abbreviation", sw);
-            createSimpleElement(measure.getName(), "name", sw);
+            CertificationCriterionXmlGenerator.add(measure.getCriteria(), "criteria", sw);
             createSimpleElement(measure.getDescription(), "description", sw);
+            createSimpleElement(measure.getId(), "id", sw);
+            createSimpleElement(measure.getName(), "name", sw);
             sw.writeEndElement();
         }
     }
