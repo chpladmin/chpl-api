@@ -126,37 +126,6 @@
                 </entry>
             </job-data-map>
         </job>
-        
-        <trigger>
-            <cron>
-                <name>generate2015</name>
-                <group>downloadFileTrigger</group>
-                <job-name>downloadFileJob2015</job-name>
-                <job-group>systemJobs</job-group>
-                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 3 1 * * ?</cron-expression> <!-- At 0103 UTC every day -->
-            </cron>
-        </trigger>
-        <trigger>
-            <cron>
-                <name>generate2014</name>
-                <group>downloadFileTrigger</group>
-                <job-name>downloadFileJob2014</job-name>
-                <job-group>systemJobs</job-group>
-                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 23 10 ? * * *</cron-expression> 
-            </cron>
-        </trigger>
-        <trigger>
-            <cron>
-                <name>generate2011</name>
-                <group>downloadFileTrigger</group>
-                <job-name>downloadFileJob2011</job-name>
-                <job-group>systemJobs</job-group>
-                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
-                <cron-expression>0 1 1 ? JAN,APR,JUL,OCT 7#1</cron-expression> <!-- At 0101 UTC on the first Saturday of the quarter -->
-            </cron>
-        </trigger>
         <trigger>
             <cron>
                 <name>generateSummaryStatistics</name>
