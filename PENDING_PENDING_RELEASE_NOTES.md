@@ -21,6 +21,6 @@ _Date TBD_
     * Criteria will now be structured: `<criteriaList><criteria/><criteria/> ... </criteriaList>`
 
 ### Bugs Fixed
-* Fixed the "basic" certified product service to return the correct additional osftware code in the CHPL Product Number	
+* Fixed the "basic" certified product service to return the correct additional software code in the CHPL Product Number	
 	
 ---
