@@ -13,10 +13,10 @@ _Date TBD_
 * Download XML file changes
   * In the <ucdProces> node
     * AllVersions will now be structured: `<allVersions><version/><version/> ... </allVersions>`
-	* SuccessVersions will now be structured: `<successVersions><version/><version/> ... </successVersions>`
+    * SuccessVersions will now be structured: `<successVersions><version/><version/> ... </successVersions>`
   * In the <listing> node
     * CertificationStatusEvents will now be structured: `<certificationEvents><certificationEvent><eventDate/><id/><reason/></status></certificationEvent> ... </certificationEvents>`
-	* TestingLabs will now be structured: `<testingLabs><testingLabs/><testingLab/> ... </testingLabs>`
+    * TestingLabs will now be structured: `<testingLabs><testingLabs/><testingLab/> ... </testingLabs>`
   * In the <ucdProcess> node
     * Criteria will no be structured: `<criteriaList><criteria/><criteria/> ... </criteriaList>`
 
