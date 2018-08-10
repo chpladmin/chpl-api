@@ -10,7 +10,7 @@
         <RollingFile name="FILE" fileName="${logDir}/${appName}.log"
             filePattern="${logDir}/${appName}-%d{yyyyMMdd}.log">
             <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%c{1}(%M:%L)] %m%n</Pattern>
+                <Pattern>%d %p %C %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy
@@ -24,23 +24,23 @@
 
     <Loggers>
         <Logger name="org.jose4j" level="WARN" additivity="false">
-            <AppenderRef ref="Console" />
+            <AppenderRef ref="FILE" />
         </Logger>
         <Logger name="org.hibernate" level="WARN" additivity="false">
-            <AppenderRef ref="Console" />
+            <AppenderRef ref="FILE" />
         </Logger>
         <Logger name="org.springframework" level="INFO"
             additivity="false">
-            <AppenderRef ref="Console" />
+            <AppenderRef ref="FILE" />
         </Logger>
         <Logger name="org.quartz" level="INFO" additivity="false">
             <AppenderRef ref="FILE" />
         </Logger>
         <Logger name="gov.healthit.chpl" level="INFO" additivity="false">
-            <AppenderRef ref="Console" />
+            <AppenderRef ref="FILE" />
         </Logger>
-        <Root level="INFO">
-            <AppenderRef ref="Console" />
+        <Root level="DEBUG">
+            <AppenderRef ref="FILE" />
         </Root>
     </Loggers>
 </Configuration>
