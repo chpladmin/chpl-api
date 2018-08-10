@@ -18,6 +18,6 @@ _Date TBD_
     * CertificationStatusEvents will now be structured: `<certificationEvents><certificationEvent><eventDate/><id/><reason/></status></certificationEvent> ... </certificationEvents>`
     * TestingLabs will now be structured: `<testingLabs><testingLabs/><testingLab/> ... </testingLabs>`
   * In the <ucdProcess> node
-    * Criteria will no be structured: `<criteriaList><criteria/><criteria/> ... </criteriaList>`
+    * Criteria will now be structured: `<criteriaList><criteria/><criteria/> ... </criteriaList>`
 
 ---
