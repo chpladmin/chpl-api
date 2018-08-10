@@ -40,13 +40,13 @@ public class BrokenSurveillanceRulesDTO implements Serializable {
     private String dateCorrectiveActionBegan;
     private String dateCorrectiveActionMustBeCompleted;
     private String dateCorrectiveActionWasCompleted;
-    private int numberOfDaysFromDeterminationToCapApproval;
-    private int numberOfDaysFromDeterminationToPresent;
-    private int numberOfDaysFromCapApprovalToCapBegan;
-    private int numberOfDaysFromCapApprovalToPresent;
-    private int numberOfDaysFromCapBeganToCapCompleted;
-    private int numberOfDaysFromCapBeganToPresent;
-    private int differenceFromCapCompletedAndCapMustBeCompleted;
+    private long numberOfDaysFromDeterminationToCapApproval;
+    private long numberOfDaysFromDeterminationToPresent;
+    private long numberOfDaysFromCapApprovalToCapBegan;
+    private long numberOfDaysFromCapApprovalToPresent;
+    private long numberOfDaysFromCapBeganToCapCompleted;
+    private long numberOfDaysFromCapBeganToPresent;
+    private long differenceFromCapCompletedAndCapMustBeCompleted;
     private Boolean deleted;
 
 
@@ -316,60 +316,60 @@ public class BrokenSurveillanceRulesDTO implements Serializable {
         this.dateCorrectiveActionWasCompleted = dateCorrectiveActionWasCompleted;
     }
 
-    public int getNumberOfDaysFromDeterminationToCapApproval() {
+    public long getNumberOfDaysFromDeterminationToCapApproval() {
         return numberOfDaysFromDeterminationToCapApproval;
     }
 
-    public void setNumberOfDaysFromDeterminationToCapApproval(final int numberOfDaysFromDeterminationToCapApproval) {
+    public void setNumberOfDaysFromDeterminationToCapApproval(final long numberOfDaysFromDeterminationToCapApproval) {
         this.numberOfDaysFromDeterminationToCapApproval = numberOfDaysFromDeterminationToCapApproval;
     }
 
-    public int getNumberOfDaysFromDeterminationToPresent() {
+    public long getNumberOfDaysFromDeterminationToPresent() {
         return numberOfDaysFromDeterminationToPresent;
     }
 
-    public void setNumberOfDaysFromDeterminationToPresent(final int numberOfDaysFromDeterminationToPresent) {
+    public void setNumberOfDaysFromDeterminationToPresent(final long numberOfDaysFromDeterminationToPresent) {
         this.numberOfDaysFromDeterminationToPresent = numberOfDaysFromDeterminationToPresent;
     }
 
-    public int getNumberOfDaysFromCapApprovalToCapBegan() {
+    public long getNumberOfDaysFromCapApprovalToCapBegan() {
         return numberOfDaysFromCapApprovalToCapBegan;
     }
 
-    public void setNumberOfDaysFromCapApprovalToCapBegan(final int numberOfDaysFromCapApprovalToCapBegan) {
+    public void setNumberOfDaysFromCapApprovalToCapBegan(final long numberOfDaysFromCapApprovalToCapBegan) {
         this.numberOfDaysFromCapApprovalToCapBegan = numberOfDaysFromCapApprovalToCapBegan;
     }
 
-    public int getNumberOfDaysFromCapApprovalToPresent() {
+    public long getNumberOfDaysFromCapApprovalToPresent() {
         return numberOfDaysFromCapApprovalToPresent;
     }
 
-    public void setNumberOfDaysFromCapApprovalToPresent(final int numberOfDaysFromCapApprovalToPresent) {
+    public void setNumberOfDaysFromCapApprovalToPresent(final long numberOfDaysFromCapApprovalToPresent) {
         this.numberOfDaysFromCapApprovalToPresent = numberOfDaysFromCapApprovalToPresent;
     }
 
-    public int getNumberOfDaysFromCapBeganToCapCompleted() {
+    public long getNumberOfDaysFromCapBeganToCapCompleted() {
         return numberOfDaysFromCapBeganToCapCompleted;
     }
 
-    public void setNumberOfDaysFromCapBeganToCapCompleted(final int numberOfDaysFromCapBeganToCapCompleted) {
+    public void setNumberOfDaysFromCapBeganToCapCompleted(final long numberOfDaysFromCapBeganToCapCompleted) {
         this.numberOfDaysFromCapBeganToCapCompleted = numberOfDaysFromCapBeganToCapCompleted;
     }
 
-    public int getNumberOfDaysFromCapBeganToPresent() {
+    public long getNumberOfDaysFromCapBeganToPresent() {
         return numberOfDaysFromCapBeganToPresent;
     }
 
-    public void setNumberOfDaysFromCapBeganToPresent(final int numberOfDaysFromCapBeganToPresent) {
+    public void setNumberOfDaysFromCapBeganToPresent(final long numberOfDaysFromCapBeganToPresent) {
         this.numberOfDaysFromCapBeganToPresent = numberOfDaysFromCapBeganToPresent;
     }
 
-    public int getDifferenceFromCapCompletedAndCapMustBeCompleted() {
+    public long getDifferenceFromCapCompletedAndCapMustBeCompleted() {
         return differenceFromCapCompletedAndCapMustBeCompleted;
     }
 
     public void setDifferenceFromCapCompletedAndCapMustBeCompleted(
-            final int differenceFromCapCompletedAndCapMustBeCompleted) {
+            final long differenceFromCapCompletedAndCapMustBeCompleted) {
         this.differenceFromCapCompletedAndCapMustBeCompleted = differenceFromCapCompletedAndCapMustBeCompleted;
     }
 
