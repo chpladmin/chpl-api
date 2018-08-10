@@ -78,6 +78,7 @@ import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.FuzzyChoicesManager;
 import gov.healthit.chpl.util.CertificationResultRules;
@@ -118,6 +119,9 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
     AccessibilityStandardDAO accStdDao;
     @Autowired
     FuzzyChoicesManager fuzzyChoicesManager;
+    
+    @Autowired
+    private CertificationResultManager certificationResultManager; 
 
     @Autowired
     ChplProductNumberUtil chplProductNumberUtil;
@@ -891,12 +895,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                         new DefaultMessageSourceResolvable("listing.badAdditionalSoftwareCodeChars"),
                         LocaleContextHolder.getLocale()), CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_LENGTH));
             } else {
-                boolean hasAS = false;
-                for (CertificationResult cert : product.getCertificationResults()) {
-                    if (cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
-                        hasAS = true;
-                    }
-                }
+                boolean hasAS = certificationResultManager.getCertifiedProductHasAdditionalSoftware(product.getId());
                 String desiredAdditionalSoftwareCode = hasAS ? "1" : "0";
                 if (!additionalSoftwareCode.equals(desiredAdditionalSoftwareCode)) {
                     updateChplProductNumber(product, CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_INDEX,
