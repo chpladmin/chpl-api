@@ -20,4 +20,7 @@ _Date TBD_
   * In the <ucdProcess> node
     * Criteria will now be structured: `<criteriaList><criteria/><criteria/> ... </criteriaList>`
 
+### Bugs Fixed
+* Fixed the "basic" certified product service to return the correct additional osftware code in the CHPL Product Number	
+	
 ---
