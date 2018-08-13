@@ -3,6 +3,7 @@ package gov.healthit.chpl.app;
 import static org.quartz.JobKey.jobKey;
 import static org.quartz.TriggerBuilder.newTrigger;
 import static org.quartz.TriggerKey.triggerKey;
+import static org.quartz.impl.matchers.GroupMatcher.groupEquals;
 
 import java.util.Date;
 
@@ -33,8 +34,7 @@ public final class TriggerJob {
         String jobGroup = "systemJobs";
         switch (args.length) {
         case 0:
-            System.out.println("will have job stuff later");
-            System.exit(0);
+            System.out.println("Job names:");
             break;
         case 2:
             jobGroup = args[1];
@@ -60,6 +60,21 @@ public final class TriggerJob {
                         .forJob(jobId)
                         .build();
                 scheduler.scheduleJob(qzTrigger);
+                scheduler.shutdown();
+            } catch (SchedulerException se) {
+                se.printStackTrace();
+            }
+        } else {
+            try {
+                StdSchedulerFactory sf = new StdSchedulerFactory();
+                sf.initialize("quartz.properties");
+                Scheduler scheduler = sf.getScheduler();
+                for (String group: scheduler.getJobGroupNames()) {
+                    for (JobKey jobKey : scheduler.getJobKeys(groupEquals(group))) {
+                        System.out.println("Found job: \"" + jobKey.getName() + "\" in group: \"" + jobKey.getGroup() + "\"");
+                    }
+                }
+                scheduler.shutdown();
             } catch (SchedulerException se) {
                 se.printStackTrace();
             }
