@@ -95,7 +95,7 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
 
         List<Future<CertifiedProductSearchDetails>> futures = new ArrayList<Future<CertifiedProductSearchDetails>>();
         SchedulerCertifiedProductSearchDetailsAsync cpsdAsync = getCertifiedProductDetailsAsyncRetrievalHelper();
-
+        
         for (CertifiedProductDetailsDTO currListing : listings) {
             try {
                 futures.add(cpsdAsync.getCertifiedProductDetail(currListing.getId(),

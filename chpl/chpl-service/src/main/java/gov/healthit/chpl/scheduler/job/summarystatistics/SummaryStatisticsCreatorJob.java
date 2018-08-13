@@ -64,7 +64,7 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
     @Override
     protected void initiateSpringBeans(final AbstractApplicationContext context) throws IOException {
         setAsynchronousStatisticsInitializor(
-                (AsynchronousSummaryStatisticsInitializor) context.getBean("asynchronousStatisticsSummaryInitializor"));
+                (AsynchronousSummaryStatisticsInitializor) context.getBean("asynchronousSummaryStatisticsInitializor"));
         setSummaryStatisticsDAO((SummaryStatisticsDAO) context.getBean("summaryStatisticsDAO"));
     }
 

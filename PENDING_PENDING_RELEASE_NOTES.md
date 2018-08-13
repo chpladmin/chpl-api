@@ -14,5 +14,14 @@ _Date TBD_
   * Added new Quartz job to gather and store ICS error data
   * Added new user schedulable job that sends the Summary Statistics Email
   * Updated manager to support ACB specific Jobs
+* Download XML file changes
+  * In the <ucdProces> node
+    * AllVersions will now be structured: `<allVersions><version/><version/> ... </allVersions>`
+    * SuccessVersions will now be structured: `<successVersions><version/><version/> ... </successVersions>`
+  * In the <listing> node
+    * CertificationStatusEvents will now be structured: `<certificationEvents><certificationEvent><eventDate/><id/><reason/></status></certificationEvent> ... </certificationEvents>`
+    * TestingLabs will now be structured: `<testingLabs><testingLabs/><testingLab/> ... </testingLabs>`
+  * In the <ucdProcess> node
+    * Criteria will now be structured: `<criteriaList><criteria/><criteria/> ... </criteriaList>`
 
 ---
