@@ -55,11 +55,11 @@ public class BrokenSurveillanceRulesEntity {
     @Column(name = "date_of_last_status_change")
     private String dateOfLastStatusChange;
 
-    @Basic(optional = false)
+    @Basic(optional = true)
     @Column(name = "surveillance_id")
     private String surveillanceId;
 
-    @Basic(optional = false)
+    @Basic(optional = true)
     @Column(name = "date_surveillance_began")
     private String dateSurveillanceBegan;
 
@@ -67,7 +67,7 @@ public class BrokenSurveillanceRulesEntity {
     @Column(name = "date_surveillance_ended")
     private String dateSurveillanceEnded;
 
-    @Basic(optional = false)
+    @Basic(optional = true)
     @Column(name = "surveillance_type")
     private String surveillanceType;
 

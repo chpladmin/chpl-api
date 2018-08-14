@@ -54,6 +54,13 @@ public class BrokenSurveillanceRulesDTO implements Serializable {
      * Default constructor.
      */
     public BrokenSurveillanceRulesDTO() {
+        this.numberOfDaysFromDeterminationToCapApproval = -1L;
+        this.numberOfDaysFromDeterminationToPresent = -1L;
+        this.numberOfDaysFromCapApprovalToCapBegan = -1L;
+        this.numberOfDaysFromCapApprovalToPresent = -1L;
+        this.numberOfDaysFromCapBeganToCapCompleted = -1L;
+        this.numberOfDaysFromCapBeganToPresent = -1L;
+        this.differenceFromCapCompletedAndCapMustBeCompleted = -1L;
     }
 
     /**

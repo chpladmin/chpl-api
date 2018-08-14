@@ -20,12 +20,10 @@ import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.app.surveillance.rules.RuleComplianceCalculator;
 import gov.healthit.chpl.dao.scheduler.BrokenSurveillanceRulesDAO;
 import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -42,6 +40,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.scheduler.DataCollectorAsyncSchedulerHelper;
 import gov.healthit.chpl.scheduler.JobConfig;
+import gov.healthit.chpl.scheduler.surveillance.rules.RuleComplianceCalculator;
 
 /**
  * Initiates and runs the the Quartz job that generates the data that is used to to create
@@ -94,9 +93,11 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         for (CertifiedProductSearchDetails listing : results) {
             errors.addAll(brokenRules(listing));
         }
+        LOGGER.info("Deleting {} OBE rules", brokenSurveillanceRulesDAO.findAll().size());
         brokenSurveillanceRulesDAO.deleteAll();
         if (errors.size() > 0) {
             saveBrokenSurveillanceRules(errors);
+            LOGGER.info("Saving {} broken rules", errors.size());
         }
     }
 
