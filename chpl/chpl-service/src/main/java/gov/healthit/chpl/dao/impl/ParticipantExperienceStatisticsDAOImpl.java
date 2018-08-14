@@ -107,14 +107,4 @@ public class ParticipantExperienceStatisticsDAOImpl extends BaseDAOImpl implemen
 
         return entity;
     }
-
-    private Long getUserId() {
-        // If there is no user the current context, assume this is a system
-        // process
-        if (Util.getCurrentUser() == null || Util.getCurrentUser().getId() == null) {
-            return MODIFIED_USER_ID;
-        } else {
-            return Util.getCurrentUser().getId();
-        }
-    }
 }

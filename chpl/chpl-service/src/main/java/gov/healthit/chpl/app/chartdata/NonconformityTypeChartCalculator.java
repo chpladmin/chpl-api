@@ -5,6 +5,8 @@ import java.util.List;
 import gov.healthit.chpl.dao.statistics.NonconformityTypeStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.SurveillanceStatisticsDAO;
 import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
+import gov.healthit.chpl.dto.ParticipantEducationStatisticsDTO;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -48,12 +50,26 @@ public class NonconformityTypeChartCalculator {
         List<NonconformityTypeStatisticsDTO> dtos = statisticsDAO.getAllNonconformitiesByCriterion();
         return dtos;
     }
+    
+    private void deleteExistingNonconformityStatistics() throws EntityRetrievalException {
+        List<NonconformityTypeStatisticsDTO> dtos = nonconformityTypeStatisticsDAO.getAllNonconformityStatistics();
+        for (NonconformityTypeStatisticsDTO dto : dtos) {
+            nonconformityTypeStatisticsDAO.delete(dto.getId());
+            LOGGER.info("Deleted: " + dto.getId());
+        }
+    }
 
     public void saveCounts(List<NonconformityTypeStatisticsDTO> dtos) {
         txnTemplate.execute(new TransactionCallbackWithoutResult() {
 
             @Override
             protected void doInTransactionWithoutResult(final TransactionStatus arg0) {
+                try {
+                    deleteExistingNonconformityStatistics();
+                } catch (EntityRetrievalException e) {
+                    LOGGER.error("Error occured while deleting existing ParticipantExperienceStatistics.", e);
+                    return;
+                }
                 for (NonconformityTypeStatisticsDTO dto : dtos) {
                     nonconformityTypeStatisticsDAO.create(dto);
                 }

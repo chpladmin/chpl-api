@@ -22,7 +22,6 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
  */
 @Repository("participantAgeStatisticsDAO")
 public class ParticipantAgeStatisticsDAOImpl extends BaseDAOImpl implements ParticipantAgeStatisticsDAO {
-    private static final long MODIFIED_USER_ID = -3L;
 
     @Override
     public List<ParticipantAgeStatisticsDTO> findAll() {
@@ -101,15 +100,5 @@ public class ParticipantAgeStatisticsDAOImpl extends BaseDAOImpl implements Part
         }
 
         return entity;
-    }
-
-    private Long getUserId() {
-        // If there is no user the current context, assume this is a system
-        // process
-        if (Util.getCurrentUser() == null || Util.getCurrentUser().getId() == null) {
-            return MODIFIED_USER_ID;
-        } else {
-            return Util.getCurrentUser().getId();
-        }
     }
 }
