@@ -8,8 +8,6 @@ import javax.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 
-import gov.healthit.chpl.auth.Util;
-
 public class BaseDAOImpl {
     public static final String SCHEMA_NAME = "openchpl";
     
