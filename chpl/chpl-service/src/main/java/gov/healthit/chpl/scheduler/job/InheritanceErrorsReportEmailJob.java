@@ -71,7 +71,8 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
         }
         SendMailUtil mailUtil = new SendMailUtil();
         try {
-            htmlMessage += createHtmlEmailBody(errors.size(), props.getProperty("oversightEmailWeeklyNoContent"));
+            htmlMessage += createHtmlEmailBody(errors.size(),
+                    props.getProperty("inheritanceReportEmailWeeklyNoContent"));
             mailUtil.sendEmail(to, subject, htmlMessage, files, props);
         } catch (IOException | MessagingException e) {
             LOGGER.error(e);

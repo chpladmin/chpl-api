@@ -255,5 +255,103 @@
                 <cron-expression>0 45 1 * * ?</cron-expression> <!-- At 0145 UTC every day -->
             </cron>
         </trigger>
+
+        <!-- Broken Surveillance Rules data emailer -->
+        <job>
+            <name>ONC All Broken Surveillance Rules Report</name>
+            <group>chplJobs</group>
+            <description>Sends an error report for all Listings breaking Surveillance rules</description>
+            <job-class>gov.healthit.chpl.scheduler.job.BrokenSurveillanceRulesEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN</value>
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>DAILY</value>
+                </entry>
+                <entry>
+                    <key>type</key>
+                    <value>All</value>
+                </entry>
+            </job-data-map>
+        </job>
+        <job>
+            <name>ONC-ACB All Broken Surveillance Rules Report</name>
+            <group>chplJobs</group>
+            <description>Sends an error report for all Listings breaking Surveillance rules, by specific ACB</description>
+            <job-class>gov.healthit.chpl.scheduler.job.BrokenSurveillanceRulesEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ACB</value>
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>DAILY</value>
+                </entry>
+                <entry>
+                    <key>acbSpecific</key>
+                    <value>true</value>
+                </entry>
+                <entry>
+                    <key>type</key>
+                    <value>All</value>
+                </entry>
+            </job-data-map>
+        </job>
+        <job>
+            <name>ONC Overnight Broken Surveillance Rules Report</name>
+            <group>chplJobs</group>
+            <description>Sends an error report for all Listings breaking Surveillance rules within the last day</description>
+            <job-class>gov.healthit.chpl.scheduler.job.BrokenSurveillanceRulesEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN</value>
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>DAILY</value>
+                </entry>
+                <entry>
+                    <key>type</key>
+                    <value>Overnight</value>
+                </entry>
+            </job-data-map>
+        </job>
+        <job>
+            <name>ONC-ACB Overnight Broken Surveillance Rules Report</name>
+            <group>chplJobs</group>
+            <description>Sends an error report for all Listings breaking Surveillance rules within the last day, by specific ACB</description>
+            <job-class>gov.healthit.chpl.scheduler.job.BrokenSurveillanceRulesEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ACB</value>
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>DAILY</value>
+                </entry>
+                <entry>
+                    <key>acbSpecific</key>
+                    <value>true</value>
+                </entry>
+                <entry>
+                    <key>type</key>
+                    <value>Overnight</value>
+                </entry>
+            </job-data-map>
+        </job>
     </schedule>
 </job-scheduling-data>

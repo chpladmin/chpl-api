@@ -55,13 +55,13 @@ public class BrokenSurveillanceRulesDTO implements Serializable {
      */
     public BrokenSurveillanceRulesDTO() {
         this.nonconformity = false;
-        this.numberOfDaysFromDeterminationToCapApproval = -1L;
-        this.numberOfDaysFromDeterminationToPresent = -1L;
-        this.numberOfDaysFromCapApprovalToCapBegan = -1L;
-        this.numberOfDaysFromCapApprovalToPresent = -1L;
-        this.numberOfDaysFromCapBeganToCapCompleted = -1L;
-        this.numberOfDaysFromCapBeganToPresent = -1L;
-        this.differenceFromCapCompletedAndCapMustBeCompleted = -1L;
+        this.numberOfDaysFromDeterminationToCapApproval = Long.MIN_VALUE;
+        this.numberOfDaysFromDeterminationToPresent = Long.MIN_VALUE;
+        this.numberOfDaysFromCapApprovalToCapBegan = Long.MIN_VALUE;
+        this.numberOfDaysFromCapApprovalToPresent = Long.MIN_VALUE;
+        this.numberOfDaysFromCapBeganToCapCompleted = Long.MIN_VALUE;
+        this.numberOfDaysFromCapBeganToPresent = Long.MIN_VALUE;
+        this.differenceFromCapCompletedAndCapMustBeCompleted = Long.MIN_VALUE;
     }
 
     /**
