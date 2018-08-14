@@ -17,8 +17,6 @@ public class BaseDAOImpl {
     protected EntityManager entityManager;
     @Autowired
     MessageSource messageSource;
-    
-    private static final long MODIFIED_USER_ID = -3L;
 
     public static final Long SYSTEM_USER_ID = -3l;
     // Other constants can be added for other user types
@@ -30,16 +28,6 @@ public class BaseDAOImpl {
 
     public void setEntityManager(final EntityManager entityManager) {
         this.entityManager = entityManager;
-    }
-    
-    protected Long getUserId() {
-        // If there is no user the current context, assume this is a system
-        // process
-        if (Util.getCurrentUser() == null || Util.getCurrentUser().getId() == null) {
-            return MODIFIED_USER_ID;
-        } else {
-            return Util.getCurrentUser().getId();
-        }
     }
 
     public Long getUserId(Long defaultUserID) {
