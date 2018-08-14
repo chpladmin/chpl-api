@@ -71,7 +71,8 @@ public final class TriggerJob {
                 Scheduler scheduler = sf.getScheduler();
                 for (String group: scheduler.getJobGroupNames()) {
                     for (JobKey jobKey : scheduler.getJobKeys(groupEquals(group))) {
-                        System.out.println("Found job: \"" + jobKey.getName() + "\" in group: \"" + jobKey.getGroup() + "\"");
+                        System.out.println("Found job: \"" + jobKey.getName()
+                        + "\" in group: \"" + jobKey.getGroup() + "\"");
                     }
                 }
                 scheduler.shutdown();
