@@ -384,6 +384,7 @@
                         <source>src/main/java/gov/healthit/chpl/domain/TestParticipant.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertificationResultTestProcedure.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertificationResultTestStandard.java</source>
+                        <source>src/main/java/gov/healthit/chpl/domain/CertificationStatusEvent.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/TestTask.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertificationResultTestTool.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/UcdProcess.java</source>

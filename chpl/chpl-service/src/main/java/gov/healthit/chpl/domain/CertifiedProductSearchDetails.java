@@ -141,7 +141,7 @@ public class CertifiedProductSearchDetails implements Serializable {
      * Infogard, National Technical Systems, SLI Global, CCHIT
      */
     @XmlElementWrapper(name = "testingLabs", nillable = true, required = false)
-    @XmlElement(name = "testingLabs")
+    @XmlElement(name = "testingLab")
     private List<CertifiedProductTestingLab> testingLabs = new ArrayList<CertifiedProductTestingLab>();
 
     /**
