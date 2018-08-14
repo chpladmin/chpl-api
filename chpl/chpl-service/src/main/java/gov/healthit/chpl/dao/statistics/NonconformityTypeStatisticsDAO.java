@@ -8,5 +8,5 @@ import java.util.List;
 public interface NonconformityTypeStatisticsDAO {
 	List<NonconformityTypeStatisticsDTO> getAllNonconformityStatistics();
 	public void create(NonconformityTypeStatisticsDTO dto);
-    void delete(Long id) throws EntityRetrievalException;
+    void deleteAllOldNonConformityStatistics() throws EntityRetrievalException;
 }

@@ -59,31 +59,10 @@ public class NonconformityTypeStatisticsDAOImpl extends BaseDAOImpl implements N
     }
     
     @Override
-    public void delete(final Long id) throws EntityRetrievalException {
-        NonconformityTypeStatisticsEntity toDelete = getEntityById(id);
+    public void deleteAllOldNonConformityStatistics() throws EntityRetrievalException {
+        String hql = "UPDATE NonconformityTypeStatisticsEntity SET deleted = true WHERE deleted = false";
+        Query query = entityManager.createQuery(hql);
 
-        if (toDelete != null) {
-            toDelete.setDeleted(true);
-            toDelete.setLastModifiedUser(getUserId());
-            entityManager.merge(toDelete);
-        }
-    }
-    
-    private NonconformityTypeStatisticsEntity getEntityById(final Long id) throws EntityRetrievalException {
-        NonconformityTypeStatisticsEntity entity = null;
-
-        Query query = entityManager.createQuery(
-                "from NonconformityTypeStatisticsEntity a where (NOT deleted = true) AND (id = :entityid) ",
-                NonconformityTypeStatisticsEntity.class);
-        query.setParameter("entityid", id);
-        List<NonconformityTypeStatisticsEntity> result = query.getResultList();
-
-        if (result.size() > 1) {
-            throw new EntityRetrievalException("Data error. Duplicate id in database.");
-        } else if (result.size() == 1) {
-            entity = result.get(0);
-        }
-
-        return entity;
+        query.executeUpdate();
     }
 }

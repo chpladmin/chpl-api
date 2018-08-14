@@ -52,11 +52,7 @@ public class NonconformityTypeChartCalculator {
     }
     
     private void deleteExistingNonconformityStatistics() throws EntityRetrievalException {
-        List<NonconformityTypeStatisticsDTO> dtos = nonconformityTypeStatisticsDAO.getAllNonconformityStatistics();
-        for (NonconformityTypeStatisticsDTO dto : dtos) {
-            nonconformityTypeStatisticsDAO.delete(dto.getId());
-            LOGGER.info("Deleted: " + dto.getId());
-        }
+            nonconformityTypeStatisticsDAO.deleteAllOldNonConformityStatistics();
     }
 
     public void saveCounts(List<NonconformityTypeStatisticsDTO> dtos) {
