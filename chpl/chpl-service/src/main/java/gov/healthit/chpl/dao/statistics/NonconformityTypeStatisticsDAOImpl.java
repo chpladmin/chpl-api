@@ -60,9 +60,8 @@ public class NonconformityTypeStatisticsDAOImpl extends BaseDAOImpl implements N
     
     @Override
     public void deleteAllOldNonConformityStatistics() throws EntityRetrievalException {
-        String hql = "UPDATE NonconformityTypeStatisticsEntity SET deleted = true WHERE deleted = false";
+        String hql = "UPDATE NonconformityTypeStatisticsEntity SET deleted = true, lastModifiedUser = " + getUserId(SYSTEM_USER_ID) + " WHERE deleted = false";
         Query query = entityManager.createQuery(hql);
-
         query.executeUpdate();
     }
 }
