@@ -22,6 +22,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -81,7 +82,7 @@ public class CertifiedProductTestFunctionalityValidatorTest {
             .thenReturn("In Criteria %s, Test Functionality %s is for %s Settings and is not valid for Practice Type %s.");
         Mockito.when(messageSource.getMessage(
                 ArgumentMatchers.eq(new DefaultMessageSourceResolvable("listing.criteria.testFunctionalityCriterionMismatch")),
-                ArgumentMatchers.any(Locale.class)))
+                ArgumentMatchers.eq(LocaleContextHolder.getLocale())))
             .thenReturn("In Criteria %s, Test Functionality %s is for Criteria %s and is not valid for Criteria Type %s.");
     }
     
@@ -157,6 +158,12 @@ public class CertifiedProductTestFunctionalityValidatorTest {
                 .thenReturn(getCertificationCriterion_a6());
         Mockito.when(messageSource.getMessage(ArgumentMatchers.any(DefaultMessageSourceResolvable.class), ArgumentMatchers.any(Locale.class)))
                 .thenReturn("In Criteria %s, Test Functionality %s is for %s Settings and is not valid for Practice Type %s.");
+        Mockito.doReturn("In Criteria 170.314 (a)(6), Test Functionality (a)(6)(11) is for "
+                + "other Settings and is not valid for Practice Type Ambulatory.")
+        .when(msgUtil).getMessage(
+                ArgumentMatchers.eq("listing.criteria.testFunctionalityPracticeTypeMismatch"),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), 
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
         
         CertifiedProductSearchDetails listing = createListing("2014");
         List<CertificationResult> certResults = new ArrayList<CertificationResult>();
@@ -216,10 +223,12 @@ public class CertifiedProductTestFunctionalityValidatorTest {
                 .thenReturn(getTestFunctionalityId_7());
         Mockito.when(certificationCriterionDAO.getByNameAndYear(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
                 .thenReturn(getCertificationCriterion_a7());
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.testFunctionalityCriterionMismatch"),
-                ArgumentMatchers.anyString()))
-                .thenReturn("In Criteria 170.314 (a)(6), Test Functionality something is for "
-                        + "Criteria other and is not valid for Criteria 170.314 (a)(6).");
+        Mockito.doReturn("In Criteria 170.314 (a)(6), Test Functionality (a)(6)(11) is for "
+                + "Criteria other and is not valid for Criteria 170.314 (a)(6).")
+        .when(msgUtil).getMessage(
+                ArgumentMatchers.eq("listing.criteria.testFunctionalityCriterionMismatch"),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), 
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
 
         CertifiedProductSearchDetails listing = createListing("2014");
         List<CertificationResult> certResults = new ArrayList<CertificationResult>();
