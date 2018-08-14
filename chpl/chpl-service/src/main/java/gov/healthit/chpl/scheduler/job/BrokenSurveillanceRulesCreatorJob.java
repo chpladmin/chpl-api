@@ -53,6 +53,8 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger(BrokenSurveillanceRulesCreatorJob.class);
     private static final String EDITION_2011 = "2011";
     private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
+    private static final Long MILLISECONDS_PER_SECOND = 1000L;
+    private static final Long SECONDS_PER_MINUTE = 60L;
     private DateTimeFormatter dateFormatter;
     private CertifiedProductSearchDAO certifiedProductSearchDAO;
     private BrokenSurveillanceRulesDAO brokenSurveillanceRulesDAO;
@@ -72,6 +74,7 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         context = new AnnotationConfigApplicationContext(JobConfig.class);
         initiateSpringBeans(context);
         loadProperties();
+        ruleComplianceCalculator.setProps(props);
         dateFormatter = DateTimeFormatter.ofPattern("uuuu/MM/dd");
     }
 
@@ -198,7 +201,9 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         }
 
         Date endTime = new Date();
-        LOGGER.info("Time to retrieve details: " + (endTime.getTime() - startTime.getTime()));
+        int seconds = (int) Math.floor((endTime.getTime() - startTime.getTime()) / MILLISECONDS_PER_SECOND);
+        int minutes = (int) Math.floor(seconds / SECONDS_PER_MINUTE);
+        LOGGER.info("Time to retrieve details: {} seconds or {} minutes", seconds, minutes);
 
         return details;
     }
@@ -230,32 +235,33 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
                                             .ofInstant(Instant.ofEpochMilli(
                                                     currResult.getDateBroken().getTime()), ZoneId.systemDefault());
                                     dateBrokenStr = dateFormatter.format(dateBroken);
-                                }
-                                switch (currResult.getRule()) {
-                                case CAP_NOT_APPROVED:
-                                    rule.setCapNotApprovedRule(dateBrokenStr);
-                                    ncHasError = true;
-                                    break;
-                                case CAP_NOT_STARTED:
-                                    rule.setCapNotStartedRule(dateBrokenStr);
-                                    ncHasError = true;
-                                    break;
-                                case CAP_NOT_COMPLETED:
-                                    rule.setCapNotCompletedRule(dateBrokenStr);
-                                    ncHasError = true;
-                                    break;
-                                case CAP_NOT_CLOSED:
-                                    rule.setCapNotClosedRule(dateBrokenStr);
-                                    ncHasError = true;
-                                    break;
-                                case NONCONFORMITY_OPEN_CAP_COMPLETE:
-                                    rule.setClosedCapWithOpenNonconformityRule(dateBrokenStr);
-                                    ncHasError = true;
-                                    break;
-                                case LONG_SUSPENSION:
-                                    break;
-                                default:
-                                    break;
+
+                                    switch (currResult.getRule()) {
+                                    case CAP_NOT_APPROVED:
+                                        rule.setCapNotApprovedRule(dateBrokenStr);
+                                        ncHasError = true;
+                                        break;
+                                    case CAP_NOT_STARTED:
+                                        rule.setCapNotStartedRule(dateBrokenStr);
+                                        ncHasError = true;
+                                        break;
+                                    case CAP_NOT_COMPLETED:
+                                        rule.setCapNotCompletedRule(dateBrokenStr);
+                                        ncHasError = true;
+                                        break;
+                                    case CAP_NOT_CLOSED:
+                                        rule.setCapNotClosedRule(dateBrokenStr);
+                                        ncHasError = true;
+                                        break;
+                                    case NONCONFORMITY_OPEN_CAP_COMPLETE:
+                                        rule.setClosedCapWithOpenNonconformityRule(dateBrokenStr);
+                                        ncHasError = true;
+                                        break;
+                                    case LONG_SUSPENSION:
+                                        break;
+                                    default:
+                                        break;
+                                    }
                                 }
                             }
                             if (ncHasError) {
