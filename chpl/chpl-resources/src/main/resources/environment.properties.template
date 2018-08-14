@@ -5,6 +5,7 @@ persistenceUnitName=openchpl
 springfox.documentation.swagger.v2.path=/api-docs
 basePath=/rest
 questionableActivityThresholdDays=0
+maxActivityRangeInDays=60
 
 #
 # job properties

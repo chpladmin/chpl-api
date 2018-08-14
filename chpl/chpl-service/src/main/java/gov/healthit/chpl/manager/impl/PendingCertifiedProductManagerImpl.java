@@ -21,11 +21,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
-import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.domain.CQMCriterion;
@@ -45,10 +43,8 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
-import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.manager.TestingFunctionalityManager;
-import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandlerFactory;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidator;
 import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFactory;
@@ -60,20 +56,12 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
     @Autowired
     private CertificationResultRules certRules;
     @Autowired
-    private CertifiedProductUploadHandlerFactory uploadHandlerFactory;
-    @Autowired
     private CertifiedProductValidatorFactory validatorFactory;
 
     @Autowired
     private PendingCertifiedProductDAO pcpDao;
     @Autowired
-    private CertificationStatusDAO statusDao;
-    @Autowired
-    private CertificationBodyManager acbManager;
-    @Autowired
     private TestingFunctionalityManager testFunctionalityManager;
-    @Autowired
-    private UserManager userManager;
     @Autowired
     private UserDAO userDAO;
     @Autowired
@@ -95,10 +83,19 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
     @Override
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB')")
-    public PendingCertifiedProductDetails getById(final List<CertificationBodyDTO> userAcbs, final Long id)
+    public PendingCertifiedProductDetails getById(final List<CertificationBodyDTO> userAcbs, 
+            final Long id) throws EntityRetrievalException, AccessDeniedException {
+            return getById(userAcbs, id, false);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB')")
+    public PendingCertifiedProductDetails getById(final List<CertificationBodyDTO> userAcbs, 
+            final Long id, final boolean includeDeleted)
             throws EntityRetrievalException, AccessDeniedException {
 
-        PendingCertifiedProductDTO pendingCp = pcpDao.findById(id, false);
+        PendingCertifiedProductDTO pendingCp = pcpDao.findById(id, includeDeleted);
         boolean userHasAcbPermissions = false;
         for (CertificationBodyDTO acb : userAcbs) {
             if (acb.getId() != null && pendingCp.getCertificationBodyId() != null

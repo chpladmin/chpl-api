@@ -1,5 +1,26 @@
 # Release Notes
 
+## Version 16.0.0
+_7 August 2018_
+
+### Backwards compatibility breaking changes
+* Require start and end data parameters on all /activity API calls that are not for a single item.
+
+### New Features
+* Added JavaMelody to provide Tomcat performance monitoring page.
+* Restrict certain /activity data to admin, acb, atl, or cms users as appropriate.
+* Update text describing /download endpoint
+
+---
+
+## Version 15.16.0
+_18 July 2018_
+
+### New Features
+* Legacy 2014 listings (those with product numbers like "CHP-") are allowed to have attested to 170.314 (g)(3) but not required to have a criteria with SED and vice versa.
+
+---
+
 ## Version 15.15.2
 _16 July 2018_
 

@@ -1,8 +1,12 @@
 package gov.healthit.chpl.domain;
 
+/**
+ * Object containing needed data for updating a Listing.
+ * @author alarned
+ *
+ */
 public class ListingUpdateRequest implements ExplainableAction {
     private CertifiedProductSearchDetails listing;
-    private Boolean banDeveloper;
     private String reason;
 
     public CertifiedProductSearchDetails getListing() {
@@ -13,21 +17,13 @@ public class ListingUpdateRequest implements ExplainableAction {
         this.listing = listing;
     }
 
-    public Boolean getBanDeveloper() {
-        return banDeveloper;
-    }
-
-    public void setBanDeveloper(final Boolean banDeveloper) {
-        this.banDeveloper = banDeveloper;
-    }
-
     @Override
     public String getReason() {
         return this.reason;
     }
 
     @Override
-    public void setReason(String reason) {
+    public void setReason(final String reason) {
         this.reason = reason;
     }
 }

@@ -7,9 +7,8 @@ import java.util.Set;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
-
-import org.apache.commons.lang.StringUtils;
 
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 
@@ -48,6 +47,7 @@ public class UcdProcess implements Serializable {
      * The set of criteria within a listing to which this UCD process is
      * applied.
      */
+    @XmlElementWrapper(name = "criteriaList", nillable = true, required = false)
     @XmlElement(required = false, nillable = true)
     private Set<CertificationCriterion> criteria;
 

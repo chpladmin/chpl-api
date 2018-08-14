@@ -8,7 +8,6 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.ParticipantExperienceStatisticsDAO;
 import gov.healthit.chpl.dto.ParticipantExperienceStatisticsDTO;
 import gov.healthit.chpl.entity.ParticipantExperienceStatisticsEntity;
@@ -22,7 +21,6 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
  */
 @Repository("participantExperienceStatisticsDAO")
 public class ParticipantExperienceStatisticsDAOImpl extends BaseDAOImpl implements ParticipantExperienceStatisticsDAO {
-    private static final long MODIFIED_USER_ID = -3L;
 
     @Override
     public List<ParticipantExperienceStatisticsDTO> findAll(final Long experienceTypeId) {
@@ -41,7 +39,7 @@ public class ParticipantExperienceStatisticsDAOImpl extends BaseDAOImpl implemen
 
         if (toDelete != null) {
             toDelete.setDeleted(true);
-            toDelete.setLastModifiedUser(getUserId());
+            toDelete.setLastModifiedUser(getUserId(SYSTEM_USER_ID));
             entityManager.merge(toDelete);
         }
     }
@@ -64,7 +62,7 @@ public class ParticipantExperienceStatisticsDAOImpl extends BaseDAOImpl implemen
         if (dto.getLastModifiedUser() != null) {
             entity.setLastModifiedUser(dto.getLastModifiedUser());
         } else {
-            entity.setLastModifiedUser(getUserId());
+            entity.setLastModifiedUser(getUserId(SYSTEM_USER_ID));
         }
         if (dto.getLastModifiedDate() != null) {
             entity.setLastModifiedDate(dto.getLastModifiedDate());

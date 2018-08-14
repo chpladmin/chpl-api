@@ -58,6 +58,13 @@ public class ApiExceptionControllerAdvice {
                 HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorJSONObject> exception(final IllegalArgumentException e) {
+        LOGGER.error(e.getMessage(), e);
+        return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()),
+                HttpStatus.BAD_REQUEST);
+    }
+    
     @ExceptionHandler(TypeMismatchException.class)
     public ResponseEntity<ErrorJSONObject> typeMismatchException(final TypeMismatchException e) {
         LOGGER.error(e.getMessage(), e);

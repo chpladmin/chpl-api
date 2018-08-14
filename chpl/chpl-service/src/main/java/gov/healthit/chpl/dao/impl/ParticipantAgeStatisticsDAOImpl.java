@@ -8,7 +8,6 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.ParticipantAgeStatisticsDAO;
 import gov.healthit.chpl.dto.ParticipantAgeStatisticsDTO;
 import gov.healthit.chpl.entity.ParticipantAgeStatisticsEntity;
@@ -39,7 +38,7 @@ public class ParticipantAgeStatisticsDAOImpl extends BaseDAOImpl implements Part
 
         if (toDelete != null) {
             toDelete.setDeleted(true);
-            toDelete.setLastModifiedUser(getUserId());
+            toDelete.setLastModifiedUser(getUserId(SYSTEM_USER_ID));
             entityManager.merge(toDelete);
         }
     }
@@ -60,7 +59,7 @@ public class ParticipantAgeStatisticsDAOImpl extends BaseDAOImpl implements Part
         if (dto.getLastModifiedUser() != null) {
             entity.setLastModifiedUser(dto.getLastModifiedUser());
         } else {
-            entity.setLastModifiedUser(getUserId());
+            entity.setLastModifiedUser(getUserId(SYSTEM_USER_ID));
         }
         if (dto.getLastModifiedDate() != null) {
             entity.setLastModifiedDate(dto.getLastModifiedDate());

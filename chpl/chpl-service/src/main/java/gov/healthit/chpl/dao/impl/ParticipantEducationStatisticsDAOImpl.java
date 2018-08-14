@@ -8,7 +8,6 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.ParticipantEducationStatisticsDAO;
 import gov.healthit.chpl.dto.ParticipantEducationStatisticsDTO;
 import gov.healthit.chpl.entity.ParticipantEducationStatisticsEntity;
@@ -39,7 +38,7 @@ public class ParticipantEducationStatisticsDAOImpl extends BaseDAOImpl implement
 
         if (toDelete != null) {
             toDelete.setDeleted(true);
-            toDelete.setLastModifiedUser(getUserId());
+            toDelete.setLastModifiedUser(getUserId(SYSTEM_USER_ID));
             entityManager.merge(toDelete);
         }
 
@@ -61,7 +60,7 @@ public class ParticipantEducationStatisticsDAOImpl extends BaseDAOImpl implement
         if (dto.getLastModifiedUser() != null) {
             entity.setLastModifiedUser(dto.getLastModifiedUser());
         } else {
-            entity.setLastModifiedUser(getUserId());
+            entity.setLastModifiedUser(getUserId(SYSTEM_USER_ID));
         }
         if (dto.getLastModifiedDate() != null) {
             entity.setLastModifiedDate(dto.getLastModifiedDate());
@@ -102,5 +101,4 @@ public class ParticipantEducationStatisticsDAOImpl extends BaseDAOImpl implement
 
         return entity;
     }
-
 }
