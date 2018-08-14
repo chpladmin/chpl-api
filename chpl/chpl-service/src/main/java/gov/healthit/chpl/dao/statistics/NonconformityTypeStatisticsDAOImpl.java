@@ -19,7 +19,7 @@ public class NonconformityTypeStatisticsDAOImpl extends BaseDAOImpl implements N
 
     @Override
     public List<NonconformityTypeStatisticsDTO> getAllNonconformityStatistics() {
-        String hql = "FROM NonconformityTypeStatisticsEntity WHERE deleted = false AND creationDate >= current_date";
+        String hql = "FROM NonconformityTypeStatisticsEntity WHERE deleted = false";
         Query query = entityManager.createQuery(hql);
 
         List<NonconformityTypeStatisticsEntity> entities = query.getResultList();
