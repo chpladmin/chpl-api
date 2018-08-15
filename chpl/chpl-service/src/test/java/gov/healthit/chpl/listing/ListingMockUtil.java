@@ -289,4 +289,11 @@ public class ListingMockUtil {
         }
         return certResult;
     }
+
+    public String getChangedListingId(String origValue, int fieldIndex, String newValue) {
+        String[] uniqueIdParts = origValue.split("\\.");
+        uniqueIdParts[fieldIndex] = newValue;
+        String changedUniqueId = String.join(".", uniqueIdParts);
+        return changedUniqueId;
+    }
 }

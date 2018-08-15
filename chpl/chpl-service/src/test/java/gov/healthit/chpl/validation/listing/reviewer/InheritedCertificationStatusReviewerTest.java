@@ -89,7 +89,7 @@ public class InheritedCertificationStatusReviewerTest {
     @Test
     public void testValidIcs_NoErrors() {
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
-        String changedChplId = getChangedListingId(
+        String changedChplId = mockUtil.getChangedListingId(
                 listing.getChplProductNumber(), CertifiedProductDTO.ICS_CODE_INDEX, "01");
         listing.setChplProductNumber(changedChplId);
         InheritedCertificationStatus ics = new InheritedCertificationStatus();
@@ -98,7 +98,7 @@ public class InheritedCertificationStatusReviewerTest {
         parent.setCertificationDate(listing.getCertificationDate() - 1);
         parent.setEdition(listing.getCertificationEdition().get("name").toString());
         parent.setId(listing.getId()-1);
-        String parentChplId = getChangedListingId(
+        String parentChplId = mockUtil.getChangedListingId(
                 listing.getChplProductNumber(), CertifiedProductDTO.ICS_CODE_INDEX, "00");
         parent.setChplProductNumber(parentChplId);
         ics.getParents().add(parent);
@@ -114,7 +114,7 @@ public class InheritedCertificationStatusReviewerTest {
     @Test
     public void testHasIcsNoParents_HasErrors() {
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
-        String changedChplId = getChangedListingId(
+        String changedChplId = mockUtil.getChangedListingId(
                 listing.getChplProductNumber(), CertifiedProductDTO.ICS_CODE_INDEX, "01");
         listing.setChplProductNumber(changedChplId);
         InheritedCertificationStatus ics = new InheritedCertificationStatus();
@@ -134,7 +134,7 @@ public class InheritedCertificationStatusReviewerTest {
         .thenReturn(null);
         
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
-        String changedChplId = getChangedListingId(
+        String changedChplId = mockUtil.getChangedListingId(
                 listing.getChplProductNumber(), CertifiedProductDTO.ICS_CODE_INDEX, "01");
         listing.setChplProductNumber(changedChplId);
         InheritedCertificationStatus ics = new InheritedCertificationStatus();
@@ -143,7 +143,7 @@ public class InheritedCertificationStatusReviewerTest {
         parent.setCertificationDate(listing.getCertificationDate() - 1);
         parent.setEdition(listing.getCertificationEdition().get("name").toString());
         parent.setId(null);
-        String parentChplId = getChangedListingId(
+        String parentChplId = mockUtil.getChangedListingId(
                 listing.getChplProductNumber(), CertifiedProductDTO.ICS_CODE_INDEX, "00");
         parent.setChplProductNumber(parentChplId);
         ics.getParents().add(parent);
@@ -159,7 +159,7 @@ public class InheritedCertificationStatusReviewerTest {
     @Test
     public void testIcsWithSelfParentId_HasErrors() {
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
-        String changedChplId = getChangedListingId(
+        String changedChplId = mockUtil.getChangedListingId(
                 listing.getChplProductNumber(), CertifiedProductDTO.ICS_CODE_INDEX, "01");
         listing.setChplProductNumber(changedChplId);
 
@@ -189,7 +189,7 @@ public class InheritedCertificationStatusReviewerTest {
     @Test
     public void testIcsWithBadParentEdition_HasErrors() {
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
-        String changedChplId = getChangedListingId(
+        String changedChplId = mockUtil.getChangedListingId(
                 listing.getChplProductNumber(), CertifiedProductDTO.ICS_CODE_INDEX, "01");
         listing.setChplProductNumber(changedChplId);
 
@@ -199,9 +199,9 @@ public class InheritedCertificationStatusReviewerTest {
         parent.setCertificationDate(listing.getCertificationDate() - 1);
         parent.setEdition(listing.getCertificationEdition().get("name").toString());
         parent.setId(listing.getId()-1);
-        String parentChplId = getChangedListingId(
+        String parentChplId = mockUtil.getChangedListingId(
                 listing.getChplProductNumber(), CertifiedProductDTO.ICS_CODE_INDEX, "00");
-        parentChplId = getChangedListingId(
+        parentChplId = mockUtil.getChangedListingId(
                 parentChplId, CertifiedProductDTO.EDITION_CODE_INDEX, "14");
         parent.setChplProductNumber(parentChplId);
         ics.getParents().add(parent);
@@ -229,7 +229,7 @@ public class InheritedCertificationStatusReviewerTest {
     @Test
     public void testIcsWithTooSmallCode_HasErrors() {
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
-        String changedChplId = getChangedListingId(
+        String changedChplId = mockUtil.getChangedListingId(
                 listing.getChplProductNumber(), CertifiedProductDTO.ICS_CODE_INDEX, "01");
         listing.setChplProductNumber(changedChplId);
 
@@ -239,7 +239,7 @@ public class InheritedCertificationStatusReviewerTest {
         parent.setCertificationDate(listing.getCertificationDate() - 1);
         parent.setEdition(listing.getCertificationEdition().get("name").toString());
         parent.setId(listing.getId()-1);
-        String parentChplId = getChangedListingId(
+        String parentChplId = mockUtil.getChangedListingId(
                 listing.getChplProductNumber(), CertifiedProductDTO.ICS_CODE_INDEX, "02");
         parent.setChplProductNumber(parentChplId);
         ics.getParents().add(parent);
@@ -264,12 +264,5 @@ public class InheritedCertificationStatusReviewerTest {
         assertFalse(listing.getErrorMessages().contains(ICS_SELF_INHERITANCE_ERROR));
         assertFalse(listing.getErrorMessages().contains(ICS_EDITION_MISMATCH_ERROR));
         assertTrue(listing.getErrorMessages().contains(ICS_NOT_LARGEST_CODE_ERROR));
-    }
-
-    private String getChangedListingId(String origValue, int fieldIndex, String newValue) {
-        String[] uniqueIdParts = origValue.split("\\.");
-        uniqueIdParts[fieldIndex] = newValue;
-        String changedUniqueId = String.join(".", uniqueIdParts);
-        return changedUniqueId;
     }
 }
