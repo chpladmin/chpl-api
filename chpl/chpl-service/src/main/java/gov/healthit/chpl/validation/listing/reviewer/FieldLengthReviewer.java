@@ -14,7 +14,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 public class FieldLengthReviewer implements Reviewer {
     @Autowired private ErrorMessageUtil msgUtil;
     @Autowired private MessageSource messageSource;
-    
+
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         if(listing.getCertificationEdition() != null && listing.getCertificationEdition().get("id") != null) {
@@ -27,7 +27,7 @@ public class FieldLengthReviewer implements Reviewer {
             checkField(listing, listing.getVersion().getVersion(), "productVersion");
         }
     }
-    
+
     private void checkField(final CertifiedProductSearchDetails product, final Object field, final String errorField) {
         if (field instanceof Long) {
             Long fieldCasted = (Long) field;

@@ -24,7 +24,7 @@ import gov.healthit.chpl.util.CertificationResultRules;
 
 @Component
 public class ListingMockUtil {
-
+    public static String CHPL_ID_2015 = "15.02.02.3007.A056.01.00.0.180214";
     @Autowired private CertificationResultRules certRules;
     
     public CertifiedProductSearchDetails createValid2015Listing() {
@@ -39,7 +39,7 @@ public class ListingMockUtil {
         listing.getCertifyingBody().put("id", "1");
         listing.getCertifyingBody().put("code", "02");
         listing.getCertifyingBody().put("name", "InfoGard");
-        listing.setChplProductNumber("15.02.02.3007.A056.01.00.0.180214");
+        listing.setChplProductNumber(CHPL_ID_2015);
         listing.setCountCerts(8);
         listing.setCountClosedNonconformities(0);
         listing.setCountClosedSurveillance(0);
