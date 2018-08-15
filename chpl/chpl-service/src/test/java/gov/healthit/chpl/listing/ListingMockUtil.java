@@ -7,6 +7,11 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertificationResultTestData;
+import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
+import gov.healthit.chpl.domain.CertificationResultTestProcedure;
+import gov.healthit.chpl.domain.CertificationResultTestStandard;
+import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
@@ -20,6 +25,8 @@ import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
+import gov.healthit.chpl.domain.TestData;
+import gov.healthit.chpl.domain.TestProcedure;
 import gov.healthit.chpl.util.CertificationResultRules;
 
 @Component
@@ -82,21 +89,45 @@ public class ListingMockUtil {
         listing.getCertificationResults().add(create2015CertResult(22L, "170.315 (b)(8)", false));
         listing.getCertificationResults().add(create2015CertResult(23L, "170.315 (b)(9)", false));
         listing.getCertificationResults().add(create2015CertResult(24L, "170.315 (c)(1)", false));
-        listing.getCertificationResults().add(create2015CertResult(25L, "170.315 (c)(2)", true));
-        //TODO: all c2 fields
-        listing.getCertificationResults().add(create2015CertResult(26L, "170.315 (c)(3)", true));
-        //TODO: all c3 fields
+
+        CertificationResult c2 = create2015CertResult(25L, "170.315 (c)(2)", true);
+        c2.setPrivacySecurityFramework("Approach 2");
+        c2.getTestDataUsed().add(createTestData(123L, "ONC Test Method", "3.2.2"));
+        c2.getTestProcedures().add(createTestProcedure(234L, "ONC Test Method", "1.1.1"));
+        c2.getTestStandards().add(createTestStandard(34L, "170.205(h)2; 170.205(k)1;170.205(k)2"));
+        c2.getTestToolsUsed().add(createTestTool(11L, "Cypress", "3.2.2", false));
+        listing.getCertificationResults().add(c2);
+
+        CertificationResult c3 = create2015CertResult(26L, "170.315 (c)(3)", true);
+        c3.setPrivacySecurityFramework("Approach 2");
+        c3.getTestDataUsed().add(createTestData(111L, "ONC Test Method", "3.2.2"));
+        c3.getTestProcedures().add(createTestProcedure(156L, "ONC Test Method", "1.1.1"));
+        c3.getTestStandards().add(createTestStandard(250L, "170.205(h)2; 170.205(k)1;170.205(k)2"));
+        c3.getTestToolsUsed().add(createTestTool(8L, "Cypress", "3.2.2", false));
+        listing.getCertificationResults().add(c3);
+
         listing.getCertificationResults().add(create2015CertResult(27L, "170.315 (c)(4)", false));
-        listing.getCertificationResults().add(create2015CertResult(28L, "170.315 (d)(1)", true));
-        //TODO: all d1 fields
-        listing.getCertificationResults().add(create2015CertResult(29L, "170.315 (d)(2)", true));
-        //TODO: all d2 fields
-        listing.getCertificationResults().add(create2015CertResult(30L, "170.315 (d)(3)", true));
-        //TODO: all d3 fields
+
+        CertificationResult d1 = create2015CertResult(28L, "170.315 (d)(1)", true);
+        d1.getTestProcedures().add(createTestProcedure(5L, "ONC Test Method", "1.1.1"));
+        listing.getCertificationResults().add(d1);
+
+        CertificationResult d2 = create2015CertResult(29L, "170.315 (d)(2)", true);
+        d2.getTestProcedures().add(createTestProcedure(98L, "ONC Test Method", "1.3"));
+        d2.getTestStandards().add(createTestStandard(3L, "170.210(e)(1); 170.210(e)(2); 170.210(e)(3); 170.210(g)"));
+        listing.getCertificationResults().add(d2);
+
+        CertificationResult d3 = create2015CertResult(30L, "170.315 (d)(3)", true);
+        d3.getTestProcedures().add(createTestProcedure(99L, "ONC Test Method", "1.3"));
+        d3.getTestStandards().add(createTestStandard(4L, "170.210(e)(1); 170.210(e)(2); 170.210(e)(3); 170.210(g)"));
+        listing.getCertificationResults().add(d3);
+
         listing.getCertificationResults().add(create2015CertResult(31L, "170.315 (d)(4)", false));
-        listing.getCertificationResults().add(create2015CertResult(32L, "170.315 (d)(5)", true));
-        //TODO: all d5 fields
-        
+
+        CertificationResult d5 = create2015CertResult(32L, "170.315 (d)(3)", true);
+        d5.getTestProcedures().add(createTestProcedure(100L, "ONC Test Method", "1.1"));
+        listing.getCertificationResults().add(d5);
+
         listing.getCertificationResults().add(create2015CertResult(33L, "170.315 (d)(6)", false));
         listing.getCertificationResults().add(create2015CertResult(34L, "170.315 (d)(7)", false));
         listing.getCertificationResults().add(create2015CertResult(35L, "170.315 (d)(8)", false));
@@ -116,10 +147,17 @@ public class ListingMockUtil {
         listing.getCertificationResults().add(create2015CertResult(49L, "170.315 (g)(1)", false));
         listing.getCertificationResults().add(create2015CertResult(50L, "170.315 (g)(2)", false));
         listing.getCertificationResults().add(create2015CertResult(51L, "170.315 (g)(3)", false));
-        listing.getCertificationResults().add(create2015CertResult(52L, "170.315 (g)(4)", true));
-        //TODO: all g4 fields
-        listing.getCertificationResults().add(create2015CertResult(53L, "170.315 (g)(5)", true));
-        //TODO: all g5 fields
+
+        CertificationResult g4 = create2015CertResult(52L, "170.315 (g)(4)", true);
+        g4.getTestProcedures().add(createTestProcedure(101L, "ONC Test Method", "1"));
+        g4.getTestFunctionality().add(createTestFunctionality(1L, "(g)(4)(i)(B)", "2015"));
+        listing.getCertificationResults().add(g4);
+
+        CertificationResult g5 = create2015CertResult(52L, "170.315 (g)(5)", true);
+        g5.getTestProcedures().add(createTestProcedure(102L, "ONC Test Method", "1"));
+        g5.getTestFunctionality().add(createTestFunctionality(2L, "(g)(5)(iii))", "2015"));
+        listing.getCertificationResults().add(g5);
+
         listing.getCertificationResults().add(create2015CertResult(54L, "170.315 (g)(6)", false));
         listing.getCertificationResults().add(create2015CertResult(55L, "170.315 (g)(7)", false));
         listing.getCertificationResults().add(create2015CertResult(56L, "170.315 (g)(8)", false));
@@ -288,6 +326,55 @@ public class ListingMockUtil {
             certResult.setTestToolsUsed(null);
         }
         return certResult;
+    }
+
+    private CertificationResultTestData createTestData(Long id, String name, String version) {
+        CertificationResultTestData testData = new CertificationResultTestData();
+        testData.setId(id);
+        testData.setAlteration("");
+        testData.setVersion(version);
+        TestData td = new TestData();
+        td.setId(1L);
+        td.setName(name);
+        testData.setTestData(td);
+        return testData;
+    }
+
+    private CertificationResultTestFunctionality createTestFunctionality(Long id, String name, String year) {
+        CertificationResultTestFunctionality testFunc = new CertificationResultTestFunctionality();
+        testFunc.setId(id);
+        testFunc.setName(name);
+        testFunc.setTestFunctionalityId(1L);
+        testFunc.setYear(year);
+        return testFunc;
+    }
+
+    private CertificationResultTestProcedure createTestProcedure(Long id, String name, String version) {
+        CertificationResultTestProcedure testProc = new CertificationResultTestProcedure();
+        testProc.setId(id);
+        testProc.setTestProcedureVersion(version);
+        TestProcedure tp = new TestProcedure();
+        tp.setId(1L);
+        tp.setName(name);
+        testProc.setTestProcedure(tp);
+        return testProc;
+    }
+
+    private CertificationResultTestStandard createTestStandard(Long id, String name) {
+        CertificationResultTestStandard testStandard = new CertificationResultTestStandard();
+        testStandard.setId(id);
+        testStandard.setTestStandardName(name);
+        return testStandard;
+    }
+
+    private CertificationResultTestTool createTestTool(Long id, String name, String version, boolean retired) {
+        CertificationResultTestTool tt = new CertificationResultTestTool();
+        tt.setId(id);
+        tt.setRetired(retired);
+        tt.setTestToolId(1L);
+        tt.setTestToolName(name);
+        tt.setTestToolVersion(version);
+        return tt;
     }
 
     public String getChangedListingId(String origValue, int fieldIndex, String newValue) {
