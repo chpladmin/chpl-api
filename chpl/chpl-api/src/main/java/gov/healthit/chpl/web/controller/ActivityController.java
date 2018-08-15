@@ -761,6 +761,7 @@ public class ActivityController {
                     + "A start and end date may optionally be provided to limit activity results.")
     @RequestMapping(value = "/user_activities/{id}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
     public List<ActivityEvent> activityByUser(@PathVariable("id") Long id,
             @RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end)

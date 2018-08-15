@@ -29,10 +29,7 @@ public class TestToolReviewer implements Reviewer {
                                     "There was no test tool name found for certification " + cert.getNumber() + ".");
                         } else {
                             TestToolDTO tt = testToolDao.getByName(testTool.getName());
-                            if (tt == null) {
-                                listing.getErrorMessages().add("No test tool with " + testTool.getName()
-                                + " was found for criteria " + cert.getNumber() + ".");
-                            } else if (tt.isRetired() && icsCodeInteger != null
+                            if (tt != null && tt.isRetired() && icsCodeInteger != null
                                     && icsCodeInteger.intValue() == 0) {
                                 if (listing.hasIcsConflict()) {
                                     listing.getWarningMessages().add("Test Tool '" + testTool.getName()
