@@ -2,7 +2,9 @@ package gov.healthit.chpl.dao.statistics;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
+import gov.healthit.chpl.entity.ParticipantExperienceStatisticsEntity;
 import gov.healthit.chpl.entity.surveillance.NonconformityTypeStatisticsEntity;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -54,5 +56,12 @@ public class NonconformityTypeStatisticsDAOImpl extends BaseDAOImpl implements N
         }
         entityManager.persist(entity);
         entityManager.flush();
+    }
+    
+    @Override
+    public void deleteAllOldNonConformityStatistics() throws EntityRetrievalException {
+        String hql = "UPDATE NonconformityTypeStatisticsEntity SET deleted = true, lastModifiedUser = " + getUserId(SYSTEM_USER_ID) + " WHERE deleted = false";
+        Query query = entityManager.createQuery(hql);
+        query.executeUpdate();
     }
 }
