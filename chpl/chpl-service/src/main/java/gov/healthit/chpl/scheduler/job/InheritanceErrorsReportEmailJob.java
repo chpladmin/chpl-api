@@ -65,6 +65,7 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
         String subject = props.getProperty("inheritanceReportEmailWeeklySubject");
         String htmlMessage;
         if (jobContext.getMergedJobDataMap().getBoolean("acbSpecific")) {
+            subject = jobContext.getMergedJobDataMap().getString("acb").replaceAll("\u263A", ", ") + " " + subject;
             htmlMessage = props.getProperty("inheritanceReportEmailAcbWeeklyHtmlMessage");
         } else {
             htmlMessage = props.getProperty("inheritanceReportEmailWeeklyHtmlMessage");

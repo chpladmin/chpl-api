@@ -106,6 +106,7 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
         if (jobContext.getMergedJobDataMap().getString("type").equalsIgnoreCase("All")) {
             subject = props.getProperty("oversightEmailWeeklySubject");
             if (jobContext.getMergedJobDataMap().getBoolean("acbSpecific")) {
+                subject = jobContext.getMergedJobDataMap().getString("acb").replaceAll("\u263A", ", ") + " " + subject;
                 htmlMessage = props.getProperty("oversightEmailAcbWeeklyHtmlMessage");
             } else {
                 htmlMessage = props.getProperty("oversightEmailWeeklyHtmlMessage");
@@ -114,6 +115,7 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
         } else {
             subject = props.getProperty("oversightEmailDailySubject");
             if (jobContext.getMergedJobDataMap().getBoolean("acbSpecific")) {
+                subject = jobContext.getMergedJobDataMap().getString("acb").replaceAll("\u263A", ", ") + " " + subject;
                 htmlMessage = props.getProperty("oversightEmailAcbDailyHtmlMessage");
             } else {
                 htmlMessage = props.getProperty("oversightEmailDailyHtmlMessage");
