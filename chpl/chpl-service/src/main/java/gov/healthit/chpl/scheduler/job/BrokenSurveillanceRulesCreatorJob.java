@@ -201,8 +201,8 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         }
 
         Date endTime = new Date();
-        int seconds = (int) Math.floor((endTime.getTime() - startTime.getTime()) / MILLISECONDS_PER_SECOND);
-        int minutes = (int) Math.floor(seconds / SECONDS_PER_MINUTE);
+        long seconds = (endTime.getTime() - startTime.getTime()) / MILLISECONDS_PER_SECOND;
+        long minutes = seconds / SECONDS_PER_MINUTE;
         LOGGER.info("Time to retrieve details: {} seconds or {} minutes", seconds, minutes);
 
         return details;
@@ -308,8 +308,7 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
             base.setDateOfLastStatusChange(dateFormatter.format(lastStatusChangeDate));
         }
         List<OversightRuleResult> result = ruleComplianceCalculator.calculateCompliance(listing, null, null);
-        if (result != null && result.size() > 0 && result.get(0) != null
-                && result.get(0).getDateBroken() != null) {
+        if (result != null && result.size() > 0 && result.get(0).getDateBroken() != null) {
             LocalDateTime dateBroken = LocalDateTime.ofInstant(
                     Instant.ofEpochMilli(result.get(0).getDateBroken().getTime()), ZoneId.systemDefault());
             base.setLengthySuspensionRule(dateFormatter.format(dateBroken));
