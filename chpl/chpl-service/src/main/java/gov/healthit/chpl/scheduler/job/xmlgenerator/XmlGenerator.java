@@ -7,6 +7,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 public class XmlGenerator {
+    public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
     public static void createSimpleElement(Long value, String nodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (value != null) {
             sw.writeStartElement(nodeName);
@@ -52,7 +53,7 @@ public class XmlGenerator {
     
     public static void createSimpleElement(Date value, String nodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (value != null) {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+            SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
             sw.writeStartElement(nodeName);
             sw.writeCharacters(sdf.format(value));
             sw.writeEndElement();

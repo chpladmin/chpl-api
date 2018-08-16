@@ -12,6 +12,7 @@ public class DeveloperStatusEventDTO implements Serializable {
     private Long developerId;
     private DeveloperStatusDTO status;
     private Date statusDate;
+    private String reason;
 
     public DeveloperStatusEventDTO() {
     }
@@ -54,6 +55,14 @@ public class DeveloperStatusEventDTO implements Serializable {
 
     public void setStatus(final DeveloperStatusDTO status) {
         this.status = status;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 
 }
