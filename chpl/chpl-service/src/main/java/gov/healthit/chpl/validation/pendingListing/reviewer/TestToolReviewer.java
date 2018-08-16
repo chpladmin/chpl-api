@@ -31,7 +31,7 @@ public class TestToolReviewer implements Reviewer {
                             TestToolDTO tt = testToolDao.getByName(testTool.getName());
                             if (tt != null && tt.isRetired() && icsCodeInteger != null
                                     && icsCodeInteger.intValue() == 0) {
-                                if (listing.hasIcsConflict()) {
+                                if (productNumUtil.hasIcsConflict(listing.getUniqueId(), listing.getIcs())) {
                                     listing.getWarningMessages().add("Test Tool '" + testTool.getName()
                                     + "' can not be used for criteria '" + cert.getNumber()
                                     + "', as it is a retired tool, and this Certified Product does not carry ICS.");

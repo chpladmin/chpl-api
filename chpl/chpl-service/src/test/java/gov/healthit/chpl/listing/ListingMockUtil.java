@@ -33,7 +33,7 @@ import gov.healthit.chpl.util.CertificationResultRules;
 public class ListingMockUtil {
     public static String CHPL_ID_2015 = "15.02.02.3007.A056.01.00.0.180214";
     @Autowired private CertificationResultRules certRules;
-    
+
     public CertifiedProductSearchDetails createValid2015Listing() {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
         listing.setAcbCertificationId("IG-4152-18-0007");

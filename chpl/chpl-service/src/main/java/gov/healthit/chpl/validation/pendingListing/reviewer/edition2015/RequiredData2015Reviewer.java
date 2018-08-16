@@ -547,7 +547,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                             // Allow retired test tool only if listing ICS = true
                             Integer icsCodeInteger = productNumUtil.getIcsCode(listing.getUniqueId());
                             if (foundTestTool.isRetired() && icsCodeInteger.intValue() == 0) {
-                                if (listing.hasIcsConflict()) {
+                                if (productNumUtil.hasIcsConflict(listing.getUniqueId(), listing.getIcs())) {
                                     //the ics code is 0 but we can't be sure that's what the user meant
                                     //because the ICS value in the file is 1 (hence the conflict), 
                                     //so issue a warning since the listing may or may not truly have ICS

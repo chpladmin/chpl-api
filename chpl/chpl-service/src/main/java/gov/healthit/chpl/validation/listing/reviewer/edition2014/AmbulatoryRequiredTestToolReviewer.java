@@ -14,9 +14,9 @@ public class AmbulatoryRequiredTestToolReviewer implements Reviewer {
     private static final String[] TEST_TOOL_CHECK_CERTS = {
             "170.314 (g)(1)", "170.314 (g)(2)", "170.314 (f)(3)"
     };
-    
+
     @Autowired private CertificationResultRules certRules;
-    
+
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         for (CertificationResult cert : listing.getCertificationResults()) {

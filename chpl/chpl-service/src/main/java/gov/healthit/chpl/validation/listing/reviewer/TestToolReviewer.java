@@ -33,7 +33,8 @@ public class TestToolReviewer implements Reviewer {
                                 listing.getErrorMessages().add("No test tool with " + testTool.getTestToolName()
                                 + " was found for criteria " + cert.getNumber() + ".");
                             } else if (tt.isRetired() && icsCodeInteger != null && icsCodeInteger.intValue() == 0) {
-                                if (listing.hasIcsConflict()) {
+                                if (productNumUtil.hasIcsConflict(listing.getChplProductNumber(), 
+                                        (listing.getIcs() == null ? Boolean.FALSE : listing.getIcs().getInherits()))) {
                                     listing.getWarningMessages().add("Test Tool '" + testTool.getTestToolName()
                                     + "' can not be used for criteria '" + cert.getNumber()
                                     + "', as it is a retired tool, and this Certified Product does not carry ICS.");

@@ -12,7 +12,6 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 
-
 public class ValidationUtils {
     private static final Logger LOGGER = LogManager.getLogger(ValidationUtils.class);
 
