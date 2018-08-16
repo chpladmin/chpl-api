@@ -7,6 +7,8 @@ import static org.quartz.impl.matchers.GroupMatcher.groupEquals;
 
 import java.util.Date;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -21,6 +23,7 @@ import org.springframework.util.StringUtils;
  *
  */
 public final class TriggerJob {
+    private static final Logger LOGGER = LogManager.getLogger(TriggerJob.class);
     private TriggerJob() { }
 
     /**
@@ -34,7 +37,6 @@ public final class TriggerJob {
         String jobGroup = "systemJobs";
         switch (args.length) {
         case 0:
-            System.out.println("Job names:");
             break;
         case 2:
             jobGroup = args[1];
@@ -42,7 +44,10 @@ public final class TriggerJob {
             jobName = args[0];
             break;
         default:
-            System.out.println("Expects 0, 1, or 2 arguments");
+            LOGGER.error("Expects 0, 1, or 2 arguments."
+                    + "\n   0 arguments: outputs all Jobs in system"
+                    + "\n   1st argument: job name"
+                    + "\n   2nd argument: group name (defaults to \"systemJobs\" if not provided)");
             System.exit(1);
         }
         if (!StringUtils.isEmpty(jobName) && !StringUtils.isEmpty(jobGroup)) {
@@ -69,12 +74,15 @@ public final class TriggerJob {
                 StdSchedulerFactory sf = new StdSchedulerFactory();
                 sf.initialize("quartz.properties");
                 Scheduler scheduler = sf.getScheduler();
+                StringBuilder output = new StringBuilder();
+                output.append("Found jobs:\n");
                 for (String group: scheduler.getJobGroupNames()) {
                     for (JobKey jobKey : scheduler.getJobKeys(groupEquals(group))) {
-                        System.out.println("Found job: \"" + jobKey.getName() + "\" in group: \"" + jobKey.getGroup() + "\"");
+                        output.append("    Job: [" + jobKey.getName() + "] Group: [" + jobKey.getGroup() + "]\n");
                     }
                 }
                 scheduler.shutdown();
+                LOGGER.info(output.toString());
             } catch (SchedulerException se) {
                 se.printStackTrace();
             }

@@ -12,7 +12,7 @@ import gov.healthit.chpl.domain.concept.ScheduleFrequencyConcept;
  * @author TYoung
  *
  */
-public class ChplJob implements Serializable{
+public class ChplJob implements Serializable {
     private static final long serialVersionUID = -7634197357525761051L;
     private String description;
     private String group;

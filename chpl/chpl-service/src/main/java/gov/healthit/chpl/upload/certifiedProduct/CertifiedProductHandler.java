@@ -342,6 +342,10 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
                 || value.equalsIgnoreCase("y")) {
             return true;
         }
+        if (value.equalsIgnoreCase("f") || value.equalsIgnoreCase("false") || value.equalsIgnoreCase("no")
+                || value.equalsIgnoreCase("n")) {
+            return false;
+        }
 
         try {
             double numValue = Double.parseDouble(value);
