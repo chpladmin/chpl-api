@@ -91,7 +91,8 @@ public class CQMResultDetails implements Serializable {
      * Edition. For a list of clinical quality measures and their viable
      * versions, please reference the CMS eCQM library.
      */
-    @XmlElement(required = false, nillable = true)
+    @XmlElementWrapper(name = "successVersions", nillable = true, required = false)
+    @XmlElement(name = "version",required = false, nillable = true)
     private Set<String> successVersions;
 
     /**
@@ -99,7 +100,8 @@ public class CQMResultDetails implements Serializable {
      * clinical quality measures and their viable versions, please reference the
      * CMS eCQM library.
      */
-    @XmlElement(required = false, nillable = true)
+    @XmlElementWrapper(name = "allVersions", nillable = true, required = false)
+    @XmlElement(name = "version",required = false, nillable = true)
     private Set<String> allVersions;
 
     /**

@@ -9,7 +9,7 @@ import java.util.TreeSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.certificationId.Validator;
 import gov.healthit.chpl.certificationId.ValidatorFactory;
 import gov.healthit.chpl.domain.SimpleCertificationId;
@@ -58,9 +57,7 @@ public class CertificationIdController {
     //
     // Retrieves all CMS Certification IDs and their date of creation.
     // **********************************************************************************************************
-    @Secured({
-            Authority.ROLE_ADMIN, Authority.ROLE_CMS_STAFF, Authority.ROLE_ONC_STAFF
-    })
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CMS_STAFF', 'ROLE_ONC_STAFF')")
     @ApiOperation(value = "Retrieves a list of all CMS EHR Certification IDs along with the date they were created.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = {
             MediaType.APPLICATION_JSON_VALUE

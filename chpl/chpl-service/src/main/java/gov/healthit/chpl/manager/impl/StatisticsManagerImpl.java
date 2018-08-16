@@ -17,9 +17,11 @@ import gov.healthit.chpl.dao.ParticipantExperienceStatisticsDAO;
 import gov.healthit.chpl.dao.ParticipantGenderStatisticsDAO;
 import gov.healthit.chpl.dao.SedParticipantStatisticsCountDAO;
 import gov.healthit.chpl.dao.TestParticipantAgeDAO;
+import gov.healthit.chpl.dao.statistics.NonconformityTypeStatisticsDAO;
 import gov.healthit.chpl.domain.ListingCountStatistics;
 import gov.healthit.chpl.domain.CriterionProductStatistics;
 import gov.healthit.chpl.domain.IncumbentDevelopersStatistics;
+import gov.healthit.chpl.domain.NonconformityTypeStatistics;
 import gov.healthit.chpl.domain.ParticipantAgeStatistics;
 import gov.healthit.chpl.domain.ParticipantEducationStatistics;
 import gov.healthit.chpl.domain.ParticipantExperienceStatistics;
@@ -27,6 +29,7 @@ import gov.healthit.chpl.dto.ListingCountStatisticsDTO;
 import gov.healthit.chpl.dto.CriterionProductStatisticsDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.IncumbentDevelopersStatisticsDTO;
+import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
 import gov.healthit.chpl.dto.ParticipantAgeStatisticsDTO;
 import gov.healthit.chpl.dto.ParticipantEducationStatisticsDTO;
 import gov.healthit.chpl.dto.ParticipantExperienceStatisticsDTO;
@@ -38,6 +41,7 @@ import gov.healthit.chpl.manager.StatisticsManager;
 
 /**
  * Implementation of the StatisticsManager interface.
+ * 
  * @author TYoung
  *
  */
@@ -57,6 +61,9 @@ public class StatisticsManagerImpl extends ApplicationObjectSupport implements S
     private ListingCountStatisticsDAO listingCountStatisticsDAO;
 
     @Autowired
+    private NonconformityTypeStatisticsDAO nonconformityTypeStatisticsDAO;
+
+    @Autowired
     private ParticipantAgeStatisticsDAO participantAgeStatisticsDAO;
 
     @Autowired
@@ -73,6 +80,19 @@ public class StatisticsManagerImpl extends ApplicationObjectSupport implements S
 
     @Autowired
     private TestParticipantAgeDAO testParticipantAgeDAO;
+
+    @Override
+    public List<NonconformityTypeStatistics> getAllNonconformitiesByCriterion() {
+        List<NonconformityTypeStatisticsDTO> dtos = nonconformityTypeStatisticsDAO.getAllNonconformityStatistics();
+
+        List<NonconformityTypeStatistics> ret = new ArrayList<NonconformityTypeStatistics>();
+        for (NonconformityTypeStatisticsDTO dto : dtos) {
+            NonconformityTypeStatistics stat = new NonconformityTypeStatistics(dto);
+            ret.add(stat);
+        }
+
+        return ret;
+    }
 
     @Override
     public List<SedParticipantStatisticsCountDTO> getAllSedParticipantCounts() {
@@ -118,7 +138,7 @@ public class StatisticsManagerImpl extends ApplicationObjectSupport implements S
 
     @Override
     public ParticipantGenderStatisticsDTO getParticipantGenderStatisticsDTO() {
-        //There should only ever be one active record.
+        // There should only ever be one active record.
         List<ParticipantGenderStatisticsDTO> stats = participantGenderStatisticsCountDAO.findAll();
         if (stats != null && stats.size() > 0) {
             return stats.get(0);

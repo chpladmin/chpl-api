@@ -1,5 +1,49 @@
 # Release Notes
 
+## Version 16.1.0
+_16 August 2018_
+
+### New Features
+* Add nonconformity charts statistics endpoint
+* Identify questionable activity based on the confirmed date of a listing rather than the certification date.
+* Add "Trigger Developer Ban" notification
+* Migrate "Summary Statistics" to Quartz
+  * Added new Quartz job to gather and store Summary Statistics
+  * Added new user schedulable job that sends the Summary Statistics Email
+  * Added new endpoint for retrieving all jobs that user has permission to schedule
+* Download XML file changes
+  * In the <ucdProces> node
+    * AllVersions will now be structured: `<allVersions><version/><version/> ... </allVersions>`
+    * SuccessVersions will now be structured: `<successVersions><version/><version/> ... </successVersions>`
+  * In the <listing> node
+    * CertificationStatusEvents will now be structured: `<certificationEvents><certificationEvent><eventDate/><id/><reason/></status></certificationEvent> ... </certificationEvents>`
+    * TestingLabs will now be structured: `<testingLabs><testingLabs/><testingLab/> ... </testingLabs>`
+  * In the <ucdProcess> node
+    * Criteria will now be structured: `<criteriaList><criteria/><criteria/> ... </criteriaList>`
+
+---
+
+## Version 16.0.0
+_7 August 2018_
+
+### Backwards compatibility breaking changes
+* Require start and end data parameters on all /activity API calls that are not for a single item.
+
+### New Features
+* Added JavaMelody to provide Tomcat performance monitoring page.
+* Restrict certain /activity data to admin, acb, atl, or cms users as appropriate.
+* Update text describing /download endpoint
+
+---
+
+## Version 15.16.0
+_18 July 2018_
+
+### New Features
+* Legacy 2014 listings (those with product numbers like "CHP-") are allowed to have attested to 170.314 (g)(3) but not required to have a criteria with SED and vice versa.
+
+---
+
 ## Version 15.15.2
 _16 July 2018_
 

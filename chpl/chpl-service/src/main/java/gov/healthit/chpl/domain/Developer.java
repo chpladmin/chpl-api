@@ -7,6 +7,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
@@ -78,7 +79,8 @@ public class Developer implements Serializable {
     /**
      * Status changes that have occurred on the developer.
      */
-    @XmlElement(required = false, nillable = true)
+    @XmlElementWrapper(name = "statusEvents", nillable = true, required = false)
+    @XmlElement(name = "statusEvent",required = false, nillable = true)
     private List<DeveloperStatusEvent> statusEvents;
 
     /**

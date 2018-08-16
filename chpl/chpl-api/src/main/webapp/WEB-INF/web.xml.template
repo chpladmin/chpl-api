@@ -68,4 +68,12 @@
   		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 
+    <filter>
+        <filter-name>javamelody</filter-name>
+        <filter-class>net.bull.javamelody.MonitoringFilter</filter-class>
+        <init-param>
+            <param-name>authorized-users</param-name>
+            <param-value>user1:pwd1, user2:pwd2</param-value>
+        </init-param>
+    </filter>
 </web-app>

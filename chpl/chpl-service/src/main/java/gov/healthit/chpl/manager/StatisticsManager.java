@@ -5,6 +5,7 @@ import java.util.List;
 import gov.healthit.chpl.domain.CriterionProductStatistics;
 import gov.healthit.chpl.domain.IncumbentDevelopersStatistics;
 import gov.healthit.chpl.domain.ListingCountStatistics;
+import gov.healthit.chpl.domain.NonconformityTypeStatistics;
 import gov.healthit.chpl.domain.ParticipantAgeStatistics;
 import gov.healthit.chpl.domain.ParticipantEducationStatistics;
 import gov.healthit.chpl.domain.ParticipantExperienceStatistics;
@@ -69,5 +70,7 @@ public interface StatisticsManager {
      * @return ParticipantExperienceStatisticsResult object
      */
     List<ParticipantExperienceStatistics> getParticipantExperienceStatisticsResult(Long experienceTypeId);
+
+    List<NonconformityTypeStatistics> getAllNonconformitiesByCriterion();
 
 }

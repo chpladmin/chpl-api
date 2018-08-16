@@ -1,5 +1,9 @@
 package gov.healthit.chpl.manager.impl;
 
+import static org.quartz.JobKey.jobKey;
+import static org.quartz.TriggerBuilder.newTrigger;
+import static org.quartz.TriggerKey.triggerKey;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,6 +18,12 @@ import javax.persistence.EntityNotFoundException;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.quartz.JobKey;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.Trigger;
+import org.quartz.TriggerKey;
+import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.MessageSource;
@@ -261,6 +271,15 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     @Autowired
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
 
+    private static final int PROD_CODE_LOC = 4;
+    private static final int VER_CODE_LOC = 5;
+    private static final int ICS_CODE_LOC = 6;
+    private static final int SW_CODE_LOC = 7;
+    private static final int DATE_CODE_LOC = 8;
+
+    /**
+     * Default constructor.
+     */
     public CertifiedProductManagerImpl() {
     }
 
@@ -461,7 +480,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         if (pendingCp.getCertificationEditionId() == null) {
             throw new EntityCreationException(
                     "The ID of an existing certification edition (year) must be provided. "
-                    + "  A new certification edition cannot be created via this process.");
+                            + "  A new certification edition cannot be created via this process.");
         }
         toCreate.setCertificationEditionId(pendingCp.getCertificationEditionId());
         toCreate.setTransparencyAttestationUrl(pendingCp.getTransparencyAttestationUrl());
@@ -517,11 +536,11 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
         String uniqueId = pendingCp.getUniqueId();
         String[] uniqueIdParts = uniqueId.split("\\.");
-        toCreate.setProductCode(uniqueIdParts[4]);
-        toCreate.setVersionCode(uniqueIdParts[5]);
-        toCreate.setIcsCode(uniqueIdParts[6]);
-        toCreate.setAdditionalSoftwareCode(uniqueIdParts[7]);
-        toCreate.setCertifiedDateCode(uniqueIdParts[8]);
+        toCreate.setProductCode(uniqueIdParts[PROD_CODE_LOC]);
+        toCreate.setVersionCode(uniqueIdParts[VER_CODE_LOC]);
+        toCreate.setIcsCode(uniqueIdParts[ICS_CODE_LOC]);
+        toCreate.setAdditionalSoftwareCode(uniqueIdParts[SW_CODE_LOC]);
+        toCreate.setCertifiedDateCode(uniqueIdParts[DATE_CODE_LOC]);
 
         CertifiedProductDTO newCertifiedProduct = cpDao.create(toCreate);
 
@@ -738,7 +757,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                                         certResult.getNumber(), testData.getTestData().getName());
                                 if (foundTestData == null) {
                                     LOGGER.error("Could not find test data for " + certResult.getNumber()
-                                        + " and test data name " + testData.getTestData().getName());
+                                    + " and test data name " + testData.getTestData().getName());
                                 } else {
                                     testDto.setTestData(foundTestData);
                                     testDto.setTestDataId(foundTestData.getId());
@@ -799,7 +818,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                                                 proc.getTestProcedure().getName());
                                 if (foundTp == null) {
                                     LOGGER.error("Could not find test procedure for " + certResult.getNumber()
-                                        + " and test procedure name " + proc.getTestProcedure().getName());
+                                    + " and test procedure name " + proc.getTestProcedure().getName());
                                 } else {
                                     procDto.setTestProcedure(foundTp);
                                     procDto.setTestProcedureId(foundTp.getId());
@@ -1022,7 +1041,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
     private CertificationResultDTO addG1G2MacraMeasures(
             final PendingCertificationResultDTO certResult, final CertificationResultDTO createdCert)
-            throws EntityCreationException {
+                    throws EntityCreationException {
         if (certResult.getG1MacraMeasures() != null && certResult.getG1MacraMeasures().size() > 0) {
             for (PendingCertificationResultMacraMeasureDTO pendingMeasure : certResult
                     .getG1MacraMeasures()) {
@@ -1129,7 +1148,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     public CertifiedProductDTO update(final Long acbId, final ListingUpdateRequest updateRequest,
             final CertifiedProductSearchDetails existingListing)
                     throws AccessDeniedException, EntityRetrievalException, JsonProcessingException,
-                            EntityCreationException, InvalidArgumentsException, IOException {
+                    EntityCreationException, InvalidArgumentsException, IOException {
 
         CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
         Long listingId = updatedListing.getId();
@@ -1165,18 +1184,11 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                         "User does not have admin permission to change " + cpDeveloper.getName() + " status.");
             }
             break;
+        case WithdrawnByAcb:
         case WithdrawnByDeveloperUnderReview:
-            // conditionally change the status of the developer if the new
-            // listing status
-            // is withdrawn by dev under surv/review (acb admin and onc admin
-            // can do this)
+            // initiate TriggerDeveloperBan job, telling ONC that they might need to ban a Developer
             if ((Util.isUserRoleAdmin() || Util.isUserRoleAcbAdmin())) {
-                if (updateRequest.getBanDeveloper() != null && updateRequest.getBanDeveloper().booleanValue()) {
-                    newDevStatusDto = devStatusDao.getByName(DeveloperStatusType.UnderCertificationBanByOnc.toString());
-                } else {
-                    LOGGER.info("Request was made to update listing status to " + updatedStatusDto.getStatus()
-                    + " but not ban the developer.");
-                }
+                triggerDeveloperBan(updatedListing);
             } else if (!Util.isUserRoleAdmin() && !Util.isUserRoleAcbAdmin()) {
                 LOGGER.error("User " + Util.getUsername()
                 + " does not have ROLE_ADMIN or ROLE_ACB and cannot change the status of "
@@ -2143,14 +2155,50 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         }
         return dtos.get(0);
     }
+    private void triggerDeveloperBan(final CertifiedProductSearchDetails updatedListing) {
+        Scheduler scheduler;
+        try {
+            scheduler = getScheduler();
+
+            TriggerKey triggerId = triggerKey("triggerBanNow_" + new Date().getTime(), "triggerDeveloperBanTrigger");
+            JobKey jobId = jobKey("Trigger Developer Ban Notification", "chplJobs");
+
+            Trigger qzTrigger = newTrigger()
+                    .withIdentity(triggerId)
+                    .startNow()
+                    .forJob(jobId)
+                    .usingJobData("status", updatedListing.getCurrentStatus().getStatus().getName())
+                    .usingJobData("dbId", updatedListing.getId())
+                    .usingJobData("chplId", updatedListing.getChplProductNumber())
+                    .usingJobData("developer", updatedListing.getDeveloper().getName())
+                    .usingJobData("acb", updatedListing.getCertifyingBody().get("name").toString())
+                    .usingJobData("changeDate", new Date().getTime())
+                    .usingJobData("firstName", Util.getCurrentUser().getFirstName())
+                    .usingJobData("lastName", Util.getCurrentUser().getLastName())
+                    .usingJobData("effectiveDate", updatedListing.getCurrentStatus().getEventDate())
+                    .usingJobData("openNcs", updatedListing.getCountOpenNonconformities())
+                    .usingJobData("closedNcs", updatedListing.getCountClosedNonconformities())
+                    .build();
+            scheduler.scheduleJob(qzTrigger);
+        } catch (SchedulerException e) {
+            LOGGER.error("Could not start Trigger Developer Ban", e);
+        }
+    }
+
+    private Scheduler getScheduler() throws SchedulerException {
+        StdSchedulerFactory sf = new StdSchedulerFactory();
+        sf.initialize("quartz.properties");
+        Scheduler scheduler = sf.getScheduler();
+        return scheduler;
+    }
 
     private class CertificationStatusEventPair {
         private CertificationStatusEvent orig;
         private CertificationStatusEvent updated;
 
-        public CertificationStatusEventPair() { }
+        CertificationStatusEventPair() { }
 
-        public CertificationStatusEventPair(final CertificationStatusEvent orig,
+        CertificationStatusEventPair(final CertificationStatusEvent orig,
                 final CertificationStatusEvent updated) {
 
             this.orig = orig;
@@ -2179,9 +2227,9 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         private CertifiedProductQmsStandard orig;
         private CertifiedProductQmsStandard updated;
 
-        public QmsStandardPair() { }
+        QmsStandardPair() { }
 
-        public QmsStandardPair(final CertifiedProductQmsStandard orig, final CertifiedProductQmsStandard updated) {
+        QmsStandardPair(final CertifiedProductQmsStandard orig, final CertifiedProductQmsStandard updated) {
             this.orig = orig;
             this.updated = updated;
         }
@@ -2208,9 +2256,9 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         private CQMResultDetailsDTO orig;
         private CQMResultDetailsDTO updated;
 
-        public CQMResultDetailsPair() { }
+        CQMResultDetailsPair() { }
 
-        public CQMResultDetailsPair(final CQMResultDetailsDTO orig, final CQMResultDetailsDTO updated) {
+        CQMResultDetailsPair(final CQMResultDetailsDTO orig, final CQMResultDetailsDTO updated) {
             this.orig = orig;
             this.updated = updated;
         }

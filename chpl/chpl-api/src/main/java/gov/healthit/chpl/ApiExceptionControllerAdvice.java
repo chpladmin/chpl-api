@@ -58,6 +58,13 @@ public class ApiExceptionControllerAdvice {
                 HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorJSONObject> exception(final IllegalArgumentException e) {
+        LOGGER.error(e.getMessage(), e);
+        return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()),
+                HttpStatus.BAD_REQUEST);
+    }
+    
     @ExceptionHandler(TypeMismatchException.class)
     public ResponseEntity<ErrorJSONObject> typeMismatchException(final TypeMismatchException e) {
         LOGGER.error(e.getMessage(), e);
@@ -144,10 +151,11 @@ public class ApiExceptionControllerAdvice {
     public ResponseEntity<ErrorJSONObject> exception(final MissingReasonException e) {
         LOGGER.error("Caught missing reason exception.", e);
         return new ResponseEntity<ErrorJSONObject>(
-                new ErrorJSONObject(e.getMessage() != null ? e.getMessage() : "A reason is required to perform this action."),
+                new ErrorJSONObject(e.getMessage() != null ? e.getMessage() : 
+                    "A reason is required to perform this action."),
                 HttpStatus.BAD_REQUEST);
     }
-    
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorJSONObject> exception(final Exception e) {
         LOGGER.error("Caught exception.", e);

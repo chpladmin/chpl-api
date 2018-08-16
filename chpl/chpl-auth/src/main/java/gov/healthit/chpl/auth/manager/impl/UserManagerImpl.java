@@ -12,7 +12,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.auth.dao.UserContactDAO;
 import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dao.UserPermissionDAO;
 import gov.healthit.chpl.auth.dto.UserDTO;
@@ -50,9 +49,6 @@ public class UserManagerImpl implements UserManager {
 	
 	@Autowired
 	private UserDAO userDAO;
-	
-	@Autowired
-	private UserContactDAO userContactDAO;
 	
 	@Autowired
 	UserPermissionDAO userPermissionDAO;
@@ -151,6 +147,10 @@ public class UserManagerImpl implements UserManager {
 		return securedUserManager.getAll();
 	}
 	
+	@Transactional
+	public List<UserDTO> getUsersWithPermission(String permissionName) {
+	    return securedUserManager.getUsersWithPermission(permissionName);
+	}
 	
 	@Transactional
 	public UserDTO getById(Long id) throws UserRetrievalException{
