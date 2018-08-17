@@ -351,7 +351,7 @@ public class CertifiedProductManagerTest extends TestCase {
         assertNotNull(status.getId());
         assertNotNull(status.getStatus());
         assertNotNull(status.getStatus().getStatusName());
-        assertEquals(DeveloperStatusType.UnderCertificationBanByOnc.toString(), status.getStatus().getStatusName());
+        assertEquals(DeveloperStatusType.Active.toString(), status.getStatus().getStatusName());
     }
 
     @Test
@@ -2483,8 +2483,9 @@ public class CertifiedProductManagerTest extends TestCase {
         assertEquals(6, listings.size());
     }
 
-    private void updateListingStatus(Long acbId, Long listingId, CertificationStatusDTO stat, String reason)
-            throws EntityRetrievalException, EntityCreationException, 
+    private void updateListingStatus(final Long acbId, final Long listingId,
+            final CertificationStatusDTO stat, final String reason)
+            throws EntityRetrievalException, EntityCreationException,
             JsonProcessingException, InvalidArgumentsException, IOException {
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
 
