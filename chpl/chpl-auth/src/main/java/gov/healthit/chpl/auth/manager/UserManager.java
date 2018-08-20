@@ -31,6 +31,7 @@ public interface UserManager {
 	
 	public List<UserDTO> getAll();
 	
+	public List<UserDTO> getUsersWithPermission(String permissionName);
 	
 	public UserDTO getById(Long id) throws UserRetrievalException;
 	

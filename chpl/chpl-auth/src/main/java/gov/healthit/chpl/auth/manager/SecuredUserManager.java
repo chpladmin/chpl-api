@@ -29,7 +29,8 @@ public interface SecuredUserManager {
 	public List<UserDTO> getAll();
 	
 	public UserDTO getById(Long id) throws UserRetrievalException;
-
+	public List<UserDTO> getUsersWithPermission(String permissionName);
+	
 	public void addAclPermission(UserDTO user, Sid recipient, Permission permission);
 	
 	public void deleteAclPermission(UserDTO user, Sid recipient, Permission permission);

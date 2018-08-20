@@ -342,7 +342,6 @@ public class CertifiedProductManagerTest extends TestCase {
 
         ListingUpdateRequest toUpdate = new ListingUpdateRequest();
         toUpdate.setListing(updatedListing);
-        toUpdate.setBanDeveloper(true);
         cpManager.update(acbId, toUpdate, existingListing);
 
         DeveloperDTO dev = devManager.getById(-1L);

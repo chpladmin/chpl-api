@@ -5,6 +5,7 @@ persistenceUnitName=openchpl
 springfox.documentation.swagger.v2.path=/api-docs
 basePath=/rest
 questionableActivityThresholdDays=0
+maxActivityRangeInDays=60
 
 #
 # job properties
@@ -111,3 +112,7 @@ chplUrlBegin=http://localhost:8000/app
 
 #Asynchronous - should always be true
 asyncEnabled=true
+
+# Scheduler properties
+corePoolSize=10
+maxPoolSize=20

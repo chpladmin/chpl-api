@@ -31,7 +31,7 @@ public class CertificationResultTestStandard implements Serializable {
     /**
      * Test standard internal ID
      */
-    @XmlElement(required = true)
+    @XmlElement(required = false, nillable = true)
     private Long testStandardId;
 
     /**
@@ -43,7 +43,7 @@ public class CertificationResultTestStandard implements Serializable {
     /**
      * Name of test standard
      */
-    @XmlElement(required = true)
+    @XmlElement(required = false, nillable = true)
     private String testStandardName;
 
     public CertificationResultTestStandard() {

@@ -65,7 +65,7 @@ public class QuestionableActivityThresholdTest extends TestCase {
     @Autowired private QuestionableActivityDAO qaDao;
     @Autowired private CertifiedProductController cpController;
     @Autowired private CertifiedProductDetailsManager cpdManager;
-    
+
     private CertifiedProductSearchDetails listing;
     private static JWTAuthenticatedUser adminUser;
     private static final long ADMIN_ID = -2L;
@@ -105,7 +105,7 @@ public class QuestionableActivityThresholdTest extends TestCase {
     public void testUpdateGapInsideActivityThreshold_DoesNotRecordActivity()
             throws EntityCreationException, EntityRetrievalException, ValidationException, InvalidArgumentsException,
             JsonProcessingException, MissingReasonException, IOException {
-        
+
         // perform an update that would generate questionable activity outside
         // of the threshold but make sure that no questionable activity was
         // entered.
@@ -120,7 +120,6 @@ public class QuestionableActivityThresholdTest extends TestCase {
         assertTrue(changedGap);
 
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setBanDeveloper(false);
         updateRequest.setListing(listing);
         cpController.updateCertifiedProduct(updateRequest);
         Date afterActivity = new Date();
@@ -130,15 +129,15 @@ public class QuestionableActivityThresholdTest extends TestCase {
         assertTrue(activities == null || activities.size() == 0);
         SecurityContextHolder.getContext().setAuthentication(null);
     }
-    
+
     @Test
     @Transactional
     @Rollback
     public void testAddCqmInsideActivityThreshold_DoesNotRecordActivity() throws
-        EntityCreationException, EntityRetrievalException,
-        ValidationException, InvalidArgumentsException, JsonProcessingException,
-        MissingReasonException, IOException {
-        
+    EntityCreationException, EntityRetrievalException,
+    ValidationException, InvalidArgumentsException, JsonProcessingException,
+    MissingReasonException, IOException {
+
         //perform an update that would generate questionable activity outside
         //of the threshold but make sure that no questionable activity was entered.
         final long cms82Id = 60L;
@@ -153,7 +152,6 @@ public class QuestionableActivityThresholdTest extends TestCase {
         listing.getCqmResults().add(addedCqm);
 
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setBanDeveloper(false);
         updateRequest.setListing(listing);
         cpController.updateCertifiedProduct(updateRequest);
         Date afterActivity = new Date();

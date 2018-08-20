@@ -11,6 +11,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
@@ -27,7 +29,7 @@ import org.springframework.web.servlet.view.JstlView;
 @ComponentScan(basePackages = {
         "org.springframework.security.**", "org.springframework.core.env.**", "gov.healthit.chpl.util.**",
         "gov.healthit.chpl.auth.**", "gov.healthit.chpl.dao.**", "gov.healthit.chpl.entity.**",
-        "gov.healthit.chpl.auth.manager.**", "gov.healthit.chpl.manager.**", "gov.healthit.chpl.upload.**",
+        /*"gov.healthit.chpl.auth.manager.**",*/ "gov.healthit.chpl.manager.**", "gov.healthit.chpl.upload.**",
         "gov.healthit.chpl.validation.**", "gov.healthit.chpl.scheduler.**"
 }, lazyInit = true, excludeFilters = {
         @ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)
@@ -158,5 +160,22 @@ public class JobConfig {
         viewResolver.setPrefix("/webapp/WEB-INF/jsp/");
         viewResolver.setSuffix(".jsp");
         return viewResolver;
+    }
+
+    /**
+     * Get a task executor.
+     * @return TaskExecutor object
+     */
+    @Bean(name = "jobAsyncDataExecutor")
+    public TaskExecutor specificTaskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(3);
+        executor.setMaxPoolSize(6);
+//        executor.setCorePoolSize(Integer.parseInt(props.getProperty("corePoolSize")));
+//        executor.setMaxPoolSize(Integer.parseInt(props.getProperty("maxPoolSize")));
+        //executor.setQueueCapacity(11);
+        executor.setThreadNamePrefix("jobDataThread");
+        executor.initialize();
+        return executor;
     }
 }

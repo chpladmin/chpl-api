@@ -27,9 +27,9 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
     public Long getTotalUniqueProductsByEditionAndStatus(final DateRange dateRange,
             final String edition, final List<String> statuses) {
         String hql = "SELECT DISTINCT UPPER(productName) || UPPER(developerName) "
-                + "FROM CertifiedProductDetailsEntity ";
+                + "FROM CertifiedProductSummaryEntity ";
 
-        boolean hasWhere = false;
+                boolean hasWhere = false;
         if (edition != null) {
             hql += " WHERE year = :edition ";
             hasWhere = true;
@@ -41,7 +41,7 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
             } else {
                 hql += " AND ";
             }
-            hql += " UPPER(certificationStatusName) IN (:statuses) ";
+            hql += " UPPER(certificationStatus) IN (:statuses) ";
         }
         if (dateRange == null) {
             if (!hasWhere) {
@@ -62,6 +62,7 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
                     + " OR "
                     + "(deleted = true AND creationDate <= :endDate AND lastModifiedDate > :endDate)) ";
         }
+
         Query query = entityManager.createQuery(hql);
         if (edition != null) {
             query.setParameter("edition", edition);
@@ -169,7 +170,7 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
     public Long getTotalListingsByEditionAndStatus(final DateRange dateRange,
             final String edition, final List<String> statuses) {
         String hql = "SELECT COUNT(*) "
-                + "FROM CertifiedProductDetailsEntity ";
+                + "FROM CertifiedProductSummaryEntity ";
         boolean hasWhere = false;
         if (edition != null) {
             hql += " WHERE year = :edition ";
@@ -182,7 +183,7 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
             } else {
                 hql += " AND ";
             }
-            hql += " UPPER(certificationStatusName) IN (:statuses) ";
+            hql += " UPPER(certificationStatus) IN (:statuses) ";
         }
         if (dateRange == null) {
             if (!hasWhere) {
@@ -224,8 +225,8 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
     @Override
     public List<CertifiedBodyStatistics> getTotalActiveListingsByCertifiedBody(final DateRange dateRange) {
         String hql = "SELECT certificationBodyName, year, count(*) "
-                + "FROM CertifiedProductDetailsEntity "
-                + "WHERE UPPER(certificationStatusName) in ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') ";
+                + "FROM CertifiedProductSummaryEntity "
+                + "WHERE UPPER(certificationStatus) in ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') ";
         if (dateRange == null) {
             hql += " AND deleted = false ";
         } else {
@@ -236,7 +237,6 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
         }
         hql += " GROUP BY certificationBodyName, year "
                 + " ORDER BY certificationBodyName ";
-
         Query query = entityManager.createQuery(hql);
         if (dateRange != null) {
             query.setParameter("startDate", dateRange.getStartDate());

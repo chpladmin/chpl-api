@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Configuration>
-<Configuration status="warn" monitorInterval="300"
-    name="CHPL-App" packages="">
+<Configuration status="warn" monitorInterval="300" name="CHPL-App"
+    packages="">
     <Properties>
         <Property name="logDir">.</Property>
         <Property name="appName">${sys:chpl.appName}</Property>
@@ -17,6 +17,10 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout
+                pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+        </Console>
     </Appenders>
 
     <Loggers>
@@ -30,10 +34,15 @@
             additivity="false">
             <AppenderRef ref="FILE" />
         </Logger>
+        <Logger name="org.quartz" level="INFO" additivity="false">
+            <AppenderRef ref="FILE" />
+            <AppenderRef ref="Console" />
+        </Logger>
         <Logger name="gov.healthit.chpl" level="INFO" additivity="false">
             <AppenderRef ref="FILE" />
+            <AppenderRef ref="Console" />
         </Logger>
-        <Root level="INFO">
+        <Root level="DEBUG">
             <AppenderRef ref="FILE" />
         </Root>
     </Loggers>
