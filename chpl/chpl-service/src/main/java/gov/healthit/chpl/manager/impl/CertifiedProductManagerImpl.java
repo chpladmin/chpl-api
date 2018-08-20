@@ -1207,6 +1207,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             statusHistoryToAdd.setDeveloperId(cpDeveloper.getId());
             statusHistoryToAdd.setStatus(newDevStatusDto);
             statusHistoryToAdd.setStatusDate(new Date());
+            //TODO: add reason
             cpDeveloper.getStatusEvents().add(statusHistoryToAdd);
             developerManager.update(cpDeveloper);
         }

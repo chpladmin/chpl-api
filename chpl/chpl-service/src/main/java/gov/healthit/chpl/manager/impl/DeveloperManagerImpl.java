@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -43,6 +44,7 @@ import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
@@ -141,14 +143,17 @@ public class DeveloperManagerImpl implements DeveloperManager {
             CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.GET_DECERTIFIED_DEVELOPERS
     }, allEntries = true)
     public DeveloperDTO update(final DeveloperDTO developer)
-            throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+            throws EntityRetrievalException, JsonProcessingException, 
+            EntityCreationException, MissingReasonException {
 
         DeveloperDTO beforeDev = getById(developer.getId());
         DeveloperStatusEventDTO newDevStatus = developer.getStatus();
         DeveloperStatusEventDTO currDevStatus = beforeDev.getStatus();
         if (currDevStatus == null || currDevStatus.getStatus() == null) {
-            String msg = "The developer " + beforeDev.getName()
-                    + " cannot be updated since it's current status cannot be determined.";
+            String msg = String.format(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("developer.noStatusFound"), 
+                    Locale.getDefault()), 
+                    beforeDev.getName());
             LOGGER.error(msg);
             throw new EntityCreationException(msg);
         }
@@ -157,10 +162,12 @@ public class DeveloperManagerImpl implements DeveloperManager {
         // then nothing can be changed
         if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
                 && !Util.isUserRoleAdmin()) {
-            LOGGER.error("User " + Util.getUsername() + " does not have ROLE_ADMIN and cannot change developer "
-                    + beforeDev.getName() + " because its status is not Active.");
-            throw new EntityCreationException(
-                    "User without ROLE_ADMIN is not authorized to update an inactive developer.");
+            String msg = String.format(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("developer.notActiveNotAdminCantChangeStatus"), 
+                    Locale.getDefault()), 
+                    Util.getUsername(), beforeDev.getName());
+            LOGGER.error(msg);
+            throw new EntityCreationException(msg);
         }
 
         // if the status history has been modified, the user must be role admin

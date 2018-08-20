@@ -23,6 +23,7 @@ public class DeveloperStatusEventDTO implements Serializable {
         this.developerId = entity.getDeveloperId();
         this.status = new DeveloperStatusDTO(entity.getDeveloperStatus());
         this.statusDate = entity.getStatusDate();
+        this.reason = entity.getReason();
     }
 
     public Long getId() {
