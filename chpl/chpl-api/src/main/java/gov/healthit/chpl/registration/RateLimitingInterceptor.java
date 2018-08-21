@@ -24,6 +24,7 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 @Component
@@ -72,16 +73,12 @@ public class RateLimitingInterceptor extends HandlerInterceptorAdapter implement
         String clientIdParam = request.getParameter("api_key");
         String clientIdHeader = request.getHeader("API-Key");
         
-        if (clientIdHeader == clientIdParam) {
+        if (!StringUtils.isEmpty(clientIdParam)) {
+            key = clientIdParam;
+        }else if(!StringUtils.isEmpty(clientIdHeader)){
             key = clientIdHeader;
-        } else {
-            if (clientIdHeader == null) {
-                key = clientIdParam;
-            } else if (clientIdParam == null) {
-                key = clientIdHeader;
-            } else {
-                return false;
-            }
+        }else{
+            return false;
         }
         
         List<ApiKeyDTO> keyDtos = apiKeyDao.findAllWhitelisted();
