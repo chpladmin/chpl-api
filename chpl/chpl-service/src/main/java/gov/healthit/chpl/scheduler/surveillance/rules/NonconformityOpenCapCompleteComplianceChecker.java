@@ -1,4 +1,4 @@
-package gov.healthit.chpl.app.surveillance.rules;
+package gov.healthit.chpl.scheduler.surveillance.rules;
 
 import java.time.Duration;
 import java.time.Instant;

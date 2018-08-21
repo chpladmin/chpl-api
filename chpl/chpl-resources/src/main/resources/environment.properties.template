@@ -106,3 +106,7 @@ chplUrlBegin=http://localhost:8000/app
 
 #Asynchronous - should always be true
 asyncEnabled=true
+
+# Scheduler properties
+corePoolSize=10
+maxPoolSize=20

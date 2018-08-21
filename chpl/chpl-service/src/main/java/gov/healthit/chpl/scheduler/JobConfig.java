@@ -29,7 +29,7 @@ import org.springframework.web.servlet.view.JstlView;
 @ComponentScan(basePackages = {
         "org.springframework.security.**", "org.springframework.core.env.**", "gov.healthit.chpl.util.**",
         "gov.healthit.chpl.auth.**", "gov.healthit.chpl.dao.**", "gov.healthit.chpl.entity.**",
-        "gov.healthit.chpl.auth.manager.**", "gov.healthit.chpl.manager.**", "gov.healthit.chpl.upload.**",
+        /*"gov.healthit.chpl.auth.manager.**",*/ "gov.healthit.chpl.manager.**", "gov.healthit.chpl.upload.**",
         "gov.healthit.chpl.validation.**", "gov.healthit.chpl.scheduler.**"
 }, lazyInit = true, excludeFilters = {
         @ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)
@@ -169,10 +169,12 @@ public class JobConfig {
     @Bean(name = "jobAsyncDataExecutor")
     public TaskExecutor specificTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(10);
-        executor.setMaxPoolSize(20);
+        executor.setCorePoolSize(3);
+        executor.setMaxPoolSize(6);
+//        executor.setCorePoolSize(Integer.parseInt(props.getProperty("corePoolSize")));
+//        executor.setMaxPoolSize(Integer.parseInt(props.getProperty("maxPoolSize")));
         //executor.setQueueCapacity(11);
-        executor.setThreadNamePrefix("chartDataThread");
+        executor.setThreadNamePrefix("jobDataThread");
         executor.initialize();
         return executor;
     }
