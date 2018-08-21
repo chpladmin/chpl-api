@@ -1,5 +1,6 @@
 package gov.healthit.chpl.dao.impl;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
@@ -21,7 +23,6 @@ import gov.healthit.chpl.dao.TestParticipantDAO;
 import gov.healthit.chpl.dao.TestTaskDAO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
-import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
@@ -35,7 +36,6 @@ import gov.healthit.chpl.dto.TestTaskDTO;
 import gov.healthit.chpl.entity.TestParticipantEntity;
 import gov.healthit.chpl.entity.TestTaskEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultAdditionalSoftwareEntity;
-import gov.healthit.chpl.entity.listing.CertificationResultDetailsEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultG1MacraMeasureEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultG2MacraMeasureEntity;
@@ -60,7 +60,10 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
     TestTaskDAO testTaskDao;
     @Autowired
     MessageSource messageSource;
-
+    
+    @Autowired
+    private Environment env;
+    
     @Override
     public CertificationResultDTO create(CertificationResultDTO result) throws EntityCreationException {
         CertificationResultEntity entity = null;
@@ -477,6 +480,23 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
             return null;
         }
         return result;
+    }
+
+    @Override
+    public boolean getCertifiedProductHasAdditionalSoftware(Long certifiedProductId) {
+        //This needs to be a native query since the is no relationship between CertificationResultEntity
+        //and CertificationResultAdditionalSoftwareEntity defined.
+        String schema = env.getProperty("persistenceUnitName");
+        Query query = entityManager.createNativeQuery(
+                        "select count(cr.certification_result_id) " 
+                        + "from " + schema + ".certification_result cr " 
+                        + "    inner join " + schema + ".certification_result_additional_software cras" 
+                        + "        on cr.certification_result_id = cras.certification_result_id " 
+                        + "where cr.certified_product_id = :certifiedProductId"); 
+        
+        query.setParameter("certifiedProductId", certifiedProductId);
+        BigInteger count = (BigInteger) query.getSingleResult();
+        return count.intValue() > 0;
     }
 
     /******************************************************

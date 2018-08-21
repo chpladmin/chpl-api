@@ -46,8 +46,8 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.manager.TestingFunctionalityManager;
 import gov.healthit.chpl.util.CertificationResultRules;
-import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidator;
-import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFactory;
+import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
+import gov.healthit.chpl.validation.listing.PendingValidator;
 
 @Service
 public class PendingCertifiedProductManagerImpl implements PendingCertifiedProductManager {
@@ -56,7 +56,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
     @Autowired
     private CertificationResultRules certRules;
     @Autowired
-    private CertifiedProductValidatorFactory validatorFactory;
+    private ListingValidatorFactory validatorFactory;
 
     @Autowired
     private PendingCertifiedProductDAO pcpDao;
@@ -356,7 +356,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 
     private void validate(final List<PendingCertifiedProductDTO> products) {
         for (PendingCertifiedProductDTO dto : products) {
-            CertifiedProductValidator validator = validatorFactory.getValidator(dto);
+            PendingValidator validator = validatorFactory.getValidator(dto);
             if (validator != null) {
                 validator.validate(dto);
             }
@@ -365,7 +365,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 
     private void validate(final PendingCertifiedProductDTO... products) {
         for (PendingCertifiedProductDTO dto : products) {
-            CertifiedProductValidator validator = validatorFactory.getValidator(dto);
+            PendingValidator validator = validatorFactory.getValidator(dto);
             if (validator != null) {
                 validator.validate(dto);
             }

@@ -37,8 +37,7 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.ProductManager;
-import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidator;
-import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFactory;
+import gov.healthit.chpl.validation.listing.reviewer.ChplNumberReviewer;
 
 @Service
 public class ProductManagerImpl implements ProductManager {
@@ -59,7 +58,7 @@ public class ProductManagerImpl implements ProductManager {
     @Autowired
     CertificationBodyManager acbManager;
     @Autowired
-    CertifiedProductValidatorFactory cpValidatorFactory;
+    ChplNumberReviewer chplNumberReviewer;
 
     @Autowired
     ActivityManager activityManager;
@@ -289,12 +288,11 @@ public class ProductManagerImpl implements ProductManager {
                 String potentialChplNumber = splitChplNumber[0] + "." + splitChplNumber[1] + "." + splitChplNumber[2]
                         + "." + splitChplNumber[3] + "." + newProductCode + "." + splitChplNumber[5] + "."
                         + splitChplNumber[6] + "." + splitChplNumber[7] + "." + splitChplNumber[8];
-                CertifiedProductValidator validator = cpValidatorFactory.getValidator(beforeProduct);
-                if (validator != null && !validator.validateUniqueId(potentialChplNumber)) {
+                if (!chplNumberReviewer.validateUniqueId(potentialChplNumber)) {
                     throw new EntityCreationException("Cannot update certified product " + chplNumber + " to "
                             + potentialChplNumber + " because a certified product with that CHPL ID already exists.");
                 }
-                if (validator != null && !validator.validateProductCodeCharacters(potentialChplNumber)) {
+                if (!chplNumberReviewer.validateProductCodeCharacters(potentialChplNumber)) {
                     throw new EntityCreationException(
                             String.format(
                                     messageSource.getMessage(
