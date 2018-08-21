@@ -11,4 +11,7 @@ _Date TBD_
   * Added new Quart job to gather and store surveillance error data
   * Added new user schedulable job to send the error email
 
+### Bugs Fixed
+* Extra test data/test procedure/test functionality/etc. no longer appears after attesting to a criteria with previously entered phantom data.
+
 ---
