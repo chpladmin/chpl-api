@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -155,6 +156,7 @@ import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
@@ -1207,9 +1209,18 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             statusHistoryToAdd.setDeveloperId(cpDeveloper.getId());
             statusHistoryToAdd.setStatus(newDevStatusDto);
             statusHistoryToAdd.setStatusDate(new Date());
-            //TODO: add reason
+            statusHistoryToAdd.setReason(String.format(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("developerStatusAutomaticallyChanged"),
+                    Locale.getDefault()),
+                    newDevStatusDto.getStatusName(), 
+                    updatedListing.getChplProductNumber(), 
+                    updatedStatus.getName()));
             cpDeveloper.getStatusEvents().add(statusHistoryToAdd);
-            developerManager.update(cpDeveloper);
+            try {
+                developerManager.update(cpDeveloper);
+            } catch(MissingReasonException ignore) {
+                //reason will never be missing since we set it above
+            }
         }
 
         CertifiedProductDTO dtoToUpdate = new CertifiedProductDTO(updatedListing);
