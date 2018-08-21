@@ -85,13 +85,14 @@ public class StatisticsDAOTest extends TestCase {
     }
 
     /**
-     * Given that getTotalDevelopers(DateRange) is called When the start date is
-     * set to the beginning of time and endDate is set to now() Then all
-     * non-deleted developers are returned
+     * Test getTotalDeveloperActivity.
+     * Given that getTotalDevelopers(DateRange) is called
+     * When the start date is set to the beginning of time and endDate is set to now()
+     * Then all non-deleted developers are returned
      */
     @Test
     @Transactional(readOnly = true)
-    public void getTotalDevelopers_filterDateRange_allDates() {
+    public void getTotalDevelopersFilterDateRangeAllDates() {
         DateRange dateRange = new DateRange(new Date(0), new Date());
         Long totalDevelopers = developerStatisticsDao.getTotalDevelopers(dateRange);
         assertNotNull(totalDevelopers);
@@ -99,13 +100,14 @@ public class StatisticsDAOTest extends TestCase {
     }
 
     /**
-     * Given that getTotalDevelopers(DateRange) is called When the start date is
-     * set to the beginning of time and endDate is set to now() Then all
-     * non-deleted developers are returned
+     * Test of getDevelopers.
+     * Given that getTotalDevelopers(DateRange) is called
+     * When the start date is set to the beginning of time and endDate is set to now()
+     * Then all non-deleted developers are returned
      */
     @Test
     @Transactional(readOnly = true)
-    public void getTotalDevelopers_filterDateRange_endDateFiltersResults() {
+    public void getTotalDevelopersFilterDateRangeEndDateFiltersResults() {
         Calendar cal = Calendar.getInstance();
         cal.set(2016, 0, 1, 0, 0);
         DateRange dateRange = new DateRange(new Date(0), new Date(cal.getTimeInMillis()));
