@@ -33,15 +33,13 @@ public class CertifiedProductXmlPresenter implements CertifiedProductPresenter {
                 XMLOutputFactory factory = XMLOutputFactory.newInstance();
                 writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
                 streamWriter = factory.createXMLStreamWriter(writer);
-                //streamWriter = new IndentingXMLStreamWriter(factory.createXMLStreamWriter(writer));
                 streamWriter.writeStartDocument("UTF-8", "1.0");
                 streamWriter.writeStartElement("ns2:results");
                 streamWriter.writeNamespace("ns2", "http://chpl.healthit.gov/listings");
                 CertifiedProductSearchDetailsXmlGenerator.add(cpList.getListings(), "listings", streamWriter);
                 streamWriter.writeEndElement();
                 streamWriter.writeEndDocument();
-                                
-            } catch(Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 LOGGER.error(e);
             } finally {

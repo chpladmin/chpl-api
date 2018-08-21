@@ -1,21 +1,23 @@
 package gov.healthit.chpl.domain.concept;
 
-import java.io.Serializable;
-
 /**
- * Enumeration that is used to indicate the frequency a job should be scheduled.
+ * Enumeration that is used to indicate the minimum frequency a job should be scheduled.
  * @author TYoung
  *
  */
-public enum ScheduleFrequencyConcept implements Serializable {
+public enum ScheduleFrequencyConcept {
     /**
-     * Indicates that a job should be scheduled daily.
+     * Indicates that a job can be scheduled per minute.
      */
-    DAILY("DAILY"),
+    MINUTES("MINUTES"),
     /**
      * Indicates that a job should be scheduled hourly.
      */
     HOURLY("HOURLY"),
+    /**
+     * Indicates that a job should be scheduled daily.
+     */
+    DAILY("DAILY"),
     /**
      * Indicates that a job should be scheduled weekly.
      */

@@ -53,7 +53,7 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
      * Constructor to initialize SummaryStatisticsJobCreator object.
      * @throws Exception is thrown
      */
-    public SummaryStatisticsCreatorJob() throws Exception{
+    public SummaryStatisticsCreatorJob() throws Exception {
         super();
         setLocalContext();
         context = new AnnotationConfigApplicationContext(JobConfig.class);
@@ -64,7 +64,7 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
     @Override
     protected void initiateSpringBeans(final AbstractApplicationContext context) throws IOException {
         setAsynchronousStatisticsInitializor(
-                (AsynchronousSummaryStatisticsInitializor) context.getBean("asynchronousStatisticsSummaryInitializor"));
+                (AsynchronousSummaryStatisticsInitializor) context.getBean("asynchronousSummaryStatisticsInitializor"));
         setSummaryStatisticsDAO((SummaryStatisticsDAO) context.getBean("summaryStatisticsDAO"));
     }
 
@@ -77,7 +77,7 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
                 throw new RuntimeException("Could not obtain the startDate.");
             }
             Date endDate = new Date();
-            Integer numDaysInPeriod = Integer.valueOf(props.getProperty("summaryEmailSubject").toString());
+            Integer numDaysInPeriod = Integer.valueOf(props.getProperty("summaryEmailPeriodInDays").toString());
 
             Future<Statistics> futureEmailBodyStats = asynchronousStatisticsInitializor.getStatistics(null);
             Statistics emailBodyStats = futureEmailBodyStats.get();
@@ -156,7 +156,7 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
 
     private Date getStartDate() {
         Calendar startDateCalendar = Calendar.getInstance();
-        //This is a constant date, which marks the beginning of time for 
+        //This is a constant date, which marks the beginning of time for
         //retrieving statistics;
         startDateCalendar.set(2016, 3, 1);
 

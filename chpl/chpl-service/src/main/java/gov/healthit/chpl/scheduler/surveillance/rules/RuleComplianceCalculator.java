@@ -1,4 +1,4 @@
-package gov.healthit.chpl.app.surveillance.rules;
+package gov.healthit.chpl.scheduler.surveillance.rules;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,10 +76,10 @@ public class RuleComplianceCalculator {
 
     public void setProps(final Properties props) {
         this.props = props;
-        lsc.setNumDaysAllowed(new Integer(props.getProperty("suspendedDaysAllowed")).intValue());
-        capApproval.setNumDaysAllowed(new Integer(props.getProperty("capApprovalDaysAllowed")).intValue());
-        capStarted.setNumDaysAllowed(new Integer(props.getProperty("capStartDaysAllowed")).intValue());
-        ncOpenCapClosed.setNumDaysAllowed(new Integer(props.getProperty("ncOpenCapClosedDaysAllowed")).intValue());
+        lsc.setNumDaysAllowed(Integer.valueOf(props.getProperty("suspendedDaysAllowed")));
+        capApproval.setNumDaysAllowed(Integer.valueOf(props.getProperty("capApprovalDaysAllowed")));
+        capStarted.setNumDaysAllowed(Integer.valueOf(props.getProperty("capStartDaysAllowed")));
+        ncOpenCapClosed.setNumDaysAllowed(Integer.valueOf(props.getProperty("ncOpenCapClosedDaysAllowed")));
     }
 
     public LongSuspensionComplianceChecker getLsc() {

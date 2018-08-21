@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.app.AppConfig;
-import gov.healthit.chpl.app.presenter.CertifiedProductCsvPresenter;
 import gov.healthit.chpl.app.presenter.SEDCsvPresenter;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -26,7 +25,6 @@ import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.CertificationResultRules;
 @Transactional
 @Component("G3Sed2015ResourceCreatorApp")
 public class G3Sed2015ResourceCreatorApp extends SEDDownloadableResourceCreatorApp{

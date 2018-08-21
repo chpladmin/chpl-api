@@ -17,6 +17,7 @@ public class NonconformityTypeStatisticsDTO {
     public NonconformityTypeStatisticsDTO(NonconformityTypeStatisticsEntity entity){
     	this.nonconformityCount = entity.getNonconformityCount();
     	this.nonconformityType = entity.getNonconformityType();
+    	this.id = entity.getId();
     	this.setCreationDate(entity.getCreationDate());
     	this.setDeleted(entity.getDeleted());
     	this.setLastModifiedUser(entity.getLastModifiedUser());

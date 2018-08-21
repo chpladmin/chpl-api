@@ -21,7 +21,6 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
  */
 @Repository("criterionProductStatisticsDAO")
 public class CriterionProductStatisticsDAOImpl extends BaseDAOImpl implements CriterionProductStatisticsDAO {
-    
     @Override
     public List<CriterionProductStatisticsDTO> findAll() {
         List<CriterionProductStatisticsEntity> result = this.findAllEntities();
@@ -104,5 +103,4 @@ public class CriterionProductStatisticsDAOImpl extends BaseDAOImpl implements Cr
 
         return entity;
     }
-
 }

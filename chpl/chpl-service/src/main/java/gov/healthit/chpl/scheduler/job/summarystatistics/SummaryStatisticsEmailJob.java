@@ -67,7 +67,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
             Statistics stats = getStatistics(summaryStatistics);
             String message = createHtmlMessage(stats, summaryStatistics.getEndDate());
             LOGGER.info(message);
-            sendEmail(message, "tmy1313@gmail.com");
+            sendEmail(message, jobContext.getMergedJobDataMap().getString("email"));
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error(e);
