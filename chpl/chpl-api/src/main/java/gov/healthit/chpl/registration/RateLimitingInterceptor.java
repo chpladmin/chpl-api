@@ -1,5 +1,9 @@
 package gov.healthit.chpl.registration;
 
+import gov.healthit.chpl.dao.ApiKeyDAO;
+import gov.healthit.chpl.dto.ApiKeyDTO;
+import gov.healthit.chpl.util.Util;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -7,7 +11,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PreDestroy;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -26,13 +29,16 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 @Component
 public class RateLimitingInterceptor extends HandlerInterceptorAdapter implements EnvironmentAware{
  
-    private static final Logger logger = LogManager.getLogger(RateLimitingInterceptor.class);
+    private static final Logger LOGGER = LogManager.getLogger(RateLimitingInterceptor.class);
     
     @Autowired
     private Environment env;
     
     @Autowired
     private MessageSource messageSource;
+    
+    @Autowired
+    private ApiKeyDAO apiKeyDao;
     
     private String timeUnit;
     
@@ -44,19 +50,19 @@ public class RateLimitingInterceptor extends HandlerInterceptorAdapter implement
     
     public RateLimitingInterceptor(){}
     
+    @Override
+    public void setEnvironment(Environment env) {
+        LOGGER.info("setEnvironment");
+        this.env = env;
+        this.timeUnit = env.getProperty("rateLimitTimeUnit");
+        this.limit = Integer.valueOf(env.getProperty("rateTokenLimit"));
+    }
+    
+    /** {@inheritDoc} */
     public String getMessage(final String messageCode, final String input, final String input2) {
         return String.format(messageSource.getMessage(
                 new DefaultMessageSourceResolvable(messageCode),
                 LocaleContextHolder.getLocale()), input, input2);
-    }
-    
-    @Override
-    public void setEnvironment(Environment env) {
-        logger.info("setEnvironment");
-        this.env = env;
-        this.timeUnit = env.getProperty("rateLimitTimeUnit");
-        this.limit = Integer.valueOf(env.getProperty("rateTokenLimit"));
-        this.whitelist = Arrays.asList(env.getProperty("whitelist").split("\\s*,\\s*"));
     }
      
     @Override
@@ -78,6 +84,12 @@ public class RateLimitingInterceptor extends HandlerInterceptorAdapter implement
             }
         }
         
+        List<ApiKeyDTO> keyDtos = apiKeyDao.findAllWhitelisted();
+        
+        for(ApiKeyDTO dto : keyDtos){
+            whitelist.add(dto.getApiKey());
+        }
+        
         // let non-API requests pass
         if (whitelist.contains(key)) {
             return true;
@@ -87,7 +99,7 @@ public class RateLimitingInterceptor extends HandlerInterceptorAdapter implement
      
         if (!allowRequest) {
             response.sendError(HttpStatus.TOO_MANY_REQUESTS.value(), getMessage("apikey.limit", String.valueOf(limit), timeUnit));
-            logger.info("Client with API KEY: " + key +  " went over API KEY limit of " + limit + ".");
+            LOGGER.info("Client with API KEY: " + key +  " went over API KEY limit of " + limit + ".");
         }
         response.addHeader("X-RateLimit-Limit", String.valueOf(limit));
         return allowRequest;
@@ -113,10 +125,5 @@ public class RateLimitingInterceptor extends HandlerInterceptorAdapter implement
             return TimeUnit.HOURS;
         }
         return null;
-    }
-
-    @PreDestroy
-    public void destroy() {
-        // loop and finalize all limiters
     }
 }

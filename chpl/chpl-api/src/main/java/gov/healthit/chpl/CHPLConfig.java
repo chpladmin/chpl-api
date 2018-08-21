@@ -140,6 +140,4 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
         viewResolver.setSuffix(".jsp");
         return viewResolver;
     }
-
-    
 }

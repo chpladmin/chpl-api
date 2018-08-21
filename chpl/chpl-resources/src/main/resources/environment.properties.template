@@ -23,8 +23,6 @@ rateTokenLimit=5
 # time unit where tokens above will be used
 # values are: second, minute, hour
 rateLimitTimeUnit=minute
-## api keys to be whitelisted seperated by commas
-whitelist=12909a978483dfb8ecd0596c98ae9094
 
 fuzzyChoiceThreshold=80
 fuzzyChoiceLimit=1

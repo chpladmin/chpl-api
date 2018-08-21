@@ -105,6 +105,20 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
         return dtos;
 
     }
+    
+    @Override
+    public List<ApiKeyDTO> findAllWhitelisted() {
+
+        List<ApiKeyEntity> entities = getAllWhitelistedEntities();
+        List<ApiKeyDTO> dtos = new ArrayList<>();
+
+        for (ApiKeyEntity entity : entities) {
+            ApiKeyDTO dto = new ApiKeyDTO(entity);
+            dtos.add(dto);
+        }
+        return dtos;
+
+    }
 
     @Override
     public ApiKeyDTO getById(Long id) throws EntityRetrievalException {
@@ -187,6 +201,13 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 
         List<ApiKeyEntity> result = entityManager
                 .createQuery("from ApiKeyEntity where (NOT deleted = true) ", ApiKeyEntity.class).getResultList();
+        return result;
+    }
+    
+    private List<ApiKeyEntity> getAllWhitelistedEntities() {
+
+        List<ApiKeyEntity> result = entityManager
+                .createQuery("from ApiKeyEntity where (NOT deleted = true) AND whitelisted = true", ApiKeyEntity.class).getResultList();
         return result;
     }
 
