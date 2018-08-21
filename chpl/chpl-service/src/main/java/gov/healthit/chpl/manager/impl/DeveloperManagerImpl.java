@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -13,9 +12,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,6 +47,7 @@ import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Service
 public class DeveloperManagerImpl implements DeveloperManager {
@@ -77,8 +74,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
     @Autowired
     private ActivityManager activityManager;
 
-    @Autowired
-    private MessageSource messageSource;
+    @Autowired private ErrorMessageUtil msgUtil;
 
     @Override
     @Transactional(readOnly = true)
@@ -150,10 +146,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
         DeveloperStatusEventDTO newDevStatus = developer.getStatus();
         DeveloperStatusEventDTO currDevStatus = beforeDev.getStatus();
         if (currDevStatus == null || currDevStatus.getStatus() == null) {
-            String msg = String.format(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("developer.noStatusFound"), 
-                    Locale.getDefault()), 
-                    beforeDev.getName());
+            String msg = msgUtil.getMessage("developer.noStatusFound", beforeDev.getName());
             LOGGER.error(msg);
             throw new EntityCreationException(msg);
         }
@@ -162,10 +155,8 @@ public class DeveloperManagerImpl implements DeveloperManager {
         // then nothing can be changed
         if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
                 && !Util.isUserRoleAdmin()) {
-            String msg = String.format(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("developer.notActiveNotAdminCantChangeStatus"), 
-                    Locale.getDefault()), 
-                    Util.getUsername(), beforeDev.getName());
+            String msg = msgUtil.getMessage("developer.notActiveNotAdminCantChangeStatus", 
+                    Util.getUsername(), beforeDev.getName()); 
             LOGGER.error(msg);
             throw new EntityCreationException(msg);
         }
@@ -406,9 +397,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
         Set<String> messages = new HashSet<String>();
 
         for (DuplicateChplProdNumber dup : duplicateChplProdNumbers) {
-            messages.add(String.format(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("developer.merge.dupChplProdNbrs"),
-                    LocaleContextHolder.getLocale()),
+            messages.add(msgUtil.getMessage("developer.merge.dupChplProdNbrs",
                     dup.getOrigChplProductNumberA(),
                     dup.getOrigChplProductNumberB()));
         }
@@ -569,10 +558,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 
         @Override
         public String toString() {
-            return String.format(
-                    messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("developer.merge.dupChplProdNbrs.duplicate"),
-                                LocaleContextHolder.getLocale()),
+            return msgUtil.getMessage("developer.merge.dupChplProdNbrs.duplicate",
                     origChplProductNumberA,
                     origChplProductNumberB);
         }

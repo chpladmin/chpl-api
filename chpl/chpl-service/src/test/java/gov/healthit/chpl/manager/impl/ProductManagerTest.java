@@ -42,6 +42,7 @@ import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
@@ -365,7 +366,8 @@ public class ProductManagerTest extends TestCase {
 	@Transactional
 	@Rollback
 	public void testNotAllowedToUpdateProductWithInactiveDeveloper() 
-			throws EntityRetrievalException, JsonProcessingException {
+			throws EntityRetrievalException, JsonProcessingException,
+	        MissingReasonException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
 		//change dev to suspended
@@ -462,7 +464,8 @@ public class ProductManagerTest extends TestCase {
 	@Test
 	@Transactional
 	@Rollback
-	public void testProductSplitFailsWithSuspendedDeveloper() throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+	public void testProductSplitFailsWithSuspendedDeveloper() throws EntityRetrievalException, 
+	    EntityCreationException, JsonProcessingException, MissingReasonException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		DeveloperDTO developer = developerManager.getById(-1L);
 		//suspended by ONC

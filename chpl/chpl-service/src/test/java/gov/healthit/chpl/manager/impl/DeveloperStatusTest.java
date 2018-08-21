@@ -67,7 +67,7 @@ public class DeveloperStatusTest {
     @Test
     public void testDeveloperStatusChange_ActiveToSuspended_NoReasonRequired() 
         throws EntityCreationException, EntityRetrievalException, 
-        JsonProcessingException {
+        JsonProcessingException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         DeveloperDTO activeDeveloper = createDeveloper(1L, "0001", "Test Developer");
         try {
@@ -89,7 +89,7 @@ public class DeveloperStatusTest {
     @Test(expected = MissingReasonException.class)
     public void testDeveloperStatusChange_ActiveToBannedNullReason_ThrowsException()
             throws EntityCreationException, EntityRetrievalException, 
-            JsonProcessingException {
+            JsonProcessingException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         DeveloperDTO activeDeveloper = createDeveloper(1L, "0001", "Test Developer");
         try {
@@ -108,7 +108,7 @@ public class DeveloperStatusTest {
     @Test(expected = MissingReasonException.class)
     public void testDeveloperStatusChange_ActiveToBannedEmptyReason_ThrowsException()
             throws EntityCreationException, EntityRetrievalException, 
-            JsonProcessingException {
+            JsonProcessingException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         DeveloperDTO activeDeveloper = createDeveloper(1L, "0001", "Test Developer");
         try {
@@ -127,7 +127,7 @@ public class DeveloperStatusTest {
     @Test
     public void testDeveloperStatusChange_ActiveToSuspendedWithReason_Allowed() 
         throws EntityCreationException, EntityRetrievalException, 
-        JsonProcessingException {
+        JsonProcessingException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         DeveloperDTO activeDeveloper = createDeveloper(1L, "0001", "Test Developer");
         try {
