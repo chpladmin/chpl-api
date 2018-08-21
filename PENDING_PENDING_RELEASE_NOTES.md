@@ -14,7 +14,7 @@ _Date TBD_
   * Added new Quart job to gather and store surveillance error data
   * Added new user schedulable job to send the error email
 * Add API throttling
-  * Added new endpoint for retrieving all jobs that user has permission to schedule
+* Added new endpoint for retrieving all jobs that user has permission to schedule
 * Download XML file changes
   * In the <ucdProces> node
     * AllVersions will now be structured: `<allVersions><version/><version/> ... </allVersions>`
