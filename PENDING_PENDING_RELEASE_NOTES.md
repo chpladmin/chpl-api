@@ -10,5 +10,6 @@ _Date TBD_
 * Migrate "Broken Surveillance Rules" report to Quartz
   * Added new Quart job to gather and store surveillance error data
   * Added new user schedulable job to send the error email
+* Add API throttling
 
 ---
