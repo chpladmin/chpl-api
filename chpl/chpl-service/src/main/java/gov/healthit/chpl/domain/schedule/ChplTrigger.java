@@ -17,6 +17,7 @@ public class ChplTrigger implements Serializable {
     private ChplJob job;
     private String cronSchedule;
     private String email;
+    private String acb;
 
     ChplTrigger() { }
 
@@ -30,6 +31,7 @@ public class ChplTrigger implements Serializable {
         this.job = chplTrigger.getJob();
         this.cronSchedule = chplTrigger.getCronSchedule();
         this.email = chplTrigger.getEmail();
+        this.acb = chplTrigger.getAcb();
     }
 
     /**
@@ -45,6 +47,7 @@ public class ChplTrigger implements Serializable {
         this.job.setName(quartzTrigger.getJobKey().getName());
         this.cronSchedule = quartzTrigger.getCronExpression();
         this.email = quartzTrigger.getJobDataMap().getString("email");
+        this.acb = quartzTrigger.getJobDataMap().getString("acb");
     }
 
     public String getName() {
@@ -85,5 +88,13 @@ public class ChplTrigger implements Serializable {
 
     public void setEmail(final String email) {
         this.email = email;
+    }
+
+    public String getAcb() {
+        return acb;
+    }
+
+    public void setAcb(final String acb) {
+        this.acb = acb;
     }
 }

@@ -3,4 +3,4 @@
  * surveillance has broken one or more of the rules. Checkers for each rule are
  * here with room to add more.
  */
-package gov.healthit.chpl.app.surveillance.rules;
+package gov.healthit.chpl.scheduler.surveillance.rules;

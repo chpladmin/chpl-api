@@ -8,16 +8,17 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("chplNumberReviewer")
 public class ChplNumberReviewer implements Reviewer {
     @Autowired private CertifiedProductDAO cpDao;
+    @Autowired private CertificationResultManager certificationResultManager; 
     @Autowired private ErrorMessageUtil msgUtil;
     
     /**
@@ -71,12 +72,7 @@ public class ChplNumberReviewer implements Reviewer {
                 listing.getErrorMessages()
                 .add(msgUtil.getMessage("listing.badAdditionalSoftwareCodeChars", CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_LENGTH));
             } else {
-                boolean hasAS = false;
-                for (CertificationResult cert : listing.getCertificationResults()) {
-                    if (cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
-                        hasAS = true;
-                    }
-                }
+                boolean hasAS = certificationResultManager.getCertifiedProductHasAdditionalSoftware(listing.getId());
                 String desiredAdditionalSoftwareCode = hasAS ? "1" : "0";
                 if (!additionalSoftwareCode.equals(desiredAdditionalSoftwareCode)) {
                     updateChplProductNumber(listing, CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_INDEX,

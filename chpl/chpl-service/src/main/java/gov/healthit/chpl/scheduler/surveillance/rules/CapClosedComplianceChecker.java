@@ -1,4 +1,4 @@
-package gov.healthit.chpl.app.surveillance.rules;
+package gov.healthit.chpl.scheduler.surveillance.rules;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -16,17 +16,22 @@ import gov.healthit.chpl.domain.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.SurveillanceOversightRule;
 import gov.healthit.chpl.entity.CertificationStatusType;
 
-@Component(value = "longSuspensionComplianceChecker")
-public class LongSuspensionComplianceChecker implements RuleComplianceChecker {
-    private int numDaysAllowed = 0;
+@Component(value = "capClosedComplianceChecker")
+public class CapClosedComplianceChecker implements RuleComplianceChecker {
+    private int numDaysAllowed = -1;
 
     public SurveillanceOversightRule getRuleChecked() {
-        return SurveillanceOversightRule.LONG_SUSPENSION;
+        return SurveillanceOversightRule.CAP_NOT_CLOSED;
     }
 
     public Date check(CertifiedProductSearchDetails cp, Surveillance surv, SurveillanceNonconformity nc) {
         Date result = null;
-        if (cp.getCurrentStatus().getStatus().getName().equals(CertificationStatusType.SuspendedByAcb.getName())) {
+        if (nc.getCapEndDate() == null
+                && (cp.getCurrentStatus().getStatus().getName().equals(CertificationStatusType.WithdrawnByAcb.getName())
+                        || cp.getCurrentStatus().getStatus().getName()
+                                .equals(CertificationStatusType.WithdrawnByDeveloper.getName())
+                        || cp.getCurrentStatus().getStatus().getName()
+                                .equals(CertificationStatusType.WithdrawnByDeveloperUnderReview.getName()))) {
             List<CertificationStatusEvent> statusEvents = cp.getCertificationEvents();
             // find the most recent one
             CertificationStatusEvent mostRecent = null;

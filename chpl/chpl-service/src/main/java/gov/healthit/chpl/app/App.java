@@ -8,6 +8,8 @@ import java.util.Properties;
 
 import org.springframework.context.support.AbstractApplicationContext;
 
+import gov.healthit.chpl.app.resource.DownloadableResourceCreatorApp;
+
 public abstract class App {
     private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
     protected Properties properties;
@@ -32,7 +34,7 @@ public abstract class App {
 
     protected Properties getProperties() throws IOException {
         if (properties == null || properties.isEmpty()) {
-            InputStream in = SurveillanceOversightReportDailyApp.class.getClassLoader()
+            InputStream in = DownloadableResourceCreatorApp.class.getClassLoader()
                     .getResourceAsStream(DEFAULT_PROPERTIES_FILE);
             if (in == null) {
                 properties = null;
