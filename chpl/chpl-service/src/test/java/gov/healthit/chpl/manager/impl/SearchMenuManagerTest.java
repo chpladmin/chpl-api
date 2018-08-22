@@ -48,8 +48,8 @@ import gov.healthit.chpl.manager.SearchMenuManager;
         gov.healthit.chpl.CHPLTestConfig.class
 })
 @TestExecutionListeners({
-        DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
-        TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
+    DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
 })
 @DatabaseSetup("classpath:data/testData.xml")
 public class SearchMenuManagerTest {
@@ -58,6 +58,8 @@ public class SearchMenuManagerTest {
 
     private static JWTAuthenticatedUser adminUser;
     private static JWTAuthenticatedUser testUser3;
+
+    private static final double MILLIS_TO_SECONDS = 1000.0;
     @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
@@ -80,20 +82,23 @@ public class SearchMenuManagerTest {
     }
 
     /**
-     * Tests that the getCertBodyNames() caches its data
+     * Tests that the getCertBodyNames() caches its data.
+     * @throws EntityRetrievalException sometimes
+     * @throws JsonProcessingException sometimes
+     * @throws EntityCreationException sometimes
      */
     @Transactional
     @Rollback(true)
     @Test
-    public void test_getCertBodyNames_CachesData()
+    public void testGetCertBodyNamesCachesData()
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+        final int maxDuration = 100;
         long startTime = System.currentTimeMillis();
-        Boolean required = false;
         Set<KeyValueModel> results = searchMenuManager.getCertBodyNames(true);
         // certBodyNames should now be cached
         long endTime = System.currentTimeMillis();
         long timeLength = endTime - startTime;
-        double elapsedSecs = timeLength / 1000.0;
+        double elapsedSecs = timeLength / MILLIS_TO_SECONDS;
 
         assertTrue("Returned " + results.size() + " certBodyNames but should return more than 0", results.size() > 0);
 
@@ -105,28 +110,32 @@ public class SearchMenuManagerTest {
         results = searchMenuManager.getCertBodyNames(true);
         endTime = System.currentTimeMillis();
         timeLength = endTime - startTime;
-        elapsedSecs = timeLength / 1000.0;
+        elapsedSecs = timeLength / MILLIS_TO_SECONDS;
         System.out.println("getCertBodyNames returned " + results.size() + " total certBodyNames.");
         System.out.println("getCertBodyNames completed in  " + timeLength + " millis or " + elapsedSecs + " seconds");
 
         assertTrue("getCertBodyNames should complete within 100 ms but took " + timeLength + " millis or " + elapsedSecs
-                + " seconds", timeLength < 100);
+                + " seconds", timeLength < maxDuration);
     }
 
     /**
-     * Tests that the getEditionNames() caches its data
+     * Tests that the getEditionNames() caches its data.
+     * @throws EntityRetrievalException sometimes
+     * @throws JsonProcessingException sometimes
+     * @throws EntityCreationException sometimes
      */
     @Transactional
     @Rollback(true)
     @Test
-    public void test_getEditionNames_CachesData()
+    public void testGetEditionNamesCachesData()
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+        final int maxDuration = 100;
         long startTime = System.currentTimeMillis();
         Set<KeyValueModel> results = searchMenuManager.getEditionNames(true);
         // getEditionNames should now be cached
         long endTime = System.currentTimeMillis();
         long timeLength = endTime - startTime;
-        double elapsedSecs = timeLength / 1000.0;
+        double elapsedSecs = timeLength / MILLIS_TO_SECONDS;
 
         assertTrue("Returned " + results.size() + " EditionNames but should return more than 0", results.size() > 0);
 
@@ -138,28 +147,32 @@ public class SearchMenuManagerTest {
         results = searchMenuManager.getEditionNames(true);
         endTime = System.currentTimeMillis();
         timeLength = endTime - startTime;
-        elapsedSecs = timeLength / 1000.0;
+        elapsedSecs = timeLength / MILLIS_TO_SECONDS;
         System.out.println("getEditionNames returned " + results.size() + " total editionNames.");
         System.out.println("getEditionNames completed in  " + timeLength + " millis or " + elapsedSecs + " seconds");
 
         assertTrue("getEditionNames should complete within 100 ms but took " + timeLength + " millis or " + elapsedSecs
-                + " seconds", timeLength < 100);
+                + " seconds", timeLength < maxDuration);
     }
 
     /**
-     * Tests that the getCertificationStatuses() caches its data
+     * Tests that the getCertificationStatuses() caches its data.
+     * @throws EntityRetrievalException sometimes
+     * @throws JsonProcessingException sometimes
+     * @throws EntityCreationException sometimes
      */
     @Transactional
     @Rollback(true)
     @Test
-    public void test_getCertificationStatuses_CachesData()
+    public void testGetCertificationStatusesCachesData()
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+        final int maxDuration = 100;
         long startTime = System.currentTimeMillis();
         Set<KeyValueModel> results = searchMenuManager.getCertificationStatuses();
         // getCertificationStatuses should now be cached
         long endTime = System.currentTimeMillis();
         long timeLength = endTime - startTime;
-        double elapsedSecs = timeLength / 1000.0;
+        double elapsedSecs = timeLength / MILLIS_TO_SECONDS;
 
         assertTrue("Returned " + results.size() + " CertificationStatuses but should return more than 0",
                 results.size() > 0);
@@ -173,13 +186,13 @@ public class SearchMenuManagerTest {
         results = searchMenuManager.getCertificationStatuses();
         endTime = System.currentTimeMillis();
         timeLength = endTime - startTime;
-        elapsedSecs = timeLength / 1000.0;
+        elapsedSecs = timeLength / MILLIS_TO_SECONDS;
         System.out.println("getCertificationStatuses returned " + results.size() + " total certificationStatuses.");
         System.out.println(
                 "getCertificationStatuses completed in  " + timeLength + " millis or " + elapsedSecs + " seconds");
 
         assertTrue("getEditionNames should complete within 100 ms but took " + timeLength + " millis or " + elapsedSecs
-                + " seconds", timeLength < 100);
+                + " seconds", timeLength < maxDuration);
     }
 
     /**
@@ -202,7 +215,7 @@ public class SearchMenuManagerTest {
 
         System.out.println("getPracticeTypeNames returned " + results.size() + " total practiceTypeNames.");
         System.out
-                .println("getPracticeTypeNames completed in  " + timeLength + " millis or " + elapsedSecs + " seconds");
+        .println("getPracticeTypeNames completed in  " + timeLength + " millis or " + elapsedSecs + " seconds");
 
         // now compare cached time vs non-cached time
         startTime = System.currentTimeMillis();
@@ -212,7 +225,7 @@ public class SearchMenuManagerTest {
         elapsedSecs = timeLength / 1000.0;
         System.out.println("getPracticeTypeNames returned " + results.size() + " total practiceTypeNames.");
         System.out
-                .println("getPracticeTypeNames completed in  " + timeLength + " millis or " + elapsedSecs + " seconds");
+        .println("getPracticeTypeNames completed in  " + timeLength + " millis or " + elapsedSecs + " seconds");
 
         assertTrue("getPracticeTypeNames should complete within 100 ms but took " + timeLength + " millis or "
                 + elapsedSecs + " seconds", timeLength < 100);
@@ -376,7 +389,7 @@ public class SearchMenuManagerTest {
                 results.size() > 0);
 
         System.out.println("getCertificationCriterionNumbers returned " + results.size()
-                + " total certificationCriterionNumbers.");
+        + " total certificationCriterionNumbers.");
         System.out.println("getCertificationCriterionNumbers completed in  " + timeLength + " millis or " + elapsedSecs
                 + " seconds");
 
@@ -387,7 +400,7 @@ public class SearchMenuManagerTest {
         timeLength = endTime - startTime;
         elapsedSecs = timeLength / 1000.0;
         System.out.println("getCertificationCriterionNumbers returned " + results.size()
-                + " total certificationCriterionNumbers.");
+        + " total certificationCriterionNumbers.");
         System.out.println("getCertificationCriterionNumbers completed in  " + timeLength + " millis or " + elapsedSecs
                 + " seconds");
 
@@ -580,7 +593,7 @@ public class SearchMenuManagerTest {
     @Transactional
     @Test
     public void testGetNotificationTypesForAdminUser() {
-        final int expectedCount = 8;
+        final int expectedCount = 1;
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         Set<NotificationType> results = searchMenuManager.getNotificationTypes();
         assertNotNull(results);
@@ -599,7 +612,7 @@ public class SearchMenuManagerTest {
         SecurityContextHolder.getContext().setAuthentication(testUser3);
         Set<NotificationType> results = searchMenuManager.getNotificationTypes();
         assertNotNull(results);
-        assertEquals(3, results.size());
+        assertEquals(0, results.size());
         for (NotificationType nt : results) {
             assertNotNull(nt.getId());
             assertNotNull(nt.getName());
@@ -641,7 +654,7 @@ public class SearchMenuManagerTest {
             assertTrue(testStandard.getYear().equals("2014") || testStandard.getYear().equals("2015"));
         }
     }
-    
+
     @Transactional
     @Rollback(true)
     @Test
@@ -675,7 +688,7 @@ public class SearchMenuManagerTest {
                     || tp.getCriteria().getCertificationEdition().equals("2015"));
         }
     }
-    
+
     @Transactional
     @Rollback(true)
     @Test

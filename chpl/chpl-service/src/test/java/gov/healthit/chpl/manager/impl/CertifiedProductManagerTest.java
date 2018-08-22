@@ -323,6 +323,40 @@ public class CertifiedProductManagerTest extends TestCase {
     @Test
     @Transactional(readOnly = false)
     @Rollback(true)
+    public void testAdminUserChangeStatusToWithdrawnByDeveloperUnderReviewWithDeveloperBan()
+            throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+            InvalidArgumentsException, IOException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        CertificationStatusDTO stat = certStatusDao.getByStatusName(
+                CertificationStatusType.WithdrawnByDeveloperUnderReview.getName());
+        assertNotNull(stat);
+        Long acbId = 1L;
+        Long listingId = 1L;
+
+        CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+        CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+        CertificationStatusEvent statusEvent = new CertificationStatusEvent();
+        statusEvent.setEventDate(System.currentTimeMillis());
+        statusEvent.setStatus(new CertificationStatus(stat));
+        updatedListing.getCertificationEvents().add(statusEvent);
+
+        ListingUpdateRequest toUpdate = new ListingUpdateRequest();
+        toUpdate.setListing(updatedListing);
+        cpManager.update(acbId, toUpdate, existingListing);
+
+        DeveloperDTO dev = devManager.getById(-1L);
+        assertNotNull(dev);
+        DeveloperStatusEventDTO status = dev.getStatus();
+        assertNotNull(status);
+        assertNotNull(status.getId());
+        assertNotNull(status.getStatus());
+        assertNotNull(status.getStatus().getStatusName());
+        assertEquals(DeveloperStatusType.Active.toString(), status.getStatus().getStatusName());
+    }
+
+    @Test
+    @Transactional(readOnly = false)
+    @Rollback(true)
     public void testAdminUserChangeStatusToWithdrawnByDeveloperUnderReviewWithoutDeveloperBan()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
             InvalidArgumentsException, IOException {
@@ -2449,8 +2483,9 @@ public class CertifiedProductManagerTest extends TestCase {
         assertEquals(6, listings.size());
     }
 
-    private void updateListingStatus(Long acbId, Long listingId, CertificationStatusDTO stat, String reason)
-            throws EntityRetrievalException, EntityCreationException, 
+    private void updateListingStatus(final Long acbId, final Long listingId,
+            final CertificationStatusDTO stat, final String reason)
+            throws EntityRetrievalException, EntityCreationException,
             JsonProcessingException, InvalidArgumentsException, IOException {
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
 
