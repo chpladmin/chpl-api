@@ -10,27 +10,27 @@ public class SimpleRateLimiter {
     private int maxPermits;
     private TimeUnit timePeriod;
     private ScheduledExecutorService scheduler;
- 
+
     SimpleRateLimiter(int permits, TimeUnit timePeriod) {
         this.semaphore = new Semaphore(permits);
         this.maxPermits = permits;
         this.timePeriod = timePeriod;
         this.schedulePermitReplenishment();
     }
- 
+
     public boolean tryAcquire() {
         return semaphore.tryAcquire();
     }
- 
+
     public void stop() {
         scheduler.shutdownNow();
     }
- 
+
     public void schedulePermitReplenishment() {
         scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(() -> {
             semaphore.release(maxPermits - semaphore.availablePermits());
         }, 1, 1, timePeriod);
- 
+
     }
 }
