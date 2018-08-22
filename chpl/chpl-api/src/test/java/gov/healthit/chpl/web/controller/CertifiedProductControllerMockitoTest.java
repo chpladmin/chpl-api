@@ -9,9 +9,11 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -25,32 +27,36 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
-import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidator;
-import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFactory;
-import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorImpl;
+import gov.healthit.chpl.validation.listing.Edition2015ListingValidator;
+import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
+import gov.healthit.chpl.validation.listing.reviewer.ChplNumberReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
 public class CertifiedProductControllerMockitoTest {
     @Mock
     private CertificationResultManager certificationResultManager;
-    
+
     @Spy
     @InjectMocks
-    private CertifiedProductValidator val = new MyValidator();
+    private Edition2015ListingValidator edition2015Validator;
+
+    @Mock
+    private ChplNumberReviewer chplNumberReviewer;
     
     @Mock
     private CertifiedProductDetailsManager cpdManager;
 
     @Mock
-    CertifiedProductValidatorFactory valFactory;
-    
+    ListingValidatorFactory valFactory;
+
     @InjectMocks
     private CertifiedProductController myController;
-    
+
     @Before
     public void setUp() throws Exception {
           MockitoAnnotations.initMocks(this);
     }
-    
+
     @Transactional
     @Test
     public void ChplProductNumberHasCorrectAdditionalSoftwareCodeWhenExists() throws EntityRetrievalException, EntityCreationException, IOException {
@@ -66,12 +72,17 @@ public class CertifiedProductControllerMockitoTest {
         //          -> Mock Method getCertifiedProductHasAdditionalSoftware to return true
                 
         //Use doReturn(...).when(spy).method(...) when setting up spies
-        doReturn(true).when(val).validateUniqueId(any(String.class));
+        //only return one reviewer for the chpl product number since that is where the
+        //additional software code check happens
+        List<Reviewer> reviewers = new ArrayList<Reviewer>();
+        reviewers.add(chplNumberReviewer);
+        doReturn(reviewers).when(edition2015Validator).getReviewers();
         
         //use when(mock.method(...)).thenReturn(...) when setting up mocks
+        when(chplNumberReviewer.validateUniqueId(ArgumentMatchers.anyString())).thenReturn(false);
         when(certificationResultManager.getCertifiedProductHasAdditionalSoftware(anyLong())).thenReturn(true);
         when(cpdManager.getCertifiedProductDetailsBasic(anyLong())).thenReturn(getCertifiedProductBasicForAdditionalSoftwareTest());
-        when(valFactory.getValidator(any(CertifiedProductSearchDetails.class))).thenReturn(val);
+        when(valFactory.getValidator(any(CertifiedProductSearchDetails.class))).thenReturn(edition2015Validator);
         
         CertifiedProductSearchDetails cp = myController.getCertifiedProductByIdBasic(8252l);
         
@@ -97,12 +108,4 @@ public class CertifiedProductControllerMockitoTest {
                
         return cp;
     }
-    
-    //This was done so that we could "mock/spy" the protected method
-    class MyValidator extends CertifiedProductValidatorImpl {
-        @Override
-        public void validateDemographics(CertifiedProductSearchDetails cp) { }
-        
-     }
-
 }
