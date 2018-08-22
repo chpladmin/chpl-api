@@ -2,10 +2,9 @@ package gov.healthit.chpl.registration;
 
 import gov.healthit.chpl.dao.ApiKeyDAO;
 import gov.healthit.chpl.dto.ApiKeyDTO;
-import gov.healthit.chpl.util.Util;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,8 +18,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -40,6 +37,9 @@ public class RateLimitingInterceptor extends HandlerInterceptorAdapter implement
 
     @Autowired
     private ApiKeyDAO apiKeyDao;
+    
+    @Autowired
+    private ErrorMessageUtil errorUtil;
 
     private String timeUnit;
 
@@ -58,13 +58,6 @@ public class RateLimitingInterceptor extends HandlerInterceptorAdapter implement
         this.env = env;
         this.timeUnit = env.getProperty("rateLimitTimeUnit");
         this.limit = Integer.valueOf(env.getProperty("rateTokenLimit"));
-    }
-
-    /** {@inheritDoc} */
-    public String getMessage(final String messageCode, final String input, final String input2) {
-        return String.format(
-                messageSource.getMessage(new DefaultMessageSourceResolvable(messageCode),
-                        LocaleContextHolder.getLocale()), input, input2);
     }
 
     @Override
@@ -96,7 +89,7 @@ public class RateLimitingInterceptor extends HandlerInterceptorAdapter implement
 
         if (!allowRequest) {
             response.sendError(HttpStatus.TOO_MANY_REQUESTS.value(),
-                    getMessage("apikey.limit", String.valueOf(limit), timeUnit));
+                    errorUtil.getMessage("apikey.limit", String.valueOf(limit), timeUnit));
             LOGGER.info("Client with API KEY: " + key + " went over API KEY limit of " + limit + ".");
         }
         response.addHeader("X-RateLimit-Limit", String.valueOf(limit));

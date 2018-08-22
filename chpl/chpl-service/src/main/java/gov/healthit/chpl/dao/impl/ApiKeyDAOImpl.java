@@ -6,11 +6,13 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.ApiKeyDAO;
 import gov.healthit.chpl.dto.ApiKeyDTO;
 import gov.healthit.chpl.entity.ApiKeyEntity;
@@ -204,6 +206,7 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
         return result;
     }
     
+    @Cacheable("getAllWhitelistedEntities")
     private List<ApiKeyEntity> getAllWhitelistedEntities() {
 
         List<ApiKeyEntity> result = entityManager
