@@ -39,7 +39,9 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
                     if (entry.getKey() != null) {
                         createSimpleElement(entry.getKey(), "key", sw);
                     }
-                    createSimpleElement(entry.getValue().toString(), "value", sw);
+                    if (entry.getValue() != null) {
+                        createSimpleElement(entry.getValue().toString(), "value", sw);
+                    }
                     sw.writeEndElement();
                 }
                 sw.writeEndElement();
