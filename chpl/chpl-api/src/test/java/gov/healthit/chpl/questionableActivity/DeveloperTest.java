@@ -38,6 +38,7 @@ import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityDeveloperD
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.manager.DeveloperManager;
 import junit.framework.TestCase;
 
@@ -75,7 +76,8 @@ public class DeveloperTest extends TestCase {
 	@Transactional
 	@Rollback
 	public void testUpdateName() throws 
-	    EntityCreationException, EntityRetrievalException, JsonProcessingException {
+	    EntityCreationException, EntityRetrievalException, 
+	    JsonProcessingException, MissingReasonException {
 	    SecurityContextHolder.getContext().setAuthentication(adminUser);
 
 	    Date beforeActivity = new Date(); 
@@ -101,7 +103,8 @@ public class DeveloperTest extends TestCase {
     @Transactional
     @Rollback
 	public void testUpdateCurrentStatus() throws 
-        EntityCreationException, EntityRetrievalException, JsonProcessingException {
+        EntityCreationException, EntityRetrievalException, 
+        JsonProcessingException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
     
         Date beforeActivity = new Date();      
@@ -146,7 +149,8 @@ public class DeveloperTest extends TestCase {
 	    @Transactional
 	    @Rollback
 	    public void testRemoveStatusHistory() throws 
-	        EntityCreationException, EntityRetrievalException, JsonProcessingException {
+	        EntityCreationException, EntityRetrievalException, 
+	        JsonProcessingException, MissingReasonException {
 	        SecurityContextHolder.getContext().setAuthentication(adminUser);
 	    
 	        Date beforeActivity = new Date();      

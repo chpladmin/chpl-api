@@ -36,6 +36,7 @@ import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.web.controller.results.DeveloperResults;
@@ -101,7 +102,8 @@ public class DeveloperController {
             produces = "application/json; charset=utf-8")
     public ResponseEntity<Developer> updateDeveloperDeprecated(
             @RequestBody(required = true) final UpdateDevelopersRequest developerInfo) throws InvalidArgumentsException,
-            EntityCreationException, EntityRetrievalException, JsonProcessingException, ValidationException {
+            EntityCreationException, EntityRetrievalException, JsonProcessingException, 
+            ValidationException, MissingReasonException {
         return update(developerInfo);
     }
 
@@ -117,13 +119,14 @@ public class DeveloperController {
             produces = "application/json; charset=utf-8")
     public ResponseEntity<Developer> updateDeveloper(
             @RequestBody(required = true) final UpdateDevelopersRequest developerInfo) throws InvalidArgumentsException,
-            EntityCreationException, EntityRetrievalException, JsonProcessingException, ValidationException {
+            EntityCreationException, EntityRetrievalException, JsonProcessingException, 
+            ValidationException, MissingReasonException {
         return update(developerInfo);
     }
 
     private ResponseEntity<Developer> update(final UpdateDevelopersRequest developerInfo)
             throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException, JsonProcessingException,
-            ValidationException {
+            ValidationException, MissingReasonException {
 
         DeveloperDTO result = null;
         HttpHeaders responseHeaders = new HttpHeaders();

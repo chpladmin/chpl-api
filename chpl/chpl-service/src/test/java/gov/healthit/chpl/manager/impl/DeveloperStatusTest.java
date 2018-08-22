@@ -34,17 +34,21 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
-import gov.healthit.chpl.manager.DeveloperManager;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
 public class DeveloperStatusTest {
+    private static final String MISSING_REASON_ERROR = 
+            "A reason must be given for marking this developer as banned on %s.";
+    
     private static JWTAuthenticatedUser adminUser;
 
     @Spy private DeveloperDAO devDao;
     @Spy private CertificationBodyManager acbManager;
     @Spy private ActivityManager activityManager;
-
+    @Spy private ErrorMessageUtil msgUtil;
+    
     @InjectMocks
     private DeveloperManagerImpl developerManager;
     
@@ -62,6 +66,10 @@ public class DeveloperStatusTest {
         .thenReturn(new ArrayList<CertificationBodyDTO>());
         Mockito.when(acbManager.getAll(ArgumentMatchers.anyBoolean()))
         .thenReturn(new ArrayList<CertificationBodyDTO>());
+        Mockito.doReturn(MISSING_REASON_ERROR)
+        .when(msgUtil).getMessage(
+                ArgumentMatchers.eq("developer.missingReasonForBan"),
+                ArgumentMatchers.anyString());
     }
 
     @Test
@@ -105,6 +113,30 @@ public class DeveloperStatusTest {
         developerManager.update(activeToBannedDeveloper);
     }
 
+    @Test(expected = MissingReasonException.class)
+    public void testDeveloperWithHistoryChange_ActiveToBannedNullReason_ThrowsException()
+            throws EntityCreationException, EntityRetrievalException, 
+            JsonProcessingException, MissingReasonException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        DeveloperDTO activeDeveloperWithStatusHistory = createDeveloper(1L, "0001", "Test Developer");
+        activeDeveloperWithStatusHistory.getStatusEvents().add(
+                createStatusEvent(2L, activeDeveloperWithStatusHistory.getId(), 
+                        DeveloperStatusType.SuspendedByOnc, new Date(), "Reason!"));
+        activeDeveloperWithStatusHistory.getStatusEvents().add(
+                createStatusEvent(2L, activeDeveloperWithStatusHistory.getId(), 
+                        DeveloperStatusType.UnderCertificationBanByOnc, new Date(), null));
+        activeDeveloperWithStatusHistory.getStatusEvents().add(
+                createStatusEvent(2L, activeDeveloperWithStatusHistory.getId(), 
+                        DeveloperStatusType.Active, new Date(), null));
+        try {
+            Mockito.when(devDao.getById(ArgumentMatchers.anyLong()))
+            .thenReturn(activeDeveloperWithStatusHistory);
+        } catch(EntityRetrievalException ex) {}
+
+        activeDeveloperWithStatusHistory.setName("New Name");
+        developerManager.update(activeDeveloperWithStatusHistory);
+    }
+    
     @Test(expected = MissingReasonException.class)
     public void testDeveloperStatusChange_ActiveToBannedEmptyReason_ThrowsException()
             throws EntityCreationException, EntityRetrievalException, 
