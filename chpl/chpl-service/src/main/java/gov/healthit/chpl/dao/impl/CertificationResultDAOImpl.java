@@ -61,9 +61,6 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
     @Autowired
     MessageSource messageSource;
     
-    @Autowired
-    private Environment env;
-    
     @Override
     public CertificationResultDTO create(CertificationResultDTO result) throws EntityCreationException {
         CertificationResultEntity entity = null;
@@ -486,11 +483,10 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
     public boolean getCertifiedProductHasAdditionalSoftware(Long certifiedProductId) {
         //This needs to be a native query since the is no relationship between CertificationResultEntity
         //and CertificationResultAdditionalSoftwareEntity defined.
-        String schema = env.getProperty("persistenceUnitName");
         Query query = entityManager.createNativeQuery(
                         "select count(cr.certification_result_id) " 
-                        + "from " + schema + ".certification_result cr " 
-                        + "    inner join " + schema + ".certification_result_additional_software cras" 
+                        + "from " + SCHEMA_NAME + ".certification_result cr " 
+                        + "    inner join " + SCHEMA_NAME + ".certification_result_additional_software cras" 
                         + "        on cr.certification_result_id = cras.certification_result_id " 
                         + "where cr.certified_product_id = :certifiedProductId"); 
         

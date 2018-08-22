@@ -25,6 +25,7 @@ import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.listing.ListingMockUtil;
+import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -62,7 +63,10 @@ public class ChplNumberReviewerTest {
     
     @Spy
     private CertifiedProductDAO listingDao;
-    
+
+    @Spy
+    private CertificationResultManager certResultManager;
+
     @Spy
     private MessageSource messageSource;
 
@@ -100,6 +104,10 @@ public class ChplNumberReviewerTest {
         Mockito.doReturn(ICS_CODE_TRUE_NO_ICS_ERROR)
         .when(msgUtil).getMessage(
                 ArgumentMatchers.eq("listing.icsCodeTrueValueFalse"));
+        
+        Mockito.when(
+                certResultManager.getCertifiedProductHasAdditionalSoftware(ArgumentMatchers.anyLong()))
+        .thenReturn(Boolean.FALSE);
     }
 
     @Test
@@ -356,7 +364,10 @@ public class ChplNumberReviewerTest {
             Mockito.when(listingDao.getByChplUniqueId(ArgumentMatchers.anyString()))
             .thenReturn(new CertifiedProductDetailsDTO());
         } catch(EntityRetrievalException ex) {}
-
+        Mockito.when(
+                certResultManager.getCertifiedProductHasAdditionalSoftware(ArgumentMatchers.anyLong()))
+        .thenReturn(Boolean.TRUE);
+        
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         //the mock listing does not have additional software; 
         //add some to a criteria that was met.
