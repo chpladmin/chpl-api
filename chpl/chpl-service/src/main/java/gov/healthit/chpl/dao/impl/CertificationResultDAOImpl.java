@@ -89,11 +89,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
             entity.setSuccess(result.getSuccessful());
             entity.setApiDocumentation(result.getApiDocumentation());
             entity.setPrivacySecurityFramework(result.getPrivacySecurityFramework());
-
-            entity.setLastModifiedDate(new Date());
             entity.setLastModifiedUser(Util.getCurrentUser().getId());
-            entity.setCreationDate(new Date());
-            entity.setDeleted(false);
 
             try {
                 entityManager.persist(entity);
@@ -123,12 +119,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         entity.setSuccess(toUpdate.getSuccessful());
         entity.setApiDocumentation(toUpdate.getApiDocumentation());
         entity.setPrivacySecurityFramework(toUpdate.getPrivacySecurityFramework());
-
-        if (toUpdate.getDeleted() != null) {
-            entity.setDeleted(toUpdate.getDeleted());
-        }
         entity.setLastModifiedUser(Util.getCurrentUser().getId());
-        entity.setLastModifiedDate(new Date());
 
         try {
             entityManager.merge(entity);

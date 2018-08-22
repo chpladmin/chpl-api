@@ -247,15 +247,17 @@ public class CertificationResultEntity implements Serializable {
     }
 
     @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false)
+    @Column(name = "creation_date", nullable = false, updatable = false, insertable = false)
     protected Date creationDate;
 
+    //marked as updatable false to avoid running the soft delete triggers in the db
+    //adding and removing certification results is done through the success flag
     @Basic(optional = false)
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false, insertable = false)
     protected Boolean deleted;
 
     @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false)
+    @Column(name = "last_modified_date", nullable = false, updatable = false, insertable = false)
     protected Date lastModifiedDate;
 
     @Basic(optional = false)
