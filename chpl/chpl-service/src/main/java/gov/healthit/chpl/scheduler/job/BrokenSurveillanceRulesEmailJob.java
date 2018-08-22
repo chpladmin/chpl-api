@@ -265,9 +265,9 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
         result.add(data.getDeveloper());
         result.add(data.getProduct());
         result.add(data.getVersion());
-        result.add(data.getAcb());
         result.add(data.getChplProductNumber());
         result.add(data.getUrl());
+        result.add(data.getAcb());
         result.add(data.getCertificationStatus());
         result.add(data.getDateOfLastStatusChange());
         result.add(data.getSurveillanceId());
