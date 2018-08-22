@@ -206,7 +206,7 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
         return result;
     }
     
-    @Cacheable("getAllWhitelistedEntities")
+    @Cacheable(CacheNames.GET_ALL_WHITELISTED)
     private List<ApiKeyEntity> getAllWhitelistedEntities() {
 
         List<ApiKeyEntity> result = entityManager
