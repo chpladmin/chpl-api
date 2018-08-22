@@ -11,4 +11,7 @@ _Date TBD_
   * Added new Quart job to gather and store surveillance error data
   * Added new user schedulable job to send the error email
 
+### Bug Fixes
+* Fix 2015 listing XML file creation process
+  
 ---
