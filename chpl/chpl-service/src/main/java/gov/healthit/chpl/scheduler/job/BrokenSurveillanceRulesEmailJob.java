@@ -149,7 +149,7 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
                 }
             }
         } else {
-            filteredErrors.addAll(errors);
+            filteredErrors.addAll(allErrors);
         }
         if (jobContext.getMergedJobDataMap().getBooleanValue("acbSpecific")) {
             for (BrokenSurveillanceRulesDTO error : filteredErrors) {
