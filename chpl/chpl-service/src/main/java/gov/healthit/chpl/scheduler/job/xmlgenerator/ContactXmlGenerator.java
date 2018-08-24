@@ -11,8 +11,8 @@ public class ContactXmlGenerator extends XmlGenerator {
             sw.writeStartElement(rootNodeName);
             createSimpleElement(contact.getContactId(), "contactId", sw);
             createSimpleElement(contact.getEmail(), "email", sw);
-            createSimpleElement(contact.getFirstName(), "firstName", sw);
-            createSimpleElement(contact.getLastName(), "lastName", sw);
+            createSimpleElement(contact.getFullName(), "firstName", sw);
+            createSimpleElement(contact.getFriendlyName(), "lastName", sw);
             createSimpleElement(contact.getPhoneNumber(), "phoneNumber", sw);
             createSimpleElement(contact.getTitle(), "title", sw);
             sw.writeEndElement();

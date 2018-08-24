@@ -63,8 +63,8 @@ public class JWTUserConverterImpl implements JWTUserConverter {
 			String lastName = identityInfo.get(3);
 			
 			user.setId(userId);
-			user.setFirstName(firstName);
-			user.setLastName(lastName);
+			user.setFullName(firstName);
+			user.setFriendlyName(lastName);
 			
 		}
 		return user;

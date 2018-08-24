@@ -27,8 +27,8 @@ public class ContactDAOImpl extends BaseDAOImpl implements ContactDAO {
 
         ContactEntity toInsert = new ContactEntity();
         toInsert.setEmail(dto.getEmail());
-        toInsert.setFirstName(dto.getFirstName());
-        toInsert.setLastName(dto.getLastName());
+        toInsert.setFullName(dto.getFullName());
+        toInsert.setFriendlyName(dto.getFriendlyName());
         toInsert.setPhoneNumber(dto.getPhoneNumber());
         toInsert.setTitle(dto.getTitle());
         toInsert.setSignatureDate(null);
@@ -48,8 +48,8 @@ public class ContactDAOImpl extends BaseDAOImpl implements ContactDAO {
         ContactEntity contact = this.getEntityById(dto.getId());
 
         contact.setEmail(dto.getEmail());
-        contact.setFirstName(dto.getFirstName());
-        contact.setLastName(dto.getLastName());
+        contact.setFullName(dto.getFullName());
+        contact.setFriendlyName(dto.getFriendlyName());
         contact.setPhoneNumber(dto.getPhoneNumber());
         contact.setTitle(dto.getTitle());
         contact.setSignatureDate(dto.getSignatureDate());
@@ -138,19 +138,19 @@ public class ContactDAOImpl extends BaseDAOImpl implements ContactDAO {
         ContactEntity entity = null;
 
         String contactQuery = "from ContactEntity a where (NOT deleted = true) ";
-        if (toSearch.getFirstName() != null) {
+        if (toSearch.getFullName() != null) {
             contactQuery += " AND (first_name = :firstName) ";
         }
-        if (toSearch.getLastName() != null) {
+        if (toSearch.getFriendlyName() != null) {
             contactQuery += " AND (last_name = :lastName)";
         }
 
         Query query = entityManager.createQuery(contactQuery, ContactEntity.class);
-        if (toSearch.getFirstName() != null) {
-            query.setParameter("firstName", toSearch.getFirstName());
+        if (toSearch.getFullName() != null) {
+            query.setParameter("firstName", toSearch.getFullName());
         }
-        if (toSearch.getLastName() != null) {
-            query.setParameter("lastName", toSearch.getLastName());
+        if (toSearch.getFriendlyName() != null) {
+            query.setParameter("lastName", toSearch.getFriendlyName());
         }
 
         List<ContactEntity> result = query.getResultList();

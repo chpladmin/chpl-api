@@ -57,16 +57,16 @@ public class NotificationDAOTest extends TestCase {
     @BeforeClass
     public static void setUpClass() throws Exception {
         adminUser = new JWTAuthenticatedUser();
-        adminUser.setFirstName("Administrator");
+        adminUser.setFullName("Administrator");
         adminUser.setId(-2L);
-        adminUser.setLastName("Administrator");
+        adminUser.setFriendlyName("Administrator");
         adminUser.setSubjectName("admin");
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 
         acbUser = new JWTAuthenticatedUser();
-        acbUser.setFirstName("Test");
+        acbUser.setFullName("Test");
         acbUser.setId(3L);
-        acbUser.setLastName("User3");
+        acbUser.setFriendlyName("User3");
         acbUser.setSubjectName("acbUser");
         acbUser.getPermissions().add(new GrantedPermission("ROLE_ACB"));
     }

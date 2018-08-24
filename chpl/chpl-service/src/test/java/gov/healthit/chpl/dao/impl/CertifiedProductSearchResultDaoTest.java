@@ -71,9 +71,9 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 	@BeforeClass
 	public static void setUpClass() throws Exception {
 		adminUser = new JWTAuthenticatedUser();
-		adminUser.setFirstName("Administrator");
+		adminUser.setFullName("Administrator");
 		adminUser.setId(-2L);
-		adminUser.setLastName("Administrator");
+		adminUser.setFriendlyName("Administrator");
 		adminUser.setSubjectName("admin");
 		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 	}

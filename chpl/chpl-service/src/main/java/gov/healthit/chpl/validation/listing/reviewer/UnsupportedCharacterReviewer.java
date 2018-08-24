@@ -60,10 +60,10 @@ public class UnsupportedCharacterReviewer implements Reviewer {
 
         if (listing.getDeveloper() != null && listing.getDeveloper().getContact() != null) {
             Contact contact = listing.getDeveloper().getContact();
-            addListingWarningIfNotValid(listing, contact.getFirstName(),
-                    "Developer Contact's First Name '" + contact.getFirstName() + "'");
-            addListingWarningIfNotValid(listing, contact.getLastName(),
-                    "Developer Contact's Last Name '" + contact.getLastName() + "'");
+            addListingWarningIfNotValid(listing, contact.getFullName(),
+                    "Developer Contact's First Name '" + contact.getFullName() + "'");
+            addListingWarningIfNotValid(listing, contact.getFriendlyName(),
+                    "Developer Contact's Last Name '" + contact.getFriendlyName() + "'");
             addListingWarningIfNotValid(listing, contact.getEmail(),
                     "Developer Contact's Email Address '" + contact.getEmail() + "'");
             addListingWarningIfNotValid(listing, contact.getPhoneNumber(),

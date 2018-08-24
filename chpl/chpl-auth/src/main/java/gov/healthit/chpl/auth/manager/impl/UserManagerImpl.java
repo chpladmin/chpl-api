@@ -32,239 +32,243 @@ import gov.healthit.chpl.auth.user.UserRetrievalException;
 public class UserManagerImpl implements UserManager {
 
     private final Random random = new SecureRandom();
-	private static final char[] symbols;
+    private static final char[] symbols;
     static {
-      StringBuilder tmp = new StringBuilder();
-      for (char ch = '0'; ch <= '9'; ++ch)
-        tmp.append(ch);
-      for (char ch = 'a'; ch <= 'z'; ++ch)
-        tmp.append(ch);
-      symbols = tmp.toString().toCharArray();
-    } 
-    
-	@Autowired private Environment env;
+        StringBuilder tmp = new StringBuilder();
+        for (char ch = '0'; ch <= '9'; ++ch)
+            tmp.append(ch);
+        for (char ch = 'a'; ch <= 'z'; ++ch)
+            tmp.append(ch);
+        symbols = tmp.toString().toCharArray();
+    }
 
-	@Autowired
-	private SecuredUserManager securedUserManager;
-	
-	@Autowired
-	private UserDAO userDAO;
-	
-	@Autowired
-	UserPermissionDAO userPermissionDAO;
-	
-	@Autowired
-	private BCryptPasswordEncoder bCryptPasswordEncoder;
-	
-	
-	@Override
-	@Transactional
-	public UserDTO create(UserCreationJSONObject userInfo) throws UserCreationException, UserRetrievalException {
-		
-		UserDTO user = UserConversionHelper.createDTO(userInfo);
-		String encodedPassword = encodePassword(userInfo.getPassword());
-		user = securedUserManager.create(user, encodedPassword);
-		return user;
-	}
-	
-	@Override
-	@Transactional
-	public UserDTO update(User userInfo) throws UserRetrievalException{
-		
-		UserDTO userDTO = getByName(userInfo.getSubjectName());
-		
-		if (userInfo.getFirstName() != null){
-			userDTO.setFirstName(userInfo.getFirstName());
-		}
-		
-		if (userInfo.getLastName() != null){
-			userDTO.setLastName(userInfo.getLastName());
-		}
-		
-		if (userInfo.getEmail() != null){
-			userDTO.setEmail(userInfo.getEmail());
-		}
-		
-		if (userInfo.getPhoneNumber() != null){
-			userDTO.setPhoneNumber(userInfo.getPhoneNumber());
-		}
-		
-		if (userInfo.getAccountEnabled() != null){
-			userDTO.setAccountEnabled(userInfo.getAccountEnabled());
-		} else {
-			userDTO.setAccountEnabled(true);
-		}
-		
-		if (userInfo.getAccountLocked() != null){
-			userDTO.setAccountLocked(userInfo.getAccountLocked());
-		} else {
-			userDTO.setAccountLocked(true);
-		}
-		
-		if(Boolean.TRUE.equals(userInfo.getComplianceTermsAccepted())) {
-			if(userDTO.getComplianceSignatureDate() == null) {
-				userDTO.setComplianceSignatureDate(new Date());
-			}
-		} else {
-			userDTO.setComplianceSignatureDate(null);
-		}
-		
-		userDTO.setTitle(userInfo.getTitle());
-		return securedUserManager.update(userDTO);
-	}
-	
-	@Override
-	@Transactional
-	public UserDTO update(UserDTO user) throws UserRetrievalException {	
-		return securedUserManager.update(user);
-	}
-	
-	@Transactional
-	private void updateContactInfo(UserEntity user){
-		securedUserManager.updateContactInfo(user);
-	}
-	
-	@Transactional
-	public void delete(UserDTO user) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
-		securedUserManager.delete(user);
-	}
-	
-	@Override
-	@Transactional
-	public void delete(String userName) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
-		
-		UserDTO user = securedUserManager.getBySubjectName(userName);
-		if (user == null){
-			throw new UserRetrievalException("User not found");
-		} else {
-			delete(user);
-		}
-	}
-	
-	
-	@Transactional
-	public List<UserDTO> getAll(){
-		return securedUserManager.getAll();
-	}
-	
-	@Transactional
-	public List<UserDTO> getUsersWithPermission(String permissionName) {
-	    return securedUserManager.getUsersWithPermission(permissionName);
-	}
-	
-	@Transactional
-	public UserDTO getById(Long id) throws UserRetrievalException{
-		return securedUserManager.getById(id);
-	}
-	
-	
-	@Override
-	@Transactional
-	public void grantRole(String userName, String role) throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
-		securedUserManager.grantRole(userName, role);
-	}
-	
-	@Override
-	@Transactional
-	public void grantAdmin(String userName) throws UserPermissionRetrievalException, UserRetrievalException, UserManagementException {
-		securedUserManager.grantAdmin(userName);
-	}
-	
-	@Override
-	@Transactional
-	public void removeRole(UserDTO user, String role) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
-		securedUserManager.removeRole(user, role);
-	}
-	
-	@Override
-	@Transactional
-	public void removeRole(String userName, String role) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
-		securedUserManager.removeRole(userName, role);
-	}
-	
-	@Override
-	@Transactional
-	public void removeAdmin(String userName) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
-		securedUserManager.removeAdmin(userName);
-	}
-	
-	@Override
-	@Transactional
-	public void updateFailedLoginCount(UserDTO userToUpdate) throws UserRetrievalException { 
-		securedUserManager.updateFailedLoginCount(userToUpdate);
-		String maxLoginsStr = env.getProperty("authMaximumLoginAttempts");
-		int maxLogins = Integer.parseInt(maxLoginsStr);
-		
-		if(userToUpdate.getFailedLoginCount() >= maxLogins) {
-			userToUpdate.setAccountLocked(true);
-			securedUserManager.updateAccountLockedStatus(userToUpdate);
-		}
-	}
-	
-	@Override
-	@Transactional
-	public void updateUserPassword(String userName, String password) throws UserRetrievalException {
-		
-		String encodedPassword = encodePassword(password);
-		UserDTO userToUpdate = securedUserManager.getBySubjectName(userName);
-		securedUserManager.updatePassword(userToUpdate, encodedPassword);
-		
-	}
-	
-	//no auth needed. create a random string and assign it to the user
-	@Override
-	@Transactional
-	public String resetUserPassword(String username, String email) throws UserRetrievalException {
-		UserDTO foundUser = userDAO.findUserByNameAndEmail(username, email);
-		if(foundUser == null) {
-			throw new UserRetrievalException("Cannot find user with name " + username + " and email address " + email);
-		}
-		
-		//create new password
-		char[] buf = new char[15];
-    	
-    	for (int idx = 0; idx < buf.length; ++idx) {
+    @Autowired private Environment env;
+
+    @Autowired
+    private SecuredUserManager securedUserManager;
+
+    @Autowired
+    private UserDAO userDAO;
+
+    @Autowired
+    UserPermissionDAO userPermissionDAO;
+
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+
+    @Override
+    @Transactional
+    public UserDTO create(final UserCreationJSONObject userInfo) throws UserCreationException, UserRetrievalException {
+
+        UserDTO user = UserConversionHelper.createDTO(userInfo);
+        String encodedPassword = encodePassword(userInfo.getPassword());
+        user = securedUserManager.create(user, encodedPassword);
+        return user;
+    }
+
+    @Override
+    @Transactional
+    public UserDTO update(final User userInfo) throws UserRetrievalException {
+
+        UserDTO userDTO = getByName(userInfo.getSubjectName());
+
+        if (userInfo.getFullName() != null) {
+            userDTO.setFullName(userInfo.getFullName());
+        }
+
+        if (userInfo.getFriendlyName() != null) {
+            userDTO.setFriendlyName(userInfo.getFriendlyName());
+        }
+
+        if (userInfo.getEmail() != null) {
+            userDTO.setEmail(userInfo.getEmail());
+        }
+
+        if (userInfo.getPhoneNumber() != null) {
+            userDTO.setPhoneNumber(userInfo.getPhoneNumber());
+        }
+
+        if (userInfo.getAccountEnabled() != null) {
+            userDTO.setAccountEnabled(userInfo.getAccountEnabled());
+        } else {
+            userDTO.setAccountEnabled(true);
+        }
+
+        if (userInfo.getAccountLocked() != null) {
+            userDTO.setAccountLocked(userInfo.getAccountLocked());
+        } else {
+            userDTO.setAccountLocked(true);
+        }
+
+        if (Boolean.TRUE.equals(userInfo.getComplianceTermsAccepted())) {
+            if (userDTO.getComplianceSignatureDate() == null) {
+                userDTO.setComplianceSignatureDate(new Date());
+            }
+        } else {
+            userDTO.setComplianceSignatureDate(null);
+        }
+
+        userDTO.setTitle(userInfo.getTitle());
+        return securedUserManager.update(userDTO);
+    }
+
+    @Override
+    @Transactional
+    public UserDTO update(final UserDTO user) throws UserRetrievalException {
+        return securedUserManager.update(user);
+    }
+
+    @Transactional
+    private void updateContactInfo(final UserEntity user) {
+        securedUserManager.updateContactInfo(user);
+    }
+
+    @Transactional
+    public void delete(final UserDTO user)
+            throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
+        securedUserManager.delete(user);
+    }
+
+    @Override
+    @Transactional
+    public void delete(final String userName)
+            throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
+
+        UserDTO user = securedUserManager.getBySubjectName(userName);
+        if (user == null) {
+            throw new UserRetrievalException("User not found");
+        } else {
+            delete(user);
+        }
+    }
+
+    @Transactional
+    public List<UserDTO> getAll() {
+        return securedUserManager.getAll();
+    }
+
+    @Transactional
+    public List<UserDTO> getUsersWithPermission(final String permissionName) {
+        return securedUserManager.getUsersWithPermission(permissionName);
+    }
+
+    @Transactional
+    public UserDTO getById(final Long id) throws UserRetrievalException {
+        return securedUserManager.getById(id);
+    }
+
+    @Override
+    @Transactional
+    public void grantRole(final String userName, final String role)
+            throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
+        securedUserManager.grantRole(userName, role);
+    }
+
+    @Override
+    @Transactional
+    public void grantAdmin(final String userName)
+            throws UserPermissionRetrievalException, UserRetrievalException, UserManagementException {
+        securedUserManager.grantAdmin(userName);
+    }
+
+    @Override
+    @Transactional
+    public void removeRole(final UserDTO user, final String role)
+            throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
+        securedUserManager.removeRole(user, role);
+    }
+
+    @Override
+    @Transactional
+    public void removeRole(final String userName, final String role)
+            throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
+        securedUserManager.removeRole(userName, role);
+    }
+
+    @Override
+    @Transactional
+    public void removeAdmin(final String userName)
+            throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
+        securedUserManager.removeAdmin(userName);
+    }
+
+    @Override
+    @Transactional
+    public void updateFailedLoginCount(final UserDTO userToUpdate) throws UserRetrievalException {
+        securedUserManager.updateFailedLoginCount(userToUpdate);
+        String maxLoginsStr = env.getProperty("authMaximumLoginAttempts");
+        int maxLogins = Integer.parseInt(maxLoginsStr);
+
+        if (userToUpdate.getFailedLoginCount() >= maxLogins) {
+            userToUpdate.setAccountLocked(true);
+            securedUserManager.updateAccountLockedStatus(userToUpdate);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void updateUserPassword(final String userName, final String password) throws UserRetrievalException {
+
+        String encodedPassword = encodePassword(password);
+        UserDTO userToUpdate = securedUserManager.getBySubjectName(userName);
+        securedUserManager.updatePassword(userToUpdate, encodedPassword);
+
+    }
+
+    //no auth needed. create a random string and assign it to the user
+    @Override
+    @Transactional
+    public String resetUserPassword(final String username, final String email) throws UserRetrievalException {
+        UserDTO foundUser = userDAO.findUserByNameAndEmail(username, email);
+        if (foundUser == null) {
+            throw new UserRetrievalException("Cannot find user with name " + username + " and email address " + email);
+        }
+
+        //create new password
+        char[] buf = new char[15];
+
+        for (int idx = 0; idx < buf.length; ++idx) {
             buf[idx] = symbols[random.nextInt(symbols.length)];
-    	}
-    	String password = new String(buf);
-    	
-		//encode new password
-		String encodedPassword = encodePassword(password);
-			
-		//update the userDTO with the new password
-		userDAO.updatePassword(foundUser.getSubjectName(), encodedPassword);
-		
-		return password;
-	}
-	
-	@Override
-	public String encodePassword(String password){
-		String encodedPassword = bCryptPasswordEncoder.encode(password);
-		return encodedPassword;
-	}
+        }
+        String password = new String(buf);
 
-	@Override
-	public String getEncodedPassword(UserDTO user) throws UserRetrievalException {
-		return userDAO.getEncodedPassword(user);
-	}
-	
-	
-	@Override
-	public Set<UserPermissionDTO> getGrantedPermissionsForUser(UserDTO user){
-		return securedUserManager.getGrantedPermissionsForUser(user);
-	}
+        //encode new password
+        String encodedPassword = encodePassword(password);
+
+        //update the userDTO with the new password
+        userDAO.updatePassword(foundUser.getSubjectName(), encodedPassword);
+
+        return password;
+    }
+
+    @Override
+    public String encodePassword(final String password) {
+        String encodedPassword = bCryptPasswordEncoder.encode(password);
+        return encodedPassword;
+    }
+
+    @Override
+    public String getEncodedPassword(final UserDTO user) throws UserRetrievalException {
+        return userDAO.getEncodedPassword(user);
+    }
 
 
-	@Override
-	public UserDTO getByName(String userName) throws UserRetrievalException {
-		return securedUserManager.getBySubjectName(userName);
-	}
-	
-	@Override
-	public UserInfoJSONObject getUserInfo(String userName) throws UserRetrievalException {
-		UserDTO user = securedUserManager.getBySubjectName(userName);
-		UserInfoJSONObject userInfo = new UserInfoJSONObject(user);
-		return userInfo;
-	}
-	
+    @Override
+    public Set<UserPermissionDTO> getGrantedPermissionsForUser(final UserDTO user) {
+        return securedUserManager.getGrantedPermissionsForUser(user);
+    }
+
+
+    @Override
+    public UserDTO getByName(final String userName) throws UserRetrievalException {
+        return securedUserManager.getBySubjectName(userName);
+    }
+
+    @Override
+    public UserInfoJSONObject getUserInfo(final String userName) throws UserRetrievalException {
+        UserDTO user = securedUserManager.getBySubjectName(userName);
+        UserInfoJSONObject userInfo = new UserInfoJSONObject(user);
+        return userInfo;
+    }
 }

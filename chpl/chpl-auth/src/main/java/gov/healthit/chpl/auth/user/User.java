@@ -15,10 +15,10 @@ public interface User extends UserDetails , Authentication {
 	public String getSubjectName();
 	public void setSubjectName(String subject);
 	
-	public void setFirstName(String firstName);
-	public String getFirstName();
-	public void setLastName(String lastName);
-	public String getLastName();
+	public void setFullName(String firstName);
+	public String getFullName();
+	public void setFriendlyName(String lastName);
+	public String getFriendlyName();
 	
 	public Set<GrantedPermission> getPermissions();
 	public void addPermission(GrantedPermission permission);

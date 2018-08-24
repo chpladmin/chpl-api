@@ -117,8 +117,8 @@ public class UserAuthenticator implements Authenticator {
 
 		identity.add(user.getId().toString());
 		identity.add(user.getName());
-		identity.add(user.getFirstName());
-		identity.add(user.getLastName());
+		identity.add(user.getFullName());
+		identity.add(user.getFriendlyName());
 
 		claims.put("Identity", identity);
 
@@ -149,8 +149,8 @@ public class UserAuthenticator implements Authenticator {
 
 			identity.add(user.getId().toString());
 			identity.add(user.getName());
-			identity.add(user.getFirstName());
-			identity.add(user.getLastName());
+			identity.add(user.getFullName());
+			identity.add(user.getFriendlyName());
 
 			claims.put("Identity", identity);
 

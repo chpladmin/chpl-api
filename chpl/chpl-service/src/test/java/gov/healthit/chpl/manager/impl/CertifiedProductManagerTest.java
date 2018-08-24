@@ -94,16 +94,16 @@ public class CertifiedProductManagerTest extends TestCase {
     @BeforeClass
     public static void setUpClass() throws Exception {
         adminUser = new JWTAuthenticatedUser();
-        adminUser.setFirstName("Administrator");
+        adminUser.setFullName("Administrator");
         adminUser.setId(ADMIN_ID);
-        adminUser.setLastName("Administrator");
+        adminUser.setFriendlyName("Administrator");
         adminUser.setSubjectName("admin");
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 
         testUser3 = new JWTAuthenticatedUser();
-        testUser3.setFirstName("Test");
+        testUser3.setFullName("Test");
         testUser3.setId(USER_ID);
-        testUser3.setLastName("User3");
+        testUser3.setFriendlyName("User3");
         testUser3.setSubjectName("testUser3");
         testUser3.getPermissions().add(new GrantedPermission("ROLE_ACB"));
     }
