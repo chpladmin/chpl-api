@@ -1,6 +1,9 @@
 
-## Version 16.2.1
+## Version 16.3.0
 _Date TBD_
+
+### New Features
+* Add API throttling
 
 ### Bugs Fixed
 * Extra test data/test procedure/test functionality/etc. no longer appears after attesting to a criteria with previously entered phantom data.

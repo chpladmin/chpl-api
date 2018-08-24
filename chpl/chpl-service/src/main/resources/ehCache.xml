@@ -6,6 +6,8 @@
 
 	<diskStore path="java.io.tmpdir" />
 	
+	getAllWhitelistedEntities
+	
 	<defaultCache
 		maxEntriesLocalHeap="10000"
 		eternal="true"
@@ -14,6 +16,16 @@
 		memoryStoreEvictionPolicy="LRU">
 		<persistence strategy="localTempSwap"/>
 	</defaultCache>
+	
+	<cache name="getAllWhitelistedEntities"
+		maxEntriesLocalHeap="10000"
+		maxEntriesLocalDisk="10000000"
+		eternal="true"
+		diskSpoolBufferSizeMB="20"
+		memoryStoreEvictionPolicy="LFU"
+		transactionalMode="off">
+		<persistence strategy="localTempSwap" />
+	</cache>
 	
 	<!-- /certification_ids caching -->
 	<cache name="allCertIdsWithProducts"
