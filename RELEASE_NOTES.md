@@ -1,5 +1,45 @@
 # Release Notes
 
+## Version 16.2.0
+_27 August 2018_
+
+### New Features
+* Migrate "ICS errors report" to Quartz
+  * Added new Quartz job to gather and store ICS error data
+  * Added new user schedulable job that sends the Summary Statistics Email
+  * Updated manager to support ACB specific Jobs
+* Migrate "Broken Surveillance Rules" report to Quartz
+  * Added new Quart job to gather and store surveillance error data
+  * Added new user schedulable job to send the error email
+
+### Bug Fixes
+* Fix 2015 listing XML file creation process
+  
+---
+
+## Version 16.1.0
+_16 August 2018_
+
+### New Features
+* Add nonconformity charts statistics endpoint
+* Identify questionable activity based on the confirmed date of a listing rather than the certification date.
+* Add "Trigger Developer Ban" notification
+* Migrate "Summary Statistics" to Quartz
+  * Added new Quartz job to gather and store Summary Statistics
+  * Added new user schedulable job that sends the Summary Statistics Email
+  * Added new endpoint for retrieving all jobs that user has permission to schedule
+* Download XML file changes
+  * In the <ucdProces> node
+    * AllVersions will now be structured: `<allVersions><version/><version/> ... </allVersions>`
+    * SuccessVersions will now be structured: `<successVersions><version/><version/> ... </successVersions>`
+  * In the <listing> node
+    * CertificationStatusEvents will now be structured: `<certificationEvents><certificationEvent><eventDate/><id/><reason/></status></certificationEvent> ... </certificationEvents>`
+    * TestingLabs will now be structured: `<testingLabs><testingLabs/><testingLab/> ... </testingLabs>`
+  * In the <ucdProcess> node
+    * Criteria will now be structured: `<criteriaList><criteria/><criteria/> ... </criteriaList>`
+
+---
+
 ## Version 16.0.0
 _7 August 2018_
 
@@ -20,7 +60,6 @@ _18 July 2018_
 * Legacy 2014 listings (those with product numbers like "CHP-") are allowed to have attested to 170.314 (g)(3) but not required to have a criteria with SED and vice versa.
 
 ---
-
 
 ## Version 15.15.2
 _16 July 2018_

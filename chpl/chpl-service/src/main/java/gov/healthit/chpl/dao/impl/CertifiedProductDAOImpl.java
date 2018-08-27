@@ -279,7 +279,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
     public List<CertifiedProductDetailsDTO> findWithInheritance() {
 
         List<CertifiedProductDetailsEntity> entities = entityManager.createQuery(
-                "SELECT DISTINCT cp " + "FROM CertifiedProductDetailsEntity cp " + "WHERE (icsCode > 0 OR ics = true)",
+                "SELECT DISTINCT cp " + "FROM CertifiedProductDetailsEntity cp " + "WHERE (icsCode != '0' OR ics = true)",
                 CertifiedProductDetailsEntity.class).getResultList();
 
         List<CertifiedProductDetailsDTO> products = new ArrayList<>();
@@ -348,6 +348,24 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
         return dtoResults;
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Date getConfirmDate(final Long listingId) {
+        Date confirmDate = null;
+        CertifiedProductEntity entity = null;
+        
+        try {
+            entity = getEntityById(listingId);
+            if (entity != null) {
+                confirmDate = entity.getCreationDate();
+            }
+        } catch(EntityRetrievalException ex) {
+            LOGGER.error("Could not get entity with ID " + listingId, ex);
+        }
+
+        return confirmDate;
+    }
+    
     @Override
     @Transactional(readOnly = true)
     public List<CertifiedProductDTO> getCertifiedProductsForDeveloper(final Long developerId) {

@@ -39,7 +39,7 @@ public class CertificationStatusEvent implements Serializable {
     /**
      * The user-provided reason that a change of certification status occurred.
      */
-    @XmlElement(required = true)
+    @XmlElement(nillable = true, required = false)
     private String reason;
 
     @XmlTransient

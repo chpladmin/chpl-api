@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.QuestionableActivityDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -46,6 +47,7 @@ public class QuestionableActivityAspect implements EnvironmentAware {
     @Autowired private CertificationResultRules certResultRules;
     @Autowired private CertifiedProductDetailsManager cpdManager;
     @Autowired private QuestionableActivityDAO questionableActivityDao;
+    @Autowired private CertifiedProductDAO listingDao;
     @Autowired private DeveloperQuestionableActivityProvider developerQuestionableActivityProvider;
     @Autowired private ProductQuestionableActivityProvider productQuestionableActivityProvider;
     @Autowired private VersionQuestionableActivityProvider versionQuestionableActivityProvider;
@@ -160,16 +162,19 @@ public class QuestionableActivityAspect implements EnvironmentAware {
 
             //check for cert result questionable activity
             //outside of the acceptable activity threshold
-            if (origListing.getCertificationDate() != null && newListing.getCertificationDate() != null
-                    && (newListing.getLastModifiedDate().longValue()
-                            - origListing.getCertificationDate().longValue() > listingActivityThresholdMillis)) {
+            
+            //get confirm date of the listing to check against the threshold
+            Date confirmDate = listingDao.getConfirmDate(origListing.getId());
+            if (confirmDate != null && newListing.getLastModifiedDate() != null &&
+                    (newListing.getLastModifiedDate().longValue()
+                            - confirmDate.getTime() > listingActivityThresholdMillis)) {
                 
                 //look for certification result questionable activity
                 if (origListing.getCertificationResults() != null && origListing.getCertificationResults().size() > 0 && 
                         newListing.getCertificationResults() != null && newListing.getCertificationResults().size() > 0) {
 
                     //all cert results are in the details so find matches based on the 
-                    //original and new criteira number fields
+                    //original and new criteria number fields
                     for (CertificationResult origCertResult : origListing.getCertificationResults()) {
                         for (CertificationResult newCertResult : newListing.getCertificationResults()) {
                             if (origCertResult.getNumber().equals(newCertResult.getNumber())) {
@@ -371,9 +376,12 @@ public class QuestionableActivityAspect implements EnvironmentAware {
             }
             //finally check for other changes that are only questionable
             //outside of the acceptable activity threshold
-            if (origListing.getCertificationDate() != null && newListing.getCertificationDate() != null
-                    && (newListing.getLastModifiedDate().longValue()
-                            - origListing.getCertificationDate().longValue() > listingActivityThresholdMillis)) {
+            
+            //get the confirm date of the listing to check against the threshold
+            Date confirmDate = listingDao.getConfirmDate(origListing.getId());
+            if (confirmDate != null && newListing.getLastModifiedDate() != null &&
+                    (newListing.getLastModifiedDate().longValue()
+                            - confirmDate.getTime() > listingActivityThresholdMillis)) {
                 activity = listingQuestionableActivityProvider.checkCertificationStatusUpdated(origListing, newListing);
                 if (activity != null) {
                     createListingActivity(activity, origListing.getId(), activityDate,

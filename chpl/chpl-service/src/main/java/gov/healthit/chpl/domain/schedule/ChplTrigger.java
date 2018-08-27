@@ -4,8 +4,6 @@ import java.io.Serializable;
 
 import org.quartz.CronTrigger;
 
-import gov.healthit.chpl.domain.concept.ScheduleTypeConcept;
-
 /**
  * Basic representation of Quartz Triggers.
  * @author alarned
@@ -16,11 +14,10 @@ public class ChplTrigger implements Serializable {
 
     private String name;
     private String group;
-    private String jobName;
-    private String jobGroup;
-    private ScheduleTypeConcept scheduleType;
+    private ChplJob job;
     private String cronSchedule;
     private String email;
+    private String acb;
 
     ChplTrigger() { }
 
@@ -31,10 +28,10 @@ public class ChplTrigger implements Serializable {
     ChplTrigger(final ChplTrigger chplTrigger) {
         this.name = chplTrigger.getName();
         this.group = chplTrigger.getGroup();
-        this.jobName = chplTrigger.getJobName();
-        this.jobGroup = chplTrigger.getJobGroup();
+        this.job = chplTrigger.getJob();
         this.cronSchedule = chplTrigger.getCronSchedule();
         this.email = chplTrigger.getEmail();
+        this.acb = chplTrigger.getAcb();
     }
 
     /**
@@ -44,10 +41,13 @@ public class ChplTrigger implements Serializable {
     public ChplTrigger(final CronTrigger quartzTrigger) {
         this.name = quartzTrigger.getKey().getName();
         this.group = quartzTrigger.getKey().getGroup();
-        this.jobName = quartzTrigger.getJobKey().getName();
-        this.jobGroup = quartzTrigger.getJobKey().getName();
+        this.job = new ChplJob();
+        this.job.setDescription("");
+        this.job.setGroup(quartzTrigger.getJobKey().getGroup());
+        this.job.setName(quartzTrigger.getJobKey().getName());
         this.cronSchedule = quartzTrigger.getCronExpression();
         this.email = quartzTrigger.getJobDataMap().getString("email");
+        this.acb = quartzTrigger.getJobDataMap().getString("acb");
     }
 
     public String getName() {
@@ -66,28 +66,12 @@ public class ChplTrigger implements Serializable {
         this.group = group;
     }
 
-    public String getJobName() {
-        return jobName;
+    public ChplJob getJob() {
+        return job;
     }
 
-    public void setJobName(final String jobName) {
-        this.jobName = jobName;
-    }
-
-    public String getJobGroup() {
-        return jobGroup;
-    }
-
-    public void setJobGroup(final String jobGroup) {
-        this.jobGroup = jobGroup;
-    }
-
-    public ScheduleTypeConcept getScheduleType() {
-        return scheduleType;
-    }
-
-    public void setScheduleType(final ScheduleTypeConcept scheduleType) {
-        this.scheduleType = scheduleType;
+    public void setJob(final ChplJob job) {
+        this.job = job;
     }
 
     public String getCronSchedule() {
@@ -104,5 +88,13 @@ public class ChplTrigger implements Serializable {
 
     public void setEmail(final String email) {
         this.email = email;
+    }
+
+    public String getAcb() {
+        return acb;
+    }
+
+    public void setAcb(final String acb) {
+        this.acb = acb;
     }
 }

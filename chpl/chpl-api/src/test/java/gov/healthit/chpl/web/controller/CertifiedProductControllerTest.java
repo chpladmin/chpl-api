@@ -6,11 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,7 +26,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -47,6 +42,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.UploadFileUtils;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
@@ -107,10 +103,6 @@ public class CertifiedProductControllerTest {
     private static JWTAuthenticatedUser adminUser;
     private static final long ADMIN_ID = -2L;
 
-    private static final String UPLOAD_2014 = "2014_V11_hasGAP.csv";
-
-    private static final String UPLOAD_2015_V12 = "2015_v12_TPTD2_error_free.csv";
-
     @BeforeClass
     public static void setUpClass() throws Exception {
         adminUser = new JWTAuthenticatedUser();
@@ -120,40 +112,6 @@ public class CertifiedProductControllerTest {
         adminUser.setSubjectName("admin");
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ACB"));
-    }
-
-    /**
-     * Retrieve the requested file from resources.
-     * @param edition certification edition
-     * @param version template version
-     * @return the requested file
-     */
-    public MultipartFile getUploadFile(final String edition, final String version){
-        ClassLoader classLoader = getClass().getClassLoader();
-        File file = null;
-        Path filePath = null;
-        String name =  null;
-        String originalFileName = null;
-        if (edition.equals("2014")) {
-            file = new File(classLoader.getResource(UPLOAD_2014).getFile());
-            filePath = Paths.get(file.getPath());
-            name = UPLOAD_2014;
-            originalFileName = UPLOAD_2014;
-        } else {
-            String resource = UPLOAD_2015_V12;
-            file = new File(classLoader.getResource(resource).getFile());
-            filePath = Paths.get(file.getPath());
-            name = resource;
-            originalFileName = resource;
-        }
-        String contentType = "text/csv";
-        byte[] content = null;
-        try {
-            content = Files.readAllBytes(filePath);
-        } catch (final IOException e) {
-        }
-        MultipartFile result = new MockMultipartFile(name, originalFileName, contentType, content);
-        return result;
     }
 
     /** 
@@ -1196,7 +1154,7 @@ public class CertifiedProductControllerTest {
     @Test
     public void test_uploadCertifiedProduct2014v2() throws EntityRetrievalException, EntityCreationException, IOException, MaxUploadSizeExceededException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        MultipartFile file = getUploadFile("2014", null);
+        MultipartFile file = UploadFileUtils.getUploadFile("2014", null);
         ResponseEntity<PendingCertifiedProductResults> response = null;
         try {
             response = certifiedProductController.upload(file);
@@ -1211,7 +1169,7 @@ public class CertifiedProductControllerTest {
     @Test
     public void test_uploadCertifiedProduct2014v2Maxlength() throws EntityRetrievalException, EntityCreationException, IOException, MaxUploadSizeExceededException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        MultipartFile file = getUploadFile("2014", null);
+        MultipartFile file = UploadFileUtils.getUploadFile("2014", null);
         ResponseEntity<PendingCertifiedProductResults> response = null;
         try {
             response = certifiedProductController.upload(file);
@@ -1228,7 +1186,7 @@ public class CertifiedProductControllerTest {
             throws EntityRetrievalException, EntityCreationException, IOException, MaxUploadSizeExceededException {
         final int expectedParticipantCount = 52;
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        MultipartFile file = getUploadFile("2015", "v12");
+        MultipartFile file = UploadFileUtils.getUploadFile("2015", "v12");
         ResponseEntity<PendingCertifiedProductResults> response = null;
         try {
             response = certifiedProductController.upload(file);
@@ -1246,6 +1204,37 @@ public class CertifiedProductControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
+    @Transactional
+    @Rollback
+    @Test
+    public void testUploadAndConfirm2015Listing() throws IOException,
+        EntityRetrievalException, EntityCreationException, InvalidArgumentsException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+        //upload a new listing to pending
+        MultipartFile file = UploadFileUtils.getUploadFile("2015", "v12");
+        ResponseEntity<PendingCertifiedProductResults> response = null;
+        try {
+            response = certifiedProductController.upload(file);
+        } catch (ValidationException e) {
+            fail(e.getMessage());
+        }
+        assertNotNull(response);
+        
+        //confirm the listing so it exists to update
+        CertifiedProductSearchDetails confirmedListing = null;
+        try {
+            ResponseEntity<CertifiedProductSearchDetails> confirmedListingResponse = 
+                    certifiedProductController.confirmPendingCertifiedProduct(
+                            response.getBody().getPendingCertifiedProducts().get(0));
+            confirmedListing = confirmedListingResponse.getBody();
+        } catch(ValidationException ex) {
+            fail(ex.getMessage());
+        }
+        assertNotNull(confirmedListing);
+        assertNotNull(confirmedListing.getId());
+    }
+    
     /**
      * Given the CHPL is accepting search requests,
      * when I call the REST API's,
