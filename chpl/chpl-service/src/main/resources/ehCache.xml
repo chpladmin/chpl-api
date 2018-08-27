@@ -6,8 +6,6 @@
 
 	<diskStore path="java.io.tmpdir" />
 	
-	getAllWhitelistedEntities
-	
 	<defaultCache
 		maxEntriesLocalHeap="10000"
 		eternal="true"
