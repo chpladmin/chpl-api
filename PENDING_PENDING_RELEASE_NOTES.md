@@ -4,6 +4,8 @@ _Date TBD_
 
 ### New Features
 * Add API throttling
+* Moved the Quartz scheduler to run in the Tomcat context
+* Each Quartz job writes to a separate log file
 
 ### Bugs Fixed
 * Extra test data/test procedure/test functionality/etc. no longer appears after attesting to a criteria with previously entered phantom data.
