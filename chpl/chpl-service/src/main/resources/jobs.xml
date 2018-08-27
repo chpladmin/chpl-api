@@ -165,7 +165,7 @@
                 </entry>
                 <entry>
                     <key>email</key>
-                    <value>tyoung@ainq.com</value>
+                    <value></value>
                 </entry>
                 <entry>
                     <key>editableJobFields</key>
@@ -190,7 +190,7 @@
                 <job-name>inheritanceErrorsReportCreator</job-name>
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 10 15 * * ?</cron-expression> <!-- At 0230 UTC every day -->
+                <cron-expression>0 30 2 * * ?</cron-expression> <!-- At 0230 UTC every day -->
             </cron>
         </trigger>
 
