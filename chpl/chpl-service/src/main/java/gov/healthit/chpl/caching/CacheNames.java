@@ -19,6 +19,10 @@ public class CacheNames {
     public static final String CERTIFICATION_CRITERION_WITH_EDITIONS = "certificationCriterionWithEditions";
     public static final String GET_DECERTIFIED_DEVELOPERS = "getDecertifiedDevelopers";
     public static final String FIND_BY_ACB_ID = "findByAcbId";
+    public static final String GET_ALL_WHITELISTED = "getAllWhitelistedEntities";
+    public static final String FIND_SURVEILLANCE_REQ_TYPE = "findSurveillanceRequirementType";
+    public static final String FIND_SURVEILLANCE_RESULT_TYPE = "findSurveillanceResultType";
+    public static final String FIND_SURVEILLANCE_NONCONFORMITY_STATUS_TYPE = "findSurveillanceNonconformityStatusType";
     public static final String UPLOAD_TEMPLATE_VERSIONS = "uploadTemplateVersions";
     public static final String TEST_PROCEDURES = "testProcedures";
     public static final String TEST_DATA = "testData";

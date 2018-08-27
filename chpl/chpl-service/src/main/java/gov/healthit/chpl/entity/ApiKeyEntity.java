@@ -31,6 +31,10 @@ public class ApiKeyEntity {
     @Basic(optional = false)
     @Column(name = "name_organization")
     private String nameOrganization;
+    
+    @Basic(optional = false)
+    @Column(name = "whitelisted", nullable = false, insertable = false)
+    private Boolean whitelisted;
 
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)
@@ -78,6 +82,14 @@ public class ApiKeyEntity {
 
     public void setNameOrganization(final String nameOrganization) {
         this.nameOrganization = nameOrganization;
+    }
+    
+    public Boolean getWhitelisted() {
+        return whitelisted;
+    }
+
+    public void setWhitelisted(Boolean whitelisted) {
+        this.whitelisted = whitelisted;
     }
 
     public Date getCreationDate() {

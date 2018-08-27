@@ -11,6 +11,7 @@ public class ApiKeyDTO implements Serializable {
     private String apiKey;
     private String email;
     private String nameOrganization;
+    private Boolean whitelisted;
     private Date creationDate;
     private Date lastModifiedDate;
     private Long lastModifiedUser;
@@ -25,6 +26,7 @@ public class ApiKeyDTO implements Serializable {
         this.apiKey = entity.getApiKey();
         this.email = entity.getEmail();
         this.nameOrganization = entity.getNameOrganization();
+        this.whitelisted = entity.getWhitelisted();
         this.creationDate = entity.getCreationDate();
         this.lastModifiedDate = entity.getLastModifiedDate();
         this.lastModifiedUser = entity.getLastModifiedUser();
@@ -62,6 +64,14 @@ public class ApiKeyDTO implements Serializable {
 
     public void setNameOrganization(final String nameOrganization) {
         this.nameOrganization = nameOrganization;
+    }
+
+    public Boolean getWhitelisted() {
+        return whitelisted;
+    }
+
+    public void setWhitelisted(Boolean whitelisted) {
+        this.whitelisted = whitelisted;
     }
 
     public Date getCreationDate() {
