@@ -9,6 +9,12 @@ import javax.xml.bind.annotation.XmlType;
 
 import gov.healthit.chpl.dto.ContactDTO;
 
+/**
+ * Domain object representing a Contact. Can be used as either contact information for a product / developer, or as
+ * contact information for a user.
+ * @author alarned
+ *
+ */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Contact implements Serializable {
@@ -21,20 +27,20 @@ public class Contact implements Serializable {
     private Long contactId;
 
     /**
-     * Contact first name. This variable is applicable for 2014 and 2015
+     * Contact full name. This variable is applicable for 2014 and 2015
      * Edition, and a string variable that does not take any restrictions on
      * formatting or values.
      */
-    @XmlElement(required = false, nillable = true)
-    private String firstName;
+    @XmlElement(required = true)
+    private String fullName;
 
     /**
-     * Contact last name. This variable is applicable for 2014 and 2015 Edition,
+     * Contact friendly name. This variable is applicable for 2014 and 2015 Edition,
      * and a string variable that does not take any restrictions on formatting
-     * or values.
+     * or values. Usually only used for Contacts representing Users.
      */
-    @XmlElement(required = true)
-    private String lastName;
+    @XmlElement(required = false, nillable = true)
+    private String friendlyName;
 
     /**
      * Email address of the contact. It is applicable to 2014 and 2015 Edition.
@@ -56,13 +62,20 @@ public class Contact implements Serializable {
     @XmlElement(required = false, nillable = true)
     private String title;
 
+    /**
+     * Default constructor.
+     */
     public Contact() {
     }
 
-    public Contact(ContactDTO dto) {
+    /**
+     * Constructed from a DTO.
+     * @param dto the DTO
+     */
+    public Contact(final ContactDTO dto) {
         this.contactId = dto.getId();
-        this.firstName = dto.getFirstName();
-        this.lastName = dto.getLastName();
+        this.fullName = dto.getFullName();
+        this.friendlyName = dto.getFriendlyName();
         this.email = dto.getEmail();
         this.phoneNumber = dto.getPhoneNumber();
         this.title = dto.getTitle();
@@ -76,20 +89,20 @@ public class Contact implements Serializable {
         this.contactId = contactId;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getFullName() {
+        return fullName;
     }
 
-    public void setFirstName(final String firstName) {
-        this.firstName = firstName;
+    public void setFullName(final String fullName) {
+        this.fullName = fullName;
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getFriendlyName() {
+        return friendlyName;
     }
 
-    public void setLastName(final String lastName) {
-        this.lastName = lastName;
+    public void setFriendlyName(final String friendlyName) {
+        this.friendlyName = friendlyName;
     }
 
     public String getEmail() {
@@ -116,4 +129,11 @@ public class Contact implements Serializable {
         this.title = title;
     }
 
+    @Override
+    public String toString() {
+        return String.format("[Contact domain object: [Id: {}] [Full Name: {}] [Friendly Name: {}] [Email: {}],"
+                + "[Phone Number: {}], [Title: {}]]", this.getContactId(), this.getFullName(), this.getFriendlyName(),
+                this.getEmail(), this.getPhoneNumber(), this.getTitle());
+
+    }
 }

@@ -1,8 +1,8 @@
 package gov.healthit.chpl.dao.impl;
 
+
 import java.util.List;
 
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,13 +18,17 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
-import gov.healthit.chpl.dao.UploadTemplateVersionDAO;
-import gov.healthit.chpl.dto.UploadTemplateVersionDTO;
-import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.dao.ActivityDAO;
+import gov.healthit.chpl.dao.ApiKeyDAO;
+import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.TestingLabDAO;
+import gov.healthit.chpl.dto.AddressDTO;
+import gov.healthit.chpl.dto.ApiKeyDTO;
 import junit.framework.TestCase;
+
+
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
@@ -33,39 +37,18 @@ import junit.framework.TestCase;
     TransactionalTestExecutionListener.class,
     DbUnitTestExecutionListener.class })
 @DatabaseSetup("classpath:data/testData.xml")
-public class UploadTemplateVersionDAOTest extends TestCase {
-	private static JWTAuthenticatedUser adminUser;
-
-	@Autowired private UploadTemplateVersionDAO templateDao;;
-
-	@Rule
-    @Autowired
-    public UnitTestRules cacheInvalidationRule;
-
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-		adminUser = new JWTAuthenticatedUser();
-		adminUser.setFullName("Administrator");
-		adminUser.setId(-2L);
-		adminUser.setFriendlyName("Administrator");
-		adminUser.setSubjectName("admin");
-		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
-	}
-
+public class ApiKeyDaoTest extends TestCase {
+	
+	@Autowired
+	private ApiKeyDAO apiKeyDao;
+	
 	@Test
-	@Transactional
-	public void canFindAll() {
-		List<UploadTemplateVersionDTO> allTemplates = templateDao.findAll();
-		assertNotNull(allTemplates);
-		assertTrue(allTemplates.size() >= 2);
-	}
+    public void getAllAddresses() {
+        List<ApiKeyDTO> results = apiKeyDao.findAllWhitelisted();
+        assertNotNull(results);
+        assertEquals(1, results.size());
+        assertEquals("12909a978483dfb8ecd0596c98ae9094", results.get(0).getApiKey());
+    }
 
-	@Test
-	@Transactional
-	public void findById() throws EntityRetrievalException {
-		Long id = 5L;
-		UploadTemplateVersionDTO template = templateDao.getById(id);
-		assertNotNull(template);
-		assertEquals(id.longValue(), template.getId().longValue());
-	}
+	
 }

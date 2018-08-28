@@ -6,11 +6,13 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.ApiKeyDAO;
 import gov.healthit.chpl.dto.ApiKeyDTO;
 import gov.healthit.chpl.entity.ApiKeyEntity;
@@ -105,6 +107,20 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
         return dtos;
 
     }
+    
+    @Override
+    public List<ApiKeyDTO> findAllWhitelisted() {
+
+        List<ApiKeyEntity> entities = getAllWhitelistedEntities();
+        List<ApiKeyDTO> dtos = new ArrayList<>();
+
+        for (ApiKeyEntity entity : entities) {
+            ApiKeyDTO dto = new ApiKeyDTO(entity);
+            dtos.add(dto);
+        }
+        return dtos;
+
+    }
 
     @Override
     public ApiKeyDTO getById(Long id) throws EntityRetrievalException {
@@ -187,6 +203,14 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 
         List<ApiKeyEntity> result = entityManager
                 .createQuery("from ApiKeyEntity where (NOT deleted = true) ", ApiKeyEntity.class).getResultList();
+        return result;
+    }
+    
+    @Cacheable(CacheNames.GET_ALL_WHITELISTED)
+    private List<ApiKeyEntity> getAllWhitelistedEntities() {
+
+        List<ApiKeyEntity> result = entityManager
+                .createQuery("from ApiKeyEntity where (NOT deleted = true) AND whitelisted = true", ApiKeyEntity.class).getResultList();
         return result;
     }
 

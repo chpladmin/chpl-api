@@ -499,7 +499,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             AddressDTO developerAddress = pendingCp.getDeveloperAddress();
             newDeveloper.setAddress(developerAddress);
             ContactDTO developerContact = new ContactDTO();
-            developerContact.setLastName(pendingCp.getDeveloperContactName());
+            developerContact.setFullName(pendingCp.getDeveloperContactName());
             developerContact.setPhoneNumber(pendingCp.getDeveloperPhoneNumber());
             developerContact.setEmail(pendingCp.getDeveloperEmail());
             newDeveloper.setContact(developerContact);
@@ -2162,8 +2162,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                     .usingJobData("developer", updatedListing.getDeveloper().getName())
                     .usingJobData("acb", updatedListing.getCertifyingBody().get("name").toString())
                     .usingJobData("changeDate", new Date().getTime())
-                    .usingJobData("firstName", Util.getCurrentUser().getFirstName())
-                    .usingJobData("lastName", Util.getCurrentUser().getLastName())
+                    .usingJobData("fullName", Util.getCurrentUser().getFullName())
                     .usingJobData("effectiveDate", updatedListing.getCurrentStatus().getEventDate())
                     .usingJobData("openNcs", updatedListing.getCountOpenNonconformities())
                     .usingJobData("closedNcs", updatedListing.getCountClosedNonconformities())

@@ -177,8 +177,8 @@ public class DeveloperController {
             if (developerContact != null) {
                 ContactDTO toCreateContact = new ContactDTO();
                 toCreateContact.setEmail(developerContact.getEmail());
-                toCreateContact.setFirstName(developerContact.getFirstName());
-                toCreateContact.setLastName(developerContact.getLastName());
+                toCreateContact.setFullName(developerContact.getFullName());
+                toCreateContact.setFriendlyName(developerContact.getFriendlyName());
                 toCreateContact.setPhoneNumber(developerContact.getPhoneNumber());
                 toCreateContact.setTitle(developerContact.getTitle());
                 toCreate.setContact(toCreateContact);
@@ -244,8 +244,8 @@ public class DeveloperController {
                 Contact developerContact = developerInfo.getDeveloper().getContact();
                 ContactDTO toUpdateContact = new ContactDTO();
                 toUpdateContact.setEmail(developerContact.getEmail());
-                toUpdateContact.setFirstName(developerContact.getFirstName());
-                toUpdateContact.setLastName(developerContact.getLastName());
+                toUpdateContact.setFullName(developerContact.getFullName());
+                toUpdateContact.setFriendlyName(developerContact.getFriendlyName());
                 toUpdateContact.setPhoneNumber(developerContact.getPhoneNumber());
                 toUpdateContact.setTitle(developerContact.getTitle());
                 toUpdate.setContact(toUpdateContact);

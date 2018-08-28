@@ -60,7 +60,7 @@ public class DeveloperDaoTest extends TestCase {
 	@BeforeClass
 	public static void setUpClass() throws Exception {
 		authUser = new JWTAuthenticatedUser();
-		authUser.setFirstName("Admin");
+		authUser.setFullName("Admin");
 		authUser.setId(-2L);
 		authUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 	}

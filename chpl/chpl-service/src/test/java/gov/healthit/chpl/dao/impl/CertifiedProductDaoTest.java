@@ -73,7 +73,7 @@ public class CertifiedProductDaoTest {
     @BeforeClass
     public static void setUpClass() {
         authUser = new JWTAuthenticatedUser();
-        authUser.setFirstName("Admin");
+        authUser.setFullName("Admin");
         authUser.setId(ADMIN_ID);
         authUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
     }
