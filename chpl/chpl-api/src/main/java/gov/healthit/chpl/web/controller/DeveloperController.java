@@ -222,6 +222,7 @@ public class DeveloperController {
                     toCreateHistory.setDeveloperId(providedStatusHistory.getDeveloperId());
                     toCreateHistory.setStatus(status);
                     toCreateHistory.setStatusDate(providedStatusHistory.getStatusDate());
+                    toCreateHistory.setReason(providedStatusHistory.getReason());
                     toUpdate.getStatusEvents().add(toCreateHistory);
                 }
             } else {

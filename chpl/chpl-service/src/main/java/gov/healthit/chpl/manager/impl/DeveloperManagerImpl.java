@@ -153,6 +153,17 @@ public class DeveloperManagerImpl implements DeveloperManager {
             throw new EntityCreationException(msg);
         }
 
+        //if any of the statuses (new, old, or any other status in the history) 
+        //is Under Certification Ban by ONC make sure there is a reason given
+        for(DeveloperStatusEventDTO statusEvent: developer.getStatusEvents()) {
+            if(statusEvent.getStatus().getStatusName().equals(
+                    DeveloperStatusType.UnderCertificationBanByOnc.toString()) &&
+               StringUtils.isEmpty(statusEvent.getReason())) {
+                throw new MissingReasonException(msgUtil.getMessage("developer.missingReasonForBan",
+                        DeveloperStatusType.UnderCertificationBanByOnc.toString()));
+            }
+        }
+
         // if the before status is not Active and the user is not ROLE_ADMIN
         // then nothing can be changed
         if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
@@ -202,17 +213,6 @@ public class DeveloperManagerImpl implements DeveloperManager {
             // only its status can be updated
             developerDao.updateStatus(newDevStatus);
             return getById(developer.getId());
-        }
-
-        //if any of the statuses (new, old, or any other status in the history) 
-        //is Under Certification Ban by ONC make sure there is a reason given
-        for(DeveloperStatusEventDTO statusEvent: developer.getStatusEvents()) {
-            if(statusEvent.getStatus().getStatusName().equals(
-                    DeveloperStatusType.UnderCertificationBanByOnc.toString()) &&
-               StringUtils.isEmpty(statusEvent.getReason())) {
-                throw new MissingReasonException(msgUtil.getMessage("developer.missingReasonForBan", 
-                        dateFormatter.format(statusEvent.getStatusDate())));
-            }
         }
 
         // if either the before or updated statuses are active and the user is

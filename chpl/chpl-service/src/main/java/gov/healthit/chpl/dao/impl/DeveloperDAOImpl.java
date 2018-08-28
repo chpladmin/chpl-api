@@ -251,6 +251,11 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
             throw new EntityCreationException(msg);
         }
 
+        //TODO: THIS ISN'T WORKING. TRY RE-WRITING TO REPLACE THE PIECES OF THE STATUS HISTORY
+        //THAT HAVE CHANGED VS DELETING EVERYTHING AND RE-ADDING IT. 
+        //ALSO THE UPDATESTATUS() METHOD SHOULD BE RE-WRITTEN SO THAT IT CAN BE CALLED HERE
+        //INSTEAD. IT IS ALSO NOT WORKING - WE ARE ENDING UP WITH DUPLICATE STATUS ENTRIES
+        //BECAUSE THAT IS ONLY ADDING ONE NOT REMOVING ANY.
         // delete existing developer status history
         for (DeveloperStatusEventEntity existingDeveloperStatusEvent : entity.getStatusEvents()) {
             DeveloperStatusEventDTO newDeveloperStatusEvent = null;
@@ -268,6 +273,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
                             newDeveloperStatusEvent.getStatus().getStatusName());
                     if (newStatus != null && newStatus.getId() != null) {
                         existingDeveloperStatusEvent.setDeveloperStatus(newStatus);
+                        existingDeveloperStatusEvent.setReason(newDeveloperStatusEvent.getReason());
                         existingDeveloperStatusEvent.setDeveloperStatusId(newStatus.getId());
                     }
                     existingDeveloperStatusEvent.setStatusDate(newDeveloperStatusEvent.getStatusDate());
@@ -294,6 +300,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
                     currDevStatus.setDeveloperStatusId(providedStatus.getId());
                     currDevStatus.setStatusDate(providedDeveloperStatusEvent.getStatusDate());
                     currDevStatus.setDeleted(false);
+                    currDevStatus.setReason(providedDeveloperStatusEvent.getReason());
                     currDevStatus.setLastModifiedUser(entity.getLastModifiedUser());
                     entityManager.persist(currDevStatus);
                     entityManager.flush();
@@ -321,6 +328,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
             DeveloperStatusEntity defaultStatus = getStatusByName(newStatusEvent.getStatus().getStatusName());
             if (defaultStatus != null) {
                 currDevStatus.setDeveloperStatusId(defaultStatus.getId());
+                currDevStatus.setReason(newStatusEvent.getReason());
                 currDevStatus.setStatusDate(newStatusEvent.getStatusDate());
                 currDevStatus.setDeleted(false);
                 currDevStatus.setLastModifiedUser(Util.getCurrentUser().getId());
