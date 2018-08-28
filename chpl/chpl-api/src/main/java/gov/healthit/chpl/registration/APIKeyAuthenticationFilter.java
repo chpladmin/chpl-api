@@ -23,7 +23,7 @@ import gov.healthit.chpl.manager.ApiKeyManager;
 
 public class APIKeyAuthenticationFilter extends GenericFilterBean {
     private static final Logger LOGGER = LogManager.getLogger(APIKeyAuthenticationFilter.class);
-    private static final String[] ALLOWED_REQUEST_PATHS = {
+    public static final String[] ALLOWED_REQUEST_PATHS = {
             "/api-docs", "/status", "/cache_status", "/monitoring"
     };
 
