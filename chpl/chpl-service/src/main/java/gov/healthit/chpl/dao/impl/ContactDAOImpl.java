@@ -23,7 +23,7 @@ public class ContactDAOImpl extends BaseDAOImpl implements ContactDAO {
     private static final Logger LOGGER = LogManager.getLogger(ContactDAOImpl.class);
 
     @Override
-    public ContactEntity create(ContactDTO dto) throws EntityCreationException, EntityRetrievalException {
+    public ContactEntity create(final ContactDTO dto) throws EntityCreationException, EntityRetrievalException {
 
         ContactEntity toInsert = new ContactEntity();
         toInsert.setEmail(dto.getEmail());
@@ -44,7 +44,7 @@ public class ContactDAOImpl extends BaseDAOImpl implements ContactDAO {
 
     @Override
     @Transactional
-    public ContactEntity update(ContactDTO dto) throws EntityRetrievalException {
+    public ContactEntity update(final ContactDTO dto) throws EntityRetrievalException {
         ContactEntity contact = this.getEntityById(dto.getId());
 
         contact.setEmail(dto.getEmail());
@@ -62,7 +62,7 @@ public class ContactDAOImpl extends BaseDAOImpl implements ContactDAO {
 
     @Override
     @Transactional
-    public void delete(Long id) throws EntityRetrievalException {
+    public void delete(final Long id) throws EntityRetrievalException {
         ContactEntity toDelete = getEntityById(id);
 
         if (toDelete != null) {
@@ -88,7 +88,7 @@ public class ContactDAOImpl extends BaseDAOImpl implements ContactDAO {
     }
 
     @Override
-    public ContactDTO getById(Long id) throws EntityRetrievalException {
+    public ContactDTO getById(final Long id) throws EntityRetrievalException {
 
         ContactDTO dto = null;
         ContactEntity ae = this.getEntityById(id);
@@ -100,7 +100,7 @@ public class ContactDAOImpl extends BaseDAOImpl implements ContactDAO {
     }
 
     @Override
-    public ContactDTO getByValues(ContactDTO contact) {
+    public ContactDTO getByValues(final ContactDTO contact) {
         ContactEntity ae = this.searchEntities(contact);
         if (ae == null) {
             return null;
@@ -113,7 +113,7 @@ public class ContactDAOImpl extends BaseDAOImpl implements ContactDAO {
         return query.getResultList();
     }
 
-    public ContactEntity getEntityById(Long id) throws EntityRetrievalException {
+    public ContactEntity getEntityById(final Long id) throws EntityRetrievalException {
         ContactEntity entity = null;
 
         Query query = entityManager.createQuery(
@@ -130,27 +130,27 @@ public class ContactDAOImpl extends BaseDAOImpl implements ContactDAO {
         return entity;
     }
 
-    private ContactEntity getEntityByValues(ContactDTO contact) {
+    private ContactEntity getEntityByValues(final ContactDTO contact) {
         return this.searchEntities(contact);
     }
 
-    private ContactEntity searchEntities(ContactDTO toSearch) {
+    private ContactEntity searchEntities(final ContactDTO toSearch) {
         ContactEntity entity = null;
 
         String contactQuery = "from ContactEntity a where (NOT deleted = true) ";
         if (toSearch.getFullName() != null) {
-            contactQuery += " AND (first_name = :firstName) ";
+            contactQuery += " AND (full_name = :fullName) ";
         }
         if (toSearch.getFriendlyName() != null) {
-            contactQuery += " AND (last_name = :lastName)";
+            contactQuery += " AND (friendly_name = :friendlyName)";
         }
 
         Query query = entityManager.createQuery(contactQuery, ContactEntity.class);
         if (toSearch.getFullName() != null) {
-            query.setParameter("firstName", toSearch.getFullName());
+            query.setParameter("fullName", toSearch.getFullName());
         }
         if (toSearch.getFriendlyName() != null) {
-            query.setParameter("lastName", toSearch.getFriendlyName());
+            query.setParameter("friendlyName", toSearch.getFriendlyName());
         }
 
         List<ContactEntity> result = query.getResultList();

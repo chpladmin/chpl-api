@@ -54,16 +54,16 @@ public class ContactDTO implements Serializable {
         return fullName;
     }
 
-    public void setFullName(final String firstName) {
-        this.fullName = firstName;
+    public void setFullName(final String fullName) {
+        this.fullName = fullName;
     }
 
     public String getFriendlyName() {
         return friendlyName;
     }
 
-    public void setFriendlyName(final String lastName) {
-        this.friendlyName = lastName;
+    public void setFriendlyName(final String friendlyName) {
+        this.friendlyName = friendlyName;
     }
 
     public String getEmail() {

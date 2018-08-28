@@ -26,7 +26,7 @@ public class ContactXmlGeneratorTest {
         ContactXmlGenerator.addContact(contact, "contact", writer);
         writer.close();
 
-        String expected = "<contact><contactId>1</contactId><email>abc@def.com</email><firstName>John</firstName><lastName>Doe</lastName><phoneNumber>5555551212</phoneNumber><title>Mr.</title></contact>";
+        String expected = "<contact><contactId>1</contactId><email>abc@def.com</email><fullName>John</fullName><friendlyName>Doe</friendlyName><phoneNumber>5555551212</phoneNumber><title>Mr.</title></contact>";
         assertEquals(expected, stringOut.toString());
         stringOut.close();
     }
@@ -42,7 +42,7 @@ public class ContactXmlGeneratorTest {
         ContactXmlGenerator.addContact(contact, "contact", writer);
         writer.close();
 
-        String expected = "<contact><contactId>1</contactId><firstName>John</firstName><lastName>Doe</lastName><phoneNumber>5555551212</phoneNumber><title>Mr.</title></contact>";
+        String expected = "<contact><contactId>1</contactId><fullName>John</fullName><friendlyName>Doe</friendlyName><phoneNumber>5555551212</phoneNumber><title>Mr.</title></contact>";
         assertEquals(expected, stringOut.toString());
         stringOut.close();
     }
