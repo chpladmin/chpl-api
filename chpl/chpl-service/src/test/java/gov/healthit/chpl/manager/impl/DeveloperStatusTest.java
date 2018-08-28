@@ -55,9 +55,9 @@ public class DeveloperStatusTest {
     @Before
     public void setup() {
         adminUser = new JWTAuthenticatedUser();
-        adminUser.setFirstName("Administrator");
+        adminUser.setFullName("Test Administrator");
         adminUser.setId(-2L);
-        adminUser.setLastName("Administrator");
+        adminUser.setFriendlyName("Admin");
         adminUser.setSubjectName("admin");
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
         
@@ -226,8 +226,8 @@ public class DeveloperStatusTest {
     private ContactDTO createContact() {
         ContactDTO contact = new ContactDTO();
         contact.setId(1L);
-        contact.setFirstName("First");
-        contact.setLastName("Last");
+        contact.setFullName("First Last");
+        contact.setFriendlyName("First");
         contact.setPhoneNumber("111-222-3333");
         contact.setSignatureDate(new Date());
         contact.setEmail("first@last.com");
