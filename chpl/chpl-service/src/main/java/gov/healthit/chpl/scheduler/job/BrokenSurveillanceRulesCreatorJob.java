@@ -20,9 +20,9 @@ import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.scheduler.BrokenSurveillanceRulesDAO;
 import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
@@ -39,7 +39,6 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.scheduler.DataCollectorAsyncSchedulerHelper;
-import gov.healthit.chpl.scheduler.JobConfig;
 import gov.healthit.chpl.scheduler.surveillance.rules.RuleComplianceCalculator;
 
 /**
@@ -50,47 +49,46 @@ import gov.healthit.chpl.scheduler.surveillance.rules.RuleComplianceCalculator;
  */
 @DisallowConcurrentExecution
 public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
-    private static final Logger LOGGER = LogManager.getLogger(BrokenSurveillanceRulesCreatorJob.class);
+    private static final Logger LOGGER = LogManager.getLogger("brokenSurveillanceRulesCreatorJobLogger");
     private static final String EDITION_2011 = "2011";
     private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
     private static final Long MILLISECONDS_PER_SECOND = 1000L;
     private static final Long SECONDS_PER_MINUTE = 60L;
     private DateTimeFormatter dateFormatter;
-    private CertifiedProductSearchDAO certifiedProductSearchDAO;
-    private BrokenSurveillanceRulesDAO brokenSurveillanceRulesDAO;
-    private CertifiedProductDetailsManager certifiedProductDetailsManager;
-    private DataCollectorAsyncSchedulerHelper dataCollectorAsyncSchedulerHelper;
-    private RuleComplianceCalculator ruleComplianceCalculator;
     private Properties props;
-    private AbstractApplicationContext context;
-
+    
+    @Autowired
+    private CertifiedProductSearchDAO certifiedProductSearchDAO;
+    
+    @Autowired
+    private BrokenSurveillanceRulesDAO brokenSurveillanceRulesDAO;
+    
+    @Autowired
+    private CertifiedProductDetailsManager certifiedProductDetailsManager;
+    
+    @Autowired
+    private DataCollectorAsyncSchedulerHelper dataCollectorAsyncSchedulerHelper;
+    
+    @Autowired
+    private RuleComplianceCalculator ruleComplianceCalculator;
+    
     /**
      * Constructor to initialize BrokenSurveillanceRulesCreatorJob object.
      * @throws Exception is thrown
      */
     public BrokenSurveillanceRulesCreatorJob() throws Exception {
         super();
-        setLocalContext();
-        context = new AnnotationConfigApplicationContext(JobConfig.class);
-        initiateSpringBeans(context);
         loadProperties();
-        ruleComplianceCalculator.setProps(props);
         dateFormatter = DateTimeFormatter.ofPattern("uuuu/MM/dd");
     }
 
     @Override
-    protected void initiateSpringBeans(final AbstractApplicationContext context) throws IOException {
-        setCertifiedProductDetailsManager((CertifiedProductDetailsManager)
-                context.getBean("certifiedProductDetailsManager"));
-        setCertifiedProductSearchDAO((CertifiedProductSearchDAO) context.getBean("certifiedProductSearchDAO"));
-        setDataCollectorAsyncSchedulerHelper((DataCollectorAsyncSchedulerHelper)
-                context.getBean("dataCollectorAsyncSchedulerHelper"));
-        setBrokenSurveillanceRulesDAO((BrokenSurveillanceRulesDAO) context.getBean("brokenSurveillanceRulesDAO"));
-        setRuleComplianceCalculator((RuleComplianceCalculator) context.getBean("ruleComplianceCalculator"));
-    }
-
-    @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
+        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+        ruleComplianceCalculator.setProps(props);
+        dataCollectorAsyncSchedulerHelper.setLogger(LOGGER);
+        
+        LOGGER.info("********* Starting the Broken Surveillance Rules Creator job. *********");
         List<CertifiedProductSearchDetails> results = retrieveData();
         List<BrokenSurveillanceRulesDTO> errors = new ArrayList<BrokenSurveillanceRulesDTO>();
         for (CertifiedProductSearchDetails listing : results) {
@@ -102,6 +100,7 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
             saveBrokenSurveillanceRules(errors);
             LOGGER.info("Saving {} broken rules", errors.size());
         }
+        LOGGER.info("********* Completed the Broken Surveillance Rules Creator job. *********");
     }
 
     private void saveBrokenSurveillanceRules(final List<BrokenSurveillanceRulesDTO> items) {
@@ -110,8 +109,6 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         } catch (EntityCreationException | EntityRetrievalException e) {
             LOGGER.error("Unable to save Broken Surveillance Rules {} with error message {}",
                     items.toString(), e.getLocalizedMessage());
-        } finally {
-            context.close();
         }
     }
 
@@ -127,28 +124,6 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
             in.close();
         }
         return props;
-    }
-
-    private void setCertifiedProductDetailsManager(
-            final CertifiedProductDetailsManager certifiedProductDetailsManager) {
-        this.certifiedProductDetailsManager = certifiedProductDetailsManager;
-    }
-
-    private void setCertifiedProductSearchDAO(final CertifiedProductSearchDAO certifiedProductSearchDAO) {
-        this.certifiedProductSearchDAO = certifiedProductSearchDAO;
-    }
-
-    private void setDataCollectorAsyncSchedulerHelper(
-            final DataCollectorAsyncSchedulerHelper dataCollectorAsyncSchedulerHelper) {
-        this.dataCollectorAsyncSchedulerHelper = dataCollectorAsyncSchedulerHelper;
-    }
-
-    private void setBrokenSurveillanceRulesDAO(final BrokenSurveillanceRulesDAO brokenSurveillanceRulesDAO) {
-        this.brokenSurveillanceRulesDAO = brokenSurveillanceRulesDAO;
-    }
-
-    private void setRuleComplianceCalculator(final RuleComplianceCalculator ruleComplianceCalculator) {
-        this.ruleComplianceCalculator = ruleComplianceCalculator;
     }
 
     private List<CertifiedProductSearchDetails> retrieveData() {

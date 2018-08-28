@@ -7,10 +7,6 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import org.quartz.Job;
-import org.springframework.context.support.AbstractApplicationContext;
-
-import gov.healthit.chpl.scheduler.QuartzLocalContext;
-import gov.healthit.chpl.scheduler.QuartzLocalContextFactory;
 
 /**
  * Base class for Quartz jobs that depend on Spring context.
@@ -20,17 +16,6 @@ import gov.healthit.chpl.scheduler.QuartzLocalContextFactory;
 public abstract class QuartzJob implements Job {
     private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
     private Properties properties;
-
-    protected abstract void initiateSpringBeans(AbstractApplicationContext context) throws IOException;
-
-    protected void setLocalContext() throws Exception {
-        QuartzLocalContext ctx = QuartzLocalContextFactory.createLocalContext(
-                getProperties().getProperty("dbDriverClass"));
-        ctx.addDataSource(getProperties().getProperty("dataSourceName"),
-                getProperties().getProperty("dataSourceConnection"),
-                getProperties().getProperty("dataSourceUsername"),
-                getProperties().getProperty("dataSourcePassword"));
-    }
 
     protected File getDownloadFolder() throws IOException {
         String downloadFolderPath = getProperties().getProperty("downloadFolderPath");

@@ -1,9 +1,8 @@
 package gov.healthit.chpl.scheduler.job;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 
-import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
@@ -19,31 +18,29 @@ import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 public abstract class DownloadableResourceCreatorJob extends QuartzJob {
 //    private static final Logger LOGGER = LogManager.getLogger(DownloadableResourceCreatorJob.class);
 
+    
     private SimpleDateFormat timestampFormat;
+    
+    @Autowired
     private CertifiedProductDetailsManager cpdManager;
+    
+    @Autowired
     private CertifiedProductDAO certifiedProductDao;
+    
+    @Autowired
     private CertificationCriterionDAO criteriaDao;
+    
+    @Autowired
     private CertificationResultDAO certificationResultDao;
+    
+    @Autowired
     private CertificationResultDetailsDAO certificationResultDetailsDao;
-    private AbstractApplicationContext applicationContext;
-
+    
     /**
      * Default constructor; creates time stamp format.
      */
     public DownloadableResourceCreatorJob() {
         timestampFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
-    }
-
-    @Override
-    protected void initiateSpringBeans(final AbstractApplicationContext context) throws IOException {
-        this.setCpdManager((CertifiedProductDetailsManager) context.getBean("certifiedProductDetailsManager"));
-        this.setCertifiedProductDao((CertifiedProductDAO) context.getBean("certifiedProductDAO"));
-        this.setCriteriaDao((CertificationCriterionDAO) context.getBean("certificationCriterionDAO"));
-        this.setCertificationResultDao((CertificationResultDAO) context.getBean("certificationResultDAO"));
-        this.setCertificationResultDetailsDao((CertificationResultDetailsDAO)
-                context.getBean("certificationResultDetailsDAO"));
-
-        setApplicationContext(context);
     }
 
     public CertifiedProductDAO getCertifiedProductDao() {
@@ -96,11 +93,4 @@ public abstract class DownloadableResourceCreatorJob extends QuartzJob {
         this.certificationResultDetailsDao = certificationResultDetailsDao;
     }
 
-    public AbstractApplicationContext getApplicationContext() {
-        return applicationContext;
-    }
-
-    public void setApplicationContext(final AbstractApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
-    }
 }

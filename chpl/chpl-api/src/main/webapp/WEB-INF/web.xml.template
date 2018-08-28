@@ -76,4 +76,25 @@
             <param-value>user1:pwd1, user2:pwd2</param-value>
         </init-param>
     </filter>
+    
+    <!-- Run Quartz inside Tomcat configuration --> 
+    <context-param>
+         <param-name>quartz:config-file</param-name>
+         <param-value>quartz.properties</param-value>
+     </context-param>
+     <context-param>
+         <param-name>quartz:shutdown-on-unload</param-name>
+         <param-value>true</param-value>
+     </context-param>
+     <context-param>
+         <param-name>quartz:wait-on-shutdown</param-name>
+         <param-value>false</param-value>
+     </context-param>
+     <context-param>
+         <param-name>quartz:start-on-load</param-name>
+         <param-value>true</param-value>
+     </context-param>
+     <listener>
+         <listener-class>org.quartz.ee.servlet.QuartzInitializerListener</listener-class>
+     </listener>
 </web-app>

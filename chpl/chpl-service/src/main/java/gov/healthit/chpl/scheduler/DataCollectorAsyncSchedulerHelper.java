@@ -19,7 +19,7 @@ import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
  */
 @Service("dataCollectorAsyncSchedulerHelper")
 public class DataCollectorAsyncSchedulerHelper {
-    private static final Logger LOGGER = LogManager.getLogger(DataCollectorAsyncSchedulerHelper.class);
+    private Logger logger;
 
     /**
      * Retrieves the associated CertifiedProductionSearchDetails object as a Future<>.
@@ -33,7 +33,18 @@ public class DataCollectorAsyncSchedulerHelper {
             final Long id, final CertifiedProductDetailsManager certifiedProductDetailsManager)
                 throws EntityRetrievalException {
         CertifiedProductSearchDetails dto = certifiedProductDetailsManager.getCertifiedProductDetails(id);
-        LOGGER.info("Finishing retrieving Details for: " + id);
+        getLogger().info("Finishing retrieving Details for: " + id);
         return new AsyncResult<CertifiedProductSearchDetails>(dto);
+    }
+    
+    public void setLogger(Logger logger) {
+        this.logger = logger;
+    }
+    
+    public Logger getLogger() {
+        if (logger == null) {
+            logger = LogManager.getLogger(SchedulerCertifiedProductSearchDetailsAsync.class);
+        }
+        return logger;
     }
 }
