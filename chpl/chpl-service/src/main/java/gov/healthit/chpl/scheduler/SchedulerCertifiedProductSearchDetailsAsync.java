@@ -19,7 +19,6 @@ import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
  */
 @Service("schedulerCertifiedProductSearchDetailsAsync")
 public class SchedulerCertifiedProductSearchDetailsAsync {
-    //private static final Logger LOGGER = LogManager.getLogger(SchedulerCertifiedProductSearchDetailsAsync.class);
     private Logger logger;
 
     /**
