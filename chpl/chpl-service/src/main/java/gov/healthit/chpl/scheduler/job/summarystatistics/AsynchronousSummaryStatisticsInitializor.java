@@ -29,7 +29,10 @@ import gov.healthit.chpl.domain.statistics.Statistics;
 @Component("asynchronousSummaryStatisticsInitializor")
 @EnableAsync
 public class AsynchronousSummaryStatisticsInitializor {
-    private static final Logger LOGGER = LogManager.getLogger(AsynchronousSummaryStatisticsInitializor.class);
+    //private static final Logger LOGGER = LogManager.getLogger(AsynchronousSummaryStatisticsInitializor.class);
+    
+    private Logger logger;
+    
     @Autowired
     private AsynchronousSummaryStatistics asyncStats;
     
@@ -53,10 +56,12 @@ public class AsynchronousSummaryStatisticsInitializor {
     @Async
     public Future<Statistics> getStatistics(final DateRange dateRange)
             throws InterruptedException, ExecutionException {
+        asyncStats.setLogger(getLogger());
+        
         if (dateRange == null) {
-            LOGGER.info("Getting all current statistics.");
+            getLogger().info("Getting all current statistics.");
         } else {
-            LOGGER.info("Getting statistics for start date " + dateRange.getStartDate() + " end date "
+            getLogger().info("Getting statistics for start date " + dateRange.getStartDate() + " end date "
                     + dateRange.getEndDate());
         }
 
@@ -91,7 +96,7 @@ public class AsynchronousSummaryStatisticsInitializor {
             totalCPsSuspended2015Listings = asyncStats.getTotalCPsSuspended2015Listings(listingStatisticsDAO, dateRange);
             totalListingsWithAlternateTestMethods = asyncStats.getTotalListingsWithAlternateTestMethods(listingStatisticsDAO);
             totalListingsWithCertifiedBodyAndAlternativeTestMethods
-            = asyncStats.getTotalListingsWithCertifiedBodyAndAlternativeTestMethods(listingStatisticsDAO);
+                = asyncStats.getTotalListingsWithCertifiedBodyAndAlternativeTestMethods(listingStatisticsDAO);
         }
 
         // developers
@@ -172,4 +177,14 @@ public class AsynchronousSummaryStatisticsInitializor {
         return new AsyncResult<>(stats);
     }
 
+    public void setLogger(Logger logger) {
+        this.logger = logger;
+    }
+    
+    public Logger getLogger() {
+        if (logger == null) {
+            logger = LogManager.getLogger(AsynchronousSummaryStatisticsInitializor.class);
+        }
+        return logger;
+    }
 }
