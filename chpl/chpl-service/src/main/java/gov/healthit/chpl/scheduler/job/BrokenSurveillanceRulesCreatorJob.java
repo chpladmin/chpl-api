@@ -22,6 +22,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.scheduler.BrokenSurveillanceRulesDAO;
@@ -90,6 +91,7 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
     }
 
     @Override
+    @Transactional
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         List<CertifiedProductSearchDetails> results = retrieveData();
         List<BrokenSurveillanceRulesDTO> errors = new ArrayList<BrokenSurveillanceRulesDTO>();

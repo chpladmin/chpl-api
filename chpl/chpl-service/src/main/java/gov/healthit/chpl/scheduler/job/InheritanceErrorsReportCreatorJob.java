@@ -20,6 +20,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.ListingGraphDAO;
@@ -82,6 +83,7 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
     }
 
     @Override
+    @Transactional
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         List<CertifiedProductSearchDetails> results = retrieveData();
         List<InheritanceErrorsReportDTO> errors = new ArrayList<InheritanceErrorsReportDTO>();
