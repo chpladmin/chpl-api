@@ -14,7 +14,7 @@ _27 August 2018_
 
 ### Bug Fixes
 * Fix 2015 listing XML file creation process
-  
+
 ---
 
 ## Version 16.1.0
