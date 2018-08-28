@@ -95,7 +95,7 @@ public class TriggerDeveloperBanJob implements Job {
                 jdm.getString("developer"),                                             // developer name
                 jdm.getString("acb"),                                                   // ACB name
                 Util.getDateFormatter().format(new Date(jdm.getLong("changeDate"))),    // date of change
-                jdm.getString("firstName") + " " + jdm.getString("lastName"),           // user making change
+                jdm.getString("fullName"),                                              // user making change
                 jdm.getString("status"),                                                // target status
                 Util.getDateFormatter().format(new Date(jdm.getLong("effectiveDate"))), // effective date of change
                 (openNcs != 1 ? "were" : "was"), openNcs, (openNcs != 1 ? "ies" : "y"), // formatted counts of open

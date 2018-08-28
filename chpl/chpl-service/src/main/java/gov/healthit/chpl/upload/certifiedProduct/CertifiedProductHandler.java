@@ -145,7 +145,7 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
 
         // look for contact in db
         ContactDTO contactToFind = new ContactDTO();
-        contactToFind.setLastName(developerContactName);
+        contactToFind.setFriendlyName(developerContactName);
         contactToFind.setEmail(developerEmail);
         contactToFind.setPhoneNumber(developerPhone);
         ContactDTO foundContact = contactDao.getByValues(contactToFind);
