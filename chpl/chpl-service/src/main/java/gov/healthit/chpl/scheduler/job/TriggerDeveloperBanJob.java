@@ -25,7 +25,7 @@ import gov.healthit.chpl.util.Util;
  *
  */
 public class TriggerDeveloperBanJob implements Job {
-    private static final Logger LOGGER = LogManager.getLogger(TriggerDeveloperBanJob.class);
+    private static final Logger LOGGER = LogManager.getLogger("triggerDeveloperBanJobLogger");
     private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
     private Properties properties = null;
 
@@ -53,12 +53,16 @@ public class TriggerDeveloperBanJob implements Job {
      */
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
+        LOGGER.info("********* Starting the Trigger Developer Ban job. *********");
+        
         String[] recipients = jobContext.getMergedJobDataMap().getString("email").split("\u263A");
+        
         try {
             sendEmail(jobContext, recipients);
         } catch (IOException | MessagingException e) {
-            e.printStackTrace();
+            LOGGER.error(e);
         }
+        LOGGER.info("********* Completed the Trigger Developer Ban job. *********");
     }
 
     private void sendEmail(final JobExecutionContext jobContext, final String[] recipients)
@@ -67,9 +71,10 @@ public class TriggerDeveloperBanJob implements Job {
         String subject = "NEED TO REVIEW: Certification Status of listing set to \""
                 + jobContext.getMergedJobDataMap().getString("status") + "\"";
         String htmlMessage = createHtmlEmailBody(jobContext);
-
-        LOGGER.info("Sending email to {} with subject {} and content {}",
-                String.join(",", recipients), subject, htmlMessage);
+        
+        LOGGER.info("Sending email to: " + jobContext.getMergedJobDataMap().getString("email"));
+        LOGGER.info("Message to be sent: " + htmlMessage);
+        
         SendMailUtil mailUtil = new SendMailUtil();
         mailUtil.sendEmail(null, recipients, subject, htmlMessage, null, properties);
     }

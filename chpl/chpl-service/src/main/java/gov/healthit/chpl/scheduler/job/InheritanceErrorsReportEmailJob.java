@@ -19,13 +19,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.dao.scheduler.InheritanceErrorsReportDAO;
 import gov.healthit.chpl.dto.scheduler.InheritanceErrorsReportDTO;
-import gov.healthit.chpl.scheduler.JobConfig;
 
 /**
  * The InheritanceErrorsReportEmailJob implements a Quartz job and is available to ROLE_ADMIN and ROLE_ACB. When
@@ -34,26 +33,29 @@ import gov.healthit.chpl.scheduler.JobConfig;
  *
  */
 public class InheritanceErrorsReportEmailJob extends QuartzJob {
-    private static final Logger LOGGER = LogManager.getLogger(InheritanceErrorsReportEmailJob.class);
+    private static final Logger LOGGER = LogManager.getLogger("inheritanceErrorsReportEmailJobLogger");
     private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
-    private InheritanceErrorsReportDAO inheritanceErrorsReportDAO;
     private Properties props;
-    private AbstractApplicationContext context;
-
+    
+    @Autowired
+    private InheritanceErrorsReportDAO inheritanceErrorsReportDAO;
+    
     /**
      * Constructor that initializes the InheritanceErrorsReportEmailJob object.
      * @throws Exception if thrown
      */
     public InheritanceErrorsReportEmailJob() throws Exception {
         super();
-        setLocalContext();
-        context = new AnnotationConfigApplicationContext(JobConfig.class);
-        initiateSpringBeans(context);
         loadProperties();
     }
 
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
+        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+        
+        LOGGER.info("********* Starting the Inheritance Error Report Email job. *********");
+        LOGGER.info("Sending email to: " + jobContext.getMergedJobDataMap().getString("email"));
+        
         List<InheritanceErrorsReportDTO> errors = getAppropriateErrors(jobContext);
         File output = null;
         List<File> files = new ArrayList<File>();
@@ -70,6 +72,8 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
         } else {
             htmlMessage = props.getProperty("inheritanceReportEmailWeeklyHtmlMessage");
         }
+        LOGGER.info("Message to be sent: " + htmlMessage);
+        
         SendMailUtil mailUtil = new SendMailUtil();
         try {
             htmlMessage += createHtmlEmailBody(errors.size(),
@@ -77,9 +81,8 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
             mailUtil.sendEmail(to, subject, htmlMessage, files, props);
         } catch (IOException | MessagingException e) {
             LOGGER.error(e);
-        } finally {
-            context.close();
         }
+        LOGGER.info("********* Completed the Inheritance Error Report Email job. *********");
     }
 
     private List<InheritanceErrorsReportDTO> getAppropriateErrors(final JobExecutionContext jobContext) {
@@ -167,11 +170,6 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
         return htmlMessage;
     }
 
-    @Override
-    protected void initiateSpringBeans(final AbstractApplicationContext context) throws IOException {
-        setInheritanceErrorsReportDAO((InheritanceErrorsReportDAO) context.getBean("inheritanceErrorsReportDAO"));
-    }
-
     private Properties loadProperties() throws IOException {
         InputStream in =
                 InheritanceErrorsReportEmailJob.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
@@ -184,9 +182,5 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
             in.close();
         }
         return props;
-    }
-
-    private void setInheritanceErrorsReportDAO(final InheritanceErrorsReportDAO inheritanceErrorsReportDAO) {
-        this.inheritanceErrorsReportDAO = inheritanceErrorsReportDAO;
     }
 }

@@ -19,8 +19,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -32,7 +32,6 @@ import gov.healthit.chpl.domain.statistics.CertifiedBodyAltTestStatistics;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 import gov.healthit.chpl.domain.statistics.Statistics;
 import gov.healthit.chpl.entity.SummaryStatisticsEntity;
-import gov.healthit.chpl.scheduler.JobConfig;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 
 /**
@@ -42,11 +41,13 @@ import gov.healthit.chpl.scheduler.job.QuartzJob;
  *
  */
 public class SummaryStatisticsEmailJob extends QuartzJob {
-    private static final Logger LOGGER = LogManager.getLogger(SummaryStatisticsEmailJob.class);
+    private static final Logger LOGGER = LogManager.getLogger("summaryStatisticsEmailJobLogger");
     private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
+    
+    @Autowired
     private SummaryStatisticsDAO summaryStatisticsDAO;
+    
     private Properties props;
-    private AbstractApplicationContext context;
 
     /**
      * Constructor that initializes the SummaryStatisticsEmailJob object.
@@ -54,33 +55,29 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
      */
     public SummaryStatisticsEmailJob() throws Exception{
         super();
-        setLocalContext();
-        context = new AnnotationConfigApplicationContext(JobConfig.class);
-        initiateSpringBeans(context);
         loadProperties();
     }
 
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         try {
+            SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+            LOGGER.info("********* Starting the Summary Statistics Email job. *********");
+            LOGGER.info("Sending email to: " + jobContext.getMergedJobDataMap().getString("email"));
+            
             SummaryStatisticsEntity summaryStatistics = summaryStatisticsDAO.getMostRecent();
             Statistics stats = getStatistics(summaryStatistics);
             String message = createHtmlMessage(stats, summaryStatistics.getEndDate());
-            LOGGER.info(message);
+            LOGGER.info("Message to be sent: " + message);
             sendEmail(message, jobContext.getMergedJobDataMap().getString("email"));
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error(e);
         } finally {
-            context.close();
+            LOGGER.info("********* Completed the Summary Statistics Email job. *********");
         }
     }
 
-    @Override
-    protected void initiateSpringBeans(final AbstractApplicationContext context) throws IOException {
-        setSummaryStatisticsDAO((SummaryStatisticsDAO) context.getBean("summaryStatisticsDAO"));
-
-    }
 
     private void sendEmail(final String message, final String address) throws AddressException, MessagingException {
         SendMailUtil mailUtil = new SendMailUtil();

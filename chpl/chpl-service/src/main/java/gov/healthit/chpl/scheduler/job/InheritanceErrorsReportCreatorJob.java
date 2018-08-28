@@ -15,12 +15,12 @@ import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.util.StringUtils;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dao.scheduler.InheritanceErrorsReportDAO;
@@ -34,7 +34,6 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.scheduler.DataCollectorAsyncSchedulerHelper;
-import gov.healthit.chpl.scheduler.JobConfig;
 
 /**
  * Initiates and runs the the Quartz job that generates the data that is used to to create
@@ -44,17 +43,28 @@ import gov.healthit.chpl.scheduler.JobConfig;
  */
 @DisallowConcurrentExecution
 public class InheritanceErrorsReportCreatorJob extends QuartzJob {
-    private static final Logger LOGGER = LogManager.getLogger(InheritanceErrorsReportCreatorJob.class);
+    private static final Logger LOGGER = LogManager.getLogger("inheritanceErrorsReportCreatorJobLogger");
     private static final String EDITION_2015 = "2015";
     private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
     private static final int MIN_NUMBER_TO_NOT_NEED_PREFIX = 10;
-    private CertifiedProductSearchDAO certifiedProductSearchDAO;
-    private InheritanceErrorsReportDAO inheritanceErrorsReportDAO;
-    private CertifiedProductDetailsManager certifiedProductDetailsManager;
-    private DataCollectorAsyncSchedulerHelper dataCollectorAsyncSchedulerHelper;
-    private ListingGraphDAO listingGraphDAO;
     private Properties props;
-    private AbstractApplicationContext context;
+    
+    @Autowired
+    private CertifiedProductSearchDAO certifiedProductSearchDAO;
+    
+    @Autowired
+    private InheritanceErrorsReportDAO inheritanceErrorsReportDAO;
+    
+    @Autowired
+    private CertifiedProductDetailsManager certifiedProductDetailsManager;
+    
+    @Autowired
+    private DataCollectorAsyncSchedulerHelper dataCollectorAsyncSchedulerHelper;
+    
+    @Autowired
+    private ListingGraphDAO listingGraphDAO;
+    
+    @Autowired
     private MessageSource messageSource;
 
     /**
@@ -63,26 +73,15 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
      */
     public InheritanceErrorsReportCreatorJob() throws Exception {
         super();
-        setLocalContext();
-        context = new AnnotationConfigApplicationContext(JobConfig.class);
-        initiateSpringBeans(context);
         loadProperties();
     }
 
     @Override
-    protected void initiateSpringBeans(final AbstractApplicationContext context) throws IOException {
-        setCertifiedProductDetailsManager((CertifiedProductDetailsManager)
-                context.getBean("certifiedProductDetailsManager"));
-        setCertifiedProductSearchDAO((CertifiedProductSearchDAO) context.getBean("certifiedProductSearchDAO"));
-        setDataCollectorAsyncSchedulerHelper((DataCollectorAsyncSchedulerHelper)
-                context.getBean("dataCollectorAsyncSchedulerHelper"));
-        setInheritanceErrorsReportDAO((InheritanceErrorsReportDAO) context.getBean("inheritanceErrorsReportDAO"));
-        setListingGraphDAO((ListingGraphDAO) context.getBean("listingGraphDao"));
-        setMessageSource((MessageSource) context.getBean("messageSource"));
-    }
-
-    @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
+        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+        dataCollectorAsyncSchedulerHelper.setLogger(LOGGER);
+        
+        LOGGER.info("********* Starting the Inheritance Error Report Creator job. *********");
         List<CertifiedProductSearchDetails> results = retrieveData();
         List<InheritanceErrorsReportDTO> errors = new ArrayList<InheritanceErrorsReportDTO>();
         for (CertifiedProductSearchDetails listing : results) {
@@ -108,6 +107,7 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
         if (errors.size() > 0) {
             saveInheritanceErrorsReport(errors);
         }
+        LOGGER.info("Completed the Inheritance Error Report Creator job. *********");
     }
 
     private void saveInheritanceErrorsReport(final List<InheritanceErrorsReportDTO> items) {
@@ -116,9 +116,7 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
         } catch (EntityCreationException | EntityRetrievalException e) {
             LOGGER.error("Unable to save Inheritance Errors Report {} with error message {}",
                     items.toString(), e.getLocalizedMessage());
-        } finally {
-            context.close();
-        }
+        } 
     }
 
     private Properties loadProperties() throws IOException {
@@ -135,32 +133,7 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
         return props;
     }
 
-    private void setCertifiedProductDetailsManager(
-            final CertifiedProductDetailsManager certifiedProductDetailsManager) {
-        this.certifiedProductDetailsManager = certifiedProductDetailsManager;
-    }
-
-    private void setCertifiedProductSearchDAO(final CertifiedProductSearchDAO certifiedProductSearchDAO) {
-        this.certifiedProductSearchDAO = certifiedProductSearchDAO;
-    }
-
-    private void setDataCollectorAsyncSchedulerHelper(
-            final DataCollectorAsyncSchedulerHelper dataCollectorAsyncSchedulerHelper) {
-        this.dataCollectorAsyncSchedulerHelper = dataCollectorAsyncSchedulerHelper;
-    }
-
-    private void setInheritanceErrorsReportDAO(final InheritanceErrorsReportDAO inheritanceErrorsReportDAO) {
-        this.inheritanceErrorsReportDAO = inheritanceErrorsReportDAO;
-    }
-
-    private void setListingGraphDAO(final ListingGraphDAO listingGraphDAO) {
-        this.listingGraphDAO = listingGraphDAO;
-    }
-
-    public void setMessageSource(final MessageSource messageSource) {
-        this.messageSource = messageSource;
-    }
-
+    
     private List<CertifiedProductSearchDetails> retrieveData() {
         List<CertifiedProductFlatSearchResult> listings = certifiedProductSearchDAO.getAllCertifiedProducts();
         List<CertifiedProductFlatSearchResult> certifiedProducts = filterData(listings);
