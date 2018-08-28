@@ -129,7 +129,7 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
         registry.addInterceptor(localeInterceptor());
-        registry.addInterceptor(rateLimitingInterceptor()).addPathPatterns("/**");
+        registry.addInterceptor(rateLimitingInterceptor()).addPathPatterns("/rest/**");
     }
 
     @Bean
