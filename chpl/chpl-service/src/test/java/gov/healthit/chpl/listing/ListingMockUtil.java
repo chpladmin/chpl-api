@@ -170,7 +170,7 @@ public class ListingMockUtil {
     }
 
     private CertifiedProductAccessibilityStandard createAccessibilityStandard() {
-        CertifiedProductAccessibilityStandard accessibilityStandard = 
+        CertifiedProductAccessibilityStandard accessibilityStandard =
                 new CertifiedProductAccessibilityStandard();
         accessibilityStandard.setId(330L);
         accessibilityStandard.setAccessibilityStandardId(8L);
@@ -206,8 +206,7 @@ public class ListingMockUtil {
         Contact contact = new Contact();
         contact.setContactId(1L);
         contact.setEmail("test@test.com");
-        contact.setFirstName("First");
-        contact.setLastName("Last");
+        contact.setFullName("First Last");
         contact.setPhoneNumber("555-444-3333");
         dev.setContact(contact);
         dev.setDeveloperId(1L);
@@ -275,60 +274,60 @@ public class ListingMockUtil {
         certResult.setNumber(number);
         certResult.setSuccess(success);
 
-        if(!certRules.hasCertOption(number, CertificationResultRules.ADDITIONAL_SOFTWARE)) {
+        if (!certRules.hasCertOption(number, CertificationResultRules.ADDITIONAL_SOFTWARE)) {
             certResult.setAdditionalSoftware(null);
         }
-        if(!certRules.hasCertOption(number, CertificationResultRules.API_DOCUMENTATION)) {
+        if (!certRules.hasCertOption(number, CertificationResultRules.API_DOCUMENTATION)) {
             certResult.setApiDocumentation(null);
         }
-        if(!certRules.hasCertOption(number, CertificationResultRules.G1_SUCCESS)) {
+        if (!certRules.hasCertOption(number, CertificationResultRules.G1_SUCCESS)) {
             certResult.setG1Success(null);
         }
-        if(!certRules.hasCertOption(number, CertificationResultRules.G1_MACRA)) {
+        if (!certRules.hasCertOption(number, CertificationResultRules.G1_MACRA)) {
             certResult.setG1MacraMeasures(null);
-        }        
-        if(!certRules.hasCertOption(number, CertificationResultRules.G2_SUCCESS)) {
+        }
+        if (!certRules.hasCertOption(number, CertificationResultRules.G2_SUCCESS)) {
             certResult.setG2Success(null);
         }
-        if(!certRules.hasCertOption(number, CertificationResultRules.G2_MACRA)) {
+        if (!certRules.hasCertOption(number, CertificationResultRules.G2_MACRA)) {
             certResult.setG2MacraMeasures(null);
         }
 
-        if(!certRules.hasCertOption(number, CertificationResultRules.GAP)) {
+        if (!certRules.hasCertOption(number, CertificationResultRules.GAP)) {
             certResult.setGap(null);
         } else {
             certResult.setGap(Boolean.FALSE);
         }
 
-        if(!certRules.hasCertOption(number, CertificationResultRules.PRIVACY_SECURITY)) {
+        if (!certRules.hasCertOption(number, CertificationResultRules.PRIVACY_SECURITY)) {
             certResult.setPrivacySecurityFramework(null);
         }
 
-        if(!certRules.hasCertOption(number, CertificationResultRules.SED)) {
+        if (!certRules.hasCertOption(number, CertificationResultRules.SED)) {
             certResult.setSed(null);
         } else {
             certResult.setSed(Boolean.FALSE);
         }
 
-        if(!certRules.hasCertOption(number, CertificationResultRules.TEST_DATA)) {
+        if (!certRules.hasCertOption(number, CertificationResultRules.TEST_DATA)) {
             certResult.setTestDataUsed(null);
         }
-        if(!certRules.hasCertOption(number, CertificationResultRules.FUNCTIONALITY_TESTED)) {
+        if (!certRules.hasCertOption(number, CertificationResultRules.FUNCTIONALITY_TESTED)) {
             certResult.setTestFunctionality(null);
         }
-        if(!certRules.hasCertOption(number, CertificationResultRules.TEST_PROCEDURE)) {
+        if (!certRules.hasCertOption(number, CertificationResultRules.TEST_PROCEDURE)) {
             certResult.setTestProcedures(null);
         }
-        if(!certRules.hasCertOption(number, CertificationResultRules.STANDARDS_TESTED)) {
+        if (!certRules.hasCertOption(number, CertificationResultRules.STANDARDS_TESTED)) {
             certResult.setTestStandards(null);
         }
-        if(!certRules.hasCertOption(number, CertificationResultRules.TEST_TOOLS_USED)) {
+        if (!certRules.hasCertOption(number, CertificationResultRules.TEST_TOOLS_USED)) {
             certResult.setTestToolsUsed(null);
         }
         return certResult;
     }
 
-    private CertificationResultTestData createTestData(Long id, String name, String version) {
+    private CertificationResultTestData createTestData(final Long id, final String name, final String version) {
         CertificationResultTestData testData = new CertificationResultTestData();
         testData.setId(id);
         testData.setAlteration("");
@@ -340,7 +339,8 @@ public class ListingMockUtil {
         return testData;
     }
 
-    private CertificationResultTestFunctionality createTestFunctionality(Long id, String name, String year) {
+    private CertificationResultTestFunctionality createTestFunctionality(final Long id,
+            final String name, final String year) {
         CertificationResultTestFunctionality testFunc = new CertificationResultTestFunctionality();
         testFunc.setId(id);
         testFunc.setName(name);
@@ -349,7 +349,8 @@ public class ListingMockUtil {
         return testFunc;
     }
 
-    private CertificationResultTestProcedure createTestProcedure(Long id, String name, String version) {
+    private CertificationResultTestProcedure createTestProcedure(final Long id,
+            final String name, final String version) {
         CertificationResultTestProcedure testProc = new CertificationResultTestProcedure();
         testProc.setId(id);
         testProc.setTestProcedureVersion(version);
@@ -360,14 +361,15 @@ public class ListingMockUtil {
         return testProc;
     }
 
-    private CertificationResultTestStandard createTestStandard(Long id, String name) {
+    private CertificationResultTestStandard createTestStandard(final Long id, final String name) {
         CertificationResultTestStandard testStandard = new CertificationResultTestStandard();
         testStandard.setId(id);
         testStandard.setTestStandardName(name);
         return testStandard;
     }
 
-    private CertificationResultTestTool createTestTool(Long id, String name, String version, boolean retired) {
+    private CertificationResultTestTool createTestTool(final Long id, final String name,
+            final String version, final boolean retired) {
         CertificationResultTestTool tt = new CertificationResultTestTool();
         tt.setId(id);
         tt.setRetired(retired);
@@ -377,7 +379,8 @@ public class ListingMockUtil {
         return tt;
     }
 
-    public String getChangedListingId(String origValue, int fieldIndex, String newValue) {
+    public String getChangedListingId(final String origValue,
+            final int fieldIndex, final String newValue) {
         String[] uniqueIdParts = origValue.split("\\.");
         uniqueIdParts[fieldIndex] = newValue;
         String changedUniqueId = String.join(".", uniqueIdParts);

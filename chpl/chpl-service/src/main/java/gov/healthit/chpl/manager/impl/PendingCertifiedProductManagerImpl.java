@@ -83,7 +83,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
     @Override
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB')")
-    public PendingCertifiedProductDetails getById(final List<CertificationBodyDTO> userAcbs, 
+    public PendingCertifiedProductDetails getById(final List<CertificationBodyDTO> userAcbs,
             final Long id) throws EntityRetrievalException, AccessDeniedException {
             return getById(userAcbs, id, false);
     }
@@ -91,7 +91,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
     @Override
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB')")
-    public PendingCertifiedProductDetails getById(final List<CertificationBodyDTO> userAcbs, 
+    public PendingCertifiedProductDetails getById(final List<CertificationBodyDTO> userAcbs,
             final Long id, final boolean includeDeleted)
             throws EntityRetrievalException, AccessDeniedException {
 
@@ -238,8 +238,8 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
                 UserDTO lastModifiedUser = userDAO.getById(pendingCp.getLastModifiedUser());
                 if (lastModifiedUser != null) {
                     Contact contact = new Contact();
-                    contact.setFirstName(lastModifiedUser.getFirstName());
-                    contact.setLastName(lastModifiedUser.getLastName());
+                    contact.setFullName(lastModifiedUser.getFullName());
+                    contact.setFriendlyName(lastModifiedUser.getFriendlyName());
                     contact.setEmail(lastModifiedUser.getEmail());
                     contact.setPhoneNumber(lastModifiedUser.getPhoneNumber());
                     contact.setTitle(lastModifiedUser.getTitle());
@@ -424,7 +424,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
                 if (pcpDetails.getPracticeType().get("id") != null) {
                     practiceTypeId = Long.valueOf(pcpDetails.getPracticeType().get("id").toString());
                 }
-            }  
+            }
             String criteriaNumber =  cert.getNumber();
             cert.setAllowedTestFunctionalities(
                     testFunctionalityManager.getTestFunctionalities(criteriaNumber, edition, practiceTypeId));
