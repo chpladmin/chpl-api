@@ -38,6 +38,7 @@ import gov.healthit.chpl.entity.developer.DeveloperTransparencyEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Repository("developerDAO")
 public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
@@ -45,11 +46,12 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
     private static final Logger LOGGER = LogManager.getLogger(DeveloperDAOImpl.class);
     private static final DeveloperStatusType DEFAULT_STATUS = DeveloperStatusType.Active;
     @Autowired
-    AddressDAO addressDao;
+    private AddressDAO addressDao;
     @Autowired
-    ContactDAO contactDao;
+    private ContactDAO contactDao;
     @Autowired
-    DeveloperStatusDAO statusDao;
+    private DeveloperStatusDAO statusDao;
+    @Autowired private ErrorMessageUtil msgUtil;
 
     @Override
     public DeveloperDTO create(DeveloperDTO dto) throws EntityCreationException, EntityRetrievalException {
@@ -241,111 +243,80 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 
         update(entity);
 
-        // update the status history
-        // check to make sure at least 1 status event was passed in, we can't
-        // delete them all
-        if (dto.getStatusEvents() == null || dto.getStatusEvents().size() == 0) {
-            String msg = "Developer Status name and date must be provided but at least one was not found; cannot insert this status history for developer "
-                    + entity.getName();
-            LOGGER.error(msg);
-            throw new EntityCreationException(msg);
-        }
-
-        //TODO: THIS ISN'T WORKING. TRY RE-WRITING TO REPLACE THE PIECES OF THE STATUS HISTORY
-        //THAT HAVE CHANGED VS DELETING EVERYTHING AND RE-ADDING IT. 
-        //ALSO THE UPDATESTATUS() METHOD SHOULD BE RE-WRITTEN SO THAT IT CAN BE CALLED HERE
-        //INSTEAD. IT IS ALSO NOT WORKING - WE ARE ENDING UP WITH DUPLICATE STATUS ENTRIES
-        //BECAUSE THAT IS ONLY ADDING ONE NOT REMOVING ANY.
-        // delete existing developer status history
-        for (DeveloperStatusEventEntity existingDeveloperStatusEvent : entity.getStatusEvents()) {
-            DeveloperStatusEventDTO newDeveloperStatusEvent = null;
-            for (DeveloperStatusEventDTO providedDeveloperStatusEvent : dto.getStatusEvents()) {
-                if (providedDeveloperStatusEvent.getId() != null && providedDeveloperStatusEvent.getId()
-                        .longValue() == existingDeveloperStatusEvent.getId().longValue()) {
-                    newDeveloperStatusEvent = providedDeveloperStatusEvent;
-                }
-            }
-            if (newDeveloperStatusEvent != null) {
-                // update with new values
-                if (newDeveloperStatusEvent.getStatus() != null
-                        && newDeveloperStatusEvent.getStatus().getStatusName() != null) {
-                    DeveloperStatusEntity newStatus = getStatusByName(
-                            newDeveloperStatusEvent.getStatus().getStatusName());
-                    if (newStatus != null && newStatus.getId() != null) {
-                        existingDeveloperStatusEvent.setDeveloperStatus(newStatus);
-                        existingDeveloperStatusEvent.setReason(newDeveloperStatusEvent.getReason());
-                        existingDeveloperStatusEvent.setDeveloperStatusId(newStatus.getId());
-                    }
-                    existingDeveloperStatusEvent.setStatusDate(newDeveloperStatusEvent.getStatusDate());
-                }
-            } else {
-                // delete
-                existingDeveloperStatusEvent.setDeleted(true);
-            }
-            existingDeveloperStatusEvent.setLastModifiedUser(Util.getCurrentUser().getId());
-            entityManager.merge(existingDeveloperStatusEvent);
-        }
-        entityManager.flush();
-
-        // add passed-in developer status history
-        for (DeveloperStatusEventDTO providedDeveloperStatusEvent : dto.getStatusEvents()) {
-            if (providedDeveloperStatusEvent.getId() == null && providedDeveloperStatusEvent.getStatus() != null
-                    && !StringUtils.isEmpty(providedDeveloperStatusEvent.getStatus().getStatusName())
-                    && providedDeveloperStatusEvent.getStatusDate() != null) {
-                DeveloperStatusEventEntity currDevStatus = new DeveloperStatusEventEntity();
-                currDevStatus.setDeveloperId(entity.getId());
-                DeveloperStatusEntity providedStatus = getStatusByName(
-                        providedDeveloperStatusEvent.getStatus().getStatusName());
-                if (providedStatus != null) {
-                    currDevStatus.setDeveloperStatusId(providedStatus.getId());
-                    currDevStatus.setStatusDate(providedDeveloperStatusEvent.getStatusDate());
-                    currDevStatus.setDeleted(false);
-                    currDevStatus.setReason(providedDeveloperStatusEvent.getReason());
-                    currDevStatus.setLastModifiedUser(entity.getLastModifiedUser());
-                    entityManager.persist(currDevStatus);
-                    entityManager.flush();
-                } else {
-                    String msg = "Could not find status with name "
-                            + providedDeveloperStatusEvent.getStatus().getStatusName()
-                            + "; cannot insert this status history entry for developer " + entity.getName();
-                    LOGGER.error(msg);
-                    throw new EntityCreationException(msg);
-                }
-            }
-        }
-
         entityManager.clear();
         return getById(dto.getId());
     }
 
     @Override
-    public void updateStatus(DeveloperStatusEventDTO newStatusEvent) throws EntityCreationException {
-        // create a new status history entry
-        if (newStatusEvent.getStatus() != null && !StringUtils.isEmpty(newStatusEvent.getStatus().getStatusName())
-                && newStatusEvent.getStatusDate() != null) {
-            DeveloperStatusEventEntity currDevStatus = new DeveloperStatusEventEntity();
-            currDevStatus.setDeveloperId(newStatusEvent.getDeveloperId());
-            DeveloperStatusEntity defaultStatus = getStatusByName(newStatusEvent.getStatus().getStatusName());
+    public void createDeveloperStatusEvent(DeveloperStatusEventDTO statusEventDto) 
+        throws EntityCreationException {
+        if (statusEventDto.getStatus() != null && 
+                !StringUtils.isEmpty(statusEventDto.getStatus().getStatusName())
+                && statusEventDto.getStatusDate() != null) {
+            DeveloperStatusEventEntity statusEvent = new DeveloperStatusEventEntity();
+            statusEvent.setDeveloperId(statusEventDto.getDeveloperId());
+            DeveloperStatusEntity defaultStatus = getStatusByName(statusEventDto.getStatus().getStatusName());
             if (defaultStatus != null) {
-                currDevStatus.setDeveloperStatusId(defaultStatus.getId());
-                currDevStatus.setReason(newStatusEvent.getReason());
-                currDevStatus.setStatusDate(newStatusEvent.getStatusDate());
-                currDevStatus.setDeleted(false);
-                currDevStatus.setLastModifiedUser(Util.getCurrentUser().getId());
-                entityManager.persist(currDevStatus);
+                statusEvent.setDeveloperStatusId(defaultStatus.getId());
+                statusEvent.setReason(statusEventDto.getReason());
+                statusEvent.setStatusDate(statusEventDto.getStatusDate());
+                statusEvent.setLastModifiedUser(Util.getCurrentUser().getId());
+                statusEvent.setDeleted(Boolean.FALSE);
+                entityManager.persist(statusEvent);
                 entityManager.flush();
             } else {
-                String msg = "Could not find status with name " + newStatusEvent.getStatus().getStatusName()
-                        + "; cannot insert this status history entry for developer with id "
-                        + newStatusEvent.getDeveloperId();
+                String msg = msgUtil.getMessage("developer.updateStatus.statusNotFound", 
+                        statusEventDto.getStatus().getStatusName(), statusEventDto.getDeveloperId());
                 LOGGER.error(msg);
                 throw new EntityCreationException(msg);
             }
         } else {
-            String msg = "Developer Status name and date must be provided but at least one was not found; cannot insert this status history for developer with id "
-                    + newStatusEvent.getDeveloperId();
+            String msg = msgUtil.getMessage("developer.updateStatus.missingData", statusEventDto.getDeveloperId());
             LOGGER.error(msg);
             throw new EntityCreationException(msg);
+        }
+        entityManager.clear();
+    }
+
+    @Override
+    public void updateDeveloperStatusEvent(DeveloperStatusEventDTO statusEventDto) 
+            throws EntityRetrievalException {
+        DeveloperStatusEventEntity entityToUpdate = 
+                entityManager.find(DeveloperStatusEventEntity.class, statusEventDto.getId());
+            if(entityToUpdate == null) {
+                String msg = msgUtil.getMessage("developer.updateStatus.idNotFound", statusEventDto.getId());
+                LOGGER.error(msg);
+                throw new EntityRetrievalException(msg);
+            } else {
+                if (statusEventDto.getStatus() != null
+                        && statusEventDto.getStatus().getStatusName() != null) {
+                    DeveloperStatusEntity newStatus = getStatusByName(
+                            statusEventDto.getStatus().getStatusName());
+                    if (newStatus != null && newStatus.getId() != null) {
+                        entityToUpdate.setDeveloperStatus(newStatus);
+                        entityToUpdate.setReason(statusEventDto.getReason());
+                        entityToUpdate.setDeveloperStatusId(newStatus.getId());
+                    }
+                    entityToUpdate.setStatusDate(statusEventDto.getStatusDate());
+                }
+                entityManager.merge(entityToUpdate);
+                entityManager.flush();
+            }
+        }
+
+    @Override
+    public void deleteDeveloperStatusEvent(DeveloperStatusEventDTO statusEventDto) 
+        throws EntityRetrievalException {
+        DeveloperStatusEventEntity statusEventEntity = 
+                entityManager.find(DeveloperStatusEventEntity.class, statusEventDto.getId());
+        if(statusEventEntity == null) {
+            String msg = msgUtil.getMessage("developer.updateStatus.idNotFound", statusEventDto.getId());
+            LOGGER.error(msg);
+            throw new EntityRetrievalException(msg);
+        } else {
+            statusEventEntity.setDeleted(Boolean.TRUE);
+            entityManager.merge(statusEventEntity);
+            entityManager.flush();
         }
     }
 
