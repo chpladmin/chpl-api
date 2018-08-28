@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultAdditionalSoftwareEntity;
@@ -506,7 +507,7 @@ throws EntityCreationException {
         return new PendingCertifiedProductDTO(entity);
     }
 
-    @Cacheable("findByAcbId")
+    @Cacheable(CacheNames.FIND_BY_ACB_ID)
     @Override
     public List<PendingCertifiedProductDTO> findByAcbId(final Long acbId) {
         List<PendingCertifiedProductEntity> entities = getEntityByAcbId(acbId);
