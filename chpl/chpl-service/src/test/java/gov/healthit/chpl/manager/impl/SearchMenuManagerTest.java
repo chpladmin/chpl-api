@@ -593,7 +593,7 @@ public class SearchMenuManagerTest {
     @Transactional
     @Test
     public void testGetNotificationTypesForAdminUser() {
-        final int expectedCount = 8;
+        final int expectedCount = 1;
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         Set<NotificationType> results = searchMenuManager.getNotificationTypes();
         assertNotNull(results);

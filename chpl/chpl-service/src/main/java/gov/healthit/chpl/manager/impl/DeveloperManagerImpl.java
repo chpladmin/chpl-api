@@ -180,8 +180,8 @@ public class DeveloperManagerImpl implements DeveloperManager {
         if (devStatusHistoryUpdated
                 && newDevStatus.getStatus().getStatusName()
                         .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
-                && !(Util.isUserRoleAdmin() || Util.isUserRoleAcbAdmin())) {
-            String  msg = msgUtil.getMessage("developer.statusChangeNotAllowedWithoutAdminOrAcb", 
+                && !Util.isUserRoleAdmin()) {
+            String  msg = msgUtil.getMessage("developer.statusChangeNotAllowedWithoutAdmin", 
                     DeveloperStatusType.UnderCertificationBanByOnc.toString());
             throw new EntityCreationException(msg);
         } else if (devStatusHistoryUpdated && !newDevStatus.getStatus().getStatusName()
