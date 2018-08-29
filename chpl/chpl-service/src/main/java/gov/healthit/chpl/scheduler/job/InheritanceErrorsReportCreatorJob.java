@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -48,22 +49,22 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
     private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
     private static final int MIN_NUMBER_TO_NOT_NEED_PREFIX = 10;
     private Properties props;
-    
+
     @Autowired
     private CertifiedProductSearchDAO certifiedProductSearchDAO;
-    
+
     @Autowired
     private InheritanceErrorsReportDAO inheritanceErrorsReportDAO;
-    
+
     @Autowired
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
-    
+
     @Autowired
     private DataCollectorAsyncSchedulerHelper dataCollectorAsyncSchedulerHelper;
-    
+
     @Autowired
     private ListingGraphDAO listingGraphDAO;
-    
+
     @Autowired
     private MessageSource messageSource;
 
@@ -77,10 +78,11 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
     }
 
     @Override
+    @Transactional
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         dataCollectorAsyncSchedulerHelper.setLogger(LOGGER);
-        
+
         LOGGER.info("********* Starting the Inheritance Error Report Creator job. *********");
         List<CertifiedProductSearchDetails> results = retrieveData();
         List<InheritanceErrorsReportDTO> errors = new ArrayList<InheritanceErrorsReportDTO>();
@@ -133,7 +135,7 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
         return props;
     }
 
-    
+
     private List<CertifiedProductSearchDetails> retrieveData() {
         List<CertifiedProductFlatSearchResult> listings = certifiedProductSearchDAO.getAllCertifiedProducts();
         List<CertifiedProductFlatSearchResult> certifiedProducts = filterData(listings);
