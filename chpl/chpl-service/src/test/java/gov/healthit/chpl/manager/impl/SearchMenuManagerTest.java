@@ -612,7 +612,7 @@ public class SearchMenuManagerTest {
         SecurityContextHolder.getContext().setAuthentication(testUser3);
         Set<NotificationType> results = searchMenuManager.getNotificationTypes();
         assertNotNull(results);
-        assertEquals(0, results.size());
+        assertEquals(3, results.size());
         for (NotificationType nt : results) {
             assertNotNull(nt.getId());
             assertNotNull(nt.getName());

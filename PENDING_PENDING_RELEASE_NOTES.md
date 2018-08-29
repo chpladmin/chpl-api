@@ -3,6 +3,7 @@
 _Date TBD_
 
 ### New Features
+* Add required reason business logic for developer bans.
 * Add API throttling
 * Moved the Quartz scheduler to run in the Tomcat context
 * Each Quartz job writes to a separate log file
