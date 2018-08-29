@@ -27,7 +27,7 @@ public class JWTUserConverterImpl implements JWTUserConverter {
 
         Map<String, Object> validatedClaims = jwtConsumer.consume(jwt);
 
-        if (validatedClaims == null){
+        if (validatedClaims == null) {
             throw new JWTValidationException("Invalid authentication token.");
         } else {
 
@@ -47,23 +47,19 @@ public class JWTUserConverterImpl implements JWTUserConverter {
 
             user.setSubjectName(subject);
 
-
             List<String> authorities = (List<String>) validatedClaims.get("Authorities");
-            List<String> identityInfo =(List<String>) validatedClaims.get("Identity");
+            List<String> identityInfo = (List<String>) validatedClaims.get("Identity");
 
-            for (String claim: authorities){
+            for (String claim: authorities) {
                 GrantedPermission permission = new GrantedPermission(claim);
                 user.addPermission(permission);
             }
 
-            String idString = identityInfo.get(0);
-            Long userId = Long.valueOf(idString);
-            String firstName = identityInfo.get(2);
-            String lastName = identityInfo.get(3);
+            Long userId = Long.valueOf(identityInfo.get(0));
+            String fullName = identityInfo.get(2);
 
             user.setId(userId);
-            user.setFullName(firstName + " " + lastName);
-            user.setFriendlyName(firstName);
+            user.setFullName(fullName);
         }
         return user;
     }
