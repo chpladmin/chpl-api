@@ -21,6 +21,7 @@ import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -56,22 +57,22 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
     private static final Long SECONDS_PER_MINUTE = 60L;
     private DateTimeFormatter dateFormatter;
     private Properties props;
-    
+
     @Autowired
     private CertifiedProductSearchDAO certifiedProductSearchDAO;
-    
+
     @Autowired
     private BrokenSurveillanceRulesDAO brokenSurveillanceRulesDAO;
-    
+
     @Autowired
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
-    
+
     @Autowired
     private DataCollectorAsyncSchedulerHelper dataCollectorAsyncSchedulerHelper;
-    
+
     @Autowired
     private RuleComplianceCalculator ruleComplianceCalculator;
-    
+
     /**
      * Constructor to initialize BrokenSurveillanceRulesCreatorJob object.
      * @throws Exception is thrown
@@ -83,11 +84,12 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
     }
 
     @Override
+    @Transactional
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         ruleComplianceCalculator.setProps(props);
         dataCollectorAsyncSchedulerHelper.setLogger(LOGGER);
-        
+
         LOGGER.info("********* Starting the Broken Surveillance Rules Creator job. *********");
         List<CertifiedProductSearchDetails> results = retrieveData();
         List<BrokenSurveillanceRulesDTO> errors = new ArrayList<BrokenSurveillanceRulesDTO>();

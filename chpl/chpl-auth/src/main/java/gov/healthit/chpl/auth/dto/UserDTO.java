@@ -27,11 +27,17 @@ public class UserDTO implements UserDetails {
     private boolean credentialsExpired;
     private boolean accountEnabled;
 
-
+    /**
+     * Default constructor.
+     */
     public UserDTO(){}
 
-    public UserDTO(UserEntity entity) {
-        if(entity != null) {
+    /**
+     * Constructed from an entity.
+     * @param entity the entity
+     */
+    public UserDTO(final UserEntity entity) {
+        if (entity != null) {
             this.id = entity.getId();
             this.subjectName = entity.getSubjectName();
             this.fullName = entity.getFullName();
@@ -52,7 +58,7 @@ public class UserDTO implements UserDetails {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -60,7 +66,7 @@ public class UserDTO implements UserDetails {
         return subjectName;
     }
 
-    public void setSubjectName(String subject) {
+    public void setSubjectName(final String subject) {
         this.subjectName = subject;
     }
 
@@ -68,7 +74,7 @@ public class UserDTO implements UserDetails {
         return fullName;
     }
 
-    public void setFullName(String fullName) {
+    public void setFullName(final String fullName) {
         this.fullName = fullName;
     }
 
@@ -76,7 +82,7 @@ public class UserDTO implements UserDetails {
         return friendlyName;
     }
 
-    public void setFriendlyName(String friendlyName) {
+    public void setFriendlyName(final String friendlyName) {
         this.friendlyName = friendlyName;
     }
 
@@ -84,7 +90,7 @@ public class UserDTO implements UserDetails {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(final String email) {
         this.email = email;
     }
 
@@ -92,7 +98,7 @@ public class UserDTO implements UserDetails {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
+    public void setPhoneNumber(final String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
@@ -100,7 +106,7 @@ public class UserDTO implements UserDetails {
         return title;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(final String title) {
         this.title = title;
     }
 
@@ -111,9 +117,9 @@ public class UserDTO implements UserDetails {
         return null;
     }
 
-    public String getName() {
-        return subjectName;
-    }
+//    public String getName() {
+//        return subjectName;
+//    }
 
     @Override
     public String getUsername() {
@@ -149,7 +155,7 @@ public class UserDTO implements UserDetails {
         return accountExpired;
     }
 
-    public void setAccountExpired(boolean accountExpired) {
+    public void setAccountExpired(final boolean accountExpired) {
         this.accountExpired = accountExpired;
     }
 
@@ -157,11 +163,11 @@ public class UserDTO implements UserDetails {
         return accountLocked;
     }
 
-    public void setAccountLocked(boolean accountLocked) {
+    public void setAccountLocked(final boolean accountLocked) {
         this.accountLocked = accountLocked;
     }
 
-    public void setCredentialsExpired(boolean credentialsExpired) {
+    public void setCredentialsExpired(final boolean credentialsExpired) {
         this.credentialsExpired = credentialsExpired;
     }
 
@@ -169,7 +175,7 @@ public class UserDTO implements UserDetails {
         return accountEnabled;
     }
 
-    public void setAccountEnabled(boolean accountEnabled) {
+    public void setAccountEnabled(final boolean accountEnabled) {
         this.accountEnabled = accountEnabled;
     }
 
@@ -177,7 +183,7 @@ public class UserDTO implements UserDetails {
         return signatureDate;
     }
 
-    public void setSignatureDate(Date signatureDate) {
+    public void setSignatureDate(final Date signatureDate) {
         this.signatureDate = signatureDate;
     }
 
@@ -185,7 +191,7 @@ public class UserDTO implements UserDetails {
         return complianceSignatureDate;
     }
 
-    public void setComplianceSignatureDate(Date complianceSignatureDate) {
+    public void setComplianceSignatureDate(final Date complianceSignatureDate) {
         this.complianceSignatureDate = complianceSignatureDate;
     }
 
@@ -193,12 +199,11 @@ public class UserDTO implements UserDetails {
         return failedLoginCount;
     }
 
-    public void setFailedLoginCount(int failedLoginCount) {
+    public void setFailedLoginCount(final int failedLoginCount) {
         this.failedLoginCount = failedLoginCount;
     }
 
     public boolean isCredentialsExpired() {
         return credentialsExpired;
     }
-
 }
