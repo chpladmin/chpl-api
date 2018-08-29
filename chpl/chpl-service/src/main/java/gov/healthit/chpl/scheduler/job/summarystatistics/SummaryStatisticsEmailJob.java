@@ -43,17 +43,17 @@ import gov.healthit.chpl.scheduler.job.QuartzJob;
 public class SummaryStatisticsEmailJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("summaryStatisticsEmailJobLogger");
     private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
-    
+
     @Autowired
     private SummaryStatisticsDAO summaryStatisticsDAO;
-    
+
     private Properties props;
 
     /**
      * Constructor that initializes the SummaryStatisticsEmailJob object.
      * @throws Exception if thrown
      */
-    public SummaryStatisticsEmailJob() throws Exception{
+    public SummaryStatisticsEmailJob() throws Exception {
         super();
         loadProperties();
     }
@@ -64,7 +64,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
             SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
             LOGGER.info("********* Starting the Summary Statistics Email job. *********");
             LOGGER.info("Sending email to: " + jobContext.getMergedJobDataMap().getString("email"));
-            
+
             SummaryStatisticsEntity summaryStatistics = summaryStatisticsDAO.getMostRecent();
             Statistics stats = getStatistics(summaryStatistics);
             String message = createHtmlMessage(stats, summaryStatistics.getEndDate());
@@ -85,10 +85,9 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         mailUtil.sendEmail(address, subject, message, getSummaryStatisticsFile(), props);
     }
 
-    
     private List<File> getSummaryStatisticsFile() {
         List<File> files = new ArrayList<File>();
-        File file = new File( 
+        File file = new File(
                         props.getProperty("downloadFolderPath") + File.separator
                         + props.getProperty("summaryEmailName", "summaryStatistics.csv"));
         files.add(file);
@@ -113,10 +112,32 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
                 "<h4>Total # of Surveillance Activities -  " + stats.getTotalSurveillanceActivities() + "</h4>");
         emailMessage.append(
                 "<ul><li>Open Surveillance Activities - " + stats.getTotalOpenSurveillanceActivities() + "</li>");
+
+        emailMessage.append("<ul>");
+        for (CertifiedBodyStatistics stat : stats.getTotalOpenSurveillanceActivitiesByAcb()) {
+            emailMessage.append("<li>Certified by ");
+            emailMessage.append(stat.getName());
+            emailMessage.append(" - ");
+            emailMessage.append(stat.getTotalListings().toString());
+            emailMessage.append("</li>");
+        }
+        emailMessage.append("</ul>");
+
         emailMessage.append(
                 "<li>Closed Surveillance Activities - " + stats.getTotalClosedSurveillanceActivities() + "</li></ul>");
         emailMessage.append("<h4>Total # of NCs -  " + stats.getTotalNonConformities() + "</h4>");
         emailMessage.append("<ul><li>Open NCs - " + stats.getTotalOpenNonconformities() + "</li>");
+
+        emailMessage.append("<ul>");
+        for (CertifiedBodyStatistics stat : stats.getTotalOpenNonconformitiesByAcb()) {
+            emailMessage.append("<li>Certified by ");
+            emailMessage.append(stat.getName());
+            emailMessage.append(" - ");
+            emailMessage.append(stat.getTotalListings().toString());
+            emailMessage.append("</li>");
+        }
+        emailMessage.append("</ul>");
+
         emailMessage.append("<li>Closed NCs - " + stats.getTotalClosedNonconformities() + "</li></ul>");
         return emailMessage.toString();
     }

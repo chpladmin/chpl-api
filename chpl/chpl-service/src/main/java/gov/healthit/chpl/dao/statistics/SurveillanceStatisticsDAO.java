@@ -3,6 +3,7 @@ package gov.healthit.chpl.dao.statistics;
 import java.util.List;
 
 import gov.healthit.chpl.domain.DateRange;
+import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
 
 public interface SurveillanceStatisticsDAO {
@@ -18,5 +19,9 @@ public interface SurveillanceStatisticsDAO {
 
     Long getTotalClosedNonconformities(DateRange dateRange);
 
-	List<NonconformityTypeStatisticsDTO> getAllNonconformitiesByCriterion();
+    List<NonconformityTypeStatisticsDTO> getAllNonconformitiesByCriterion();
+
+    List<CertifiedBodyStatistics> getTotalOpenNonconformitiesByAcb(DateRange dateRange);
+
+    List<CertifiedBodyStatistics> getTotalOpenSurveillanceActivitiesByAcb(DateRange dateRange);
 }
