@@ -3,6 +3,8 @@ package gov.healthit.chpl.certificationId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 public class Validator2014 extends Validator {
 
@@ -92,6 +94,7 @@ public class Validator2014 extends Validator {
         for (String crit : REQUIRED_CRITERIA) {
             if (null == criteriaMet.get(crit)) {
                 criteriaValid = false;
+                missingAnd.add(crit);
             } else {
                 this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
             }
@@ -147,6 +150,13 @@ public class Validator2014 extends Validator {
                 ++cqmCount;
             }
         }
+        
+        if(!(this.counts.get("cqmsInpatientRequiredMet") >= this.counts.get("cqmsInpatientRequired"))){
+            String needed = String.valueOf((this.counts.get("cqmsInpatientRequired") - cqmCount));
+            TreeMap<String,ArrayList<String>> missingInpatient = new TreeMap<String,ArrayList<String>>();
+            missingInpatient.put(needed, (ArrayList<String>)INPATIENT_CQMS);
+            missingX.add(missingInpatient);
+        }
 
         this.counts.put("cqmsInpatientRequiredMet", cqmCount);
         return (this.counts.get("cqmsInpatientRequiredMet") >= this.counts.get("cqmsInpatientRequired"));
@@ -157,6 +167,7 @@ public class Validator2014 extends Validator {
     //
     // At least 9 total Ambulatory CQMs with at least 6 of those being
     // Ambulatory Core CQMs.
+    // §170.102   Definitions
     // **********************************************************************
     protected boolean isAmbulatoryCqmsValid() {
         int nonCoreAmbulatory = 0;
@@ -170,13 +181,30 @@ public class Validator2014 extends Validator {
                 ++nonCoreAmbulatory;
             }
         }
+        
+        if(coreAmbulatory < this.counts.get("cqmsAmbulatoryCoreRequired")){
+            String missing = String.valueOf(this.counts.get("cqmsAmbulatoryCoreRequired") - coreAmbulatory);
+            TreeMap<String,ArrayList<String>> missingCoreAmbulatory = new TreeMap<String,ArrayList<String>>();
+            missingCoreAmbulatory.put(missing, (ArrayList<String>)this.AMBULATORY_CORE_CQMS);
+            missingX.add(missingCoreAmbulatory);
+        }else if(((this.counts.get("cqmsAmbulatoryRequiredMet") + this.counts.get("cqmsAmbulatoryCoreRequiredMet")) 
+                < (this.counts.get("cqmsAmbulatoryRequired") + this.counts.get("cqmsAmbulatoryCoreRequired")))){
+            String missing = String.valueOf((this.counts.get("cqmsAmbulatoryCoreRequired") 
+                    + this.counts.get("cqmsAmbulatoryRequired")) - (coreAmbulatory + nonCoreAmbulatory));
+            TreeMap<String,ArrayList<String>> missingAmbulatory = new TreeMap<String,ArrayList<String>>();
+            ArrayList<String> combined = new ArrayList<String>();
+            combined.addAll(this.AMBULATORY_CORE_CQMS);
+            combined.addAll(this.AMBULATORY_CQMS);
+            missingAmbulatory.put(missing, combined);
+            missingX.add(missingAmbulatory);
+        }
 
         this.counts.put("cqmsAmbulatoryRequiredMet", nonCoreAmbulatory);
         this.counts.put("cqmsAmbulatoryCoreRequiredMet", coreAmbulatory);
 
-        return ((this.counts.get("cqmsAmbulatoryRequiredMet")
-                + this.counts.get("cqmsAmbulatoryCoreRequiredMet")) >= (this.counts.get("cqmsAmbulatoryRequiredMet")
-                        + this.counts.get("cqmsAmbulatoryCoreRequiredMet")));
+        return (this.counts.get("cqmsAmbulatoryCoreRequiredMet") >= this.counts.get("cqmsAmbulatoryCoreRequired"))
+                && ((this.counts.get("cqmsAmbulatoryRequiredMet") + this.counts.get("cqmsAmbulatoryCoreRequiredMet")) 
+                        >= (this.counts.get("cqmsAmbulatoryRequired") + this.counts.get("cqmsAmbulatoryCoreRequired")));
     }
 
     // **********************************************************************
@@ -192,6 +220,9 @@ public class Validator2014 extends Validator {
                 return true;
             }
         }
+        TreeSet<String> missing1 = new TreeSet<String>();
+        missing1.addAll(CPOE_CRITERIA);
+        missingOr.add(missing1);
         return false;
     }
 
@@ -204,7 +235,7 @@ public class Validator2014 extends Validator {
 
         // 170.314(b)(1) and 170.314(b)(2) and 170.314(b)(8) and 170.314(h)(1)
         if (this.criteriaMet.containsKey("170.314 (b)(1)") && this.criteriaMet.containsKey("170.314 (b)(2)")
-                && this.criteriaMet.containsKey("170.314 (8)(8)") && this.criteriaMet.containsKey("170.314 (h)(1)")) {
+                && this.criteriaMet.containsKey("170.314 (b)(8)") && this.criteriaMet.containsKey("170.314 (h)(1)")) {
             this.counts.put("criteriaTocRequiredMet", 4);
             this.counts.put("criteriaTocRequired", 4);
             return true;
@@ -239,7 +270,23 @@ public class Validator2014 extends Validator {
             this.counts.put("criteriaTocRequired", 2);
             return true;
         }
-
+        
+        ArrayList<String> missing2 = new ArrayList<String>();
+        missing2.addAll(Arrays.asList("170.314(b)(1)","170.314(b)(2)","170.314(b)(8)","170.314(h)(1)"));
+        missingCombo.add(missing2);
+        ArrayList<String> missing3 = new ArrayList<String>();
+        missing3.addAll(Arrays.asList("170.314(b)(1)","170.314(b)(2)","170.314(h)(1)"));
+        missingCombo.add(missing3);
+        ArrayList<String> missing4 = new ArrayList<String>();
+        missing4.addAll(Arrays.asList("170.314(b)(1)","170.314(b)(2)","170.314(b)(8)"));
+        missingCombo.add(missing4);
+        ArrayList<String> missing5 = new ArrayList<String>();
+        missing5.addAll(Arrays.asList("170.314(b)(8)","170.314(h)(1)"));
+        missingCombo.add(missing5);
+        ArrayList<String> missing6 = new ArrayList<String>();
+        missing6.addAll(Arrays.asList("170.314(b)(1)","170.314(b)(2)"));
+        missingCombo.add(missing6);
+        
         return false;
     }
 }
