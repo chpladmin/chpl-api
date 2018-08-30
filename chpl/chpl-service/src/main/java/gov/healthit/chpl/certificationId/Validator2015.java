@@ -3,6 +3,7 @@ package gov.healthit.chpl.certificationId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TreeSet;
 
 public class Validator2015 extends Validator {
 
@@ -52,6 +53,7 @@ public class Validator2015 extends Validator {
         boolean criteriaValid = true;
         for (String crit : REQUIRED_CRITERIA) {
             if (null == criteriaMet.get(crit)) {
+                missingAnd.add(crit);
                 criteriaValid = false;
             } else {
                 this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
@@ -100,6 +102,9 @@ public class Validator2015 extends Validator {
                 return true;
             }
         }
+        TreeSet<String> missing1 = new TreeSet<String>();
+        missing1.addAll(CPOE_CRITERIA_OR);
+        missingOr.add(missing1);
         return false;
     }
 
@@ -111,15 +116,26 @@ public class Validator2015 extends Validator {
     // **********************************************************************
     protected boolean isDPValid() {
         this.counts.put("criteriaDpRequired", 1);
+        
+        boolean met = false;
 
         // 170.315 (h)(1)
         if (this.criteriaMet.containsKey("170.315 (h)(1)")) {
             this.counts.put("criteriaDpRequiredMet", 1);
+            met = true;
         }
 
         // 170.315 (h)(2)
         if (this.criteriaMet.containsKey("170.315 (h)(2)")) {
             this.counts.put("criteriaDpRequiredMet", 1);
+            met = true;
+        }
+        
+        if(!met){
+            TreeSet<String> missing2 = new TreeSet<String>();
+            missing2.add("170.315 (h)(1)");
+            missing2.add("170.315 (h)(2)");
+            missingOr.add(missing2);
         }
 
         return (this.counts.get("criteriaDpRequiredMet") >= this.counts.get("criteriaDpRequired"));
