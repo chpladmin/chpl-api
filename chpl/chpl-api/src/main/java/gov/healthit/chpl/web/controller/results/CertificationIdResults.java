@@ -1,8 +1,12 @@
 package gov.healthit.chpl.web.controller.results;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 
@@ -50,6 +54,8 @@ public class CertificationIdResults implements Serializable {
     private String ehrCertificationId;
     private Map<String, Integer> metCounts;
     private Map<String, Integer> metPercentages;
+    private SortedSet<String> missingAnd;
+    private List<TreeSet<String>> missingOr;
     private String year;
     private boolean isValid;
 
@@ -99,5 +105,21 @@ public class CertificationIdResults implements Serializable {
 
     public void setMetCounts(final Map<String, Integer> metCounts) {
         this.metCounts = metCounts;
+    }
+
+    public SortedSet<String> getMissingAnd() {
+        return missingAnd;
+    }
+
+    public void setMissingAnd(SortedSet<String> missingAnd) {
+        this.missingAnd = missingAnd;
+    }
+
+    public List<TreeSet<String>> getMissingOr() {
+        return missingOr;
+    }
+
+    public void setMissingOr(List<TreeSet<String>> list) {
+        this.missingOr = list;
     }
 }
