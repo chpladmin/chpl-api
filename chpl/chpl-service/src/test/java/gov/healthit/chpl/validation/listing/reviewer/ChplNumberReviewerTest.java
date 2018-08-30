@@ -63,7 +63,10 @@ public class ChplNumberReviewerTest {
     
     @Spy
     private CertifiedProductDAO listingDao;
-    
+
+    @Spy
+    private CertificationResultManager certResultManager;
+
     @Spy
     private MessageSource messageSource;
 
@@ -108,6 +111,9 @@ public class ChplNumberReviewerTest {
                 ArgumentMatchers.eq("listing.icsCodeTrueValueFalse"));
         
         Mockito.doReturn(false).when(certificationResultManager).getCertifiedProductHasAdditionalSoftware(ArgumentMatchers.anyLong());
+        Mockito.when(
+                certResultManager.getCertifiedProductHasAdditionalSoftware(ArgumentMatchers.anyLong()))
+        .thenReturn(Boolean.FALSE);
     }
 
     @Test
@@ -369,7 +375,10 @@ public class ChplNumberReviewerTest {
             .when(certificationResultManager).getCertifiedProductHasAdditionalSoftware(ArgumentMatchers.anyLong());
             
         } catch(EntityRetrievalException ex) {}
-
+        Mockito.when(
+                certResultManager.getCertifiedProductHasAdditionalSoftware(ArgumentMatchers.anyLong()))
+        .thenReturn(Boolean.TRUE);
+        
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         //the mock listing does not have additional software; 
         //add some to a criteria that was met.

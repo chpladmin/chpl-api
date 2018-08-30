@@ -33,6 +33,7 @@ import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 import junit.framework.TestCase;
@@ -97,7 +98,8 @@ public class VersionManagerTest extends TestCase {
 	@Transactional
 	@Rollback
 	public void testNotAllowedToUpdateVersionWithInactiveDeveloper() 
-			throws EntityRetrievalException, JsonProcessingException {
+			throws EntityRetrievalException, JsonProcessingException,
+	        MissingReasonException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
 		//change dev to suspended

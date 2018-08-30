@@ -40,9 +40,11 @@ public class Statistics implements Serializable {
     private Long total2011Listings;
     private Long totalSurveillanceActivities;
     private Long totalOpenSurveillanceActivities;
+    private List<CertifiedBodyStatistics> totalOpenSurveillanceActivitiesByAcb;
     private Long totalClosedSurveillanceActivities;
     private Long totalNonConformities;
     private Long totalOpenNonconformities;
+    private List<CertifiedBodyStatistics> totalOpenNonconformitiesByAcb;
     private Long totalClosedNonconformities;
     private Long totalListingsWithAlternativeTestMethods;
     private List<CertifiedBodyAltTestStatistics> totalListingsWithCertifiedBodyAndAlternativeTestMethods;
@@ -330,5 +332,22 @@ public class Statistics implements Serializable {
             final List<CertifiedBodyAltTestStatistics> totalListingsWithCertifiedBodyAndAlternativeTestMethods) {
         this.totalListingsWithCertifiedBodyAndAlternativeTestMethods
         = totalListingsWithCertifiedBodyAndAlternativeTestMethods;
+    }
+
+    public List<CertifiedBodyStatistics> getTotalOpenNonconformitiesByAcb() {
+        return totalOpenNonconformitiesByAcb;
+    }
+
+    public void setTotalOpenNonconformitiesByAcb(final List<CertifiedBodyStatistics> totalOpenNonconformitiesByAcb) {
+        this.totalOpenNonconformitiesByAcb = totalOpenNonconformitiesByAcb;
+    }
+
+    public List<CertifiedBodyStatistics> getTotalOpenSurveillanceActivitiesByAcb() {
+        return totalOpenSurveillanceActivitiesByAcb;
+    }
+
+    public void setTotalOpenSurveillanceActivitiesByAcb(
+            final List<CertifiedBodyStatistics> totalOpenSurveillanceActivitiesByAcb) {
+        this.totalOpenSurveillanceActivitiesByAcb = totalOpenSurveillanceActivitiesByAcb;
     }
 }
