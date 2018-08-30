@@ -25,6 +25,7 @@ import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.listing.ListingMockUtil;
+import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -69,8 +70,13 @@ public class ChplNumberReviewerTest {
     @Spy
     private ErrorMessageUtil msgUtil;
     
+    @Spy
+    private CertificationResultManager certificationResultManager;
+    
     @InjectMocks
     private ChplNumberReviewer chplNumberReviewer;
+    
+    
 
     @Before
     public void setup() {
@@ -100,6 +106,8 @@ public class ChplNumberReviewerTest {
         Mockito.doReturn(ICS_CODE_TRUE_NO_ICS_ERROR)
         .when(msgUtil).getMessage(
                 ArgumentMatchers.eq("listing.icsCodeTrueValueFalse"));
+        
+        Mockito.doReturn(false).when(certificationResultManager).getCertifiedProductHasAdditionalSoftware(ArgumentMatchers.anyLong());
     }
 
     @Test
@@ -166,6 +174,7 @@ public class ChplNumberReviewerTest {
     
     @Test
     public void testBadVersionCodeCharacter_HasError() {
+        
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         listing.setChplProductNumber(mockUtil.getChangedListingId(
                 listing.getChplProductNumber(), CertifiedProductDTO.VERSION_CODE_INDEX, "0!"));
@@ -355,6 +364,10 @@ public class ChplNumberReviewerTest {
         try {
             Mockito.when(listingDao.getByChplUniqueId(ArgumentMatchers.anyString()))
             .thenReturn(new CertifiedProductDetailsDTO());
+            
+            Mockito.doReturn(true)
+            .when(certificationResultManager).getCertifiedProductHasAdditionalSoftware(ArgumentMatchers.anyLong());
+            
         } catch(EntityRetrievalException ex) {}
 
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
