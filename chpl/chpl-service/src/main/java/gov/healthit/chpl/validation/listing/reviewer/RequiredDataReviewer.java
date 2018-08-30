@@ -19,9 +19,6 @@ public class RequiredDataReviewer implements Reviewer {
         if (listing.getCertificationEdition() == null || listing.getCertificationEdition().get("id") == null) {
             listing.getErrorMessages().add("Certification edition is required but was not found.");
         }
-        if (listing.getTestingLabs() == null || listing.getTestingLabs().size() == 0) {
-            listing.getErrorMessages().add(msgUtil.getMessage("atl.notFound"));
-        }
         if (StringUtils.isEmpty(listing.getAcbCertificationId())) {
             listing.getWarningMessages().add("CHPL certification ID was not found.");
         }
