@@ -627,9 +627,6 @@ public class CertifiedProductValidationTest {
     @Test
     public void validateSedUcdMismatchHasExpectedErrors()
             throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
-        
-        
-        
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         CertifiedProductSearchDetails listing = CertifiedProductValidationTestHelper.createListing("2014");
         List<CertificationResult> certResults = new ArrayList<CertificationResult>();
