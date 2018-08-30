@@ -18,7 +18,10 @@ public abstract class Validator {
     protected SortedSet<Integer> editionYears = new TreeSet<Integer>();
     protected String attestationYear = null;
     
-    
+    // missing criteria where all in the set are required
+    protected SortedSet<String> missingAnd = new TreeSet<String>();
+    // missing 1 criteria from each of the following sets
+    protected List<TreeSet<String>> missingOr = new ArrayList<TreeSet<String>>();
     // missing at least one of the following combinations of criteria
     protected List<ArrayList<String>> missingCombo = new ArrayList<ArrayList<String>>();
     // missing X criteria from the list of criteria
@@ -42,6 +45,14 @@ public abstract class Validator {
 
     public Map<String, Integer> getCqmsMet() {
         return this.cqmsMet;
+    }
+
+    public SortedSet<String> getMissingAnd() {
+        return missingAnd;
+    }
+
+    public List<TreeSet<String>> getMissingOr() {
+        return missingOr;
     }
 
     public List<ArrayList<String>> getMissingCombo() {

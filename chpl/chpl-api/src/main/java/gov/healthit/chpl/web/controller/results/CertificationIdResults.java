@@ -4,7 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 
@@ -52,6 +54,8 @@ public class CertificationIdResults implements Serializable {
     private String ehrCertificationId;
     private Map<String, Integer> metCounts;
     private Map<String, Integer> metPercentages;
+    protected SortedSet<String> missingAnd = new TreeSet<String>();
+    protected List<TreeSet<String>> missingOr = new ArrayList<TreeSet<String>>();
     private List<ArrayList<String>> missingCombo = new ArrayList<ArrayList<String>>();
     private List<TreeMap<String,ArrayList<String>>> missingX = new ArrayList<TreeMap<String,ArrayList<String>>>();
     private String year;
@@ -103,6 +107,22 @@ public class CertificationIdResults implements Serializable {
 
     public void setMetCounts(final Map<String, Integer> metCounts) {
         this.metCounts = metCounts;
+    }
+
+    public SortedSet<String> getMissingAnd() {
+        return missingAnd;
+    }
+
+    public void setMissingAnd(SortedSet<String> missingAnd) {
+        this.missingAnd = missingAnd;
+    }
+
+    public List<TreeSet<String>> getMissingOr() {
+        return missingOr;
+    }
+
+    public void setMissingOr(List<TreeSet<String>> missingOr) {
+        this.missingOr = missingOr;
     }
 
     public List<ArrayList<String>> getMissingCombo() {
