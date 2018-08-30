@@ -10,7 +10,7 @@ import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.InpatientG1G2RequiredData2014Reviewer;
 
 @Component("inpatientModular2014LegacyListingValidator")
-public class InpatientModular2014LegacyListingValidator extends Edition2014ListingValidator {
+public class InpatientModular2014LegacyListingValidator extends Edition2014LegacyListingValidator {
     @Autowired 
     @Qualifier("inpatientG1G2RequiredData2014Reviewer")
     private InpatientG1G2RequiredData2014Reviewer g1g2Reviewer;
