@@ -149,6 +149,22 @@
                 </entry>
             </job-data-map>
         </job>
+        <trigger>
+            <cron>
+                <name>qaSummaryStatisticsEmailJob</name>
+                <group>qaTrigger</group>
+                <job-name>Summary Statistics Email</job-name>
+                <job-group>chplJobs</job-group>
+                <job-data-map>
+                    <entry>
+                        <key>email</key>
+                        <value>amore@ainq.com</value>
+                    </entry>
+                </job-data-map>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 11 0 * * ?</cron-expression>
+            </cron>
+        </trigger>
 
         <!-- Job fired when developer ban notification needs to happen -->
         <job>
@@ -165,7 +181,7 @@
                 </entry>
                 <entry>
                     <key>email</key>
-                    <value>amore@ainq.com</value>
+                    <value></value>
                 </entry>
                 <entry>
                     <key>editableJobFields</key>
@@ -235,6 +251,42 @@
                 </entry>
             </job-data-map>
         </job>
+        <trigger>
+            <cron>
+                <name>qaInheritanceErrorsEmailJob</name>
+                <group>qaTrigger</group>
+                <job-name>ONC Inherited Certification Status Errors Report</job-name>
+                <job-group>chplJobs</job-group>
+                <job-data-map>
+                    <entry>
+                        <key>email</key>
+                        <value>amore@ainq.com</value>
+                    </entry>
+                </job-data-map>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 11 0 * * ?</cron-expression>
+            </cron>
+        </trigger>
+        <trigger>
+            <cron>
+                <name>qaInheritanceErrorsACBEmailJob</name>
+                <group>qaTrigger</group>
+                <job-name>ONC-ACB Inherited Certification Status Errors Report</job-name>
+                <job-group>chplJobs</job-group>
+                <job-data-map>
+                    <entry>
+                        <key>email</key>
+                        <value>amore@ainq.com</value>
+                    </entry>
+                    <entry>
+                        <key>acb</key>
+                        <value>Drummond Group☺ICSA Labs☺InfoGard☺SLI Compliance</value>
+                    </entry>
+                </job-data-map>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 11 0 * * ?</cron-expression>
+            </cron>
+        </trigger>
 
         <!-- Broken Surveillance Rules data creator -->
         <job>
@@ -353,5 +405,77 @@
                 </entry>
             </job-data-map>
         </job>
+        <trigger>
+            <cron>
+                <name>qaAllBrokenSurveillanceEmailJob</name>
+                <group>qaTrigger</group>
+                <job-name>ONC All Broken Surveillance Rules Report</job-name>
+                <job-group>chplJobs</job-group>
+                <job-data-map>
+                    <entry>
+                        <key>email</key>
+                        <value>amore@ainq.com</value>
+                    </entry>
+                </job-data-map>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 11 0 * * ?</cron-expression>
+            </cron>
+        </trigger>
+        <trigger>
+            <cron>
+                <name>qaAllBrokenSurveillanceACBEmailJob</name>
+                <group>qaTrigger</group>
+                <job-name>ONC-ACB All Broken Surveillance Rules Report</job-name>
+                <job-group>chplJobs</job-group>
+                <job-data-map>
+                    <entry>
+                        <key>email</key>
+                        <value>amore@ainq.com</value>
+                    </entry>
+                    <entry>
+                        <key>acb</key>
+                        <value>Drummond Group☺ICSA Labs☺InfoGard☺SLI Compliance</value>
+                    </entry>
+                </job-data-map>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 11 0 * * ?</cron-expression>
+            </cron>
+        </trigger>
+        <trigger>
+            <cron>
+                <name>qaOvernightBrokenSurveillanceEmailJob</name>
+                <group>qaTrigger</group>
+                <job-name>ONC Overnight Broken Surveillance Rules Report</job-name>
+                <job-group>chplJobs</job-group>
+                <job-data-map>
+                    <entry>
+                        <key>email</key>
+                        <value>amore@ainq.com</value>
+                    </entry>
+                </job-data-map>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 11 0 * * ?</cron-expression>
+            </cron>
+        </trigger>
+        <trigger>
+            <cron>
+                <name>qaOvernightBrokenSurveillanceACBEmailJob</name>
+                <group>qaTrigger</group>
+                <job-name>ONC-ACB Overnight Broken Surveillance Rules Report</job-name>
+                <job-group>chplJobs</job-group>
+                <job-data-map>
+                    <entry>
+                        <key>email</key>
+                        <value>amore@ainq.com</value>
+                    </entry>
+                    <entry>
+                        <key>acb</key>
+                        <value>Drummond Group☺ICSA Labs☺InfoGard☺SLI Compliance</value>
+                    </entry>
+                </job-data-map>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 11 0 * * ?</cron-expression>
+            </cron>
+        </trigger>
     </schedule>
 </job-scheduling-data>

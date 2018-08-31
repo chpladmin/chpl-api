@@ -37,8 +37,8 @@ public class JWTUserConverterImplTest {
 		testUser.setAccountLocked(false);
 		testUser.setCredentialsExpired(false);
 		testUser.setEmail("test@test.com");
-		testUser.setFirstName("admin");
-		testUser.setLastName("admin");
+		testUser.setFullName("admin");
+		testUser.setFriendlyName("admin");
 		testUser.setPhoneNumber("123-456-7890");
 		testUser.setSubjectName("testUser");
 		testUser.setTitle("Dr.");
@@ -46,8 +46,8 @@ public class JWTUserConverterImplTest {
 		String jwt = authenticator.getJWT(testUser);
 		User user = converter.getAuthenticatedUser(jwt);
 		
-		assertEquals(user.getFirstName(), testUser.getFirstName());
-		assertEquals(user.getLastName(), testUser.getLastName());
+		assertEquals(user.getFullName(), testUser.getFullName());
+		assertEquals(user.getFriendlyName(), testUser.getFriendlyName());
 		assertEquals(user.getSubjectName(), testUser.getSubjectName());
 		
 	}

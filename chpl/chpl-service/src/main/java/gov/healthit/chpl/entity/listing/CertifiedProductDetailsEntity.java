@@ -176,11 +176,8 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "contact_id")
     private Long contactId;
 
-    @Column(name = "first_name")
-    private String firstName;
-
-    @Column(name = "last_name")
-    private String lastName;
+    @Column(name = "full_name")
+    private String fullName;
 
     @Column(name = "email")
     private String email;
@@ -684,20 +681,12 @@ public class CertifiedProductDetailsEntity {
         this.contactId = contactId;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getFullName() {
+        return fullName;
     }
 
-    public void setFirstName(final String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(final String lastName) {
-        this.lastName = lastName;
+    public void setFullName(final String fullName) {
+        this.fullName = fullName;
     }
 
     public String getEmail() {

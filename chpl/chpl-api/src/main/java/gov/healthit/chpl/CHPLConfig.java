@@ -8,12 +8,14 @@ import java.util.Locale;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.oxm.Marshaller;
@@ -33,6 +35,7 @@ import org.springframework.web.servlet.view.JstlView;
 
 import gov.healthit.chpl.manager.ApiKeyManager;
 import gov.healthit.chpl.registration.APIKeyAuthenticationFilter;
+import gov.healthit.chpl.registration.RateLimitingInterceptor;
 
 @Configuration
 @EnableWebMvc
@@ -45,7 +48,7 @@ import gov.healthit.chpl.registration.APIKeyAuthenticationFilter;
 @ComponentScan(basePackages = {
         "gov.healthit.chpl.**"
 })
-public class CHPLConfig extends WebMvcConfigurerAdapter {
+public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAware{
 
     private static final Logger LOGGER = LogManager.getLogger(CHPLConfig.class);
     private static final long MAX_UPLOAD_FILE_SIZE = 5242880;
@@ -53,7 +56,14 @@ public class CHPLConfig extends WebMvcConfigurerAdapter {
     
     @Autowired
     private ApiKeyManager apiKeyManager;
-
+    
+    private Environment env;
+    
+    @Override
+    public void setEnvironment(Environment env) {
+        this.env = env;
+    }
+    
     @Bean
     public MappingJackson2HttpMessageConverter jsonConverter() {
         MappingJackson2HttpMessageConverter bean = new MappingJackson2HttpMessageConverter();
@@ -109,10 +119,17 @@ public class CHPLConfig extends WebMvcConfigurerAdapter {
         interceptor.setParamName("lang");
         return interceptor;
     }
+    
+    @Bean
+    public RateLimitingInterceptor rateLimitingInterceptor() {
+        RateLimitingInterceptor interceptor = new RateLimitingInterceptor();
+        return interceptor;
+    }
 
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
         registry.addInterceptor(localeInterceptor());
+        registry.addInterceptor(rateLimitingInterceptor()).addPathPatterns("/**").excludePathPatterns(APIKeyAuthenticationFilter.ALLOWED_REQUEST_PATHS);
     }
 
     @Bean

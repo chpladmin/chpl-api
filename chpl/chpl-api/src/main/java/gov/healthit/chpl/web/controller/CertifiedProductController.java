@@ -75,8 +75,9 @@ import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandler;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandlerFactory;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
-import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidator;
-import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFactory;
+import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
+import gov.healthit.chpl.validation.listing.PendingValidator;
+import gov.healthit.chpl.validation.listing.Validator;
 import gov.healthit.chpl.web.controller.results.CQMResultDetailResults;
 import gov.healthit.chpl.web.controller.results.CertificationResults;
 import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
@@ -114,7 +115,7 @@ public class CertifiedProductController {
     private ActivityManager activityManager;
 
     @Autowired
-    private CertifiedProductValidatorFactory validatorFactory;
+    private ListingValidatorFactory validatorFactory;
 
     @Autowired
     private MeaningfulUseController meaningfulUseController;
@@ -214,7 +215,7 @@ public class CertifiedProductController {
         CertifiedProductSearchDetails certifiedProduct =
                 cpdManager.getCertifiedProductDetailsByChplProductNumber(chplProductNumber.toString());
 
-        CertifiedProductValidator validator = validatorFactory.getValidator(certifiedProduct);
+        Validator validator = validatorFactory.getValidator(certifiedProduct);
         if (validator != null) {
             validator.validate(certifiedProduct);
         }
@@ -608,7 +609,7 @@ public class CertifiedProductController {
         cpManager.sanitizeUpdatedListingData(newAcbId, updatedListing);
 
         // validate
-        CertifiedProductValidator validator = validatorFactory.getValidator(updatedListing);
+        Validator validator = validatorFactory.getValidator(updatedListing);
         if (validator != null) {
             validator.validate(updatedListing);
         }
@@ -928,7 +929,7 @@ public class CertifiedProductController {
         Long acbId = new Long(acbIdStr);
         if (pcpManager.isPendingListingAvailableForUpdate(acbId, pendingCp.getId())) {
             PendingCertifiedProductDTO pcpDto = new PendingCertifiedProductDTO(pendingCp);
-            CertifiedProductValidator validator = validatorFactory.getValidator(pcpDto);
+            PendingValidator validator = validatorFactory.getValidator(pcpDto);
             if (validator != null) {
                 validator.validate(pcpDto);
             }
@@ -1133,7 +1134,7 @@ public class CertifiedProductController {
 
     private CertifiedProductSearchDetails validateCertifiedProduct(
             final CertifiedProductSearchDetails certifiedProduct) {
-        CertifiedProductValidator validator = validatorFactory.getValidator(certifiedProduct);
+        Validator validator = validatorFactory.getValidator(certifiedProduct);
         if (validator != null) {
             validator.validate(certifiedProduct);
         }
