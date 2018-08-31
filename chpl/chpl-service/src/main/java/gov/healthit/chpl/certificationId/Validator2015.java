@@ -3,6 +3,7 @@ package gov.healthit.chpl.certificationId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 public class Validator2015 extends Validator {
@@ -102,7 +103,7 @@ public class Validator2015 extends Validator {
                 return true;
             }
         }
-        TreeSet<String> missing1 = new TreeSet<String>();
+        SortedSet<String> missing1 = new TreeSet<String>();
         missing1.addAll(CPOE_CRITERIA_OR);
         missingOr.add(missing1);
         return false;
@@ -132,7 +133,7 @@ public class Validator2015 extends Validator {
         }
         
         if(!met){
-            TreeSet<String> missing2 = new TreeSet<String>();
+            SortedSet<String> missing2 = new TreeSet<String>();
             missing2.add("170.315 (h)(1)");
             missing2.add("170.315 (h)(2)");
             missingOr.add(missing2);

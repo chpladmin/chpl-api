@@ -55,7 +55,7 @@ public class CertificationIdResults implements Serializable {
     private Map<String, Integer> metCounts;
     private Map<String, Integer> metPercentages;
     private SortedSet<String> missingAnd;
-    private List<TreeSet<String>> missingOr;
+    private List<SortedSet<String>> missingOr;
     private String year;
     private boolean isValid;
 
@@ -115,11 +115,11 @@ public class CertificationIdResults implements Serializable {
         this.missingAnd = missingAnd;
     }
 
-    public List<TreeSet<String>> getMissingOr() {
+    public List<SortedSet<String>> getMissingOr() {
         return missingOr;
     }
 
-    public void setMissingOr(List<TreeSet<String>> list) {
+    public void setMissingOr(List<SortedSet<String>> list) {
         this.missingOr = list;
     }
 }
