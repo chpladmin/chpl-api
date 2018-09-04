@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 public class Validator2014 extends Validator {
 
@@ -220,7 +219,7 @@ public class Validator2014 extends Validator {
                 return true;
             }
         }
-        TreeSet<String> missing1 = new TreeSet<String>();
+        ArrayList<String> missing1 = new ArrayList<String>();
         missing1.addAll(CPOE_CRITERIA);
         missingOr.add(missing1);
         return false;

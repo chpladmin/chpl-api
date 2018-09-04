@@ -19,9 +19,9 @@ public abstract class Validator {
     protected String attestationYear = null;
     
     // missing criteria where all in the set are required
-    protected SortedSet<String> missingAnd = new TreeSet<String>();
+    protected ArrayList<String> missingAnd = new ArrayList<String>();
     // missing 1 criteria from each of the following sets
-    protected List<TreeSet<String>> missingOr = new ArrayList<TreeSet<String>>();
+    protected List<ArrayList<String>> missingOr = new ArrayList<ArrayList<String>>();
     // missing at least one of the following combinations of criteria
     protected List<ArrayList<String>> missingCombo = new ArrayList<ArrayList<String>>();
     // missing X criteria from the list of criteria
@@ -47,11 +47,11 @@ public abstract class Validator {
         return this.cqmsMet;
     }
 
-    public SortedSet<String> getMissingAnd() {
+    public ArrayList<String> getMissingAnd() {
         return missingAnd;
     }
 
-    public List<TreeSet<String>> getMissingOr() {
+    public List<ArrayList<String>> getMissingOr() {
         return missingOr;
     }
 
