@@ -3,18 +3,16 @@ package gov.healthit.chpl.certificationId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 public class Validator2015 extends Validator {
 
-    protected static final List<String> REQUIRED_CRITERIA = new ArrayList<String>(
-            Arrays.asList("170.315 (a)(5)", "170.315 (a)(6)", "170.315 (a)(7)", "170.315 (a)(8)", "170.315 (a)(9)",
-                    "170.315 (a)(11)", "170.315 (a)(14)", "170.315 (c)(1)", "170.315 (b)(1)", "170.315 (b)(6)",
-                    "170.315 (g)(7)", "170.315 (g)(8)", "170.315 (g)(9)"));
+    protected static final List<String> REQUIRED_CRITERIA = new ArrayList<String>(Arrays.asList("170.315 (a)(5)",
+            "170.315 (a)(6)", "170.315 (a)(7)", "170.315 (a)(8)", "170.315 (a)(9)", "170.315 (a)(11)",
+            "170.315 (a)(14)", "170.315 (c)(1)", "170.315 (b)(1)", "170.315 (b)(6)", "170.315 (g)(7)",
+            "170.315 (g)(8)", "170.315 (g)(9)"));
 
-    protected static final List<String> CPOE_CRITERIA_OR = new ArrayList<String>(
-            Arrays.asList("170.315 (a)(1)", "170.315 (a)(2)", "170.315 (a)(3)"));
+    protected static final List<String> CPOE_CRITERIA_OR = new ArrayList<String>(Arrays.asList("170.315 (a)(1)",
+            "170.315 (a)(2)", "170.315 (a)(3)"));
 
     public Validator2015() {
         this.counts.put("criteriaRequired", REQUIRED_CRITERIA.size());
@@ -64,10 +62,14 @@ public class Validator2015 extends Validator {
         boolean cpoeValid = isCPOEValid();
         boolean dpValid = isDPValid();
 
-        this.counts.put("criteriaRequired", this.counts.get("criteriaRequired")
-                + this.counts.get("criteriaCpoeRequired") + this.counts.get("criteriaDpRequired"));
-        this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet")
-                + this.counts.get("criteriaCpoeRequiredMet") + this.counts.get("criteriaDpRequiredMet"));
+        this.counts.put(
+                "criteriaRequired",
+                this.counts.get("criteriaRequired") + this.counts.get("criteriaCpoeRequired")
+                        + this.counts.get("criteriaDpRequired"));
+        this.counts.put(
+                "criteriaRequiredMet",
+                this.counts.get("criteriaRequiredMet") + this.counts.get("criteriaCpoeRequiredMet")
+                        + this.counts.get("criteriaDpRequiredMet"));
 
         return (criteriaValid && cpoeValid && dpValid);
     }
@@ -103,9 +105,9 @@ public class Validator2015 extends Validator {
                 return true;
             }
         }
-        SortedSet<String> missing1 = new TreeSet<String>();
-        missing1.addAll(CPOE_CRITERIA_OR);
-        missingOr.add(missing1);
+        ArrayList<String> missing = new ArrayList<String>();
+        missing.addAll(CPOE_CRITERIA_OR);
+        missingOr.add(missing);
         return false;
     }
 
@@ -117,7 +119,7 @@ public class Validator2015 extends Validator {
     // **********************************************************************
     protected boolean isDPValid() {
         this.counts.put("criteriaDpRequired", 1);
-        
+
         boolean met = false;
 
         // 170.315 (h)(1)
@@ -131,12 +133,12 @@ public class Validator2015 extends Validator {
             this.counts.put("criteriaDpRequiredMet", 1);
             met = true;
         }
-        
-        if(!met){
-            SortedSet<String> missing2 = new TreeSet<String>();
-            missing2.add("170.315 (h)(1)");
-            missing2.add("170.315 (h)(2)");
-            missingOr.add(missing2);
+
+        if (!met) {
+            ArrayList<String> missing = new ArrayList<String>();
+            missing.add("170.315 (h)(1)");
+            missing.add("170.315 (h)(2)");
+            missingOr.add(missing);
         }
 
         return (this.counts.get("criteriaDpRequiredMet") >= this.counts.get("criteriaDpRequired"));

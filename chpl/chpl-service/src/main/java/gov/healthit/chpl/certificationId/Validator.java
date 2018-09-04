@@ -12,9 +12,9 @@ import gov.healthit.chpl.dto.CQMMetDTO;
 public abstract class Validator {
     
     // missing criteria where all in the set are required
-    protected SortedSet<String> missingAnd = new TreeSet<String>();
+    protected ArrayList<String> missingAnd = new ArrayList<String>();
     // missing 1 criteria from each of the following sets
-    protected List<SortedSet<String>> missingOr = new ArrayList<SortedSet<String>>();
+    protected List<ArrayList<String>> missingOr = new ArrayList<ArrayList<String>>();
     
     protected Map<String, Integer> criteriaMet = new HashMap<String, Integer>(100);
     protected Map<String, Integer> cqmsMet = new HashMap<String, Integer>(100);
@@ -38,11 +38,11 @@ public abstract class Validator {
         return this.criteriaMet;
     }
 
-    public SortedSet<String> getMissingAnd() {
+    public ArrayList<String> getMissingAnd() {
         return missingAnd;
     }
 
-    public List<SortedSet<String>> getMissingOr() {
+    public List<ArrayList<String>> getMissingOr() {
         return missingOr;
     }
 
