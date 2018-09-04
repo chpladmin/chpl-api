@@ -9,6 +9,7 @@ _Date TBD_
 * Each Quartz job writes to a separate log file
 * Add Open Surveillance Activities by ACB in the Statistics Report
 * Add Open Nonconformities by ACB in the Statistics Report
+* Return info messages for CMS ID missing criteria
 
 ### Bugs Fixed
 * Extra test data/test procedure/test functionality/etc. no longer appears after attesting to a criteria with previously entered phantom data.

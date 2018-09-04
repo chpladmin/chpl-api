@@ -1,5 +1,6 @@
 package gov.healthit.chpl.certificationId;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,7 +10,12 @@ import java.util.TreeSet;
 import gov.healthit.chpl.dto.CQMMetDTO;
 
 public abstract class Validator {
-
+    
+    // missing criteria where all in the set are required
+    protected ArrayList<String> missingAnd = new ArrayList<String>();
+    // missing 1 criteria from each of the following sets
+    protected List<ArrayList<String>> missingOr = new ArrayList<ArrayList<String>>();
+    
     protected Map<String, Integer> criteriaMet = new HashMap<String, Integer>(100);
     protected Map<String, Integer> cqmsMet = new HashMap<String, Integer>(100);
     protected Map<String, Integer> domainsMet = new HashMap<String, Integer>(10);
@@ -30,6 +36,14 @@ public abstract class Validator {
 
     public Map<String, Integer> getCriteriaMet() {
         return this.criteriaMet;
+    }
+
+    public ArrayList<String> getMissingAnd() {
+        return missingAnd;
+    }
+
+    public List<ArrayList<String>> getMissingOr() {
+        return missingOr;
     }
 
     public Map<String, Integer> getCqmsMet() {
