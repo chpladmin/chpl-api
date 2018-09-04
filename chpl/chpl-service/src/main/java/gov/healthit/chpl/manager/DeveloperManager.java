@@ -9,6 +9,7 @@ import gov.healthit.chpl.domain.DeveloperTransparency;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 
 public interface DeveloperManager {
@@ -21,7 +22,8 @@ public interface DeveloperManager {
     List<DeveloperTransparency> getDeveloperCollection();
 
     DeveloperDTO update(DeveloperDTO developer)
-            throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
+            throws EntityRetrievalException, JsonProcessingException, 
+            EntityCreationException, MissingReasonException;
 
     DeveloperDTO create(DeveloperDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException;

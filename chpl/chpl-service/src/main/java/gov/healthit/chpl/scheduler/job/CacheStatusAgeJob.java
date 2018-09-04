@@ -28,7 +28,7 @@ import gov.healthit.chpl.auth.SendMailUtil;
  *
  */
 public class CacheStatusAgeJob implements Job {
-    private static final Logger LOGGER = LogManager.getLogger(CacheStatusAgeJob.class);
+    private static final Logger LOGGER = LogManager.getLogger("cacheStatusAgeJobLogger");
     private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
     private Properties properties = null;
 
@@ -57,18 +57,20 @@ public class CacheStatusAgeJob implements Job {
      */
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
+        LOGGER.info("********* Starting the Cache Status Age job. *********");
         try {
             if (isCacheOld()) {
                 String recipient = jobContext.getMergedJobDataMap().getString("email");
                 try {
                     sendEmail(recipient);
                 } catch (IOException | MessagingException e) {
-                    e.printStackTrace();
+                    LOGGER.error(e);
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e);
         }
+        LOGGER.info("********* Completed the Cache Status Age job. *********");
     }
 
     private boolean isCacheOld() throws UnsupportedEncodingException, IOException {
@@ -104,10 +106,11 @@ public class CacheStatusAgeJob implements Job {
 
     private void sendEmail(final String recipient)
             throws IOException, AddressException, MessagingException {
-
+        LOGGER.info("Sending email to: " + recipient);
         String subject = properties.getProperty("cacheStatusMaxAgeSubject");
         String htmlMessage = createHtmlEmailBody();
-
+        LOGGER.info("Message to be sent: " + htmlMessage);
+        
         SendMailUtil mailUtil = new SendMailUtil();
         mailUtil.sendEmail(recipient, subject, htmlMessage, null, properties);
     }

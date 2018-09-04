@@ -137,5 +137,4 @@ public class CertificationIdResults implements Serializable {
     public void setMissingX(List<TreeMap<String, ArrayList<String>>> missingX) {
         this.missingX = missingX;
     }
-    
 }

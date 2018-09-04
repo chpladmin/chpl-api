@@ -59,7 +59,7 @@ public class InvitationManagerImpl implements InvitationManager {
     private InvitationPermissionDAO invitationPermissionDao;
 
     @Autowired
-    Authenticator userAuthenticator;
+    private Authenticator userAuthenticator;
     @Autowired
     private UserManager userManager;
     @Autowired
@@ -72,7 +72,7 @@ public class InvitationManagerImpl implements InvitationManager {
     @Override
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public InvitationDTO inviteAdmin(String emailAddress, List<String> permissions)
+    public InvitationDTO inviteAdmin(final String emailAddress, final List<String> permissions)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
         InvitationDTO dto = new InvitationDTO();
         dto.setEmail(emailAddress);
@@ -85,7 +85,7 @@ public class InvitationManagerImpl implements InvitationManager {
     @Override
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB')")
-    public InvitationDTO inviteWithRolesOnly(String emailAddress, List<String> permissions)
+    public InvitationDTO inviteWithRolesOnly(final String emailAddress, final List<String> permissions)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
         InvitationDTO dto = new InvitationDTO();
         dto.setEmail(emailAddress);
@@ -99,7 +99,8 @@ public class InvitationManagerImpl implements InvitationManager {
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN') or "
             + "(hasRole('ROLE_ACB') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-    public InvitationDTO inviteWithAcbAccess(String emailAddress, Long acbId, List<String> permissions)
+    public InvitationDTO inviteWithAcbAccess(final String emailAddress, final Long acbId,
+            final List<String> permissions)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
         InvitationDTO dto = new InvitationDTO();
         dto.setEmail(emailAddress);
@@ -116,7 +117,8 @@ public class InvitationManagerImpl implements InvitationManager {
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN') or "
             + "(hasRole('ROLE_ATL') and hasPermission(#atlId, 'gov.healthit.chpl.dto.TestingLabDTO', admin))")
-    public InvitationDTO inviteWithAtlAccess(String emailAddress, Long atlId, List<String> permissions)
+    public InvitationDTO inviteWithAtlAccess(final String emailAddress, final Long atlId,
+            final List<String> permissions)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
         InvitationDTO dto = new InvitationDTO();
         dto.setEmail(emailAddress);
@@ -135,9 +137,9 @@ public class InvitationManagerImpl implements InvitationManager {
             + "hasRole('ROLE_ACB') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin) "
             + " and "
             + "hasRole('ROLE_ATL') and hasPermission(#atlId, 'gov.healthit.chpl.dto.TestingLabDTO', admin)" + ")")
-    public InvitationDTO inviteWithAcbAndAtlAccess(String emailAddress, Long acbId, Long atlId,
-            List<String> permissions)
-            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
+    public InvitationDTO inviteWithAcbAndAtlAccess(final String emailAddress, final Long acbId, final Long atlId,
+            final List<String> permissions)
+                    throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
         InvitationDTO dto = new InvitationDTO();
         dto.setEmail(emailAddress);
         dto.setTestingLabId(atlId);
@@ -150,7 +152,7 @@ public class InvitationManagerImpl implements InvitationManager {
         return createInvitation(dto, permissions);
     }
 
-    private InvitationDTO createInvitation(InvitationDTO toCreate, List<String> permissions)
+    private InvitationDTO createInvitation(final InvitationDTO toCreate, final List<String> permissions)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
         InvitationDTO createdInvitation = null;
         createdInvitation = invitationDao.create(toCreate);
@@ -182,32 +184,32 @@ public class InvitationManagerImpl implements InvitationManager {
 
     @Override
     @Transactional
-    public InvitationDTO getByInvitationHash(String hash) {
+    public InvitationDTO getByInvitationHash(final String hash) {
         return invitationDao.getByInvitationToken(hash);
     }
 
     @Override
     @Transactional
-    public InvitationDTO getByConfirmationHash(String hash) {
+    public InvitationDTO getByConfirmationHash(final String hash) {
         return invitationDao.getByConfirmationToken(hash);
     }
 
     @Override
     @Transactional
-    public InvitationDTO getById(Long id) throws UserRetrievalException {
+    public InvitationDTO getById(final Long id) throws UserRetrievalException {
         return invitationDao.getById(id);
     }
 
     @Override
     @Transactional
-    public UserDTO createUserFromInvitation(InvitationDTO invitation, UserCreationJSONObject user)
+    public UserDTO createUserFromInvitation(final InvitationDTO invitation, final UserCreationJSONObject user)
             throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException, UserCreationException {
         Authentication authenticator = getInvitedUserAuthenticator(invitation.getLastModifiedUserId());
         SecurityContextHolder.getContext().setAuthentication(authenticator);
 
         // create the user
         UserDTO newUser = null;
-        
+
         try {
             newUser = userManager.getByName(user.getSubjectName());
             if (newUser == null) {
@@ -216,11 +218,10 @@ public class InvitationManagerImpl implements InvitationManager {
                 throw new InvalidArgumentsException(
                         "A user with the name " + user.getSubjectName() + " already exists.");
             }
-        } catch(UserRetrievalException ex) {
+        } catch (UserRetrievalException ex) {
             newUser = userManager.create(user);
         }
-       
-        
+
         try {
             handleInvitation(invitation, newUser);
 
@@ -239,7 +240,7 @@ public class InvitationManagerImpl implements InvitationManager {
 
     @Override
     @Transactional
-    public UserDTO confirmAccountEmail(InvitationDTO invitation) throws UserRetrievalException {
+    public UserDTO confirmAccountEmail(final InvitationDTO invitation) throws UserRetrievalException {
         Authentication authenticator = getInvitedUserAuthenticator(invitation.getLastModifiedUserId());
         SecurityContextHolder.getContext().setAuthentication(authenticator);
 
@@ -267,7 +268,7 @@ public class InvitationManagerImpl implements InvitationManager {
 
     @Override
     @Transactional
-    public UserDTO updateUserFromInvitation(InvitationDTO invitation, UserDTO toUpdate)
+    public UserDTO updateUserFromInvitation(final InvitationDTO invitation, final UserDTO toUpdate)
             throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException {
         User loggedInUser = gov.healthit.chpl.auth.Util.getCurrentUser();
 
@@ -298,14 +299,14 @@ public class InvitationManagerImpl implements InvitationManager {
      * gives the user the permissions listed in the invitation also adds the
      * user to any ACBs in the invitation the securitycontext must have a valid
      * authentication specified when this is called
-     * 
+     *
      * @param invitation
      * @param user
      * @throws EntityRetrievalException
      * @throws InvalidArgumentsException
      * @throws UserRetrievalException
      */
-    private void handleInvitation(InvitationDTO invitation, UserDTO user)
+    private void handleInvitation(final InvitationDTO invitation, final UserDTO user)
             throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException {
         CertificationBodyDTO userAcb = null;
         if (invitation.getAcbId() != null) {
@@ -329,16 +330,16 @@ public class InvitationManagerImpl implements InvitationManager {
                 UserPermissionDTO userPermission = userPermissionDao.findById(permission.getPermissionId());
                 try {
                     if (userPermission.getAuthority().equals("ROLE_ADMIN")) {
-                        userManager.grantAdmin(user.getName());
+                        userManager.grantAdmin(user.getUsername());
                     } else {
-                        userManager.grantRole(user.getName(), userPermission.getAuthority());
+                        userManager.grantRole(user.getUsername(), userPermission.getAuthority());
                     }
                 } catch (final UserPermissionRetrievalException ex) {
-                    LOGGER.error("Could not add role " + userPermission.getAuthority() + " for user " + user.getName(),
-                            ex);
+                    LOGGER.error("Could not add role " + userPermission.getAuthority()
+                    + " for user " + user.getUsername(), ex);
                 } catch (final UserManagementException mex) {
-                    LOGGER.error("Could not add role " + userPermission.getAuthority() + " for user " + user.getName(),
-                            mex);
+                    LOGGER.error("Could not add role " + userPermission.getAuthority()
+                    + " for user " + user.getUsername(), mex);
                 }
             }
         }
@@ -353,7 +354,7 @@ public class InvitationManagerImpl implements InvitationManager {
         }
     }
 
-    private Authentication getInvitedUserAuthenticator(Long id) {
+    private Authentication getInvitedUserAuthenticator(final Long id) {
         JWTAuthenticatedUser authenticator = new JWTAuthenticatedUser() {
 
             @Override

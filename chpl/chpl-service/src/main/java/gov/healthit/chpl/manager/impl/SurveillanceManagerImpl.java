@@ -10,7 +10,6 @@ import javax.persistence.EntityNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -65,7 +64,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceManagerImpl.class);
     @Autowired
     private Environment env;
-    
+
     @Autowired
     private SurveillanceDAO survDao;
     @Autowired
@@ -82,7 +81,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 
     @Override
     @Transactional(readOnly = true)
-    public Surveillance getById(Long survId) throws EntityRetrievalException {
+    public Surveillance getById(final Long survId) throws EntityRetrievalException {
         SurveillanceEntity surv = survDao.getSurveillanceById(survId);
         Surveillance result = convertToDomain(surv);
         validator.validate(result);
@@ -91,7 +90,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 
     @Override
     @Transactional(readOnly = true)
-    public Surveillance getByFriendlyIdAndProduct(Long certifiedProductId, String survFriendlyId) {
+    public Surveillance getByFriendlyIdAndProduct(final Long certifiedProductId, final String survFriendlyId) {
         SurveillanceEntity surv = survDao.getSurveillanceByCertifiedProductAndFriendlyId(certifiedProductId,
                 survFriendlyId);
         if (surv == null) {
@@ -105,7 +104,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Surveillance> getByCertifiedProduct(Long cpId) {
+    public List<Surveillance> getByCertifiedProduct(final Long cpId) {
         List<SurveillanceEntity> survResults = survDao.getSurveillanceByCertifiedProductId(cpId);
         List<Surveillance> results = new ArrayList<Surveillance>();
         if (survResults != null) {
@@ -120,7 +119,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 
     @Override
     @Transactional(readOnly = true)
-    public SurveillanceNonconformityDocument getDocumentById(Long docId, boolean getFileContents)
+    public SurveillanceNonconformityDocument getDocumentById(final Long docId, final boolean getFileContents)
             throws EntityRetrievalException {
         SurveillanceNonconformityDocumentationEntity docEntity = survDao.getDocumentById(docId);
 
@@ -135,7 +134,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') "
             + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-    public Long createSurveillance(Long acbId, Surveillance surv)
+    public Long createSurveillance(final Long acbId, final Surveillance surv)
             throws UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
         Long insertedId = null;
         checkSurveillanceAuthority(surv);
@@ -155,7 +154,8 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN') or " + "(hasRole('ROLE_ACB') "
             + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-    public Long addDocumentToNonconformity(Long acbId, Long nonconformityId, SurveillanceNonconformityDocument doc)
+    public Long addDocumentToNonconformity(final Long acbId, final Long nonconformityId,
+            final SurveillanceNonconformityDocument doc)
             throws EntityRetrievalException {
         Long insertedId = null;
         insertedId = survDao.insertNonconformityDocument(nonconformityId, doc);
@@ -166,7 +166,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') "
             + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-    public void updateSurveillance(Long acbId, Surveillance surv) throws EntityRetrievalException,
+    public void updateSurveillance(final Long acbId, final Surveillance surv) throws EntityRetrievalException,
             UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
         SurveillanceEntity dbSurvEntity = new SurveillanceEntity();
         try {
@@ -191,7 +191,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') "
             + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-    public void deleteSurveillance(Long acbId, Surveillance surv)
+    public void deleteSurveillance(final Long acbId, final Surveillance surv)
             throws EntityRetrievalException, SurveillanceAuthorityAccessDeniedException {
         checkSurveillanceAuthority(surv);
         survDao.deleteSurveillance(surv);
@@ -201,7 +201,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') "
             + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-    public void deleteNonconformityDocument(Long acbId, Long documentId) throws EntityRetrievalException {
+    public void deleteNonconformityDocument(final Long acbId, final Long documentId) throws EntityRetrievalException {
         survDao.deleteNonconformityDocument(documentId);
     }
 
@@ -209,7 +209,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('ROLE_ACB') "
             + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-    public List<Surveillance> getPendingByAcb(Long acbId) {
+    public List<Surveillance> getPendingByAcb(final Long acbId) {
         List<PendingSurveillanceEntity> pendingResults = survDao.getPendingSurveillanceByAcb(acbId);
         List<Surveillance> results = new ArrayList<Surveillance>();
         if (pendingResults != null) {
@@ -225,7 +225,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('ROLE_ACB') "
             + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-    public Surveillance getPendingById(Long acbId, Long survId, boolean includeDeleted)
+    public Surveillance getPendingById(final Long acbId, final Long survId, final boolean includeDeleted)
             throws EntityRetrievalException {
         PendingSurveillanceEntity pending = survDao.getPendingSurveillanceById(survId, includeDeleted);
         Surveillance surv = convertToDomain(pending);
@@ -236,7 +236,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     @Transactional
     @PreAuthorize("hasRole('ROLE_ACB') "
             + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-    public Long createPendingSurveillance(Long acbId, Surveillance surv) {
+    public Long createPendingSurveillance(final Long acbId, final Surveillance surv) {
         Long insertedId = null;
 
         try {
@@ -252,7 +252,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     @Transactional
     @PreAuthorize("hasRole('ROLE_ACB') "
             + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-    public void deletePendingSurveillance(Long acbId, Long survId, boolean isConfirmed)
+    public void deletePendingSurveillance(final Long acbId, final Long survId, final boolean isConfirmed)
             throws ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException,
             EntityCreationException {
         PendingSurveillanceEntity surv = survDao.getPendingSurveillanceById(survId, true);
@@ -284,7 +284,8 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     @Override
     @Transactional
     @PreAuthorize("hasRole('ROLE_ACB')")
-    public void deletePendingSurveillance(List<CertificationBodyDTO> userAcbs, Long survId, boolean isConfirmed)
+    public void deletePendingSurveillance(final List<CertificationBodyDTO> userAcbs,
+            final Long survId, final boolean isConfirmed)
             throws EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException,
             JsonProcessingException, EntityRetrievalException, EntityCreationException {
         PendingSurveillanceEntity surv = survDao.getPendingSurveillanceById(survId, true);
@@ -332,7 +333,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     @Transactional
     @PreAuthorize("hasRole('ROLE_ACB') "
             + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-    public boolean isPendingSurveillanceAvailableForUpdate(Long acbId, Long pendingSurvId)
+    public boolean isPendingSurveillanceAvailableForUpdate(final Long acbId, final Long pendingSurvId)
             throws EntityRetrievalException, ObjectMissingValidationException {
         PendingSurveillanceEntity pendingSurv = survDao.getPendingSurveillanceById(pendingSurvId, true);
         return isPendingSurveillanceAvailableForUpdate(acbId, pendingSurv);
@@ -342,9 +343,10 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     @Transactional
     @PreAuthorize("hasRole('ROLE_ACB') "
             + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-    public boolean isPendingSurveillanceAvailableForUpdate(Long acbId, PendingSurveillanceEntity pendingSurv)
+    public boolean isPendingSurveillanceAvailableForUpdate(final Long acbId,
+            final PendingSurveillanceEntity pendingSurv)
             throws EntityRetrievalException, ObjectMissingValidationException {
-        if (pendingSurv.getDeleted().booleanValue() == true) {
+        if (pendingSurv.getDeleted().booleanValue()) {
             ObjectMissingValidationException alreadyDeletedEx = new ObjectMissingValidationException();
             alreadyDeletedEx.getErrorMessages()
                     .add("This pending surveillance has already been confirmed or rejected by another user.");
@@ -356,8 +358,8 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
                 UserDTO lastModifiedUser = userDAO.getById(pendingSurv.getLastModifiedUser());
                 if (lastModifiedUser != null) {
                     Contact contact = new Contact();
-                    contact.setFirstName(lastModifiedUser.getFirstName());
-                    contact.setLastName(lastModifiedUser.getLastName());
+                    contact.setFullName(lastModifiedUser.getFullName());
+                    contact.setFriendlyName(lastModifiedUser.getFriendlyName());
                     contact.setEmail(lastModifiedUser.getEmail());
                     contact.setPhoneNumber(lastModifiedUser.getPhoneNumber());
                     contact.setTitle(lastModifiedUser.getTitle());
@@ -375,22 +377,22 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 
     @Override
     @Transactional(readOnly = true)
-    public void validate(Surveillance surveillance) {
+    public void validate(final Surveillance surveillance) {
         validator.validate(surveillance);
     }
 
     @Override
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
-    public File getProtectedDownloadFile(String filenameToDownload) throws IOException {
+    public File getProtectedDownloadFile(final String filenameToDownload) throws IOException {
         return getFileFromDownloadFolder(filenameToDownload);
     }
 
     @Override
-    public File getDownloadFile(String filenameToDownload) throws IOException {
+    public File getDownloadFile(final String filenameToDownload) throws IOException {
         return getFileFromDownloadFolder(filenameToDownload);
     }
 
-    private File getFileFromDownloadFolder(String filenameToDownload) throws IOException {
+    private File getFileFromDownloadFolder(final String filenameToDownload) throws IOException {
         String downloadFileLocation = env.getProperty("downloadFolderPath");
 
         File downloadFile = new File(downloadFileLocation + File.separator + filenameToDownload);
@@ -401,7 +403,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
         return downloadFile;
     }
 
-    private Surveillance convertToDomain(PendingSurveillanceEntity pr) {
+    private Surveillance convertToDomain(final PendingSurveillanceEntity pr) {
         Surveillance surv = new Surveillance();
         surv.setId(pr.getId());
         surv.setSurveillanceIdToReplace(pr.getSurvFriendlyIdToReplace());
@@ -475,8 +477,8 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
         return surv;
     }
 
-    private SurveillanceNonconformityDocument convertToDomain(SurveillanceNonconformityDocumentationEntity entity,
-            boolean getContents) {
+    private SurveillanceNonconformityDocument convertToDomain(final SurveillanceNonconformityDocumentationEntity entity,
+            final boolean getContents) {
         SurveillanceNonconformityDocument doc = new SurveillanceNonconformityDocument();
         doc.setId(entity.getId());
         doc.setFileType(entity.getFileType());
@@ -487,7 +489,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
         return doc;
     }
 
-    private Surveillance convertToDomain(SurveillanceEntity entity) {
+    private Surveillance convertToDomain(final SurveillanceEntity entity) {
         Surveillance surv = new Surveillance();
         surv.setId(entity.getId());
         surv.setFriendlyId(entity.getFriendlyId());
@@ -595,7 +597,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
         return surv;
     }
 
-    private void checkSurveillanceAuthority(Surveillance surv) throws SurveillanceAuthorityAccessDeniedException {
+    private void checkSurveillanceAuthority(final Surveillance surv) throws SurveillanceAuthorityAccessDeniedException {
         Boolean hasOncAdmin = Util.isUserRoleAdmin();
         Boolean hasAcbAdmin = Util.isUserRoleAcbAdmin();
         if (StringUtils.isEmpty(surv.getAuthority())) {
@@ -618,7 +620,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
             // Cannot have surveillance authority as ACB for user lacking ONC
             // and ACB roles
             else if (surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB)) {
-                if (!hasOncAdmin && !hasAcbAdmin ) {
+                if (!hasOncAdmin && !hasAcbAdmin) {
                     String errorMsg = "User must have ONC or ACB roles for a surveillance authority created by ACB";
                     LOGGER.error(errorMsg);
                     throw new SurveillanceAuthorityAccessDeniedException(errorMsg);
@@ -627,7 +629,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
         }
     }
 
-    private void updateNullAuthority(Surveillance surv) {
+    private void updateNullAuthority(final Surveillance surv) {
         Boolean hasOncAdmin = Util.isUserRoleAdmin();
         Boolean hasAcbAdmin = Util.isUserRoleAcbAdmin();
         if (StringUtils.isEmpty(surv.getAuthority())) {

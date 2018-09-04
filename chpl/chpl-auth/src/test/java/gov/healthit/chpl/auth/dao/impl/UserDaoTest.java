@@ -2,7 +2,6 @@ package gov.healthit.chpl.auth.dao.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Set;
@@ -36,152 +35,152 @@ import gov.healthit.chpl.auth.user.UserRetrievalException;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.auth.CHPLAuthenticationSecurityTestConfig.class })
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
-		TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
+    TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 @DatabaseSetup("classpath:data/testData.xml")
 public class UserDaoTest {
 
-	@Autowired
-	private UserDAO dao;
-	@Autowired
-	private UserPermissionDAO permDao;
-	@Autowired
-	private BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Autowired
+    private UserDAO dao;
+    @Autowired
+    private UserPermissionDAO permDao;
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-	private static final String ROLE_ACB = "ROLE_ACB";
-	private static final String ROLE_ONC_STAFF = "ROLE_ONC_STAFF";
-	private static JWTAuthenticatedUser authUser;
+    private static final String ROLE_ACB = "ROLE_ACB";
+    private static final String ROLE_ONC_STAFF = "ROLE_ONC_STAFF";
+    private static JWTAuthenticatedUser authUser;
 
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-		authUser = new JWTAuthenticatedUser();
-		authUser.setFirstName("Administrator");
-		authUser.setId(-2L);
-		authUser.setLastName("Administrator");
-		authUser.setSubjectName("admin");
-		authUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
-		SecurityContextHolder.getContext().setAuthentication(authUser);
-	}
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        authUser = new JWTAuthenticatedUser();
+        authUser.setFullName("Administrator");
+        authUser.setId(-2L);
+        authUser.setFriendlyName("Administrator");
+        authUser.setSubjectName("admin");
+        authUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+        SecurityContextHolder.getContext().setAuthentication(authUser);
+    }
 
-	@Test(expected = UserRetrievalException.class)
-	public void testCreateAndDeleteUser() throws UserCreationException, UserRetrievalException {
-		String password = "password";
-		String encryptedPassword = bCryptPasswordEncoder.encode(password);
+    @Test(expected = UserRetrievalException.class)
+    public void testCreateAndDeleteUser() throws UserCreationException, UserRetrievalException {
+        String password = "password";
+        String encryptedPassword = bCryptPasswordEncoder.encode(password);
 
-		UserDTO testUser = new UserDTO();
-		testUser.setAccountEnabled(true);
-		testUser.setAccountExpired(false);
-		testUser.setAccountLocked(false);
-		testUser.setCredentialsExpired(false);
-		testUser.setEmail("kekey@ainq.com");
-		testUser.setFirstName("Katy");
-		testUser.setLastName("Ekey-Test");
-		testUser.setPhoneNumber("443-745-0987");
-		testUser.setSubjectName("testUser");
-		testUser.setTitle("Developer");
-		testUser = dao.create(testUser, encryptedPassword);
+        UserDTO testUser = new UserDTO();
+        testUser.setAccountEnabled(true);
+        testUser.setAccountExpired(false);
+        testUser.setAccountLocked(false);
+        testUser.setCredentialsExpired(false);
+        testUser.setEmail("kekey@ainq.com");
+        testUser.setFullName("Katy");
+        testUser.setFriendlyName("Ekey-Test");
+        testUser.setPhoneNumber("443-745-0987");
+        testUser.setSubjectName("testUser");
+        testUser.setTitle("Developer");
+        testUser = dao.create(testUser, encryptedPassword);
 
-		assertNotNull(testUser.getId());
-		assertEquals("testUser", testUser.getSubjectName());
+        assertNotNull(testUser.getId());
+        assertEquals("testUser", testUser.getSubjectName());
 
-		Long insertedUserId = testUser.getId();
-		dao.delete(insertedUserId);
+        Long insertedUserId = testUser.getId();
+        dao.delete(insertedUserId);
 
-		dao.getById(insertedUserId);
-	}
+        dao.getById(insertedUserId);
+    }
 
-	@Test
-	public void testAddOncStaffPermission() throws UserRetrievalException, UserPermissionRetrievalException {
-		UserDTO toEdit = dao.getByName("TESTUSER");
-		assertNotNull(toEdit);
+    @Test
+    public void testAddOncStaffPermission() throws UserRetrievalException, UserPermissionRetrievalException {
+        UserDTO toEdit = dao.getByName("TESTUSER");
+        assertNotNull(toEdit);
 
-		dao.removePermission(toEdit.getSubjectName(), ROLE_ONC_STAFF);
-		dao.addPermission(toEdit.getSubjectName(), ROLE_ONC_STAFF);
+        dao.removePermission(toEdit.getSubjectName(), ROLE_ONC_STAFF);
+        dao.addPermission(toEdit.getSubjectName(), ROLE_ONC_STAFF);
 
-		Set<UserPermissionDTO> permissions = permDao.findPermissionsForUser(toEdit.getId());
-		assertNotNull(permissions);
-		boolean hasOncStaffRole = false;
-		for (UserPermissionDTO perm : permissions) {
-			if (ROLE_ONC_STAFF.equals(perm.toString())) {
-				hasOncStaffRole = true;
-			}
-		}
-		assertTrue(hasOncStaffRole);
-	}
+        Set<UserPermissionDTO> permissions = permDao.findPermissionsForUser(toEdit.getId());
+        assertNotNull(permissions);
+        boolean hasOncStaffRole = false;
+        for (UserPermissionDTO perm : permissions) {
+            if (ROLE_ONC_STAFF.equals(perm.toString())) {
+                hasOncStaffRole = true;
+            }
+        }
+        assertTrue(hasOncStaffRole);
+    }
 
-	@Test
-	public void testAddAcbAdminPermission() throws UserRetrievalException, UserPermissionRetrievalException {
-		UserDTO toEdit = dao.getByName("TESTUSER");
-		assertNotNull(toEdit);
+    @Test
+    public void testAddAcbAdminPermission() throws UserRetrievalException, UserPermissionRetrievalException {
+        UserDTO toEdit = dao.getByName("TESTUSER");
+        assertNotNull(toEdit);
 
-		dao.removePermission(toEdit.getSubjectName(), ROLE_ACB);
-		dao.addPermission(toEdit.getSubjectName(), ROLE_ACB);
+        dao.removePermission(toEdit.getSubjectName(), ROLE_ACB);
+        dao.addPermission(toEdit.getSubjectName(), ROLE_ACB);
 
-		Set<UserPermissionDTO> permissions = permDao.findPermissionsForUser(toEdit.getId());
-		assertNotNull(permissions);
-		boolean hasAcbStaffRole = false;
-		for (UserPermissionDTO perm : permissions) {
-			if (ROLE_ACB.equals(perm.toString())) {
-				hasAcbStaffRole = true;
-			}
-		}
-		assertTrue(hasAcbStaffRole);
-	}
+        Set<UserPermissionDTO> permissions = permDao.findPermissionsForUser(toEdit.getId());
+        assertNotNull(permissions);
+        boolean hasAcbStaffRole = false;
+        for (UserPermissionDTO perm : permissions) {
+            if (ROLE_ACB.equals(perm.toString())) {
+                hasAcbStaffRole = true;
+            }
+        }
+        assertTrue(hasAcbStaffRole);
+    }
 
-	@Test
-	public void testAddInvalidPermission() throws UserRetrievalException, UserPermissionRetrievalException {
-		UserDTO toEdit = dao.getByName("TESTUSER");
-		assertNotNull(toEdit);
+    @Test
+    public void testAddInvalidPermission() throws UserRetrievalException, UserPermissionRetrievalException {
+        UserDTO toEdit = dao.getByName("TESTUSER");
+        assertNotNull(toEdit);
 
-		boolean caught = false;
-		try {
-			dao.addPermission(toEdit.getSubjectName(), "BOGUS");
-		} catch (UserPermissionRetrievalException ex) {
-			caught = true;
-		}
+        boolean caught = false;
+        try {
+            dao.addPermission(toEdit.getSubjectName(), "BOGUS");
+        } catch (UserPermissionRetrievalException ex) {
+            caught = true;
+        }
 
-		assertTrue(caught);
-	}
+        assertTrue(caught);
+    }
 
-	@Test
-	public void testFindUser() {
-		UserDTO toFind = new UserDTO();
-		toFind.setSubjectName("TESTUSER");
-		toFind.setFirstName("TEST");
-		toFind.setLastName("USER");
-		toFind.setEmail("test@ainq.com");
-		toFind.setPhoneNumber("(301) 560-6999");
-		toFind.setTitle("employee");
+    @Test
+    public void testFindUser() {
+        UserDTO toFind = new UserDTO();
+        toFind.setSubjectName("TESTUSER");
+        toFind.setFullName("TEST");
+        toFind.setFriendlyName("USER");
+        toFind.setEmail("test@ainq.com");
+        toFind.setPhoneNumber("(301) 560-6999");
+        toFind.setTitle("employee");
 
-		UserDTO found = dao.findUser(toFind);
-		assertNotNull(found);
-		assertNotNull(found.getId());
-		assertEquals(1, found.getId().longValue());
+        UserDTO found = dao.findUser(toFind);
+        assertNotNull(found);
+        assertNotNull(found.getId());
+        assertEquals(1, found.getId().longValue());
 
-	}
+    }
 
-	/**
-	 * Given the DAO is called 
-	 * When the passed in user id has been deleted 
-	 * Then null is returned
-	 * 
-	 * @throws UserRetrievalException
-	 */
-	@Test(expected = UserRetrievalException.class)
-	public void testGetById_returnsNullForDeletedUser() throws UserRetrievalException {
-		dao.getById(-3L);
-	}
+    /**
+     * Given the DAO is called 
+     * When the passed in user id has been deleted 
+     * Then null is returned
+     * 
+     * @throws UserRetrievalException
+     */
+    @Test(expected = UserRetrievalException.class)
+    public void testGetById_returnsNullForDeletedUser() throws UserRetrievalException {
+        dao.getById(-3L);
+    }
 
-	/**
-	 * Given the DAO is called 
-	 * When the passed in user id is valid/active 
-	 * Then a result is returned
-	 * 
-	 * @throws UserRetrievalException
-	 */
-	@Test
-	public void testGetById_returnsResultForActiveUser() throws UserRetrievalException {
-		UserDTO userDto = null;
-		userDto = dao.getById(-2L);
-		assertTrue(userDto != null);
-	}
+    /**
+     * Given the DAO is called 
+     * When the passed in user id is valid/active 
+     * Then a result is returned
+     * 
+     * @throws UserRetrievalException
+     */
+    @Test
+    public void testGetById_returnsResultForActiveUser() throws UserRetrievalException {
+        UserDTO userDto = null;
+        userDto = dao.getById(-2L);
+        assertTrue(userDto != null);
+    }
 }

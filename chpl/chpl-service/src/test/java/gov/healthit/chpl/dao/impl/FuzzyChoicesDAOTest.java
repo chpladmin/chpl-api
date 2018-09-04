@@ -50,7 +50,7 @@ public class FuzzyChoicesDAOTest {
 	@BeforeClass
 	public static void setUpClass() throws Exception {
 		authUser = new JWTAuthenticatedUser();
-		authUser.setFirstName("Admin");
+		authUser.setFullName("Admin");
 		authUser.setId(-2L);
 		authUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 	}

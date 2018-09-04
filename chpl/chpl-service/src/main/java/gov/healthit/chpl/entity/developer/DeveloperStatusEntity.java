@@ -33,7 +33,7 @@ public class DeveloperStatusEntity implements Cloneable, Serializable {
     private DeveloperStatusType name;
 
     @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false)
+    @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
     private Date creationDate;
 
     @Basic(optional = false)
@@ -42,7 +42,7 @@ public class DeveloperStatusEntity implements Cloneable, Serializable {
     private Boolean deleted;
 
     @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false)
+    @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
     private Date lastModifiedDate;
 
     @Basic(optional = false)

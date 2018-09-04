@@ -17,7 +17,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
@@ -177,4 +176,20 @@ public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements Enviro
         return new MeaningfulUseUploadJob();
     }
 
+    /**
+     * Get a task executor.
+     * @return TaskExecutor object
+     */
+    @Bean(name = "jobAsyncDataExecutor")
+    public TaskExecutor specificTaskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(3);
+        executor.setMaxPoolSize(6);
+        //executor.setCorePoolSize(Integer.parseInt(props.getProperty("corePoolSize")));
+        //executor.setMaxPoolSize(Integer.parseInt(props.getProperty("maxPoolSize")));
+        //executor.setQueueCapacity(11);
+        executor.setThreadNamePrefix("jobDataThread");
+        executor.initialize();
+        return executor;
+    }
 }

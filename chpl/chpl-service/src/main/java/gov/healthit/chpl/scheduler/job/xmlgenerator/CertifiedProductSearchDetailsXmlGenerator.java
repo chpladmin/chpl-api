@@ -36,8 +36,12 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
                 sw.writeStartElement("certificationEdition");
                 for (Entry<String, Object> entry : cp.getCertificationEdition().entrySet()) {
                     sw.writeStartElement("entry");
-                    createSimpleElement(entry.getKey(), "key", sw);
-                    createSimpleElement(entry.getValue().toString(), "value", sw);
+                    if (entry.getKey() != null) {
+                        createSimpleElement(entry.getKey(), "key", sw);
+                    }
+                    if (entry.getValue() != null) {
+                        createSimpleElement(entry.getValue().toString(), "value", sw);
+                    }
                     sw.writeEndElement();
                 }
                 sw.writeEndElement();
@@ -48,8 +52,12 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
                 sw.writeStartElement("certifyingBody");
                 for (Entry<String, Object> entry : cp.getCertifyingBody().entrySet()) {
                     sw.writeStartElement("entry");
-                    createSimpleElement(entry.getKey(), "key", sw);
-                    createSimpleElement(entry.getValue().toString(), "value", sw);
+                    if (entry.getKey() != null) {
+                        createSimpleElement(entry.getKey(), "key", sw);
+                    }
+                    if (entry.getValue() != null) {
+                        createSimpleElement(entry.getValue().toString(), "value", sw);
+                    }
                     sw.writeEndElement();
                 }
                 sw.writeEndElement();
@@ -59,8 +67,12 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
                 sw.writeStartElement("classificationType");
                 for (Entry<String, Object> entry : cp.getClassificationType().entrySet()) {
                     sw.writeStartElement("entry");
-                    createSimpleElement(entry.getKey(), "key", sw);
-                    createSimpleElement(entry.getValue().toString(), "value", sw);
+                    if (entry.getKey() != null) {
+                        createSimpleElement(entry.getKey(), "key", sw);
+                    }
+                    if (entry.getValue() != null) {
+                        createSimpleElement(entry.getValue().toString(), "value", sw);
+                    }
                     sw.writeEndElement();
                 }
                 sw.writeEndElement();
@@ -84,8 +96,12 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
                 sw.writeStartElement("practiceType");
                 for (Entry<String, Object> entry : cp.getPracticeType().entrySet()) {
                     sw.writeStartElement("entry");
-                    createSimpleElement(entry.getKey(), "key", sw);
-                    createSimpleElement(entry.getValue().toString(), "value", sw);
+                    if (entry.getKey() != null) {
+                        createSimpleElement(entry.getKey(), "key", sw);
+                    }
+                    if (entry.getValue() != null) {
+                        createSimpleElement(entry.getValue().toString(), "value", sw);
+                    }
                     sw.writeEndElement();
                 }
                 sw.writeEndElement();

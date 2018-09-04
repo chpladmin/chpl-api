@@ -73,8 +73,8 @@ public class UserAuthenticatorTest {
 		
 		User user = jwtUserConverter.getAuthenticatedUser(jwt);
 		assertEquals(userDTO.getSubjectName(), user.getSubjectName());
-		assertEquals(userDTO.getFirstName(), user.getFirstName());
-		assertEquals(userDTO.getLastName(), user.getLastName());
+		assertEquals(userDTO.getFullName(), user.getFullName());
+		assertEquals(userDTO.getFriendlyName(), user.getFriendlyName());
 		
 	}
 	
@@ -97,9 +97,9 @@ public class UserAuthenticatorTest {
 		
 		JWTAuthenticatedUser adminUser;
 		adminUser = new JWTAuthenticatedUser();
-		adminUser.setFirstName("Administrator");
+		adminUser.setFullName("Administrator");
 		adminUser.setId(-2L);
-		adminUser.setLastName("Administrator");
+		adminUser.setFriendlyName("Administrator");
 		adminUser.setSubjectName("admin");
 		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 		
@@ -110,8 +110,8 @@ public class UserAuthenticatorTest {
 		
 		User user = jwtUserConverter.getAuthenticatedUser(jwt);
 		assertEquals(adminUser.getSubjectName(), user.getSubjectName());
-		assertEquals(adminUser.getFirstName(), user.getFirstName());
-		assertEquals(adminUser.getLastName(), user.getLastName());
+		assertEquals(adminUser.getFullName(), user.getFullName());
+		assertEquals(adminUser.getFriendlyName(), user.getFriendlyName());
 		
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}

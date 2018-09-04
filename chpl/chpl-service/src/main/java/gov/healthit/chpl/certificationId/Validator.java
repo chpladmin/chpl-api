@@ -11,7 +11,6 @@ import java.util.TreeSet;
 import gov.healthit.chpl.dto.CQMMetDTO;
 
 public abstract class Validator {
-
     protected Map<String, Integer> criteriaMet = new HashMap<String, Integer>(100);
     protected Map<String, Integer> cqmsMet = new HashMap<String, Integer>(100);
     protected Map<String, Integer> domainsMet = new HashMap<String, Integer>(10);

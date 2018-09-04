@@ -15,7 +15,7 @@ public class TestTaskXmlGenerator extends XmlGenerator {
         if (tasks != null) {
             sw.writeStartElement(rootNodeName);
             for (TestTask task : tasks) {
-                add(task, "", sw);
+                add(task, "tasks", sw);
             }
             sw.writeEndElement();
         }

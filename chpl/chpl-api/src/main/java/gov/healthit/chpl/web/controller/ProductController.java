@@ -233,8 +233,8 @@ public class ProductController {
                 if (productInfo.getProduct().getContact() != null) {
                     ContactDTO contact = new ContactDTO();
                     contact.setId(productInfo.getProduct().getContact().getContactId());
-                    contact.setFirstName(productInfo.getProduct().getContact().getFirstName());
-                    contact.setLastName(productInfo.getProduct().getContact().getLastName());
+                    contact.setFullName(productInfo.getProduct().getContact().getFullName());
+                    contact.setFriendlyName(productInfo.getProduct().getContact().getFriendlyName());
                     contact.setTitle(productInfo.getProduct().getContact().getTitle());
                     contact.setEmail(productInfo.getProduct().getContact().getEmail());
                     contact.setPhoneNumber(productInfo.getProduct().getContact().getPhoneNumber());

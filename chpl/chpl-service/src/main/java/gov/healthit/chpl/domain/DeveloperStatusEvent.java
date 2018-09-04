@@ -39,6 +39,13 @@ public class DeveloperStatusEvent implements Serializable {
     @XmlElement(required = true)
     private Date statusDate;
 
+    /**
+     * The reason for this status change. 
+     * It is required of the status changed to 'Under Certification Ban by ONC'
+     */
+    @XmlElement(required = false)
+    private String reason;
+
     public DeveloperStatusEvent() {
     }
 
@@ -47,6 +54,7 @@ public class DeveloperStatusEvent implements Serializable {
         this.developerId = dto.getDeveloperId();
         this.status = new DeveloperStatus(dto.getStatus());
         this.statusDate = dto.getStatusDate();
+        this.reason = dto.getReason();
     }
 
     public Long getId() {
@@ -79,5 +87,13 @@ public class DeveloperStatusEvent implements Serializable {
 
     public void setStatusDate(final Date statusDate) {
         this.statusDate = statusDate;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 }

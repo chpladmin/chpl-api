@@ -16,16 +16,14 @@ import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.BeansException;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
-import gov.healthit.chpl.scheduler.JobConfig;
 import gov.healthit.chpl.scheduler.SchedulerCertifiedProductSearchDetailsAsync;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProduct2014CsvPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductCsvPresenter;
@@ -38,26 +36,32 @@ import gov.healthit.chpl.scheduler.presenter.CertifiedProductXmlPresenter;
  */
 @DisallowConcurrentExecution
 public class CertifiedProductDownloadableResourceCreatorJob extends DownloadableResourceCreatorJob {
-    private static final Logger LOGGER = LogManager.getLogger(CertifiedProductDownloadableResourceCreatorJob.class);
+    private static final Logger LOGGER = LogManager.getLogger("certifiedProductDownloadableResourceCreatorJobLogger");
     private static final int MILLIS_PER_SECOND = 1000;
     private String edition;
-    private AbstractApplicationContext context;
 
+    @Autowired
+    private SchedulerCertifiedProductSearchDetailsAsync schedulerCertifiedProductSearchDetailsAsync;
+    
+    //@Autowired
+    //private CertifiedProductDetailsManager certifiedProductDetailsManager;
+    
     /**
      * Default constructor.
      * @throws Exception if issue with context
      */
     public CertifiedProductDownloadableResourceCreatorJob() throws Exception {
         super();
-        setLocalContext();
-        context = new AnnotationConfigApplicationContext(JobConfig.class);
-        initiateSpringBeans(context);
     }
 
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
+        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+        schedulerCertifiedProductSearchDetailsAsync.setLogger(LOGGER);
+        
         Date start = new Date();
         edition = jobContext.getMergedJobDataMap().getString("edition");
+        LOGGER.info("********* Starting the Certified Product Downloadable Resource Creator job for " + edition + ". *********");
         try {
             List<CertifiedProductDetailsDTO> listings = getRelevantListings();
 
@@ -77,7 +81,7 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         Date end = new Date();
         LOGGER.info("Time to create file(s) for " + edition + " edition: "
                 + ((end.getTime() - start.getTime()) / MILLIS_PER_SECOND) + " seconds");
-        context.close();
+        LOGGER.info("********* Cmpleted the Certified Product Downloadable Resource Creator job for " + edition + ". *********");
     }
 
     private List<CertifiedProductDetailsDTO> getRelevantListings() throws EntityRetrievalException {
@@ -98,8 +102,7 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         
         for (CertifiedProductDetailsDTO currListing : listings) {
             try {
-                futures.add(cpsdAsync.getCertifiedProductDetail(currListing.getId(),
-                        getCertifiedProductDetailsManager()));
+                futures.add(cpsdAsync.getCertifiedProductDetail(currListing.getId(), getCpdManager()));
             } catch (EntityRetrievalException e) {
                 LOGGER.error("Could not retrieve certified product details for id: " + currListing.getId(), e);
             }
@@ -207,11 +210,6 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
 
     private SchedulerCertifiedProductSearchDetailsAsync getCertifiedProductDetailsAsyncRetrievalHelper()
             throws BeansException {
-        return (SchedulerCertifiedProductSearchDetailsAsync)
-                getApplicationContext().getBean("schedulerCertifiedProductSearchDetailsAsync");
-    }
-
-    private CertifiedProductDetailsManager getCertifiedProductDetailsManager() throws BeansException {
-        return (CertifiedProductDetailsManager) getApplicationContext().getBean("certifiedProductDetailsManager");
+        return this.schedulerCertifiedProductSearchDetailsAsync;
     }
 }

@@ -28,7 +28,8 @@ import gov.healthit.chpl.entity.CertificationStatusType;
 @Component
 @EnableAsync
 public class AsynchronousSummaryStatistics {
-    private static final Logger LOGGER = LogManager.getLogger(AsynchronousSummaryStatistics.class);
+    //private static final Logger LOGGER = LogManager.getLogger(AsynchronousSummaryStatistics.class);
+    private Logger logger;
 
     /**
      * Total # of Unique Developers (Regardless of Edition).
@@ -529,5 +530,44 @@ public class AsynchronousSummaryStatistics {
             final DateRange dateRange) {
         Long total = surveillanceStatisticsDAO.getTotalClosedNonconformities(dateRange);
         return new AsyncResult<Long>(total);
+    }
+    
+    /**
+     * Open NCs by ACB.
+     * @param surveillanceStatisticsDAO DAO that provides access to surveillance statistics
+     * @param dateRange the range of time to get statistics from
+     * @return the statistic
+     */
+    @Async("jobAsyncDataExecutor")
+    @Transactional
+    public Future<List<CertifiedBodyStatistics>> getTotalOpenNonconformitiesByAcb(final SurveillanceStatisticsDAO surveillanceStatisticsDAO,
+            final DateRange dateRange) {
+        List<CertifiedBodyStatistics> totals = surveillanceStatisticsDAO.getTotalOpenNonconformitiesByAcb(dateRange);
+        return new AsyncResult<List<CertifiedBodyStatistics>>(totals);
+    }
+    
+    /**
+     * Open NCs by ACB.
+     * @param surveillanceStatisticsDAO DAO that provides access to surveillance statistics
+     * @param dateRange the range of time to get statistics from
+     * @return the statistic
+     */
+    @Async("jobAsyncDataExecutor")
+    @Transactional
+    public Future<List<CertifiedBodyStatistics>> getTotalOpenSurveillancesByAcb(final SurveillanceStatisticsDAO surveillanceStatisticsDAO,
+            final DateRange dateRange) {
+        List<CertifiedBodyStatistics> totals = surveillanceStatisticsDAO.getTotalOpenSurveillanceActivitiesByAcb(dateRange);
+        return new AsyncResult<List<CertifiedBodyStatistics>>(totals);
+    }
+    
+    public void setLogger(Logger logger) {
+        this.logger = logger;
+    }
+    
+    public Logger getLogger() {
+        if (logger == null) {
+            logger = LogManager.getLogger(AsynchronousSummaryStatistics.class);
+        }
+        return logger;
     }
 }
