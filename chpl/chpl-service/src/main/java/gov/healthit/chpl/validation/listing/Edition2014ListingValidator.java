@@ -12,11 +12,11 @@ import gov.healthit.chpl.validation.listing.reviewer.CertificationStatusReviewer
 import gov.healthit.chpl.validation.listing.reviewer.ChplNumberReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.DeveloperStatusReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.FieldLengthReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.InheritedCertificationStatusReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.SedG3Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestFunctionalityReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestToolReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.TestingLabReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnattestedCriteriaWithDataReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnsupportedCharacterReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UrlReviewer;
@@ -33,10 +33,6 @@ public abstract class Edition2014ListingValidator extends Validator {
     @Autowired
     @Qualifier("chplNumberReviewer")
     private ChplNumberReviewer chplNumberReviewer;
-
-    @Autowired
-    @Qualifier("icsReviewer")
-    private InheritedCertificationStatusReviewer icsReviewer;
 
     @Autowired
     @Qualifier("developerStatusReviewer")
@@ -57,6 +53,10 @@ public abstract class Edition2014ListingValidator extends Validator {
     @Autowired
     @Qualifier("requiredData2014Reviewer")
     private RequiredData2014Reviewer requiredFieldReviewer;
+
+    @Autowired
+    @Qualifier("testingLabReviewer")
+    private TestingLabReviewer testingLabReviewer;
 
     @Autowired
     @Qualifier("sedG3Reviewer")
@@ -93,11 +93,11 @@ public abstract class Edition2014ListingValidator extends Validator {
         if (reviewers == null) {
             reviewers = new ArrayList<Reviewer>();
             reviewers.add(chplNumberReviewer);
-            reviewers.add(icsReviewer);
             reviewers.add(devStatusReviewer);
             reviewers.add(unsupportedCharacterReviewer);
             reviewers.add(fieldLengthReviewer);
             reviewers.add(requiredFieldReviewer);
+            reviewers.add(testingLabReviewer);
             reviewers.add(validDataReviewer);
             reviewers.add(sedG3Reviewer);
             reviewers.add(certStatusReviewer);

@@ -14,7 +14,7 @@ import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 @Component("legacyTestToolReviewer")
 public class LegacyTestToolReviewer implements Reviewer {
     @Autowired TestToolDAO testToolDao;
-    
+
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         for (CertificationResult cert : listing.getCertificationResults()) {

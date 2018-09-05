@@ -26,9 +26,6 @@ import org.quartz.TriggerKey;
 import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -155,19 +152,20 @@ import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Service("certifiedProductManager")
 public class CertifiedProductManagerImpl implements CertifiedProductManager {
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductManagerImpl.class);
 
-    @Autowired
-    private MessageSource messageSource;
+    @Autowired private ErrorMessageUtil msgUtil;
 
     @Autowired
     private CertifiedProductDAO cpDao;
@@ -1207,8 +1205,13 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             statusHistoryToAdd.setDeveloperId(cpDeveloper.getId());
             statusHistoryToAdd.setStatus(newDevStatusDto);
             statusHistoryToAdd.setStatusDate(new Date());
+            statusHistoryToAdd.setReason(msgUtil.getMessage("developer.statusAutomaticallyChanged"));
             cpDeveloper.getStatusEvents().add(statusHistoryToAdd);
-            developerManager.update(cpDeveloper);
+            try {
+                developerManager.update(cpDeveloper);
+            } catch(MissingReasonException ignore) {
+                //reason will never be missing since we set it above
+            }
         }
 
         CertifiedProductDTO dtoToUpdate = new CertifiedProductDTO(updatedListing);
@@ -1786,28 +1789,21 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             statusEventDto.setEventDate(new Date(toAdd.getEventDate()));
             statusEventDto.setReason(toAdd.getReason());
             if (toAdd.getStatus() == null) {
-                String msg = String.format(messageSource.getMessage(
-                        new DefaultMessageSourceResolvable(
-                                "listing.missingCertificationStatus"),
-                        LocaleContextHolder.getLocale()));
+                String msg = msgUtil.getMessage("listing.missingCertificationStatus");
                 throw new EntityRetrievalException(msg);
             } else if (toAdd.getStatus().getId() != null) {
                 CertificationStatusDTO statusDto = certStatusDao.getById(toAdd.getStatus().getId());
                 if (statusDto == null) {
-                    String msg = String.format(messageSource.getMessage(
-                            new DefaultMessageSourceResolvable(
-                                    "listing.badCertificationStatusId"),
-                            LocaleContextHolder.getLocale()), toAdd.getStatus().getId());
+                    String msg = msgUtil.getMessage("listing.badCertificationStatusId", 
+                            toAdd.getStatus().getId()); 
                     throw new EntityRetrievalException(msg);
                 }
                 statusEventDto.setStatus(statusDto);
             } else if (!StringUtils.isEmpty(toAdd.getStatus().getName())) {
                 CertificationStatusDTO statusDto = certStatusDao.getByStatusName(toAdd.getStatus().getName());
                 if (statusDto == null) {
-                    String msg = String.format(messageSource.getMessage(
-                            new DefaultMessageSourceResolvable(
-                                    "listing.badCertificationStatusName"),
-                            LocaleContextHolder.getLocale()), toAdd.getStatus().getName());
+                    String msg = msgUtil.getMessage("listing.badCertificationStatusName",
+                            toAdd.getStatus().getName()); 
                     throw new EntityRetrievalException(msg);
                 }
                 statusEventDto.setStatus(statusDto);
@@ -1836,28 +1832,21 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                 statusEventDto.setEventDate(new Date(cseToUpdate.getEventDate()));
                 statusEventDto.setReason(cseToUpdate.getReason());
                 if (cseToUpdate.getStatus() == null) {
-                    String msg = String.format(messageSource.getMessage(
-                            new DefaultMessageSourceResolvable(
-                                    "listing.missingCertificationStatus"),
-                            LocaleContextHolder.getLocale()));
+                    String msg = msgUtil.getMessage("listing.missingCertificationStatus"); 
                     throw new EntityRetrievalException(msg);
                 } else if (cseToUpdate.getStatus().getId() != null) {
                     CertificationStatusDTO statusDto = certStatusDao.getById(cseToUpdate.getStatus().getId());
                     if (statusDto == null) {
-                        String msg = String.format(messageSource.getMessage(
-                                new DefaultMessageSourceResolvable(
-                                        "listing.badCertificationStatusId"),
-                                LocaleContextHolder.getLocale()), cseToUpdate.getStatus().getId());
+                        String msg = msgUtil.getMessage("listing.badCertificationStatusId",
+                                cseToUpdate.getStatus().getId()); 
                         throw new EntityRetrievalException(msg);
                     }
                     statusEventDto.setStatus(statusDto);
                 } else if (!StringUtils.isEmpty(cseToUpdate.getStatus().getName())) {
                     CertificationStatusDTO statusDto = certStatusDao.getByStatusName(cseToUpdate.getStatus().getName());
                     if (statusDto == null) {
-                        String msg = String.format(messageSource.getMessage(
-                                new DefaultMessageSourceResolvable(
-                                        "listing.badCertificationStatusName"),
-                                LocaleContextHolder.getLocale()), cseToUpdate.getStatus().getName());
+                        String msg = msgUtil.getMessage("listing.badCertificationStatusName",
+                                cseToUpdate.getStatus().getName());
                         throw new EntityRetrievalException(msg);
                     }
                     statusEventDto.setStatus(statusDto);

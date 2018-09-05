@@ -39,6 +39,9 @@ public class DeveloperStatusEventEntity implements Cloneable, Serializable {
     @JoinColumn(name = "vendor_status_id", insertable = false, updatable = false)
     private DeveloperStatusEntity developerStatus;
 
+    @Column(name = "reason")
+    private String reason;
+    
     @Column(name = "status_date")
     private Date statusDate;
     @Column(name = "deleted")
@@ -131,5 +134,13 @@ public class DeveloperStatusEventEntity implements Cloneable, Serializable {
 
     public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 }

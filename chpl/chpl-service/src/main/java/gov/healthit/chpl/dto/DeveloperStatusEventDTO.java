@@ -3,6 +3,9 @@ package gov.healthit.chpl.dto;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.apache.commons.lang.ObjectUtils;
+import org.springframework.util.StringUtils;
+
 import gov.healthit.chpl.entity.developer.DeveloperStatusEventEntity;
 
 public class DeveloperStatusEventDTO implements Serializable {
@@ -12,6 +15,7 @@ public class DeveloperStatusEventDTO implements Serializable {
     private Long developerId;
     private DeveloperStatusDTO status;
     private Date statusDate;
+    private String reason;
 
     public DeveloperStatusEventDTO() {
     }
@@ -22,6 +26,7 @@ public class DeveloperStatusEventDTO implements Serializable {
         this.developerId = entity.getDeveloperId();
         this.status = new DeveloperStatusDTO(entity.getDeveloperStatus());
         this.statusDate = entity.getStatusDate();
+        this.reason = entity.getReason();
     }
 
     public Long getId() {
@@ -56,4 +61,20 @@ public class DeveloperStatusEventDTO implements Serializable {
         this.status = status;
     }
 
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
+    public boolean matches(DeveloperStatusEventDTO anotherStatusEvent) {
+        boolean result = false;
+        if(this.getId() != null && anotherStatusEvent.getId() != null && 
+                this.getId().longValue() == anotherStatusEvent.getId().longValue()) {
+            return true;
+        }
+        return result;
+    }
 }

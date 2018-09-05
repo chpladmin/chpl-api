@@ -13,6 +13,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -46,6 +50,8 @@ import gov.healthit.chpl.dto.PendingCertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.manager.CertificationResultManager;
+import gov.healthit.chpl.manager.impl.CertificationResultManagerImpl;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import gov.healthit.chpl.validation.listing.PendingValidator;
 import gov.healthit.chpl.validation.listing.Validator;
@@ -55,8 +61,43 @@ import gov.healthit.chpl.validation.listing.Validator;
  * @author alarned
  *
  */
+
+
+// This test class has a modified configuration to get the tests to work.  The method
+// CertificationResultsManagerImpl.getCertifiedProductHasAdditionalSoftware() does not 
+// work in the test environment, so we are overriding that method.  Since we are not 
+// testing that particular method with these tests, this should be OK.  To do this, we 
+// did the following:
+//      1. Create a new class (MyCertificationResultManager) that extends 
+//          CertificationResultManagerImpl and override the 
+//          getCertifiedProductHasAdditionalSoftware method with a constant value 
+//          of 'false'
+//      2. Created a new Spring configuration class CertifiedProductValidationTestConfig, 
+//          based on the CHPLTestConfig class
+//      3. In the new config class, specify that the CertificationResultManager bean should 
+//          use an instance of MyCertificationResultManager.
+//      4. Modify this test class to use the new spring configuration that was just created:
+//          @ContextConfiguration(classes = { CertifiedProductValidationTestConfig.class })
+@Configuration
+@Import(gov.healthit.chpl.CHPLTestConfig.class)
+class CertifiedProductValidationTestConfig {
+    @Bean
+    @Primary
+    public CertificationResultManager certificationResultManager() {
+        return new MyCertificationResultManager();
+    }
+}
+
+class MyCertificationResultManager extends CertificationResultManagerImpl  {
+    @Override
+    public boolean getCertifiedProductHasAdditionalSoftware(Long certifiedProductId) {
+        return false;
+    }
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
+@ContextConfiguration(classes = { CertifiedProductValidationTestConfig.class })
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
     DirtiesContextTestExecutionListener.class,
     TransactionalTestExecutionListener.class,
@@ -103,7 +144,7 @@ public class CertifiedProductValidationTest {
 
     @Autowired
     ListingValidatorFactory validatorFactory;
-
+    
     private static JWTAuthenticatedUser adminUser;
     private static final long ADMIN_ID = -2L;
 
@@ -711,6 +752,7 @@ public class CertifiedProductValidationTest {
     @Test
     public void validateRetiredTestToolNoIcsHasError()
             throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
+        
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         CertifiedProductSearchDetails listing = CertifiedProductValidationTestHelper.createListing("2015");
         List<CertificationResult> certResults = new ArrayList<CertificationResult>();

@@ -25,6 +25,7 @@ import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.listing.ListingMockUtil;
+import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -59,16 +60,22 @@ public class ChplNumberReviewerTest {
     private static final String DUPLICATE_CHPLID_ERROR_END = "one already exists with this ID.";
             
     @Autowired private ListingMockUtil mockUtil;
-    
+
     @Spy
     private CertifiedProductDAO listingDao;
-    
+
+    @Spy
+    private CertificationResultManager certResultManager;
+
     @Spy
     private MessageSource messageSource;
 
     @Spy
     private ErrorMessageUtil msgUtil;
-    
+
+    @Spy
+    private CertificationResultManager certificationResultManager;
+
     @InjectMocks
     private ChplNumberReviewer chplNumberReviewer;
 
@@ -100,6 +107,11 @@ public class ChplNumberReviewerTest {
         Mockito.doReturn(ICS_CODE_TRUE_NO_ICS_ERROR)
         .when(msgUtil).getMessage(
                 ArgumentMatchers.eq("listing.icsCodeTrueValueFalse"));
+        
+        Mockito.doReturn(false).when(certificationResultManager).getCertifiedProductHasAdditionalSoftware(ArgumentMatchers.anyLong());
+        Mockito.when(
+                certResultManager.getCertifiedProductHasAdditionalSoftware(ArgumentMatchers.anyLong()))
+        .thenReturn(Boolean.FALSE);
     }
 
     @Test
@@ -131,7 +143,7 @@ public class ChplNumberReviewerTest {
         assertFalse(listing.getErrorMessages().contains(ICS_CODE_FALSE_HAS_ICS_ERROR));
         assertFalse(listing.getErrorMessages().contains(ICS_CODE_TRUE_NO_ICS_ERROR));
     }
-    
+
     @Test
     public void testBadProductCodeCharacter_HasError() {
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
@@ -147,7 +159,7 @@ public class ChplNumberReviewerTest {
         assertFalse(listing.getErrorMessages().contains(ICS_CODE_FALSE_HAS_ICS_ERROR));
         assertFalse(listing.getErrorMessages().contains(ICS_CODE_TRUE_NO_ICS_ERROR));
     }
-    
+
     @Test
     public void testBadVersionCodeLength_HasError() {
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
@@ -163,7 +175,7 @@ public class ChplNumberReviewerTest {
         assertFalse(listing.getErrorMessages().contains(ICS_CODE_FALSE_HAS_ICS_ERROR));
         assertFalse(listing.getErrorMessages().contains(ICS_CODE_TRUE_NO_ICS_ERROR));
     }
-    
+
     @Test
     public void testBadVersionCodeCharacter_HasError() {
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
@@ -179,7 +191,7 @@ public class ChplNumberReviewerTest {
         assertFalse(listing.getErrorMessages().contains(ICS_CODE_FALSE_HAS_ICS_ERROR));
         assertFalse(listing.getErrorMessages().contains(ICS_CODE_TRUE_NO_ICS_ERROR));
     }
-    
+
     @Test
     public void testBadIcsCodeLength_HasError() {
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
@@ -195,7 +207,7 @@ public class ChplNumberReviewerTest {
         assertFalse(listing.getErrorMessages().contains(ICS_CODE_FALSE_HAS_ICS_ERROR));
         assertFalse(listing.getErrorMessages().contains(ICS_CODE_TRUE_NO_ICS_ERROR));
     }
-    
+
     @Test
     public void testBadIcsCodeCharacter_HasError() {
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
@@ -355,8 +367,15 @@ public class ChplNumberReviewerTest {
         try {
             Mockito.when(listingDao.getByChplUniqueId(ArgumentMatchers.anyString()))
             .thenReturn(new CertifiedProductDetailsDTO());
+            
+            Mockito.doReturn(true)
+            .when(certificationResultManager).getCertifiedProductHasAdditionalSoftware(ArgumentMatchers.anyLong());
+            
         } catch(EntityRetrievalException ex) {}
-
+        Mockito.when(
+                certResultManager.getCertifiedProductHasAdditionalSoftware(ArgumentMatchers.anyLong()))
+        .thenReturn(Boolean.TRUE);
+        
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         //the mock listing does not have additional software; 
         //add some to a criteria that was met.

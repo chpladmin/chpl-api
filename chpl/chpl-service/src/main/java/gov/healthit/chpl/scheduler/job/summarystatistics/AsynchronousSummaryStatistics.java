@@ -532,6 +532,34 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<Long>(total);
     }
     
+    /**
+     * Open NCs by ACB.
+     * @param surveillanceStatisticsDAO DAO that provides access to surveillance statistics
+     * @param dateRange the range of time to get statistics from
+     * @return the statistic
+     */
+    @Async("jobAsyncDataExecutor")
+    @Transactional
+    public Future<List<CertifiedBodyStatistics>> getTotalOpenNonconformitiesByAcb(final SurveillanceStatisticsDAO surveillanceStatisticsDAO,
+            final DateRange dateRange) {
+        List<CertifiedBodyStatistics> totals = surveillanceStatisticsDAO.getTotalOpenNonconformitiesByAcb(dateRange);
+        return new AsyncResult<List<CertifiedBodyStatistics>>(totals);
+    }
+    
+    /**
+     * Open NCs by ACB.
+     * @param surveillanceStatisticsDAO DAO that provides access to surveillance statistics
+     * @param dateRange the range of time to get statistics from
+     * @return the statistic
+     */
+    @Async("jobAsyncDataExecutor")
+    @Transactional
+    public Future<List<CertifiedBodyStatistics>> getTotalOpenSurveillancesByAcb(final SurveillanceStatisticsDAO surveillanceStatisticsDAO,
+            final DateRange dateRange) {
+        List<CertifiedBodyStatistics> totals = surveillanceStatisticsDAO.getTotalOpenSurveillanceActivitiesByAcb(dateRange);
+        return new AsyncResult<List<CertifiedBodyStatistics>>(totals);
+    }
+    
     public void setLogger(Logger logger) {
         this.logger = logger;
     }

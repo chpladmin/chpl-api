@@ -71,6 +71,13 @@ public class QuestionableActivityAspect implements EnvironmentAware {
         triggerTypes = questionableActivityDao.getAllTriggers();
     }
 
+    @Before("execution(* gov.healthit.chpl.web.controller.CertifiedProductController.updateCertifiedProductDeprecated(..)) && "
+            + "args(updateRequest,..)")
+    public void checkReasonProvidedIfRequiredOnListingUpdateDeprecated(ListingUpdateRequest updateRequest) 
+            throws EntityRetrievalException, MissingReasonException {
+        checkReasonProvidedIfRequiredOnListingUpdate(updateRequest);
+    }
+
     @Before("execution(* gov.healthit.chpl.web.controller.CertifiedProductController.updateCertifiedProduct(..)) && "
             + "args(updateRequest,..)")
     public void checkReasonProvidedIfRequiredOnListingUpdate(ListingUpdateRequest updateRequest) 
