@@ -19,22 +19,22 @@
             <artifactId>chpl-resources</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
-        
+
         <dependency>
             <groupId>gov.healthit.chpl</groupId>
             <artifactId>chpl-auth</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
-        <!-- Core utilities used by other modules. Define this if you use
+        <!-- Core utilities used by other modules. Define this if you use 
             Spring Utility APIs (org.springframework.core.*/org.springframework.util.*) -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
             <version>${org.springframework.version}</version>
         </dependency>
-        <!-- Spring MVC for Servlet Environments (depends on spring-core,
-            spring-beans, spring-context, spring-web) Define this if you use Spring MVC
+        <!-- Spring MVC for Servlet Environments (depends on spring-core, 
+            spring-beans, spring-context, spring-web) Define this if you use Spring MVC 
             with a Servlet Container such as Apache Tomcat (org.springframework.web.servlet.*) -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -99,7 +99,7 @@
             <version>1.5.4</version>
         </dependency>
 
-        <!-- Optional for caching. Used to log stuff <dependency> <groupId>ch.qos.logback</groupId>
+        <!-- Optional for caching. Used to log stuff <dependency> <groupId>ch.qos.logback</groupId> 
             <artifactId>logback-classic</artifactId> <version>1.0.13</version> </dependency> -->
 
         <!-- Spring caching framework inside this -->
@@ -175,6 +175,12 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-csv</artifactId>
             <version>1.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-validator</groupId>
+            <artifactId>commons-validator</artifactId>
+            <version>1.6</version>
         </dependency>
 
         <dependency>
@@ -257,7 +263,7 @@
             <version>2.19.0</version>
             <scope>test</scope>
         </dependency>
-        
+
         <!-- for unit/integration testing of the dao calls -->
         <dependency>
             <groupId>gov.healthit.chpl</groupId>
@@ -310,7 +316,7 @@
             </exclusions>
         </dependency>
     </dependencies>
-    
+
     <build>
         <finalName>chpl-service</finalName>
         <plugins>
@@ -319,7 +325,9 @@
                 <artifactId>maven-enforcer-plugin</artifactId>
                 <version>1.4.1</version>
                 <configuration>
-                    <rules><dependencyConvergence/></rules>
+                    <rules>
+                        <dependencyConvergence />
+                    </rules>
                 </configuration>
             </plugin>
             <plugin>
@@ -336,7 +344,8 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
-                    <!-- add the main class App to the manifest for the created jar -->
+                    <!-- add the main class App to the manifest for the created 
+                        jar -->
                     <archive>
                         <manifest>
                             <mainClass>gov.healthit.chpl.app.App</mainClass>
@@ -422,10 +431,10 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>                    
+            </plugin>
         </plugins>
     </build>
-    
+
     <profiles>
         <profile>
             <id>environment-specific</id>
@@ -434,10 +443,11 @@
                     <name>env</name>
                 </property>
             </activation>
-            
+
             <build>
                 <plugins>
-                    <!-- this plugin copies the correct resource into the jar for the environment -->
+                    <!-- this plugin copies the correct resource into the 
+                        jar for the environment -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-resources-plugin</artifactId>
@@ -464,7 +474,7 @@
             </build>
         </profile>
     </profiles>
-    
+
     <reporting>
         <plugins>
             <plugin>
