@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.util.StringUtils;
@@ -17,21 +18,31 @@ public class ValidationUtils {
 
     public static boolean hasNewline(String input) {
         //check both windows and unix line separator chars
-        if(input == null || StringUtils.isEmpty(input)) {
+        if (input == null || StringUtils.isEmpty(input)) {
             return false;
         }
         return input.contains("\n") || input.contains("\r\n");
     }
-    
+
+    /**
+     * Validate that input string is a well formed URL.
+     * @param input URL to check
+     * @return true iff input is a valid URL. Will return false for empty/null string
+     */
+    public static boolean isWellFormedUrl(final String input) {
+        UrlValidator validator = new UrlValidator();
+        return validator.isValid(input);
+    }
+
     public static boolean isValidUtf8(String input) {
         return isValidUtf8(Charset.defaultCharset(), input);
     }
-    
+
     public static boolean isValidUtf8(Charset inputCharset, String input) {
-        if(input == null || StringUtils.isEmpty(input)) {
+        if (input == null || StringUtils.isEmpty(input)) {
             return true;
         }
-        
+
         if (inputCharset.name().equals(StandardCharsets.UTF_8.name())) {
             LOGGER.debug("Looking for UTF-8 Replacement Character in " + input);
             return !hasUtf8ReplacementCharacter(input);
@@ -99,7 +110,7 @@ public class ValidationUtils {
         }
         return true;
     }
-    
+
     public static boolean hasCert(String certNumber, final List<String> allCerts){
         boolean hasCert = false;
         for (int i = 0; i < allCerts.size() && !hasCert; i++) {
@@ -109,7 +120,7 @@ public class ValidationUtils {
         }
         return hasCert;
     }
-    
+
     /**
      * Look for required complimentary criteria; if any one of the
      * criterionToCheck is present in allCriteriaMet then all of the
@@ -185,7 +196,7 @@ public class ValidationUtils {
         }
         return errors;
     }
-    
+
     /**
      * Returns true if any of the passed in certs are present
      * @param toCheck
@@ -201,7 +212,7 @@ public class ValidationUtils {
         }
         return result;
     }
-    
+
     public static boolean containsCert(final PendingCertificationResultDTO certToCompare, final String[] certs){
         boolean hasCert = false;
         for (String cert : certs) {
@@ -211,7 +222,7 @@ public class ValidationUtils {
         }
         return hasCert;
     }
-    
+
     public static boolean containsCert(final CertificationResult certToCompare, final String[] certs){
         boolean hasCert = false;
         for (String cert : certs) {
@@ -221,7 +232,7 @@ public class ValidationUtils {
         }
         return hasCert;
     }
-    
+
     /**
      * look for required complimentary certs when one of the criteria met is a
      * certain class of cert... such as 170.315 (a)(*)
@@ -257,7 +268,7 @@ public class ValidationUtils {
         }
         return errors;
     }
-    
+
     /**
      * Look for a required complimentary criteria when a specific criteria has
      * been met

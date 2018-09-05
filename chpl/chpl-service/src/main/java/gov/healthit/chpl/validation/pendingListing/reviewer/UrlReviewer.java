@@ -1,8 +1,8 @@
 package gov.healthit.chpl.validation.pendingListing.reviewer;
 
-import org.apache.commons.validator.routines.UrlValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
@@ -19,6 +19,7 @@ public class UrlReviewer implements Reviewer {
 
     @Autowired private ErrorMessageUtil msgUtil;
 
+    @Override
     public void review(final PendingCertifiedProductDTO listing) {
         //check all string fields at the listing level
         if (listing.getDeveloperWebsite() != null) {
@@ -42,12 +43,11 @@ public class UrlReviewer implements Reviewer {
 
     private void addListingErrorIfNotValid(final PendingCertifiedProductDTO listing,
             final String input, final String fieldName) {
-        if (ValidationUtils.hasNewline(input)) {
-            listing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.invalidUrlFound", fieldName));
-        } else {
-            UrlValidator validator = new UrlValidator();
-            if (!validator.isValid(input)) {
+        if (!StringUtils.isEmpty(input)) {
+            if (ValidationUtils.hasNewline(input)) {
+                listing.getErrorMessages().add(
+                        msgUtil.getMessage("listing.invalidUrlFound", fieldName));
+            }  else if (!ValidationUtils.isWellFormedUrl(input)) {
                 listing.getErrorMessages().add(
                         msgUtil.getMessage("listing.invalidUrlFound", fieldName));
             }
@@ -56,12 +56,11 @@ public class UrlReviewer implements Reviewer {
 
     private void addCriteriaErrorIfNotValid(final PendingCertifiedProductDTO listing,
             final PendingCertificationResultDTO cert, final String input, final String fieldName) {
-        if (ValidationUtils.hasNewline(input)) {
-            listing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.criteria.invalidUrlFound", fieldName, cert.getNumber()));
-        } else {
-            UrlValidator validator = new UrlValidator();
-            if (!validator.isValid(input)) {
+        if (!StringUtils.isEmpty(input)) {
+            if (ValidationUtils.hasNewline(input)) {
+                listing.getErrorMessages().add(
+                        msgUtil.getMessage("listing.criteria.invalidUrlFound", fieldName, cert.getNumber()));
+            }  else if (!ValidationUtils.isWellFormedUrl(input)) {
                 listing.getErrorMessages().add(
                         msgUtil.getMessage("listing.criteria.invalidUrlFound", fieldName, cert.getNumber()));
             }

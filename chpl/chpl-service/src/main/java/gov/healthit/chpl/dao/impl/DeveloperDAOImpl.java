@@ -38,6 +38,7 @@ import gov.healthit.chpl.entity.developer.DeveloperTransparencyEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.ValidationUtils;
 
 @Repository("developerDAO")
 public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
@@ -86,6 +87,11 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
             }
 
             entity.setName(dto.getName());
+            if (dto.getWebsite() != null && !StringUtils.isEmpty(dto.getWebsite())) {
+                if (!ValidationUtils.isWellFormedUrl(dto.getWebsite())) {
+                    throw new EntityCreationException("Developer website is invalid");
+                }
+            }
             entity.setWebsite(dto.getWebsite());
 
             if (dto.getDeleted() != null) {
@@ -218,6 +224,11 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
             entity.setContact(null);
         }
 
+        if (dto.getWebsite() != null && !StringUtils.isEmpty(dto.getWebsite())) {
+            if (!ValidationUtils.isWellFormedUrl(dto.getWebsite())) {
+                throw new EntityCreationException("Developer website is invalid");
+            }
+        }
         entity.setWebsite(dto.getWebsite());
         if (dto.getName() != null) {
             entity.setName(dto.getName());

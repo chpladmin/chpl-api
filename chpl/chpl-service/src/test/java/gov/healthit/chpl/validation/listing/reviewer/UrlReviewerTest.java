@@ -1,5 +1,6 @@
 package gov.healthit.chpl.validation.listing.reviewer;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -27,13 +28,10 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
 public class UrlReviewerTest {
-    private static final String URL_WITH_NEWLINE = "http://fake.example.com\nhttp://fake2.example.com";
-    private static final String BAD_REPORT_FILE_LOCATION_ERROR =
-            "The value for Report File Location, '" + URL_WITH_NEWLINE + "', is not a valid URL";
+    private static final String BAD_REPORT_FILE_LOCATION_ERROR = "Fake error message";
 
     @Autowired private ListingMockUtil mockUtil;
 
-//    @Spy private CertifiedProductManager cpManager;
     @Mock private ErrorMessageUtil msgUtil;
 
     @InjectMocks
@@ -57,10 +55,11 @@ public class UrlReviewerTest {
      * OCD-744
      */
     @Test
-    public void testValidReportFileLocationUrlHasNewLine() {
+    public void testWhenReportFileLocationUrlHasNewLine() {
         Mockito.doReturn(BAD_REPORT_FILE_LOCATION_ERROR)
         .when(msgUtil).getMessage(eq("listing.invalidUrlFound"), anyString());
-        listing.setReportFileLocation(URL_WITH_NEWLINE);
+        String url = "http://fake.example.com\nhttp://fake2.example.com";
+        listing.setReportFileLocation(url);
         urlReviewer.review(listing);
         assertTrue(listing.getErrorMessages().contains(BAD_REPORT_FILE_LOCATION_ERROR));
     }
@@ -72,12 +71,51 @@ public class UrlReviewerTest {
      * OCD-744
      */
     @Test
-    public void testValidReportFileLocationUrlHasProperShape() {
-        Mockito.doReturn("The value for Report File Location, 'not an url', is not a valid URL.")
+    public void testWhenReportFileLocationUrlHasProperShape() {
+        Mockito.doReturn(BAD_REPORT_FILE_LOCATION_ERROR)
         .when(msgUtil).getMessage(eq("listing.invalidUrlFound"), anyString());
-        listing.setReportFileLocation("not an url");
+        String url = "not a valid url";
+        listing.setReportFileLocation(url);
         urlReviewer.review(listing);
         assertTrue(listing.getErrorMessages()
-                .contains("The value for Report File Location, 'not an url', is not a valid URL."));
+                .contains(BAD_REPORT_FILE_LOCATION_ERROR));
+    }
+
+    /**
+     * Given the report file location has an empty URL
+     * when the validator runs
+     * then there should not be an error.
+     *
+     * A different validator is checking for required elements.
+     * OCD-744
+     */
+    @Test
+    public void testWhenReportFileLocationUrlIsEmpty() {
+        Mockito.doReturn(BAD_REPORT_FILE_LOCATION_ERROR)
+        .when(msgUtil).getMessage(eq("listing.invalidUrlFound"), anyString());
+        String url = "";
+        listing.setReportFileLocation(url);
+        urlReviewer.review(listing);
+        assertFalse(listing.getErrorMessages()
+                .contains(BAD_REPORT_FILE_LOCATION_ERROR));
+    }
+
+    /**
+     * Given the report file location has a null URL
+     * when the validator runs
+     * then there should not be an error.
+     *
+     * A different validator is checking for required elements.
+     * OCD-744
+     */
+    @Test
+    public void testWhenReportFileLocationUrlIsNull() {
+        Mockito.doReturn(BAD_REPORT_FILE_LOCATION_ERROR)
+        .when(msgUtil).getMessage(eq("listing.invalidUrlFound"), anyString());
+        String url = null;
+        listing.setReportFileLocation(url);
+        urlReviewer.review(listing);
+        assertFalse(listing.getErrorMessages()
+                .contains(BAD_REPORT_FILE_LOCATION_ERROR));
     }
 }
