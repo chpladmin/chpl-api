@@ -16,5 +16,6 @@ _Date TBD_
 * Fixed the "basic" certified product service to return the correct additional software code in the CHPL Product Number	
 * Fixed XML generation process to properly output `<tasks></tasks>` tag - was previously outputing as `<></>`.
 * Use "full name" and "friendly name" for users/contacts
+* Fix reason required error to show again for certain listing updates.
 
 ---
