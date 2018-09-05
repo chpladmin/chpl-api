@@ -124,7 +124,7 @@ public class DeveloperController {
         return update(developerInfo);
     }
 
-    private ResponseEntity<Developer> update(final UpdateDevelopersRequest developerInfo)
+    private synchronized ResponseEntity<Developer> update(final UpdateDevelopersRequest developerInfo)
             throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException, JsonProcessingException,
             ValidationException, MissingReasonException {
 
