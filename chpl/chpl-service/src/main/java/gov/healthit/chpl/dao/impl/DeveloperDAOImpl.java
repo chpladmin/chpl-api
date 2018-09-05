@@ -89,11 +89,6 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
             }
 
             entity.setName(dto.getName());
-            if (dto.getWebsite() != null && !StringUtils.isEmpty(dto.getWebsite())) {
-                if (!ValidationUtils.isWellFormedUrl(dto.getWebsite())) {
-                    throw new EntityCreationException("Developer website is invalid");
-                }
-            }
             entity.setWebsite(dto.getWebsite());
 
             if (dto.getDeleted() != null) {
@@ -226,11 +221,6 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
             entity.setContact(null);
         }
 
-        if (dto.getWebsite() != null && !StringUtils.isEmpty(dto.getWebsite())) {
-            if (!ValidationUtils.isWellFormedUrl(dto.getWebsite())) {
-                throw new EntityCreationException("Developer website is invalid");
-            }
-        }
         entity.setWebsite(dto.getWebsite());
         if (dto.getName() != null) {
             entity.setName(dto.getName());
@@ -260,7 +250,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 
     @Override
     public void createDeveloperStatusEvent(DeveloperStatusEventDTO statusEventDto) 
-        throws EntityCreationException {
+            throws EntityCreationException {
         if (statusEventDto.getStatus() != null && 
                 !StringUtils.isEmpty(statusEventDto.getStatus().getStatusName())
                 && statusEventDto.getStatusDate() != null) {
@@ -294,30 +284,30 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
             throws EntityRetrievalException {
         DeveloperStatusEventEntity entityToUpdate = 
                 entityManager.find(DeveloperStatusEventEntity.class, statusEventDto.getId());
-            if(entityToUpdate == null) {
-                String msg = msgUtil.getMessage("developer.updateStatus.idNotFound", statusEventDto.getId());
-                LOGGER.error(msg);
-                throw new EntityRetrievalException(msg);
-            } else {
-                if (statusEventDto.getStatus() != null
-                        && statusEventDto.getStatus().getStatusName() != null) {
-                    DeveloperStatusEntity newStatus = getStatusByName(
-                            statusEventDto.getStatus().getStatusName());
-                    if (newStatus != null && newStatus.getId() != null) {
-                        entityToUpdate.setDeveloperStatus(newStatus);
-                        entityToUpdate.setReason(statusEventDto.getReason());
-                        entityToUpdate.setDeveloperStatusId(newStatus.getId());
-                    }
-                    entityToUpdate.setStatusDate(statusEventDto.getStatusDate());
+        if(entityToUpdate == null) {
+            String msg = msgUtil.getMessage("developer.updateStatus.idNotFound", statusEventDto.getId());
+            LOGGER.error(msg);
+            throw new EntityRetrievalException(msg);
+        } else {
+            if (statusEventDto.getStatus() != null
+                    && statusEventDto.getStatus().getStatusName() != null) {
+                DeveloperStatusEntity newStatus = getStatusByName(
+                        statusEventDto.getStatus().getStatusName());
+                if (newStatus != null && newStatus.getId() != null) {
+                    entityToUpdate.setDeveloperStatus(newStatus);
+                    entityToUpdate.setReason(statusEventDto.getReason());
+                    entityToUpdate.setDeveloperStatusId(newStatus.getId());
                 }
-                entityManager.merge(entityToUpdate);
-                entityManager.flush();
+                entityToUpdate.setStatusDate(statusEventDto.getStatusDate());
             }
+            entityManager.merge(entityToUpdate);
+            entityManager.flush();
         }
+    }
 
     @Override
     public void deleteDeveloperStatusEvent(DeveloperStatusEventDTO statusEventDto) 
-        throws EntityRetrievalException {
+            throws EntityRetrievalException {
         DeveloperStatusEventEntity statusEventEntity = 
                 entityManager.find(DeveloperStatusEventEntity.class, statusEventDto.getId());
         if(statusEventEntity == null) {
@@ -499,7 +489,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
         Query getDecertifiedDevelopers = entityManager.createQuery(
                 "FROM CertifiedProductDetailsEntity "
                         + "WHERE developerStatusName IN (:banned) AND deleted = false AND acbIsDeleted = false",
-                CertifiedProductDetailsEntity.class);
+                        CertifiedProductDetailsEntity.class);
         getDecertifiedDevelopers.setParameter("banned", String.valueOf(DeveloperStatusType.UnderCertificationBanByOnc));
         List<CertifiedProductDetailsEntity> result = getDecertifiedDevelopers.getResultList();
         List<DecertifiedDeveloperDTO> dtoList = new ArrayList<DecertifiedDeveloperDTO>();
@@ -580,7 +570,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
                         + "LEFT OUTER JOIN FETCH v.contact " + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
                         + "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
                         + "LEFT OUTER JOIN FETCH v.developerCertificationStatuses " + "where (NOT v.deleted = true)",
-                DeveloperEntity.class).getResultList();
+                        DeveloperEntity.class).getResultList();
         return result;
     }
 

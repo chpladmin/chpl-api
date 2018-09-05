@@ -49,6 +49,7 @@ import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.ValidationUtils;
 
 @Service
 public class DeveloperManagerImpl implements DeveloperManager {
@@ -199,7 +200,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
                 && newDevStatus.getStatus().getStatusName()
                         .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
                 && !(Util.isUserRoleAdmin() || Util.isUserRoleAcbAdmin())) {
-            String  msg = msgUtil.getMessage("developer.statusChangeNotAllowedWithoutAdminOrAcb", 
+            String msg = msgUtil.getMessage("developer.statusChangeNotAllowedWithoutAdminOrAcb",
                     DeveloperStatusType.UnderCertificationBanByOnc.toString());
             throw new EntityCreationException(msg);
         } else if (currentStatusChanged && !newDevStatus.getStatus().getStatusName()
@@ -212,6 +213,16 @@ public class DeveloperManagerImpl implements DeveloperManager {
             // only its current status can be updated
             updateStatusHistory(beforeDev, updatedDev);
             return getById(updatedDev.getId());
+        }
+
+        /*
+         * Check to see that the Developer's website is valid.
+         */
+        if (updatedDev.getWebsite() != null && !StringUtils.isEmpty(updatedDev.getWebsite())) {
+            if (!ValidationUtils.isWellFormedUrl(updatedDev.getWebsite())) {
+                String msg = msgUtil.getMessage("developer.websiteIsInvalid");
+                throw new EntityCreationException(msg);
+            }
         }
 
         // if either the before or updated statuses are active and the user is
@@ -350,6 +361,16 @@ public class DeveloperManagerImpl implements DeveloperManager {
     }, allEntries = true)
     public DeveloperDTO create(final DeveloperDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+
+        /*
+         * Check to see that the Developer's website is valid.
+         */
+        if (dto.getWebsite() != null && !StringUtils.isEmpty(dto.getWebsite())) {
+            if (!ValidationUtils.isWellFormedUrl(dto.getWebsite())) {
+                String msg = msgUtil.getMessage("developer.websiteIsInvalid");
+                throw new EntityCreationException(msg);
+            }
+        }
 
         DeveloperDTO created = developerDao.create(dto);
 
