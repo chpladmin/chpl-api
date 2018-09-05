@@ -48,7 +48,7 @@ public class MacraMeasureDaoTest extends TestCase {
 	public void getAllMeasures() {
 		List<MacraMeasureDTO> results = macraDao.findAll();
 		assertNotNull(results);
-		assertEquals(132, results.size());
+		assertEquals(138, results.size());
 	}
 	
 	@Test
@@ -64,7 +64,7 @@ public class MacraMeasureDaoTest extends TestCase {
 	public void getMeasuresForCertificationCriteriaMultipleResults() {
 		List<MacraMeasureDTO> results = macraDao.getByCriteriaNumber("170.315 (b)(1)");
 		assertNotNull(results);
-		assertEquals(9, results.size());
+		assertEquals(10, results.size());
 	}
 	
 	@Test

@@ -160,8 +160,8 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         Calendar startDateCalendar = Calendar.getInstance();
         //This is a constant date, which marks the beginning of time for
         //retrieving statistics;
-        startDateCalendar.set(2016, 3, 1);
-
+        startDateCalendar.set(2016, 3, 1, 0, 0, 0);
+        
         //What DOW is today?
         Calendar now = Calendar.getInstance();
         Integer dow = now.get(Calendar.DAY_OF_WEEK);
