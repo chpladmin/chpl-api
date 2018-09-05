@@ -15,6 +15,7 @@ import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 
 public class ValidationUtils {
     private static final Logger LOGGER = LogManager.getLogger(ValidationUtils.class);
+    private static UrlValidator urlValidator = new UrlValidator();
 
     public static boolean hasNewline(String input) {
         //check both windows and unix line separator chars
@@ -30,8 +31,7 @@ public class ValidationUtils {
      * @return true iff input is a valid URL. Will return false for empty/null string
      */
     public static boolean isWellFormedUrl(final String input) {
-        UrlValidator validator = new UrlValidator();
-        return validator.isValid(input);
+        return urlValidator.isValid(input);
     }
 
     public static boolean isValidUtf8(String input) {
