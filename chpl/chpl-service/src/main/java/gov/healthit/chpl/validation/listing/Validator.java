@@ -15,7 +15,7 @@ public abstract class Validator {
     /**
      * Concrete classes should provide a list of reviewers.
      * Each reviewer can check a specific part of a listing for errors.
-     * @return the applicable listings
+     * @return the applicable reviewers
      */
     public abstract List<Reviewer> getReviewers();
 
