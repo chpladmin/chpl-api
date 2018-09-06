@@ -45,6 +45,8 @@ public class UrlReviewerTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+        Mockito.doReturn(BAD_REPORT_FILE_LOCATION_ERROR)
+        .when(msgUtil).getMessage(eq("listing.invalidUrlFound"), anyString());
         listing = mockUtil.createValid2015Listing();
     }
 
@@ -56,8 +58,6 @@ public class UrlReviewerTest {
      */
     @Test
     public void testWhenReportFileLocationUrlHasNewLine() {
-        Mockito.doReturn(BAD_REPORT_FILE_LOCATION_ERROR)
-        .when(msgUtil).getMessage(eq("listing.invalidUrlFound"), anyString());
         String url = "http://fake.example.com\nhttp://fake2.example.com";
         listing.setReportFileLocation(url);
         urlReviewer.review(listing);
@@ -72,13 +72,10 @@ public class UrlReviewerTest {
      */
     @Test
     public void testWhenReportFileLocationUrlHasProperShape() {
-        Mockito.doReturn(BAD_REPORT_FILE_LOCATION_ERROR)
-        .when(msgUtil).getMessage(eq("listing.invalidUrlFound"), anyString());
         String url = "not a valid url";
         listing.setReportFileLocation(url);
         urlReviewer.review(listing);
-        assertTrue(listing.getErrorMessages()
-                .contains(BAD_REPORT_FILE_LOCATION_ERROR));
+        assertTrue(listing.getErrorMessages().contains(BAD_REPORT_FILE_LOCATION_ERROR));
     }
 
     /**
@@ -91,13 +88,10 @@ public class UrlReviewerTest {
      */
     @Test
     public void testWhenReportFileLocationUrlIsEmpty() {
-        Mockito.doReturn(BAD_REPORT_FILE_LOCATION_ERROR)
-        .when(msgUtil).getMessage(eq("listing.invalidUrlFound"), anyString());
         String url = "";
         listing.setReportFileLocation(url);
         urlReviewer.review(listing);
-        assertFalse(listing.getErrorMessages()
-                .contains(BAD_REPORT_FILE_LOCATION_ERROR));
+        assertFalse(listing.getErrorMessages().contains(BAD_REPORT_FILE_LOCATION_ERROR));
     }
 
     /**
@@ -110,12 +104,9 @@ public class UrlReviewerTest {
      */
     @Test
     public void testWhenReportFileLocationUrlIsNull() {
-        Mockito.doReturn(BAD_REPORT_FILE_LOCATION_ERROR)
-        .when(msgUtil).getMessage(eq("listing.invalidUrlFound"), anyString());
         String url = null;
         listing.setReportFileLocation(url);
         urlReviewer.review(listing);
-        assertFalse(listing.getErrorMessages()
-                .contains(BAD_REPORT_FILE_LOCATION_ERROR));
+        assertFalse(listing.getErrorMessages().contains(BAD_REPORT_FILE_LOCATION_ERROR));
     }
 }
