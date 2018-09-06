@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Set;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -606,8 +607,10 @@ public class SearchMenuManagerTest {
         }
     }
 
+    //Moving the jobs to Quartz makes this test invalid.
     @Transactional
     @Test
+    @Ignore
     public void testGetNotificationTypesForAcbUser() {
         SecurityContextHolder.getContext().setAuthentication(testUser3);
         Set<NotificationType> results = searchMenuManager.getNotificationTypes();

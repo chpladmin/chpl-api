@@ -1,5 +1,10 @@
 package gov.healthit.chpl.listing;
 
+import static org.junit.Assert.fail;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,11 +32,14 @@ import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.TestData;
 import gov.healthit.chpl.domain.TestProcedure;
+import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.util.CertificationResultRules;
 
 @Component
 public class ListingMockUtil {
     public static String CHPL_ID_2015 = "15.02.02.3007.A056.01.00.0.180214";
+    private static final Long EDITION_2015_ID = 3L;
+    private static final Long EDITION_2014_ID = 2L;
     @Autowired private CertificationResultRules certRules;
 
     public CertifiedProductSearchDetails createValid2015Listing() {
@@ -167,6 +175,36 @@ public class ListingMockUtil {
 
         //TODO: cqms
         return listing;
+    }
+
+    /**
+     * Create a pending Listing.
+     * @param year the edition of the listing
+     * @return a valid pending listing
+     */
+    public PendingCertifiedProductDTO createPendingListing(final String year) {
+        PendingCertifiedProductDTO pendingListing = new PendingCertifiedProductDTO();
+        String certDateString = "11-09-2016";
+        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        try {
+            Date inputDate = dateFormat.parse(certDateString);
+            pendingListing.setCertificationDate(inputDate);
+        } catch (ParseException ex) {
+            fail(ex.getMessage());
+        }
+        pendingListing.setId(1L);
+        pendingListing.setIcs(false);
+        pendingListing.setCertificationEdition(year);
+        if (year.equals("2015")) {
+            pendingListing.setCertificationEditionId(EDITION_2015_ID);
+            pendingListing.setUniqueId("15.07.07.2642.IC04.36.00.1.160402");
+        } else if (year.equals("2014")) {
+            pendingListing.setCertificationEditionId(EDITION_2014_ID);
+            pendingListing.setUniqueId("14.07.07.2642.IC04.36.00.1.160402");
+            pendingListing.setPracticeType("Ambulatory");
+            pendingListing.setProductClassificationName("Modular EHR");
+        }
+        return pendingListing;
     }
 
     private CertifiedProductAccessibilityStandard createAccessibilityStandard() {
