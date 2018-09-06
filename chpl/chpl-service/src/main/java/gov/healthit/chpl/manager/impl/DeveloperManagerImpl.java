@@ -218,7 +218,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
         /*
          * Check to see that the Developer's website is valid.
          */
-        if (updatedDev.getWebsite() != null && !StringUtils.isEmpty(updatedDev.getWebsite())) {
+        if (!StringUtils.isEmpty(updatedDev.getWebsite())) {
             if (!ValidationUtils.isWellFormedUrl(updatedDev.getWebsite())) {
                 String msg = msgUtil.getMessage("developer.websiteIsInvalid");
                 throw new EntityCreationException(msg);
@@ -365,7 +365,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
         /*
          * Check to see that the Developer's website is valid.
          */
-        if (dto.getWebsite() != null && !StringUtils.isEmpty(dto.getWebsite())) {
+        if (!StringUtils.isEmpty(dto.getWebsite())) {
             if (!ValidationUtils.isWellFormedUrl(dto.getWebsite())) {
                 String msg = msgUtil.getMessage("developer.websiteIsInvalid");
                 throw new EntityCreationException(msg);
