@@ -17,6 +17,7 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.TestToolReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.UnattestedCriteriaWithDataReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.UnsupportedCharacterReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.UrlReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.ValidDataReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.RequiredData2015Reviewer;
 
@@ -27,54 +28,59 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.Required
  */
 @Component
 public class Edition2015PendingListingValidator extends PendingValidator {
-    @Autowired 
+    @Autowired
     @Qualifier("pendingChplNumberReviewer")
     private ChplNumberReviewer chplNumberReviewer;
 
-    @Autowired 
+    @Autowired
     @Qualifier("pendingDeveloperStatusReviewer")
     private DeveloperStatusReviewer devStatusReviewer;
 
-    @Autowired 
+    @Autowired
     @Qualifier("pendingCertificationDateReviewer")
     private CertificationDateReviewer certDateReviewer;
 
-    @Autowired 
+    @Autowired
     @Qualifier("pendingFuzzyMatchReviewer")
     private FuzzyMatchReviewer fuzzyMatchReviewer;
 
-    @Autowired 
+    @Autowired
     @Qualifier("pendingUnsupportedCharacterReviewer")
     private UnsupportedCharacterReviewer unsupportedCharacterReviewer;
 
-    @Autowired 
+    @Autowired
     @Qualifier("pendingUnattestedCriteriaWithDataReviewer")
     private UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer;
 
-    @Autowired 
+    @Autowired
     @Qualifier("pendingValidDataReviewer")
     private ValidDataReviewer validDataReviewer;
 
-    @Autowired 
+    @Autowired
     @Qualifier("pendingFieldLengthReviewer")
     private FieldLengthReviewer fieldLengthReviewer;
 
-    @Autowired 
+    @Autowired
     @Qualifier("pendingRequiredData2015Reviewer")
     private RequiredData2015Reviewer requiredDataReviewer;
 
-    @Autowired 
+    @Autowired
     @Qualifier("pendingTestToolReviewer")
     private TestToolReviewer ttReviewer;
 
-    @Autowired 
+    @Autowired
     @Qualifier("pendingIcsReviewer")
     private InheritedCertificationStatusReviewer icsReviewer;
 
+    @Autowired
+    @Qualifier("pendingUrlReviewer")
+    private UrlReviewer urlReviewer;
+
     private List<Reviewer> reviewers;
 
+    @Override
     public List<Reviewer> getReviewers() {
-        if(reviewers == null) {
+        if (reviewers == null) {
             reviewers = new ArrayList<Reviewer>();
             reviewers.add(chplNumberReviewer);
             reviewers.add(devStatusReviewer);
@@ -87,6 +93,7 @@ public class Edition2015PendingListingValidator extends PendingValidator {
             reviewers.add(requiredDataReviewer);
             reviewers.add(ttReviewer);
             reviewers.add(icsReviewer);
+            reviewers.add(urlReviewer);
         }
         return reviewers;
     }
