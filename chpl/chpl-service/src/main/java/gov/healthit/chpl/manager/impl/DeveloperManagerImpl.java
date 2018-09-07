@@ -214,6 +214,10 @@ public class DeveloperManagerImpl implements DeveloperManager {
             return getById(updatedDev.getId());
         }
 
+        if (beforeDev.getContact() != null && beforeDev.getContact().getId() != null) {
+            updatedDev.getContact().setId(beforeDev.getContact().getId());
+        }
+
         // if either the before or updated statuses are active and the user is
         // ROLE_ADMIN
         // OR if before status is active and user is not ROLE_ADMIN - proceed
