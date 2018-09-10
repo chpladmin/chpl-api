@@ -5,24 +5,36 @@ import java.util.Date;
 
 import gov.healthit.chpl.entity.ContactEntity;
 
+/**
+ * Data transfer object for Contacts.
+ * @author alarned
+ *
+ */
 public class ContactDTO implements Serializable {
     private static final long serialVersionUID = 5417465972193498436L;
     private Long id;
-    private String firstName;
-    private String lastName;
+    private String fullName;
+    private String friendlyName;
     private String email;
     private String phoneNumber;
     private String title;
     private Date signatureDate;
 
+    /**
+     * Default constructor.
+     */
     public ContactDTO() {
     }
 
-    public ContactDTO(ContactEntity entity) {
+    /**
+     * Constructed from an entity.
+     * @param entity the entity
+     */
+    public ContactDTO(final ContactEntity entity) {
         if (entity != null) {
             this.id = entity.getId();
-            this.firstName = entity.getFirstName();
-            this.lastName = entity.getLastName();
+            this.fullName = entity.getFullName();
+            this.friendlyName = entity.getFriendlyName();
             this.email = entity.getEmail();
             this.phoneNumber = entity.getPhoneNumber();
             this.title = entity.getTitle();
@@ -38,20 +50,20 @@ public class ContactDTO implements Serializable {
         this.id = id;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getFullName() {
+        return fullName;
     }
 
-    public void setFirstName(final String firstName) {
-        this.firstName = firstName;
+    public void setFullName(final String fullName) {
+        this.fullName = fullName;
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getFriendlyName() {
+        return friendlyName;
     }
 
-    public void setLastName(final String lastName) {
-        this.lastName = lastName;
+    public void setFriendlyName(final String friendlyName) {
+        this.friendlyName = friendlyName;
     }
 
     public String getEmail() {
@@ -84,5 +96,13 @@ public class ContactDTO implements Serializable {
 
     public void setSignatureDate(final Date signatureDate) {
         this.signatureDate = signatureDate;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("[Contact DTO: [Id: {}] [Full Name: {}] [Friendly Name: {}] [Email: {}],"
+                + "[Phone Number: {}], [Title: {}]]", this.getId(), this.getFullName(), this.getFriendlyName(),
+                this.getEmail(), this.getPhoneNumber(), this.getTitle());
+
     }
 }

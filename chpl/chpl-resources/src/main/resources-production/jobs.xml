@@ -8,6 +8,17 @@
         <delete-triggers-in-group>triggerJob</delete-triggers-in-group>
     </pre-processing-commands>
     <schedule>
+      <!-- update summary statistics to run at 0400 UTC -->
+        <trigger>
+            <cron>
+                <name>generateSummaryStatistics</name>
+                <group>summaryStatisticsTrigger</group>
+                <job-name>summaryStatisticsCreator</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 0 4 * * ?</cron-expression> <!-- At 0400 UTC every day -->
+            </cron>
+        </trigger>
         <!-- Inheritance Report data creator -->
         <job>
             <name>inheritanceErrorsReportCreator</name>

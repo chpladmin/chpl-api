@@ -80,9 +80,9 @@ public class ListingTest extends TestCase {
     @BeforeClass
     public static void setUpClass() throws Exception {
         adminUser = new JWTAuthenticatedUser();
-        adminUser.setFirstName("Administrator");
+        adminUser.setFullName("Administrator");
         adminUser.setId(ADMIN_ID);
-        adminUser.setLastName("Administrator");
+        adminUser.setFriendlyName("Administrator");
         adminUser.setSubjectName("admin");
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ACB"));
@@ -140,6 +140,38 @@ public class ListingTest extends TestCase {
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(listing);
         cpController.updateCertifiedProduct(updateRequest);
+        Date afterActivity = new Date();
+
+        List<QuestionableActivityListingDTO> activities =
+                qaDao.findListingActivityBetweenDates(beforeActivity, afterActivity);
+        assertNotNull(activities);
+        assertEquals(1, activities.size());
+        QuestionableActivityListingDTO activity = activities.get(0);
+        assertEquals(expectedId, activity.getListingId().longValue());
+        assertNull(activity.getBefore());
+        assertNull(activity.getAfter());
+        assertEquals(QuestionableActivityTriggerConcept.EDITION_2011_EDITED.getName(), activity.getTrigger().getName());
+
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    @Test(expected = MissingReasonException.class)
+    @Transactional
+    @Rollback
+    public void testUpdate2011ListingDeprecatedWithoutReason() throws
+    EntityCreationException, EntityRetrievalException,
+    ValidationException, InvalidArgumentsException, JsonProcessingException,
+    MissingReasonException, IOException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+        final long cpId = 3L;
+        final long expectedId = 3L;
+        Date beforeActivity = new Date();
+        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(cpId);
+        listing.setAcbCertificationId("NEWACBCERTIFICATIONID");
+        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+        updateRequest.setListing(listing);
+        cpController.updateCertifiedProductDeprecated(updateRequest);
         Date afterActivity = new Date();
 
         List<QuestionableActivityListingDTO> activities =

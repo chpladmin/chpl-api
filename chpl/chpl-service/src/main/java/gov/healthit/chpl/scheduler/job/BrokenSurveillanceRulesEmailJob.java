@@ -26,15 +26,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.dao.scheduler.BrokenSurveillanceRulesDAO;
 import gov.healthit.chpl.domain.SurveillanceOversightRule;
 import gov.healthit.chpl.dto.scheduler.BrokenSurveillanceRulesDTO;
-import gov.healthit.chpl.scheduler.JobConfig;
 
 /**
  * The BrokenSurveillanceRulesEmailJob implements a Quartz job and is available to ROLE_ADMIN and ROLE_ACB. When
@@ -43,13 +42,14 @@ import gov.healthit.chpl.scheduler.JobConfig;
  *
  */
 public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
-    private static final Logger LOGGER = LogManager.getLogger(BrokenSurveillanceRulesEmailJob.class);
+    private static final Logger LOGGER = LogManager.getLogger("brokenSurveillanceRulesEmailJobLogger");
     private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
-    private BrokenSurveillanceRulesDAO brokenSurveillanceRulesDAO;
     private DateTimeFormatter dateFormatter;
     private Properties props;
-    private AbstractApplicationContext context;
     private Map<SurveillanceOversightRule, Integer> allBrokenRulesCounts;
+    
+    @Autowired
+    private BrokenSurveillanceRulesDAO brokenSurveillanceRulesDAO;
 
     private static final String TRIGGER_DESCRIPTIONS = "<h4>Description of Surveillance Rules</h4>" + "<ol>" + "<li>"
             + SurveillanceOversightRule.LONG_SUSPENSION.getTitle() + ": "
@@ -71,9 +71,6 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
      */
     public BrokenSurveillanceRulesEmailJob() throws Exception {
         super();
-        setLocalContext();
-        context = new AnnotationConfigApplicationContext(JobConfig.class);
-        initiateSpringBeans(context);
         loadProperties();
         allBrokenRulesCounts = new HashMap<SurveillanceOversightRule, Integer>();
         allBrokenRulesCounts.put(SurveillanceOversightRule.LONG_SUSPENSION, 0);
@@ -87,6 +84,10 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
 
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
+        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+        LOGGER.info("********* Starting the Broken Surveillance Rules Email job. *********");
+        LOGGER.info("Sending email to: " + jobContext.getMergedJobDataMap().getString("email"));
+        
         List<BrokenSurveillanceRulesDTO> errors = getAppropriateErrors(jobContext);
         String filename = null;
         if (jobContext.getMergedJobDataMap().getString("type").equalsIgnoreCase("All")) {
@@ -129,9 +130,8 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
             mailUtil.sendEmail(to, subject, htmlMessage, files, props);
         } catch (MessagingException e) {
             LOGGER.error(e);
-        } finally {
-            context.close();
-        }
+        } 
+        LOGGER.info("********* Completed the Broken Surveillance Rules Email job. *********");
     }
 
     private List<BrokenSurveillanceRulesDTO> getAppropriateErrors(final JobExecutionContext jobContext) {
@@ -356,11 +356,6 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
 
         htmlMessage += TRIGGER_DESCRIPTIONS;
         return htmlMessage;
-    }
-
-    @Override
-    protected void initiateSpringBeans(final AbstractApplicationContext context) throws IOException {
-        setBrokenSurveillanceRulesDAO((BrokenSurveillanceRulesDAO) context.getBean("brokenSurveillanceRulesDAO"));
     }
 
     private Properties loadProperties() throws IOException {

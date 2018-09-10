@@ -21,6 +21,87 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
+        <RollingFile name="summaryStatisticsEmailJob" fileName="${logDir}/scheduler/summaryStatisticsEmailJob.log"
+                     filePattern="${logDir}/scheduler/history/summaryStatisticsEmailJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="summaryStatisticsCreatorJob" fileName="${logDir}/scheduler/summaryStatisticsCreatorJob.log"
+                     filePattern="${logDir}/scheduler/history/summaryStatisticsCreatorJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="certifiedProductDownloadableResourceCreatorJob" fileName="${logDir}/scheduler/certifiedProductDownloadableResourceCreatorJob.log"
+                     filePattern="${logDir}/scheduler/history/certifiedProductDownloadableResourceCreatorJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="brokenSurveillanceRulesCreatorJob" fileName="${logDir}/scheduler/brokenSurveillanceRulesCreatorJob.log"
+                     filePattern="${logDir}/scheduler/history/brokenSurveillanceRulesCreatorJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="brokenSurveillanceRulesEmailJob" fileName="${logDir}/scheduler/brokenSurveillanceRulesEmailJob.log"
+                     filePattern="${logDir}/scheduler/history/brokenSurveillanceRulesEmailJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="inheritanceErrorsReportCreatorJob" fileName="${logDir}/scheduler/inheritanceErrorsReportCreatorJob.log"
+                     filePattern="${logDir}/scheduler/history/inheritanceErrorsReportCreatorJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="inheritanceErrorsReportEmailJob" fileName="${logDir}/scheduler/inheritanceErrorsReportEmailJob.log"
+                     filePattern="${logDir}/scheduler/history/inheritanceErrorsReportEmailJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="cacheStatusAgeJob" fileName="${logDir}/scheduler/cacheStatusAgeJob.log"
+                     filePattern="${logDir}/scheduler/history/cacheStatusAgeJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="triggerDeveloperBanJob" fileName="${logDir}/scheduler/triggerDeveloperBanJob.log"
+                     filePattern="${logDir}/scheduler/history/triggerDeveloperBanJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile>
     </Appenders>
 
     <Loggers>
@@ -49,8 +130,32 @@
             additivity="false">
             <AppenderRef ref="STDOUT" />
         </Logger>
-        <Root level="INFO">
-            <AppenderRef ref="FILE" />
-        </Root>
+        <Logger name="summaryStatisticsEmailJobLogger" level="INFO" additivity="false">
+            <AppenderRef ref="summaryStatisticsEmailJob" />
+        </Logger>
+        <Logger name="summaryStatisticsCreatorJobLogger" level="INFO" additivity="false">
+            <AppenderRef ref="summaryStatisticsCreatorJob" />
+        </Logger>
+        <Logger name="certifiedProductDownloadableResourceCreatorJobLogger" level="INFO" additivity="false">
+            <AppenderRef ref="certifiedProductDownloadableResourceCreatorJob" />
+        </Logger>
+        <Logger name="brokenSurveillanceRulesCreatorJobLogger" level="INFO" additivity="false">
+            <AppenderRef ref="brokenSurveillanceRulesCreatorJob" />
+        </Logger>
+        <Logger name="brokenSurveillanceRulesEmailJobLogger" level="INFO" additivity="false">
+            <AppenderRef ref="brokenSurveillanceRulesEmailJob" />
+        </Logger>
+        <Logger name="inheritanceErrorsReportCreatorJobLogger" level="INFO" additivity="false">
+            <AppenderRef ref="inheritanceErrorsReportCreatorJob" />
+        </Logger>
+        <Logger name="inheritanceErrorsReportEmailJobLogger" level="INFO" additivity="false">
+            <AppenderRef ref="inheritanceErrorsReportEmailJob" />
+        </Logger>
+        <Logger name="cacheStatusAgeJobLogger" level="INFO" additivity="false">
+            <AppenderRef ref="cacheStatusAgeJob" />
+        </Logger>
+        <Logger name="triggerDeveloperBanJobLogger" level="INFO" additivity="false">
+            <AppenderRef ref="triggerDeveloperBanJob" />
+        </Logger>
     </Loggers>
 </Configuration>

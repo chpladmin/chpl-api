@@ -72,8 +72,8 @@ import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.exception.ObjectsMissingValidationException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidator;
-import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFactory;
+import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
+import gov.healthit.chpl.validation.listing.PendingValidator;
 import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -98,7 +98,7 @@ public class CertifiedProductControllerTest {
     TestToolDAO ttDao;
 
     @Autowired
-    CertifiedProductValidatorFactory validatorFactory;
+    ListingValidatorFactory validatorFactory;
 
     private static JWTAuthenticatedUser adminUser;
     private static final long ADMIN_ID = -2L;
@@ -106,9 +106,9 @@ public class CertifiedProductControllerTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         adminUser = new JWTAuthenticatedUser();
-        adminUser.setFirstName("Administrator");
+        adminUser.setFullName("Administrator");
         adminUser.setId(ADMIN_ID);
-        adminUser.setLastName("Administrator");
+        adminUser.setFriendlyName("Administrator");
         adminUser.setSubjectName("admin");
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ACB"));
@@ -452,7 +452,7 @@ public class CertifiedProductControllerTest {
         pcpDTO.setIcs(false); // Inherited Status = product.getIcs();
         pcpDTO.setUniqueId("15.07.07.2642.IC04.36.00.1.160402");
         pcpDTO.setPracticeType("Ambulatory");
-        CertifiedProductValidator validator = validatorFactory.getValidator(pcpDTO);
+        PendingValidator validator = validatorFactory.getValidator(pcpDTO);
         if (validator != null) {
             validator.validate(pcpDTO);
         }
@@ -538,7 +538,7 @@ public class CertifiedProductControllerTest {
         cr.setG1Success(false);
         cr.setG2Success(false);
         cr.setGap(null);
-        cr.setNumber("170.314 (g)(4)");
+        cr.setNumber("170.315 (g)(4)");
         cr.setPrivacySecurityFramework("Approach 1 Approach 2"); // bad value
         cr.setSed(null);
         cr.setSuccess(true);
@@ -604,7 +604,7 @@ public class CertifiedProductControllerTest {
             assertNotNull(e);
             Boolean hasError = false;
             for (String error : e.getErrorMessages()){
-                if (error.startsWith("Certification 170.314 (g)(4) contains Privacy and Security Framework")){
+                if (error.startsWith("Certification 170.315 (g)(4) contains Privacy and Security Framework")){
                     hasError = true;
                 }
             }
@@ -825,7 +825,7 @@ public class CertifiedProductControllerTest {
         pcpDTO.setIcs(false); // Inherited Status = product.getIcs();
         pcpDTO.setUniqueId("15.07.07.2642.IC04.36.00.1.160402");
         pcpDTO.setPracticeType("Ambulatory");
-        CertifiedProductValidator validator = validatorFactory.getValidator(pcpDTO);
+        PendingValidator validator = validatorFactory.getValidator(pcpDTO);
         if (validator != null) {
             validator.validate(pcpDTO);
         }
@@ -924,7 +924,7 @@ public class CertifiedProductControllerTest {
         pcpDTO.setIcs(false); // Inherited Status = product.getIcs();
         pcpDTO.setUniqueId("15.07.07.2642.IC04.36.00.1.160402");
         pcpDTO.setPracticeType("Ambulatory");
-        CertifiedProductValidator validator = validatorFactory.getValidator(pcpDTO);
+        PendingValidator validator = validatorFactory.getValidator(pcpDTO);
         if (validator != null) {
             validator.validate(pcpDTO);
         }
@@ -1023,7 +1023,7 @@ public class CertifiedProductControllerTest {
         pcpDTO.setIcs(false); // Inherited Status = product.getIcs();
         pcpDTO.setUniqueId("15.07.07.2642.IC04.36.00.1.160402");
         pcpDTO.setPracticeType("Ambulatory");
-        CertifiedProductValidator validator = validatorFactory.getValidator(pcpDTO);
+        PendingValidator validator = validatorFactory.getValidator(pcpDTO);
         if (validator != null) {
             validator.validate(pcpDTO);
         }

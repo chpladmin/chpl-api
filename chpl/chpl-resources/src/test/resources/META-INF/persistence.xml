@@ -93,6 +93,7 @@
         <class>gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity</class>
         <class>gov.healthit.chpl.entity.listing.CertifiedProductEntity</class>
         <class>gov.healthit.chpl.entity.listing.CertifiedProductQmsStandardEntity</class>
+        <class>gov.healthit.chpl.entity.listing.CertifiedProductSummaryEntity</class>
         <class>gov.healthit.chpl.entity.listing.CertifiedProductTargetedUserEntity</class>
         <class>gov.healthit.chpl.entity.listing.CertifiedProductTestingLabMapEntity</class>
         <class>gov.healthit.chpl.entity.listing.ListingToListingMapEntity</class>

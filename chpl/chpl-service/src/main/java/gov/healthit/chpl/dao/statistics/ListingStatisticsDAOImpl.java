@@ -86,7 +86,7 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
                 + "FROM( "
                 +   "SELECT DISTINCT certification_body_name, year, CONCAT(UPPER(product_Name), "
                 +   "UPPER(vendor_Name)) AS products "
-                +   "FROM openchpl.certified_product_details "
+                +   "FROM " + SCHEMA_NAME + ".certified_product_details "
                 +   "WHERE ";
         if (dateRange == null) {
             sql += " deleted = false ";
@@ -131,7 +131,7 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
                 + "FROM( "
                 +   "SELECT DISTINCT certification_body_name, year, CONCAT(UPPER(product_Name), "
                 +   "UPPER(vendor_Name)) AS products, certification_status_name "
-                +   "FROM openchpl.certified_product_details "
+                +   "FROM " + SCHEMA_NAME + ".certified_product_details "
                 +   "WHERE ";
         if (dateRange == null) {
             sql += " deleted = false ";
