@@ -54,7 +54,7 @@ import gov.healthit.chpl.util.ValidationUtils;
 @Service
 public class DeveloperManagerImpl implements DeveloperManager {
     private static final Logger LOGGER = LogManager.getLogger(DeveloperManagerImpl.class);
-    
+
     @Autowired
     private DeveloperDAO developerDao;
 
@@ -158,7 +158,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
         for(DeveloperStatusEventDTO statusEvent: updatedDev.getStatusEvents()) {
             if(statusEvent.getStatus().getStatusName().equals(
                     DeveloperStatusType.UnderCertificationBanByOnc.toString()) &&
-               StringUtils.isEmpty(statusEvent.getReason())) {
+                    StringUtils.isEmpty(statusEvent.getReason())) {
                 throw new MissingReasonException(msgUtil.getMessage("developer.missingReasonForBan",
                         DeveloperStatusType.UnderCertificationBanByOnc.toString()));
             }
@@ -180,7 +180,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
         boolean devStatusHistoryUpdated = isStatusHistoryUpdated(beforeDev, updatedDev);
         if (devStatusHistoryUpdated
                 && newDevStatus.getStatus().getStatusName()
-                        .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
+                .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
                 && !Util.isUserRoleAdmin()) {
             String  msg = msgUtil.getMessage("developer.statusChangeNotAllowedWithoutAdmin", 
                     DeveloperStatusType.UnderCertificationBanByOnc.toString());
@@ -198,7 +198,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
                 .equals(newDevStatus.getStatus().getStatusName());
         if (currentStatusChanged
                 && newDevStatus.getStatus().getStatusName()
-                        .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
+                .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
                 && !(Util.isUserRoleAdmin() || Util.isUserRoleAcbAdmin())) {
             String msg = msgUtil.getMessage("developer.statusChangeNotAllowedWithoutAdminOrAcb",
                     DeveloperStatusType.UnderCertificationBanByOnc.toString());
@@ -225,6 +225,10 @@ public class DeveloperManagerImpl implements DeveloperManager {
             }
         }
 
+        if (beforeDev.getContact() != null && beforeDev.getContact().getId() != null) {
+            updatedDev.getContact().setId(beforeDev.getContact().getId());
+        }
+
         // if either the before or updated statuses are active and the user is
         // ROLE_ADMIN
         // OR if before status is active and user is not ROLE_ADMIN - proceed
@@ -249,7 +253,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
                         for (DeveloperACBMapDTO attMap : updatedDev.getTransparencyAttestationMappings()) {
                             if (attMap.getAcbName().equals(acb.getName())) {
                                 developerMappingToCreate
-                                        .setTransparencyAttestation(attMap.getTransparencyAttestation());
+                                .setTransparencyAttestation(attMap.getTransparencyAttestation());
                                 developerDao.createTransparencyMapping(developerMappingToCreate);
                             }
                         }
@@ -272,7 +276,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
     }
 
     private void updateStatusHistory(DeveloperDTO beforeDev, DeveloperDTO updatedDev) 
-        throws EntityRetrievalException, EntityCreationException {
+            throws EntityRetrievalException, EntityCreationException {
         //update status history
         List<DeveloperStatusEventDTO> statusEventsToAdd = new ArrayList<DeveloperStatusEventDTO>();
         List<DeveloperStatusEventPair> statusEventsToUpdate = new ArrayList<DeveloperStatusEventPair>();
@@ -421,7 +425,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
             DeveloperStatusEventDTO currDeveloperStatus = beforeDeveloper.getStatus();
             if (currDeveloperStatus == null || currDeveloperStatus.getStatus() == null) {
                 String msg = "Cannot merge developer " + beforeDeveloper.getName()
-                        + " because their current status cannot be determined.";
+                + " because their current status cannot be determined.";
                 LOGGER.error(msg);
                 throw new EntityCreationException(msg);
             } else if (!currDeveloperStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
@@ -445,7 +449,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
                         transparencyAttestation = currAtt;
                     } else if (currAtt != transparencyAttestation) {
                         throw new EntityCreationException("Cannot complete merge because " + acb.getName()
-                                + " has a conflicting transparency attestation for these developers.");
+                        + " has a conflicting transparency attestation for these developers.");
                     }
                 }
             }
@@ -488,17 +492,17 @@ public class DeveloperManagerImpl implements DeveloperManager {
         }
 
         activityManager
-                .addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER,
-                        createdDeveloper.getId(), "Merged " + developerIdsToMerge.size()
-                                + " developers into new developer '" + createdDeveloper.getName() + "'.",
-                        beforeDevelopers, createdDeveloper);
+        .addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER,
+                createdDeveloper.getId(), "Merged " + developerIdsToMerge.size()
+                + " developers into new developer '" + createdDeveloper.getName() + "'.",
+                beforeDevelopers, createdDeveloper);
 
         return createdDeveloper;
     }
 
     private Set<String> getDuplicateChplProductNumberErrorMessages(
             final List<DuplicateChplProdNumber> duplicateChplProdNumbers) {
-        
+
         Set<String> messages = new HashSet<String>();
 
         for (DuplicateChplProdNumber dup : duplicateChplProdNumbers) {
@@ -597,7 +601,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
                     if (origStatusHistory.getStatus().getId().longValue() == changedStatusHistory.getStatus().getId()
                             .longValue()
                             && origStatusHistory.getStatusDate().getTime() == changedStatusHistory.getStatusDate()
-                                    .getTime()) {
+                            .getTime()) {
                         foundMatchInChanged = true;
                     }
                 }
