@@ -51,10 +51,10 @@ public class CertificationIdResults implements Serializable {
     private String ehrCertificationId;
     private Map<String, Integer> metCounts;
     private Map<String, Integer> metPercentages;
-    protected ArrayList<String> missingAnd = new ArrayList<String>();
-    protected List<ArrayList<String>> missingOr = new ArrayList<ArrayList<String>>();
+    private ArrayList<String> missingAnd = new ArrayList<String>();
+    private List<ArrayList<String>> missingOr = new ArrayList<ArrayList<String>>();
     private List<ArrayList<String>> missingCombo = new ArrayList<ArrayList<String>>();
-    private List<TreeMap<String,ArrayList<String>>> missingX = new ArrayList<TreeMap<String,ArrayList<String>>>();
+    private List<TreeMap<String, ArrayList<String>>> missingX = new ArrayList<TreeMap<String, ArrayList<String>>>();
     private String year;
     private boolean isValid;
 

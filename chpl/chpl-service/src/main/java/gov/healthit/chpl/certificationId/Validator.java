@@ -16,7 +16,7 @@ public abstract class Validator {
     protected Map<String, Integer> domainsMet = new HashMap<String, Integer>(10);
     protected SortedSet<Integer> editionYears = new TreeSet<Integer>();
     protected String attestationYear = null;
-    
+
     // missing criteria where all in the set are required
     protected ArrayList<String> missingAnd = new ArrayList<String>();
     // missing 1 criteria from each of the following sets
@@ -24,7 +24,7 @@ public abstract class Validator {
     // missing at least one of the following combinations of criteria
     protected List<ArrayList<String>> missingCombo = new ArrayList<ArrayList<String>>();
     // missing X criteria from the list of criteria
-    protected List<TreeMap<String,ArrayList<String>>> missingX = new ArrayList<TreeMap<String,ArrayList<String>>>();
+    protected List<TreeMap<String, ArrayList<String>>> missingX = new ArrayList<TreeMap<String, ArrayList<String>>>();
 
     protected Map<String, Integer> percents = new HashMap<String, Integer>();
     protected Map<String, Integer> counts = new HashMap<String, Integer>();
@@ -140,30 +140,30 @@ public abstract class Validator {
     //
     // **********************************************************************
     protected void calculatePercentages() {
-        this.percents.put("criteriaMet",
-                (0 == this.counts.get("criteriaRequired")) ? 0
-                        : Math.min((int) Math.floor(
-                                (this.counts.get("criteriaRequiredMet") * 100.0) / this.counts.get("criteriaRequired")),
-                                100));
-        this.percents.put("cqmDomains",
-                (0 == this.counts.get("domainsRequired")) ? 0
-                        : Math.min((int) Math.floor(
-                                (this.counts.get("domainsRequiredMet") * 100.0) / this.counts.get("domainsRequired")),
-                                100));
-        this.percents.put("cqmsInpatient",
-                (0 == this.counts.get("cqmsInpatientRequired")) ? 0
-                        : Math.min((int) Math.floor((this.counts.get("cqmsInpatientRequiredMet") * 100.0)
+        this.percents.put(
+                "criteriaMet",
+                (0 == this.counts.get("criteriaRequired")) ? 0 : Math.min(
+                        (int) Math.floor((this.counts.get("criteriaRequiredMet") * 100.0)
+                                / this.counts.get("criteriaRequired")), 100));
+        this.percents.put(
+                "cqmDomains",
+                (0 == this.counts.get("domainsRequired")) ? 0 : Math.min(
+                        (int) Math.floor((this.counts.get("domainsRequiredMet") * 100.0)
+                                / this.counts.get("domainsRequired")), 100));
+        this.percents.put(
+                "cqmsInpatient",
+                (0 == this.counts.get("cqmsInpatientRequired")) ? 0 : Math.min(
+                        (int) Math.floor((this.counts.get("cqmsInpatientRequiredMet") * 100.0)
                                 / this.counts.get("cqmsInpatientRequired")), 100));
-        this.percents.put("cqmsAmbulatory",
-                (0 == this.counts.get("cqmsAmbulatoryRequired") + this.counts.get("cqmsAmbulatoryCoreRequired")) ? 0
-                        : Math.min(
-                                (int) Math.floor(((this.counts.get("cqmsAmbulatoryCoreRequiredMet")
-                                        + Math.min(this.counts.get("cqmsAmbulatoryRequiredMet"),
-                                                this.counts.get("cqmsAmbulatoryRequired")))
-                                        / (double) (this.counts.get("cqmsAmbulatoryRequired")
-                                                + this.counts.get("cqmsAmbulatoryCoreRequired")))
-                                        * 100.0),
-                                100));
+        this.percents
+                .put("cqmsAmbulatory",
+                        (0 == this.counts.get("cqmsAmbulatoryRequired") + this.counts.get("cqmsAmbulatoryCoreRequired")) ? 0
+                                : Math.min(
+                                        (int) Math.floor(((this.counts.get("cqmsAmbulatoryCoreRequiredMet") + Math.min(
+                                                this.counts.get("cqmsAmbulatoryRequiredMet"),
+                                                this.counts.get("cqmsAmbulatoryRequired"))) / (double) (this.counts
+                                                .get("cqmsAmbulatoryRequired") + this.counts
+                                                .get("cqmsAmbulatoryCoreRequired"))) * 100.0), 100));
     }
 
     // **********************************************************************
