@@ -9,6 +9,6 @@ _Date TBD_
   * Other report file
   * API Documentation (at criteria level)
   * Developer website
-* Add info messages for 2014 cms id widget
+  * Add info messages for 2014 cms id widget
 
 ---
