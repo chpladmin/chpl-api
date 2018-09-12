@@ -16,6 +16,8 @@ public class ApiKeyDTO implements Serializable {
     private Date lastModifiedDate;
     private Long lastModifiedUser;
     private Boolean deleted;
+    private Date lastUsedDate;
+    private Date deleteWarningSentDate;
 
     public ApiKeyDTO() {
     }
@@ -31,7 +33,8 @@ public class ApiKeyDTO implements Serializable {
         this.lastModifiedDate = entity.getLastModifiedDate();
         this.lastModifiedUser = entity.getLastModifiedUser();
         this.deleted = entity.getDeleted();
-
+        this.setLastUsedDate(entity.getLastUsedDate());
+        this.setDeleteWarningSentDate(entity.getDeleteWarningSentDate());
     }
 
     public Long getId() {
@@ -104,6 +107,22 @@ public class ApiKeyDTO implements Serializable {
 
     public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public Date getLastUsedDate() {
+        return lastUsedDate;
+    }
+
+    public void setLastUsedDate(Date lastUsedDate) {
+        this.lastUsedDate = lastUsedDate;
+    }
+
+    public Date getDeleteWarningSentDate() {
+        return deleteWarningSentDate;
+    }
+
+    public void setDeleteWarningSentDate(Date deleteWarningSentDate) {
+        this.deleteWarningSentDate = deleteWarningSentDate;
     }
 
 }

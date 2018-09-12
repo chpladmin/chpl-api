@@ -51,6 +51,12 @@ public class ApiKeyEntity {
     @Basic(optional = false)
     @Column(name = "deleted", nullable = false)
     private Boolean deleted;
+    
+    @Column(name = "last_used_date", nullable = false)
+    private Date lastUsedDate;
+    
+    @Column(name = "delete_warning_sent_date", nullable = true)
+    private Date deleteWarningSentDate; 
 
     public Long getId() {
         return id;
@@ -122,6 +128,22 @@ public class ApiKeyEntity {
 
     public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public Date getLastUsedDate() {
+        return lastUsedDate;
+    }
+
+    public void setLastUsedDate(Date lastUsedDate) {
+        this.lastUsedDate = lastUsedDate;
+    }
+
+    public Date getDeleteWarningSentDate() {
+        return deleteWarningSentDate;
+    }
+
+    public void setDeleteWarningSentDate(Date deleteWarningSentDate) {
+        this.deleteWarningSentDate = deleteWarningSentDate;
     }
 
 }

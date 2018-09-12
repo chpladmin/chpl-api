@@ -47,6 +47,9 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
     @Autowired
     private SummaryStatisticsDAO summaryStatisticsDAO;
 
+    @Autowired
+    private SendMailUtil sendMailUtil;
+    
     private Properties props;
 
     /**
@@ -80,9 +83,9 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
 
 
     private void sendEmail(final String message, final String address) throws AddressException, MessagingException {
-        SendMailUtil mailUtil = new SendMailUtil();
+        //SendMailUtil mailUtil = new SendMailUtil();
         String subject = props.getProperty("summaryEmailSubject").toString();
-        mailUtil.sendEmail(address, subject, message, getSummaryStatisticsFile(), props);
+        sendMailUtil.sendEmail(address, subject, message, getSummaryStatisticsFile(), props);
     }
 
     private List<File> getSummaryStatisticsFile() {

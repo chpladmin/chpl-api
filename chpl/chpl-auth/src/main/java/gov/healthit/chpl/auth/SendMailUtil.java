@@ -1,6 +1,7 @@
 package gov.healthit.chpl.auth;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -37,7 +38,7 @@ import org.springframework.util.StringUtils;
  * @author dlucas
  *
  */
-@Service("SendMailUtil")
+@Service
 public class SendMailUtil {
 
     private static final Logger LOGGER = LogManager.getLogger(SendMailUtil.class);
@@ -162,83 +163,22 @@ public class SendMailUtil {
      * @throws MessagingException if messaging fails
      */
     public void sendEmail(final String toEmail, final String subject, final String htmlMessage,
-            final List<File> files, final Properties props)
-                    throws AddressException, MessagingException {
-        // do not attempt to send email if we are in a dev environment
-        String mailHost = props.getProperty("smtpHost");
-        if (StringUtils.isEmpty(mailHost) || "development".equalsIgnoreCase(mailHost)
-                || "dev".equalsIgnoreCase(mailHost)) {
-            return;
-        }
-
-        // sets SMTP server properties
-        Properties properties = new Properties();
-        properties.put("mail.smtp.host", props.getProperty("smtpHost"));
-        properties.put("mail.smtp.port", props.getProperty("smtpPort"));
-        properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.starttls.enable", "true");
-
-        LOGGER.debug("Mail Host: " + properties.getProperty("mail.smtp.host"));
-        LOGGER.debug("Mail Port: " + properties.getProperty("mail.smtp.port"));
-        LOGGER.debug("Mail Username :" + props.getProperty("smtpUsername"));
-
-        // creates a new session with an authenticator
-        javax.mail.Authenticator auth = new javax.mail.Authenticator() {
-            @Override
-            public PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(props.getProperty("smtpUsername"), props.getProperty("smtpPassword"));
-            }
-        };
-
-        Session session = Session.getInstance(properties, auth);
-
-        // creates a new e-mail message
-        Message msg = new MimeMessage(session);
-
-        try {
-            InternetAddress fromEmail = new InternetAddress(props.getProperty("smtpFrom"));
-            msg.setFrom(fromEmail);
-            LOGGER.debug("Sending email from " + props.getProperty("smtpFrom"));
-        } catch (MessagingException ex) {
-            LOGGER.fatal("Invalid Email Address: " + props.getProperty("smtpFrom"), ex);
-            throw ex;
-        }
-
-        try {
-            InternetAddress toAddress = new InternetAddress(toEmail);
-            msg.setRecipient(Message.RecipientType.TO, toAddress);
-            LOGGER.debug("Sending email to " + toEmail);
-        } catch (MessagingException ex) {
-            LOGGER.fatal("Invalid Email Address: " + toEmail, ex);
-            throw ex;
-        }
-
-        msg.setSubject(subject);
-        msg.setSentDate(new Date());
-
-        BodyPart messageBodyPartWithMessage = new MimeBodyPart();
-        messageBodyPartWithMessage.setContent(htmlMessage, "text/html");
-
-        Multipart multipart = new MimeMultipart();
-        multipart.addBodyPart(messageBodyPartWithMessage);
-
-        if (files != null) {
-            // Add file attachments to email
-            for (File file : files) {
-                MimeBodyPart messageBodyPart = new MimeBodyPart();
-                DataSource source = new FileDataSource(file);
-                messageBodyPart.setDataHandler(new DataHandler(source));
-                messageBodyPart.setFileName(file.getName());
-
-                multipart.addBodyPart(messageBodyPart);
-            }
-        }
-        msg.setContent(multipart, "text/html");
-
+            final List<File> files, final Properties props) throws AddressException, MessagingException {
+        
         // sends the e-mail
         Boolean emailSentSuccessfully = false;
         try {
-            Transport.send(msg);
+            List<String> addresses = new ArrayList<String>();
+            addresses.add(toEmail);
+            
+            EmailUtil email = new EmailUtil(env);
+            email.toAddresses(addresses)
+                    .subject(subject)
+                    .htmlBody(htmlMessage)
+                    .fileAttachments(files)
+                    .sendEmail();
+                    
+            
             emailSentSuccessfully = true;
             LOGGER.info("email sent successfully");
         } catch (SendFailedException e) {
@@ -280,26 +220,7 @@ public class SendMailUtil {
             return;
         }
 
-        // sets SMTP server properties
-        Properties properties = new Properties();
-        properties.put("mail.smtp.host", props.getProperty("smtpHost"));
-        properties.put("mail.smtp.port", props.getProperty("smtpPort"));
-        properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.starttls.enable", "true");
-
-        LOGGER.debug("Mail Host: " + properties.getProperty("mail.smtp.host"));
-        LOGGER.debug("Mail Port: " + properties.getProperty("mail.smtp.port"));
-        LOGGER.debug("Mail Username :" + props.getProperty("smtpUsername"));
-
-        // creates a new session with an authenticator
-        javax.mail.Authenticator auth = new javax.mail.Authenticator() {
-            @Override
-            public PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(props.getProperty("smtpUsername"), props.getProperty("smtpPassword"));
-            }
-        };
-
-        Session session = Session.getInstance(properties, auth);
+        Session session = getSession(props);
 
         // creates a new e-mail message
         Message msg = new MimeMessage(session);
@@ -385,4 +306,30 @@ public class SendMailUtil {
             LOGGER.info("Email did not send successfully.");
         }
     }
+    
+
+    private Session getSession(final Properties props) {
+        // sets SMTP server properties
+        Properties properties = new Properties();
+        properties.put("mail.smtp.host", props.getProperty("smtpHost"));
+        properties.put("mail.smtp.port", props.getProperty("smtpPort"));
+        properties.put("mail.smtp.auth", "true");
+        properties.put("mail.smtp.starttls.enable", "true");
+
+        LOGGER.debug("Mail Host: " + properties.getProperty("mail.smtp.host"));
+        LOGGER.debug("Mail Port: " + properties.getProperty("mail.smtp.port"));
+        LOGGER.debug("Mail Username :" + props.getProperty("smtpUsername"));
+
+        // creates a new session with an authenticator
+        javax.mail.Authenticator auth = new javax.mail.Authenticator() {
+            @Override
+            public PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(props.getProperty("smtpUsername"), props.getProperty("smtpPassword"));
+            }
+        };
+
+        Session session = Session.getInstance(properties, auth);
+        return session;
+    }
+
 }
