@@ -294,31 +294,31 @@ public class Validator20142015 extends Validator {
         }
 
         if (!flag) {
-            missingCombo.add((ArrayList<String>)Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.314(h)(1)",
-                    "170.315 (b)(1)", "170.315 (h)(1)"));
-            missingCombo.add((ArrayList<String>)Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.314(h)(1)",
-                    "170.315 (b)(1)", "170.315 (h)(2)"));
-            missingCombo.add((ArrayList<String>)Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.314(h)(1)",
-                    "170.315 (h)(2)"));
-            missingCombo.add((ArrayList<String>)Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.314(h)(1)",
-                    "170.315 (b)(1)"));
-            missingCombo.add((ArrayList<String>)Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.314(h)(1)"));
-            missingCombo.add((ArrayList<String>)Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(h)(1)", "170.315(h)(2)"));
-            missingCombo.add((ArrayList<String>)Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.315(h)(2)"));
-            missingCombo.add((ArrayList<String>)Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(h)(1)", "170.315(b)(1)"));
-            missingCombo.add((ArrayList<String>)Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.315(b)(1)"));
-            missingCombo.add((ArrayList<String>)Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.315(h)(1)"));
-            missingCombo.add((ArrayList<String>)Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)"));
-            missingCombo.add((ArrayList<String>)Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.315(h)(2)"));
-            missingCombo.add((ArrayList<String>)Arrays.asList("170.314(b)(8)", "170.314(h)(1)", "170.315(h)(2)"));
-            missingCombo.add((ArrayList<String>)Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.315(b)(1)"));
-            missingCombo.add((ArrayList<String>)Arrays.asList("170.314(b)(8)", "170.314(h)(1)", "170.315(b)(1)"));
-            missingCombo.add((ArrayList<String>)Arrays.asList("170.315(b)(1)", "170.315(h)(1)", "170.315(h)(2)"));
-            missingCombo.add((ArrayList<String>)Arrays.asList("170.314(b)(8)", "170.314(h)(1)"));
-            missingCombo.add((ArrayList<String>)Arrays.asList("170.314(b)(1)", "170.314(b)(2)"));
-            missingCombo.add((ArrayList<String>)Arrays.asList("170.314(h)(1)", "170.315(b)(1)"));
-            missingCombo.add((ArrayList<String>)Arrays.asList("170.315(b)(1)", "170.315(h)(1)"));
-            missingCombo.add((ArrayList<String>)Arrays.asList("170.315(b)(1)", "170.315(h)(2)"));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.314(h)(1)",
+                    "170.315 (b)(1)", "170.315 (h)(1)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.314(h)(1)",
+                    "170.315 (b)(1)", "170.315 (h)(2)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.314(h)(1)",
+                    "170.315 (h)(2)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.314(h)(1)",
+                    "170.315 (b)(1)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.314(h)(1)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(h)(1)", "170.315(h)(2)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.315(h)(2)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(h)(1)", "170.315(b)(1)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.315(b)(1)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.315(h)(1)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.315(h)(2)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(8)", "170.314(h)(1)", "170.315(h)(2)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.315(b)(1)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(8)", "170.314(h)(1)", "170.315(b)(1)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.315(b)(1)", "170.315(h)(1)", "170.315(h)(2)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(8)", "170.314(h)(1)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(1)", "170.314(b)(2)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(h)(1)", "170.315(b)(1)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.315(b)(1)", "170.315(h)(1)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.315(b)(1)", "170.315(h)(2)")));
         }
 
         return false;
