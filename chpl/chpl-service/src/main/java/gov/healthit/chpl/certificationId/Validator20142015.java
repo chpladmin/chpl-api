@@ -56,10 +56,8 @@ public class Validator20142015 extends Validator {
             this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
             cpoe = true;
         } else {
-            ArrayList<String> missing = new ArrayList<String>();
-            missing.addAll(new ArrayList<String>(Arrays.asList("170.314 (a)(1)", "170.314 (a)(18)", "170.314 (a)(19)",
+            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (a)(1)", "170.314 (a)(18)", "170.314 (a)(19)",
                     "170.314 (a)(20)", "170.315 (a)(1)", "170.315 (a)(2)", "170.315 (a)(3)")));
-            missingOr.add(missing);
         }
 
         // (2)(i) Record demographics at 45 CFR 170.314(a)(3); or (ii) 45 CFR
@@ -68,9 +66,7 @@ public class Validator20142015 extends Validator {
             recordDemo = true;
             this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
         } else {
-            ArrayList<String> missing = new ArrayList<String>();
-            missing.addAll(new ArrayList<String>(Arrays.asList("170.314 (a)(3)", "170.315 (a)(5)")));
-            missingOr.add(missing);
+            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (a)(3)", "170.315 (a)(5)")));
         }
 
         // (3)(i) Problem list at 45 CFR 170.314(a)(5); or (ii) 45 CFR
@@ -79,9 +75,7 @@ public class Validator20142015 extends Validator {
             problemList = true;
             this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
         } else {
-            ArrayList<String> missing = new ArrayList<String>();
-            missing.addAll(new ArrayList<String>(Arrays.asList("170.314 (a)(5)", "170.315 (a)(6)")));
-            missingOr.add(missing);
+            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (a)(5)", "170.315 (a)(6)")));
         }
 
         // (4)(i) Medication list at 45 CFR 170.314(a)(6); or (ii) 45 CFR
@@ -90,9 +84,7 @@ public class Validator20142015 extends Validator {
             medList = true;
             this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
         } else {
-            ArrayList<String> missing = new ArrayList<String>();
-            missing.addAll(new ArrayList<String>(Arrays.asList("170.314 (a)(6)", "170.315 (a)(7)")));
-            missingOr.add(missing);
+            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (a)(6)", "170.315 (a)(7)")));
         }
 
         // (5)(i) Medication allergy list 45 CFR 170.314(a)(7); or (ii) 45 CFR
@@ -101,9 +93,7 @@ public class Validator20142015 extends Validator {
             medAllergyList = true;
             this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
         } else {
-            ArrayList<String> missing = new ArrayList<String>();
-            missing.addAll(new ArrayList<String>(Arrays.asList("170.314 (a)(7)", "170.315 (a)(8)")));
-            missingOr.add(missing);
+            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (a)(7)", "170.315 (a)(8)")));
         }
 
         // (6)(i) Clinical decision support at 45 CFR 170.314(a)(8); or (ii) 45
@@ -112,9 +102,7 @@ public class Validator20142015 extends Validator {
             clinicalDecision = true;
             this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
         } else {
-            ArrayList<String> missing = new ArrayList<String>();
-            missing.addAll(new ArrayList<String>(Arrays.asList("170.314 (a)(8)", "170.315 (a)(9)")));
-            missingOr.add(missing);
+            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (a)(8)", "170.315 (a)(9)")));
         }
 
         boolean critToc = this.isCriteriaTOCValid();
@@ -306,73 +294,31 @@ public class Validator20142015 extends Validator {
         }
 
         if (!flag) {
-            ArrayList<String> missing = new ArrayList<String>();
-            missing.addAll(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.314(h)(1)",
+            missingCombo.add((ArrayList<String>)Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.314(h)(1)",
                     "170.315 (b)(1)", "170.315 (h)(1)"));
-            missingCombo.add(missing);
-            ArrayList<String> missing2 = new ArrayList<String>();
-            missing2.addAll(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.314(h)(1)",
+            missingCombo.add((ArrayList<String>)Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.314(h)(1)",
                     "170.315 (b)(1)", "170.315 (h)(2)"));
-            missingCombo.add(missing2);
-            ArrayList<String> missing3 = new ArrayList<String>();
-            missing3.addAll(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.314(h)(1)",
+            missingCombo.add((ArrayList<String>)Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.314(h)(1)",
                     "170.315 (h)(2)"));
-            missingCombo.add(missing3);
-            ArrayList<String> missing4 = new ArrayList<String>();
-            missing4.addAll(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.314(h)(1)",
+            missingCombo.add((ArrayList<String>)Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.314(h)(1)",
                     "170.315 (b)(1)"));
-            missingCombo.add(missing4);
-            ArrayList<String> missing5 = new ArrayList<String>();
-            missing5.addAll(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.314(h)(1)"));
-            missingCombo.add(missing5);
-            ArrayList<String> missing6 = new ArrayList<String>();
-            missing6.addAll(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(h)(1)", "170.315(h)(2)"));
-            missingCombo.add(missing6);
-            ArrayList<String> missing7 = new ArrayList<String>();
-            missing7.addAll(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.315(h)(2)"));
-            missingCombo.add(missing7);
-            ArrayList<String> missing8 = new ArrayList<String>();
-            missing8.addAll(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(h)(1)", "170.315(b)(1)"));
-            missingCombo.add(missing8);
-            ArrayList<String> missing9 = new ArrayList<String>();
-            missing9.addAll(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.315(b)(1)"));
-            missingCombo.add(missing9);
-            ArrayList<String> missing10 = new ArrayList<String>();
-            missing10.addAll(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.315(h)(1)"));
-            missingCombo.add(missing10);
-            ArrayList<String> missing11 = new ArrayList<String>();
-            missing11.addAll(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)"));
-            missingCombo.add(missing11);
-            ArrayList<String> missing12 = new ArrayList<String>();
-            missing12.addAll(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.315(h)(2)"));
-            missingCombo.add(missing12);
-            ArrayList<String> missing13 = new ArrayList<String>();
-            missing13.addAll(Arrays.asList("170.314(b)(8)", "170.314(h)(1)", "170.315(h)(2)"));
-            missingCombo.add(missing13);
-            ArrayList<String> missing14 = new ArrayList<String>();
-            missing14.addAll(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.315(b)(1)"));
-            missingCombo.add(missing14);
-            ArrayList<String> missing15 = new ArrayList<String>();
-            missing15.addAll(Arrays.asList("170.314(b)(8)", "170.314(h)(1)", "170.315(b)(1)"));
-            missingCombo.add(missing15);
-            ArrayList<String> missing16 = new ArrayList<String>();
-            missing16.addAll(Arrays.asList("170.315(b)(1)", "170.315(h)(1)", "170.315(h)(2)"));
-            missingCombo.add(missing16);
-            ArrayList<String> missing17 = new ArrayList<String>();
-            missing17.addAll(Arrays.asList("170.314(b)(8)", "170.314(h)(1)"));
-            missingCombo.add(missing17);
-            ArrayList<String> missing18 = new ArrayList<String>();
-            missing18.addAll(Arrays.asList("170.314(b)(1)", "170.314(b)(2)"));
-            missingCombo.add(missing18);
-            ArrayList<String> missing19 = new ArrayList<String>();
-            missing19.addAll(Arrays.asList("170.314(h)(1)", "170.315(b)(1)"));
-            missingCombo.add(missing19);
-            ArrayList<String> missing20 = new ArrayList<String>();
-            missing20.addAll(Arrays.asList("170.315(b)(1)", "170.315(h)(1)"));
-            missingCombo.add(missing20);
-            ArrayList<String> missing21 = new ArrayList<String>();
-            missing21.addAll(Arrays.asList("170.315(b)(1)", "170.315(h)(2)"));
-            missingCombo.add(missing21);
+            missingCombo.add((ArrayList<String>)Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.314(h)(1)"));
+            missingCombo.add((ArrayList<String>)Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(h)(1)", "170.315(h)(2)"));
+            missingCombo.add((ArrayList<String>)Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.315(h)(2)"));
+            missingCombo.add((ArrayList<String>)Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(h)(1)", "170.315(b)(1)"));
+            missingCombo.add((ArrayList<String>)Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.315(b)(1)"));
+            missingCombo.add((ArrayList<String>)Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.315(h)(1)"));
+            missingCombo.add((ArrayList<String>)Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)"));
+            missingCombo.add((ArrayList<String>)Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.315(h)(2)"));
+            missingCombo.add((ArrayList<String>)Arrays.asList("170.314(b)(8)", "170.314(h)(1)", "170.315(h)(2)"));
+            missingCombo.add((ArrayList<String>)Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.315(b)(1)"));
+            missingCombo.add((ArrayList<String>)Arrays.asList("170.314(b)(8)", "170.314(h)(1)", "170.315(b)(1)"));
+            missingCombo.add((ArrayList<String>)Arrays.asList("170.315(b)(1)", "170.315(h)(1)", "170.315(h)(2)"));
+            missingCombo.add((ArrayList<String>)Arrays.asList("170.314(b)(8)", "170.314(h)(1)"));
+            missingCombo.add((ArrayList<String>)Arrays.asList("170.314(b)(1)", "170.314(b)(2)"));
+            missingCombo.add((ArrayList<String>)Arrays.asList("170.314(h)(1)", "170.315(b)(1)"));
+            missingCombo.add((ArrayList<String>)Arrays.asList("170.315(b)(1)", "170.315(h)(1)"));
+            missingCombo.add((ArrayList<String>)Arrays.asList("170.315(b)(1)", "170.315(h)(2)"));
         }
 
         return false;
@@ -391,27 +337,21 @@ public class Validator20142015 extends Validator {
         if (this.criteriaMet.containsKey("170.314 (c)(1)") || this.criteriaMet.containsKey("170.315 (c)(1)")) {
             ++cqmCritCount;
         } else {
-            ArrayList<String> missing = new ArrayList<String>();
-            missing.addAll(new ArrayList<String>(Arrays.asList("170.314 (c)(1)", "170.315 (c)(1)")));
-            missingOr.add(missing);
+            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (c)(1)", "170.315 (c)(1)")));
         }
 
         // (2) 45 CFR 170.314(c)(2) or 170.315(c)(2)
         if (this.criteriaMet.containsKey("170.314 (c)(2)") || this.criteriaMet.containsKey("170.315 (c)(2)")) {
             ++cqmCritCount;
         } else {
-            ArrayList<String> missing = new ArrayList<String>();
-            missing.addAll(new ArrayList<String>(Arrays.asList("170.314 (c)(2)", "170.315 (c)(2)")));
-            missingOr.add(missing);
+            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (c)(2)", "170.315 (c)(2)")));
         }
 
         // (3) 45 CFR 170.314(c)(3) or 170.315(c)(3)
         if (this.criteriaMet.containsKey("170.314 (c)(3)") || this.criteriaMet.containsKey("170.315 (c)(3)")) {
             ++cqmCritCount;
         } else {
-            ArrayList<String> missing = new ArrayList<String>();
-            missing.addAll(new ArrayList<String>(Arrays.asList("170.314 (c)(3)", "170.315 (c)(3)")));
-            missingOr.add(missing);
+            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (c)(3)", "170.315 (c)(3)")));
         }
 
         this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + cqmCritCount);
@@ -433,72 +373,56 @@ public class Validator20142015 extends Validator {
         if (this.criteriaMet.containsKey("170.314 (d)(1)") || this.criteriaMet.containsKey("170.315 (d)(1)")) {
             ++psCritMetCount;
         } else {
-            ArrayList<String> missing = new ArrayList<String>();
-            missing.addAll(new ArrayList<String>(Arrays.asList("170.314 (d)(1)", "170.315 (d)(1)")));
-            missingOr.add(missing);
+            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (d)(1)", "170.315 (d)(1)")));
         }
 
         // (2) 45 CFR 170.314(d)(2) or 170.315(d)(2);
         if (this.criteriaMet.containsKey("170.314 (d)(2)") || this.criteriaMet.containsKey("170.315 (d)(2)")) {
             ++psCritMetCount;
         } else {
-            ArrayList<String> missing = new ArrayList<String>();
-            missing.addAll(new ArrayList<String>(Arrays.asList("170.314 (d)(2)", "170.315 (d)(2)")));
-            missingOr.add(missing);
+            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (d)(2)", "170.315 (d)(2)")));
         }
 
         // (3) 45 CFR 170.314(d)(3) or 170.315(d)(3);
         if (this.criteriaMet.containsKey("170.314 (d)(3)") || this.criteriaMet.containsKey("170.315 (d)(3)")) {
             ++psCritMetCount;
         } else {
-            ArrayList<String> missing = new ArrayList<String>();
-            missing.addAll(new ArrayList<String>(Arrays.asList("170.314 (d)(3)", "170.315 (d)(3)")));
-            missingOr.add(missing);
+            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (d)(3)", "170.315 (d)(3)")));
         }
 
         // (4) 45 CFR 170.314(d)(4) or 170.315(d)(4);
         if (this.criteriaMet.containsKey("170.314 (d)(4)") || this.criteriaMet.containsKey("170.315 (d)(4)")) {
             ++psCritMetCount;
         } else {
-            ArrayList<String> missing = new ArrayList<String>();
-            missing.addAll(new ArrayList<String>(Arrays.asList("170.314 (d)(4)", "170.315 (d)(4)")));
-            missingOr.add(missing);
+            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (d)(4)", "170.315 (d)(4)")));
         }
 
         // (5) 45 CFR 170.314(d)(5) or 170.315(d)(5);
         if (this.criteriaMet.containsKey("170.314 (d)(5)") || this.criteriaMet.containsKey("170.315 (d)(5)")) {
             ++psCritMetCount;
         } else {
-            ArrayList<String> missing = new ArrayList<String>();
-            missing.addAll(new ArrayList<String>(Arrays.asList("170.314 (d)(5)", "170.315 (d)(5)")));
-            missingOr.add(missing);
+            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (d)(5)", "170.315 (d)(5)")));
         }
 
         // (6) 45 CFR 170.314(d)(6) or 170.315(d)(6);
         if (this.criteriaMet.containsKey("170.314 (d)(6)") || this.criteriaMet.containsKey("170.315 (d)(6)")) {
             ++psCritMetCount;
         } else {
-            ArrayList<String> missing = new ArrayList<String>();
-            missing.addAll(new ArrayList<String>(Arrays.asList("170.314 (d)(6)", "170.315 (d)(6)")));
-            missingOr.add(missing);
+            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (d)(6)", "170.315 (d)(6)")));
         }
 
         // (7) 45 CFR 170.314(d)(7) or 170.315(d)(7);
         if (this.criteriaMet.containsKey("170.314 (d)(7)") || this.criteriaMet.containsKey("170.315 (d)(7)")) {
             ++psCritMetCount;
         } else {
-            ArrayList<String> missing = new ArrayList<String>();
-            missing.addAll(new ArrayList<String>(Arrays.asList("170.314 (d)(7)", "170.315 (d)(7)")));
-            missingOr.add(missing);
+            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (d)(7)", "170.315 (d)(7)")));
         }
 
         // (8) 45 CFR 170.314(d)(8) or 170.315(d)(8);
         if (this.criteriaMet.containsKey("170.314 (d)(8)") || this.criteriaMet.containsKey("170.315 (d)(8)")) {
             ++psCritMetCount;
         } else {
-            ArrayList<String> missing = new ArrayList<String>();
-            missing.addAll(new ArrayList<String>(Arrays.asList("170.314 (d)(8)", "170.315 (d)(8)")));
-            missingOr.add(missing);
+            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (d)(8)", "170.315 (d)(8)")));
         }
 
         this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + psCritMetCount);

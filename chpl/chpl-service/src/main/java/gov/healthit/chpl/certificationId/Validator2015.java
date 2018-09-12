@@ -105,9 +105,7 @@ public class Validator2015 extends Validator {
                 return true;
             }
         }
-        ArrayList<String> missing = new ArrayList<String>();
-        missing.addAll(CPOE_CRITERIA_OR);
-        missingOr.add(missing);
+        missingOr.add(new ArrayList<String>(CPOE_CRITERIA_OR));
         return false;
     }
 
@@ -135,10 +133,7 @@ public class Validator2015 extends Validator {
         }
 
         if (!met) {
-            ArrayList<String> missing = new ArrayList<String>();
-            missing.add("170.315 (h)(1)");
-            missing.add("170.315 (h)(2)");
-            missingOr.add(missing);
+            missingOr.add(new ArrayList<String>(Arrays.asList("170.315 (h)(1)","170.315 (h)(2)")));
         }
 
         return (this.counts.get("criteriaDpRequiredMet") >= this.counts.get("criteriaDpRequired"));
