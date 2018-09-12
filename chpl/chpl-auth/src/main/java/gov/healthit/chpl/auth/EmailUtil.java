@@ -1,8 +1,6 @@
 package gov.healthit.chpl.auth;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -10,9 +8,7 @@ import java.util.Properties;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
-import javax.mail.Address;
 import javax.mail.Authenticator;
-import javax.mail.BodyPart;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
@@ -85,17 +81,18 @@ public class EmailUtil {
     //where it all comes together
     //this method is private and is called from sendEmail()
     private EmailUtil build() throws AddressException, MessagingException {
+        EmailOverrider overrider = new EmailOverrider(env);
         Session session = Session.getInstance(getProperties(), getAuthenticator(getProperties()));
         message = new MimeMessage(session);
         
-        message.addRecipients(RecipientType.TO, getRecipients());
+        message.addRecipients(RecipientType.TO, overrider.getRecipients(toAddresses));
         message.setFrom(new InternetAddress(getProperties().getProperty("smtpFrom")));
         message.setSubject(this.subject);
         message.setSentDate(new Date());
         
         Multipart multipart = new MimeMultipart();
         
-        multipart.addBodyPart(getBody());
+        multipart.addBodyPart(overrider.getBody(htmlBody, toAddresses));
         
         if (fileAttachments != null) {
             // Add file attachments to email
@@ -144,91 +141,5 @@ public class EmailUtil {
         LOGGER.debug("Mail Username :" + env.getProperty("smtpUsername"));
         
         return properties;
-    }
-    
-    private Address[] getRecipients() throws MessagingException {
-        List<Address> addresses = new ArrayList<Address>();
-        if (shouldEmailBeRedirected()) {
-            Address address = new InternetAddress(getForwardToEmail());
-            addresses.add(address);
-        } else {
-            for (String addr : toAddresses) {
-                Address address = new InternetAddress(addr);
-                addresses.add(address);
-            }
-        }
-        Address[] addressArr = new Address[addresses.size()];
-        return addresses.toArray(addressArr);
-    }
-    
-    private BodyPart getBody() throws MessagingException {
-        StringBuffer message = new StringBuffer();
-        
-        if (shouldEmailBeRedirected()) {
-            message.append("<b>");
-            message.append("The intended recipients: ");
-            message.append(getToAddressesAsString());
-            message.append("</b>");
-            message.append("<br/><br/>");
-        }
-        message.append(htmlBody);
-        BodyPart messageBodyPartWithMessage = new MimeBodyPart();
-        messageBodyPartWithMessage.setContent(message.toString(), "text/html");
-        return messageBodyPartWithMessage;
-    }
-    
-    private String getToAddressesAsString() {
-        String addresses = "";
-        for (String address : toAddresses) {
-            if (!addresses.equals("")) {
-                addresses += ", ";
-            }
-            addresses += address;
-            
-        }
-        return addresses;
-    }
-    
-    private Boolean shouldEmailBeRedirected() throws MessagingException {
-        //ASSUMPTION:
-        //If any of the recipients are not in the whitelisted domain, we are going to redirect the email.
-        
-        if (isNonProductionEmailEnvironment()) {
-            List<String> whitelistedDomains = getWhitelistedDomains();
-            for (String address : toAddresses) {
-                if (!whitelistedDomains.contains(getEmailDomain(address))) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-    
-    private List<String> getWhitelistedDomains() {
-        List<String> domains = new ArrayList<String>();
-        String domainList =  env.getProperty("emailNonProductionEnvironmentWhitelist");
-        if (domainList != null) {
-            domains.addAll(Arrays.asList(domainList.split(",")));
-        }
-        return domains;
-    }
-    
-    private Boolean isNonProductionEmailEnvironment() {
-        String isNonProductionEmailEnvironment = env.getProperty("emailNonProductionEnvironment");
-        //We are going to assume that if the property was not found that we are in a PROD environment
-        if (isNonProductionEmailEnvironment == null) {
-            return false;
-        } else {
-            return Boolean.parseBoolean(isNonProductionEmailEnvironment);
-        }
-    }
-    
-    private String getEmailDomain(String someEmail)
-    {
-        return  someEmail.substring(someEmail.indexOf("@") + 1);
-    }
-    
-    private String getForwardToEmail() {
-        return env.getProperty("emailNonProductionEnvironmentForwardAddress");
     }
 } 
