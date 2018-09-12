@@ -80,6 +80,7 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
         } else {
             entity.setLastModifiedUser(dto.getLastModifiedUser());
         }
+        entity.setLastUsedDate(dto.getLastUsedDate());
         update(entity);
 
         return new ApiKeyDTO(entity);
