@@ -19,6 +19,8 @@ import org.apache.logging.log4j.Logger;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.auth.SendMailUtil;
 
@@ -31,7 +33,10 @@ public class CacheStatusAgeJob implements Job {
     private static final Logger LOGGER = LogManager.getLogger("cacheStatusAgeJobLogger");
     private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
     private Properties properties = null;
-
+    
+    @Autowired
+    private SendMailUtil sendMailUtil;
+    
     /**
      * Default constructor.
      * @throws IOException if unable to load properties
@@ -57,6 +62,7 @@ public class CacheStatusAgeJob implements Job {
      */
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
+        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Cache Status Age job. *********");
         try {
             if (isCacheOld()) {
@@ -111,8 +117,7 @@ public class CacheStatusAgeJob implements Job {
         String htmlMessage = createHtmlEmailBody();
         LOGGER.info("Message to be sent: " + htmlMessage);
         
-        SendMailUtil mailUtil = new SendMailUtil();
-        mailUtil.sendEmail(recipient, subject, htmlMessage, null, properties);
+        sendMailUtil.sendEmail(recipient, subject, htmlMessage, null, properties);
     }
 
     private String createHtmlEmailBody() {

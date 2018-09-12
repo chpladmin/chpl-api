@@ -40,6 +40,8 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
     @Autowired
     private InheritanceErrorsReportDAO inheritanceErrorsReportDAO;
     
+    @Autowired
+    private SendMailUtil sendMailUtil;
     /**
      * Constructor that initializes the InheritanceErrorsReportEmailJob object.
      * @throws Exception if thrown
@@ -74,11 +76,10 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
         }
         LOGGER.info("Message to be sent: " + htmlMessage);
         
-        SendMailUtil mailUtil = new SendMailUtil();
         try {
             htmlMessage += createHtmlEmailBody(errors.size(),
                     props.getProperty("inheritanceReportEmailWeeklyNoContent"));
-            mailUtil.sendEmail(to, subject, htmlMessage, files, props);
+            sendMailUtil.sendEmail(to, subject, htmlMessage, files, props);
         } catch (IOException | MessagingException e) {
             LOGGER.error(e);
         }

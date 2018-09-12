@@ -181,12 +181,6 @@ public class SendMailUtil {
             
             emailSentSuccessfully = true;
             LOGGER.info("email sent successfully");
-        } catch (SendFailedException e) {
-            LOGGER.info("SendFailedException. " + e.getMessage());
-        } catch (AuthenticationFailedException e) {
-            LOGGER.info("AuthenticationFailedException. " + e.getMessage());
-        } catch (MessagingException e) {
-            LOGGER.info("MessagingException. " + e.getMessage());
         } catch (Exception e) {
             LOGGER.info("Exception while sending email. " + e.getMessage());
         }

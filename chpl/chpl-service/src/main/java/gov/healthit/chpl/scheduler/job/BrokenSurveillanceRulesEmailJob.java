@@ -50,6 +50,9 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
     
     @Autowired
     private BrokenSurveillanceRulesDAO brokenSurveillanceRulesDAO;
+    
+    @Autowired
+    private SendMailUtil sendMailUtil;
 
     private static final String TRIGGER_DESCRIPTIONS = "<h4>Description of Surveillance Rules</h4>" + "<ol>" + "<li>"
             + SurveillanceOversightRule.LONG_SUSPENSION.getTitle() + ": "
@@ -125,9 +128,8 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
         }
         LOGGER.info("Sending email to {} with contents {} and a total of {} broken rules",
                 to, htmlMessage, errors.size());
-        SendMailUtil mailUtil = new SendMailUtil();
         try {
-            mailUtil.sendEmail(to, subject, htmlMessage, files, props);
+            sendMailUtil.sendEmail(to, subject, htmlMessage, files, props);
         } catch (MessagingException e) {
             LOGGER.error(e);
         } 
