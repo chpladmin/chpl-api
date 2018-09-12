@@ -224,9 +224,7 @@ public class Validator2014 extends Validator {
                 return true;
             }
         }
-        ArrayList<String> missing = new ArrayList<String>();
-        missing.addAll(CPOE_CRITERIA);
-        missingOr.add(missing);
+        missingOr.add(new ArrayList<String>(CPOE_CRITERIA));
         return false;
     }
 
@@ -275,21 +273,11 @@ public class Validator2014 extends Validator {
             return true;
         }
 
-        ArrayList<String> missing = new ArrayList<String>();
-        missing.addAll(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.314(h)(1)"));
-        missingCombo.add(missing);
-        ArrayList<String> missing2 = new ArrayList<String>();
-        missing2.addAll(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(h)(1)"));
-        missingCombo.add(missing2);
-        ArrayList<String> missing3 = new ArrayList<String>();
-        missing3.addAll(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)"));
-        missingCombo.add(missing3);
-        ArrayList<String> missing4 = new ArrayList<String>();
-        missing4.addAll(Arrays.asList("170.314(b)(8)", "170.314(h)(1)"));
-        missingCombo.add(missing4);
-        ArrayList<String> missing5 = new ArrayList<String>();
-        missing5.addAll(Arrays.asList("170.314(b)(1)", "170.314(b)(2)"));
-        missingCombo.add(missing5);
+        missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.314(h)(1)")));
+        missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(h)(1)")));
+        missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)")));
+        missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(8)", "170.314(h)(1)")));
+        missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(1)", "170.314(b)(2)")));
 
         return false;
     }
