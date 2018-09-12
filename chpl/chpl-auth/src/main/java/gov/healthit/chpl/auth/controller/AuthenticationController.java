@@ -1,5 +1,8 @@
 package gov.healthit.chpl.auth.controller;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import javax.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.healthit.chpl.auth.SendMailUtil;
+import gov.healthit.chpl.auth.EmailBuilder;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.authentication.Authenticator;
 import gov.healthit.chpl.auth.authentication.LoginCredentials;
@@ -32,7 +35,6 @@ public class AuthenticationController{
 	
 	@Autowired
 	private Authenticator authenticator;
-	@Autowired SendMailUtil sendMailService;
 	
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -121,7 +123,12 @@ public class AuthenticationController{
        			+ "<p>Take care,<br/> " +
 				 "The Open Data CHPL Team</p>";
 		String[] toEmails = {userInfo.getEmail()};
-		sendMailService.sendEmail(toEmails, null, "Open Data CHPL Password Reset", htmlMessage);
+
+		EmailBuilder emailBuilder = new EmailBuilder(env);
+		emailBuilder.recipients(new ArrayList<String>(Arrays.asList(toEmails)))
+		                .subject("Open Data CHPL Password Reset")
+		                .htmlMessage(htmlMessage)
+		                .sendEmail();
 		
 		return "{\"passwordReset\" : true }";
 	

@@ -25,74 +25,56 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.core.env.Environment;
 
-public class EmailUtil {
-    private static final Logger LOGGER = LogManager.getLogger(EmailUtil.class);
+public class EmailBuilder {
+    private static final Logger LOGGER = LogManager.getLogger(EmailBuilder.class);
     private MimeMessage message;
-    private List<String> toAddresses;
+    private List<String> recipients;
     
     //optional parameters set to default        
     private String subject = "";
     private String htmlBody = ""; 
-    private Boolean useSignature = false;
     private List<File> fileAttachments = null;
-    private String fromDisplayName = "";
-    private String fromAddress = "";
     private Environment env = null;
     
-    public EmailUtil(Environment env) {
+    public EmailBuilder(Environment env) {
         this.env = env;
     }
     
-    public EmailUtil toAddresses(List<String> addresses) {
-        this.toAddresses = addresses;
+    public EmailBuilder recipients(List<String> addresses) {
+        this.recipients = addresses;
         return this;
     }
     
-    public EmailUtil fromDisplayName(String val) {
-        fromDisplayName = val;
-        return this;
-    }
-    
-    public EmailUtil subject(String val) {
+    public EmailBuilder subject(String val) {
         subject = val;
         return this;
     }
     
-    public EmailUtil htmlBody(String val) {
+    public EmailBuilder htmlMessage(String val) {
         htmlBody = val;
         return this;
     }
     
-    public EmailUtil useSignature(Boolean bool) {
-        useSignature = bool;
-        return this;
-    }
-    
-    public EmailUtil fromAddress(String val) {
-        fromAddress = val;
-        return this;
-    }
-    
-    public EmailUtil fileAttachments(List<File> val) {
+    public EmailBuilder fileAttachments(List<File> val) {
         fileAttachments = val;
         return this;
     }
     
     //where it all comes together
     //this method is private and is called from sendEmail()
-    private EmailUtil build() throws AddressException, MessagingException {
+    private EmailBuilder build() throws AddressException, MessagingException {
         EmailOverrider overrider = new EmailOverrider(env);
         Session session = Session.getInstance(getProperties(), getAuthenticator(getProperties()));
         message = new MimeMessage(session);
         
-        message.addRecipients(RecipientType.TO, overrider.getRecipients(toAddresses));
+        message.addRecipients(RecipientType.TO, overrider.getRecipients(recipients));
         message.setFrom(new InternetAddress(getProperties().getProperty("smtpFrom")));
         message.setSubject(this.subject);
         message.setSentDate(new Date());
         
         Multipart multipart = new MimeMultipart();
         
-        multipart.addBodyPart(overrider.getBody(htmlBody, toAddresses));
+        multipart.addBodyPart(overrider.getBody(htmlBody, recipients));
         
         if (fileAttachments != null) {
             // Add file attachments to email

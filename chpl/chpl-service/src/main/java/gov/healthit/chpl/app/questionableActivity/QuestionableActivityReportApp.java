@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -23,11 +24,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.app.App;
 import gov.healthit.chpl.app.AppConfig;
-import gov.healthit.chpl.auth.SendMailUtil;
+import gov.healthit.chpl.auth.EmailBuilder;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.dao.NotificationDAO;
 import gov.healthit.chpl.dao.QuestionableActivityDAO;
@@ -66,6 +68,7 @@ public class QuestionableActivityReportApp extends App {
 
     protected QuestionableActivityDAO qaDao;
     protected NotificationDAO notificationDao;
+    protected Environment env;
 
     /**
      * Constructor.
@@ -87,6 +90,7 @@ public class QuestionableActivityReportApp extends App {
     protected void initiateSpringBeans(final AbstractApplicationContext context) throws IOException {
         this.setQaDao((QuestionableActivityDAO) context.getBean("questionableActivityDao"));
         this.setNotificationDao((NotificationDAO) context.getBean("notificationDAO"));
+        env = (Environment) context.getBean("environment");
     }
 
     protected void runJob() throws IOException, MessagingException {
@@ -169,10 +173,13 @@ public class QuestionableActivityReportApp extends App {
                 emailAddrs[i] = recip.getEmail();
                 LOGGER.info("Sending email to " + recip.getEmail());
             }
-            SendMailUtil mailUtil = new SendMailUtil();
-            mailUtil.sendEmail(null, emailAddrs,
-                    this.getProperties().getProperty("questionableActivityEmailSubject").toString(),
-                    emailBody, filesToEmail, this.getProperties());
+
+            EmailBuilder emailBuilder = new EmailBuilder(env);
+            emailBuilder.recipients(new ArrayList<String>(Arrays.asList(emailAddrs)))
+                            .subject(getProperties().getProperty("questionableActivityEmailSubject").toString())
+                            .htmlMessage(emailBody)
+                            .fileAttachments(filesToEmail)
+                            .sendEmail();
         }
     }
 

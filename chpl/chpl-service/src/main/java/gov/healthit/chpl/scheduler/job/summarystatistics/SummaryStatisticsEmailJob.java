@@ -20,13 +20,14 @@ import org.apache.logging.log4j.Logger;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.healthit.chpl.auth.SendMailUtil;
+import gov.healthit.chpl.auth.EmailBuilder;
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyAltTestStatistics;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
@@ -48,7 +49,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
     private SummaryStatisticsDAO summaryStatisticsDAO;
 
     @Autowired
-    private SendMailUtil sendMailUtil;
+    private Environment env;
     
     private Properties props;
 
@@ -83,9 +84,17 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
 
 
     private void sendEmail(final String message, final String address) throws AddressException, MessagingException {
-        //SendMailUtil mailUtil = new SendMailUtil();
         String subject = props.getProperty("summaryEmailSubject").toString();
-        sendMailUtil.sendEmail(address, subject, message, getSummaryStatisticsFile(), props);
+
+        List<String> addresses = new ArrayList<String>();
+        addresses.add(address);
+
+        EmailBuilder emailBuilder = new EmailBuilder(env);
+        emailBuilder.recipients(addresses)
+                        .subject(subject)
+                        .htmlMessage(message)
+                        .fileAttachments(getSummaryStatisticsFile())
+                        .sendEmail();
     }
 
     private List<File> getSummaryStatisticsFile() {

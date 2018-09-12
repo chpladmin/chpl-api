@@ -20,9 +20,10 @@ import org.apache.logging.log4j.Logger;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.auth.SendMailUtil;
+import gov.healthit.chpl.auth.EmailBuilder;
 import gov.healthit.chpl.dao.scheduler.InheritanceErrorsReportDAO;
 import gov.healthit.chpl.dto.scheduler.InheritanceErrorsReportDTO;
 
@@ -41,7 +42,7 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
     private InheritanceErrorsReportDAO inheritanceErrorsReportDAO;
     
     @Autowired
-    private SendMailUtil sendMailUtil;
+    private Environment env;
     /**
      * Constructor that initializes the InheritanceErrorsReportEmailJob object.
      * @throws Exception if thrown
@@ -77,9 +78,18 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
         LOGGER.info("Message to be sent: " + htmlMessage);
         
         try {
-            htmlMessage += createHtmlEmailBody(errors.size(),
+            htmlMessage += createHtmlEmailBody(errors.size(), 
                     props.getProperty("inheritanceReportEmailWeeklyNoContent"));
-            sendMailUtil.sendEmail(to, subject, htmlMessage, files, props);
+            
+            List<String> addresses = new ArrayList<String>();
+            addresses.add(to);
+
+            EmailBuilder emailBuilder = new EmailBuilder(env);
+            emailBuilder.recipients(addresses)
+                            .subject(subject)
+                            .htmlMessage(htmlMessage)
+                            .fileAttachments(files)
+                            .sendEmail();
         } catch (IOException | MessagingException e) {
             LOGGER.error(e);
         }

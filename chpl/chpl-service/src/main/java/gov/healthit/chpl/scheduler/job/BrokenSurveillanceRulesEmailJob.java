@@ -27,10 +27,11 @@ import org.apache.logging.log4j.Logger;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.auth.SendMailUtil;
+import gov.healthit.chpl.auth.EmailBuilder;
 import gov.healthit.chpl.dao.scheduler.BrokenSurveillanceRulesDAO;
 import gov.healthit.chpl.domain.SurveillanceOversightRule;
 import gov.healthit.chpl.dto.scheduler.BrokenSurveillanceRulesDTO;
@@ -52,7 +53,7 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
     private BrokenSurveillanceRulesDAO brokenSurveillanceRulesDAO;
     
     @Autowired
-    private SendMailUtil sendMailUtil;
+    private Environment env;
 
     private static final String TRIGGER_DESCRIPTIONS = "<h4>Description of Surveillance Rules</h4>" + "<ol>" + "<li>"
             + SurveillanceOversightRule.LONG_SUSPENSION.getTitle() + ": "
@@ -129,7 +130,15 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
         LOGGER.info("Sending email to {} with contents {} and a total of {} broken rules",
                 to, htmlMessage, errors.size());
         try {
-            sendMailUtil.sendEmail(to, subject, htmlMessage, files, props);
+            List<String> addresses = new ArrayList<String>();
+            addresses.add(to);
+            
+            EmailBuilder emailBuilder = new EmailBuilder(env);
+            emailBuilder.recipients(addresses)
+                            .subject(subject)
+                            .htmlMessage(htmlMessage)
+                            .fileAttachments(files)
+                            .sendEmail();
         } catch (MessagingException e) {
             LOGGER.error(e);
         } 

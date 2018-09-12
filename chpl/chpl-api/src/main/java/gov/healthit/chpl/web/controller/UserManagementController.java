@@ -1,6 +1,7 @@
 package gov.healthit.chpl.web.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -25,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.SendMailUtil;
+import gov.healthit.chpl.auth.EmailBuilder;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.authentication.Authenticator;
 import gov.healthit.chpl.auth.domain.Authority;
@@ -81,9 +82,6 @@ public class UserManagementController {
     private ActivityManager activityManager;
 
     @Autowired
-    private SendMailUtil sendMailService;
-
-    @Autowired
     private Environment env;
 
     private static final Logger LOGGER = LogManager.getLogger(UserManagementController.class);
@@ -135,8 +133,12 @@ public class UserManagementController {
         String[] toEmails = {
                 createdUser.getEmail()
         };
-        sendMailService.sendEmail(toEmails, null, "Confirm CHPL Administrator Account", htmlMessage);
-
+        EmailBuilder emailBuilder = new EmailBuilder(env);
+        emailBuilder.recipients(new ArrayList<String>(Arrays.asList(toEmails)))
+                        .subject("Confirm CHPL Administrator Account")
+                        .htmlMessage(htmlMessage)
+                        .sendEmail();
+        
         String activityDescription = "User " + createdUser.getSubjectName() + " was created.";
         activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, createdUser.getId(), activityDescription,
                 null, createdUser, createdUser.getId());
@@ -290,8 +292,13 @@ public class UserManagementController {
         String[] toEmails = {
                 createdInvite.getEmail()
         };
-        sendMailService.sendEmail(toEmails, null, "CHPL Administrator Invitation", htmlMessage);
 
+        EmailBuilder emailBuilder = new EmailBuilder(env);
+        emailBuilder.recipients(new ArrayList<String>(Arrays.asList(toEmails)))
+                        .subject("CHPL Administrator Invitation")
+                        .htmlMessage(htmlMessage)
+                        .sendEmail();
+        
         UserInvitation result = new UserInvitation(createdInvite);
         return result;
     }
