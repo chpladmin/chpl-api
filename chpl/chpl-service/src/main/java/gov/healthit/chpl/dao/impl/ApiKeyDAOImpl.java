@@ -1,6 +1,7 @@
 package gov.healthit.chpl.dao.impl;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -186,6 +187,18 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
         }
         return dto;
     }
+    
+    @Override
+    public List<ApiKeyDTO> findAllNotUsedInXDays(Integer days) {
+        List<ApiKeyEntity> entities = getAllNotUsedInXDays(days);
+        List<ApiKeyDTO> dtos = new ArrayList<>();
+
+        for (ApiKeyEntity entity : entities) {
+            ApiKeyDTO dto = new ApiKeyDTO(entity);
+            dtos.add(dto);
+        }
+        return dtos;
+    }
 
     private void create(ApiKeyEntity entity) {
 
@@ -215,6 +228,18 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
         return result;
     }
 
+    private List<ApiKeyEntity> getAllNotUsedInXDays(final Integer days) {
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DAY_OF_MONTH, (-1 * days));
+        List<ApiKeyEntity> result = 
+                entityManager.createQuery(
+                        "from ApiKeyEntity where deleted <> true AND lastUsedDate < :targetDate AND deleteWarningSentDate is null",
+                        ApiKeyEntity.class)
+                .setParameter("targetDate", cal.getTime())
+                .getResultList();
+        return result;
+    }
+    
     private ApiKeyEntity getEntityById(Long entityId) throws EntityRetrievalException {
 
         ApiKeyEntity entity = null;

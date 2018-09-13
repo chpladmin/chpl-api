@@ -27,5 +27,7 @@ public interface ApiKeyDAO {
     ApiKeyDTO getRevokedKeyByKey(String apiKey);
 
     List<ApiKeyDTO> findAllWhitelisted();
+    
+    List<ApiKeyDTO> findAllNotUsedInXDays(Integer days);
 
 }

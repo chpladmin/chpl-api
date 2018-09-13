@@ -8,6 +8,27 @@
         <delete-triggers-in-group>triggerJob</delete-triggers-in-group>
     </pre-processing-commands>
     <schedule>
+        <!-- API Key Delete Warning Job -->
+        <job>
+            <name>apiKeyDeleteWarningEmailJob</name>
+            <group>systemJobs</group>
+            <description>Send email to API key holders, where the API key hasn't been used in X days</description>
+            <job-class>gov.healthit.chpl.scheduler.job.ApiKeyWarningEmailJob</job-class>
+            <durability>true</durability>
+            <recover>true</recover>
+        </job>
+        <trigger>
+            <cron>
+                <name>apiKeyDeleteWarningEmail</name>
+                <group>apiKeyDeleteWarningEmailTrigger</group>
+                <job-name>apiKeyDeleteWarningEmailJob</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
+                <cron-expression>0 50 9 1/1 * ? *</cron-expression> <!-- At 0445 UTC on the first Saturday of the quarter -->
+            </cron>
+        </trigger>
+        
+        
         <!-- Cache status age notification -->
         <job>
             <name>Cache Status Age</name>
