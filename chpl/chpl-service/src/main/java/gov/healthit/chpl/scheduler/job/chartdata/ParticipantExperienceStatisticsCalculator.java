@@ -1,4 +1,4 @@
-package gov.healthit.chpl.app.chartdata;
+package gov.healthit.chpl.scheduler.job.chartdata;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,10 +8,7 @@ import java.util.Map.Entry;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.healthit.chpl.dao.ParticipantExperienceStatisticsDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -23,32 +20,31 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 /**
- * Populates the participant_experience_statistics table with summarized count information.
+ * Populates the participant_experience_statistics table with summarized count
+ * information.
+ * 
  * @author TYoung
  *
  */
 public class ParticipantExperienceStatisticsCalculator {
     private static final Logger LOGGER = LogManager.getLogger(ParticipantExperienceStatisticsCalculator.class);
 
-    private ChartDataApplicationEnvironment appEnvironment;
+    @Autowired
     private ParticipantExperienceStatisticsDAO participantExperienceStatisticsDAO;
-    private JpaTransactionManager txnManager;
-    private TransactionTemplate txnTemplate;
     private Long experienceTypeId;
 
     /**
-     * This method calculates the participant experience counts and saves them to the
-     * participant_experience_statistics table.
-     * @param certifiedProductSearchDetails List of CertifiedProductSearchDetails objects
-     * @param experienceTypeId 1 - Professional Experience, 2 - Product Experience, 3 - Computer Experience.
-     *          These values have constants defined in ExperienceTypes.
-     * @param appEnvironment the ChartDataApplicationEnvironment (provides access to Spring managed beans)
+     * This method calculates the participant experience counts and saves them
+     * to the participant_experience_statistics table.
+     * 
+     * @param certifiedProductSearchDetails
+     *            List of CertifiedProductSearchDetails objects
+     * @param experienceTypeId
+     *            1 - Professional Experience, 2 - Product Experience, 3 -
+     *            Computer Experience. These values have constants defined in
+     *            ExperienceTypes.
      */
-    public void run(final List<CertifiedProductSearchDetails> certifiedProductSearchDetails,
-            final Long experienceTypeId, final ChartDataApplicationEnvironment appEnvironment) {
-        this.appEnvironment = appEnvironment;
-        this.experienceTypeId = experienceTypeId;
-        initialize();
+    public void run(final List<CertifiedProductSearchDetails> certifiedProductSearchDetails, final Long experienceTypeId) {
 
         Map<Integer, Long> experienceCounts = getCounts(certifiedProductSearchDetails);
 
@@ -63,16 +59,10 @@ public class ParticipantExperienceStatisticsCalculator {
         }
     }
 
-    private void initialize() {
-        participantExperienceStatisticsDAO = (ParticipantExperienceStatisticsDAO)
-                appEnvironment.getSpringManagedObject("participantExperienceStatisticsDAO");
-        txnManager = (JpaTransactionManager) appEnvironment.getSpringManagedObject("transactionManager");
-        txnTemplate = new TransactionTemplate(txnManager);
-    }
-
     private Map<Integer, Long> getCounts(final List<CertifiedProductSearchDetails> certifiedProductSearchDetails) {
-        //The key = Months of experience
-        //The value = count of participants that fall into the associated months of experience
+        // The key = Months of experience
+        // The value = count of participants that fall into the associated
+        // months of experience
         Map<Integer, Long> experienceMap = new HashMap<Integer, Long>();
         List<TestParticipant> uniqueParticipants = getUniqueParticipants(certifiedProductSearchDetails);
         for (TestParticipant participant : uniqueParticipants) {
@@ -88,15 +78,15 @@ public class ParticipantExperienceStatisticsCalculator {
     }
 
     private Integer getExperienceMonthBasedOnExperienceType(final TestParticipant participant) {
-         if (experienceTypeId.equals(ExperienceType.COMPUTER_EXPERIENCE)) {
-             return participant.getComputerExperienceMonths();
-         } else if (experienceTypeId.equals(ExperienceType.PRODUCT_EXPERIENCE)) {
-             return participant.getProductExperienceMonths();
-         } else if (experienceTypeId.equals(ExperienceType.PROFESSIONAL_EXPERIENCE)) {
-             return participant.getProfessionalExperienceMonths();
-         } else {
-             return 0;
-         }
+        if (experienceTypeId.equals(ExperienceType.COMPUTER_EXPERIENCE)) {
+            return participant.getComputerExperienceMonths();
+        } else if (experienceTypeId.equals(ExperienceType.PRODUCT_EXPERIENCE)) {
+            return participant.getProductExperienceMonths();
+        } else if (experienceTypeId.equals(ExperienceType.PROFESSIONAL_EXPERIENCE)) {
+            return participant.getProfessionalExperienceMonths();
+        } else {
+            return 0;
+        }
     }
 
     private List<TestParticipant> getUniqueParticipants(
@@ -115,26 +105,19 @@ public class ParticipantExperienceStatisticsCalculator {
     }
 
     private void save(final List<ParticipantExperienceStatisticsEntity> entities) {
-        txnTemplate.execute(new TransactionCallbackWithoutResult() {
-
-            @Override
-            protected void doInTransactionWithoutResult(final TransactionStatus arg0) {
-                try {
-                    deleteExistingPartcipantExperienceStatistics();
-                } catch (EntityRetrievalException e) {
-                    LOGGER.error("Error occured while deleting existing ParticipantExperienceStatistics.", e);
-                    return;
-                }
-                for (ParticipantExperienceStatisticsEntity entity : entities) {
-                    saveParticipantExperienceStatistic(entity);
-                }
-            }
-        });
+        try {
+            deleteExistingPartcipantExperienceStatistics();
+        } catch (EntityRetrievalException e) {
+            LOGGER.error("Error occured while deleting existing ParticipantExperienceStatistics.", e);
+            return;
+        }
+        for (ParticipantExperienceStatisticsEntity entity : entities) {
+            saveParticipantExperienceStatistic(entity);
+        }
     }
 
-    private List<ParticipantExperienceStatisticsEntity>
-            convertExperienceCountMapToListOfParticipantExperienceStatistics(
-                    final Map<Integer, Long> experienceCounts) {
+    private List<ParticipantExperienceStatisticsEntity> convertExperienceCountMapToListOfParticipantExperienceStatistics(
+            final Map<Integer, Long> experienceCounts) {
         List<ParticipantExperienceStatisticsEntity> entities = new ArrayList<ParticipantExperienceStatisticsEntity>();
         for (Entry<Integer, Long> entry : experienceCounts.entrySet()) {
             ParticipantExperienceStatisticsEntity entity = new ParticipantExperienceStatisticsEntity();

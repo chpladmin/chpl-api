@@ -24,6 +24,7 @@ import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CriterionProductStatisticsDAO;
 import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
+import gov.healthit.chpl.scheduler.job.chartdata.CriterionProductStatisticsCalculator;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)

@@ -1,4 +1,4 @@
-package gov.healthit.chpl.app.chartdata;
+package gov.healthit.chpl.scheduler.job.chartdata;
 
 /**
  * Class containing constants used for professional experience type

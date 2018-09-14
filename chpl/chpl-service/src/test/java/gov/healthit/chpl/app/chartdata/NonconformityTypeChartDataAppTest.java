@@ -3,6 +3,7 @@ package gov.healthit.chpl.app.chartdata;
 import gov.healthit.chpl.dao.statistics.NonconformityTypeStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.SurveillanceStatisticsDAO;
 import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
+import gov.healthit.chpl.scheduler.job.chartdata.NonconformityTypeChartCalculator;
 
 import java.util.List;
 
