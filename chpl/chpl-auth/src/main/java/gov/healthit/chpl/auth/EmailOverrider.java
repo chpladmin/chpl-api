@@ -66,7 +66,7 @@ public class EmailOverrider {
         //ASSUMPTION:
         //If any of the recipients are not in the whitelisted domain, we are going to redirect the email.
         
-        if (isNonProductionEmailEnvironment()) {
+        if (!isProductionEmailEnvironment()) {
             List<String> whitelistedDomains = getWhitelistedDomains();
             for (String address : toAddresses) {
                 if (!whitelistedDomains.contains(getEmailDomain(address))) {
@@ -79,20 +79,20 @@ public class EmailOverrider {
     
     private List<String> getWhitelistedDomains() {
         List<String> domains = new ArrayList<String>();
-        String domainList =  env.getProperty("emailNonProductionEnvironmentWhitelist");
+        String domainList =  env.getProperty("emailBuilder.config.whitelistedDomains");
         if (domainList != null) {
             domains.addAll(Arrays.asList(domainList.split(",")));
         }
         return domains;
     }
     
-    private Boolean isNonProductionEmailEnvironment() {
-        String isNonProductionEmailEnvironment = env.getProperty("emailNonProductionEnvironment");
+    private Boolean isProductionEmailEnvironment() {
+        String isProductionEmailEnvironment = env.getProperty("emailBuilder.config.productionEnvironment");
         //We are going to assume that if the property was not found that we are in a PROD environment
-        if (isNonProductionEmailEnvironment == null) {
-            return false;
+        if (isProductionEmailEnvironment == null) {
+            return true;
         } else {
-            return Boolean.parseBoolean(isNonProductionEmailEnvironment);
+            return Boolean.parseBoolean(isProductionEmailEnvironment);
         }
     }
     
@@ -102,6 +102,6 @@ public class EmailOverrider {
     }
     
     private String getForwardToEmail() {
-        return env.getProperty("emailNonProductionEnvironmentForwardAddress");
+        return env.getProperty("emailBuilder.config.forwardAddress");
     }
 }

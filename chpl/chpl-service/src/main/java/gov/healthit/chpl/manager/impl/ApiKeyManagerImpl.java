@@ -50,6 +50,12 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 
     @Override
     @Transactional
+    public ApiKeyDTO updateApiKey(ApiKeyDTO dto) throws EntityRetrievalException {
+        return apiKeyDAO.update(dto);
+    }
+    
+    @Override
+    @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void deleteKey(Long keyId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {

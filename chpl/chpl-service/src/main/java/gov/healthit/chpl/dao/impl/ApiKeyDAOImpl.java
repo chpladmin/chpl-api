@@ -82,6 +82,7 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
             entity.setLastModifiedUser(dto.getLastModifiedUser());
         }
         entity.setLastUsedDate(dto.getLastUsedDate());
+        entity.setDeleteWarningSentDate(dto.getDeleteWarningSentDate());
         update(entity);
 
         return new ApiKeyDTO(entity);
@@ -89,11 +90,9 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 
     @Override
     public void delete(Long id) {
-
         Query query = entityManager.createQuery("UPDATE ApiKeyEntity SET deleted = true WHERE api_key_id = :entityid");
         query.setParameter("entityid", id);
         query.executeUpdate();
-
     }
 
     @Override

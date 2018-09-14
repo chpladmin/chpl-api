@@ -116,3 +116,25 @@ asyncEnabled=true
 # Scheduler properties
 corePoolSize=10
 maxPoolSize=20
+
+####### Email Builder Settings #######
+#Do we want to 'check' emails before sending them?
+#emailBuilder.config.productionEnvironment=false
+#Let emails being sent to this list of domains go through
+#emailBuilder.config.whitelistedDomains=ainq.com
+#Emails should be sent to this address
+#emailBuilder.config.forwardAddress=tyoung@ainq.com
+#######################################
+emailBuilder.config.productionEnvironment=false
+emailBuilder.config.whitelistedDomains=ainq.com
+emailBuilder.config.whitelistedDomains=ainq.com
+
+#DeleteAPIKeyWarningEmail
+job.apiKeyWarningEmailJob.config.apiKeyLastUsedDaysAgo=7
+job.apiKeyWarningEmailJob.config.daysUntilDelete=3
+job.apiKeyWarningEmailJob.config.message=Name/Organization: %s<br/>Unused API keys are removed from the CHPL system after %s days. Your key, %s, was last used on %s and unless it is used again, will be removed in %s days.<br/>Thank you
+
+#DeleteAPIKeyWarningEmail
+job.apiKeyWarningEmailJob.config.apiKeyLastUsedDaysAgo=7
+job.apiKeyWarningEmailJob.config.daysUntilDelete=3
+job.apiKeyWarningEmailJob.config.message=Name/Organization: %s<br/>Unused API keys are removed from the CHPL system after %s days. Your key, %s, was last used on %s and unless it is used again, will be removed in %s days.<br/>Thank you
