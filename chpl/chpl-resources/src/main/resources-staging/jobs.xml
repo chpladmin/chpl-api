@@ -405,6 +405,25 @@
                 </entry>
             </job-data-map>
         </job>
+        <!-- Questionable Activity data emailer -->
+        <job>
+            <name>Questionable Activity Report</name>
+            <group>chplJobs</group>
+            <description>Sends a report of questionable activity within the last week</description>
+            <job-class>gov.healthit.chpl.scheduler.job.QuestionableActivityEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN</value>
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>DAILY</value>
+                </entry>
+            </job-data-map>
+        </job>
         <trigger>
             <cron>
                 <name>qaAllBrokenSurveillanceEmailJob</name>
@@ -477,25 +496,21 @@
                 <cron-expression>0 0 11 * * ?</cron-expression>
             </cron>
         </trigger>
-
-        <!-- Questionable Activity data emailer -->
-        <job>
-            <name>Questionable Activity Report</name>
-            <group>chplJobs</group>
-            <description>Sends a report of questionable activity within the last week</description>
-            <job-class>gov.healthit.chpl.scheduler.job.QuestionableActivityEmailJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-            <job-data-map>
-                <entry>
-                    <key>authorities</key>
-                    <value>ROLE_ADMIN</value>
-                </entry>
-                <entry>
-                    <key>frequency</key>
-                    <value>DAILY</value>
-                </entry>
-            </job-data-map>
-        </job>
+        <trigger>
+            <cron>
+                <name>qaQuestionableActivityEmailJob</name>
+                <group>qaTrigger</group>
+                <job-name>Questionable Activity Report</job-name>
+                <job-group>chplJobs</job-group>
+                <job-data-map>
+                    <entry>
+                        <key>email</key>
+                        <value>amore@ainq.com</value>
+                    </entry>
+                </job-data-map>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 0 11 ? * WED</cron-expression>
+            </cron>
+        </trigger>
     </schedule>
 </job-scheduling-data>

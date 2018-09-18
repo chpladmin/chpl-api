@@ -369,7 +369,7 @@
                 </entry>
                 <entry>
                     <key>frequency</key>
-                    <value>DAILY</value>
+                    <value>WEEKLY</value>
                 </entry>
             </job-data-map>
         </job>
