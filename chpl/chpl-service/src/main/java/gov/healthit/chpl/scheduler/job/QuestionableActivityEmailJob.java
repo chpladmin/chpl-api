@@ -121,7 +121,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
     }
 
     private List<List<String>> getAppropriateActivities(final JobExecutionContext jobContext, 
-            Date start, Date end) {
+            final Date start, final Date end) {
         List<List<String>> activities = new ArrayList<List<String>>();
         activities.addAll(createListingActivityRows(start, end));
         activities.addAll(createCriteriaActivityRows(start, end));
@@ -184,7 +184,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         return row;
     }
 
-    private List<List<String>> createCriteriaActivityRows(Date startDate, Date endDate) {
+    private List<List<String>> createCriteriaActivityRows(final Date startDate, final Date endDate) {
         LOGGER.debug("Getting certification result activity between " + startDate + " and " + endDate);
         List<QuestionableActivityCertificationResultDTO> certResultActivities =
                 questionableActivityDao.findCertificationResultActivityBetweenDates(startDate, endDate);
@@ -227,7 +227,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         return activityCsvRows;
     }
 
-    private List<List<String>> createListingActivityRows(Date startDate, Date endDate) {
+    private List<List<String>> createListingActivityRows(final Date startDate, final Date endDate) {
         LOGGER.debug("Getting listing activity between " + startDate + " and " + endDate);
         List<QuestionableActivityListingDTO> listingActivities =
                 questionableActivityDao.findListingActivityBetweenDates(startDate, endDate);
@@ -270,7 +270,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         return activityCsvRows;
     }
 
-    private List<List<String>> createDeveloperActivityRows(Date startDate, Date endDate) {
+    private List<List<String>> createDeveloperActivityRows(final Date startDate, final Date endDate) {
         LOGGER.debug("Getting developer activity between " + startDate + " and " + endDate);
         List<QuestionableActivityDeveloperDTO> developerActivities =
                 questionableActivityDao.findDeveloperActivityBetweenDates(startDate, endDate);
@@ -313,7 +313,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         return activityCsvRows;
     }
 
-    private List<List<String>> createProductActivityRows(Date startDate, Date endDate) {
+    private List<List<String>> createProductActivityRows(final Date startDate, final Date endDate) {
         LOGGER.debug("Getting product activity between " + startDate + " and " + endDate);
         List<QuestionableActivityProductDTO> productActivities =
                 questionableActivityDao.findProductActivityBetweenDates(startDate, endDate);
@@ -356,7 +356,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         return activityCsvRows;
     }
 
-    private List<List<String>> createVersionActivityRows(Date startDate, Date endDate) {
+    private List<List<String>> createVersionActivityRows(final Date startDate, final Date endDate) {
         LOGGER.debug("Getting version activity between " + startDate + " and " + endDate);
         List<QuestionableActivityVersionDTO> versionActivities =
                 questionableActivityDao.findVersionActivityBetweenDates(startDate, endDate);
