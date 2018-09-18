@@ -29,5 +29,6 @@ public interface ApiKeyDAO {
     List<ApiKeyDTO> findAllWhitelisted();
     
     List<ApiKeyDTO> findAllNotUsedInXDays(Integer days);
-
+    
+    List<ApiKeyDTO> findAllToBeRevoked(Integer daysSinceWarningSent);
 }

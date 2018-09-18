@@ -2,7 +2,6 @@ package gov.healthit.chpl.scheduler.job;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -24,8 +23,8 @@ import gov.healthit.chpl.dto.ApiKeyDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ApiKeyManager;
 
-public class ApiKeyWarningEmailJob implements Job {
-    private static final Logger LOGGER = LogManager.getLogger("apiKeyWarningEmailJobLogger");
+public class ApiKeyDeleteJob implements Job {
+private static final Logger LOGGER = LogManager.getLogger("apiKeyWarningEmailJobLogger");
     
     @Autowired
     private Environment env;
@@ -39,8 +38,8 @@ public class ApiKeyWarningEmailJob implements Job {
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        LOGGER.info("********* Starting the API Key Warning Email job. *********");
-        LOGGER.info("Looking for API keys that have not been used in " + getNumberOfDays() + " days.");
+        LOGGER.info("********* Starting the API Key Deletion job. *********");
+        LOGGER.info("Looking for API keys where the warning email was sent " + getNumberOfDays() + " days ago.");
         
         List<ApiKeyDTO> apiKeyDTOs = apiKeyDAO.findAllNotUsedInXDays(getNumberOfDays());
         
@@ -62,7 +61,7 @@ public class ApiKeyWarningEmailJob implements Job {
     }
     
     private void updateDeleteWarningSentDate(ApiKeyDTO dto) throws EntityRetrievalException {
-        dto.setDeleteWarningSentDate(new Date());
+        dto.setDeleted(true);
         apiKeyManager.updateApiKey(dto);
     }
     
@@ -79,14 +78,15 @@ public class ApiKeyWarningEmailJob implements Job {
     }
     
     private String getHtmlMessage(ApiKeyDTO dto) {
-        String message = String.format(
-                env.getProperty("job.apiKeyWarningEmailJob.config.message"),
-                dto.getNameOrganization(),
-                getNumberOfDays().toString(),
-                dto.getApiKey(),
-                getDateFormatter().format(dto.getLastUsedDate()),
-                getNumberOfDaysUntilDelete().toString());
-        
+        String message = "";
+//                String.format(
+//                env.getProperty("job.apiKeyWarningEmailJob.config.message"),
+//                dto.getNameOrganization(),
+//                getNumberOfDays().toString(),
+//                dto.getApiKey(),
+//                getDateFormatter().format(dto.getLastUsedDate()),
+//                getNumberOfDaysUntilDelete().toString());
+//        
         return message;
     }
     
@@ -102,10 +102,6 @@ public class ApiKeyWarningEmailJob implements Job {
     }
     
     private Integer getNumberOfDays() {
-        return Integer.valueOf(env.getProperty("job.apiKeyWarningEmailJob.config.apiKeyLastUsedDaysAgo"));
-    }
-    
-    private Integer getNumberOfDaysUntilDelete() {
         return Integer.valueOf(env.getProperty("job.apiKeyWarningEmailJob.config.daysUntilDelete"));
     }
 }

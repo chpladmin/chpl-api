@@ -198,6 +198,18 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
         }
         return dtos;
     }
+    
+    @Override
+    public List<ApiKeyDTO> findAllToBeRevoked(Integer daysSinceWarningSent) {
+        List<ApiKeyEntity> entities = getAllToBeRevoked(daysSinceWarningSent);
+        List<ApiKeyDTO> dtos = new ArrayList<>();
+
+        for (ApiKeyEntity entity : entities) {
+            ApiKeyDTO dto = new ApiKeyDTO(entity);
+            dtos.add(dto);
+        }
+        return dtos;
+    }
 
     private void create(ApiKeyEntity entity) {
 
@@ -233,6 +245,18 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
         List<ApiKeyEntity> result = 
                 entityManager.createQuery(
                         "from ApiKeyEntity where deleted <> true AND lastUsedDate < :targetDate AND deleteWarningSentDate is null",
+                        ApiKeyEntity.class)
+                .setParameter("targetDate", cal.getTime())
+                .getResultList();
+        return result;
+    }
+    
+    private List<ApiKeyEntity> getAllToBeRevoked(Integer daysSinceWarningSent) {
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DAY_OF_MONTH, (-1 * daysSinceWarningSent));
+        List<ApiKeyEntity> result = 
+                entityManager.createQuery(
+                        "from ApiKeyEntity where deleted <> true AND deleteWarningSentDate < :targetDate",
                         ApiKeyEntity.class)
                 .setParameter("targetDate", cal.getTime())
                 .getResultList();
