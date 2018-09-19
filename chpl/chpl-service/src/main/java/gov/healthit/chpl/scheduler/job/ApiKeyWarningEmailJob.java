@@ -40,9 +40,9 @@ public class ApiKeyWarningEmailJob implements Job {
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the API Key Warning Email job. *********");
-        LOGGER.info("Looking for API keys that have not been used in " + getNumberOfDays() + " days.");
+        LOGGER.info("Looking for API keys that have not been used in " + getNumberOfDaysForWarning() + " days.");
         
-        List<ApiKeyDTO> apiKeyDTOs = apiKeyDAO.findAllNotUsedInXDays(getNumberOfDays());
+        List<ApiKeyDTO> apiKeyDTOs = apiKeyDAO.findAllNotUsedInXDays(getNumberOfDaysForWarning());
         
         LOGGER.info("Found " + apiKeyDTOs.size() + " API keys to send warnings for.");
         
@@ -82,7 +82,7 @@ public class ApiKeyWarningEmailJob implements Job {
         String message = String.format(
                 env.getProperty("job.apiKeyWarningEmailJob.config.message"),
                 dto.getNameOrganization(),
-                getNumberOfDays().toString(),
+                getTotalDaysUnusedBeforeDelete().toString(),
                 dto.getApiKey(),
                 getDateFormatter().format(dto.getLastUsedDate()),
                 getNumberOfDaysUntilDelete().toString());
@@ -101,7 +101,11 @@ public class ApiKeyWarningEmailJob implements Job {
                 Locale.US);
     }
     
-    private Integer getNumberOfDays() {
+    private Integer getTotalDaysUnusedBeforeDelete() {
+        return getNumberOfDaysForWarning() + getNumberOfDaysUntilDelete();
+    }
+    
+    private Integer getNumberOfDaysForWarning() {
         return Integer.valueOf(env.getProperty("job.apiKeyWarningEmailJob.config.apiKeyLastUsedDaysAgo"));
     }
     

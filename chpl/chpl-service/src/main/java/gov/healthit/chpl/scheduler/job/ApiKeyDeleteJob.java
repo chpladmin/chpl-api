@@ -24,7 +24,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ApiKeyManager;
 
 public class ApiKeyDeleteJob implements Job {
-private static final Logger LOGGER = LogManager.getLogger("apiKeyWarningEmailJobLogger");
+private static final Logger LOGGER = LogManager.getLogger("apiKeyDeleteJobLogger");
     
     @Autowired
     private Environment env;
@@ -39,19 +39,19 @@ private static final Logger LOGGER = LogManager.getLogger("apiKeyWarningEmailJob
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the API Key Deletion job. *********");
-        LOGGER.info("Looking for API keys where the warning email was sent " + getNumberOfDays() + " days ago.");
+        LOGGER.info("Looking for API keys where the warning email was sent " + getNumberOfDaysUntilDelete() + " days ago.");
         
-        List<ApiKeyDTO> apiKeyDTOs = apiKeyDAO.findAllNotUsedInXDays(getNumberOfDays());
+        List<ApiKeyDTO> apiKeyDTOs = apiKeyDAO.findAllToBeRevoked(getNumberOfDaysUntilDelete());
         
-        LOGGER.info("Found " + apiKeyDTOs.size() + " API keys to send warnings for.");
+        LOGGER.info("Found " + apiKeyDTOs.size() + " API keys to delete.");
         
         for (ApiKeyDTO dto : apiKeyDTOs) {
             
             try {
-                updateDeleteWarningSentDate(dto);
+                updateDeleted(dto);
                 sendEmail(dto);
             } catch (EntityRetrievalException e) {
-                LOGGER.error("Error updating api_key.delete_warning_sent_date for id: " + dto.getId(), e);
+                LOGGER.error("Error updating api_key.deleted for id: " + dto.getId(), e);
             } catch (MessagingException e) {
                 LOGGER.error("Error sending email to: " + dto.getEmail(), e);
             } 
@@ -60,7 +60,7 @@ private static final Logger LOGGER = LogManager.getLogger("apiKeyWarningEmailJob
         LOGGER.info("********* Completed the API Key Warning Email job. *********");
     }
     
-    private void updateDeleteWarningSentDate(ApiKeyDTO dto) throws EntityRetrievalException {
+    private void updateDeleted(ApiKeyDTO dto) throws EntityRetrievalException {
         dto.setDeleted(true);
         apiKeyManager.updateApiKey(dto);
     }
@@ -76,22 +76,20 @@ private static final Logger LOGGER = LogManager.getLogger("apiKeyWarningEmailJob
                         .sendEmail();
         LOGGER.info("Email sent to: " + dto.getEmail());
     }
-    
+
     private String getHtmlMessage(ApiKeyDTO dto) {
-        String message = "";
-//                String.format(
-//                env.getProperty("job.apiKeyWarningEmailJob.config.message"),
-//                dto.getNameOrganization(),
-//                getNumberOfDays().toString(),
-//                dto.getApiKey(),
-//                getDateFormatter().format(dto.getLastUsedDate()),
-//                getNumberOfDaysUntilDelete().toString());
-//        
+        String message = String.format(
+                env.getProperty("job.apiKeyDeleteJob.config.message"),
+                dto.getNameOrganization(),
+                getTotalDaysUnusedBeforeDelete().toString(),
+                dto.getApiKey(),
+                getDateFormatter().format(dto.getLastUsedDate()));
+        
         return message;
     }
     
     private String getSubject() {
-        return "ONC-CHPL: Your API key will be deleted";
+        return "ONC-CHPL: Your API key has been deleted";
     }
     
     private DateFormat getDateFormatter() {
@@ -101,7 +99,16 @@ private static final Logger LOGGER = LogManager.getLogger("apiKeyWarningEmailJob
                 Locale.US);
     }
     
-    private Integer getNumberOfDays() {
+    private Integer getTotalDaysUnusedBeforeDelete() {
+        return getNumberOfDaysForWarning() + getNumberOfDaysUntilDelete();
+    }
+    
+    private Integer getNumberOfDaysForWarning() {
+        return Integer.valueOf(env.getProperty("job.apiKeyWarningEmailJob.config.apiKeyLastUsedDaysAgo"));
+    }
+    
+    private Integer getNumberOfDaysUntilDelete() {
         return Integer.valueOf(env.getProperty("job.apiKeyWarningEmailJob.config.daysUntilDelete"));
     }
+    
 }
