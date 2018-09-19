@@ -1,5 +1,8 @@
 package gov.healthit.chpl.certificationId;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class Validator20142015 extends Validator {
 
     public Validator20142015() {
@@ -48,10 +51,13 @@ public class Validator20142015 extends Validator {
         // 170.315(a)(1), (2) or (3).
         if ((this.criteriaMet.containsKey("170.314 (a)(1)") || this.criteriaMet.containsKey("170.314 (a)(18)")
                 || this.criteriaMet.containsKey("170.314 (a)(19)") || this.criteriaMet.containsKey("170.314 (a)(20)"))
-                || (this.criteriaMet.containsKey("170.315 (a)(1)") || this.criteriaMet.containsKey("170.315 (a)(2)")
-                        || this.criteriaMet.containsKey("170.315 (a)(3)"))) {
+                || (this.criteriaMet.containsKey("170.315 (a)(1)") || this.criteriaMet.containsKey("170.315 (a)(2)") || this.criteriaMet
+                        .containsKey("170.315 (a)(3)"))) {
             this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
             cpoe = true;
+        } else {
+            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (a)(1)", "170.314 (a)(18)", "170.314 (a)(19)",
+                    "170.314 (a)(20)", "170.315 (a)(1)", "170.315 (a)(2)", "170.315 (a)(3)")));
         }
 
         // (2)(i) Record demographics at 45 CFR 170.314(a)(3); or (ii) 45 CFR
@@ -59,6 +65,8 @@ public class Validator20142015 extends Validator {
         if (this.criteriaMet.containsKey("170.314 (a)(3)") || this.criteriaMet.containsKey("170.315 (a)(5)")) {
             recordDemo = true;
             this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+        } else {
+            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (a)(3)", "170.315 (a)(5)")));
         }
 
         // (3)(i) Problem list at 45 CFR 170.314(a)(5); or (ii) 45 CFR
@@ -66,6 +74,8 @@ public class Validator20142015 extends Validator {
         if (this.criteriaMet.containsKey("170.314 (a)(5)") || this.criteriaMet.containsKey("170.315 (a)(6)")) {
             problemList = true;
             this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+        } else {
+            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (a)(5)", "170.315 (a)(6)")));
         }
 
         // (4)(i) Medication list at 45 CFR 170.314(a)(6); or (ii) 45 CFR
@@ -73,6 +83,8 @@ public class Validator20142015 extends Validator {
         if (this.criteriaMet.containsKey("170.314 (a)(6)") || this.criteriaMet.containsKey("170.315 (a)(7)")) {
             medList = true;
             this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+        } else {
+            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (a)(6)", "170.315 (a)(7)")));
         }
 
         // (5)(i) Medication allergy list 45 CFR 170.314(a)(7); or (ii) 45 CFR
@@ -80,6 +92,8 @@ public class Validator20142015 extends Validator {
         if (this.criteriaMet.containsKey("170.314 (a)(7)") || this.criteriaMet.containsKey("170.315 (a)(8)")) {
             medAllergyList = true;
             this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+        } else {
+            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (a)(7)", "170.315 (a)(8)")));
         }
 
         // (6)(i) Clinical decision support at 45 CFR 170.314(a)(8); or (ii) 45
@@ -87,14 +101,16 @@ public class Validator20142015 extends Validator {
         if (this.criteriaMet.containsKey("170.314 (a)(8)") || this.criteriaMet.containsKey("170.315 (a)(9)")) {
             clinicalDecision = true;
             this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+        } else {
+            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (a)(8)", "170.315 (a)(9)")));
         }
 
         boolean critToc = this.isCriteriaTOCValid();
         boolean critCqm = this.isCriteriaCqmValid();
         boolean critPs = this.isCriteriaPSValid();
 
-        return (cpoe && recordDemo && problemList && medList && medAllergyList && clinicalDecision && critToc && critCqm
-                && critPs);
+        return (cpoe && recordDemo && problemList && medList && medAllergyList && clinicalDecision && critToc
+                && critCqm && critPs);
     }
 
     // **********************************************************************
@@ -106,6 +122,7 @@ public class Validator20142015 extends Validator {
     // required criteria to the sets with the least required criteria.
     // **********************************************************************
     protected boolean isCriteriaTOCValid() {
+        boolean flag = false;
 
         // (xvi) 45 CFR 170.314(b)(1), (b)(2), (b)(8), (h)(1), 170.315(b)(1),
         // and 170.315(h)(1).
@@ -113,6 +130,7 @@ public class Validator20142015 extends Validator {
                 && this.criteriaMet.containsKey("170.314 (b)(8)") && this.criteriaMet.containsKey("170.314 (h)(1)")
                 && this.criteriaMet.containsKey("170.315 (b)(1)") && this.criteriaMet.containsKey("170.315 (h)(1)")) {
             this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            flag = true;
             return true;
         }
 
@@ -122,6 +140,7 @@ public class Validator20142015 extends Validator {
                 && this.criteriaMet.containsKey("170.314 (b)(8)") && this.criteriaMet.containsKey("170.314 (h)(1)")
                 && this.criteriaMet.containsKey("170.315 (b)(1)") && this.criteriaMet.containsKey("170.315 (h)(2)")) {
             this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            flag = true;
             return true;
         }
 
@@ -130,6 +149,7 @@ public class Validator20142015 extends Validator {
                 && this.criteriaMet.containsKey("170.314 (b)(8)") && this.criteriaMet.containsKey("170.314 (h)(1)")
                 && this.criteriaMet.containsKey("170.315 (h)(2)")) {
             this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            flag = true;
             return true;
         }
 
@@ -138,6 +158,7 @@ public class Validator20142015 extends Validator {
                 && this.criteriaMet.containsKey("170.314 (b)(8)") && this.criteriaMet.containsKey("170.314 (h)(1)")
                 && this.criteriaMet.containsKey("170.315 (b)(1)")) {
             this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            flag = true;
             return true;
         }
 
@@ -145,6 +166,7 @@ public class Validator20142015 extends Validator {
         if (this.criteriaMet.containsKey("170.314 (b)(1)") && this.criteriaMet.containsKey("170.314 (b)(2)")
                 && this.criteriaMet.containsKey("170.314 (b)(8)") && this.criteriaMet.containsKey("170.314 (h)(1)")) {
             this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            flag = true;
             return true;
         }
 
@@ -152,6 +174,7 @@ public class Validator20142015 extends Validator {
         if (this.criteriaMet.containsKey("170.314 (b)(1)") && this.criteriaMet.containsKey("170.314 (b)(2)")
                 && this.criteriaMet.containsKey("170.314 (h)(1)") && this.criteriaMet.containsKey("170.315 (h)(2)")) {
             this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            flag = true;
             return true;
         }
 
@@ -159,6 +182,7 @@ public class Validator20142015 extends Validator {
         if (this.criteriaMet.containsKey("170.314 (b)(1)") && this.criteriaMet.containsKey("170.314 (b)(2)")
                 && this.criteriaMet.containsKey("170.314 (b)(8)") && this.criteriaMet.containsKey("170.315 (h)(2)")) {
             this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            flag = true;
             return true;
         }
 
@@ -166,6 +190,7 @@ public class Validator20142015 extends Validator {
         if (this.criteriaMet.containsKey("170.314 (b)(1)") && this.criteriaMet.containsKey("170.314 (b)(2)")
                 && this.criteriaMet.containsKey("170.314 (h)(1)") && this.criteriaMet.containsKey("170.315 (b)(1)")) {
             this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            flag = true;
             return true;
         }
 
@@ -173,6 +198,7 @@ public class Validator20142015 extends Validator {
         if (this.criteriaMet.containsKey("170.314 (b)(1)") && this.criteriaMet.containsKey("170.314 (b)(2)")
                 && this.criteriaMet.containsKey("170.314 (b)(8)") && this.criteriaMet.containsKey("170.315 (b)(1)")) {
             this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            flag = true;
             return true;
         }
 
@@ -180,6 +206,7 @@ public class Validator20142015 extends Validator {
         if (this.criteriaMet.containsKey("170.314 (b)(1)") && this.criteriaMet.containsKey("170.314 (b)(2)")
                 && this.criteriaMet.containsKey("170.314 (h)(1)")) {
             this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            flag = true;
             return true;
         }
 
@@ -187,6 +214,7 @@ public class Validator20142015 extends Validator {
         if (this.criteriaMet.containsKey("170.314 (b)(1)") && this.criteriaMet.containsKey("170.314 (b)(2)")
                 && this.criteriaMet.containsKey("170.314 (b)(8)")) {
             this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            flag = true;
             return true;
         }
 
@@ -194,6 +222,7 @@ public class Validator20142015 extends Validator {
         if (this.criteriaMet.containsKey("170.314 (b)(1)") && this.criteriaMet.containsKey("170.314 (b)(2)")
                 && this.criteriaMet.containsKey("170.315 (h)(2)")) {
             this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            flag = true;
             return true;
         }
 
@@ -201,6 +230,7 @@ public class Validator20142015 extends Validator {
         if (this.criteriaMet.containsKey("170.314 (b)(8)") && this.criteriaMet.containsKey("170.314 (h)(1)")
                 && this.criteriaMet.containsKey("170.315 (h)(2)")) {
             this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            flag = true;
             return true;
         }
 
@@ -208,6 +238,7 @@ public class Validator20142015 extends Validator {
         if (this.criteriaMet.containsKey("170.314 (b)(1)") && this.criteriaMet.containsKey("170.314 (b)(2)")
                 && this.criteriaMet.containsKey("170.315 (b)(1)")) {
             this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            flag = true;
             return true;
         }
 
@@ -215,6 +246,7 @@ public class Validator20142015 extends Validator {
         if (this.criteriaMet.containsKey("170.314 (b)(8)") && this.criteriaMet.containsKey("170.314 (h)(1)")
                 && this.criteriaMet.containsKey("170.315 (b)(1)")) {
             this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            flag = true;
             return true;
         }
 
@@ -222,37 +254,71 @@ public class Validator20142015 extends Validator {
         if (this.criteriaMet.containsKey("170.315 (b)(1)") && this.criteriaMet.containsKey("170.315 (h)(1)")
                 && this.criteriaMet.containsKey("170.315 (h)(2)")) {
             this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            flag = true;
             return true;
         }
 
         // (v) 45 CFR 170.314(b)(8) and (h)(1).
         if (this.criteriaMet.containsKey("170.314 (b)(8)") && this.criteriaMet.containsKey("170.314 (h)(1)")) {
             this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            flag = true;
             return true;
         }
 
         // (i) 45 CFR 170.314(b)(1) and (2).
         if (this.criteriaMet.containsKey("170.314 (b)(1)") && this.criteriaMet.containsKey("170.314 (b)(2)")) {
             this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            flag = true;
             return true;
         }
 
         // (xviii) 45 CFR 170.314(h)(1) and 170.315(b)(1).
         if (this.criteriaMet.containsKey("170.314 (h)(1)") && this.criteriaMet.containsKey("170.315 (b)(1)")) {
             this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            flag = true;
             return true;
         }
 
         // (xix) 45 CFR 170.315(b)(1) and (h)(1).
         if (this.criteriaMet.containsKey("170.315 (b)(1)") && this.criteriaMet.containsKey("170.315 (h)(1)")) {
             this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            flag = true;
             return true;
         }
 
         // (xx) 45 CFR 170.315(b)(1) and (h)(2).
         if (this.criteriaMet.containsKey("170.315 (b)(1)") && this.criteriaMet.containsKey("170.315 (h)(2)")) {
             this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            flag = true;
             return true;
+        }
+
+        if (!flag) {
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.314(h)(1)",
+                    "170.315 (b)(1)", "170.315 (h)(1)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.314(h)(1)",
+                    "170.315 (b)(1)", "170.315 (h)(2)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.314(h)(1)",
+                    "170.315 (h)(2)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.314(h)(1)",
+                    "170.315 (b)(1)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.314(h)(1)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(h)(1)", "170.315(h)(2)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.315(h)(2)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(h)(1)", "170.315(b)(1)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.315(b)(1)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.315(h)(1)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.315(h)(2)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(8)", "170.314(h)(1)", "170.315(h)(2)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.315(b)(1)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(8)", "170.314(h)(1)", "170.315(b)(1)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.315(b)(1)", "170.315(h)(1)", "170.315(h)(2)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(8)", "170.314(h)(1)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(1)", "170.314(b)(2)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(h)(1)", "170.315(b)(1)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.315(b)(1)", "170.315(h)(1)")));
+            missingCombo.add(new ArrayList<String>(Arrays.asList("170.315(b)(1)", "170.315(h)(2)")));
         }
 
         return false;
@@ -270,16 +336,22 @@ public class Validator20142015 extends Validator {
         // (1) 45 CFR 170.314(c)(1) or 170.315(c)(1);
         if (this.criteriaMet.containsKey("170.314 (c)(1)") || this.criteriaMet.containsKey("170.315 (c)(1)")) {
             ++cqmCritCount;
+        } else {
+            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (c)(1)", "170.315 (c)(1)")));
         }
 
         // (2) 45 CFR 170.314(c)(2) or 170.315(c)(2)
         if (this.criteriaMet.containsKey("170.314 (c)(2)") || this.criteriaMet.containsKey("170.315 (c)(2)")) {
             ++cqmCritCount;
+        } else {
+            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (c)(2)", "170.315 (c)(2)")));
         }
 
         // (3) 45 CFR 170.314(c)(3) or 170.315(c)(3)
         if (this.criteriaMet.containsKey("170.314 (c)(3)") || this.criteriaMet.containsKey("170.315 (c)(3)")) {
             ++cqmCritCount;
+        } else {
+            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (c)(3)", "170.315 (c)(3)")));
         }
 
         this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + cqmCritCount);
@@ -300,41 +372,57 @@ public class Validator20142015 extends Validator {
         // (1) 45 CFR 170.314(d)(1) or 170.315(d)(1);
         if (this.criteriaMet.containsKey("170.314 (d)(1)") || this.criteriaMet.containsKey("170.315 (d)(1)")) {
             ++psCritMetCount;
+        } else {
+            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (d)(1)", "170.315 (d)(1)")));
         }
 
         // (2) 45 CFR 170.314(d)(2) or 170.315(d)(2);
         if (this.criteriaMet.containsKey("170.314 (d)(2)") || this.criteriaMet.containsKey("170.315 (d)(2)")) {
             ++psCritMetCount;
+        } else {
+            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (d)(2)", "170.315 (d)(2)")));
         }
 
         // (3) 45 CFR 170.314(d)(3) or 170.315(d)(3);
         if (this.criteriaMet.containsKey("170.314 (d)(3)") || this.criteriaMet.containsKey("170.315 (d)(3)")) {
             ++psCritMetCount;
+        } else {
+            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (d)(3)", "170.315 (d)(3)")));
         }
 
         // (4) 45 CFR 170.314(d)(4) or 170.315(d)(4);
         if (this.criteriaMet.containsKey("170.314 (d)(4)") || this.criteriaMet.containsKey("170.315 (d)(4)")) {
             ++psCritMetCount;
+        } else {
+            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (d)(4)", "170.315 (d)(4)")));
         }
 
         // (5) 45 CFR 170.314(d)(5) or 170.315(d)(5);
         if (this.criteriaMet.containsKey("170.314 (d)(5)") || this.criteriaMet.containsKey("170.315 (d)(5)")) {
             ++psCritMetCount;
+        } else {
+            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (d)(5)", "170.315 (d)(5)")));
         }
 
         // (6) 45 CFR 170.314(d)(6) or 170.315(d)(6);
         if (this.criteriaMet.containsKey("170.314 (d)(6)") || this.criteriaMet.containsKey("170.315 (d)(6)")) {
             ++psCritMetCount;
+        } else {
+            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (d)(6)", "170.315 (d)(6)")));
         }
 
         // (7) 45 CFR 170.314(d)(7) or 170.315(d)(7);
         if (this.criteriaMet.containsKey("170.314 (d)(7)") || this.criteriaMet.containsKey("170.315 (d)(7)")) {
             ++psCritMetCount;
+        } else {
+            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (d)(7)", "170.315 (d)(7)")));
         }
 
         // (8) 45 CFR 170.314(d)(8) or 170.315(d)(8);
         if (this.criteriaMet.containsKey("170.314 (d)(8)") || this.criteriaMet.containsKey("170.315 (d)(8)")) {
             ++psCritMetCount;
+        } else {
+            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (d)(8)", "170.315 (d)(8)")));
         }
 
         this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + psCritMetCount);

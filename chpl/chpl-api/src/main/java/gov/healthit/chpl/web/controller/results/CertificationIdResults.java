@@ -4,8 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedSet;
-
+import java.util.TreeMap;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 
 public class CertificationIdResults implements Serializable {
@@ -52,8 +51,10 @@ public class CertificationIdResults implements Serializable {
     private String ehrCertificationId;
     private Map<String, Integer> metCounts;
     private Map<String, Integer> metPercentages;
-    private ArrayList<String> missingAnd;
-    private List<ArrayList<String>> missingOr;
+    private ArrayList<String> missingAnd = new ArrayList<String>();
+    private List<ArrayList<String>> missingOr = new ArrayList<ArrayList<String>>();
+    private List<ArrayList<String>> missingCombo = new ArrayList<ArrayList<String>>();
+    private List<TreeMap<String, ArrayList<String>>> missingX = new ArrayList<TreeMap<String, ArrayList<String>>>();
     private String year;
     private boolean isValid;
 
@@ -119,5 +120,21 @@ public class CertificationIdResults implements Serializable {
 
     public void setMissingOr(List<ArrayList<String>> missingOr) {
         this.missingOr = missingOr;
+    }
+
+    public List<ArrayList<String>> getMissingCombo() {
+        return missingCombo;
+    }
+
+    public void setMissingCombo(List<ArrayList<String>> missingCombo) {
+        this.missingCombo = missingCombo;
+    }
+
+    public List<TreeMap<String, ArrayList<String>>> getMissingX() {
+        return missingX;
+    }
+
+    public void setMissingX(List<TreeMap<String, ArrayList<String>>> missingX) {
+        this.missingX = missingX;
     }
 }

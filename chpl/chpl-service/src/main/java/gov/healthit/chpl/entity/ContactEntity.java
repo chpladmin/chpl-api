@@ -39,7 +39,7 @@ public class ContactEntity implements Cloneable, Serializable {
     private Boolean deleted;
 
     @Basic(optional = true)
-    @Column(nullable = false, length = NAME_COMPONENT_LENGTH)
+    @Column(length = NAME_COMPONENT_LENGTH)
     private String email;
 
     @Basic(optional = false)
@@ -47,7 +47,7 @@ public class ContactEntity implements Cloneable, Serializable {
     private String fullName;
 
     @Basic(optional = true)
-    @Column(name = "friendly_name", nullable = false, length = NAME_COMPONENT_LENGTH)
+    @Column(name = "friendly_name", length = NAME_COMPONENT_LENGTH)
     private String friendlyName;
 
     @Basic(optional = false)
@@ -59,7 +59,7 @@ public class ContactEntity implements Cloneable, Serializable {
     private Long lastModifiedUser;
 
     @Basic(optional = true)
-    @Column(name = "phone_number", nullable = false, length = PHONE_LENGTH)
+    @Column(name = "phone_number", length = PHONE_LENGTH)
     private String phoneNumber;
 
     @Basic(optional = true)

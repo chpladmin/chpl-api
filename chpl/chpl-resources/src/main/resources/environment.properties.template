@@ -42,8 +42,10 @@ summaryEmailName=summaryStatistics.csv
 summaryEmailPeriodInDays=7
 
 #questionable activity email properties
-questionableActivityReportFilename=questionable-activity.csv
+questionableActivityReportFilename=questionable-activity
 questionableActivityEmailSubject=Questionable Activity Report
+questionableActivityHasDataEmailBody=<p>A summary of questionable activity found between %s and %s is attached.</p>"
+questionableActivityNoDataEmailBody=<p>No questionable activity was found between %s and %s.</p>
 
 #oversight email properties
 suspendedDaysAllowed=30
