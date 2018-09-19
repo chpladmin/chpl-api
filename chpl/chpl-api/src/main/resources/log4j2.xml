@@ -37,6 +37,15 @@
                 <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
             </Policies>
         </RollingFile>
+        <RollingFile name="g3Sed2015DownloadableResourceCreatorJob" fileName="${logDir}/scheduler/g3Sed2015DownloadableResourceCreatorJob.log"
+                     filePattern="${logDir}/scheduler/history/g3Sed2015DownloadableResourceCreatorJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile>
         <RollingFile name="brokenSurveillanceRulesCreatorJob" fileName="${logDir}/scheduler/brokenSurveillanceRulesCreatorJob.log"
                      filePattern="${logDir}/scheduler/history/brokenSurveillanceRulesCreatorJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
@@ -131,6 +140,9 @@
         </Logger>
         <Logger name="certifiedProductDownloadableResourceCreatorJobLogger" level="INFO" additivity="false">
             <AppenderRef ref="certifiedProductDownloadableResourceCreatorJob" />
+        </Logger>
+        <Logger name="g3Sed2015DownloadableResourceCreatorJobLogger" level="INFO" additivity="false">
+            <AppenderRef ref="g3Sed2015DownloadableResourceCreatorJob" />
         </Logger>
         <Logger name="brokenSurveillanceRulesCreatorJobLogger" level="INFO" additivity="false">
             <AppenderRef ref="brokenSurveillanceRulesCreatorJob" />
