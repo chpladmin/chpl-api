@@ -11,5 +11,6 @@ _Date TBD_
   * Developer website
   * Add info messages for 2014 cms id widget
   * Add info messages for 2014/2015 id widget
+* Move questionable activity email code into quartz job to allow user scheduling.
 
 ---
