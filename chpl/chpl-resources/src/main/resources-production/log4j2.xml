@@ -170,8 +170,9 @@
         <Logger name="apiKeyWarningEmailJobLogger" level="INFO" additivity="false">
             <AppenderRef ref="apiKeyWarningEmailJob" />
         </Logger>
-         <Logger name="apiKeyDeleteJobLogger" level="INFO" additivity="false">
+        <Logger name="apiKeyDeleteJobLogger" level="INFO" additivity="false">
             <AppenderRef ref="apiKeyDeleteJob" />
+        </Logger>
         <Logger name="questionableActivityEmailJobLogger" level="INFO" additivity="false">
             <AppenderRef ref="questionableActivityEmailJob" />
         </Logger>

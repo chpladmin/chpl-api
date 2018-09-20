@@ -23,7 +23,6 @@ public class ApiKeyDTO implements Serializable {
     }
 
     public ApiKeyDTO(ApiKeyEntity entity) {
-
         this.id = entity.getId();
         this.apiKey = entity.getApiKey();
         this.email = entity.getEmail();
@@ -73,7 +72,7 @@ public class ApiKeyDTO implements Serializable {
         return whitelisted;
     }
 
-    public void setWhitelisted(Boolean whitelisted) {
+    public void setWhitelisted(final Boolean whitelisted) {
         this.whitelisted = whitelisted;
     }
 
@@ -113,7 +112,7 @@ public class ApiKeyDTO implements Serializable {
         return lastUsedDate;
     }
 
-    public void setLastUsedDate(Date lastUsedDate) {
+    public void setLastUsedDate(final Date lastUsedDate) {
         this.lastUsedDate = lastUsedDate;
     }
 
@@ -121,7 +120,7 @@ public class ApiKeyDTO implements Serializable {
         return deleteWarningSentDate;
     }
 
-    public void setDeleteWarningSentDate(Date deleteWarningSentDate) {
+    public void setDeleteWarningSentDate(final Date deleteWarningSentDate) {
         this.deleteWarningSentDate = deleteWarningSentDate;
     }
 

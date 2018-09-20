@@ -24,7 +24,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 
     @Override
-    public ApiKeyDTO create(ApiKeyDTO dto) throws EntityCreationException {
+    public ApiKeyDTO create(final ApiKeyDTO dto) throws EntityCreationException {
 
         ApiKeyEntity entity = null;
         try {
@@ -62,7 +62,7 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
     }
 
     @Override
-    public ApiKeyDTO update(ApiKeyDTO dto) throws EntityRetrievalException {
+    public ApiKeyDTO update(final ApiKeyDTO dto) throws EntityRetrievalException {
 
         ApiKeyEntity entity = getEntityById(dto.getId());
 
@@ -89,7 +89,7 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(final Long id) {
         Query query = entityManager.createQuery("UPDATE ApiKeyEntity SET deleted = true WHERE api_key_id = :entityid");
         query.setParameter("entityid", id);
         query.executeUpdate();
@@ -108,7 +108,7 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
         return dtos;
 
     }
-    
+
     @Override
     public List<ApiKeyDTO> findAllWhitelisted() {
 
@@ -124,7 +124,7 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
     }
 
     @Override
-    public ApiKeyDTO getById(Long id) throws EntityRetrievalException {
+    public ApiKeyDTO getById(final Long id) throws EntityRetrievalException {
 
         ApiKeyDTO dto = null;
         ApiKeyEntity entity = getEntityById(id);
@@ -137,7 +137,7 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
     }
 
     @Override
-    public ApiKeyDTO getByKey(String apiKey) throws EntityRetrievalException {
+    public ApiKeyDTO getByKey(final String apiKey) throws EntityRetrievalException {
 
         ApiKeyDTO dto = null;
         ApiKeyEntity entity = getEntityByKey(apiKey);
@@ -163,7 +163,7 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
     }
 
     @Override
-    public ApiKeyDTO getRevokedKeyById(Long id) throws EntityRetrievalException {
+    public ApiKeyDTO getRevokedKeyById(final Long id) throws EntityRetrievalException {
 
         ApiKeyDTO dto = null;
         ApiKeyEntity entity = getRevokedEntityById(id);
@@ -176,7 +176,7 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
     }
 
     @Override
-    public ApiKeyDTO getRevokedKeyByKey(String apiKey) {
+    public ApiKeyDTO getRevokedKeyByKey(final String apiKey) {
 
         ApiKeyDTO dto = null;
         ApiKeyEntity entity = getRevokedEntityByKey(apiKey);
@@ -186,9 +186,9 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
         }
         return dto;
     }
-    
+
     @Override
-    public List<ApiKeyDTO> findAllNotUsedInXDays(Integer days) {
+    public List<ApiKeyDTO> findAllNotUsedInXDays(final Integer days) {
         List<ApiKeyEntity> entities = getAllNotUsedInXDays(days);
         List<ApiKeyDTO> dtos = new ArrayList<>();
 
@@ -198,9 +198,9 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
         }
         return dtos;
     }
-    
+
     @Override
-    public List<ApiKeyDTO> findAllToBeRevoked(Integer daysSinceWarningSent) {
+    public List<ApiKeyDTO> findAllToBeRevoked(final Integer daysSinceWarningSent) {
         List<ApiKeyEntity> entities = getAllToBeRevoked(daysSinceWarningSent);
         List<ApiKeyDTO> dtos = new ArrayList<>();
 
@@ -211,13 +211,12 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
         return dtos;
     }
 
-    private void create(ApiKeyEntity entity) {
-
+    private void create(final ApiKeyEntity entity) {
         entityManager.persist(entity);
         entityManager.flush();
     }
 
-    private void update(ApiKeyEntity entity) {
+    private void update(final ApiKeyEntity entity) {
 
         entityManager.merge(entity);
         entityManager.flush();
@@ -230,31 +229,34 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
                 .createQuery("from ApiKeyEntity where (NOT deleted = true) ", ApiKeyEntity.class).getResultList();
         return result;
     }
-    
+
     @Cacheable(CacheNames.GET_ALL_WHITELISTED)
     private List<ApiKeyEntity> getAllWhitelistedEntities() {
 
         List<ApiKeyEntity> result = entityManager
-                .createQuery("from ApiKeyEntity where (NOT deleted = true) AND whitelisted = true", ApiKeyEntity.class).getResultList();
+                .createQuery("from ApiKeyEntity where (NOT deleted = true) AND whitelisted = true",
+                        ApiKeyEntity.class).getResultList();
         return result;
     }
 
     private List<ApiKeyEntity> getAllNotUsedInXDays(final Integer days) {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DAY_OF_MONTH, (-1 * days));
-        List<ApiKeyEntity> result = 
+        List<ApiKeyEntity> result =
                 entityManager.createQuery(
-                        "from ApiKeyEntity where deleted <> true AND lastUsedDate < :targetDate AND deleteWarningSentDate is null",
+                        "from ApiKeyEntity where deleted <> true "
+                        + "AND lastUsedDate < :targetDate "
+                        + "AND deleteWarningSentDate is null",
                         ApiKeyEntity.class)
                 .setParameter("targetDate", cal.getTime())
                 .getResultList();
         return result;
     }
-    
-    private List<ApiKeyEntity> getAllToBeRevoked(Integer daysSinceWarningSent) {
+
+    private List<ApiKeyEntity> getAllToBeRevoked(final Integer daysSinceWarningSent) {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DAY_OF_MONTH, (-1 * daysSinceWarningSent));
-        List<ApiKeyEntity> result = 
+        List<ApiKeyEntity> result =
                 entityManager.createQuery(
                         "from ApiKeyEntity where deleted <> true AND deleteWarningSentDate < :targetDate",
                         ApiKeyEntity.class)
@@ -262,11 +264,9 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
                 .getResultList();
         return result;
     }
-    
-    private ApiKeyEntity getEntityById(Long entityId) throws EntityRetrievalException {
 
+    private ApiKeyEntity getEntityById(final Long entityId) throws EntityRetrievalException {
         ApiKeyEntity entity = null;
-
         Query query = entityManager.createQuery(
                 "from ApiKeyEntity where (NOT deleted = true) AND (api_key_id = :entityid) ", ApiKeyEntity.class);
         query.setParameter("entityid", entityId);
@@ -284,10 +284,8 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
         return entity;
     }
 
-    private ApiKeyEntity getEntityByKey(String key) throws EntityRetrievalException {
-
+    private ApiKeyEntity getEntityByKey(final String key) throws EntityRetrievalException {
         ApiKeyEntity entity = null;
-
         Query query = entityManager.createQuery("from ApiKeyEntity where (NOT deleted = true) AND (api_key = :apikey) ",
                 ApiKeyEntity.class);
         query.setParameter("apikey", key);
@@ -304,14 +302,12 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
     }
 
     private List<ApiKeyEntity> getAllRevokedEntities() {
-
         List<ApiKeyEntity> result = entityManager
                 .createQuery("from ApiKeyEntity where (deleted = true) ", ApiKeyEntity.class).getResultList();
         return result;
     }
 
-    private ApiKeyEntity getRevokedEntityById(Long entityId) throws EntityRetrievalException {
-
+    private ApiKeyEntity getRevokedEntityById(final Long entityId) throws EntityRetrievalException {
         ApiKeyEntity entity = null;
 
         Query query = entityManager.createQuery(
@@ -327,8 +323,7 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
         return entity;
     }
 
-    private ApiKeyEntity getRevokedEntityByKey(String key) {
-
+    private ApiKeyEntity getRevokedEntityByKey(final String key) {
         ApiKeyEntity entity = null;
 
         Query query = entityManager.createQuery("from ApiKeyEntity where (deleted = true) AND (api_key = :apikey) ",
