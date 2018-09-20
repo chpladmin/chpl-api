@@ -145,6 +145,7 @@ public class ApiKeyController {
             apiKey.setName(dto.getNameOrganization());
             apiKey.setEmail(dto.getEmail());
             apiKey.setKey(dto.getApiKey());
+            apiKey.setLastUsedDate(dto.getLastUsedDate());
             keys.add(apiKey);
         }
 
