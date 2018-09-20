@@ -81,10 +81,11 @@ private static final Logger LOGGER = LogManager.getLogger("apiKeyDeleteJobLogger
         String message = String.format(
                 env.getProperty("job.apiKeyDeleteJob.config.message"),
                 dto.getNameOrganization(),
-                getTotalDaysUnusedBeforeDelete().toString(),
                 dto.getApiKey(),
-                getDateFormatter().format(dto.getLastUsedDate()));
-        
+                getDateFormatter().format(dto.getLastUsedDate()),
+                env.getProperty("chplUrlBegin"),
+                env.getProperty("chplUrlBegin"));
+
         return message;
     }
     
@@ -97,10 +98,6 @@ private static final Logger LOGGER = LogManager.getLogger("apiKeyDeleteJobLogger
                 DateFormat.LONG, 
                 DateFormat.LONG, 
                 Locale.US);
-    }
-    
-    private Integer getTotalDaysUnusedBeforeDelete() {
-        return getNumberOfDaysForWarning() + getNumberOfDaysUntilDelete();
     }
     
     private Integer getNumberOfDaysForWarning() {
