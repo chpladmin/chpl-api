@@ -353,5 +353,25 @@
                 </entry>
             </job-data-map>
         </job>
+
+        <!-- Questionable Activity data emailer -->
+        <job>
+            <name>Questionable Activity Report</name>
+            <group>chplJobs</group>
+            <description>Sends a report of questionable activity within the last week</description>
+            <job-class>gov.healthit.chpl.scheduler.job.QuestionableActivityEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN</value>
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>WEEKLY</value>
+                </entry>
+            </job-data-map>
+        </job>
     </schedule>
 </job-scheduling-data>
