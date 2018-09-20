@@ -9,6 +9,7 @@ public class ApiKey implements Serializable {
     private String email;
     private String key;
     private Date lastUsedDate;
+    private Date deleteWarningSentDate;
 
     public String getName() {
         return name;
@@ -40,5 +41,13 @@ public class ApiKey implements Serializable {
     
     public void setLastUsedDate(final Date lastUsedDate) {
         this.lastUsedDate = lastUsedDate;
+    }
+
+    public Date getDeleteWarningSentDate() {
+        return deleteWarningSentDate;
+    }
+
+    public void setDeleteWarningSentDate(Date deleteWarningSentDate) {
+        this.deleteWarningSentDate = deleteWarningSentDate;
     }
 }

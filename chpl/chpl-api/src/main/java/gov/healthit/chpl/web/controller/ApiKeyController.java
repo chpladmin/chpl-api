@@ -146,6 +146,7 @@ public class ApiKeyController {
             apiKey.setEmail(dto.getEmail());
             apiKey.setKey(dto.getApiKey());
             apiKey.setLastUsedDate(dto.getLastUsedDate());
+            apiKey.setDeleteWarningSentDate(dto.getDeleteWarningSentDate());
             keys.add(apiKey);
         }
 
