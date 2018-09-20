@@ -529,7 +529,7 @@
                 <job-name>apiKeyDeleteWarningEmailJob</job-name>
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
-                <cron-expression>0 0 4 1/1 * ? *</cron-expression> <!-- At 0445 UTC on the first Saturday of the quarter -->
+                <cron-expression>0 0 4 1/1 * ? *</cron-expression> <!-- At 0400 UTC every day -->
             </cron>
         </trigger>
         
@@ -549,7 +549,7 @@
                 <job-name>apiKeyDeleteJob</job-name>
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
-                <cron-expression>0 5 4 1/1 * ? *</cron-expression> <!-- At 0445 UTC on the first Saturday of the quarter -->
+                <cron-expression>0 5 4 1/1 * ? *</cron-expression> <!-- At 0405 UTC every day -->
             </cron>
         </trigger>
     </schedule>
