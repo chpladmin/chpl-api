@@ -3,7 +3,6 @@ package gov.healthit.chpl.scheduler.job;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -131,11 +130,8 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
             throws IOException {
         String csvFilename = downloadFolder.getAbsolutePath() + 
                 File.separator + 
-                "surveillance-all-" + 
-                getTimestampFormat().format(new Date()) + 
-                ".csv";
+                "surveillance-all.csv";
         File csvFile = getFile(csvFilename);
-        //TODO write presenter
         SurveillanceCsvPresenter csvPresenter = new SurveillanceCsvPresenter(getProperties());
         csvPresenter.presentAsFile(csvFile, results);
         LOGGER.info("Wrote Surveillance-All CSV file.");
@@ -145,9 +141,7 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
             throws IOException {
         String csvFilename = downloadFolder.getAbsolutePath() + 
                 File.separator + 
-                "surveillance-with-nonconformities-" + 
-                getTimestampFormat().format(new Date()) + 
-                ".csv";
+                "surveillance-with-nonconformities.csv";
         File csvFile = getFile(csvFilename);
         NonconformityCsvPresenter csvPresenter = new NonconformityCsvPresenter(getProperties());
         csvPresenter.presentAsFile(csvFile, results);
@@ -158,9 +152,7 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
             throws IOException {
         String csvFilename = downloadFolder.getAbsolutePath() + 
                 File.separator + 
-                "surveillance-basic-report-" + 
-                getTimestampFormat().format(new Date()) + 
-                ".csv";
+                "surveillance-basic-report.csv";
         File csvFile = getFile(csvFilename);
         SurveillanceReportCsvPresenter csvPresenter = new SurveillanceReportCsvPresenter(getProperties());
         csvPresenter.presentAsFile(csvFile, results);
