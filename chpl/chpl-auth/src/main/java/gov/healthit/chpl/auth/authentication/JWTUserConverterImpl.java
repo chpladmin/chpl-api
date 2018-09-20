@@ -18,7 +18,7 @@ public class JWTUserConverterImpl implements JWTUserConverter {
     @Autowired
     private JWTConsumer jwtConsumer;
 
-    public JWTUserConverterImpl(){}
+    public JWTUserConverterImpl() {}
 
     public User getAuthenticatedUser(final String jwt) throws JWTValidationException {
 

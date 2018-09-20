@@ -81,7 +81,7 @@ public class UserManagerTest {
         toCreate.setEmail("email@example.com");
         toCreate.setFullName("test");
         toCreate.setFriendlyName("test");
-        toCreate.setPassword("testpass");
+        toCreate.setPassword("a long password that should be good enough to not be blocked");
         toCreate.setPhoneNumber("123-456-7890");
         toCreate.setSubjectName("testuser");
         toCreate.setTitle("Dr.");
@@ -109,7 +109,42 @@ public class UserManagerTest {
         toCreate.setEmail("email@example.com");
         toCreate.setFullName("test");
         toCreate.setFriendlyName("test");
-        toCreate.setPassword("testpass");
+        toCreate.setPassword("a long password that should be good enough to not be blocked");
+        toCreate.setPhoneNumber("123-456-7890");
+        toCreate.setSubjectName("testuser");
+        toCreate.setTitle("Dr.");
+
+        UserDTO result = userManager.create(toCreate);
+        UserDTO created = userManager.getById(result.getId());
+
+        assertEquals(toCreate.getEmail(), created.getEmail());
+        assertEquals(toCreate.getFullName(), created.getFullName());
+        assertEquals(toCreate.getFriendlyName(), created.getFriendlyName());
+        assertEquals(toCreate.getSubjectName(), created.getSubjectName());
+
+        userManager.delete(created.getUsername());
+        userManager.getById(result.getId());
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    /**
+     * Verify that a weak password results in a Create User exception.
+     * @throws UserCreationException expected
+     * @throws UserRetrievalException not expected
+     * @throws UserPermissionRetrievalException not expected
+     * @throws UserManagementException not expected
+     */
+    @Test(expected = UserCreationException.class)
+    public void testCreateDeleteUserWithBadPassword() throws UserCreationException,
+    UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
+
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+        UserCreationJSONObject toCreate = new UserCreationJSONObject();
+        toCreate.setEmail("email@example.com");
+        toCreate.setFullName("test");
+        toCreate.setFriendlyName("test");
+        toCreate.setPassword("weak");
         toCreate.setPhoneNumber("123-456-7890");
         toCreate.setSubjectName("testuser");
         toCreate.setTitle("Dr.");

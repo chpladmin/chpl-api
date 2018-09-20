@@ -2,6 +2,8 @@ package gov.healthit.chpl.auth.controller;
 
 import javax.mail.MessagingException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
@@ -10,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.nulabinc.zxcvbn.Strength;
 
 import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.auth.Util;
@@ -20,6 +24,7 @@ import gov.healthit.chpl.auth.json.UserResetPasswordJSONObject;
 import gov.healthit.chpl.auth.jwt.JWTCreationException;
 import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.user.UpdatePasswordRequest;
+import gov.healthit.chpl.auth.user.UpdatePasswordResponse;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -34,6 +39,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @RestController
 @RequestMapping("/auth")
 public class AuthenticationController {
+    private static final Logger LOGGER = LogManager.getLogger(AuthenticationController.class);
 
     @Autowired
     private Authenticator authenticator;
@@ -93,7 +99,8 @@ public class AuthenticationController {
     /**
      * Change a logged in user's password.
      * @param request the update password request
-     * @return "true" when password is changed
+     * @return an object with t/f re: password being changed,
+     *  and data about bad passwords if strength wasn't high enough
      * @throws UserRetrievalException if user cannot be retrieved or does not have permission to modify their data
      */
     @ApiOperation(value = "Change password.",
@@ -101,18 +108,34 @@ public class AuthenticationController {
                     + "passed in matches what is stored in the database.")
     @RequestMapping(value = "/change_password", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
-    public String changePassword(@RequestBody final UpdatePasswordRequest request) throws UserRetrievalException {
+    public UpdatePasswordResponse changePassword(@RequestBody final UpdatePasswordRequest request)
+            throws UserRetrievalException {
+        UpdatePasswordResponse response = new UpdatePasswordResponse();
         if (Util.getCurrentUser() == null) {
             throw new UserRetrievalException("No user is logged in.");
         }
-        //get the current user
+
+        // get the current user
         UserDTO currUser = userManager.getById(Util.getCurrentUser().getId());
         if (currUser == null) {
             throw new UserRetrievalException("The user with id " + Util.getCurrentUser().getId()
                     + " could not be found or the logged in user does not have permission to modify their data.");
         }
 
-        //encode the old password passed in to compare
+        // check the strength of the new password
+        Strength strength = userManager.getPasswordStrength(currUser, request.getNewPassword());
+        if (strength.getScore() < UserManager.MIN_PASSWORD_STRENGTH) {
+            LOGGER.info("Strength results: [warning: {}] [suggestions: {}] [score: {}] [worst case crack time: {}]",
+                    strength.getFeedback().getWarning(),
+                    strength.getFeedback().getSuggestions().toString(),
+                    strength.getScore(),
+                    strength.getCrackTimesDisplay().getOfflineFastHashing1e10PerSecond());
+            response.setStrength(strength);
+            response.setPasswordUpdated(false);
+            return response;
+        }
+
+        // encode the old password passed in to compare
         String currEncodedPassword = userManager.getEncodedPassword(currUser);
         boolean oldPasswordMatches = bCryptPasswordEncoder.matches(request.getOldPassword(), currEncodedPassword);
         if (!oldPasswordMatches) {
@@ -120,7 +143,8 @@ public class AuthenticationController {
         } else {
             userManager.updateUserPassword(currUser.getSubjectName(), request.getNewPassword());
         }
-        return "{\"passwordUpdated\" : true }";
+        response.setPasswordUpdated(true);
+        return response;
     }
 
     /**
@@ -155,6 +179,5 @@ public class AuthenticationController {
         sendMailService.sendEmail(toEmails, null, "Open Data CHPL Password Reset", htmlMessage);
 
         return "{\"passwordReset\" : true }";
-
     }
 }
