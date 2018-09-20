@@ -99,11 +99,7 @@ private static final Logger LOGGER = LogManager.getLogger("apiKeyDeleteJobLogger
                 DateFormat.LONG, 
                 Locale.US);
     }
-    
-    private Integer getNumberOfDaysForWarning() {
-        return Integer.valueOf(env.getProperty("job.apiKeyWarningEmailJob.config.apiKeyLastUsedDaysAgo"));
-    }
-    
+
     private Integer getNumberOfDaysUntilDelete() {
         return Integer.valueOf(env.getProperty("job.apiKeyWarningEmailJob.config.daysUntilDelete"));
     }
