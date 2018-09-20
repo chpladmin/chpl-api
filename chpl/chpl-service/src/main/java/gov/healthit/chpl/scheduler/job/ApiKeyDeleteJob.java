@@ -97,7 +97,7 @@ private static final Logger LOGGER = LogManager.getLogger("apiKeyDeleteJobLogger
         return DateFormat.getDateTimeInstance(
                 DateFormat.LONG, 
                 DateFormat.LONG, 
- gut                Locale.US);
+                 Locale.US);
     }
 
     private Integer getNumberOfDaysUntilDelete() {
