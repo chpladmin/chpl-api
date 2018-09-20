@@ -57,7 +57,7 @@ private static final Logger LOGGER = LogManager.getLogger("apiKeyDeleteJobLogger
             } 
         }
         
-        LOGGER.info("********* Completed the API Key Warning Email job. *********");
+        LOGGER.info("********* Completed the API Key Deletion job. *********");
     }
     
     private void updateDeleted(ApiKeyDTO dto) throws EntityRetrievalException {
@@ -97,7 +97,7 @@ private static final Logger LOGGER = LogManager.getLogger("apiKeyDeleteJobLogger
         return DateFormat.getDateTimeInstance(
                 DateFormat.LONG, 
                 DateFormat.LONG, 
-                Locale.US);
+ gut                Locale.US);
     }
 
     private Integer getNumberOfDaysUntilDelete() {
