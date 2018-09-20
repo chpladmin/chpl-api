@@ -123,13 +123,13 @@ maxPoolSize=20
 #Do we want to 'check' emails before sending them?
 #emailBuilder.config.productionEnvironment=false
 #Let emails being sent to this list of domains go through
-#emailBuilder.config.whitelistedDomains=ainq.com
+#emailBuilder.config.whitelistedDomains=ainq.com,onc.gov
 #Emails should be sent to this address
-#emailBuilder.config.forwardAddress=tyoung@ainq.com
+#emailBuilder.config.forwardAddress=example@ainq.com
 #######################################
 emailBuilder.config.productionEnvironment=false
 emailBuilder.config.whitelistedDomains=ainq.com
-emailBuilder.config.whitelistedDomains=ainq.com
+emailBuilder.config.forwardAddress=example@ainq.com
 
 #DeleteAPIKeyWarningEmail
 job.apiKeyWarningEmailJob.config.apiKeyLastUsedDaysAgo=7
