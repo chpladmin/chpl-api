@@ -19,6 +19,7 @@ import gov.healthit.chpl.validation.listing.reviewer.TestToolReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestingLabReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnattestedCriteriaWithDataReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnsupportedCharacterReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.UrlReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ValidDataReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredData2015Reviewer;
 
@@ -33,19 +34,19 @@ public class Edition2015ListingValidator extends Validator {
     @Qualifier("chplNumberReviewer")
     private ChplNumberReviewer chplNumberReviewer;
 
-    @Autowired 
+    @Autowired
     @Qualifier("developerStatusReviewer")
     private DeveloperStatusReviewer devStatusReviewer;
 
-    @Autowired 
+    @Autowired
     @Qualifier("unsupportedCharacterReviewer")
     private UnsupportedCharacterReviewer unsupportedCharacterReviewer;
 
-    @Autowired 
+    @Autowired
     @Qualifier("fieldLengthReviewer")
     private FieldLengthReviewer fieldLengthReviewer;
 
-    @Autowired 
+    @Autowired
     @Qualifier("requiredData2015Reviewer")
     private RequiredData2015Reviewer requiredDataReviewer;
 
@@ -57,34 +58,39 @@ public class Edition2015ListingValidator extends Validator {
     @Qualifier("validDataReviewer")
     private ValidDataReviewer validDataReviewer;
 
-    @Autowired 
+    @Autowired
     @Qualifier("sedG3Reviewer")
     private SedG3Reviewer sedG3Reviewer;
 
-    @Autowired 
+    @Autowired
     @Qualifier("certificationStatusReviewer")
     private CertificationStatusReviewer certStatusReviewer;
 
-    @Autowired 
+    @Autowired
     @Qualifier("certificationDateReviewer")
     private CertificationDateReviewer certDateReviewer;
 
-    @Autowired 
+    @Autowired
     @Qualifier("unattestedCriteriaWithDataReviewer")
     private UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer;
 
-    @Autowired 
+    @Autowired
     @Qualifier("testToolReviewer")
     private TestToolReviewer ttReviewer;
 
-    @Autowired 
+    @Autowired
     @Qualifier("icsReviewer")
     private InheritedCertificationStatusReviewer icsReviewer;
 
+    @Autowired
+    @Qualifier("urlReviewer")
+    private UrlReviewer urlReviewer;
+
     private List<Reviewer> reviewers;
 
+    @Override
     public List<Reviewer> getReviewers() {
-        if(reviewers == null) {
+        if (reviewers == null) {
             reviewers = new ArrayList<Reviewer>();
             reviewers.add(chplNumberReviewer);
             reviewers.add(devStatusReviewer);
@@ -99,6 +105,7 @@ public class Edition2015ListingValidator extends Validator {
             reviewers.add(unattestedCriteriaWithDataReviewer);
             reviewers.add(icsReviewer);
             reviewers.add(ttReviewer);
+            reviewers.add(urlReviewer);
         }
         return reviewers;
     }
