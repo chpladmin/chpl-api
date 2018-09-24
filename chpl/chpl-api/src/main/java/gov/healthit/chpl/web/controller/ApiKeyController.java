@@ -1,6 +1,7 @@
 package gov.healthit.chpl.web.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -21,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.SendMailUtil;
+import gov.healthit.chpl.auth.EmailBuilder;
 import gov.healthit.chpl.domain.ApiKey;
 import gov.healthit.chpl.domain.ApiKeyActivity;
 import gov.healthit.chpl.domain.ApiKeyRegistration;
@@ -39,9 +40,6 @@ public class ApiKeyController {
 
     @Autowired
     private ApiKeyManager apiKeyManager;
-
-    @Autowired
-    private SendMailUtil sendMailService;
 
     @Autowired
     private Environment env;
@@ -147,6 +145,8 @@ public class ApiKeyController {
             apiKey.setName(dto.getNameOrganization());
             apiKey.setEmail(dto.getEmail());
             apiKey.setKey(dto.getApiKey());
+            apiKey.setLastUsedDate(dto.getLastUsedDate());
+            apiKey.setDeleteWarningSentDate(dto.getDeleteWarningSentDate());
             keys.add(apiKey);
         }
 
@@ -268,6 +268,11 @@ public class ApiKeyController {
         String[] toEmails = {
                 email
         };
-        sendMailService.sendEmail(toEmails, null, subject, htmlMessage);
+        
+        EmailBuilder emailBuilder = new EmailBuilder(env);
+        emailBuilder.recipients(new ArrayList<String>(Arrays.asList(toEmails)))
+                        .subject(subject)
+                        .htmlMessage(htmlMessage)
+                        .sendEmail();
     }
 }

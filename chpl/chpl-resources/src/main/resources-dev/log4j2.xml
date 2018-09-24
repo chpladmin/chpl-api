@@ -102,6 +102,24 @@
                 <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
             </Policies>
         </RollingFile>
+        <RollingFile name="apiKeyWarningEmailJob" fileName="${logDir}/scheduler/apiKeyWarningEmailJob.log"
+                     filePattern="${logDir}/scheduler/history/apiKeyWarningEmailJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="apiKeyDeleteJob" fileName="${logDir}/scheduler/apiKeyDeleteJob.log"
+                     filePattern="${logDir}/scheduler/history/apiKeyDeleteJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile>
         <RollingFile name="questionableActivityEmailJob" fileName="${logDir}/scheduler/questionableActivityEmailJob.log"
                      filePattern="${logDir}/scheduler/history/questionableActivityEmailJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
@@ -165,6 +183,12 @@
         </Logger>
         <Logger name="triggerDeveloperBanJobLogger" level="INFO" additivity="false">
             <AppenderRef ref="triggerDeveloperBanJob" />
+        </Logger>
+        <Logger name="apiKeyWarningEmailJobLogger" level="INFO" additivity="false">
+            <AppenderRef ref="apiKeyWarningEmailJob" />
+        </Logger>
+        <Logger name="apiKeyDeleteJobLogger" level="INFO" additivity="false">
+            <AppenderRef ref="apiKeyDeleteJob" />
         </Logger>
         <Logger name="questionableActivityEmailJobLogger" level="INFO" additivity="false">
             <AppenderRef ref="questionableActivityEmailJob" />

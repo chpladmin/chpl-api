@@ -1,6 +1,7 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,12 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 
     }
 
+    @Override
+    @Transactional
+    public ApiKeyDTO updateApiKey(ApiKeyDTO dto) throws EntityRetrievalException {
+        return apiKeyDAO.update(dto);
+    }
+    
     @Override
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -102,6 +109,10 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
         apiKeyActivityDto.setDeleted(false);
 
         apiKeyActivityDAO.create(apiKeyActivityDto);
+        
+        //Update the lastUsedDate...
+        apiKey.setLastUsedDate(new Date());
+        apiKeyDAO.update(apiKey);
     }
 
     @Override
