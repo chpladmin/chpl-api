@@ -56,6 +56,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 
@@ -76,6 +77,9 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     @Autowired
     private UserPermissionDAO userPermissionDao;
 
+    @Autowired
+    private CertificationBodyManager acbManager;
+    
     @Autowired
     private ActivityManager activityManager;
 
@@ -220,7 +224,8 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
         }
         return results;
     }
-
+    
+    
     @Override
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('ROLE_ACB') "
@@ -410,21 +415,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
         surv.setStartDate(pr.getStartDate());
         surv.setEndDate(pr.getEndDate());
         surv.setRandomizedSitesUsed(pr.getNumRandomizedSites());
-        if (pr.getCertifiedProduct() != null) {
-            CertifiedProductEntity cpEntity = pr.getCertifiedProduct();
-            try {
-                CertifiedProductDetailsDTO cpDto = cpDao.getDetailsById(cpEntity.getId());
-                surv.setCertifiedProduct(new CertifiedProduct(cpDto));
-            } catch (final EntityRetrievalException ex) {
-                LOGGER.error("Could not find details for certified product " + cpEntity.getId());
-            }
-        } else {
-            CertifiedProduct cp = new CertifiedProduct();
-            cp.setId(pr.getCertifiedProductId());
-            cp.setChplProductNumber(pr.getCertifiedProductUniqueId());
-            surv.setCertifiedProduct(cp);
-        }
-
+        
         SurveillanceType survType = new SurveillanceType();
         survType.setName(pr.getSurveillanceType());
         surv.setType(survType);
