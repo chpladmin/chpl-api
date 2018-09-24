@@ -1,5 +1,21 @@
 # Release Notes
 
+## Version 16.4.0
+_24 September 2018_
+
+### New Features
+* Validate URLs on upload / confirm / edit
+  * Transparency Attestation
+  * SED Report File
+  * Other report file
+  * API Documentation (at criteria level)
+  * Developer website
+* Add info messages for 2014 cms id widget
+* Add info messages for 2014/2015 id widget
+* Move questionable activity email code into quartz job to allow user scheduling.
+
+---
+
 ## Version 16.3.0
 _10 September 2018_
 
