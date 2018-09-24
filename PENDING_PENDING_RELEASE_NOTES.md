@@ -1,6 +1,9 @@
 
-## Version 16.5.0
+## Version 17.0.0
 _Date TBD_
+
+### Major Change
+* When retrieving Pending Surveillances, the listing details will not longer be populated
 
 ### New Features
 * Added scheduled job to send warning to users who have not used thier API key in the last X days
