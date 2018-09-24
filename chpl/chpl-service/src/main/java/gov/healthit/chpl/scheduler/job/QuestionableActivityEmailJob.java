@@ -25,10 +25,11 @@ import org.apache.logging.log4j.Logger;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.auth.SendMailUtil;
+import gov.healthit.chpl.auth.EmailBuilder;
 import gov.healthit.chpl.dao.QuestionableActivityDAO;
 import gov.healthit.chpl.domain.concept.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityCertificationResultDTO;
@@ -54,6 +55,9 @@ public class QuestionableActivityEmailJob extends QuartzJob {
     @Autowired
     private QuestionableActivityDAO questionableActivityDao;
 
+    @Autowired
+    private Environment env;
+    
     private static final int NUM_REPORT_COLS = 13;
     private static final int ACB_COL = 0;
     private static final int DEVELOPER_COL = 1;
@@ -111,9 +115,18 @@ public class QuestionableActivityEmailJob extends QuartzJob {
 
         LOGGER.info("Sending email to {} with contents {} and a total of {} questionable activities",
                 to, htmlMessage, csvRows.size());
-        SendMailUtil mailUtil = new SendMailUtil();
+        
         try {
-            mailUtil.sendEmail(to, subject, htmlMessage, files, props);
+            List<String> recipients = new ArrayList<String>();
+            recipients.add(to);
+            
+            EmailBuilder emailBuilder = new EmailBuilder(env);
+            emailBuilder.recipients(recipients)
+                        .subject(subject)
+                        .htmlMessage(htmlMessage)
+                        .fileAttachments(files)
+                        .sendEmail();
+            
         } catch (MessagingException e) {
             LOGGER.error(e);
         } 

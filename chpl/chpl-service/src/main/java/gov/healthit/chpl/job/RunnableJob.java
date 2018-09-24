@@ -1,15 +1,19 @@
 package gov.healthit.chpl.job;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import javax.mail.MessagingException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.auth.SendMailUtil;
+import gov.healthit.chpl.auth.EmailBuilder;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.JobDAO;
 import gov.healthit.chpl.dto.job.JobDTO;
@@ -21,7 +25,8 @@ public class RunnableJob implements Runnable {
     private static final Logger LOGGER = LogManager.getLogger(RunnableJob.class);
 
     @Autowired
-    protected SendMailUtil mailUtils;
+    protected Environment env;
+    
     @Autowired
     protected JobDAO jobDao;
     protected JobDTO job;
@@ -115,7 +120,11 @@ public class RunnableJob implements Runnable {
         }
 
         try {
-            mailUtils.sendEmail(to, null, subject, htmlMessage);
+            EmailBuilder emailBuilder = new EmailBuilder(env);
+            emailBuilder.recipients(new ArrayList<String>(Arrays.asList(to)))
+                            .subject(subject)
+                            .htmlMessage(htmlMessage)
+                            .sendEmail();
         } catch (final MessagingException ex) {
             LOGGER.error("Error sending email " + ex.getMessage(), ex);
         } finally {
