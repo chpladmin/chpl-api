@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 
 public class CertificationIdResults implements Serializable {
@@ -55,6 +56,7 @@ public class CertificationIdResults implements Serializable {
     private List<ArrayList<String>> missingOr = new ArrayList<ArrayList<String>>();
     private List<ArrayList<String>> missingCombo = new ArrayList<ArrayList<String>>();
     private List<TreeMap<String, ArrayList<String>>> missingX = new ArrayList<TreeMap<String, ArrayList<String>>>();
+    private List<TreeMap<String, ArrayList<String>>> missingXOr = new ArrayList<TreeMap<String, ArrayList<String>>>();
     private String year;
     private boolean isValid;
 
@@ -136,5 +138,13 @@ public class CertificationIdResults implements Serializable {
 
     public void setMissingX(List<TreeMap<String, ArrayList<String>>> missingX) {
         this.missingX = missingX;
+    }
+
+    public List<TreeMap<String, ArrayList<String>>> getMissingXOr() {
+        return missingXOr;
+    }
+
+    public void setMissingXOr(List<TreeMap<String, ArrayList<String>>> missingXOr) {
+        this.missingXOr = missingXOr;
     }
 }
