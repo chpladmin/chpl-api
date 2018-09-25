@@ -56,7 +56,6 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
-import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 
@@ -77,9 +76,6 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     @Autowired
     private UserPermissionDAO userPermissionDao;
 
-    @Autowired
-    private CertificationBodyManager acbManager;
-    
     @Autowired
     private ActivityManager activityManager;
 
@@ -224,8 +220,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
         }
         return results;
     }
-    
-    
+
     @Override
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('ROLE_ACB') "
