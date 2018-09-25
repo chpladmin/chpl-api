@@ -13,7 +13,6 @@ import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
@@ -21,7 +20,6 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.scheduler.SchedulerCertifiedProductSearchDetailsAsync;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProduct2014CsvPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductCsvPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductXmlPresenter;
@@ -37,12 +35,6 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
     private static final int MILLIS_PER_SECOND = 1000;
     private String edition;
 
-    @Autowired
-    private SchedulerCertifiedProductSearchDetailsAsync schedulerCertifiedProductSearchDetailsAsync;
-    
-    //@Autowired
-    //private CertifiedProductDetailsManager certifiedProductDetailsManager;
-    
     /**
      * Default constructor.
      * @throws Exception if issue with context
@@ -54,8 +46,8 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        schedulerCertifiedProductSearchDetailsAsync.setLogger(LOGGER);
-        
+        getCertifiedProductDetailsAsyncRetrievalHelper().setLogger(LOGGER);
+
         Date start = new Date();
         edition = jobContext.getMergedJobDataMap().getString("edition");
         LOGGER.info("********* Starting the Certified Product Downloadable Resource Creator job for " + edition + ". *********");
@@ -78,7 +70,7 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         Date end = new Date();
         LOGGER.info("Time to create file(s) for " + edition + " edition: "
                 + ((end.getTime() - start.getTime()) / MILLIS_PER_SECOND) + " seconds");
-        LOGGER.info("********* Cmpleted the Certified Product Downloadable Resource Creator job for " + edition + ". *********");
+        LOGGER.info("********* Completed the Certified Product Downloadable Resource Creator job for " + edition + ". *********");
     }
 
     private List<CertifiedProductDetailsDTO> getRelevantListings() throws EntityRetrievalException {
