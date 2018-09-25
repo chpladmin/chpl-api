@@ -346,6 +346,7 @@ public class CertificationIdController {
         results.setMissingCombo(validator.getMissingCombo());
         results.setMissingOr(validator.getMissingOr());
         results.setMissingAnd(validator.getMissingAnd());
+        results.setMissingXOr(validator.getMissingXOr());
 
         // Lookup CERT ID
         if (validator.isValid()) {
