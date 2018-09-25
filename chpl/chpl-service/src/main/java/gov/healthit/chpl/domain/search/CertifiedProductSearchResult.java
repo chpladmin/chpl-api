@@ -96,7 +96,7 @@ public class CertifiedProductSearchResult implements Serializable {
      * Constructed from other search result.
      * @param other the other search result
      */
-    public CertifiedProductSearchResult(CertifiedProductSearchResult other) {
+    public CertifiedProductSearchResult(final CertifiedProductSearchResult other) {
         this.id = other.getId();
         this.chplProductNumber = other.getChplProductNumber();
         this.edition = other.getEdition();

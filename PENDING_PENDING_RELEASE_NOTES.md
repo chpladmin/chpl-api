@@ -11,5 +11,6 @@ _Date TBD_
 * Add password strength checker when anyone:
   * creates a new User
   * updates a password
+* Add Developer Status to search results view
 
 ---

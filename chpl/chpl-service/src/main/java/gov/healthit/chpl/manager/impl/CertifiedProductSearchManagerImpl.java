@@ -22,10 +22,10 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 
     @Autowired
     CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
-    
+
     @Autowired
     CertifiedProductSearchDAO searchDao;
-    
+
     @Autowired
     CertifiedProductSearchDAO basicCpSearchDao;
 
@@ -39,12 +39,12 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 
     @Transactional
     @Override
-    public SearchResponse search(SearchRequest searchRequest) {
+    public SearchResponse search(final SearchRequest searchRequest) {
 
         Collection<CertifiedProductBasicSearchResult> searchResults = searchDao.search(searchRequest);
         int totalCountSearchResults = searchDao.getTotalResultCount(searchRequest);
-        
-        SearchResponse response = new SearchResponse(new Integer(totalCountSearchResults), 
+
+        SearchResponse response = new SearchResponse(new Integer(totalCountSearchResults),
                 searchResults, searchRequest.getPageSize(), searchRequest.getPageNumber());
         return response;
     }

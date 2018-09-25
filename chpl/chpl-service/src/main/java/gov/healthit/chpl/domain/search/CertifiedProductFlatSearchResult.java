@@ -6,6 +6,11 @@ public class CertifiedProductFlatSearchResult extends CertifiedProductSearchResu
     private static final long serialVersionUID = -2547390525592841044L;
 
     @JsonView({
+        SearchViews.Default.class
+    })
+    private String developerStatus;
+
+    @JsonView({
             SearchViews.Default.class
     })
     private String previousDevelopers; // unicode-char delimited string of
@@ -25,16 +30,32 @@ public class CertifiedProductFlatSearchResult extends CertifiedProductSearchResu
 
     private String apiDocumentation;
 
+    /**
+     * Default constructor.
+     */
     public CertifiedProductFlatSearchResult() {
 
     }
 
-    public CertifiedProductFlatSearchResult(CertifiedProductFlatSearchResult other) {
+    /**
+     * Constructed from other flat search result.
+     * @param other the other one
+     */
+    public CertifiedProductFlatSearchResult(final CertifiedProductFlatSearchResult other) {
         super(other);
+        this.developerStatus = other.getDeveloperStatus();
         this.previousDevelopers = other.getPreviousDevelopers();
         this.criteriaMet = other.getCriteriaMet();
         this.cqmsMet = other.getCqmsMet();
         this.apiDocumentation = other.getApiDocumentation();
+    }
+
+    public String getDeveloperStatus() {
+        return developerStatus;
+    }
+
+    public void setDeveloperStatus(final String developerStatus) {
+        this.developerStatus = developerStatus;
     }
 
     public String getPreviousDevelopers() {

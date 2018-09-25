@@ -623,6 +623,7 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
             result.setAcbCertificationId(dbResult.getAcbCertificationId());
             result.setPracticeType(dbResult.getPracticeTypeName());
             result.setDeveloper(dbResult.getDeveloper());
+            result.setDeveloperStatus(dbResult.getDeveloperStatus());
             result.setProduct(dbResult.getProduct());
             result.setVersion(dbResult.getVersion());
             result.setNumMeaningfulUse(dbResult.getMeaningfulUseUserCount());
