@@ -37,10 +37,10 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("inheritanceErrorsReportEmailJobLogger");
     private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
     private Properties props;
-    
+
     @Autowired
     private InheritanceErrorsReportDAO inheritanceErrorsReportDAO;
-    
+
     @Autowired
     private Environment env;
     /**
@@ -55,10 +55,10 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        
+
         LOGGER.info("********* Starting the Inheritance Error Report Email job. *********");
         LOGGER.info("Sending email to: " + jobContext.getMergedJobDataMap().getString("email"));
-        
+
         List<InheritanceErrorsReportDTO> errors = getAppropriateErrors(jobContext);
         File output = null;
         List<File> files = new ArrayList<File>();
@@ -76,20 +76,20 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
             htmlMessage = props.getProperty("inheritanceReportEmailWeeklyHtmlMessage");
         }
         LOGGER.info("Message to be sent: " + htmlMessage);
-        
+
         try {
-            htmlMessage += createHtmlEmailBody(errors.size(), 
+            htmlMessage += createHtmlEmailBody(errors.size(),
                     props.getProperty("inheritanceReportEmailWeeklyNoContent"));
-            
+
             List<String> addresses = new ArrayList<String>();
             addresses.add(to);
 
             EmailBuilder emailBuilder = new EmailBuilder(env);
             emailBuilder.recipients(addresses)
-                            .subject(subject)
-                            .htmlMessage(htmlMessage)
-                            .fileAttachments(files)
-                            .sendEmail();
+            .subject(subject)
+            .htmlMessage(htmlMessage)
+            .fileAttachments(files)
+            .sendEmail();
         } catch (IOException | MessagingException e) {
             LOGGER.error(e);
         }
