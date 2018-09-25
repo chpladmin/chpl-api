@@ -23,8 +23,6 @@ public abstract class Validator {
     protected List<ArrayList<String>> missingOr = new ArrayList<ArrayList<String>>();
     // missing at least one of the following combinations of criteria
     protected List<ArrayList<String>> missingCombo = new ArrayList<ArrayList<String>>();
-    // missing X criteria from the AND list of criteria
-    protected List<TreeMap<String, ArrayList<String>>> missingX = new ArrayList<TreeMap<String, ArrayList<String>>>();
     // missing X criteria from the OR list of criteria
     protected List<TreeMap<String, ArrayList<String>>> missingXOr = new ArrayList<TreeMap<String, ArrayList<String>>>();
 
@@ -58,10 +56,6 @@ public abstract class Validator {
 
     public List<ArrayList<String>> getMissingCombo() {
         return missingCombo;
-    }
-
-    public List<TreeMap<String, ArrayList<String>>> getMissingX() {
-        return missingX;
     }
 
     public List<TreeMap<String, ArrayList<String>>> getMissingXOr() {

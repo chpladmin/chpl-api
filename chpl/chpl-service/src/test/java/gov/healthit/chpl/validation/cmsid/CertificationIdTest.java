@@ -58,7 +58,7 @@ public class CertificationIdTest extends TestCase {
         List<CQMMetDTO> cqmDtos = certificationIdManager.getCqmsMetByCertifiedProductIds(productIdList);
 
         validator.validate(criteriaDtos, cqmDtos, new ArrayList<Integer>(2014));
-        assertNotNull(validator.getMissingX());
+        assertNotNull(validator.getMissingXOr());
         assertNotNull(validator.getMissingCombo());
         assertNotNull(validator.getMissingOr());
         assertNotNull(validator.getMissingAnd());
@@ -80,7 +80,7 @@ public class CertificationIdTest extends TestCase {
         List<CQMMetDTO> cqmDtos = certificationIdManager.getCqmsMetByCertifiedProductIds(productIdList);
 
         validator.validate(criteriaDtos, cqmDtos, new ArrayList<Integer>(2015));
-        assertTrue(validator.getMissingX().isEmpty());
+        assertTrue(validator.getMissingXOr().isEmpty());
         assertTrue(validator.getMissingCombo().isEmpty());
         assertNotNull(validator.getMissingOr());
         assertNotNull(validator.getMissingAnd());
@@ -103,7 +103,7 @@ public class CertificationIdTest extends TestCase {
         List<CQMMetDTO> cqmDtos = certificationIdManager.getCqmsMetByCertifiedProductIds(productIdList);
 
         validator.validate(criteriaDtos, cqmDtos, new ArrayList<Integer>(2014));
-        assertTrue(validator.getMissingX().isEmpty());
+        assertTrue(validator.getMissingXOr().isEmpty());
         assertNotNull(validator.getMissingCombo());
         assertNotNull(validator.getMissingOr());
         assertTrue(validator.getMissingAnd().isEmpty());

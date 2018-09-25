@@ -55,7 +55,6 @@ public class CertificationIdResults implements Serializable {
     private ArrayList<String> missingAnd = new ArrayList<String>();
     private List<ArrayList<String>> missingOr = new ArrayList<ArrayList<String>>();
     private List<ArrayList<String>> missingCombo = new ArrayList<ArrayList<String>>();
-    private List<TreeMap<String, ArrayList<String>>> missingX = new ArrayList<TreeMap<String, ArrayList<String>>>();
     private List<TreeMap<String, ArrayList<String>>> missingXOr = new ArrayList<TreeMap<String, ArrayList<String>>>();
     private String year;
     private boolean isValid;
@@ -130,14 +129,6 @@ public class CertificationIdResults implements Serializable {
 
     public void setMissingCombo(List<ArrayList<String>> missingCombo) {
         this.missingCombo = missingCombo;
-    }
-
-    public List<TreeMap<String, ArrayList<String>>> getMissingX() {
-        return missingX;
-    }
-
-    public void setMissingX(List<TreeMap<String, ArrayList<String>>> missingX) {
-        this.missingX = missingX;
     }
 
     public List<TreeMap<String, ArrayList<String>>> getMissingXOr() {
