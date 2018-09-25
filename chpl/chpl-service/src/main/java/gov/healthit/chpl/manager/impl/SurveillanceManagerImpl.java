@@ -427,6 +427,11 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
                 reqType.setName(preq.getRequirementType());
                 req.setType(reqType);
 
+                CertifiedProduct cp = new CertifiedProduct();
+                cp.setId(pr.getCertifiedProductId());
+                cp.setChplProductNumber(pr.getCertifiedProductUniqueId());
+                surv.setCertifiedProduct(cp);
+
                 if (preq.getNonconformities() != null) {
                     for (PendingSurveillanceNonconformityEntity pnc : preq.getNonconformities()) {
                         SurveillanceNonconformity nc = new SurveillanceNonconformity();
