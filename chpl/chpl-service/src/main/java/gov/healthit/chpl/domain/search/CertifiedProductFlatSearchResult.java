@@ -2,6 +2,12 @@ package gov.healthit.chpl.domain.search;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+/**
+ * Class containing fields that are flattened using an emoji delimiter. This includes CQMs, certification criteria,
+ * previous developers, and an array of API Documentation as necessary.
+ * @author alarned
+ *
+ */
 public class CertifiedProductFlatSearchResult extends CertifiedProductSearchResult {
     private static final long serialVersionUID = -2547390525592841044L;
 
@@ -25,11 +31,18 @@ public class CertifiedProductFlatSearchResult extends CertifiedProductSearchResu
 
     private String apiDocumentation;
 
+    /**
+     * Default constructor.
+     */
     public CertifiedProductFlatSearchResult() {
 
     }
 
-    public CertifiedProductFlatSearchResult(CertifiedProductFlatSearchResult other) {
+    /**
+     * Constructed from other flat search result.
+     * @param other the other one
+     */
+    public CertifiedProductFlatSearchResult(final CertifiedProductFlatSearchResult other) {
         super(other);
         this.previousDevelopers = other.getPreviousDevelopers();
         this.criteriaMet = other.getCriteriaMet();

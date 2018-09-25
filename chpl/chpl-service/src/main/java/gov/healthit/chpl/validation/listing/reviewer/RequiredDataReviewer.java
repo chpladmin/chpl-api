@@ -15,7 +15,7 @@ public class RequiredDataReviewer implements Reviewer {
     @Autowired protected CertificationResultRules certRules;
 
     @Override
-    public void review(CertifiedProductSearchDetails listing) {
+    public void review(final CertifiedProductSearchDetails listing) {
         if (listing.getCertificationEdition() == null || listing.getCertificationEdition().get("id") == null) {
             listing.getErrorMessages().add("Certification edition is required but was not found.");
         }

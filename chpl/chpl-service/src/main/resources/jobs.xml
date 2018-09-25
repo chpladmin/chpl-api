@@ -143,6 +143,46 @@
             </cron>
         </trigger>
 
+        <!-- Daily G3/SED details generator -->
+        <job>
+            <name>g3Sed2015DownloadFileJob</name>
+            <group>systemJobs</group>
+            <description>Generate SED download files for 2015 listings with G3.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.G3Sed2015DownloadableResourceCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+        <trigger>
+            <cron>
+                <name>g3Sed2015DownloadFileJob</name>
+                <group>downloadFileTrigger</group>
+                <job-name>g3Sed2015DownloadFileJob</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 50 4 * * ?</cron-expression> <!-- At 0450 UTC every day -->
+            </cron>
+        </trigger>
+
+        <!-- Daily surveillance downloads generator -->
+        <job>
+            <name>surveillanceDownloadFileJob</name>
+            <group>systemJobs</group>
+            <description>Generate Surveillance download files.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.SurveillanceDownloadableResourceCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+        <trigger>
+            <cron>
+                <name>surveillanceDownloadFileJob</name>
+                <group>downloadFileTrigger</group>
+                <job-name>surveillanceDownloadFileJob</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 55 4 * * ?</cron-expression> <!-- At 0455 UTC every day -->
+            </cron>
+        </trigger>
+
         <!-- Summary statistics generator -->
         <job>
             <name>summaryStatisticsCreator</name>
