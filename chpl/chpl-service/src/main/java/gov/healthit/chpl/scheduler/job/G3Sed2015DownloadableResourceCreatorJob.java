@@ -2,12 +2,9 @@ package gov.healthit.chpl.scheduler.job;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import org.apache.logging.log4j.LogManager;
@@ -15,7 +12,6 @@ import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -44,7 +40,7 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
      * @throws Exception if issue with context
      */
     public G3Sed2015DownloadableResourceCreatorJob() throws Exception {
-        super();
+        super(LOGGER);
     }
 
     @Override
@@ -56,10 +52,11 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
         try {
             List<Long> listingIds = getRelevantListingIds();
 
-            List<Future<CertifiedProductSearchDetails>> futures = getCertifiedProductSearchDetailsFutures(listingIds);
+            List<Future<CertifiedProductSearchDetails>> futures = 
+                    getCertifiedProductSearchDetailsFuturesFromIds(listingIds);
             Map<Long, CertifiedProductSearchDetails> cpMap = getMapFromFutures(futures);
             List<CertifiedProductSearchDetails> orderedListings = 
-                    createOrderedListOfCertifiedProducts(cpMap, listingIds);
+                    createOrderedListOfCertifiedProductsFromIds(cpMap, listingIds);
 
             File downloadFolder = getDownloadFolder();
             writeToFile(downloadFolder, orderedListings);
@@ -80,49 +77,6 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
         List<Long> listingIds = getCertificationResultDao().getCpIdsByCriterionId(certCrit.getId());
         LOGGER.info("Found " + listingIds.size() + " listings attesting to " + CRITERIA_NAME + ".");
         return listingIds;
-    }
-
-    private List<Future<CertifiedProductSearchDetails>> getCertifiedProductSearchDetailsFutures(
-            final List<Long> listingIds) throws Exception {
-
-        List<Future<CertifiedProductSearchDetails>> futures = new ArrayList<Future<CertifiedProductSearchDetails>>();
-        SchedulerCertifiedProductSearchDetailsAsync cpsdAsync = getCertifiedProductDetailsAsyncRetrievalHelper();
-        
-        for (Long currListingId : listingIds) {
-            try {
-                futures.add(cpsdAsync.getCertifiedProductDetail(currListingId, getCpdManager()));
-            } catch (EntityRetrievalException e) {
-                LOGGER.error("Could not retrieve certified product details for id: " + currListingId, e);
-            }
-        }
-        return futures;
-    }
-
-    private Map<Long, CertifiedProductSearchDetails> getMapFromFutures(
-            final List<Future<CertifiedProductSearchDetails>> futures) {
-        Map<Long, CertifiedProductSearchDetails> cpMap = new HashMap<Long, CertifiedProductSearchDetails>();
-        for (Future<CertifiedProductSearchDetails> future : futures) {
-            try {
-                cpMap.put(future.get().getId(), future.get());
-            } catch (InterruptedException | ExecutionException e) {
-                LOGGER.error("Could not retrieve certified product details for unknown id.", e);
-            }
-        }
-        return cpMap;
-    }
-
-    private List<CertifiedProductSearchDetails> createOrderedListOfCertifiedProducts(
-            final Map<Long, CertifiedProductSearchDetails> certifiedProducts, final List<Long> orderedIds) {
-
-        List<CertifiedProductSearchDetails> ordered = new ArrayList<CertifiedProductSearchDetails>();
-
-        for (Long id : orderedIds) {
-            if (certifiedProducts.containsKey(id)) {
-                ordered.add(certifiedProducts.get(id));
-            }
-        }
-
-        return ordered;
     }
 
     private void writeToFile(final File downloadFolder, final List<CertifiedProductSearchDetails> results)
@@ -150,10 +104,5 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
             throw new IOException("File can not be created");
         }
         return file;
-    }
-
-    private SchedulerCertifiedProductSearchDetailsAsync getCertifiedProductDetailsAsyncRetrievalHelper()
-            throws BeansException {
-        return this.schedulerCertifiedProductSearchDetailsAsync;
     }
 }
