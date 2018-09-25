@@ -19,10 +19,17 @@ public class ApiKeyDTO implements Serializable {
     private Date lastUsedDate;
     private Date deleteWarningSentDate;
 
+    /**
+     * Default constructor.
+     */
     public ApiKeyDTO() {
     }
 
-    public ApiKeyDTO(ApiKeyEntity entity) {
+    /**
+     * Constructed from an entity.
+     * @param entity the entity
+     */
+    public ApiKeyDTO(final ApiKeyEntity entity) {
         this.id = entity.getId();
         this.apiKey = entity.getApiKey();
         this.email = entity.getEmail();
@@ -123,5 +130,4 @@ public class ApiKeyDTO implements Serializable {
     public void setDeleteWarningSentDate(final Date deleteWarningSentDate) {
         this.deleteWarningSentDate = deleteWarningSentDate;
     }
-
 }

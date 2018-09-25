@@ -44,6 +44,7 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
             entity.setEmail(dto.getEmail());
             entity.setNameOrganization(dto.getNameOrganization());
             entity.setCreationDate(dto.getCreationDate());
+            entity.setWhitelisted(dto.getWhitelisted());
             if (dto.getLastModifiedDate() == null) {
                 entity.setLastModifiedDate(new Date());
             } else {
@@ -71,6 +72,7 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
         entity.setNameOrganization(dto.getNameOrganization());
         entity.setCreationDate(dto.getCreationDate());
         entity.setDeleted(dto.getDeleted());
+        entity.setWhitelisted(dto.getWhitelisted());
         if (dto.getLastModifiedDate() == null) {
             entity.setLastModifiedDate(new Date());
         } else {
