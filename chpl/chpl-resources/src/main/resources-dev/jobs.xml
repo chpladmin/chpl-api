@@ -552,5 +552,45 @@
                 <cron-expression>0 0 11 ? * WED</cron-expression>
             </cron>
         </trigger>
+        
+        <!-- API Key Delete Warning Job -->
+        <job>
+            <name>apiKeyDeleteWarningEmailJob</name>
+            <group>systemJobs</group>
+            <description>Send email to API key holders, where the API key hasn't been used in X days</description>
+            <job-class>gov.healthit.chpl.scheduler.job.ApiKeyWarningEmailJob</job-class>
+            <durability>true</durability>
+            <recover>true</recover>
+        </job>
+        <trigger>
+            <cron>
+                <name>apiKeyDeleteWarningEmail</name>
+                <group>apiKeyDeleteWarningEmailTrigger</group>
+                <job-name>apiKeyDeleteWarningEmailJob</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
+                <cron-expression>0 0 4 1/1 * ? *</cron-expression> <!-- At 0400 UTC on every day -->
+            </cron>
+        </trigger>
+        
+        <!-- API Key Delete Job -->
+        <job>
+            <name>apiKeyDeleteJob</name>
+            <group>systemJobs</group>
+            <description>Send email to API key holders where a warning email has been sent, after x days of inactivity, and delete the key</description>
+            <job-class>gov.healthit.chpl.scheduler.job.ApiKeyDeleteJob</job-class>
+            <durability>true</durability>
+            <recover>true</recover>
+        </job>
+        <trigger>
+            <cron>
+                <name>apiKeyDeleteEmail</name>
+                <group>apiKeyDeleteTrigger</group>
+                <job-name>apiKeyDeleteJob</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
+                <cron-expression>0 5 4 1/1 * ? *</cron-expression> <!-- At 0405 UTC on every day -->
+            </cron>
+        </trigger>
     </schedule>
 </job-scheduling-data>

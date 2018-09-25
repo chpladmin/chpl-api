@@ -147,7 +147,7 @@ public class UserAuthenticator implements Authenticator {
             List<String> identity = new ArrayList<String>();
 
             identity.add(user.getId().toString());
-            identity.add(user.getName());
+            identity.add(user.getUsername());
             identity.add(user.getFullName());
 
             claims.put("Identity", identity);
