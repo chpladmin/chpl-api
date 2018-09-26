@@ -148,10 +148,19 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
             pcpDao.delete(existingId);
         }
 
-        // insert the record
-        PendingCertifiedProductDTO pendingCpDto = pcpDao.create(toCreate);
-        updateCertResults(pendingCpDto);
-        validate(pendingCpDto);
+        PendingCertifiedProductDTO pendingCpDto = null;
+        try {
+            // insert the record
+            pendingCpDto = pcpDao.create(toCreate);
+            updateCertResults(pendingCpDto);
+            validate(pendingCpDto);
+        } catch(Exception ex) {
+            //something unexpected happened on upload
+            //make sure the user gets an appropriate error message
+            EntityCreationException toThrow = new EntityCreationException("An unexpected error occurred. Please review the information in your upload file. The CHPL team has been notified.");
+            toThrow.setStackTrace(ex.getStackTrace());
+            throw toThrow;
+        }
 
         String activityMsg = "Certified product " + pendingCpDto.getProductName() + " is pending.";
         activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCpDto.getId(),

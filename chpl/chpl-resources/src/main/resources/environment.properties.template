@@ -79,6 +79,10 @@ cacheStatusMaxAge=3600000
 cacheStatusMaxAgeSubject=Listing Cache Maximum Age Reached (LOCAL)
 cacheStatusMaxAgeUrl=http://localhost:8080/chpl-service/cache_status
 
+#listing upload error email properties
+uploadErrorEmailRecipients=test@ainq.com,test2@ainq.com
+uploadErrorEmailSubject=CHPL Listing Upload Error (LOCAL)
+
 #schema download file properties
 schemaXmlName=listingSchema.xsd
 schemaCsv2014Name=listing2014Schema.csv
