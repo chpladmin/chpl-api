@@ -12,5 +12,6 @@ _Date TBD_
   * creates a new User
   * updates a password
 * Add Developer Status to search results view
+* Catch any unexpected error that occurs during a listing upload. Allow the error to be emailed to CHPL team if desired.
 
 ---
