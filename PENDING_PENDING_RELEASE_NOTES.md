@@ -1,6 +1,9 @@
 
-## Version 16.5.0
+## Version 17.0.0
 _Date TBD_
+
+### Major Change
+* When retrieving Pending Surveillances, the listing details will no longer be populated
 
 ### New Features
 * Move surveillance download file generation into quartz job to allow for better job management.
