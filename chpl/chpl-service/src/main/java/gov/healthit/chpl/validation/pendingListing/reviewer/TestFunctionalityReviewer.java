@@ -20,7 +20,7 @@ import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 
 /**
- * Confirms that the certification date of the listing is not in the future.
+ * Confirms that the test functionality is valid for the criteria that is applying it.
  * @author kekey
  *
  */

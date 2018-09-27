@@ -167,7 +167,37 @@ public class PendingListingTestFunctionalityReviewerTest {
         
         assertTrue(doesTestFunctionalityCriterionErrorMessageExist(listing.getErrorMessages()));
     }
-    
+
+    //A test functionality name that does not exist
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void validatePendingCertifiedProductInvalidTestFunctionalityCatchesException() {
+        String invalidTestFuncName = "Bad test functionality name";
+        Mockito.when(testFunctionalityDAO.getByNumberAndEdition(ArgumentMatchers.eq(invalidTestFuncName), ArgumentMatchers.anyLong()))
+                .thenReturn(null);
+        Mockito.when(certificationCriterionDAO.getByNameAndYear(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+                .thenReturn(getCertificationCriterion_a6());
+        Mockito.when(practiceTypeDAO.getByName(ArgumentMatchers.anyString()))
+                .thenReturn(getPracticeType_Ambulatory());
+        
+        PendingCertifiedProductDTO listing = createPendingListing("2014");
+        List<PendingCertificationResultDTO> certResults = new ArrayList<PendingCertificationResultDTO>();
+        PendingCertificationResultDTO certResult = createPendingCertResult("170.314 (a)(6)");
+        PendingCertificationResultTestFunctionalityDTO crtf = new PendingCertificationResultTestFunctionalityDTO();
+        crtf.setId(1L);
+        crtf.setNumber(invalidTestFuncName);
+        crtf.setTestFunctionalityId(null);
+        certResult.setTestFunctionality(new ArrayList<PendingCertificationResultTestFunctionalityDTO>());
+        certResult.getTestFunctionality().add(crtf);
+        certResults.add(certResult);
+        listing.getCertificationCriterion().add(certResult);
+
+        pendingTfReviewer.review(listing);
+
+        assertTrue(doesInvalidTestFunctionalityErrorMessageExist(listing.getErrorMessages()));
+    }
+
     private Boolean doesTestFunctionalityPracticeTypeErrorMessageExist(Set<String> errorMessages) {
         for (String error : errorMessages) {
             if (error.contains("In Criteria")
@@ -179,7 +209,7 @@ public class PendingListingTestFunctionalityReviewerTest {
         }
         return false;
     }
-    
+
     private Boolean doesTestFunctionalityCriterionErrorMessageExist(Set<String> errorMessages) {
         for (String error : errorMessages) {
             if (error.contains("In Criteria")
@@ -191,7 +221,16 @@ public class PendingListingTestFunctionalityReviewerTest {
         }
         return false;
     }
-    
+
+    private Boolean doesInvalidTestFunctionalityErrorMessageExist(Set<String> errorMessages) {
+        for (String error : errorMessages) {
+            if (error.contains("Invalid test functionality 'Bad test functionality name' found for criteria")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private PendingCertifiedProductDTO createPendingListing(final String year) {
         PendingCertifiedProductDTO pendingListing = new PendingCertifiedProductDTO();
         String certDateString = "11-09-2016";
