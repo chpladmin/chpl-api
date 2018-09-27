@@ -2,7 +2,6 @@ package gov.healthit.chpl.scheduler.job;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -81,16 +80,13 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
 
     private void writeToFile(final File downloadFolder, final List<CertifiedProductSearchDetails> results)
             throws IOException {
-        String csvFilename = getFileName(downloadFolder.getAbsolutePath(),
-                getTimestampFormat().format(new Date()));
+        String csvFilename = downloadFolder.getAbsolutePath() + 
+                File.separator + 
+                "chpl-sed-all-details.csv";
         File csvFile = getFile(csvFilename);
         Sed2015CsvPresenter csvPresenter = new Sed2015CsvPresenter();
         csvPresenter.presentAsFile(csvFile, results);
         LOGGER.info("Wrote G3 SED 2015 CSV file.");
-    }
-
-    private String getFileName(final String path, final String timeStamp) {
-        return path + File.separator + "chpl-sed-all-details-" + timeStamp + ".csv";
     }
 
     private File getFile(final String fileName) throws IOException {
