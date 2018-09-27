@@ -10,7 +10,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 import org.junit.Before;
@@ -21,9 +20,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -46,37 +42,47 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.TestFunctionalityRev
 public class PendingListingTestFunctionalityReviewerTest {
     private static final Long EDITION_2015_ID = 3L;
     private static final Long EDITION_2014_ID = 2L;
+    private static final String INVALID_TEST_FUNC_ERROR = "Criteria 170.314 (a)(6) contains an invalid test functionality 'Bad test functionality name'.";
 
     @Spy
     private TestFunctionalityDAO testFunctionalityDAO;
-    
+
     @Spy
     private CertificationCriterionDAO certificationCriterionDAO;
-    
-    @Spy
-    private MessageSource messageSource;
-    
+
     @Spy
     private PracticeTypeDAO practiceTypeDAO;
-    
+
     @Spy
     private ErrorMessageUtil msgUtil;
-    
+
     @InjectMocks
     private TestFunctionalityReviewer pendingTfReviewer;
-    
+
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+        Mockito.doReturn("In Criteria %s, Test Functionality %s is for %s Settings and is not valid for Practice Type %s.")
+        .when(msgUtil).getMessage(
+                ArgumentMatchers.eq("listing.criteria.testFunctionalityPracticeTypeMismatch"), 
+                ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyString());
+
+        Mockito.doReturn("In Criteria %s, Test Functionality %s is for Criteria %s and is not valid for Criteria Type %s.")
+        .when(msgUtil).getMessage(
+                ArgumentMatchers.eq("listing.criteria.testFunctionalityCriterionMismatch"), 
+                ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyString());
         
-        Mockito.when(messageSource.getMessage(
-                ArgumentMatchers.eq(new DefaultMessageSourceResolvable("listing.criteria.testFunctionalityPracticeTypeMismatch")),
-                ArgumentMatchers.any(Locale.class)))
-            .thenReturn("In Criteria %s, Test Functionality %s is for %s Settings and is not valid for Practice Type %s.");
-        Mockito.when(messageSource.getMessage(
-                ArgumentMatchers.eq(new DefaultMessageSourceResolvable("listing.criteria.testFunctionalityCriterionMismatch")),
-                ArgumentMatchers.eq(LocaleContextHolder.getLocale())))
-            .thenReturn("In Criteria %s, Test Functionality %s is for Criteria %s and is not valid for Criteria Type %s.");
+        Mockito.doReturn(INVALID_TEST_FUNC_ERROR)
+        .when(msgUtil).getMessage(
+                ArgumentMatchers.eq("listing.criteria.testFunctionalityNotFound"), 
+                ArgumentMatchers.eq("170.314 (a)(6)"),
+                ArgumentMatchers.eq("Bad test functionality name"));
     }
 
     //Case 1: A valid test functionality
@@ -224,7 +230,7 @@ public class PendingListingTestFunctionalityReviewerTest {
 
     private Boolean doesInvalidTestFunctionalityErrorMessageExist(Set<String> errorMessages) {
         for (String error : errorMessages) {
-            if (error.contains("Invalid test functionality 'Bad test functionality name' found for criteria")) {
+            if (error.equals(INVALID_TEST_FUNC_ERROR)) {
                 return true;
             }
         }

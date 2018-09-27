@@ -33,6 +33,7 @@ import gov.healthit.chpl.dto.TestProcedureDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 import gov.healthit.chpl.validation.pendingListing.reviewer.RequiredDataReviewer;
 
@@ -94,6 +95,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     @Autowired private TestProcedureDAO testProcDao;
     @Autowired private TestDataDAO testDataDao;
     @Autowired private ChplProductNumberUtil productNumUtil;
+    @Autowired private ErrorMessageUtil msgUtil;
 
     public RequiredData2015Reviewer() {
         super();
@@ -573,9 +575,8 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                     pendingFuncMap.getNumber(), listing.getCertificationEditionId());
                             if (foundTestFunc == null || foundTestFunc.getId() == null) {
                                 listing.getErrorMessages()
-                                        .add("Certification " + cert.getNumber()
-                                                + " contains invalid test functionality: '" + pendingFuncMap.getNumber()
-                                                + "'.");
+                                        .add(msgUtil.getMessage("listing.criteria.testFunctionalityNotFound", 
+                                                cert.getNumber(), pendingFuncMap.getNumber()));
                             }
                         }
                     }
