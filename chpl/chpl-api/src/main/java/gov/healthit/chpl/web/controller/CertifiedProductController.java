@@ -6,14 +6,19 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletResponse;
 
@@ -23,9 +28,6 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -44,6 +46,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.auth.EmailBuilder;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.CertifiedProduct;
@@ -75,6 +78,7 @@ import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandler;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandlerFactory;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import gov.healthit.chpl.validation.listing.PendingValidator;
 import gov.healthit.chpl.validation.listing.Validator;
@@ -124,7 +128,7 @@ public class CertifiedProductController {
     private Environment env;
 
     @Autowired
-    private MessageSource messageSource;
+    private ErrorMessageUtil msgUtil;
 
     @Autowired
     private ChplProductNumberUtil chplProductNumberUtil;
@@ -647,10 +651,8 @@ public class CertifiedProductController {
                 boolean isDup = cpManager.chplIdExists(updatedListing.getChplProductNumber());
                 if (isDup) {
                     updatedListing.getErrorMessages()
-                    .add(String
-                            .format(messageSource.getMessage(
-                                    new DefaultMessageSourceResolvable("listing.chplProductNumber.changedNotUnique"),
-                                    LocaleContextHolder.getLocale()), updatedListing.getChplProductNumber()));
+                    .add(msgUtil.getMessage("listing.chplProductNumber.changedNotUnique", 
+                            updatedListing.getChplProductNumber()));
                 }
             } catch (final EntityRetrievalException ex) {
             }
@@ -706,10 +708,7 @@ public class CertifiedProductController {
             throws EntityRetrievalException, AccessDeniedException {
 
         if (!Util.isUserRoleAcbAdmin()) {
-            throw new AccessDeniedException(String
-                    .format(messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("access.pendingCertifiedProducts"),
-                            LocaleContextHolder.getLocale())));
+            throw new AccessDeniedException(msgUtil.getMessage("access.pendingCertifiedProducts"));
         }
 
         List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
@@ -988,12 +987,12 @@ public class CertifiedProductController {
     public ResponseEntity<PendingCertifiedProductResults> upload(@RequestParam("file") final MultipartFile file)
             throws ValidationException, MaxUploadSizeExceededException {
         if (file.isEmpty()) {
-            throw new ValidationException("You cannot upload an empty file!");
+            throw new ValidationException(msgUtil.getMessage("upload.emptyFile"));
         }
 
         if (!file.getContentType().equalsIgnoreCase("text/csv")
                 && !file.getContentType().equalsIgnoreCase("application/vnd.ms-excel")) {
-            throw new ValidationException("File must be a CSV document.");
+            throw new ValidationException(msgUtil.getMessage("upload.notCSV"));
         }
         HttpHeaders responseHeaders = new HttpHeaders();
         List<PendingCertifiedProductDetails> uploadedProducts = new ArrayList<PendingCertifiedProductDetails>();
@@ -1006,9 +1005,8 @@ public class CertifiedProductController {
 
             List<CSVRecord> records = parser.getRecords();
             if (records.size() <= 1) {
-                throw new ValidationException(String
-                        .format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.upload.emptyRows"),
-                                LocaleContextHolder.getLocale())));
+                throw new ValidationException(
+                        msgUtil.getMessage("listing.upload.emptyRows"));
             }
 
             Set<String> handlerErrors = new HashSet<String>();
@@ -1032,8 +1030,7 @@ public class CertifiedProductController {
 
                         if (currStatus.equalsIgnoreCase("NEW")) {
                             if (!currUniqueId.contains("XXXX") && uniqueIdsFromFile.contains(currUniqueId)) {
-                                handlerErrors.add("Multiple products with unique id " + currUniqueId
-                                        + " were found in the file.");
+                                handlerErrors.add(msgUtil.getMessage("upload.duplicateUniqueIds", currUniqueId));
                                 duplicateIdsFromFile.add(currUniqueId);
                             } else {
                                 uniqueIdsFromFile.add(currUniqueId);
@@ -1101,21 +1098,20 @@ public class CertifiedProductController {
                                 .createOrReplace(cpToAdd.getCertificationBodyId(), cpToAdd);
                         PendingCertifiedProductDetails details = new PendingCertifiedProductDetails(pendingCpDto);
                         uploadedProducts.add(details);
-                    } catch (final EntityCreationException ex) {
+                    } catch (final EntityCreationException | EntityRetrievalException ex) {
                         String error = "Error creating pending certified product " + cpToAdd.getUniqueId()
                         + ". Error was: " + ex.getMessage();
                         LOGGER.error(error);
+                        //send an email to the team that something weird happened
+                        sendUploadError(file, ex);
                         throw new ValidationException(error);
-                    } catch (final EntityRetrievalException ex) {
-                        LOGGER.error("Error retreiving pending certified product.", ex);
                     }
                 }
             }
         } catch (final IOException ioEx) {
             LOGGER.error("Could not get input stream for uploaded file " + file.getName());
-            throw new ValidationException(String
-                    .format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.upload.couldNotParse"),
-                            LocaleContextHolder.getLocale()), file.getName()));
+            throw new ValidationException(
+                    msgUtil.getMessage("listing.upload.couldNotParse", file.getName()));
         } finally {
             try {
                 parser.close();
@@ -1140,5 +1136,71 @@ public class CertifiedProductController {
         }
 
         return certifiedProduct;
+    }
+
+    /**
+     * Creates an email message to the configured recipients
+     * with configured subject and uses the stack trace as the
+     * email body. Creates a temporary file that is the uploaded
+     * CSV and attaches it to the email.
+     * @param file
+     * @param ex
+     */
+    private void sendUploadError(MultipartFile file, Exception ex) {
+        //get the recipients of this email
+        //if there are none specified we won't continue
+        String[] toProperty = env.getProperty("uploadErrorEmailRecipients").split(",");
+        if(toProperty == null || toProperty.length == 0) {
+            return;
+        }
+        List<String> recipients = Arrays.asList(toProperty);
+
+        //figure out the filename for the attachment
+        String originalFilename = file.getOriginalFilename();
+        int indexOfExtension = originalFilename.indexOf(".");
+        String filenameWithoutExtension = file.getOriginalFilename();
+        if(indexOfExtension >= 0) {
+            filenameWithoutExtension = 
+                    originalFilename.substring(0, indexOfExtension);
+        }
+        String extension = ".csv";
+        if(indexOfExtension >= 0) {
+            extension = originalFilename.substring(indexOfExtension);
+        }
+
+        //attach the file the user tried to upload
+        File temp = null;
+        List<File> attachments = null;
+        try {
+            temp = File.createTempFile(filenameWithoutExtension, extension);
+            file.transferTo(temp);
+            attachments = new ArrayList<File>();
+            attachments.add(temp);
+        } catch(IOException io) {
+            LOGGER.error("Could not create temporary file for attachment: " + io.getMessage(), io);
+        }
+
+        //create the email body
+        String htmlBody = "<p>Upload attempted at " + new Date() + 
+                "<br/>Uploaded by " + Util.getUsername() + "</p>";
+        StringWriter writer = new StringWriter();
+        ex.printStackTrace(new PrintWriter(writer));
+        htmlBody += "<pre>" + writer.toString() + "</pre>";
+
+        //build and send the email
+        try {
+        EmailBuilder emailBuilder = new EmailBuilder(env);
+        emailBuilder.recipients(recipients)
+            .subject(env.getProperty("uploadErrorEmailSubject"))
+            .fileAttachments(attachments)
+            .htmlMessage(htmlBody)
+            .sendEmail();
+        } catch(MessagingException msgEx) {
+            LOGGER.error("Could not send team email about failed listing upload.", msgEx);
+        } finally {
+            if(temp != null) {
+                temp.delete();
+            }
+        }
     }
 }
