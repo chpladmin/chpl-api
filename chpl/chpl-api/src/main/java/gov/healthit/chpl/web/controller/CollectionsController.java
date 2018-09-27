@@ -46,7 +46,7 @@ public class CollectionsController {
     @RequestMapping(value = "/certified_products", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody String getAllCertifiedProducts(
-            @RequestParam(value = "fields", required = false) String delimitedFieldNames)
+            @RequestParam(value = "fields", required = false) final String delimitedFieldNames)
             throws JsonProcessingException {
 
         List<CertifiedProductFlatSearchResult> cachedSearchResults = certifiedProductSearchManager.search();
@@ -63,8 +63,8 @@ public class CollectionsController {
             // them
             // by setting fields to null but do not want to overwrite the cached
             // data
-            List<CertifiedProductFlatSearchResult> mutableSearchResults = new ArrayList<CertifiedProductFlatSearchResult>(
-                    cachedSearchResults.size());
+            List<CertifiedProductFlatSearchResult> mutableSearchResults
+            = new ArrayList<CertifiedProductFlatSearchResult>(cachedSearchResults.size());
             for (CertifiedProductFlatSearchResult cachedSearchResult : cachedSearchResults) {
                 mutableSearchResults.add(new CertifiedProductFlatSearchResult(cachedSearchResult));
             }
@@ -148,7 +148,7 @@ public class CollectionsController {
         return developerResults;
     }
 
-    private List<Field> getAllInheritedFields(Class clazz, List<Field> fields) {
+    private List<Field> getAllInheritedFields(final Class clazz, final List<Field> fields) {
         Class superClazz = clazz.getSuperclass();
         if (superClazz != null) {
             getAllInheritedFields(superClazz, fields);

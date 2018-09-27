@@ -1,18 +1,19 @@
-package gov.healthit.chpl.app.questionableActivity;
+package gov.healthit.chpl.scheduler.job;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.mail.MessagingException;
@@ -21,19 +22,16 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.support.AbstractApplicationContext;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.app.App;
-import gov.healthit.chpl.app.AppConfig;
-import gov.healthit.chpl.auth.SendMailUtil;
-import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.dao.NotificationDAO;
+import gov.healthit.chpl.auth.EmailBuilder;
 import gov.healthit.chpl.dao.QuestionableActivityDAO;
-import gov.healthit.chpl.domain.concept.NotificationTypeConcept;
 import gov.healthit.chpl.domain.concept.QuestionableActivityTriggerConcept;
-import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityCertificationResultDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityDeveloperDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
@@ -43,11 +41,23 @@ import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityVersionDTO
 import gov.healthit.chpl.util.Util;
 
 /**
- * Application to generate and send email with Questionable Activity.
+ * The QuestionableActivityEmailJob implements a Quartz job and is available to ROLE_ADMIN. When
+ * invoked it emails relevant individuals with the questionable activity that has occurred within 
+ * the last week.
+ * @author kekey
  *
  */
-public class QuestionableActivityReportApp extends App {
-    private static final Logger LOGGER = LogManager.getLogger(QuestionableActivityReportApp.class);
+public class QuestionableActivityEmailJob extends QuartzJob {
+    private static final Logger LOGGER = LogManager.getLogger("questionableActivityEmailJobLogger");
+    private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
+    private Properties props;
+
+    @Autowired
+    private QuestionableActivityDAO questionableActivityDao;
+
+    @Autowired
+    private Environment env;
+    
     private static final int NUM_REPORT_COLS = 13;
     private static final int ACB_COL = 0;
     private static final int DEVELOPER_COL = 1;
@@ -62,124 +72,135 @@ public class QuestionableActivityReportApp extends App {
     private static final int ACTIVITY_DESCRIPTION_COL = 10;
     private static final int ACTIVITY_CERT_STATUS_CHANGE_REASON_COL = 11;
     private static final int ACTIVITY_REASON_COL = 12;
-    private Date startDate, endDate;
-
-    protected QuestionableActivityDAO qaDao;
-    protected NotificationDAO notificationDao;
 
     /**
-     * Constructor.
+     * Constructor that initializes the QuestionableActivityEmailJob object.
+     * @throws Exception if thrown
      */
-    public QuestionableActivityReportApp() {
+    public QuestionableActivityEmailJob() throws Exception {
+        super();
+        loadProperties();
     }
 
-    /**
-     * Constructor with start/end dates.
-     * @param start start date of report
-     * @param end end date of report
-     */
-    public QuestionableActivityReportApp(final Date start, final Date end) {
-        this();
-        this.startDate = start;
-        this.endDate = end;
-    }
+    @Override
+    public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
+        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+        LOGGER.info("********* Starting the Questionable Activity Email job. *********");
+        LOGGER.info("Creating questionable activity email for: " + jobContext.getMergedJobDataMap().getString("email"));
 
-    protected void initiateSpringBeans(final AbstractApplicationContext context) throws IOException {
-        this.setQaDao((QuestionableActivityDAO) context.getBean("questionableActivityDao"));
-        this.setNotificationDao((NotificationDAO) context.getBean("notificationDAO"));
-    }
-
-    protected void runJob() throws IOException, MessagingException {
-        //generate header
-        List<String> headerRows = createHeader();
-
-        //generate all of the data rows
-        List<List<String>> listingActivityRows = createListingActivityRows();
-        List<List<String>> criteriaActivityRows = createCriteriaActivityRows();
-        List<List<String>> developerActivityRows = createDeveloperActivityRows();
-        List<List<String>> productActivityRows = createProductActivityRows();
-        List<List<String>> versionActivityRows = createVersionActivityRows();
-
-        List<File> filesToEmail = new ArrayList<File>();
-        String emailBody = "";
-
-        //write out listing, developer, product, and version activities
-        if ((listingActivityRows == null || listingActivityRows.size() == 0)
-                && (criteriaActivityRows == null || criteriaActivityRows.size() == 0)
-                && (developerActivityRows == null || developerActivityRows.size() == 0)
-                && (productActivityRows == null || productActivityRows.size() == 0)
-                && (versionActivityRows == null || versionActivityRows.size() == 0)) {
-            //send no activity email
-            emailBody = "<p>No questionable activity was found between "
-                    + Util.getDateFormatter().format(startDate) + " and "
-                    + Util.getDateFormatter().format(endDate) + ".</p>";
+        Calendar end = Calendar.getInstance();
+        Calendar start = Calendar.getInstance();
+        start.roll(Calendar.DAY_OF_MONTH, -7);
+        List<List<String>> csvRows = getAppropriateActivities(jobContext, start.getTime(), end.getTime());
+        String to = jobContext.getMergedJobDataMap().getString("email");
+        String subject = props.getProperty("questionableActivityEmailSubject");
+        String htmlMessage = null;
+        List<File> files = null;
+        if(csvRows != null && csvRows.size() > 0) {
+            htmlMessage = String.format(props.getProperty("questionableActivityHasDataEmailBody"), 
+                    Util.getDateFormatter().format(start.getTime()),
+                    Util.getDateFormatter().format(end.getTime()));
+            String filename = props.getProperty("questionableActivityReportFilename");
+            File output = null;
+            files = new ArrayList<File>();
+            if (csvRows.size() > 0) {
+                output = getOutputFile(csvRows, filename);
+                files.add(output);
+            }
         } else {
-            FileWriter writer = null;
-            CSVPrinter csvPrinter = null;
-            File reportFile = null;
+            htmlMessage = String.format(props.getProperty("questionableActivityNoDataEmailBody"), 
+                    Util.getDateFormatter().format(start.getTime()),
+                    Util.getDateFormatter().format(end.getTime()));
+        }
+
+        LOGGER.info("Sending email to {} with contents {} and a total of {} questionable activities",
+                to, htmlMessage, csvRows.size());
+        
+        try {
+            List<String> recipients = new ArrayList<String>();
+            recipients.add(to);
+            
+            EmailBuilder emailBuilder = new EmailBuilder(env);
+            emailBuilder.recipients(recipients)
+                        .subject(subject)
+                        .htmlMessage(htmlMessage)
+                        .fileAttachments(files)
+                        .sendEmail();
+            
+        } catch (MessagingException e) {
+            LOGGER.error(e);
+        } 
+        LOGGER.info("********* Completed the Questionable Activity Email job. *********");
+    }
+
+    private List<List<String>> getAppropriateActivities(final JobExecutionContext jobContext, 
+            final Date start, final Date end) {
+        List<List<String>> activities = new ArrayList<List<String>>();
+        activities.addAll(createListingActivityRows(start, end));
+        activities.addAll(createCriteriaActivityRows(start, end));
+        activities.addAll(createDeveloperActivityRows(start, end));
+        activities.addAll(createProductActivityRows(start, end));
+        activities.addAll(createVersionActivityRows(start, end));
+        return activities;
+    }
+
+    private File getOutputFile(final List<List<String>> rows, final String reportFilename) {
+        File temp = null;
+        OutputStreamWriter writer = null;
+        CSVPrinter csvPrinter = null;
+        try {
+            temp = File.createTempFile(reportFilename, ".csv");
+            temp.deleteOnExit();
+            writer = new OutputStreamWriter(
+                    new FileOutputStream(temp),
+                    Charset.forName("UTF-8").newEncoder()
+                    );
+            csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL);
+            csvPrinter.printRecord(getHeaderRow());
+            for (List<String> rowValue : rows) {
+                csvPrinter.printRecord(rowValue);
+            }
+        } catch (IOException e) {
+            LOGGER.error(e);
+        } finally {
             try {
-                String reportFilename = this.getProperties().getProperty("questionableActivityReportFilename");
-                reportFile = new File(
-                        this.getDownloadFolder().getAbsolutePath() + File.separator
-                        + reportFilename);
-                writer = new FileWriter(reportFile);
-                csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL);
-                csvPrinter.printRecord(headerRows);
-                for (List<String> rowValue : listingActivityRows) {
-                    csvPrinter.printRecord(rowValue);
-                }
-                for (List<String> rowValue : criteriaActivityRows) {
-                    csvPrinter.printRecord(rowValue);
-                }
-                for (List<String> rowValue : developerActivityRows) {
-                    csvPrinter.printRecord(rowValue);
-                }
-                for (List<String> rowValue : productActivityRows) {
-                    csvPrinter.printRecord(rowValue);
-                }
-                for (List<String> rowValue : versionActivityRows) {
-                    csvPrinter.printRecord(rowValue);
-                }
-            } catch (final IOException ex) {
-                LOGGER.error("Could not write file " + reportFile.getName(), ex);
-            } finally {
-                try {
-                    writer.flush();
-                    writer.close();
+                if (csvPrinter != null) {
                     csvPrinter.flush();
                     csvPrinter.close();
-                } catch (Exception ignore) {
                 }
+                if (writer != null) {
+                    writer.flush();
+                    writer.close();
+                }
+            } catch (IOException e) {
+                LOGGER.error(e);
             }
-            filesToEmail.add(reportFile);
-            emailBody = "<p>A summary of questionable activity found between "
-                    + Util.getDateFormatter().format(startDate) + " and "
-                    + Util.getDateFormatter().format(endDate) + " is attached.</p>";
         }
-
-        //look up subscribers and email them
-        Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
-        permissions.add(new GrantedPermission("ROLE_ADMIN"));
-        List<RecipientWithSubscriptionsDTO> recipients = notificationDao
-                .getAllNotificationMappingsForType(permissions, NotificationTypeConcept.QUESTIONABLE_ACTIVITY, null);
-        if (recipients != null && recipients.size() > 0) {
-            String[] emailAddrs = new String[recipients.size()];
-            for (int i = 0; i < recipients.size(); i++) {
-                RecipientWithSubscriptionsDTO recip = recipients.get(i);
-                emailAddrs[i] = recip.getEmail();
-                LOGGER.info("Sending email to " + recip.getEmail());
-            }
-            SendMailUtil mailUtil = new SendMailUtil();
-            mailUtil.sendEmail(null, emailAddrs,
-                    this.getProperties().getProperty("questionableActivityEmailSubject").toString(),
-                    emailBody, filesToEmail, this.getProperties());
-        }
+        return temp;
     }
 
-    private List<List<String>> createCriteriaActivityRows() throws IOException {
+    private List<String> getHeaderRow() {
+        List<String> row = new ArrayList<String>();
+        row.add("ONC-ACB");
+        row.add("Developer");
+        row.add("Product");
+        row.add("Version");
+        row.add("CHPL Product Number");
+        row.add("Current Certification Status");
+        row.add("Link");
+        row.add("Activity Timestamp");
+        row.add("Responsible User");
+        row.add("Activity Type");
+        row.add("Activity");
+        row.add("Reason for Status Change");
+        row.add("Reason");
+        return row;
+    }
+
+    private List<List<String>> createCriteriaActivityRows(final Date startDate, final Date endDate) {
         LOGGER.debug("Getting certification result activity between " + startDate + " and " + endDate);
         List<QuestionableActivityCertificationResultDTO> certResultActivities =
-                qaDao.findCertificationResultActivityBetweenDates(startDate, endDate);
+                questionableActivityDao.findCertificationResultActivityBetweenDates(startDate, endDate);
         LOGGER.debug("Found " + certResultActivities.size() + " questionable certification result activities");
 
         //create a bucket for each activity timestamp+trigger type
@@ -219,10 +240,10 @@ public class QuestionableActivityReportApp extends App {
         return activityCsvRows;
     }
 
-    private List<List<String>> createListingActivityRows() throws IOException {
+    private List<List<String>> createListingActivityRows(final Date startDate, final Date endDate) {
         LOGGER.debug("Getting listing activity between " + startDate + " and " + endDate);
         List<QuestionableActivityListingDTO> listingActivities =
-                qaDao.findListingActivityBetweenDates(startDate, endDate);
+                questionableActivityDao.findListingActivityBetweenDates(startDate, endDate);
         LOGGER.debug("Found " + listingActivities.size() + " questionable listing activities");
 
         //create a bucket for each activity timestamp+trigger type
@@ -262,10 +283,10 @@ public class QuestionableActivityReportApp extends App {
         return activityCsvRows;
     }
 
-    private List<List<String>> createDeveloperActivityRows() {
+    private List<List<String>> createDeveloperActivityRows(final Date startDate, final Date endDate) {
         LOGGER.debug("Getting developer activity between " + startDate + " and " + endDate);
         List<QuestionableActivityDeveloperDTO> developerActivities =
-                qaDao.findDeveloperActivityBetweenDates(startDate, endDate);
+                questionableActivityDao.findDeveloperActivityBetweenDates(startDate, endDate);
         LOGGER.debug("Found " + developerActivities.size() + " questionable developer activities");
 
         //create a bucket for each activity timestamp+trigger type
@@ -305,10 +326,10 @@ public class QuestionableActivityReportApp extends App {
         return activityCsvRows;
     }
 
-    private List<List<String>> createProductActivityRows() {
+    private List<List<String>> createProductActivityRows(final Date startDate, final Date endDate) {
         LOGGER.debug("Getting product activity between " + startDate + " and " + endDate);
         List<QuestionableActivityProductDTO> productActivities =
-                qaDao.findProductActivityBetweenDates(startDate, endDate);
+                questionableActivityDao.findProductActivityBetweenDates(startDate, endDate);
         LOGGER.debug("Found " + productActivities.size() + " questionable developer activities");
 
         //create a bucket for each activity timestamp+trigger type
@@ -348,10 +369,10 @@ public class QuestionableActivityReportApp extends App {
         return activityCsvRows;
     }
 
-    private List<List<String>> createVersionActivityRows() {
+    private List<List<String>> createVersionActivityRows(final Date startDate, final Date endDate) {
         LOGGER.debug("Getting version activity between " + startDate + " and " + endDate);
         List<QuestionableActivityVersionDTO> versionActivities =
-                qaDao.findVersionActivityBetweenDates(startDate, endDate);
+                questionableActivityDao.findVersionActivityBetweenDates(startDate, endDate);
         LOGGER.debug("Found " + versionActivities.size() + " questionable developer activities");
 
         //create a bucket for each activity timestamp+trigger type
@@ -392,7 +413,7 @@ public class QuestionableActivityReportApp extends App {
     }
 
     private void putListingActivityInRow(final QuestionableActivityListingDTO activity,
-            final List<String> currRow) throws IOException {
+            final List<String> currRow) {
         //fill in info about the listing that will be the same for every
         //activity found in this date bucket
         currRow.set(ACB_COL, activity.getListing().getCertificationBodyName());
@@ -401,7 +422,7 @@ public class QuestionableActivityReportApp extends App {
         currRow.set(VERSION_COL, activity.getListing().getVersion().getVersion());
         currRow.set(LISTING_COL, activity.getListing().getChplProductNumber());
         currRow.set(STATUS_COL, activity.getListing().getCertificationStatusName());
-        currRow.set(LINK_COL, this.getProperties().getProperty(
+        currRow.set(LINK_COL, props.getProperty(
                 "chplUrlBegin") + "/#/admin/reports/" + activity.getListing().getId());
         currRow.set(ACTIVITY_USER_COL, activity.getUser().getSubjectName());
 
@@ -468,7 +489,7 @@ public class QuestionableActivityReportApp extends App {
     }
 
     private void putCertResultActivityInRow(final QuestionableActivityCertificationResultDTO activity,
-            final List<String> currRow) throws IOException {
+            final List<String> currRow) {
         //fill in info about the listing that will be the same for every
         //activity found in this date bucket
         currRow.set(ACB_COL, activity.getListing().getCertificationBodyName());
@@ -477,7 +498,7 @@ public class QuestionableActivityReportApp extends App {
         currRow.set(VERSION_COL, activity.getListing().getVersion().getVersion());
         currRow.set(LISTING_COL, activity.getListing().getChplProductNumber());
         currRow.set(STATUS_COL, activity.getListing().getCertificationStatusName());
-        currRow.set(LINK_COL, this.getProperties().getProperty(
+        currRow.set(LINK_COL, props.getProperty(
                 "chplUrlBegin") + "/#/admin/reports/" + activity.getListing().getId());
         currRow.set(ACTIVITY_USER_COL, activity.getUser().getSubjectName());
 
@@ -648,24 +669,6 @@ public class QuestionableActivityReportApp extends App {
         }
     }
 
-    private List<String> createHeader() {
-        List<String> row = new ArrayList<String>();
-        row.add("ACB");
-        row.add("Developer");
-        row.add("Product");
-        row.add("Version");
-        row.add("CHPL Product Number");
-        row.add("Current Certification Status");
-        row.add("Link");
-        row.add("Activity Timestamp");
-        row.add("Responsible User");
-        row.add("Activity Type");
-        row.add("Activity");
-        row.add("Reason for Status Change");
-        row.add("Reason");
-        return row;
-    }
-
     private List<String> createEmptyRow() {
         List<String> row = new ArrayList<String>(NUM_REPORT_COLS);
         for (int i = 0; i < NUM_REPORT_COLS; i++) {
@@ -674,20 +677,22 @@ public class QuestionableActivityReportApp extends App {
         return row;
     }
 
-    public QuestionableActivityDAO getQaDao() {
-        return qaDao;
+    private Properties loadProperties() throws IOException {
+        InputStream in =
+                QuestionableActivityEmailJob.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
+        if (in == null) {
+            props = null;
+            throw new FileNotFoundException("Environment Properties File not found in class path.");
+        } else {
+            props = new Properties();
+            props.load(in);
+            in.close();
+        }
+        return props;
     }
 
-    public void setQaDao(final QuestionableActivityDAO qaDao) {
-        this.qaDao = qaDao;
-    }
-
-    public NotificationDAO getNotificationDao() {
-        return notificationDao;
-    }
-
-    public void setNotificationDao(final NotificationDAO notificationDao) {
-        this.notificationDao = notificationDao;
+    private void setQuestionableActivityDAO(final QuestionableActivityDAO questionableActivityDao) {
+        this.questionableActivityDao = questionableActivityDao;
     }
 
     private class ActivityDateTriggerGroup {
@@ -735,54 +740,5 @@ public class QuestionableActivityReportApp extends App {
         public QuestionableActivityTriggerDTO getTrigger() {
             return trigger;
         }
-    }
-
-    public static void main(final String[] args) throws Exception {
-        if (args == null || args.length < 2) {
-            LOGGER.error("QuestionableActivityReportApp HELP: \n"
-                    + "QuestionableActivityReportApp 2017-10-01 2017-10-31\n"
-                    + "QuestionableActivityReportApp expects two arguments "
-                    + "that are the start and end dates for which to report questionable activity.");
-            return;
-        }
-
-        String startDateStr = args[0].trim();
-        String endDateStr = args[1].trim();
-        SimpleDateFormat startEndDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Date startDate = null;
-        Date endDate = null;
-        try {
-            startDate = startEndDateFormat.parse(startDateStr);
-            //defaults to 00:00:00 HMS
-        } catch (ParseException ex) {
-            LOGGER.error("Could not parse " + startDateStr + " as a date. Please make sure the "
-                    + " start date is in the format yyyy-MM-dd.");
-            return;
-        }
-
-        try {
-            endDate = startEndDateFormat.parse(endDateStr);
-            //got date from args, set time to end of day
-            Calendar endDateCal = new GregorianCalendar();
-            endDateCal.setTime(endDate);
-            endDateCal.set(Calendar.HOUR, 23);
-            endDateCal.set(Calendar.MINUTE, 59);
-            endDateCal.set(Calendar.SECOND, 59);
-            endDateCal.set(Calendar.MILLISECOND, 999);
-            endDate = endDateCal.getTime();
-        } catch (ParseException ex) {
-            LOGGER.error("Could not parse " + endDateStr + " as a date. Please make sure the "
-                    + " end date is in the format yyyy-MM-dd.");
-            return;
-        }
-
-        LOGGER.info("Generating questionable activity report between " + startDate + " and " + endDate);
-
-        QuestionableActivityReportApp app = new QuestionableActivityReportApp(startDate, endDate);
-        app.setLocalContext();
-        AbstractApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
-        app.initiateSpringBeans(context);
-        app.runJob();
-        context.close();
     }
 }

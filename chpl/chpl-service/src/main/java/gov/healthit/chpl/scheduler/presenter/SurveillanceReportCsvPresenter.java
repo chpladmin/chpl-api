@@ -1,4 +1,4 @@
-package gov.healthit.chpl.app.surveillance.presenter;
+package gov.healthit.chpl.scheduler.presenter;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -6,20 +6,18 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.stereotype.Component;
+import java.util.Properties;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.SurveillanceRequirement;
 
-@Component("surveillanceReportCsvPresenter")
 public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
-    private static final Logger LOGGER = LogManager.getLogger(SurveillanceReportCsvPresenter.class);
 
+    public SurveillanceReportCsvPresenter(final Properties props) {
+        super(props);
+    }
     protected List<String> generateHeaderValues() {
         List<String> result = new ArrayList<String>();
         result.add("Developer");
@@ -51,7 +49,8 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
         return result;
     }
 
-    protected List<List<String>> generateMultiRowValue(CertifiedProductSearchDetails data, Surveillance surv) {
+    protected List<List<String>> generateMultiRowValue(final CertifiedProductSearchDetails data, 
+            final Surveillance surv) {
         List<List<String>> result = new ArrayList<List<String>>();
 
         List<String> survFields = getSurveillanceFields(data, surv);
@@ -82,11 +81,12 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
         return result;
     }
 
-    protected List<SurveillanceNonconformity> getNonconformities(SurveillanceRequirement req) {
+    protected List<SurveillanceNonconformity> getNonconformities(final SurveillanceRequirement req) {
         return req.getNonconformities();
     }
 
-    protected List<String> getSurveillanceFields(CertifiedProductSearchDetails data, Surveillance surv) {
+    protected List<String> getSurveillanceFields(final CertifiedProductSearchDetails data, 
+            final Surveillance surv) {
         List<String> survFields = new ArrayList<String>();
         survFields.add(data.getDeveloper().getName());
         survFields.add(data.getProduct().getName());
@@ -132,7 +132,8 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
         return survFields;
     }
 
-    protected List<String> getNoNonconformityFields(CertifiedProductSearchDetails data, Surveillance surv) {
+    protected List<String> getNoNonconformityFields(final CertifiedProductSearchDetails data, 
+            final Surveillance surv) {
         List<String> ncFields = new ArrayList<String>();
         ncFields.add("N");
         ncFields.add("");
@@ -151,8 +152,9 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
         return ncFields;
     }
 
-    protected List<String> getNonconformityFields(CertifiedProductSearchDetails data, Surveillance surv,
-            SurveillanceNonconformity nc) {
+    protected List<String> getNonconformityFields(final CertifiedProductSearchDetails data, 
+            final Surveillance surv,
+            final SurveillanceNonconformity nc) {
         List<String> ncFields = new ArrayList<String>();
         ncFields.add("Y");
         ncFields.add(nc.getNonconformityType());

@@ -7,6 +7,11 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+/**
+ * Entity used for basic search results.
+ * @author alarned
+ *
+ */
 @Entity
 @Table(name = "certified_product_search")
 public class CertifiedProductBasicSearchResultEntity {
@@ -40,6 +45,9 @@ public class CertifiedProductBasicSearchResultEntity {
     @Column(name = "vendor_name")
     private String developer;
 
+    @Column(name = "vendor_status_name")
+    private String developerStatus;
+
     @Column(name = "owner_history")
     private String previousDevelopers;
 
@@ -72,11 +80,11 @@ public class CertifiedProductBasicSearchResultEntity {
 
     @Column(name = "certs")
     private String certs; // comma-separated list of all certification criteria
-                          // met by the certified product
+    // met by the certified product
 
     @Column(name = "cqms")
     private String cqms; // comma-separated list of all cqms met by the
-                         // certified product
+    // certified product
 
     @Column(name = "parent")
     private String parent; // comma-separated list of all parents
@@ -176,6 +184,14 @@ public class CertifiedProductBasicSearchResultEntity {
 
     public void setDeveloper(final String developer) {
         this.developer = developer;
+    }
+
+    public String getDeveloperStatus() {
+        return developerStatus;
+    }
+
+    public void setDeveloperStatus(final String developerStatus) {
+        this.developerStatus = developerStatus;
     }
 
     public Date getCertificationDate() {

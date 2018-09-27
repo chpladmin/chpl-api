@@ -1,6 +1,7 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 
     @Override
     @Transactional
-    public ApiKeyDTO createKey(ApiKeyDTO toCreate)
+    public ApiKeyDTO createKey(final ApiKeyDTO toCreate)
             throws EntityCreationException, JsonProcessingException, EntityRetrievalException {
 
         ApiKeyDTO created = apiKeyDAO.create(toCreate);
@@ -49,8 +50,14 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 
     @Override
     @Transactional
+    public ApiKeyDTO updateApiKey(final ApiKeyDTO dto) throws EntityRetrievalException {
+        return apiKeyDAO.update(dto);
+    }
+
+    @Override
+    @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void deleteKey(Long keyId)
+    public void deleteKey(final Long keyId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 
         ApiKeyDTO toDelete = apiKeyDAO.getById(keyId);
@@ -65,7 +72,7 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
     @Override
     @Transactional
     //TODO: fix the @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void deleteKey(String keyString)
+    public void deleteKey(final String keyString)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
 
         ApiKeyDTO toDelete = apiKeyDAO.getByKey(keyString);
@@ -79,19 +86,19 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 
     @Override
     @Transactional
-    public ApiKeyDTO findKey(Long keyId) throws EntityRetrievalException {
+    public ApiKeyDTO findKey(final Long keyId) throws EntityRetrievalException {
         return apiKeyDAO.getById(keyId);
     }
 
     @Override
     @Transactional
-    public ApiKeyDTO findKey(String keyString) throws EntityRetrievalException {
+    public ApiKeyDTO findKey(final String keyString) throws EntityRetrievalException {
         return apiKeyDAO.getByKey(keyString);
     }
 
     @Override
     @Transactional
-    public void logApiKeyActivity(String keyString, String apiCallPath)
+    public void logApiKeyActivity(final String keyString, final String apiCallPath)
             throws EntityRetrievalException, EntityCreationException {
 
         ApiKeyDTO apiKey = findKey(keyString);
@@ -102,12 +109,16 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
         apiKeyActivityDto.setDeleted(false);
 
         apiKeyActivityDAO.create(apiKeyActivityDto);
+
+        //Update the lastUsedDate...
+        apiKey.setLastUsedDate(new Date());
+        apiKeyDAO.update(apiKey);
     }
 
     @Override
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
-    public List<ApiKeyActivity> getApiKeyActivity(String keyString) throws EntityRetrievalException {
+    public List<ApiKeyActivity> getApiKeyActivity(final String keyString) throws EntityRetrievalException {
 
         ApiKeyDTO apiKey = findKey(keyString);
         if (apiKey == null) {
@@ -138,8 +149,8 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
     @Override
     @Transactional
     //TODO: fix the @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
-    public List<ApiKeyActivity> getApiKeyActivity(String keyString, Integer pageNumber, Integer pageSize)
-            throws EntityRetrievalException {
+    public List<ApiKeyActivity> getApiKeyActivity(final String keyString,
+            final Integer pageNumber, final Integer pageSize) throws EntityRetrievalException {
 
         ApiKeyDTO apiKey = findKey(keyString);
         if (apiKey == null) {
@@ -214,8 +225,9 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
      */
     @Override
     //TODO: fix the @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
-    public List<ApiKeyActivity> getApiKeyActivity(String apiKeyFilter, Integer pageNumber, Integer pageSize,
-            boolean dateAscending, Long startDateMilli, Long endDateMilli) throws EntityRetrievalException {
+    public List<ApiKeyActivity> getApiKeyActivity(final String apiKeyFilter, final Integer pageNumber,
+            final Integer pageSize, final boolean dateAscending, final Long startDateMilli, final Long endDateMilli)
+                    throws EntityRetrievalException {
         List<ApiKeyActivityDTO> activityDTOs = apiKeyActivityDAO.getApiKeyActivity(apiKeyFilter, pageNumber, pageSize,
                 dateAscending, startDateMilli, endDateMilli);
         List<ApiKeyActivity> apiKeyActivitiesList = new ArrayList<ApiKeyActivity>();

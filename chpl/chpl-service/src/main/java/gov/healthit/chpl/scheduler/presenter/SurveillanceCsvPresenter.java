@@ -1,4 +1,4 @@
-package gov.healthit.chpl.app.surveillance.presenter;
+package gov.healthit.chpl.scheduler.presenter;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -15,9 +15,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformity;
@@ -29,17 +27,17 @@ import gov.healthit.chpl.domain.SurveillanceRequirement;
  * @author kekey
  *
  */
-@Component("surveillanceCsvPresenter")
 public class SurveillanceCsvPresenter {
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceCsvPresenter.class);
     protected Properties props;
     protected DateTimeFormatter dateFormatter;
 
-    public SurveillanceCsvPresenter() {
+    public SurveillanceCsvPresenter(final Properties props) {
         dateFormatter = DateTimeFormatter.ofPattern("uuuu/MM/dd");
+        this.props = props;
     }
 
-    public void presentAsFile(File file, CertifiedProductDownloadResponse cpList) {
+    public void presentAsFile(final File file, final List<CertifiedProductSearchDetails> cpList) {
         FileWriter writer = null;
         CSVPrinter csvPrinter = null;
         try {
@@ -47,7 +45,7 @@ public class SurveillanceCsvPresenter {
             csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL);
             csvPrinter.printRecord(generateHeaderValues());
 
-            for (CertifiedProductSearchDetails cp : cpList.getListings()) {
+            for (CertifiedProductSearchDetails cp : cpList) {
                 if (cp.getSurveillance() != null && cp.getSurveillance().size() > 0) {
                     for (Surveillance currSurveillance : cp.getSurveillance()) {
                         List<List<String>> rowValues = generateMultiRowValue(cp, currSurveillance);
@@ -104,7 +102,8 @@ public class SurveillanceCsvPresenter {
         return result;
     }
 
-    protected List<List<String>> generateMultiRowValue(CertifiedProductSearchDetails data, Surveillance surv) {
+    protected List<List<String>> generateMultiRowValue(final CertifiedProductSearchDetails data, 
+            final Surveillance surv) {
         List<List<String>> result = new ArrayList<List<String>>();
 
         List<String> firstRow = new ArrayList<String>();
@@ -158,7 +157,8 @@ public class SurveillanceCsvPresenter {
         return result;
     }
 
-    protected List<String> generateSurveillanceRowValues(CertifiedProductSearchDetails listing, Surveillance surv) {
+    protected List<String> generateSurveillanceRowValues(final CertifiedProductSearchDetails listing, 
+            final Surveillance surv) {
         List<String> result = new ArrayList<String>();
         result.add(listing.getChplProductNumber());
         result.add(props.getProperty("chplUrlBegin") + "#/product/" + listing.getId());
@@ -191,7 +191,7 @@ public class SurveillanceCsvPresenter {
         return result;
     }
 
-    protected List<String> generateSurveilledRequirementRowValues(SurveillanceRequirement req) {
+    protected List<String> generateSurveilledRequirementRowValues(final SurveillanceRequirement req) {
         List<String> reqRow = new ArrayList<String>();
 
         if (req.getType() != null) {
@@ -212,7 +212,7 @@ public class SurveillanceCsvPresenter {
         return reqRow;
     }
 
-    protected List<String> generateNonconformityRowValues(SurveillanceNonconformity nc) {
+    protected List<String> generateNonconformityRowValues(final SurveillanceNonconformity nc) {
         List<String> ncRow = new ArrayList<String>();
         if (nc.getNonconformityType() != null) {
             ncRow.add(nc.getNonconformityType());
@@ -290,13 +290,5 @@ public class SurveillanceCsvPresenter {
             ncRow.add("");
         }
         return ncRow;
-    }
-
-    public Properties getProps() {
-        return props;
-    }
-
-    public void setProps(final Properties props) {
-        this.props = props;
     }
 }

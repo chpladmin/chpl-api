@@ -196,7 +196,6 @@
             <version>9.1-901-1.jdbc4</version>
         </dependency>
 
-
         <dependency>
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-catalina</artifactId>
@@ -204,9 +203,14 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- Password strength checking library -->
+        <dependency>
+            <groupId>com.nulab-inc</groupId>
+            <artifactId>zxcvbn</artifactId>
+            <version>1.2.5</version>
+        </dependency>
 
         <!-- for unit/integration testing of the dao calls -->
-
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-all</artifactId>

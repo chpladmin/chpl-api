@@ -42,8 +42,10 @@ summaryEmailName=summaryStatistics.csv
 summaryEmailPeriodInDays=7
 
 #questionable activity email properties
-questionableActivityReportFilename=questionable-activity.csv
+questionableActivityReportFilename=questionable-activity
 questionableActivityEmailSubject=Questionable Activity Report
+questionableActivityHasDataEmailBody=<p>A summary of questionable activity found between %s and %s is attached.</p>"
+questionableActivityNoDataEmailBody=<p>No questionable activity was found between %s and %s.</p>
 
 #oversight email properties
 suspendedDaysAllowed=30
@@ -116,3 +118,23 @@ asyncEnabled=true
 # Scheduler properties
 corePoolSize=10
 maxPoolSize=20
+
+####### Email Builder Settings #######
+#Do we want to 'check' emails before sending them?
+#emailBuilder.config.productionEnvironment=false
+#Let emails being sent to this list of domains go through
+#emailBuilder.config.whitelistedDomains=ainq.com,onc.gov
+#Emails should be sent to this address
+#emailBuilder.config.forwardAddress=example@ainq.com
+#######################################
+emailBuilder.config.productionEnvironment=false
+emailBuilder.config.whitelistedDomains=ainq.com
+emailBuilder.config.forwardAddress=example@ainq.com
+
+#DeleteAPIKeyWarningEmail
+job.apiKeyWarningEmailJob.config.apiKeyLastUsedDaysAgo=7
+job.apiKeyWarningEmailJob.config.daysUntilDelete=3
+job.apiKeyWarningEmailJob.config.message=Name/Organization: %s<br/><br/>Unused API keys are removed from the CHPL system after %s days.  Your key, %s, was last used on %s and unless it is used again, will be removed in %s days.<br/><br/>Thank you
+
+#ApiKeyDeleteJob
+job.apiKeyDeleteJob.config.message=Name/Organization: %s<br/><br/>A warning was previously sent as your key, %s, was last used on %s.  As per the warning and ONC's policy, your key has been removed.<br/><br/>If you would like to resume using the CHPL's public API, you may register for a new key at <a href='%s'>%s</a>.<br/><br/>Thank you

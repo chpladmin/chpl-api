@@ -1,14 +1,19 @@
 
-## Version 16.4.0
+## Version 17.0.0
 _Date TBD_
 
+### Major Change
+* When retrieving Pending Surveillances, the listing details will no longer be populated
+
 ### New Features
-* Validate URLs on upload / confirm / edit
-  * Transparency Attestation
-  * SED Report File
-  * Other report file
-  * API Documentation (at criteria level)
-  * Developer website
-  * Add info messages for 2014 cms id widget
+* Move surveillance download file generation into quartz job to allow for better job management.
+* Move SED G3 download file generation into quartz job for allow for better job management.
+* Added scheduled job to send warning to users who have not used thier API key in the last X days
+* Added scheduled job to delete api keys that have not been used in X days
+* Added LastUsedDate and DeleteWarningSentDate to the ./key endpoint return value(s)
+* Add password strength checker when anyone:
+  * creates a new User
+  * updates a password
+* Add Developer Status to search results view
 
 ---

@@ -13,8 +13,12 @@ import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
+import gov.healthit.chpl.dao.statistics.NonconformityTypeStatisticsDAO;
+import gov.healthit.chpl.dao.statistics.SurveillanceStatisticsDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.dto.IncumbentDevelopersStatisticsDTO;
@@ -38,6 +42,10 @@ public final class ChartDataCreatorJob extends QuartzJob {
 
     @Autowired
     private CertifiedProductSearchDAO certifiedProductSearchDAO;
+    @Autowired
+    private SurveillanceStatisticsDAO statisticsDAO;
+    @Autowired
+    private NonconformityTypeStatisticsDAO nonconformityTypeStatisticsDAO;
 
     /**
      * Constructor to initialize InheritanceErrorsReportCreatorJob object.
@@ -65,14 +73,16 @@ public final class ChartDataCreatorJob extends QuartzJob {
     }
 
     @Override
+    @Transactional
     public void execute(JobExecutionContext arg0) throws JobExecutionException {
+    	SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         List<CertifiedProductFlatSearchResult> certifiedProducts = certifiedProductSearchDAO.getAllCertifiedProducts();
         LOGGER.info("Certified Product Count: " + certifiedProducts.size());
 
-        analyzeSed(certifiedProducts);
-        analyzeProducts(certifiedProducts);
-        analyzeDevelopers(certifiedProducts);
-        analyzeListingCounts(certifiedProducts);
+        //analyzeSed(certifiedProducts);
+        //analyzeProducts(certifiedProducts);
+        //analyzeDevelopers(certifiedProducts);
+        //analyzeListingCounts(certifiedProducts);
         analyzeNonconformity();
     }
 

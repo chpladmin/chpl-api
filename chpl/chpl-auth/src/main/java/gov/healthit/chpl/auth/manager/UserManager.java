@@ -3,6 +3,8 @@ package gov.healthit.chpl.auth.manager;
 import java.util.List;
 import java.util.Set;
 
+import com.nulabinc.zxcvbn.Strength;
+
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.json.User;
@@ -14,6 +16,11 @@ import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 
 public interface UserManager {
+
+    /**
+     * Minimum Password strength required for new users and password changes.
+     */
+    int MIN_PASSWORD_STRENGTH = 3;
 
     UserDTO create(UserCreationJSONObject userInfo) throws UserCreationException, UserRetrievalException;
 
@@ -56,4 +63,12 @@ public interface UserManager {
     String encodePassword(String password);
 
     Set<UserPermissionDTO> getGrantedPermissionsForUser(UserDTO user);
+
+    /**
+     * Retrieve password strength object.
+     * @param user user's information
+     * @param password the password to check
+     * @return a Strength object with password strength information
+     */
+    Strength getPasswordStrength(UserDTO user, String password);
 }
