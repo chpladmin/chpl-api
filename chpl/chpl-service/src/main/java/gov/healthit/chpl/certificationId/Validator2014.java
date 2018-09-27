@@ -131,7 +131,7 @@ public class Validator2014 extends Validator {
         if (isInpatientCqmsValid()) {
             valid = true;
         }
-        if(!valid){
+        if (!valid){
             System.out.println(valid);
             if (this.counts.get("cqmsInpatientRequiredMet") < this.counts.get("cqmsInpatientRequired")) {
                 String needed = String.valueOf((this.counts.get("cqmsInpatientRequired") - inpatientCqmCount));
@@ -275,11 +275,11 @@ public class Validator2014 extends Validator {
             return true;
         }
 
-        missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)", "170.314(h)(1)")));
-        missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(h)(1)")));
-        missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(1)", "170.314(b)(2)", "170.314(b)(8)")));
-        missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(8)", "170.314(h)(1)")));
-        missingCombo.add(new ArrayList<String>(Arrays.asList("170.314(b)(1)", "170.314(b)(2)")));
+        missingCombo.add(new ArrayList<String>(Arrays.asList("170.314 (b)(1)", "170.314 (b)(2)", "170.314 (b)(8)", "170.314 (h)(1)")));
+        missingCombo.add(new ArrayList<String>(Arrays.asList("170.314 (b)(1)", "170.314 (b)(2)", "170.314 (h)(1)")));
+        missingCombo.add(new ArrayList<String>(Arrays.asList("170.314 (b)(1)", "170.314 (b)(2)", "170.314 (b)(8)")));
+        missingCombo.add(new ArrayList<String>(Arrays.asList("170.314 (b)(8)", "170.314 (h)(1)")));
+        missingCombo.add(new ArrayList<String>(Arrays.asList("170.314 (b)(1)", "170.314 (b)(2)")));
 
         return false;
     }
