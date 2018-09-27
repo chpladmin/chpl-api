@@ -24,3 +24,6 @@ fuzzyChoiceLimit=1
 
 #Asynchronous - should always be false for jUnits to properly work in our environment
 asyncEnabled=false
+
+# number of tokens per API Key per time unit below
+rateTokenLimit=5

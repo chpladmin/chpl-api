@@ -3,11 +3,13 @@ package gov.healthit.chpl.dto;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.apache.commons.lang.ObjectUtils;
-import org.springframework.util.StringUtils;
-
 import gov.healthit.chpl.entity.developer.DeveloperStatusEventEntity;
 
+/**
+ * Developer Status Event DTO.
+ * @author alarned
+ *
+ */
 public class DeveloperStatusEventDTO implements Serializable {
     private static final long serialVersionUID = -2492374479266782228L;
 
@@ -17,10 +19,15 @@ public class DeveloperStatusEventDTO implements Serializable {
     private Date statusDate;
     private String reason;
 
+    /** Default constructor. */
     public DeveloperStatusEventDTO() {
     }
 
-    public DeveloperStatusEventDTO(DeveloperStatusEventEntity entity) {
+    /**
+     * Constructed from entity.
+     * @param entity the entity
+     */
+    public DeveloperStatusEventDTO(final DeveloperStatusEventEntity entity) {
         this();
         this.id = entity.getId();
         this.developerId = entity.getDeveloperId();
@@ -65,16 +72,31 @@ public class DeveloperStatusEventDTO implements Serializable {
         return reason;
     }
 
-    public void setReason(String reason) {
+    public void setReason(final String reason) {
         this.reason = reason;
     }
 
-    public boolean matches(DeveloperStatusEventDTO anotherStatusEvent) {
+    /**
+     * Return true iff this DTO matches a different on.
+     * @param anotherStatusEvent the different one
+     * @return true iff this matches
+     */
+    public boolean matches(final DeveloperStatusEventDTO anotherStatusEvent) {
         boolean result = false;
-        if(this.getId() != null && anotherStatusEvent.getId() != null && 
-                this.getId().longValue() == anotherStatusEvent.getId().longValue()) {
+        if (this.getId() != null && anotherStatusEvent.getId() != null
+                && this.getId().longValue() == anotherStatusEvent.getId().longValue()) {
             return true;
         }
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Developer Status Event DTO: ["
+                + "[Developer ID: " + this.developerId + "] "
+                + "[Status Date: " + this.statusDate.toString() + "] "
+                + "[Status: " + this.status.getStatusName() + "] "
+                + "[Reason: " + this.reason + "]"
+                + "]";
     }
 }
