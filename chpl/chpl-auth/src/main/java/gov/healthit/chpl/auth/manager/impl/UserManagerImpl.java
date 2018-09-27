@@ -300,8 +300,10 @@ public class UserManagerImpl implements UserManager {
         badWords.add("chpl");
         badWords.add(user.getEmail());
         badWords.add(user.getFullName());
-        badWords.add(user.getFriendlyName());
         badWords.add(user.getUsername());
+        if (user.getFriendlyName() != null) {
+            badWords.add(user.getFriendlyName());
+        }
 
         Zxcvbn zxcvbn = new Zxcvbn();
         Strength strength = zxcvbn.measure(password, badWords);
