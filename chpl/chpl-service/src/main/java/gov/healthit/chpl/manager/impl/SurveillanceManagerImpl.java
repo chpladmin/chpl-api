@@ -410,21 +410,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
         surv.setStartDate(pr.getStartDate());
         surv.setEndDate(pr.getEndDate());
         surv.setRandomizedSitesUsed(pr.getNumRandomizedSites());
-        if (pr.getCertifiedProduct() != null) {
-            CertifiedProductEntity cpEntity = pr.getCertifiedProduct();
-            try {
-                CertifiedProductDetailsDTO cpDto = cpDao.getDetailsById(cpEntity.getId());
-                surv.setCertifiedProduct(new CertifiedProduct(cpDto));
-            } catch (final EntityRetrievalException ex) {
-                LOGGER.error("Could not find details for certified product " + cpEntity.getId());
-            }
-        } else {
-            CertifiedProduct cp = new CertifiedProduct();
-            cp.setId(pr.getCertifiedProductId());
-            cp.setChplProductNumber(pr.getCertifiedProductUniqueId());
-            surv.setCertifiedProduct(cp);
-        }
-
+        
         SurveillanceType survType = new SurveillanceType();
         survType.setName(pr.getSurveillanceType());
         surv.setType(survType);
@@ -440,6 +426,11 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
                 SurveillanceRequirementType reqType = new SurveillanceRequirementType();
                 reqType.setName(preq.getRequirementType());
                 req.setType(reqType);
+
+                CertifiedProduct cp = new CertifiedProduct();
+                cp.setId(pr.getCertifiedProductId());
+                cp.setChplProductNumber(pr.getCertifiedProductUniqueId());
+                surv.setCertifiedProduct(cp);
 
                 if (preq.getNonconformities() != null) {
                     for (PendingSurveillanceNonconformityEntity pnc : preq.getNonconformities()) {
