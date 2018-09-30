@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
@@ -18,6 +19,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 public class CertificationEditionDAOImpl extends BaseDAOImpl implements CertificationEditionDAO {
 
     @Override
+    @Transactional
     public void create(CertificationEditionDTO dto) throws EntityCreationException, EntityRetrievalException {
 
         CertificationEditionEntity entity = null;
@@ -48,6 +50,7 @@ public class CertificationEditionDAOImpl extends BaseDAOImpl implements Certific
     }
 
     @Override
+    @Transactional
     public void update(CertificationEditionDTO dto) throws EntityRetrievalException {
 
         CertificationEditionEntity entity = this.getEntityById(dto.getId());
@@ -63,6 +66,7 @@ public class CertificationEditionDAOImpl extends BaseDAOImpl implements Certific
     }
 
     @Override
+    @Transactional
     public void delete(Long id) {
         Query query = entityManager.createQuery(
                 "UPDATE CertificationEditionEntity SET deleted = true WHERE certification_edition_id = :entityid");

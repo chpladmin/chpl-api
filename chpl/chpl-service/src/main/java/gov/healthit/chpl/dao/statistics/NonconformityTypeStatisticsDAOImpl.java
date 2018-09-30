@@ -13,6 +13,7 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository("nonconformityTypeStatisticsDAO")
 public class NonconformityTypeStatisticsDAOImpl extends BaseDAOImpl implements NonconformityTypeStatisticsDAO {
@@ -32,7 +33,9 @@ public class NonconformityTypeStatisticsDAOImpl extends BaseDAOImpl implements N
 
         return dtos;
     }
-
+    
+    @Override
+    @Transactional
     public void create(NonconformityTypeStatisticsDTO dto) {
         NonconformityTypeStatisticsEntity entity = new NonconformityTypeStatisticsEntity();
         entity.setNonconformityCount(dto.getNonconformityCount());
@@ -59,6 +62,7 @@ public class NonconformityTypeStatisticsDAOImpl extends BaseDAOImpl implements N
     }
     
     @Override
+    @Transactional
     public void deleteAllOldNonConformityStatistics() throws EntityRetrievalException {
         String hql = "UPDATE NonconformityTypeStatisticsEntity SET deleted = true, lastModifiedUser = " + getUserId(SYSTEM_USER_ID) + " WHERE deleted = false";
         Query query = entityManager.createQuery(hql);

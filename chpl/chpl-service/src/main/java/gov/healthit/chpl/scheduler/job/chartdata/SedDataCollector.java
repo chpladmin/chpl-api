@@ -9,6 +9,7 @@ import java.util.concurrent.Future;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
@@ -26,10 +27,16 @@ import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 public class SedDataCollector {
     private static final Logger LOGGER = LogManager.getLogger(SedDataCollector.class);
     private static final String EDITION_2015 = "2015";
+    
+    @Autowired
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
 
     @Autowired
     private DataCollectorAsyncHelper dataCollectorAsyncHelper;
+    
+    public SedDataCollector() {
+    	SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+    }
 
     /**
      * This method runs the data retrieval process for the 2015 SED products and
@@ -69,8 +76,12 @@ public class SedDataCollector {
 
         for (CertifiedProductFlatSearchResult certifiedProduct : certifiedProducts) {
             try {
-                futures.add(dataCollectorAsyncHelper.getCertifiedProductDetail(certifiedProduct.getId(),
-                        certifiedProductDetailsManager));
+            	if(certifiedProduct.getId() > 9000) {
+            		System.out.println(dataCollectorAsyncHelper.getCertifiedProductDetail(certifiedProduct.getId(),
+            				certifiedProductDetailsManager));
+            		futures.add(dataCollectorAsyncHelper.getCertifiedProductDetail(certifiedProduct.getId(),
+            				certifiedProductDetailsManager));
+            	}
             } catch (EntityRetrievalException e) {
                 LOGGER.error("Could not retrieve certified product details for id: " + certifiedProduct.getId(), e);
             }
@@ -79,6 +90,7 @@ public class SedDataCollector {
         Date startTime = new Date();
         for (Future<CertifiedProductSearchDetails> future : futures) {
             try {
+            	System.out.println(future.get().getChplProductNumber());
                 details.add(future.get());
             } catch (InterruptedException | ExecutionException e) {
                 LOGGER.error("Could not retrieve certified product details for unknown id.", e);

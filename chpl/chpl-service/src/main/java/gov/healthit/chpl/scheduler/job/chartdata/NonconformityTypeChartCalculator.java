@@ -14,6 +14,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 @Component("nonconformityTypeChartCalculator")
 @EnableAsync
@@ -25,6 +26,10 @@ public class NonconformityTypeChartCalculator {
     private SurveillanceStatisticsDAO statisticsDAO;
     @Autowired
     private NonconformityTypeStatisticsDAO nonconformityTypeStatisticsDAO;
+    
+    public NonconformityTypeChartCalculator() {
+    	SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+    }
     
     public void logCounts(List<NonconformityTypeStatisticsDTO> dtos) {
         for (NonconformityTypeStatisticsDTO dto : dtos) {

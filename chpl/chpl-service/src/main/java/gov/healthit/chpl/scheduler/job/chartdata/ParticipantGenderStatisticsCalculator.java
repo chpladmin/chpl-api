@@ -8,6 +8,8 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+
 import gov.healthit.chpl.dao.ParticipantGenderStatisticsDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestParticipant;
@@ -29,6 +31,10 @@ public class ParticipantGenderStatisticsCalculator {
 
     @Autowired
     private ParticipantGenderStatisticsDAO participantGenderStatisticsDAO;
+    
+    public ParticipantGenderStatisticsCalculator() {
+    	SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+    }
 
     /**
      * This method calculates the participant gender counts and saves them to

@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CriterionProductStatisticsDAO;
@@ -30,6 +31,10 @@ public class CriterionProductStatisticsCalculator {
 
     private CertificationCriterionDAO certificationCriterionDAO;
     private CriterionProductStatisticsDAO criterionProductStatisticsDAO;
+    
+    public CriterionProductStatisticsCalculator() {
+    	SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+    }
 
     /**
      * criterionMap maps the certification criterion to the count of unique

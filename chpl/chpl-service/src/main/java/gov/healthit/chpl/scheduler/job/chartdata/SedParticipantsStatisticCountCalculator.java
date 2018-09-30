@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.SedParticipantStatisticsCountDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -30,6 +31,10 @@ public class SedParticipantsStatisticCountCalculator {
 
     @Autowired
     private SedParticipantStatisticsCountDAO sedParticipantStatisticsCountDAO;
+    
+    public SedParticipantsStatisticCountCalculator() {
+    	SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+    }
 
     /**
      * This method calculates the participant counts and saves them to the

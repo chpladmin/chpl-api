@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.ParticipantAgeStatisticsDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -31,6 +32,10 @@ public class ParticipantAgeStatisticsCalculator {
 
     @Autowired
     private ParticipantAgeStatisticsDAO participantAgeStatisticsDAO;
+    
+    public ParticipantAgeStatisticsCalculator() {
+    	SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+    }
 
     /**
      * This method calculates the participant counts and saves them to the

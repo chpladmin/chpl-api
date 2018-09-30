@@ -79,7 +79,7 @@ public final class ChartDataCreatorJob extends QuartzJob {
         List<CertifiedProductFlatSearchResult> certifiedProducts = certifiedProductSearchDAO.getAllCertifiedProducts();
         LOGGER.info("Certified Product Count: " + certifiedProducts.size());
 
-        //analyzeSed(certifiedProducts);
+        analyzeSed(certifiedProducts);
         //analyzeProducts(certifiedProducts);
         //analyzeDevelopers(certifiedProducts);
         //analyzeListingCounts(certifiedProducts);
@@ -123,6 +123,8 @@ public final class ChartDataCreatorJob extends QuartzJob {
         // Get Certified Products
         SedDataCollector sedDataCollector = new SedDataCollector();
         List<CertifiedProductSearchDetails> seds = sedDataCollector.retreiveData(listings);
+        
+        LOGGER.info("Collected SED Data");
 
         // Extract SED Statistics
         SedParticipantsStatisticCountCalculator sedParticipantsStatisticCountCalculator = new SedParticipantsStatisticCountCalculator();

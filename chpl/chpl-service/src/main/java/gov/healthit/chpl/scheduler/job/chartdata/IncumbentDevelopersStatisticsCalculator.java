@@ -7,8 +7,9 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+
 import gov.healthit.chpl.dao.CertificationEditionDAO;
-import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.IncumbentDevelopersStatisticsDAO;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.dto.IncumbentDevelopersStatisticsDTO;
@@ -29,8 +30,10 @@ public class IncumbentDevelopersStatisticsCalculator {
     private IncumbentDevelopersStatisticsDAO incumbentDevelopersStatisticsDAO;
     @Autowired
     private CertificationEditionDAO certificationEditionDAO;
-    @Autowired
-    private CertificationStatusDAO certificationStatusDAO;
+    
+    public IncumbentDevelopersStatisticsCalculator() {
+    	SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+    }
 
     /**
      * Loop through every Listing. For each Listing, add that Listing's

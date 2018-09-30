@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.ParticipantExperienceStatisticsDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -32,6 +33,10 @@ public class ParticipantExperienceStatisticsCalculator {
     @Autowired
     private ParticipantExperienceStatisticsDAO participantExperienceStatisticsDAO;
     private Long experienceTypeId;
+    
+    public ParticipantExperienceStatisticsCalculator() {
+    	SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+    }
 
     /**
      * This method calculates the participant experience counts and saves them
