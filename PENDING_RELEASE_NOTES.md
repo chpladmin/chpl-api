@@ -17,4 +17,8 @@ _Date TBD_
 * Add Developer Status to search results view
 * Catch any unexpected error that occurs during a listing upload. Allow the error to be emailed to CHPL team if desired.
 
+### Bugs Fixed
+* Invalid test functionality names are handled properly for 2014 listing uploads.
+* Fix questionable activity report end of the month date rollover.
+
 ---
