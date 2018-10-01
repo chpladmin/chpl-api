@@ -18,6 +18,7 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertificationIdManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
+import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.SearchMenuManager;
 
 @Component
@@ -34,7 +35,10 @@ public class AsynchronousCacheInitialization {
     private PendingCertifiedProductDAO pendingCertifiedProductDAO;
     @Autowired
     private CertificationBodyDAO certificationBodyDAO;
-
+    
+    @Autowired
+    private DeveloperManager developerManager;
+    
     @Async
     @Transactional
     public Future<Boolean> initializeSearchOptions() throws EntityRetrievalException {
@@ -89,7 +93,7 @@ public class AsynchronousCacheInitialization {
     public Future<Boolean> initializeDecertifiedDevelopers()
             throws IOException, EntityRetrievalException, InterruptedException {
         LOGGER.info("Starting cache initialization for DeveloperManager.getDecertifiedDevelopers()");
-        certificationIdManager.getAllWithProducts();
+        developerManager.getDecertifiedDevelopers();
         LOGGER.info("Finished cache initialization for DeveloperManager.getDecertifiedDevelopers()");
         return new AsyncResult<>(true);
     }
