@@ -36,7 +36,7 @@ import gov.healthit.chpl.scheduler.job.QuartzJob;
  */
 @DisallowConcurrentExecution
 public final class ChartDataCreatorJob extends QuartzJob {
-    private static final Logger LOGGER = LogManager.getLogger(ChartDataCreatorJob.class);
+    private static final Logger LOGGER = LogManager.getLogger("chartDataCreatorJobLogger");
     private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
     private Properties props;
 
