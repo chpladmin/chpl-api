@@ -141,7 +141,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
             CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.GET_DECERTIFIED_DEVELOPERS
     }, allEntries = true)
     public DeveloperDTO update(final DeveloperDTO updatedDev)
-            throws EntityRetrievalException, JsonProcessingException, 
+            throws EntityRetrievalException, JsonProcessingException,
             EntityCreationException, MissingReasonException {
 
         DeveloperDTO beforeDev = getById(updatedDev.getId());
@@ -153,12 +153,12 @@ public class DeveloperManagerImpl implements DeveloperManager {
             throw new EntityCreationException(msg);
         }
 
-        //if any of the statuses (new, old, or any other status in the history) 
+        //if any of the statuses (new, old, or any other status in the history)
         //is Under Certification Ban by ONC make sure there is a reason given
-        for(DeveloperStatusEventDTO statusEvent: updatedDev.getStatusEvents()) {
-            if(statusEvent.getStatus().getStatusName().equals(
-                    DeveloperStatusType.UnderCertificationBanByOnc.toString()) &&
-                    StringUtils.isEmpty(statusEvent.getReason())) {
+        for (DeveloperStatusEventDTO statusEvent: updatedDev.getStatusEvents()) {
+            if (statusEvent.getStatus().getStatusName().equals(
+                    DeveloperStatusType.UnderCertificationBanByOnc.toString())
+                    && StringUtils.isEmpty(statusEvent.getReason())) {
                 throw new MissingReasonException(msgUtil.getMessage("developer.missingReasonForBan",
                         DeveloperStatusType.UnderCertificationBanByOnc.toString()));
             }
@@ -168,8 +168,8 @@ public class DeveloperManagerImpl implements DeveloperManager {
         // then nothing can be changed
         if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
                 && !Util.isUserRoleAdmin()) {
-            String msg = msgUtil.getMessage("developer.notActiveNotAdminCantChangeStatus", 
-                    Util.getUsername(), beforeDev.getName()); 
+            String msg = msgUtil.getMessage("developer.notActiveNotAdminCantChangeStatus",
+                    Util.getUsername(), beforeDev.getName());
             LOGGER.error(msg);
             throw new EntityCreationException(msg);
         }
@@ -182,7 +182,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
                 && newDevStatus.getStatus().getStatusName()
                 .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
                 && !Util.isUserRoleAdmin()) {
-            String  msg = msgUtil.getMessage("developer.statusChangeNotAllowedWithoutAdmin", 
+            String  msg = msgUtil.getMessage("developer.statusChangeNotAllowedWithoutAdmin",
                     DeveloperStatusType.UnderCertificationBanByOnc.toString());
             throw new EntityCreationException(msg);
         } else if (devStatusHistoryUpdated && !newDevStatus.getStatus().getStatusName()
@@ -275,7 +275,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
         return after;
     }
 
-    private void updateStatusHistory(DeveloperDTO beforeDev, DeveloperDTO updatedDev) 
+    private void updateStatusHistory(final DeveloperDTO beforeDev, final DeveloperDTO updatedDev)
             throws EntityRetrievalException, EntityCreationException {
         //update status history
         List<DeveloperStatusEventDTO> statusEventsToAdd = new ArrayList<DeveloperStatusEventDTO>();
@@ -316,8 +316,8 @@ public class DeveloperManagerImpl implements DeveloperManager {
                 for (DeveloperStatusEventDTO existingStatusEvent : beforeDev.getStatusEvents()) {
                     boolean inUpdatedStatusHistory = false;
                     for (DeveloperStatusEventDTO updatedStatusEvent : updatedDev.getStatusEvents()) {
-                        inUpdatedStatusHistory = !inUpdatedStatusHistory ? 
-                                existingStatusEvent.matches(updatedStatusEvent) : inUpdatedStatusHistory;
+                        inUpdatedStatusHistory = !inUpdatedStatusHistory
+                                ? existingStatusEvent.matches(updatedStatusEvent) : inUpdatedStatusHistory;
                     }
                     if (!inUpdatedStatusHistory) {
                         statusEventsToRemove.add(existingStatusEvent);
@@ -353,7 +353,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 
         for (DeveloperStatusEventDTO toRemove : statusEventsToRemove) {
             developerDao.deleteDeveloperStatusEvent(toRemove);
-        }        
+        }
     }
 
     @Override
