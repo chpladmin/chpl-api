@@ -38,7 +38,7 @@ public class TestFunctionalityReviewer implements Reviewer {
     private PracticeTypeDAO practiceTypeDAO;
 
     @Override
-    public void review(PendingCertifiedProductDTO listing) {
+    public void review(final PendingCertifiedProductDTO listing) {
         if (listing.getCertificationCriterion() != null) {
             for (PendingCertificationResultDTO cr : listing.getCertificationCriterion()) {
                 if (cr.getTestFunctionality() != null) {
@@ -50,22 +50,22 @@ public class TestFunctionalityReviewer implements Reviewer {
             }
         }
     }
-    
+
     private Set<String> getTestingFunctionalityErrorMessages(final PendingCertificationResultTestFunctionalityDTO crtf,
             final PendingCertificationResultDTO cr, final PendingCertifiedProductDTO cp) {
 
         Set<String> errors = new HashSet<String>();
         TestFunctionalityDTO tf = getTestFunctionality(crtf.getNumber());
-        if(tf == null) {
-            errors.add(msgUtil.getMessage("listing.criteria.testFunctionalityNotFound", 
+        if (tf == null) {
+            errors.add(msgUtil.getMessage("listing.criteria.testFunctionalityNotFound",
                     cr.getNumber(), crtf.getNumber()));
         } else {
             PracticeTypeDTO pt = practiceTypeDAO.getByName(cp.getPracticeType());
-    
+
             if (!isTestFunctionalityPracticeTypeValid(pt.getId(), tf)) {
                 errors.add(getTestFunctionalityPracticeTypeErrorMessage(crtf, cr, cp));
             }
-    
+
             String criterionNumber = cr.getNumber();
             if (!isTestFunctionalityCritierionValid(criterionNumber, tf)) {
                 errors.add(getTestFunctionalityCriterionErrorMessage(crtf, cr, cp));
@@ -73,12 +73,12 @@ public class TestFunctionalityReviewer implements Reviewer {
         }
         return errors;
     }
-    
+
     private TestFunctionalityDTO getTestFunctionality(final String number) {
         Long editionId = 2L;
         return testFunctionalityDAO.getByNumberAndEdition(number, editionId);
     }
-    
+
     private Boolean isTestFunctionalityPracticeTypeValid(final Long practiceTypeId,
             final TestFunctionalityDTO tf) {
 
@@ -89,7 +89,7 @@ public class TestFunctionalityReviewer implements Reviewer {
         }
         return true;
     }
-    
+
     private Boolean isTestFunctionalityCritierionValid(final String certificationCriterionName,
             final TestFunctionalityDTO tf) {
 
@@ -102,7 +102,7 @@ public class TestFunctionalityReviewer implements Reviewer {
         }
         return true;
     }
-    
+
     private String getTestFunctionalityPracticeTypeErrorMessage(
             final PendingCertificationResultTestFunctionalityDTO crtf, final PendingCertificationResultDTO cr,
             final PendingCertifiedProductDTO cp) {
@@ -115,7 +115,7 @@ public class TestFunctionalityReviewer implements Reviewer {
                 tf.getPracticeType().getName(),
                 cp.getPracticeType());
     }
-    
+
     private String getTestFunctionalityPracticeTypeErrorMessage(final String criteriaNumber,
             final String testFunctionalityNumber, final String validPracticeTypeName,
             final String currentPracticeTypeName) {
@@ -123,7 +123,7 @@ public class TestFunctionalityReviewer implements Reviewer {
         return msgUtil.getMessage("listing.criteria.testFunctionalityPracticeTypeMismatch",
                 criteriaNumber, testFunctionalityNumber, validPracticeTypeName, currentPracticeTypeName);
     }
-    
+
     private String getTestFunctionalityCriterionErrorMessage(final PendingCertificationResultTestFunctionalityDTO crtf,
             final PendingCertificationResultDTO cr, final PendingCertifiedProductDTO cp) {
 
@@ -135,7 +135,7 @@ public class TestFunctionalityReviewer implements Reviewer {
                 tf.getCertificationCriterion().getNumber(),
                 cr.getNumber());
     }
-    
+
     private String getTestFunctionalityCriterionErrorMessage(final String criteriaNumber,
             final String testFunctionalityNumber, final String validCriterion, final String currentCriterion) {
 
