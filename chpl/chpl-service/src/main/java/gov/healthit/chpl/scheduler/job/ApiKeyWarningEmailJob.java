@@ -91,7 +91,7 @@ public class ApiKeyWarningEmailJob implements Job {
     }
     
     private String getSubject() {
-        return "ONC-CHPL: Your API key will be deleted";
+        return env.getProperty("job.apiKeyWarningEmailJob.config.subject");
     }
     
     private DateFormat getDateFormatter() {

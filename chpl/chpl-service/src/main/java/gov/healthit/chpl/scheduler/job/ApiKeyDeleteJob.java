@@ -90,7 +90,7 @@ private static final Logger LOGGER = LogManager.getLogger("apiKeyDeleteJobLogger
     }
     
     private String getSubject() {
-        return "ONC-CHPL: Your API key has been deleted";
+        return env.getProperty("job.apiKeyDeleteJob.config.subject");
     }
     
     private DateFormat getDateFormatter() {
