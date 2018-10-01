@@ -11,9 +11,10 @@ _Date TBD_
 * Added scheduled job to send warning to users who have not used thier API key in the last X days
 * Added scheduled job to delete api keys that have not been used in X days
 * Added LastUsedDate and DeleteWarningSentDate to the ./key endpoint return value(s)
-* Add password strength checker when anyone:
+* Add password strength checker implementing [a java fork](https://github.com/nulab/zxcvbn4j) of [zxcvbn](https://github.com/dropbox/zxcvbn) when anyone:
   * creates a new User
   * updates a password
 * Add Developer Status to search results view
+* Catch any unexpected error that occurs during a listing upload. Allow the error to be emailed to CHPL team if desired.
 
 ---

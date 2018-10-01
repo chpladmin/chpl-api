@@ -84,6 +84,7 @@ public class ApiKeyController {
         toCreate.setEmail(registration.getEmail());
         toCreate.setNameOrganization(registration.getName());
         toCreate.setCreationDate(now);
+        toCreate.setLastUsedDate(now);
         toCreate.setLastModifiedDate(now);
         toCreate.setLastModifiedUser(-3L);
         toCreate.setDeleted(false);
