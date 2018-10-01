@@ -90,7 +90,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
 
         Calendar end = Calendar.getInstance();
         Calendar start = Calendar.getInstance();
-        start.roll(Calendar.DAY_OF_MONTH, -7);
+        start.add(Calendar.DAY_OF_MONTH, -7);
         List<List<String>> csvRows = getAppropriateActivities(jobContext, start.getTime(), end.getTime());
         String to = jobContext.getMergedJobDataMap().getString("email");
         String subject = props.getProperty("questionableActivityEmailSubject");
