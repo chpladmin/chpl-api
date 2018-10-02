@@ -448,7 +448,7 @@
                 <job-name>chartDataCreator</job-name>
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 48 10 * * ?</cron-expression> <!-- At 0230 UTC every day -->
+                <cron-expression>0 30 13 * * ?</cron-expression> <!-- At 0230 UTC every day -->
             </cron>
         </trigger>
         <!-- Questionable Activity data emailer -->

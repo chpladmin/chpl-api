@@ -28,14 +28,14 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
  *
  */
 public class ParticipantExperienceStatisticsCalculator {
-    private static final Logger LOGGER = LogManager.getLogger(ParticipantExperienceStatisticsCalculator.class);
+    private static final Logger LOGGER = LogManager.getLogger("chartDataCreatorJobLogger");
 
     @Autowired
     private ParticipantExperienceStatisticsDAO participantExperienceStatisticsDAO;
     private Long experienceTypeId;
-    
+
     public ParticipantExperienceStatisticsCalculator() {
-    	SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
     }
 
     /**
@@ -49,7 +49,10 @@ public class ParticipantExperienceStatisticsCalculator {
      *            Computer Experience. These values have constants defined in
      *            ExperienceTypes.
      */
-    public void run(final List<CertifiedProductSearchDetails> certifiedProductSearchDetails, final Long experienceTypeId) {
+    public void run(final List<CertifiedProductSearchDetails> certifiedProductSearchDetails,
+            final Long experienceTypeId) {
+
+        this.experienceTypeId = experienceTypeId;
 
         Map<Integer, Long> experienceCounts = getCounts(certifiedProductSearchDetails);
 

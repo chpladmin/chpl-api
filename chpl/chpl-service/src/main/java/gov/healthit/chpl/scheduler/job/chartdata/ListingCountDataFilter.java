@@ -15,7 +15,7 @@ import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
  *
  */
 public class ListingCountDataFilter {
-    private static final Logger LOGGER = LogManager.getLogger(ListingCountDataFilter.class);
+    private static final Logger LOGGER = LogManager.getLogger("chartDataCreatorJobLogger");
     private static final String EDITION_2014 = "2014";
     private static final String EDITION_2015 = "2015";
     private static final String BAD_STATUS = "Retired";
@@ -31,8 +31,8 @@ public class ListingCountDataFilter {
             final List<CertifiedProductFlatSearchResult> certifiedProducts) {
         List<CertifiedProductFlatSearchResult> results = new ArrayList<CertifiedProductFlatSearchResult>();
         for (CertifiedProductFlatSearchResult result : certifiedProducts) {
-            if ((result.getEdition().equalsIgnoreCase(EDITION_2014) || result.getEdition().equalsIgnoreCase(
-                    EDITION_2015))
+            if ((result.getEdition().equalsIgnoreCase(EDITION_2014)
+                    || result.getEdition().equalsIgnoreCase(EDITION_2015))
                     && !result.getCertificationStatus().equalsIgnoreCase(BAD_STATUS)) {
                 results.add(result);
             }

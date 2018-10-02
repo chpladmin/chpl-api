@@ -26,17 +26,17 @@ import gov.healthit.chpl.scheduler.SchedulerCertifiedProductSearchDetailsAsync;
  *
  */
 public class SedDataCollector {
-    private static final Logger LOGGER = LogManager.getLogger(SedDataCollector.class);
+    private static final Logger LOGGER = LogManager.getLogger("chartDataCreatorJobLogger");
     private static final String EDITION_2015 = "2015";
-    
+
     @Autowired
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
 
     @Autowired
     private SchedulerCertifiedProductSearchDetailsAsync cpsdAsync;
-    
+
     public SedDataCollector() {
-    	SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
     }
 
     /**
@@ -52,7 +52,8 @@ public class SedDataCollector {
         List<CertifiedProductFlatSearchResult> certifiedProducts = filterData(listings);
         LOGGER.info("2015/SED Certified Product Count: " + certifiedProducts.size());
 
-        List<CertifiedProductSearchDetails> certifiedProductsWithDetails = getCertifiedProductDetailsForAll(certifiedProducts);
+        List<CertifiedProductSearchDetails> certifiedProductsWithDetails = getCertifiedProductDetailsForAll(
+                certifiedProducts);
 
         return certifiedProductsWithDetails;
     }
@@ -77,11 +78,11 @@ public class SedDataCollector {
 
         for (CertifiedProductFlatSearchResult certifiedProduct : certifiedProducts) {
             try {
-            	if(certifiedProduct.getId() > 9000) {
-            	    System.out.println("Creating future for listing id " + certifiedProduct.getId());
-            		futures.add(cpsdAsync.getCertifiedProductDetail(certifiedProduct.getId(),
-            				certifiedProductDetailsManager));
-            	}
+                if (certifiedProduct.getId() > 9600) {
+                    System.out.println("Creating future for listing id " + certifiedProduct.getId());
+                    futures.add(cpsdAsync.getCertifiedProductDetail(certifiedProduct.getId(),
+                            certifiedProductDetailsManager));
+                }
             } catch (EntityRetrievalException e) {
                 LOGGER.error("Could not retrieve certified product details for id: " + certifiedProduct.getId(), e);
             }
@@ -91,7 +92,7 @@ public class SedDataCollector {
         for (Future<CertifiedProductSearchDetails> future : futures) {
             try {
                 CertifiedProductSearchDetails currDetails = future.get();
-            	System.out.println("Got future for CHPL product number " + currDetails.getChplProductNumber());
+                System.out.println("Got future for CHPL product number " + currDetails.getChplProductNumber());
                 details.add(future.get());
             } catch (InterruptedException | ExecutionException e) {
                 LOGGER.error("Could not retrieve certified product details for unknown id.", e);

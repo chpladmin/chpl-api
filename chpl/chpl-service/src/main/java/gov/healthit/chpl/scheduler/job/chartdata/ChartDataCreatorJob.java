@@ -17,8 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
-import gov.healthit.chpl.dao.statistics.NonconformityTypeStatisticsDAO;
-import gov.healthit.chpl.dao.statistics.SurveillanceStatisticsDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.dto.IncumbentDevelopersStatisticsDTO;
@@ -42,10 +40,6 @@ public final class ChartDataCreatorJob extends QuartzJob {
 
     @Autowired
     private CertifiedProductSearchDAO certifiedProductSearchDAO;
-    @Autowired
-    private SurveillanceStatisticsDAO statisticsDAO;
-    @Autowired
-    private NonconformityTypeStatisticsDAO nonconformityTypeStatisticsDAO;
 
     /**
      * Constructor to initialize InheritanceErrorsReportCreatorJob object.
@@ -59,8 +53,8 @@ public final class ChartDataCreatorJob extends QuartzJob {
     }
 
     private Properties loadProperties() throws IOException {
-        InputStream in = BrokenSurveillanceRulesCreatorJob.class.getClassLoader().getResourceAsStream(
-                DEFAULT_PROPERTIES_FILE);
+        InputStream in = BrokenSurveillanceRulesCreatorJob.class.getClassLoader()
+                .getResourceAsStream(DEFAULT_PROPERTIES_FILE);
         if (in == null) {
             props = null;
             throw new FileNotFoundException("Environment Properties File not found in class path.");
@@ -75,15 +69,18 @@ public final class ChartDataCreatorJob extends QuartzJob {
     @Override
     @Transactional
     public void execute(JobExecutionContext arg0) throws JobExecutionException {
-    	SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+        LOGGER.info("*****Chart Data Generator is startin now.*****");
+        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         List<CertifiedProductFlatSearchResult> certifiedProducts = certifiedProductSearchDAO.getAllCertifiedProducts();
         LOGGER.info("Certified Product Count: " + certifiedProducts.size());
 
-        analyzeSed(certifiedProducts);
-        //analyzeProducts(certifiedProducts);
-        //analyzeDevelopers(certifiedProducts);
-        //analyzeListingCounts(certifiedProducts);
-        analyzeNonconformity();
+        // analyzeSed(certifiedProducts);
+        analyzeProducts(certifiedProducts);
+        // analyzeDevelopers(certifiedProducts);
+        // analyzeListingCounts(certifiedProducts);
+        // analyzeNonconformity();
+
+        LOGGER.info("*****Chart Data Generator is done running.*****");
     }
 
     private static void analyzeDevelopers(final List<CertifiedProductFlatSearchResult> listings) {
@@ -110,20 +107,19 @@ public final class ChartDataCreatorJob extends QuartzJob {
     }
 
     private static void analyzeProducts(final List<CertifiedProductFlatSearchResult> listings) {
+        CriterionProductStatisticsCalculator criterionProductStatisticsCalculator = new CriterionProductStatisticsCalculator();
         CriterionProductDataFilter criterionProductDataFilter = new CriterionProductDataFilter();
         List<CertifiedProductFlatSearchResult> filteredListings = criterionProductDataFilter.filterData(listings);
-        CriterionProductStatisticsCalculator criterionProductStatisticsCalculator = new CriterionProductStatisticsCalculator();
         Map<String, Long> productCounts = criterionProductStatisticsCalculator.getCounts(filteredListings);
         criterionProductStatisticsCalculator.logCounts(productCounts);
         criterionProductStatisticsCalculator.save(productCounts);
-
     }
 
     private static void analyzeSed(final List<CertifiedProductFlatSearchResult> listings) {
         // Get Certified Products
         SedDataCollector sedDataCollector = new SedDataCollector();
         List<CertifiedProductSearchDetails> seds = sedDataCollector.retreiveData(listings);
-        
+
         LOGGER.info("Collected SED Data");
 
         // Extract SED Statistics

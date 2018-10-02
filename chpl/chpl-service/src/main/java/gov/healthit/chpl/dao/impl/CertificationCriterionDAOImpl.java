@@ -23,6 +23,7 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 	private static final Logger LOGGER = LogManager.getLogger(CertificationCriterionDAOImpl.class);
 
 	@Override
+    @Transactional
 	public CertificationCriterionDTO create(CertificationCriterionDTO dto)
 			throws EntityCreationException, EntityRetrievalException {
 
@@ -58,6 +59,7 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 	}
 
 	@Override
+    @Transactional
 	public CertificationCriterionDTO update(CertificationCriterionDTO dto)
 			throws EntityRetrievalException, EntityCreationException {
 
@@ -178,7 +180,6 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 
 	}
 
-	@Transactional
 	private List<CertificationCriterionEntity> getAllEntities() {
 		Query query = entityManager
 				.createQuery(

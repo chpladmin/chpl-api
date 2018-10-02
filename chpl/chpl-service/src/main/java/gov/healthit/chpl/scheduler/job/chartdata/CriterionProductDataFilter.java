@@ -15,7 +15,7 @@ import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
  *
  */
 public class CriterionProductDataFilter {
-    private static final Logger LOGGER = LogManager.getLogger(CriterionProductDataFilter.class);
+    private static final Logger LOGGER = LogManager.getLogger("chartDataCreatorJobLogger");
     private static final String EDITION_2014 = "2014";
     private static final String EDITION_2015 = "2015";
 

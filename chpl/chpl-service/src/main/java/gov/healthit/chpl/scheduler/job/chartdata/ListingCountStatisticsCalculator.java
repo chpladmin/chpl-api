@@ -26,7 +26,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
  *
  */
 public class ListingCountStatisticsCalculator {
-    private static final Logger LOGGER = LogManager.getLogger(ListingCountStatisticsCalculator.class);
+    private static final Logger LOGGER = LogManager.getLogger("chartDataCreatorJobLogger");
 
     @Autowired
     private ListingCountStatisticsDAO statisticsDAO;
@@ -34,9 +34,9 @@ public class ListingCountStatisticsCalculator {
     private CertificationEditionDAO certificationEditionDAO;
     @Autowired
     private CertificationStatusDAO certificationStatusDAO;
-    
+
     public ListingCountStatisticsCalculator() {
-    	SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
     }
 
     /**

@@ -20,36 +20,36 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 @EnableAsync
 public class NonconformityTypeChartCalculator {
 
-    private static final Logger LOGGER = LogManager.getLogger(NonconformityTypeChartCalculator.class);
-    
+    private static final Logger LOGGER = LogManager.getLogger("chartDataCreatorJobLogger");
+
     @Autowired
     private SurveillanceStatisticsDAO statisticsDAO;
     @Autowired
     private NonconformityTypeStatisticsDAO nonconformityTypeStatisticsDAO;
-    
+
     public NonconformityTypeChartCalculator() {
-    	SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
     }
-    
+
     public void logCounts(List<NonconformityTypeStatisticsDTO> dtos) {
         for (NonconformityTypeStatisticsDTO dto : dtos) {
             LOGGER.info("Crtieria: " + dto.getNonconformityType() + " Number of NCs: " + dto.getNonconformityCount());
         }
     }
-    
+
     @Transactional
     @Async
     public List<NonconformityTypeStatisticsDTO> getCounts() {
         List<NonconformityTypeStatisticsDTO> dtos = statisticsDAO.getAllNonconformitiesByCriterion();
         return dtos;
     }
-    
+
     @Transactional
     @Async
     private void deleteExistingNonconformityStatistics() throws EntityRetrievalException {
         nonconformityTypeStatisticsDAO.deleteAllOldNonConformityStatistics();
     }
-    
+
     @Transactional
     @Async
     public void saveCounts(List<NonconformityTypeStatisticsDTO> dtos) {

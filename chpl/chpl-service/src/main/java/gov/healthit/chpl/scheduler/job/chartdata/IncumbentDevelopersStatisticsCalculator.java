@@ -24,15 +24,15 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
  *
  */
 public class IncumbentDevelopersStatisticsCalculator {
-    private static final Logger LOGGER = LogManager.getLogger(IncumbentDevelopersStatisticsCalculator.class);
+    private static final Logger LOGGER = LogManager.getLogger("chartDataCreatorJobLogger");
 
     @Autowired
     private IncumbentDevelopersStatisticsDAO incumbentDevelopersStatisticsDAO;
     @Autowired
     private CertificationEditionDAO certificationEditionDAO;
-    
+
     public IncumbentDevelopersStatisticsCalculator() {
-    	SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
     }
 
     /**

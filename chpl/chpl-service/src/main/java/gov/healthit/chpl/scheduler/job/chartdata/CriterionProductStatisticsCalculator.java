@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
@@ -27,13 +28,15 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
  *
  */
 public class CriterionProductStatisticsCalculator {
-    private static final Logger LOGGER = LogManager.getLogger(CriterionProductStatisticsCalculator.class);
+    private static final Logger LOGGER = LogManager.getLogger("chartDataCreatorJobLogger");
 
+    @Autowired
     private CertificationCriterionDAO certificationCriterionDAO;
+    @Autowired
     private CriterionProductStatisticsDAO criterionProductStatisticsDAO;
-    
+
     public CriterionProductStatisticsCalculator() {
-    	SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
     }
 
     /**
@@ -87,14 +90,15 @@ public class CriterionProductStatisticsCalculator {
      *            count data
      */
     public void save(final Map<String, Long> productCounts) {
-        List<CriterionProductStatisticsEntity> entities = convertProductCountMapToListOfCriterionProductStatistics(productCounts);
+        List<CriterionProductStatisticsEntity> entities =
+        convertProductCountMapToListOfCriterionProductStatistics(productCounts);
         try {
             deleteExistingCriterionProductStatistics();
         } catch (EntityRetrievalException e) {
             LOGGER.error("Error occured while deleting existing CriterionProductStatistics.", e);
             return;
         }
-
+        
         for (CriterionProductStatisticsEntity entity : entities) {
             saveCriterionProductStatistic(entity);
         }

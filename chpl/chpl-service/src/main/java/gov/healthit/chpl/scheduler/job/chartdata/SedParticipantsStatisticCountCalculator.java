@@ -27,13 +27,13 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
  *
  */
 public class SedParticipantsStatisticCountCalculator {
-    private static final Logger LOGGER = LogManager.getLogger(SedParticipantsStatisticCountCalculator.class);
+    private static final Logger LOGGER = LogManager.getLogger("chartDataCreatorJobLogger");
 
     @Autowired
     private SedParticipantStatisticsCountDAO sedParticipantStatisticsCountDAO;
-    
+
     public SedParticipantsStatisticCountCalculator() {
-    	SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
     }
 
     /**

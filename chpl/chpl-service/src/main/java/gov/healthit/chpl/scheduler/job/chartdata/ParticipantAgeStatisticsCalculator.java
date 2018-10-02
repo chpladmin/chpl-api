@@ -28,13 +28,13 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
  *
  */
 public class ParticipantAgeStatisticsCalculator {
-    private static final Logger LOGGER = LogManager.getLogger(ParticipantAgeStatisticsCalculator.class);
+    private static final Logger LOGGER = LogManager.getLogger("chartDataCreatorJobLogger");
 
     @Autowired
     private ParticipantAgeStatisticsDAO participantAgeStatisticsDAO;
-    
+
     public ParticipantAgeStatisticsCalculator() {
-    	SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
     }
 
     /**
