@@ -20,5 +20,6 @@ _Date TBD_
 ### Bugs Fixed
 * Invalid test functionality names are handled properly for 2014 listing uploads.
 * Fix questionable activity report end of the month date rollover.
+* Fix creation of public announcement ignoring 'public' checkbox.
 
 ---
