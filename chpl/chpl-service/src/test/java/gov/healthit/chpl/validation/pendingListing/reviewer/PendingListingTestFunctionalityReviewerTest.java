@@ -47,8 +47,9 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.TestFunctionalityRev
 public class PendingListingTestFunctionalityReviewerTest {
     private static final Long EDITION_2015_ID = 3L;
     private static final Long EDITION_2014_ID = 2L;
-    private static final String INVALID_TEST_FUNC_ERROR =
-            "Criteria 170.314 (a)(6) contains an invalid test functionality 'Bad test functionality name'.";
+    private static final String INVALID_TEST_FUNC_WARNING =
+            "Criteria 170.314 (a)(6) contains an invalid test functionality"
+            + " 'Bad test functionality name'. It has been removed from the pending listing.";
 
     @Spy
     private TestFunctionalityDAO testFunctionalityDAO;
@@ -84,9 +85,9 @@ public class PendingListingTestFunctionalityReviewerTest {
                 ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyString());
 
-        Mockito.doReturn(INVALID_TEST_FUNC_ERROR)
+        Mockito.doReturn(INVALID_TEST_FUNC_WARNING)
         .when(msgUtil).getMessage(
-                ArgumentMatchers.eq("listing.criteria.testFunctionalityNotFound"),
+                ArgumentMatchers.eq("listing.criteria.testFunctionalityNotFoundAndRemoved"),
                 ArgumentMatchers.eq("170.314 (a)(6)"),
                 ArgumentMatchers.eq("Bad test functionality name"));
     }
@@ -215,7 +216,7 @@ public class PendingListingTestFunctionalityReviewerTest {
 
         pendingTfReviewer.review(listing);
 
-        assertTrue(doesInvalidTestFunctionalityErrorMessageExist(listing.getErrorMessages()));
+        assertTrue(doesInvalidTestFunctionalityWarningMessageExist(listing.getWarningMessages()));
     }
 
     private Boolean doesTestFunctionalityPracticeTypeErrorMessageExist(final Set<String> errorMessages) {
@@ -242,9 +243,9 @@ public class PendingListingTestFunctionalityReviewerTest {
         return false;
     }
 
-    private Boolean doesInvalidTestFunctionalityErrorMessageExist(final Set<String> errorMessages) {
-        for (String error : errorMessages) {
-            if (error.equals(INVALID_TEST_FUNC_ERROR)) {
+    private Boolean doesInvalidTestFunctionalityWarningMessageExist(final Set<String> warningMessages) {
+        for (String warning : warningMessages) {
+            if (warning.equals(INVALID_TEST_FUNC_WARNING)) {
                 return true;
             }
         }
