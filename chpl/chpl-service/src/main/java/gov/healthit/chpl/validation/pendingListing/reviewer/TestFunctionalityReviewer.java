@@ -1,6 +1,7 @@
 package gov.healthit.chpl.validation.pendingListing.reviewer;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,34 +43,40 @@ public class TestFunctionalityReviewer implements Reviewer {
         if (listing.getCertificationCriterion() != null) {
             for (PendingCertificationResultDTO cr : listing.getCertificationCriterion()) {
                 if (cr.getTestFunctionality() != null) {
-                    for (PendingCertificationResultTestFunctionalityDTO crtf : cr.getTestFunctionality()) {
-                        listing.getErrorMessages().addAll(
-                                getTestingFunctionalityErrorMessages(crtf, cr, listing));
+                    Iterator<PendingCertificationResultTestFunctionalityDTO> crtfIter =
+                            cr.getTestFunctionality().iterator();
+                    while (crtfIter.hasNext()) {
+                        PendingCertificationResultTestFunctionalityDTO crtf = crtfIter.next();
+                        TestFunctionalityDTO tf = getTestFunctionality(crtf.getNumber());
+                        if (tf == null) {
+                            listing.getWarningMessages().add(
+                                    msgUtil.getMessage("listing.criteria.testFunctionalityNotFoundAndRemoved",
+                                    cr.getNumber(), crtf.getNumber()));
+                            crtfIter.remove();
+                        } else {
+                            listing.getErrorMessages().addAll(
+                                getTestingFunctionalityErrorMessages(tf, crtf, cr, listing));
+                        }
                     }
                 }
             }
         }
     }
 
-    private Set<String> getTestingFunctionalityErrorMessages(final PendingCertificationResultTestFunctionalityDTO crtf,
+    private Set<String> getTestingFunctionalityErrorMessages(final TestFunctionalityDTO tf, 
+            final PendingCertificationResultTestFunctionalityDTO crtf,
             final PendingCertificationResultDTO cr, final PendingCertifiedProductDTO cp) {
 
         Set<String> errors = new HashSet<String>();
-        TestFunctionalityDTO tf = getTestFunctionality(crtf.getNumber());
-        if (tf == null) {
-            errors.add(msgUtil.getMessage("listing.criteria.testFunctionalityNotFound",
-                    cr.getNumber(), crtf.getNumber()));
-        } else {
-            PracticeTypeDTO pt = practiceTypeDAO.getByName(cp.getPracticeType());
+        PracticeTypeDTO pt = practiceTypeDAO.getByName(cp.getPracticeType());
 
-            if (!isTestFunctionalityPracticeTypeValid(pt.getId(), tf)) {
-                errors.add(getTestFunctionalityPracticeTypeErrorMessage(crtf, cr, cp));
-            }
+        if (!isTestFunctionalityPracticeTypeValid(pt.getId(), tf)) {
+            errors.add(getTestFunctionalityPracticeTypeErrorMessage(crtf, cr, cp));
+        }
 
-            String criterionNumber = cr.getNumber();
-            if (!isTestFunctionalityCritierionValid(criterionNumber, tf)) {
-                errors.add(getTestFunctionalityCriterionErrorMessage(crtf, cr, cp));
-            }
+        String criterionNumber = cr.getNumber();
+        if (!isTestFunctionalityCritierionValid(criterionNumber, tf)) {
+            errors.add(getTestFunctionalityCriterionErrorMessage(crtf, cr, cp));
         }
         return errors;
     }
