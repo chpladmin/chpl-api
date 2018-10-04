@@ -13,11 +13,20 @@ import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.SurveillanceRequirement;
 
+/**
+ * Write out surveillance report with values related to time between dates.
+ *
+ */
 public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 
+    /**
+     * Constructor with properties.
+     * @param props the properties
+     */
     public SurveillanceReportCsvPresenter(final Properties props) {
         super(props);
     }
+
     protected List<String> generateHeaderValues() {
         List<String> result = new ArrayList<String>();
         result.add("Developer");
@@ -32,6 +41,7 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
         result.add("Date Surveillance Began");
         result.add("Date Surveillance Ended");
         result.add("Surveillance Type");
+        result.add("Date surveillance last updated");
         result.add("Non-conformity (Y/N)");
         result.add("Non-conformity Criteria");
         result.add("Date of Determination of Non-Conformity");
@@ -46,10 +56,11 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
         result.add("Number of Days from CAP Began to CAP Completed");
         result.add("Number of Days from CAP Began to Present");
         result.add("Difference from CAP Completed and CAP Must Be Completed");
+        result.add("Date non-conformity last updated");
         return result;
     }
 
-    protected List<List<String>> generateMultiRowValue(final CertifiedProductSearchDetails data, 
+    protected List<List<String>> generateMultiRowValue(final CertifiedProductSearchDetails data,
             final Surveillance surv) {
         List<List<String>> result = new ArrayList<List<String>>();
 
@@ -85,7 +96,7 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
         return req.getNonconformities();
     }
 
-    protected List<String> getSurveillanceFields(final CertifiedProductSearchDetails data, 
+    protected List<String> getSurveillanceFields(final CertifiedProductSearchDetails data,
             final Surveillance surv) {
         List<String> survFields = new ArrayList<String>();
         survFields.add(data.getDeveloper().getName());
@@ -129,10 +140,12 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
             survFields.add("");
         }
         survFields.add(surv.getType().getName());
+        survFields.add(dateFormatter.format(LocalDateTime.ofInstant(Instant.ofEpochMilli(
+                surv.getLastModifiedDate().getTime()), ZoneId.systemDefault())));
         return survFields;
     }
 
-    protected List<String> getNoNonconformityFields(final CertifiedProductSearchDetails data, 
+    protected List<String> getNoNonconformityFields(final CertifiedProductSearchDetails data,
             final Surveillance surv) {
         List<String> ncFields = new ArrayList<String>();
         ncFields.add("N");
@@ -149,10 +162,11 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
         ncFields.add("");
         ncFields.add("");
         ncFields.add("");
+        ncFields.add("");
         return ncFields;
     }
 
-    protected List<String> getNonconformityFields(final CertifiedProductSearchDetails data, 
+    protected List<String> getNonconformityFields(final CertifiedProductSearchDetails data,
             final Surveillance surv,
             final SurveillanceNonconformity nc) {
         List<String> ncFields = new ArrayList<String>();
@@ -245,6 +259,8 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
         } else {
             ncFields.add("N/A");
         }
+        ncFields.add(dateFormatter.format(LocalDateTime.ofInstant(Instant.ofEpochMilli(
+                nc.getLastModifiedDate().getTime()), ZoneId.systemDefault())));
         return ncFields;
     }
 }
