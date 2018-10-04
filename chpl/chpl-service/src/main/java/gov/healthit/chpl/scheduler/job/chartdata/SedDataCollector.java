@@ -78,11 +78,8 @@ public class SedDataCollector {
 
         for (CertifiedProductFlatSearchResult certifiedProduct : certifiedProducts) {
             try {
-                if (certifiedProduct.getId() > 9600) {
-                    System.out.println("Creating future for listing id " + certifiedProduct.getId());
                     futures.add(cpsdAsync.getCertifiedProductDetail(certifiedProduct.getId(),
                             certifiedProductDetailsManager));
-                }
             } catch (EntityRetrievalException e) {
                 LOGGER.error("Could not retrieve certified product details for id: " + certifiedProduct.getId(), e);
             }
@@ -92,7 +89,6 @@ public class SedDataCollector {
         for (Future<CertifiedProductSearchDetails> future : futures) {
             try {
                 CertifiedProductSearchDetails currDetails = future.get();
-                System.out.println("Got future for CHPL product number " + currDetails.getChplProductNumber());
                 details.add(future.get());
             } catch (InterruptedException | ExecutionException e) {
                 LOGGER.error("Could not retrieve certified product details for unknown id.", e);

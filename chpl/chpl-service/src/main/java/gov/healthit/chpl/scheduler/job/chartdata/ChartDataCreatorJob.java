@@ -74,11 +74,11 @@ public final class ChartDataCreatorJob extends QuartzJob {
         List<CertifiedProductFlatSearchResult> certifiedProducts = certifiedProductSearchDAO.getAllCertifiedProducts();
         LOGGER.info("Certified Product Count: " + certifiedProducts.size());
 
-        // analyzeSed(certifiedProducts);
+        analyzeSed(certifiedProducts);
         analyzeProducts(certifiedProducts);
-        // analyzeDevelopers(certifiedProducts);
-        // analyzeListingCounts(certifiedProducts);
-        // analyzeNonconformity();
+        analyzeDevelopers(certifiedProducts);
+        analyzeListingCounts(certifiedProducts);
+        analyzeNonconformity();
 
         LOGGER.info("*****Chart Data Generator is done running.*****");
     }
