@@ -2,6 +2,7 @@ package gov.healthit.chpl.validation.pendingListing.reviewer.edition2015;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -583,14 +584,18 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
 
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)
                         && cert.getTestFunctionality() != null && cert.getTestFunctionality().size() > 0) {
-                    for (PendingCertificationResultTestFunctionalityDTO pendingFuncMap : cert.getTestFunctionality()) {
-                        if (pendingFuncMap.getTestFunctionalityId() == null) {
+                    Iterator<PendingCertificationResultTestFunctionalityDTO> crtfIter =
+                            cert.getTestFunctionality().iterator();
+                    while (crtfIter.hasNext()) {
+                        PendingCertificationResultTestFunctionalityDTO crtf = crtfIter.next();
+                        if (crtf.getTestFunctionalityId() == null) {
                             TestFunctionalityDTO foundTestFunc = testFuncDao.getByNumberAndEdition(
-                                    pendingFuncMap.getNumber(), listing.getCertificationEditionId());
+                                    crtf.getNumber(), listing.getCertificationEditionId());
                             if (foundTestFunc == null || foundTestFunc.getId() == null) {
                                 listing.getErrorMessages()
-                                        .add(msgUtil.getMessage("listing.criteria.testFunctionalityNotFound", 
-                                                cert.getNumber(), pendingFuncMap.getNumber()));
+                                        .add(msgUtil.getMessage("listing.criteria.testFunctionalityNotFoundAndRemoved",
+                                                cert.getNumber(), crtf.getNumber()));
+                                crtfIter.remove();
                             }
                         }
                     }
