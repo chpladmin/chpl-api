@@ -592,7 +592,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                             TestFunctionalityDTO foundTestFunc = testFuncDao.getByNumberAndEdition(
                                     crtf.getNumber(), listing.getCertificationEditionId());
                             if (foundTestFunc == null || foundTestFunc.getId() == null) {
-                                listing.getWarningMessages()
+                                listing.getErrorMessages()
                                         .add(msgUtil.getMessage("listing.criteria.testFunctionalityNotFoundAndRemoved",
                                                 cert.getNumber(), crtf.getNumber()));
                                 crtfIter.remove();
