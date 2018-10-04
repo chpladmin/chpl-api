@@ -488,6 +488,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
         surv.setEndDate(entity.getEndDate());
         surv.setRandomizedSitesUsed(entity.getNumRandomizedSites());
         surv.setAuthority(userPermissionDao.findById(entity.getUserPermissionId()).getAuthority());
+        surv.setLastModifiedDate(entity.getLastModifiedDate());
 
         if (entity.getCertifiedProduct() != null) {
             CertifiedProductEntity cpEntity = entity.getCertifiedProduct();
@@ -562,6 +563,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
                         nc.setSitesPassed(ncEntity.getSitesPassed());
                         nc.setSummary(ncEntity.getSummary());
                         nc.setTotalSites(ncEntity.getTotalSites());
+                        nc.setLastModifiedDate(ncEntity.getLastModifiedDate());
                         if (ncEntity.getNonconformityStatus() != null) {
                             SurveillanceNonconformityStatus status = new SurveillanceNonconformityStatus();
                             status.setId(ncEntity.getNonconformityStatus().getId());
@@ -607,10 +609,9 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
                 String errorMsg = "User must have authority " + Authority.ROLE_ADMIN;
                 LOGGER.error(errorMsg);
                 throw new SurveillanceAuthorityAccessDeniedException(errorMsg);
-            }
-            // Cannot have surveillance authority as ACB for user lacking ONC
-            // and ACB roles
-            else if (surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB)) {
+            } else if (surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB)) {
+                // Cannot have surveillance authority as ACB for user lacking ONC
+                // and ACB roles
                 if (!hasOncAdmin && !hasAcbAdmin) {
                     String errorMsg = "User must have ONC or ACB roles for a surveillance authority created by ACB";
                     LOGGER.error(errorMsg);

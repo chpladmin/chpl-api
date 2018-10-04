@@ -172,6 +172,7 @@ public final class TriggerJob {
             System.exit(1);
         }
         try {
+            LOGGER.info("Starting job {} in group {}", jobName, jobGroup);
             StdSchedulerFactory sf = new StdSchedulerFactory();
             sf.initialize("quartz.properties");
             Scheduler scheduler = sf.getScheduler();
