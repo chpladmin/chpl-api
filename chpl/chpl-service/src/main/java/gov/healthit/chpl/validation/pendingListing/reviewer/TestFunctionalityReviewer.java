@@ -49,7 +49,7 @@ public class TestFunctionalityReviewer implements Reviewer {
                         PendingCertificationResultTestFunctionalityDTO crtf = crtfIter.next();
                         TestFunctionalityDTO tf = getTestFunctionality(crtf.getNumber());
                         if (tf == null) {
-                            listing.getWarningMessages().add(
+                            listing.getErrorMessages().add(
                                     msgUtil.getMessage("listing.criteria.testFunctionalityNotFoundAndRemoved",
                                     cr.getNumber(), crtf.getNumber()));
                             crtfIter.remove();
