@@ -6,7 +6,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -19,8 +18,6 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.caching.UnitTestRules;
-import gov.healthit.chpl.dao.CertificationEditionDAO;
-import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.IncumbentDevelopersStatisticsDAO;
 import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
@@ -29,11 +26,13 @@ import gov.healthit.chpl.scheduler.job.chartdata.IncumbentDevelopersStatisticsCa
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
+@TestExecutionListeners({
+        DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
+})
 @DatabaseSetup("classpath:data/testData.xml")
 public class IncumbentDevelopersStatisticsChartDataAppTest extends TestCase {
 
@@ -46,19 +45,8 @@ public class IncumbentDevelopersStatisticsChartDataAppTest extends TestCase {
 
     @Autowired
     private IncumbentDevelopersStatisticsDAO statisticsDAO;
-
-    @Autowired
-    private CertificationEditionDAO certificationEditionDAO;
-
-    @Autowired
-    private CertificationStatusDAO certificationStatusDAO;
-
     @Autowired
     private CertifiedProductSearchDAO certifiedProductSearchDAO;
-
-    @Autowired
-    private JpaTransactionManager txnManager;
-
     @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
@@ -78,14 +66,17 @@ public class IncumbentDevelopersStatisticsChartDataAppTest extends TestCase {
 
         assertNotNull(dtos);
         assertEquals(ENDING_LENGTH, dtos.size());
-        for(IncumbentDevelopersStatisticsDTO dto : dtos) {
-            if(dto.getNewCertificationEditionId().longValue() == 3 && dto.getOldCertificationEditionId().longValue() == 2) {
+        for (IncumbentDevelopersStatisticsDTO dto : dtos) {
+            if (dto.getNewCertificationEditionId().longValue() == 3
+                    && dto.getOldCertificationEditionId().longValue() == 2) {
                 assertEquals(3, dto.getNewCount().longValue());
                 assertEquals(1, dto.getIncumbentCount().longValue());
-            } else if(dto.getNewCertificationEditionId().longValue() == 3 && dto.getOldCertificationEditionId().longValue() == 1) {
+            } else if (dto.getNewCertificationEditionId().longValue() == 3
+                    && dto.getOldCertificationEditionId().longValue() == 1) {
                 assertEquals(2, dto.getNewCount().longValue());
                 assertEquals(2, dto.getIncumbentCount().longValue());
-            } else if(dto.getNewCertificationEditionId().longValue() == 2 && dto.getOldCertificationEditionId().longValue() == 1) {
+            } else if (dto.getNewCertificationEditionId().longValue() == 2
+                    && dto.getOldCertificationEditionId().longValue() == 1) {
                 assertEquals(0, dto.getNewCount().longValue());
                 assertEquals(1, dto.getIncumbentCount().longValue());
             }
