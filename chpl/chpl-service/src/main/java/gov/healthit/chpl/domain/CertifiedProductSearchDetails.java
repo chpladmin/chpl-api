@@ -16,12 +16,8 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import gov.healthit.chpl.dto.CertifiedProductDTO;
-
 /**
  * Certified Product Search Details entity.
- * @author alarned
- *
  */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
