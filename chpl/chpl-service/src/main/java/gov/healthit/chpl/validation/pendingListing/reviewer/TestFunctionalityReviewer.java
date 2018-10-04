@@ -1,12 +1,10 @@
 package gov.healthit.chpl.validation.pendingListing.reviewer;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
@@ -18,9 +16,10 @@ import gov.healthit.chpl.dto.PendingCertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 /**
- * Confirms that the certification date of the listing is not in the future.
+ * Confirms that the test functionality is valid for the criteria that is applying it.
  * @author kekey
  *
  */
@@ -34,30 +33,41 @@ public class TestFunctionalityReviewer implements Reviewer {
     private CertificationCriterionDAO certificationCriterionDAO;
 
     @Autowired
-    private MessageSource messageSource;
+    private ErrorMessageUtil msgUtil;
 
     @Autowired
     private PracticeTypeDAO practiceTypeDAO;
 
     @Override
-    public void review(PendingCertifiedProductDTO listing) {
+    public void review(final PendingCertifiedProductDTO listing) {
         if (listing.getCertificationCriterion() != null) {
             for (PendingCertificationResultDTO cr : listing.getCertificationCriterion()) {
                 if (cr.getTestFunctionality() != null) {
-                    for (PendingCertificationResultTestFunctionalityDTO crtf : cr.getTestFunctionality()) {
-                        listing.getErrorMessages().addAll(
-                                getTestingFunctionalityErrorMessages(crtf, cr, listing));
+                    Iterator<PendingCertificationResultTestFunctionalityDTO> crtfIter =
+                            cr.getTestFunctionality().iterator();
+                    while (crtfIter.hasNext()) {
+                        PendingCertificationResultTestFunctionalityDTO crtf = crtfIter.next();
+                        TestFunctionalityDTO tf = getTestFunctionality(crtf.getNumber());
+                        if (tf == null) {
+                            listing.getErrorMessages().add(
+                                    msgUtil.getMessage("listing.criteria.testFunctionalityNotFoundAndRemoved",
+                                    cr.getNumber(), crtf.getNumber()));
+                            crtfIter.remove();
+                        } else {
+                            listing.getErrorMessages().addAll(
+                                getTestingFunctionalityErrorMessages(tf, crtf, cr, listing));
+                        }
                     }
                 }
             }
         }
     }
-    
-    private Set<String> getTestingFunctionalityErrorMessages(final PendingCertificationResultTestFunctionalityDTO crtf,
+
+    private Set<String> getTestingFunctionalityErrorMessages(final TestFunctionalityDTO tf, 
+            final PendingCertificationResultTestFunctionalityDTO crtf,
             final PendingCertificationResultDTO cr, final PendingCertifiedProductDTO cp) {
 
         Set<String> errors = new HashSet<String>();
-        TestFunctionalityDTO tf = getTestFunctionality(crtf.getNumber());
         PracticeTypeDTO pt = practiceTypeDAO.getByName(cp.getPracticeType());
 
         if (!isTestFunctionalityPracticeTypeValid(pt.getId(), tf)) {
@@ -68,15 +78,14 @@ public class TestFunctionalityReviewer implements Reviewer {
         if (!isTestFunctionalityCritierionValid(criterionNumber, tf)) {
             errors.add(getTestFunctionalityCriterionErrorMessage(crtf, cr, cp));
         }
-
         return errors;
     }
-    
+
     private TestFunctionalityDTO getTestFunctionality(final String number) {
         Long editionId = 2L;
         return testFunctionalityDAO.getByNumberAndEdition(number, editionId);
     }
-    
+
     private Boolean isTestFunctionalityPracticeTypeValid(final Long practiceTypeId,
             final TestFunctionalityDTO tf) {
 
@@ -87,7 +96,7 @@ public class TestFunctionalityReviewer implements Reviewer {
         }
         return true;
     }
-    
+
     private Boolean isTestFunctionalityCritierionValid(final String certificationCriterionName,
             final TestFunctionalityDTO tf) {
 
@@ -100,7 +109,7 @@ public class TestFunctionalityReviewer implements Reviewer {
         }
         return true;
     }
-    
+
     private String getTestFunctionalityPracticeTypeErrorMessage(
             final PendingCertificationResultTestFunctionalityDTO crtf, final PendingCertificationResultDTO cr,
             final PendingCertifiedProductDTO cp) {
@@ -113,18 +122,15 @@ public class TestFunctionalityReviewer implements Reviewer {
                 tf.getPracticeType().getName(),
                 cp.getPracticeType());
     }
-    
+
     private String getTestFunctionalityPracticeTypeErrorMessage(final String criteriaNumber,
             final String testFunctionalityNumber, final String validPracticeTypeName,
             final String currentPracticeTypeName) {
 
-        return String.format(
-                messageSource.getMessage(
-                        new DefaultMessageSourceResolvable("listing.criteria.testFunctionalityPracticeTypeMismatch"),
-                        LocaleContextHolder.getLocale()),
+        return msgUtil.getMessage("listing.criteria.testFunctionalityPracticeTypeMismatch",
                 criteriaNumber, testFunctionalityNumber, validPracticeTypeName, currentPracticeTypeName);
     }
-    
+
     private String getTestFunctionalityCriterionErrorMessage(final PendingCertificationResultTestFunctionalityDTO crtf,
             final PendingCertificationResultDTO cr, final PendingCertifiedProductDTO cp) {
 
@@ -136,14 +142,11 @@ public class TestFunctionalityReviewer implements Reviewer {
                 tf.getCertificationCriterion().getNumber(),
                 cr.getNumber());
     }
-    
+
     private String getTestFunctionalityCriterionErrorMessage(final String criteriaNumber,
             final String testFunctionalityNumber, final String validCriterion, final String currentCriterion) {
 
-        return String.format(
-                messageSource.getMessage(
-                        new DefaultMessageSourceResolvable("listing.criteria.testFunctionalityCriterionMismatch"),
-                        LocaleContextHolder.getLocale()),
+        return msgUtil.getMessage("listing.criteria.testFunctionalityCriterionMismatch",
                 criteriaNumber, testFunctionalityNumber, validCriterion, currentCriterion);
     }
 }
