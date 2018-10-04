@@ -66,8 +66,7 @@ public class ListingCountStatisticsChartDataAppTest extends TestCase {
     @Test
     @Transactional
     public void buildListingCountStatistics() {
-        ListingCountStatisticsCalculator calc = new ListingCountStatisticsCalculator(
-                statisticsDAO, certificationEditionDAO, certificationStatusDAO, txnManager);
+        ListingCountStatisticsCalculator calc = new ListingCountStatisticsCalculator();
         List<ListingCountStatisticsDTO> dtos = statisticsDAO.findAll();
         assertNotNull(dtos);
         assertEquals(STARTING_LENGTH, dtos.size());

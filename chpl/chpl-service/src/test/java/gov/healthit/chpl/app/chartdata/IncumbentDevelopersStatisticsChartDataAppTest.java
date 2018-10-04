@@ -66,8 +66,7 @@ public class IncumbentDevelopersStatisticsChartDataAppTest extends TestCase {
     @Test
     @Transactional
     public void buildIncumbentDeveloperStatistics() {
-        IncumbentDevelopersStatisticsCalculator calc = new IncumbentDevelopersStatisticsCalculator(
-                statisticsDAO, certificationEditionDAO, certificationStatusDAO, txnManager);
+        IncumbentDevelopersStatisticsCalculator calc = new IncumbentDevelopersStatisticsCalculator();
         List<IncumbentDevelopersStatisticsDTO> dtos = statisticsDAO.findAll();
         assertNotNull(dtos);
         assertEquals(STARTING_LENGTH, dtos.size());

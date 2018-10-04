@@ -59,8 +59,7 @@ public class CriterionProductStatisticsChartDataAppTest extends TestCase {
     @Test
     @Transactional
     public void buildListingCountStatistics() {
-        CriterionProductStatisticsCalculator calc = new CriterionProductStatisticsCalculator(
-                statisticsDAO, certificationCriterionDAO, txnManager);
+        CriterionProductStatisticsCalculator calc = new CriterionProductStatisticsCalculator();
 
         List<CertifiedProductFlatSearchResult> allResults = certifiedProductSearchDAO.getAllCertifiedProducts();
         Map<String, Long> results = calc.getCounts(allResults);

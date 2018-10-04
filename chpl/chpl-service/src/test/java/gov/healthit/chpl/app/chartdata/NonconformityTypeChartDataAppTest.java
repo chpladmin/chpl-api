@@ -36,20 +36,10 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 @DatabaseSetup("classpath:data/testData.xml")
 public class NonconformityTypeChartDataAppTest extends TestCase {
 
-    @Autowired
-    private SurveillanceStatisticsDAO statisticsDAO;
-
-    @Autowired
-    private NonconformityTypeStatisticsDAO nonconformStatDAO;
-
-    @Autowired
-    private JpaTransactionManager txnManager;
-
     @Test
     @Transactional
     public void buildNonconformityTypeStatistics() {
-        NonconformityTypeChartCalculator calc = new NonconformityTypeChartCalculator(statisticsDAO, nonconformStatDAO,
-                txnManager);
+        NonconformityTypeChartCalculator calc = new NonconformityTypeChartCalculator();
         List<NonconformityTypeStatisticsDTO> dtos = calc.getCounts();
         assertNotNull(dtos);
         assertEquals(1, dtos.size());
