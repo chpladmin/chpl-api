@@ -116,7 +116,7 @@ public class AnnouncementController {
         } else {
             toCreate.setEndDate(announcementInfo.getEndDate());
         }
-
+        toCreate.setIsPublic(announcementInfo.getIsPublic() != null ? announcementInfo.getIsPublic() : Boolean.FALSE);
         toCreate = announcementManager.create(toCreate);
         return new Announcement(toCreate);
     }
