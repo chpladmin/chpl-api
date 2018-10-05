@@ -4,6 +4,11 @@ _Date TBD_
 
 ### New Features
 * Added "last modified date" for surveillance and non-conformities to download files
+* Modified the Summary Statistics Report email
+  * Re-arranged the order of some headings
+  * Added totals for Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2014 Listings
+  * Added totals for Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2015 Listings
+  * Added active ACBs (when broken out) where the total for the ACB is 0
 
 ### Bugs Fixed
 * Fix creation of public announcement ignoring 'public' checkbox.
