@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertificationEditionDAO;
@@ -116,6 +117,7 @@ public class ListingCountStatisticsCalculator {
      * @param dtos
      *            statistics objects
      */
+    @Transactional
     public void save(final List<ListingCountStatisticsDTO> dtos) {
         try {
             deleteExistingStatistics();

@@ -88,7 +88,6 @@ public class SedDataCollector {
         Date startTime = new Date();
         for (Future<CertifiedProductSearchDetails> future : futures) {
             try {
-                CertifiedProductSearchDetails currDetails = future.get();
                 details.add(future.get());
             } catch (InterruptedException | ExecutionException e) {
                 LOGGER.error("Could not retrieve certified product details for unknown id.", e);

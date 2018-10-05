@@ -69,16 +69,16 @@ public final class ChartDataCreatorJob extends QuartzJob {
     @Override
     @Transactional
     public void execute(JobExecutionContext arg0) throws JobExecutionException {
-        LOGGER.info("*****Chart Data Generator is startin now.*****");
+        LOGGER.info("*****Chart Data Generator is starting now.*****");
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         List<CertifiedProductFlatSearchResult> certifiedProducts = certifiedProductSearchDAO.getAllCertifiedProducts();
         LOGGER.info("Certified Product Count: " + certifiedProducts.size());
 
-        analyzeSed(certifiedProducts);
-        analyzeProducts(certifiedProducts);
-        analyzeDevelopers(certifiedProducts);
+        //analyzeSed(certifiedProducts);
+        //analyzeProducts(certifiedProducts);
+        //analyzeDevelopers(certifiedProducts);
         analyzeListingCounts(certifiedProducts);
-        analyzeNonconformity();
+        //analyzeNonconformity();
 
         LOGGER.info("*****Chart Data Generator is done running.*****");
     }
