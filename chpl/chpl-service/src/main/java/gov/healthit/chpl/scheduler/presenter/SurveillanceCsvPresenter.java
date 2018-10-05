@@ -29,8 +29,9 @@ import gov.healthit.chpl.domain.SurveillanceRequirement;
  */
 public class SurveillanceCsvPresenter {
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceCsvPresenter.class);
-    protected Properties props;
-    protected DateTimeFormatter dateFormatter;
+    private Properties props;
+    private DateTimeFormatter dateFormatter;
+    private DateTimeFormatter dateTimeFormatter;
 
     /**
      * Constructor with properties.
@@ -38,6 +39,7 @@ public class SurveillanceCsvPresenter {
      */
     public SurveillanceCsvPresenter(final Properties props) {
         dateFormatter = DateTimeFormatter.ofPattern("uuuu/MM/dd");
+        dateTimeFormatter = DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm Z");
         this.props = props;
     }
 
@@ -199,7 +201,7 @@ public class SurveillanceCsvPresenter {
         } else {
             result.add("");
         }
-        result.add(dateFormatter.format(LocalDateTime.ofInstant(Instant.ofEpochMilli(
+        result.add(dateTimeFormatter.format(LocalDateTime.ofInstant(Instant.ofEpochMilli(
                 surv.getLastModifiedDate().getTime()), ZoneId.systemDefault())));
         return result;
     }
@@ -302,8 +304,20 @@ public class SurveillanceCsvPresenter {
         } else {
             ncRow.add("");
         }
-        ncRow.add(dateFormatter.format(LocalDateTime.ofInstant(Instant.ofEpochMilli(
+        ncRow.add(dateTimeFormatter.format(LocalDateTime.ofInstant(Instant.ofEpochMilli(
                 nc.getLastModifiedDate().getTime()), ZoneId.systemDefault())));
         return ncRow;
+    }
+
+    public final Properties getProps() {
+        return props;
+    }
+
+    public final DateTimeFormatter getDateFormatter() {
+        return dateFormatter;
+    }
+
+    public final DateTimeFormatter getDateTimeFormatter() {
+        return dateTimeFormatter;
     }
 }
