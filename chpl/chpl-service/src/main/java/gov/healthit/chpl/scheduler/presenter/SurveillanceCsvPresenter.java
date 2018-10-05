@@ -22,21 +22,32 @@ import gov.healthit.chpl.domain.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.SurveillanceRequirement;
 
 /**
- * writes out all surveillance for all products in the system
- * 
+ * Writes out all surveillance for all products in the system.
+ *
  * @author kekey
  *
  */
 public class SurveillanceCsvPresenter {
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceCsvPresenter.class);
-    protected Properties props;
-    protected DateTimeFormatter dateFormatter;
+    private Properties props;
+    private DateTimeFormatter dateFormatter;
+    private DateTimeFormatter dateTimeFormatter;
 
+    /**
+     * Constructor with properties.
+     * @param props the properties
+     */
     public SurveillanceCsvPresenter(final Properties props) {
         dateFormatter = DateTimeFormatter.ofPattern("uuuu/MM/dd");
+        dateTimeFormatter = DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm Z");
         this.props = props;
     }
 
+    /**
+     * Write out surveillance details to CSV file.
+     * @param file the output file
+     * @param cpList list of Certified Products
+     */
     public void presentAsFile(final File file, final List<CertifiedProductSearchDetails> cpList) {
         FileWriter writer = null;
         CSVPrinter csvPrinter = null;
@@ -83,6 +94,7 @@ public class SurveillanceCsvPresenter {
         result.add("SURVEILLANCE_ENDED");
         result.add("SURVEILLANCE_TYPE");
         result.add("RANDOMIZED_SITES_USED");
+        result.add("SURVEILLANCE_LAST_UPDATED_DATE");
         result.add("SURVEILLED_REQUIREMENT_TYPE");
         result.add("SURVEILLED_REQUIREMENT");
         result.add("SURVEILLANCE_RESULT");
@@ -99,10 +111,11 @@ public class SurveillanceCsvPresenter {
         result.add("TOTAL_SITES");
         result.add("DEVELOPER_EXPLANATION");
         result.add("RESOLUTION_DESCRIPTION");
+        result.add("NON_CONFORMITY_LAST_UPDATED_DATE");
         return result;
     }
 
-    protected List<List<String>> generateMultiRowValue(final CertifiedProductSearchDetails data, 
+    protected List<List<String>> generateMultiRowValue(final CertifiedProductSearchDetails data,
             final Surveillance surv) {
         List<List<String>> result = new ArrayList<List<String>>();
 
@@ -157,7 +170,7 @@ public class SurveillanceCsvPresenter {
         return result;
     }
 
-    protected List<String> generateSurveillanceRowValues(final CertifiedProductSearchDetails listing, 
+    protected List<String> generateSurveillanceRowValues(final CertifiedProductSearchDetails listing,
             final Surveillance surv) {
         List<String> result = new ArrayList<String>();
         result.add(listing.getChplProductNumber());
@@ -188,6 +201,8 @@ public class SurveillanceCsvPresenter {
         } else {
             result.add("");
         }
+        result.add(dateTimeFormatter.format(LocalDateTime.ofInstant(Instant.ofEpochMilli(
+                surv.getLastModifiedDate().getTime()), ZoneId.systemDefault())));
         return result;
     }
 
@@ -289,6 +304,20 @@ public class SurveillanceCsvPresenter {
         } else {
             ncRow.add("");
         }
+        ncRow.add(dateTimeFormatter.format(LocalDateTime.ofInstant(Instant.ofEpochMilli(
+                nc.getLastModifiedDate().getTime()), ZoneId.systemDefault())));
         return ncRow;
+    }
+
+    public final Properties getProps() {
+        return props;
+    }
+
+    public final DateTimeFormatter getDateFormatter() {
+        return dateFormatter;
+    }
+
+    public final DateTimeFormatter getDateTimeFormatter() {
+        return dateTimeFormatter;
     }
 }

@@ -48,7 +48,8 @@ public class PendingListingTestFunctionalityReviewerTest {
     private static final Long EDITION_2015_ID = 3L;
     private static final Long EDITION_2014_ID = 2L;
     private static final String INVALID_TEST_FUNC_ERROR =
-            "Criteria 170.314 (a)(6) contains an invalid test functionality 'Bad test functionality name'.";
+            "Criteria 170.314 (a)(6) contains an invalid test functionality"
+            + " 'Bad test functionality name'. It has been removed from the pending listing.";
 
     @Spy
     private TestFunctionalityDAO testFunctionalityDAO;
@@ -86,7 +87,7 @@ public class PendingListingTestFunctionalityReviewerTest {
 
         Mockito.doReturn(INVALID_TEST_FUNC_ERROR)
         .when(msgUtil).getMessage(
-                ArgumentMatchers.eq("listing.criteria.testFunctionalityNotFound"),
+                ArgumentMatchers.eq("listing.criteria.testFunctionalityNotFoundAndRemoved"),
                 ArgumentMatchers.eq("170.314 (a)(6)"),
                 ArgumentMatchers.eq("Bad test functionality name"));
     }

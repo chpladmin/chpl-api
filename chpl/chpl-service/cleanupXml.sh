@@ -8,19 +8,23 @@
 # parse command line inputs
 #   default to 30 days, and not deleting "first of the month" files
 #   missing edition is a fail
+#   missing xml folder location is a fail
 numdays=30
 edition=''
 dflag='false'
+xmlFolder=''
 
-while getopts 'de:n:h?' flag; do
+while getopts 'de:n:f:h?' flag; do
     case "${flag}" in
         d) dflag='true' ;;
         e) edition="${OPTARG}" ;;
         n) numdays="${OPTARG}" ;;
+        f) xmlFolder="${OPTARG}" ;;
         *) printf 'Usage: %s: [-d] [-n numdays]
    -d: delete the first of the month files
    -e: edition of files to remove [2011|2014|2015]
    -n: number of days to keep
+   -f: folder where files are
    -h, -?: print this message\n' $0; exit 0 ;;
     esac
 done
@@ -37,11 +41,10 @@ fi
 expression=".*chpl-$edition-.*"
 
 # find the folder that has the XML files
-if [ ! -f environment.properties ]; then
-    printf "\nError: environment.properties file not found\n\n"
+if [ "$xmlFolder" = "" ]; then
+    printf "\nError: XML folder location is required\n\n"
     exit 1
 fi
-xmlFolder=$(cat environment.properties | grep downloadFolderPath | cut -d '=' -f2)
 
 # execute
 echo "Deleting $edition edition files more than $numdays days old from $xmlFolder";

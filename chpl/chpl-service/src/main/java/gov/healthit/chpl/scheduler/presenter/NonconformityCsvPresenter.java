@@ -17,20 +17,24 @@ import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceRequirement;
 
 /**
- * writes out only surveillance records that resulted in nonconformities
- * 
+ * Writes out only surveillance records that resulted in nonconformities.
+ *
  * @author kekey
  *
  */
 public class NonconformityCsvPresenter extends SurveillanceCsvPresenter {
     private static final Logger LOGGER = LogManager.getLogger(NonconformityCsvPresenter.class);
 
-    public NonconformityCsvPresenter(Properties props) {
+    /**
+     * Constructor with properties.
+     * @param props the properties file
+     */
+    public NonconformityCsvPresenter(final Properties props) {
         super(props);
     }
 
     @Override
-    public void presentAsFile(File file, List<CertifiedProductSearchDetails> cpList) {
+    public void presentAsFile(final File file, final List<CertifiedProductSearchDetails> cpList) {
         FileWriter writer = null;
         CSVPrinter csvPrinter = null;
         try {
