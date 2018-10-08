@@ -89,7 +89,7 @@
                 <job-name>downloadFileJob2015</job-name>
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 30 4 * * ?</cron-expression> <!-- At 0430 UTC every day -->
+                <cron-expression>0 21 13 * * ?</cron-expression> <!-- At 0430 UTC every day -->
             </cron>
         </trigger>
 

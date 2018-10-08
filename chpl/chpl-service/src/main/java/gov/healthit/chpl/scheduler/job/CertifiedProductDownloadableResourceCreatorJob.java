@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Future;
 
 import org.apache.logging.log4j.LogManager;
@@ -53,8 +52,24 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         LOGGER.info("********* Starting the Certified Product Downloadable Resource Creator job for " + edition + ". *********");
         try {
             List<CertifiedProductDetailsDTO> listings = getRelevantListings();
-
+            
             List<Future<CertifiedProductSearchDetails>> futures = getCertifiedProductSearchDetailsFutures(listings);
+            
+            File downloadFolder = getDownloadFolder();
+            String xmlFilename = getFileName(downloadFolder.getAbsolutePath(),
+                    getTimestampFormat().format(new Date()), "xml");
+            File xmlFile = getFile(xmlFilename);
+            CertifiedProductXmlPresenter xmlPresenter = new CertifiedProductXmlPresenter();
+            xmlPresenter.open(xmlFile);
+            
+            for (Future<CertifiedProductSearchDetails> future : futures) {
+                CertifiedProductSearchDetails cp = future.get();
+                xmlPresenter.add(cp);
+            }
+            
+            xmlPresenter.close();
+            
+            /*
             Map<Long, CertifiedProductSearchDetails> cpMap = getMapFromFutures(futures);
 
             CertifiedProductDownloadResponse results = new CertifiedProductDownloadResponse();
@@ -64,6 +79,7 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
 
             File downloadFolder = getDownloadFolder();
             writeToFile(downloadFolder, results);
+            */
         } catch (Exception e) {
             LOGGER.error(e);
         }
