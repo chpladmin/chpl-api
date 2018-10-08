@@ -263,9 +263,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                     if (certCriteria.getNumber().equals(UCD_RELATED_CERTS[i])) {
                         // make sure at least one UCD process has this criteria
                         // number
-                        if (certCriteria.getNumber().equals("170.315 (b)(3)")) {
-                            System.out.println("");
-                        }
                         if (certCriteria.isSed()) {
                             if (listing.getSed() == null || listing.getSed().getUcdProcesses() == null
                                     || listing.getSed().getUcdProcesses().size() == 0) {
