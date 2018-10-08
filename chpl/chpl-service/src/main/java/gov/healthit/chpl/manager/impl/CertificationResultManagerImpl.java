@@ -1360,6 +1360,11 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             Long certificationResultId) {
         return certResultDAO.getAdditionalSoftwareForCertificationResult(certificationResultId);
     }
+    
+    @Override
+    public boolean getCertifiedProductHasAdditionalSoftware(Long certifiedProductId) {
+        return certResultDAO.getCertifiedProductHasAdditionalSoftware(certifiedProductId);
+    }
 
     @Override
     public List<CertificationResultUcdProcessDTO> getUcdProcessesForCertificationResult(Long certificationResultId) {

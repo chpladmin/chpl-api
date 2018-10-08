@@ -19,20 +19,20 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.healthit.chpl.auth.SendMailUtil;
+import gov.healthit.chpl.auth.EmailBuilder;
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyAltTestStatistics;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 import gov.healthit.chpl.domain.statistics.Statistics;
 import gov.healthit.chpl.entity.SummaryStatisticsEntity;
-import gov.healthit.chpl.scheduler.JobConfig;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 
 /**
@@ -42,56 +42,64 @@ import gov.healthit.chpl.scheduler.job.QuartzJob;
  *
  */
 public class SummaryStatisticsEmailJob extends QuartzJob {
-    private static final Logger LOGGER = LogManager.getLogger(SummaryStatisticsEmailJob.class);
+    private static final Logger LOGGER = LogManager.getLogger("summaryStatisticsEmailJobLogger");
     private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
+
+    @Autowired
     private SummaryStatisticsDAO summaryStatisticsDAO;
+
+    @Autowired
+    private Environment env;
+    
     private Properties props;
-    private AbstractApplicationContext context;
 
     /**
      * Constructor that initializes the SummaryStatisticsEmailJob object.
      * @throws Exception if thrown
      */
-    public SummaryStatisticsEmailJob() throws Exception{
+    public SummaryStatisticsEmailJob() throws Exception {
         super();
-        setLocalContext();
-        context = new AnnotationConfigApplicationContext(JobConfig.class);
-        initiateSpringBeans(context);
         loadProperties();
     }
 
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         try {
+            SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+            LOGGER.info("********* Starting the Summary Statistics Email job. *********");
+            LOGGER.info("Sending email to: " + jobContext.getMergedJobDataMap().getString("email"));
+
             SummaryStatisticsEntity summaryStatistics = summaryStatisticsDAO.getMostRecent();
             Statistics stats = getStatistics(summaryStatistics);
             String message = createHtmlMessage(stats, summaryStatistics.getEndDate());
-            LOGGER.info(message);
+            LOGGER.info("Message to be sent: " + message);
             sendEmail(message, jobContext.getMergedJobDataMap().getString("email"));
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error(e);
         } finally {
-            context.close();
+            LOGGER.info("********* Completed the Summary Statistics Email job. *********");
         }
     }
 
-    @Override
-    protected void initiateSpringBeans(final AbstractApplicationContext context) throws IOException {
-        setSummaryStatisticsDAO((SummaryStatisticsDAO) context.getBean("summaryStatisticsDAO"));
-
-    }
 
     private void sendEmail(final String message, final String address) throws AddressException, MessagingException {
-        SendMailUtil mailUtil = new SendMailUtil();
         String subject = props.getProperty("summaryEmailSubject").toString();
-        mailUtil.sendEmail(address, subject, message, getSummaryStatisticsFile(), props);
+
+        List<String> addresses = new ArrayList<String>();
+        addresses.add(address);
+
+        EmailBuilder emailBuilder = new EmailBuilder(env);
+        emailBuilder.recipients(addresses)
+                        .subject(subject)
+                        .htmlMessage(message)
+                        .fileAttachments(getSummaryStatisticsFile())
+                        .sendEmail();
     }
 
-    
     private List<File> getSummaryStatisticsFile() {
         List<File> files = new ArrayList<File>();
-        File file = new File( 
+        File file = new File(
                         props.getProperty("downloadFolderPath") + File.separator
                         + props.getProperty("summaryEmailName", "summaryStatistics.csv"));
         files.add(file);
@@ -116,10 +124,32 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
                 "<h4>Total # of Surveillance Activities -  " + stats.getTotalSurveillanceActivities() + "</h4>");
         emailMessage.append(
                 "<ul><li>Open Surveillance Activities - " + stats.getTotalOpenSurveillanceActivities() + "</li>");
+
+        emailMessage.append("<ul>");
+        for (CertifiedBodyStatistics stat : stats.getTotalOpenSurveillanceActivitiesByAcb()) {
+            emailMessage.append("<li>Certified by ");
+            emailMessage.append(stat.getName());
+            emailMessage.append(" - ");
+            emailMessage.append(stat.getTotalListings().toString());
+            emailMessage.append("</li>");
+        }
+        emailMessage.append("</ul>");
+
         emailMessage.append(
                 "<li>Closed Surveillance Activities - " + stats.getTotalClosedSurveillanceActivities() + "</li></ul>");
         emailMessage.append("<h4>Total # of NCs -  " + stats.getTotalNonConformities() + "</h4>");
         emailMessage.append("<ul><li>Open NCs - " + stats.getTotalOpenNonconformities() + "</li>");
+
+        emailMessage.append("<ul>");
+        for (CertifiedBodyStatistics stat : stats.getTotalOpenNonconformitiesByAcb()) {
+            emailMessage.append("<li>Certified by ");
+            emailMessage.append(stat.getName());
+            emailMessage.append(" - ");
+            emailMessage.append(stat.getTotalListings().toString());
+            emailMessage.append("</li>");
+        }
+        emailMessage.append("</ul>");
+
         emailMessage.append("<li>Closed NCs - " + stats.getTotalClosedNonconformities() + "</li></ul>");
         return emailMessage.toString();
     }

@@ -46,8 +46,8 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.manager.TestingFunctionalityManager;
 import gov.healthit.chpl.util.CertificationResultRules;
-import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidator;
-import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFactory;
+import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
+import gov.healthit.chpl.validation.listing.PendingValidator;
 
 @Service
 public class PendingCertifiedProductManagerImpl implements PendingCertifiedProductManager {
@@ -56,7 +56,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
     @Autowired
     private CertificationResultRules certRules;
     @Autowired
-    private CertifiedProductValidatorFactory validatorFactory;
+    private ListingValidatorFactory validatorFactory;
 
     @Autowired
     private PendingCertifiedProductDAO pcpDao;
@@ -83,7 +83,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
     @Override
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB')")
-    public PendingCertifiedProductDetails getById(final List<CertificationBodyDTO> userAcbs, 
+    public PendingCertifiedProductDetails getById(final List<CertificationBodyDTO> userAcbs,
             final Long id) throws EntityRetrievalException, AccessDeniedException {
             return getById(userAcbs, id, false);
     }
@@ -91,7 +91,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
     @Override
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB')")
-    public PendingCertifiedProductDetails getById(final List<CertificationBodyDTO> userAcbs, 
+    public PendingCertifiedProductDetails getById(final List<CertificationBodyDTO> userAcbs,
             final Long id, final boolean includeDeleted)
             throws EntityRetrievalException, AccessDeniedException {
 
@@ -148,10 +148,19 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
             pcpDao.delete(existingId);
         }
 
-        // insert the record
-        PendingCertifiedProductDTO pendingCpDto = pcpDao.create(toCreate);
-        updateCertResults(pendingCpDto);
-        validate(pendingCpDto);
+        PendingCertifiedProductDTO pendingCpDto = null;
+        try {
+            // insert the record
+            pendingCpDto = pcpDao.create(toCreate);
+            updateCertResults(pendingCpDto);
+            validate(pendingCpDto);
+        } catch(Exception ex) {
+            //something unexpected happened on upload
+            //make sure the user gets an appropriate error message
+            EntityCreationException toThrow = new EntityCreationException("An unexpected error occurred. Please review the information in your upload file. The CHPL team has been notified.");
+            toThrow.setStackTrace(ex.getStackTrace());
+            throw toThrow;
+        }
 
         String activityMsg = "Certified product " + pendingCpDto.getProductName() + " is pending.";
         activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCpDto.getId(),
@@ -238,8 +247,8 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
                 UserDTO lastModifiedUser = userDAO.getById(pendingCp.getLastModifiedUser());
                 if (lastModifiedUser != null) {
                     Contact contact = new Contact();
-                    contact.setFirstName(lastModifiedUser.getFirstName());
-                    contact.setLastName(lastModifiedUser.getLastName());
+                    contact.setFullName(lastModifiedUser.getFullName());
+                    contact.setFriendlyName(lastModifiedUser.getFriendlyName());
                     contact.setEmail(lastModifiedUser.getEmail());
                     contact.setPhoneNumber(lastModifiedUser.getPhoneNumber());
                     contact.setTitle(lastModifiedUser.getTitle());
@@ -356,7 +365,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 
     private void validate(final List<PendingCertifiedProductDTO> products) {
         for (PendingCertifiedProductDTO dto : products) {
-            CertifiedProductValidator validator = validatorFactory.getValidator(dto);
+            PendingValidator validator = validatorFactory.getValidator(dto);
             if (validator != null) {
                 validator.validate(dto);
             }
@@ -365,7 +374,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 
     private void validate(final PendingCertifiedProductDTO... products) {
         for (PendingCertifiedProductDTO dto : products) {
-            CertifiedProductValidator validator = validatorFactory.getValidator(dto);
+            PendingValidator validator = validatorFactory.getValidator(dto);
             if (validator != null) {
                 validator.validate(dto);
             }
@@ -424,7 +433,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
                 if (pcpDetails.getPracticeType().get("id") != null) {
                     practiceTypeId = Long.valueOf(pcpDetails.getPracticeType().get("id").toString());
                 }
-            }  
+            }
             String criteriaNumber =  cert.getNumber();
             cert.setAllowedTestFunctionalities(
                     testFunctionalityManager.getTestFunctionalities(criteriaNumber, edition, practiceTypeId));

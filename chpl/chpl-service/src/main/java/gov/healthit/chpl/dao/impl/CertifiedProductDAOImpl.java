@@ -279,7 +279,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
     public List<CertifiedProductDetailsDTO> findWithInheritance() {
 
         List<CertifiedProductDetailsEntity> entities = entityManager.createQuery(
-                "SELECT DISTINCT cp " + "FROM CertifiedProductDetailsEntity cp " + "WHERE (icsCode > 0 OR ics = true)",
+                "SELECT DISTINCT cp " + "FROM CertifiedProductDetailsEntity cp " + "WHERE (icsCode != '0' OR ics = true)",
                 CertifiedProductDetailsEntity.class).getResultList();
 
         List<CertifiedProductDetailsDTO> products = new ArrayList<>();

@@ -25,6 +25,8 @@ public interface CertificationResultManager {
     List<CertificationResultAdditionalSoftwareDTO> getAdditionalSoftwareMappingsForCertificationResult(
             Long certificationResultId);
 
+    boolean getCertifiedProductHasAdditionalSoftware(Long certifiedProductId);
+
     List<CertificationResultUcdProcessDTO> getUcdProcessesForCertificationResult(Long certificationResultId);
 
     List<CertificationResultTestStandardDTO> getTestStandardsForCertificationResult(Long certificationResultId);

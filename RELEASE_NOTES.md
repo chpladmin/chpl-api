@@ -1,5 +1,84 @@
 # Release Notes
 
+## Version 17.0.0
+_8 October 2018_
+
+### Major Change
+* When retrieving Pending Surveillances, the listing details will no longer be populated
+
+### New Features
+* Move surveillance download file generation into quartz job to allow for better job management.
+* Move SED G3 download file generation into quartz job for allow for better job management.
+* Added scheduled job to send warning to users who have not used thier API key in the last X days
+* Added scheduled job to delete api keys that have not been used in X days
+* Added LastUsedDate and DeleteWarningSentDate to the ./key endpoint return value(s)
+* Add password strength checker implementing [a java fork](https://github.com/nulab/zxcvbn4j) of [zxcvbn](https://github.com/dropbox/zxcvbn) when anyone:
+  * creates a new User
+  * updates a password
+* Add Developer Status to search results view
+* Catch any unexpected error that occurs during a listing upload. Allow the error to be emailed to CHPL team if desired.
+
+### Bugs Fixed
+* Invalid test functionality names are removed and an error is given to the user for 2014 and 2015 uploads.
+* Fix questionable activity report end of the month date rollover.
+
+---
+
+## Version 16.4.0
+_24 September 2018_
+
+### New Features
+* Validate URLs on upload / confirm / edit
+  * Transparency Attestation
+  * SED Report File
+  * Other report file
+  * API Documentation (at criteria level)
+  * Developer website
+* Add info messages for 2014 cms id widget
+* Add info messages for 2014/2015 id widget
+* Move questionable activity email code into quartz job to allow user scheduling.
+
+---
+
+## Version 16.3.0
+_10 September 2018_
+
+### New Features
+* Add required reason business logic for developer bans.
+* Add API throttling
+* Moved the Quartz scheduler to run in the Tomcat context
+* Each Quartz job writes to a separate log file
+* Add Open Surveillance Activities by ACB in the Statistics Report
+* Add Open Nonconformities by ACB in the Statistics Report
+* Return info messages for CMS ID missing criteria
+
+### Bugs Fixed
+* Extra test data/test procedure/test functionality/etc. no longer appears after attesting to a criteria with previously entered phantom data.
+* Fixed the "basic" certified product service to return the correct additional software code in the CHPL Product Number	
+* Fixed XML generation process to properly output `<tasks></tasks>` tag - was previously outputing as `<></>`.
+* Use "full name" and "friendly name" for users/contacts
+* Fix reason required error to show again for certain listing updates.
+* Fix possibility of multiple developer status edits happening at the same time.
+
+---
+
+## Version 16.2.0
+_27 August 2018_
+
+### New Features
+* Migrate "ICS errors report" to Quartz
+  * Added new Quartz job to gather and store ICS error data
+  * Added new user schedulable job that sends the Summary Statistics Email
+  * Updated manager to support ACB specific Jobs
+* Migrate "Broken Surveillance Rules" report to Quartz
+  * Added new Quart job to gather and store surveillance error data
+  * Added new user schedulable job to send the error email
+
+### Bug Fixes
+* Fix 2015 listing XML file creation process
+
+---
+
 ## Version 16.1.0
 _16 August 2018_
 

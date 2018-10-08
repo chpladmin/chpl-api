@@ -5,16 +5,48 @@
     xsi:schemaLocation="http://www.quartz-scheduler.org/xml/JobSchedulingData http://www.quartz-scheduler.org/xml/job_scheduling_data_2_0.xsd"
     version="2.0">
     <pre-processing-commands>
-        <delete-job>
-            <name>cacheStatusAgeJob</name>
-            <group>chplJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>triggerDeveloperBan</name>
-            <group>chplJobs</group>
-        </delete-job>
+        <delete-triggers-in-group>triggerJob</delete-triggers-in-group>
     </pre-processing-commands>
     <schedule>
+        <!-- API Key Delete Warning Job -->
+        <job>
+            <name>apiKeyDeleteWarningEmailJob</name>
+            <group>systemJobs</group>
+            <description>Send email to API key holders, where the API key hasn't been used in X days</description>
+            <job-class>gov.healthit.chpl.scheduler.job.ApiKeyWarningEmailJob</job-class>
+            <durability>true</durability>
+            <recover>true</recover>
+        </job>
+        <trigger>
+            <cron>
+                <name>apiKeyDeleteWarningEmail</name>
+                <group>apiKeyDeleteWarningEmailTrigger</group>
+                <job-name>apiKeyDeleteWarningEmailJob</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
+                <cron-expression>0 55 10 1/1 * ? *</cron-expression> <!-- At 0445 UTC on the first Saturday of the quarter -->
+            </cron>
+        </trigger>
+        <!-- API Key Delete Job -->
+        <job>
+            <name>apiKeyDeleteJob</name>
+            <group>systemJobs</group>
+            <description>Send email to API key holders where a warning email has been sent, after x days of inactivity, and delete the key</description>
+            <job-class>gov.healthit.chpl.scheduler.job.ApiKeyDeleteJob</job-class>
+            <durability>true</durability>
+            <recover>true</recover>
+        </job>
+        <trigger>
+            <cron>
+                <name>apiKeyDeleteEmail</name>
+                <group>apiKeyDeleteTrigger</group>
+                <job-name>apiKeyDeleteJob</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
+                <cron-expression>0 35 10 1/1 * ? *</cron-expression> <!-- At 0445 UTC on the first Saturday of the quarter -->
+            </cron>
+        </trigger>
+        
         <!-- Cache status age notification -->
         <job>
             <name>Cache Status Age</name>
@@ -111,6 +143,46 @@
             </cron>
         </trigger>
 
+        <!-- Daily G3/SED details generator -->
+        <job>
+            <name>g3Sed2015DownloadFileJob</name>
+            <group>systemJobs</group>
+            <description>Generate SED download files for 2015 listings with G3.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.G3Sed2015DownloadableResourceCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+        <trigger>
+            <cron>
+                <name>g3Sed2015DownloadFileJob</name>
+                <group>downloadFileTrigger</group>
+                <job-name>g3Sed2015DownloadFileJob</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 50 4 * * ?</cron-expression> <!-- At 0450 UTC every day -->
+            </cron>
+        </trigger>
+
+        <!-- Daily surveillance downloads generator -->
+        <job>
+            <name>surveillanceDownloadFileJob</name>
+            <group>systemJobs</group>
+            <description>Generate Surveillance download files.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.SurveillanceDownloadableResourceCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+        <trigger>
+            <cron>
+                <name>surveillanceDownloadFileJob</name>
+                <group>downloadFileTrigger</group>
+                <job-name>surveillanceDownloadFileJob</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 55 4 * * ?</cron-expression> <!-- At 0455 UTC every day -->
+            </cron>
+        </trigger>
+
         <!-- Summary statistics generator -->
         <job>
             <name>summaryStatisticsCreator</name>
@@ -181,5 +253,204 @@
             </job-data-map>
         </job>
 
+        <!-- Inheritance Report data creator -->
+        <job>
+            <name>inheritanceErrorsReportCreator</name>
+            <group>systemJobs</group>
+            <description>Generates the inheritance errors data</description>
+            <job-class>gov.healthit.chpl.scheduler.job.InheritanceErrorsReportCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+        <trigger>
+            <cron>
+                <name>generateInheritanceErrorsReport</name>
+                <group>inheritanceErrorsReportTrigger</group>
+                <job-name>inheritanceErrorsReportCreator</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 30 2 * * ?</cron-expression> <!-- At 0230 UTC every day -->
+            </cron>
+        </trigger>
+
+        <!-- Inheritance Report data emailer -->
+        <job>
+            <name>ONC Inherited Certification Status Errors Report</name>
+            <group>chplJobs</group>
+            <description>Sends an error report for all Listings breaking ICS rules</description>
+            <job-class>gov.healthit.chpl.scheduler.job.InheritanceErrorsReportEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN</value>
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>DAILY</value>
+                </entry>
+            </job-data-map>
+        </job>
+        <job>
+            <name>ONC-ACB Inherited Certification Status Errors Report</name>
+            <group>chplJobs</group>
+            <description>Sends an error report for all Listings breaking ICS rules, by specific ACB</description>
+            <job-class>gov.healthit.chpl.scheduler.job.InheritanceErrorsReportEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ACB</value>
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>DAILY</value>
+                </entry>
+                <entry>
+                    <key>acbSpecific</key>
+                    <value>true</value>
+                </entry>
+            </job-data-map>
+        </job>
+
+        <!-- Broken Surveillance Rules data creator -->
+        <job>
+            <name>brokenSurveillanceRulesCreator</name>
+            <group>systemJobs</group>
+            <description>Generates the data for the broken surveillance rules report</description>
+            <job-class>gov.healthit.chpl.scheduler.job.BrokenSurveillanceRulesCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+        <trigger>
+            <cron>
+                <name>generateBrokenSurveillanceRules</name>
+                <group>brokenSurveillanceRulesTrigger</group>
+                <job-name>brokenSurveillanceRulesCreator</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 45 1 * * ?</cron-expression> <!-- At 0145 UTC every day -->
+            </cron>
+        </trigger>
+
+        <!-- Broken Surveillance Rules data emailer -->
+        <job>
+            <name>ONC All Broken Surveillance Rules Report</name>
+            <group>chplJobs</group>
+            <description>Sends an error report for all Listings breaking Surveillance rules</description>
+            <job-class>gov.healthit.chpl.scheduler.job.BrokenSurveillanceRulesEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN</value>
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>DAILY</value>
+                </entry>
+                <entry>
+                    <key>type</key>
+                    <value>All</value>
+                </entry>
+            </job-data-map>
+        </job>
+        <job>
+            <name>ONC-ACB All Broken Surveillance Rules Report</name>
+            <group>chplJobs</group>
+            <description>Sends an error report for all Listings breaking Surveillance rules, by specific ACB</description>
+            <job-class>gov.healthit.chpl.scheduler.job.BrokenSurveillanceRulesEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ACB</value>
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>DAILY</value>
+                </entry>
+                <entry>
+                    <key>acbSpecific</key>
+                    <value>true</value>
+                </entry>
+                <entry>
+                    <key>type</key>
+                    <value>All</value>
+                </entry>
+            </job-data-map>
+        </job>
+        <job>
+            <name>ONC Overnight Broken Surveillance Rules Report</name>
+            <group>chplJobs</group>
+            <description>Sends an error report for all Listings breaking Surveillance rules within the last day</description>
+            <job-class>gov.healthit.chpl.scheduler.job.BrokenSurveillanceRulesEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN</value>
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>DAILY</value>
+                </entry>
+                <entry>
+                    <key>type</key>
+                    <value>Overnight</value>
+                </entry>
+            </job-data-map>
+        </job>
+        <job>
+            <name>ONC-ACB Overnight Broken Surveillance Rules Report</name>
+            <group>chplJobs</group>
+            <description>Sends an error report for all Listings breaking Surveillance rules within the last day, by specific ACB</description>
+            <job-class>gov.healthit.chpl.scheduler.job.BrokenSurveillanceRulesEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ACB</value>
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>DAILY</value>
+                </entry>
+                <entry>
+                    <key>acbSpecific</key>
+                    <value>true</value>
+                </entry>
+                <entry>
+                    <key>type</key>
+                    <value>Overnight</value>
+                </entry>
+            </job-data-map>
+        </job>
+
+        <!-- Questionable Activity data emailer -->
+        <job>
+            <name>Questionable Activity Report</name>
+            <group>chplJobs</group>
+            <description>Sends a report of questionable activity within the last week</description>
+            <job-class>gov.healthit.chpl.scheduler.job.QuestionableActivityEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN</value>
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>WEEKLY</value>
+                </entry>
+            </job-data-map>
+        </job>
     </schedule>
 </job-scheduling-data>

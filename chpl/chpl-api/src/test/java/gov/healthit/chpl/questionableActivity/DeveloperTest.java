@@ -1,6 +1,5 @@
 package gov.healthit.chpl.questionableActivity;
 
-
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -38,10 +37,9 @@ import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityDeveloperD
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.manager.DeveloperManager;
 import junit.framework.TestCase;
-
-
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
@@ -51,60 +49,62 @@ import junit.framework.TestCase;
     DbUnitTestExecutionListener.class })
 @DatabaseSetup("classpath:data/testData.xml")
 public class DeveloperTest extends TestCase {
-	
-	@Autowired private QuestionableActivityDAO qaDao;	
-	@Autowired private DeveloperManager devManager;
-	private static JWTAuthenticatedUser adminUser;
-	
-	@Rule
+
+    @Autowired private QuestionableActivityDAO qaDao;
+    @Autowired private DeveloperManager devManager;
+    private static JWTAuthenticatedUser adminUser;
+
+    @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
-	
-	
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-		adminUser = new JWTAuthenticatedUser();
-		adminUser.setFirstName("Administrator");
-		adminUser.setId(-2L);
-		adminUser.setLastName("Administrator");
-		adminUser.setSubjectName("admin");
-		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
-	}
-	
-	@Test
-	@Transactional
-	@Rollback
-	public void testUpdateName() throws 
-	    EntityCreationException, EntityRetrievalException, JsonProcessingException {
-	    SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-	    Date beforeActivity = new Date(); 
-	    DeveloperDTO developer = devManager.getById(-1L);
-	    developer.setName("NEW DEVELOPER NAME");
-	    devManager.update(developer);
-		Date afterActivity = new Date();
-		
-		List<QuestionableActivityDeveloperDTO> activities = 
-		        qaDao.findDeveloperActivityBetweenDates(beforeActivity, afterActivity);
-		assertNotNull(activities);
-		assertEquals(1, activities.size());
-		QuestionableActivityDeveloperDTO activity = activities.get(0);
-		assertEquals(-1, activity.getDeveloperId().longValue());
-		assertEquals("Test Developer 1", activity.getBefore());
-		assertEquals("NEW DEVELOPER NAME", activity.getAfter());
-		assertEquals(QuestionableActivityTriggerConcept.DEVELOPER_NAME_EDITED.getName(), activity.getTrigger().getName());
-		
-		SecurityContextHolder.getContext().setAuthentication(null);
-	}
-	
-	@Test
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        adminUser = new JWTAuthenticatedUser();
+        adminUser.setFullName("Administrator");
+        adminUser.setId(-2L);
+        adminUser.setFriendlyName("Administrator");
+        adminUser.setSubjectName("admin");
+        adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+    }
+
+    @Test
     @Transactional
     @Rollback
-	public void testUpdateCurrentStatus() throws 
-        EntityCreationException, EntityRetrievalException, JsonProcessingException {
+    public void testUpdateName() throws
+    EntityCreationException, EntityRetrievalException,
+    JsonProcessingException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-    
-        Date beforeActivity = new Date();      
+
+        Date beforeActivity = new Date();
+        DeveloperDTO developer = devManager.getById(-1L);
+        developer.setName("NEW DEVELOPER NAME");
+        devManager.update(developer);
+        Date afterActivity = new Date();
+
+        List<QuestionableActivityDeveloperDTO> activities =
+                qaDao.findDeveloperActivityBetweenDates(beforeActivity, afterActivity);
+        assertNotNull(activities);
+        assertEquals(1, activities.size());
+        QuestionableActivityDeveloperDTO activity = activities.get(0);
+        assertEquals(-1, activity.getDeveloperId().longValue());
+        assertEquals("Test Developer 1", activity.getBefore());
+        assertEquals("NEW DEVELOPER NAME", activity.getAfter());
+        assertEquals(QuestionableActivityTriggerConcept.DEVELOPER_NAME_EDITED.getName(),
+                activity.getTrigger().getName());
+
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void testUpdateCurrentStatus() throws
+    EntityCreationException, EntityRetrievalException,
+    JsonProcessingException, MissingReasonException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+        Date beforeActivity = new Date();
         DeveloperDTO developer = devManager.getById(-1L);
         DeveloperStatusEventDTO newCurrStatus = new DeveloperStatusEventDTO();
         newCurrStatus.setDeveloperId(developer.getId());
@@ -117,20 +117,20 @@ public class DeveloperTest extends TestCase {
         developer.getStatusEvents().add(newCurrStatus);
         devManager.update(developer);
         Date afterActivity = new Date();
-        
-        List<QuestionableActivityDeveloperDTO> activities = 
+
+        List<QuestionableActivityDeveloperDTO> activities =
                 qaDao.findDeveloperActivityBetweenDates(beforeActivity, afterActivity);
         assertNotNull(activities);
         assertEquals(2, activities.size());
         int numFound = 0;
-        for(QuestionableActivityDeveloperDTO activity : activities) {
-            if(activity.getTrigger().getName().equals(
+        for (QuestionableActivityDeveloperDTO activity : activities) {
+            if (activity.getTrigger().getName().equals(
                     QuestionableActivityTriggerConcept.DEVELOPER_STATUS_EDITED.getName())) {
                 numFound++;
                 assertEquals(-1, activity.getDeveloperId().longValue());
                 assertEquals(DeveloperStatusType.Active.toString(), activity.getBefore());
                 assertEquals(DeveloperStatusType.SuspendedByOnc.toString(), activity.getAfter());
-            } else if(activity.getTrigger().getName().equals(
+            } else if (activity.getTrigger().getName().equals(
                     QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_ADDED.getName())) {
                 numFound++;
                 assertEquals(-1, activity.getDeveloperId().longValue());
@@ -141,48 +141,49 @@ public class DeveloperTest extends TestCase {
         assertEquals(2, numFound);
         SecurityContextHolder.getContext().setAuthentication(null);
     }
-	
-	   @Test
-	    @Transactional
-	    @Rollback
-	    public void testRemoveStatusHistory() throws 
-	        EntityCreationException, EntityRetrievalException, JsonProcessingException {
-	        SecurityContextHolder.getContext().setAuthentication(adminUser);
-	    
-	        Date beforeActivity = new Date();      
-	        DeveloperDTO developer = devManager.getById(-3L);
-	        Iterator<DeveloperStatusEventDTO> iter = developer.getStatusEvents().iterator();
-	        while(iter.hasNext()) {
-	            DeveloperStatusEventDTO status = iter.next();
-	            if(status.getStatus().getStatusName().equals(
-	                    DeveloperStatusType.SuspendedByOnc.toString())) {
-	                iter.remove();
-	            }
-	        }
-	        devManager.update(developer);
-	        Date afterActivity = new Date();
-	        
-	        List<QuestionableActivityDeveloperDTO> activities = 
-	                qaDao.findDeveloperActivityBetweenDates(beforeActivity, afterActivity);
-	        assertNotNull(activities);
-	        assertEquals(2, activities.size());
-	        int numFound = 0;
-	        for(QuestionableActivityDeveloperDTO activity : activities) {
-	            if(activity.getTrigger().getName().equals(
-	                    QuestionableActivityTriggerConcept.DEVELOPER_STATUS_EDITED.getName())) {
-	                numFound++;
-	                assertEquals(-3, activity.getDeveloperId().longValue());
-	                assertEquals(DeveloperStatusType.SuspendedByOnc.toString(), activity.getBefore());
-	                assertEquals(DeveloperStatusType.Active.toString(), activity.getAfter());
-	            } else if(activity.getTrigger().getName().equals(
-	                    QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_REMOVED.getName())) {
-	                numFound++;
-	                assertEquals(-3, activity.getDeveloperId().longValue());
-	                assertEquals("Suspended by ONC (2015-08-21)", activity.getBefore());
-	                assertNull(activity.getAfter());
-	            }
-	        }
-	        assertEquals(2, numFound);
-	        SecurityContextHolder.getContext().setAuthentication(null);
-	    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void testRemoveStatusHistory() throws
+    EntityCreationException, EntityRetrievalException,
+    JsonProcessingException, MissingReasonException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+        Date beforeActivity = new Date();
+        DeveloperDTO developer = devManager.getById(-3L);
+        Iterator<DeveloperStatusEventDTO> iter = developer.getStatusEvents().iterator();
+        while (iter.hasNext()) {
+            DeveloperStatusEventDTO status = iter.next();
+            if (status.getStatus().getStatusName().equals(
+                    DeveloperStatusType.SuspendedByOnc.toString())) {
+                iter.remove();
+            }
+        }
+        devManager.update(developer);
+        Date afterActivity = new Date();
+
+        List<QuestionableActivityDeveloperDTO> activities =
+                qaDao.findDeveloperActivityBetweenDates(beforeActivity, afterActivity);
+        assertNotNull(activities);
+        assertEquals(2, activities.size());
+        int numFound = 0;
+        for (QuestionableActivityDeveloperDTO activity : activities) {
+            if (activity.getTrigger().getName().equals(
+                    QuestionableActivityTriggerConcept.DEVELOPER_STATUS_EDITED.getName())) {
+                numFound++;
+                assertEquals(-3, activity.getDeveloperId().longValue());
+                assertEquals(DeveloperStatusType.SuspendedByOnc.toString(), activity.getBefore());
+                assertEquals(DeveloperStatusType.Active.toString(), activity.getAfter());
+            } else if (activity.getTrigger().getName().equals(
+                    QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_REMOVED.getName())) {
+                numFound++;
+                assertEquals(-3, activity.getDeveloperId().longValue());
+                assertEquals("Suspended by ONC (2015-08-21)", activity.getBefore());
+                assertNull(activity.getAfter());
+            }
+        }
+        assertEquals(2, numFound);
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
 }

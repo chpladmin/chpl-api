@@ -18,6 +18,7 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dao.UserPermissionDAO;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.Surveillance;
@@ -525,7 +526,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
         return results;
     }
 
-    @Cacheable("findSurveillanceRequirementType")
+    @Cacheable(CacheNames.FIND_SURVEILLANCE_REQ_TYPE)
     public SurveillanceRequirementType findSurveillanceRequirementType(String type) {
         LOGGER.debug("Searching for surveillance requirement type '" + type + "'.");
         if (StringUtils.isEmpty(type)) {
@@ -580,7 +581,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
         return results;
     }
 
-    @Cacheable("findSurveillanceResultType")
+    @Cacheable(CacheNames.FIND_SURVEILLANCE_RESULT_TYPE)
     public SurveillanceResultType findSurveillanceResultType(String type) {
         LOGGER.debug("Searching for surveillance result type '" + type + "'.");
         if (StringUtils.isEmpty(type)) {
@@ -633,7 +634,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
         return results;
     }
 
-    @Cacheable("findSurveillanceNonconformityStatusType")
+    @Cacheable(CacheNames.FIND_SURVEILLANCE_NONCONFORMITY_STATUS_TYPE)
     public SurveillanceNonconformityStatus findSurveillanceNonconformityStatusType(String type) {
         LOGGER.debug("Searching for nonconformity status type '" + type + "'.");
         if (StringUtils.isEmpty(type)) {

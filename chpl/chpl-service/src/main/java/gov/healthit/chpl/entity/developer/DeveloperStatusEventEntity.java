@@ -14,6 +14,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+/**
+ * Developer status entity.
+ * @author alarned
+ *
+ */
 @Entity
 @Table(name = "vendor_status_history")
 public class DeveloperStatusEventEntity implements Cloneable, Serializable {
@@ -38,6 +43,9 @@ public class DeveloperStatusEventEntity implements Cloneable, Serializable {
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "vendor_status_id", insertable = false, updatable = false)
     private DeveloperStatusEntity developerStatus;
+
+    @Column(name = "reason")
+    private String reason;
 
     @Column(name = "status_date")
     private Date statusDate;
@@ -131,5 +139,23 @@ public class DeveloperStatusEventEntity implements Cloneable, Serializable {
 
     public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(final String reason) {
+        this.reason = reason;
+    }
+
+    @Override
+    public String toString() {
+        return "Developer Status Event Entity: ["
+                + "[Developer: " + this.developer.getName() + "] "
+                + "[Status Date: " + this.statusDate.toString() + "] "
+                + "[Status: " + this.developerStatus.getName() + "] "
+                + "[Reason: " + this.reason + "]"
+                + "]";
     }
 }

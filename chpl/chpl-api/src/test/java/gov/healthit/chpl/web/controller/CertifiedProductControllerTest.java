@@ -72,8 +72,8 @@ import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.exception.ObjectsMissingValidationException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidator;
-import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFactory;
+import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
+import gov.healthit.chpl.validation.listing.PendingValidator;
 import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -93,12 +93,12 @@ public class CertifiedProductControllerTest {
 
     @Autowired
     PendingCertifiedProductDAO pcpDAO;
-    
+
     @Autowired
     TestToolDAO ttDao;
 
     @Autowired
-    CertifiedProductValidatorFactory validatorFactory;
+    ListingValidatorFactory validatorFactory;
 
     private static JWTAuthenticatedUser adminUser;
     private static final long ADMIN_ID = -2L;
@@ -106,9 +106,9 @@ public class CertifiedProductControllerTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         adminUser = new JWTAuthenticatedUser();
-        adminUser.setFirstName("Administrator");
+        adminUser.setFullName("Administrator");
         adminUser.setId(ADMIN_ID);
-        adminUser.setLastName("Administrator");
+        adminUser.setFriendlyName("Administrator");
         adminUser.setSubjectName("admin");
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ACB"));
@@ -160,7 +160,7 @@ public class CertifiedProductControllerTest {
             throws EntityRetrievalException, EntityCreationException, IOException,
             MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        
+
         //insert a retired test tool
         TestToolDTO retiredTestTool = new TestToolDTO();
         retiredTestTool.setName("Retired Test Tool");
@@ -171,7 +171,7 @@ public class CertifiedProductControllerTest {
         retiredTestTool = ttDao.getByName("Retired Test Tool");
         retiredTestTool.setRetired(true);
         ttDao.update(retiredTestTool);
-        
+
         CertifiedProductSearchDetails updateRequest = new CertifiedProductSearchDetails();
         updateRequest.setCertificationDate(1440090840000L);
         updateRequest.setId(1L); // Certified_product_id = 1 has icsCode = true and is associated with TestTool with id=2 & id = 3 that have retired = true
@@ -363,7 +363,7 @@ public class CertifiedProductControllerTest {
     @Test
     public void test_updatePendingCertifiedProductDTO_icsAndRetiredTTs_warningvsError() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        
+
         //insert a retired test tool
         TestToolDTO retiredTestTool = new TestToolDTO();
         retiredTestTool.setName("Retired Test Tool");
@@ -374,7 +374,7 @@ public class CertifiedProductControllerTest {
         retiredTestTool = ttDao.getByName("Retired Test Tool");
         retiredTestTool.setRetired(true);
         ttDao.update(retiredTestTool);
-        
+
         PendingCertifiedProductDTO pcpDTO = new PendingCertifiedProductDTO();
         String certDateString = "11-09-2016";
         DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
@@ -452,7 +452,7 @@ public class CertifiedProductControllerTest {
         pcpDTO.setIcs(false); // Inherited Status = product.getIcs();
         pcpDTO.setUniqueId("15.07.07.2642.IC04.36.00.1.160402");
         pcpDTO.setPracticeType("Ambulatory");
-        CertifiedProductValidator validator = validatorFactory.getValidator(pcpDTO);
+        PendingValidator validator = validatorFactory.getValidator(pcpDTO);
         if (validator != null) {
             validator.validate(pcpDTO);
         }
@@ -460,7 +460,7 @@ public class CertifiedProductControllerTest {
         // ICS is false, 15.07.07.2642.IC04.36.00.1.160402 shows false ICS. No mismatch = error message
         assertTrue(pcpDTO.getErrorMessages().contains(
                 "Test Tool 'Retired Test Tool' can not be used for criteria '170.315 (b)(6)', "
-                + "as it is a retired tool, and this Certified Product does not carry ICS."));
+                        + "as it is a retired tool, and this Certified Product does not carry ICS."));
 
         // test 2
         pcpDTO.getWarningMessages().clear();
@@ -538,7 +538,7 @@ public class CertifiedProductControllerTest {
         cr.setG1Success(false);
         cr.setG2Success(false);
         cr.setGap(null);
-        cr.setNumber("170.314 (g)(4)");
+        cr.setNumber("170.315 (g)(4)");
         cr.setPrivacySecurityFramework("Approach 1 Approach 2"); // bad value
         cr.setSed(null);
         cr.setSuccess(true);
@@ -604,7 +604,7 @@ public class CertifiedProductControllerTest {
             assertNotNull(e);
             Boolean hasError = false;
             for (String error : e.getErrorMessages()){
-                if (error.startsWith("Certification 170.314 (g)(4) contains Privacy and Security Framework")){
+                if (error.startsWith("Certification 170.315 (g)(4) contains Privacy and Security Framework")){
                     hasError = true;
                 }
             }
@@ -825,7 +825,7 @@ public class CertifiedProductControllerTest {
         pcpDTO.setIcs(false); // Inherited Status = product.getIcs();
         pcpDTO.setUniqueId("15.07.07.2642.IC04.36.00.1.160402");
         pcpDTO.setPracticeType("Ambulatory");
-        CertifiedProductValidator validator = validatorFactory.getValidator(pcpDTO);
+        PendingValidator validator = validatorFactory.getValidator(pcpDTO);
         if (validator != null) {
             validator.validate(pcpDTO);
         }
@@ -924,7 +924,7 @@ public class CertifiedProductControllerTest {
         pcpDTO.setIcs(false); // Inherited Status = product.getIcs();
         pcpDTO.setUniqueId("15.07.07.2642.IC04.36.00.1.160402");
         pcpDTO.setPracticeType("Ambulatory");
-        CertifiedProductValidator validator = validatorFactory.getValidator(pcpDTO);
+        PendingValidator validator = validatorFactory.getValidator(pcpDTO);
         if (validator != null) {
             validator.validate(pcpDTO);
         }
@@ -1023,7 +1023,7 @@ public class CertifiedProductControllerTest {
         pcpDTO.setIcs(false); // Inherited Status = product.getIcs();
         pcpDTO.setUniqueId("15.07.07.2642.IC04.36.00.1.160402");
         pcpDTO.setPracticeType("Ambulatory");
-        CertifiedProductValidator validator = validatorFactory.getValidator(pcpDTO);
+        PendingValidator validator = validatorFactory.getValidator(pcpDTO);
         if (validator != null) {
             validator.validate(pcpDTO);
         }
@@ -1083,12 +1083,12 @@ public class CertifiedProductControllerTest {
         bulkIds.getIds().add(-1L);
         try {
             certifiedProductController.rejectPendingCertifiedProducts(bulkIds);
-        } catch (ObjectsMissingValidationException e){
+        } catch (ObjectsMissingValidationException e) {
             assertNotNull(e.getExceptions());
             assertEquals(1, e.getExceptions().size());
-            for (ObjectMissingValidationException ex : e.getExceptions()){
+            for (ObjectMissingValidationException ex : e.getExceptions()) {
                 assertEquals(1, ex.getErrorMessages().size());
-                if (ex.getErrorMessages().iterator().next().contains("has already been confirmed or rejected")){
+                if (ex.getErrorMessages().iterator().next().contains("has already been confirmed or rejected")) {
                     hasError = true;
                 }
                 assertNotNull(ex.getContact());
@@ -1111,7 +1111,8 @@ public class CertifiedProductControllerTest {
     @Transactional
     @Rollback(true)
     @Test
-    public void test_confirmPendingCP_isAlreadyDeleted_returnsBadRequest() throws JsonProcessingException, EntityRetrievalException, EntityCreationException, InvalidArgumentsException, ValidationException {
+    public void test_confirmPendingCP_isAlreadyDeleted_returnsBadRequest()
+            throws JsonProcessingException, EntityRetrievalException, EntityCreationException, InvalidArgumentsException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         PendingCertifiedProductDTO pcpDTO = null;
         PendingCertifiedProductDetails pcpDetails = null;
@@ -1120,9 +1121,9 @@ public class CertifiedProductControllerTest {
         Boolean hasError = false;
         try {
             certifiedProductController.confirmPendingCertifiedProduct(pcpDetails);
-        } catch (ObjectMissingValidationException e){
-            for (String error : e.getErrorMessages()){
-                if (error.contains("has already been confirmed or rejected")){
+        } catch (ObjectMissingValidationException e) {
+            for (String error : e.getErrorMessages()) {
+                if (error.contains("has already been confirmed or rejected")) {
                     hasError = true;
                 }
             }
@@ -1149,10 +1150,10 @@ public class CertifiedProductControllerTest {
         assertNotNull(cpDetails);
     }
 
-
     @Transactional
     @Test
-    public void test_uploadCertifiedProduct2014v2() throws EntityRetrievalException, EntityCreationException, IOException, MaxUploadSizeExceededException {
+    public void test_uploadCertifiedProduct2014v2()
+            throws EntityRetrievalException, EntityCreationException, IOException, MaxUploadSizeExceededException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         MultipartFile file = UploadFileUtils.getUploadFile("2014", null);
         ResponseEntity<PendingCertifiedProductResults> response = null;
@@ -1162,12 +1163,13 @@ public class CertifiedProductControllerTest {
             e.printStackTrace();
         }
         assertNotNull(response);
-        assertEquals(HttpStatus.OK,response.getStatusCode());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Transactional
     @Test
-    public void test_uploadCertifiedProduct2014v2Maxlength() throws EntityRetrievalException, EntityCreationException, IOException, MaxUploadSizeExceededException {
+    public void test_uploadCertifiedProduct2014v2Maxlength()
+            throws EntityRetrievalException, EntityCreationException, IOException, MaxUploadSizeExceededException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         MultipartFile file = UploadFileUtils.getUploadFile("2014", null);
         ResponseEntity<PendingCertifiedProductResults> response = null;
@@ -1208,7 +1210,7 @@ public class CertifiedProductControllerTest {
     @Rollback
     @Test
     public void testUploadAndConfirm2015Listing() throws IOException,
-        EntityRetrievalException, EntityCreationException, InvalidArgumentsException {
+    EntityRetrievalException, EntityCreationException, InvalidArgumentsException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         //upload a new listing to pending
@@ -1220,21 +1222,32 @@ public class CertifiedProductControllerTest {
             fail(e.getMessage());
         }
         assertNotNull(response);
-        
+
         //confirm the listing so it exists to update
         CertifiedProductSearchDetails confirmedListing = null;
         try {
-            ResponseEntity<CertifiedProductSearchDetails> confirmedListingResponse = 
+            ResponseEntity<CertifiedProductSearchDetails> confirmedListingResponse =
                     certifiedProductController.confirmPendingCertifiedProduct(
                             response.getBody().getPendingCertifiedProducts().get(0));
             confirmedListing = confirmedListingResponse.getBody();
-        } catch(ValidationException ex) {
-            fail(ex.getMessage());
+        } catch (ValidationException ex) {
+            String message = "";
+            if (ex.getErrorMessages() != null && ex.getErrorMessages().size() > 0) {
+                for (String m : ex.getErrorMessages()) {
+                    message += m;
+                }
+            }
+            if (ex.getWarningMessages() != null && ex.getWarningMessages().size() > 0) {
+                for (String m : ex.getWarningMessages()) {
+                    message += m;
+                }
+            }
+            fail(ex.getMessage() + message);
         }
         assertNotNull(confirmedListing);
         assertNotNull(confirmedListing.getId());
     }
-    
+
     /**
      * Given the CHPL is accepting search requests,
      * when I call the REST API's,
@@ -1255,11 +1268,10 @@ public class CertifiedProductControllerTest {
                 resp.getNumMeaningfulUse() == expectedCount);
     }
 
-
-
     @Transactional
     @Test(expected = EntityRetrievalException.class)
-    public void getMissingCertifiedProductDetailsById() throws EntityRetrievalException, EntityCreationException, IOException {
+    public void getMissingCertifiedProductDetailsById() 
+            throws EntityRetrievalException, EntityCreationException, IOException {
         certifiedProductController.getCertifiedProductById(65732843893L);
     }
 }

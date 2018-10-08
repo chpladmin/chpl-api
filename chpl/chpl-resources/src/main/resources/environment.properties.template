@@ -18,6 +18,12 @@ surveillanceThresholdToProcessAsJob=50
 #file name that daily SED details will be written to
 SEDDownloadName=chpl-sed-all-details.csv
 
+# number of tokens per API Key per time unit below
+rateTokenLimit=5
+# time unit where tokens above will be used
+# values are: second, minute, hour
+rateLimitTimeUnit=minute
+
 fuzzyChoiceThreshold=80
 fuzzyChoiceLimit=1
 
@@ -36,8 +42,10 @@ summaryEmailName=summaryStatistics.csv
 summaryEmailPeriodInDays=7
 
 #questionable activity email properties
-questionableActivityReportFilename=questionable-activity.csv
+questionableActivityReportFilename=questionable-activity
 questionableActivityEmailSubject=Questionable Activity Report
+questionableActivityHasDataEmailBody=<p>A summary of questionable activity found between %s and %s is attached.</p>"
+questionableActivityNoDataEmailBody=<p>No questionable activity was found between %s and %s.</p>
 
 #oversight email properties
 suspendedDaysAllowed=30
@@ -70,6 +78,10 @@ inheritanceReportEmailAcbWeeklyHtmlMessage=<h3>ONC-ACB Weekly ICS Validation Rep
 cacheStatusMaxAge=3600000
 cacheStatusMaxAgeSubject=Listing Cache Maximum Age Reached (LOCAL)
 cacheStatusMaxAgeUrl=http://localhost:8080/chpl-service/cache_status
+
+#listing upload error email properties
+uploadErrorEmailRecipients=test@ainq.com,test2@ainq.com
+uploadErrorEmailSubject=CHPL Listing Upload Error (LOCAL)
 
 #schema download file properties
 schemaXmlName=listingSchema.xsd
@@ -106,3 +118,29 @@ chplUrlBegin=http://localhost:8000/app
 
 #Asynchronous - should always be true
 asyncEnabled=true
+
+# Scheduler properties
+corePoolSize=10
+maxPoolSize=20
+
+####### Email Builder Settings #######
+#Do we want to 'check' emails before sending them?
+#emailBuilder.config.productionEnvironment=false
+#Let emails being sent to this list of domains go through
+#emailBuilder.config.whitelistedDomains=ainq.com,onc.gov
+#Emails should be sent to this address
+#emailBuilder.config.forwardAddress=example@ainq.com
+#######################################
+emailBuilder.config.productionEnvironment=false
+emailBuilder.config.whitelistedDomains=ainq.com
+emailBuilder.config.forwardAddress=example@ainq.com
+
+#DeleteAPIKeyWarningEmail
+job.apiKeyWarningEmailJob.config.apiKeyLastUsedDaysAgo=7
+job.apiKeyWarningEmailJob.config.daysUntilDelete=3
+job.apiKeyWarningEmailJob.config.message=Name/Organization: %s<br/><br/>Unused API keys are removed from the CHPL system after %s days.  Your key, %s, was last used on %s and unless it is used again, will be removed in %s days.<br/><br/>Thank you
+job.apiKeyWarningEmailJob.config.subject=[LOCAL] ONC-CHPL: Your API key will be deleted
+
+#ApiKeyDeleteJob
+job.apiKeyDeleteJob.config.message=Name/Organization: %s<br/><br/>A warning was previously sent as your key, %s, was last used on %s.  As per the warning and ONC's policy, your key has been removed.<br/><br/>If you would like to resume using the CHPL's public API, you may register for a new key at <a href='%s'>%s</a>.<br/><br/>Thank you
+job.apiKeyDeleteJob.config.subject=[LOCAL] ONC-CHPL: Your API key has been deleted

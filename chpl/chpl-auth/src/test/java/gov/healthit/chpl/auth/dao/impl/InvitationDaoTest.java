@@ -54,9 +54,9 @@ public class InvitationDaoTest {
 	@BeforeClass
 	public static void setUpClass() throws Exception {
 		chplAdminUser = new JWTAuthenticatedUser();
-		chplAdminUser.setFirstName("Administrator");
+		chplAdminUser.setFullName("Administrator");
 		chplAdminUser.setId(-2L);
-		chplAdminUser.setLastName("Administrator");
+		chplAdminUser.setFriendlyName("Administrator");
 		chplAdminUser.setSubjectName("admin");
 		chplAdminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 	}

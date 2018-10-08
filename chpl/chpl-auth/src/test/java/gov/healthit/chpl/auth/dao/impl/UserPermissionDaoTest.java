@@ -41,9 +41,9 @@ public class UserPermissionDaoTest {
 	@BeforeClass
 	public static void setUpClass() throws Exception {
 		authUser = new JWTAuthenticatedUser();
-		authUser.setFirstName("Administrator");
+		authUser.setFullName("Administrator");
 		authUser.setId(-2L);
-		authUser.setLastName("Administrator");
+		authUser.setFriendlyName("Administrator");
 		authUser.setSubjectName("admin");
 		authUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 		SecurityContextHolder.getContext().setAuthentication(authUser);

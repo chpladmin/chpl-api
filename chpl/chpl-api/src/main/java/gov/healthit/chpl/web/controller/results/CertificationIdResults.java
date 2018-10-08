@@ -1,8 +1,10 @@
 package gov.healthit.chpl.web.controller.results;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 
@@ -50,6 +52,10 @@ public class CertificationIdResults implements Serializable {
     private String ehrCertificationId;
     private Map<String, Integer> metCounts;
     private Map<String, Integer> metPercentages;
+    private ArrayList<String> missingAnd = new ArrayList<String>();
+    private List<ArrayList<String>> missingOr = new ArrayList<ArrayList<String>>();
+    private List<ArrayList<String>> missingCombo = new ArrayList<ArrayList<String>>();
+    private List<TreeMap<String, ArrayList<String>>> missingXOr = new ArrayList<TreeMap<String, ArrayList<String>>>();
     private String year;
     private boolean isValid;
 
@@ -99,5 +105,37 @@ public class CertificationIdResults implements Serializable {
 
     public void setMetCounts(final Map<String, Integer> metCounts) {
         this.metCounts = metCounts;
+    }
+
+    public ArrayList<String> getMissingAnd() {
+        return missingAnd;
+    }
+
+    public void setMissingAnd(ArrayList<String> missingAnd) {
+        this.missingAnd = missingAnd;
+    }
+
+    public List<ArrayList<String>> getMissingOr() {
+        return missingOr;
+    }
+
+    public void setMissingOr(List<ArrayList<String>> missingOr) {
+        this.missingOr = missingOr;
+    }
+
+    public List<ArrayList<String>> getMissingCombo() {
+        return missingCombo;
+    }
+
+    public void setMissingCombo(List<ArrayList<String>> missingCombo) {
+        this.missingCombo = missingCombo;
+    }
+
+    public List<TreeMap<String, ArrayList<String>>> getMissingXOr() {
+        return missingXOr;
+    }
+
+    public void setMissingXOr(List<TreeMap<String, ArrayList<String>>> missingXOr) {
+        this.missingXOr = missingXOr;
     }
 }

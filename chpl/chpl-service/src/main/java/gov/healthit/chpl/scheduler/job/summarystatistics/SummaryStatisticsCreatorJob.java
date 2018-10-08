@@ -19,8 +19,8 @@ import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,7 +31,6 @@ import gov.healthit.chpl.domain.statistics.Statistics;
 import gov.healthit.chpl.entity.SummaryStatisticsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.scheduler.JobConfig;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 
 /**
@@ -42,35 +41,35 @@ import gov.healthit.chpl.scheduler.job.QuartzJob;
  */
 @DisallowConcurrentExecution
 public class SummaryStatisticsCreatorJob extends QuartzJob {
-    private static final Logger LOGGER = LogManager.getLogger(SummaryStatisticsCreatorJob.class);
+    private static final Logger LOGGER = LogManager.getLogger("summaryStatisticsCreatorJobLogger");
     private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
+    
+    @Autowired
     private AsynchronousSummaryStatisticsInitializor asynchronousStatisticsInitializor;
+    
+    @Autowired
     private SummaryStatisticsDAO summaryStatisticsDAO;
+    
     private Properties props;
-    private AbstractApplicationContext context;
-
+    
     /**
      * Constructor to initialize SummaryStatisticsJobCreator object.
      * @throws Exception is thrown
      */
     public SummaryStatisticsCreatorJob() throws Exception {
         super();
-        setLocalContext();
-        context = new AnnotationConfigApplicationContext(JobConfig.class);
-        initiateSpringBeans(context);
+        //setLocalContext();
         loadProperties();
     }
 
-    @Override
-    protected void initiateSpringBeans(final AbstractApplicationContext context) throws IOException {
-        setAsynchronousStatisticsInitializor(
-                (AsynchronousSummaryStatisticsInitializor) context.getBean("asynchronousSummaryStatisticsInitializor"));
-        setSummaryStatisticsDAO((SummaryStatisticsDAO) context.getBean("summaryStatisticsDAO"));
-    }
-
+    
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
+        LOGGER.info("********* Starting the Summary Statistics Creation job. *********");
         try {
+            SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+            asynchronousStatisticsInitializor.setLogger(LOGGER);
+            
             Boolean generateCsv = Boolean.valueOf(jobContext.getMergedJobDataMap().getString("generateCsvFile"));
             Date startDate = getStartDate();
             if (startDate == null) {
@@ -89,9 +88,8 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
 
         } catch (Exception e) {
             LOGGER.error(e);
-        } finally {
-            context.close();
-        }
+        } 
+        LOGGER.info("********* Completed the Summary Statistics Creation job. *********");
     }
 
     private void createSummaryStatisticsFile(final Date startDate, final Date endDate,
@@ -120,11 +118,15 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
             endDateCal.add(Calendar.DATE, numDaysInPeriod);
         }
         LOGGER.info("Finished getting statistics");
-        StatsCsvFileWriter.writeCsvFile(props.getProperty("downloadFolderPath") + File.separator
+        
+        LOGGER.info("Writing statistics CSV");
+        StatsCsvFileWriter csvFileWriter = new StatsCsvFileWriter();
+        csvFileWriter.writeCsvFile(props.getProperty("downloadFolderPath") + File.separator
                 + props.getProperty("summaryEmailName", "summaryStatistics.csv"), csvStats);
 
         new File(props.getProperty("downloadFolderPath") + File.separator
                 + props.getProperty("summaryEmailName", "summaryStatistics.csv"));
+        LOGGER.info("Completed statistics CSV");
     }
 
     private String getJson(final Statistics statistics) throws JsonProcessingException {
@@ -158,8 +160,8 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         Calendar startDateCalendar = Calendar.getInstance();
         //This is a constant date, which marks the beginning of time for
         //retrieving statistics;
-        startDateCalendar.set(2016, 3, 1);
-
+        startDateCalendar.set(2016, 3, 1, 0, 0, 0);
+        
         //What DOW is today?
         Calendar now = Calendar.getInstance();
         Integer dow = now.get(Calendar.DAY_OF_WEEK);

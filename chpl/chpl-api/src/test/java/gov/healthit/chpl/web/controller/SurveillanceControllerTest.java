@@ -97,37 +97,37 @@ public class SurveillanceControllerTest {
 	@BeforeClass
 	public static void setUpClass() throws Exception {
 		adminUser = new JWTAuthenticatedUser();
-		adminUser.setFirstName("Administrator");
+		adminUser.setFullName("Administrator");
 		adminUser.setId(-2L);
-		adminUser.setLastName("Administrator");
+		adminUser.setFriendlyName("Administrator");
 		adminUser.setSubjectName("admin");
 		adminUser.getPermissions().add(new GrantedPermission(Authority.ROLE_ADMIN));
 		
 		acbAdmin = new JWTAuthenticatedUser();
-		acbAdmin.setFirstName("acbAdmin");
+		acbAdmin.setFullName("acbAdmin");
 		acbAdmin.setId(3L);
-		acbAdmin.setLastName("User");
+		acbAdmin.setFriendlyName("User");
 		acbAdmin.setSubjectName("testUser3");
 		acbAdmin.getPermissions().add(new GrantedPermission(Authority.ROLE_ACB));
 		
 		acbAdmin2 = new JWTAuthenticatedUser();
-		acbAdmin2.setFirstName("acbAdmin2");
+		acbAdmin2.setFullName("acbAdmin2");
 		acbAdmin2.setId(1L);
-		acbAdmin2.setLastName("User");
+		acbAdmin2.setFriendlyName("User");
 		acbAdmin2.setSubjectName("acbAdmin2");
 		acbAdmin2.getPermissions().add(new GrantedPermission(Authority.ROLE_ACB));
 		
 		oncAdmin = new JWTAuthenticatedUser();
-		oncAdmin.setFirstName("oncAdmin");
+		oncAdmin.setFullName("oncAdmin");
 		oncAdmin.setId(3L);
-		oncAdmin.setLastName("User");
+		oncAdmin.setFriendlyName("User");
 		oncAdmin.setSubjectName("oncAdminUser");
 		oncAdmin.getPermissions().add(new GrantedPermission(Authority.ROLE_ADMIN));
 		
 		oncAndAcb = new JWTAuthenticatedUser();
-		oncAndAcb.setFirstName("oncAndAcb");
+		oncAndAcb.setFullName("oncAndAcb");
 		oncAndAcb.setId(1L);
-		oncAndAcb.setLastName("User");
+		oncAndAcb.setFriendlyName("User");
 		oncAndAcb.setSubjectName("oncAndAcbUser");
 		oncAndAcb.getPermissions().add(new GrantedPermission(Authority.ROLE_ADMIN));
 		oncAndAcb.getPermissions().add(new GrantedPermission(Authority.ROLE_ACB));

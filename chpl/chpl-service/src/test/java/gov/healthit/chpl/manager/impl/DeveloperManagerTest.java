@@ -38,6 +38,7 @@ import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
@@ -65,16 +66,16 @@ public class DeveloperManagerTest extends TestCase {
 	@BeforeClass
 	public static void setUpClass() throws Exception {
 		adminUser = new JWTAuthenticatedUser();
-		adminUser.setFirstName("Administrator");
+		adminUser.setFullName("Administrator");
 		adminUser.setId(-2L);
-		adminUser.setLastName("Administrator");
+		adminUser.setFriendlyName("Administrator");
 		adminUser.setSubjectName("admin");
 		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 		
 		testUser3 = new JWTAuthenticatedUser();
-		testUser3.setFirstName("Test");
+		testUser3.setFullName("Test");
 		testUser3.setId(3L);
-		testUser3.setLastName("User3");
+		testUser3.setFriendlyName("User3");
 		testUser3.setSubjectName("testUser3");
 		testUser3.getPermissions().add(new GrantedPermission("ROLE_ACB"));
 	}
@@ -144,7 +145,8 @@ public class DeveloperManagerTest extends TestCase {
 	@Transactional
 	@Rollback
 	public void testDeveloperStatusChangeAllowedByAdmin() 
-			throws EntityRetrievalException, JsonProcessingException {
+			throws EntityRetrievalException, JsonProcessingException,
+			MissingReasonException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		DeveloperDTO developer = developerManager.getById(-1L);
 		assertNotNull(developer);
@@ -247,7 +249,8 @@ public class DeveloperManagerTest extends TestCase {
 	@Transactional
 	@Rollback(true)
 	public void testNoUpdatesAllowedByNonAdminIfDeveloperIsNotActive() 
-			throws EntityRetrievalException, JsonProcessingException {
+			throws EntityRetrievalException, JsonProcessingException,
+	        MissingReasonException {
 		SecurityContextHolder.getContext().setAuthentication(testUser3);
 		DeveloperDTO developer = developerManager.getById(-3L);
 		assertNotNull(developer);
@@ -274,7 +277,8 @@ public class DeveloperManagerTest extends TestCase {
 	@Transactional
 	@Rollback
 	public void testDeveloperStatusChangeNotAllowedByNonAdmin() 
-			throws EntityRetrievalException, JsonProcessingException {
+			throws EntityRetrievalException, JsonProcessingException,
+	        MissingReasonException {
 		SecurityContextHolder.getContext().setAuthentication(testUser3);
 		DeveloperDTO developer = developerManager.getById(-1L);
 		assertNotNull(developer);
