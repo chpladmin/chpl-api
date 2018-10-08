@@ -11,6 +11,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 
+/**
+ * Domain object for Nonconformities related to surveillance.
+ */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SurveillanceNonconformity implements Serializable {
@@ -108,6 +111,12 @@ public class SurveillanceNonconformity implements Serializable {
     @XmlElementWrapper(name = "documents", nillable = true, required = false)
     @XmlElement(name = "document")
     private List<SurveillanceNonconformityDocument> documents = new ArrayList<SurveillanceNonconformityDocument>();
+
+    /**
+     * Date of the last modification of the surveillance.
+     */
+    @XmlElement(required = true)
+    private Date lastModifiedDate;
 
     public Long getId() {
         return id;
@@ -227,5 +236,13 @@ public class SurveillanceNonconformity implements Serializable {
 
     public void setDocuments(final List<SurveillanceNonconformityDocument> documents) {
         this.documents = documents;
+    }
+
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
     }
 }

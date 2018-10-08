@@ -139,6 +139,8 @@ emailBuilder.config.forwardAddress=example@ainq.com
 job.apiKeyWarningEmailJob.config.apiKeyLastUsedDaysAgo=7
 job.apiKeyWarningEmailJob.config.daysUntilDelete=3
 job.apiKeyWarningEmailJob.config.message=Name/Organization: %s<br/><br/>Unused API keys are removed from the CHPL system after %s days.  Your key, %s, was last used on %s and unless it is used again, will be removed in %s days.<br/><br/>Thank you
+job.apiKeyWarningEmailJob.config.subject=[LOCAL] ONC-CHPL: Your API key will be deleted
 
 #ApiKeyDeleteJob
 job.apiKeyDeleteJob.config.message=Name/Organization: %s<br/><br/>A warning was previously sent as your key, %s, was last used on %s.  As per the warning and ONC's policy, your key has been removed.<br/><br/>If you would like to resume using the CHPL's public API, you may register for a new key at <a href='%s'>%s</a>.<br/><br/>Thank you
+job.apiKeyDeleteJob.config.subject=[LOCAL] ONC-CHPL: Your API key has been deleted

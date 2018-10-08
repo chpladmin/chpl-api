@@ -22,6 +22,12 @@ questionableActivityThresholdDays=30
 fuzzyChoiceThreshold=80
 fuzzyChoiceLimit=1
 
+# number of tokens per API Key per time unit below
+rateTokenLimit=5
+# time unit where tokens above will be used
+# values are: second, minute, hour
+rateLimitTimeUnit=minute
+
 #Asynchronous - should always be false for jUnits to properly work in our environment
 asyncEnabled=false
 
