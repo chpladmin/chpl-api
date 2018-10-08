@@ -7,5 +7,6 @@ _Date TBD_
 
 ### Bugs Fixed
 * Fix creation of public announcement ignoring 'public' checkbox.
+* Fix incorrect errors for changing sed to false for a criteria
 
 ---
