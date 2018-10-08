@@ -78,11 +78,18 @@ public class StatsCsvFileWriter {
         } finally {
             try {
                 fileWriter.flush();
+            } catch (final IOException e) {
+                getLogger().error("Error while flushing fileWriter!", e);
+            }
+            try {
                 fileWriter.close();
+            } catch (final IOException e) {
+                getLogger().error("Error while closing fileWriter!", e);
+            }
+            try {
                 csvFilePrinter.close();
             } catch (final IOException e) {
-                getLogger().error("Error while flushing/closing fileWriter/csvPrinter!", e);
-                e.printStackTrace();
+                getLogger().error("Error while closing csvPrinter!", e);
             }
         }
     }
