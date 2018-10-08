@@ -5,6 +5,10 @@ import static org.quartz.TriggerBuilder.newTrigger;
 import static org.quartz.TriggerKey.triggerKey;
 import static org.quartz.impl.matchers.GroupMatcher.groupEquals;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -26,6 +30,7 @@ import org.quartz.impl.StdSchedulerFactory;
 public final class TriggerJob {
     private static final Logger LOGGER = LogManager.getLogger(TriggerJob.class);
     private TriggerJob() { }
+    private static DateTimeFormatter dateTimeFormatter;
 
     /**
      * Triggers a job to run once.
@@ -33,7 +38,7 @@ public final class TriggerJob {
      *  otherwise takes action based on first argument
      */
     public static void main(final String[] args) {
-
+        dateTimeFormatter = DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss");
         if (args != null && args.length > 0) {
             switch (args[0]) {
             case "start":
@@ -42,9 +47,9 @@ public final class TriggerJob {
             case "list":
                 listJobs();
                 break;
-//            case "interrupt":
-//                interruptJob(Arrays.copyOfRange(args, 1, args.length));
-//                break;
+                //            case "interrupt":
+                //                interruptJob(Arrays.copyOfRange(args, 1, args.length));
+                //                break;
             case "help":
                 displayHelp(args[0]);
                 break;
@@ -61,7 +66,7 @@ public final class TriggerJob {
         LOGGER.info("Expects 0 or more arguments."
                 + "\n   0 arguments: display this information"
                 + "\n   1st argument: one of \"list\" \"start\" \"help\" to cause relevant action"
-//                + "\n   1st argument: one of \"list\" \"start\" \"interrupt\" \"help\" to cause relevant action"
+                //                + "\n   1st argument: one of \"list\" \"start\" \"interrupt\" \"help\" to cause relevant action"
                 + "\n   nth arguments: action specific arguments");
     }
 
@@ -77,16 +82,16 @@ public final class TriggerJob {
                 LOGGER.info("List command expects no arguments."
                         + "\n   Outputs currently available triggers and running Triggers");
                 break;
-//            case "interrupt":
-//                LOGGER.info("Interrupt command expects one or two arguments."
-//                        + "\n   1st argument: job name"
-//                        + "\n   2nd argument: group name (defaults to \"systemJobs\" if not provided)");
-//                break;
+                //            case "interrupt":
+                //                LOGGER.info("Interrupt command expects one or two arguments."
+                //                        + "\n   1st argument: job name"
+                //                        + "\n   2nd argument: group name (defaults to \"systemJobs\" if not provided)");
+                //                break;
             case "help":
                 LOGGER.info("Help command expects zero or one argument."
                         + "\n   No arguments: display this help"
                         + "\n   One argument: action name, display help for that action"
-//                        + "\n   Available actions: start list interrupt help");
+                        //                        + "\n   Available actions: start list interrupt help");
                         + "\n   Available actions: start list help");
                 break;
             default:
@@ -98,37 +103,37 @@ public final class TriggerJob {
         }
     }
 
-//    private static void interruptJob(final String[] args) {
-//        String jobName = null;
-//        String jobGroup = "systemJobs";
-//        switch (args.length) {
-//        case 2:
-//            jobGroup = args[1];
-//        case 1:
-//            jobName = args[0];
-//            break;
-//        default:
-//            LOGGER.error("Interrupt command expects one or two arguments."
-//                    + "\n   1st argument: job name"
-//                    + "\n   2nd argument: group name (defaults to \"systemJobs\" if not provided)");
-//            System.exit(1);
-//        }
-//        try {
-//            StdSchedulerFactory sf = new StdSchedulerFactory();
-//            sf.initialize("quartz.properties");
-//            Scheduler scheduler = sf.getScheduler();
-//
-//            JobKey jobId = jobKey(jobName, jobGroup);
-//            if (scheduler.interrupt(jobId)) {
-//                LOGGER.info("Interrupted Job: [{}] Group: [{}]", jobName, jobGroup);
-//            } else {
-//                LOGGER.info("Unable to interrupt Job: [{}] Group: [{}]", jobName, jobGroup);
-//            }
-//            scheduler.shutdown();
-//        } catch (SchedulerException e) {
-//            e.printStackTrace();
-//        }
-//    }
+    //    private static void interruptJob(final String[] args) {
+    //        String jobName = null;
+    //        String jobGroup = "systemJobs";
+    //        switch (args.length) {
+    //        case 2:
+    //            jobGroup = args[1];
+    //        case 1:
+    //            jobName = args[0];
+    //            break;
+    //        default:
+    //            LOGGER.error("Interrupt command expects one or two arguments."
+    //                    + "\n   1st argument: job name"
+    //                    + "\n   2nd argument: group name (defaults to \"systemJobs\" if not provided)");
+    //            System.exit(1);
+    //        }
+    //        try {
+    //            StdSchedulerFactory sf = new StdSchedulerFactory();
+    //            sf.initialize("quartz.properties");
+    //            Scheduler scheduler = sf.getScheduler();
+    //
+    //            JobKey jobId = jobKey(jobName, jobGroup);
+    //            if (scheduler.interrupt(jobId)) {
+    //                LOGGER.info("Interrupted Job: [{}] Group: [{}]", jobName, jobGroup);
+    //            } else {
+    //                LOGGER.info("Unable to interrupt Job: [{}] Group: [{}]", jobName, jobGroup);
+    //            }
+    //            scheduler.shutdown();
+    //        } catch (SchedulerException e) {
+    //            e.printStackTrace();
+    //        }
+    //    }
 
     private static void listJobs() {
         try {
@@ -187,6 +192,9 @@ public final class TriggerJob {
                     .build();
             scheduler.scheduleJob(qzTrigger);
             scheduler.shutdown();
+            LOGGER.info("Expecting job to start at {}", (dateTimeFormatter
+                    .format(LocalDateTime.ofInstant(Instant.ofEpochMilli(qzTrigger.getNextFireTime().getTime()),
+                            ZoneId.systemDefault()))));
         } catch (SchedulerException se) {
             se.printStackTrace();
         }
