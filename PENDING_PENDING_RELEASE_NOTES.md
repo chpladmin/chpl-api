@@ -4,6 +4,10 @@ _Date TBD_
 
 ### New Features
 * Added "last modified date" for surveillance and non-conformities to download files
+
+### Bugs Fixed
+* Fix creation of public announcement ignoring 'public' checkbox.
+* Fix incorrect errors for changing sed to false for a criteria
 * Modified the Summary Statistics Report email
   * Re-arranged the order of some headings
   * Added totals for Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2014 Listings
@@ -12,5 +16,6 @@ _Date TBD_
 
 ### Bugs Fixed
 * Fix creation of public announcement ignoring 'public' checkbox.
-
+* Fix incorrect error messages when editing SED = false for a criteria
 ---
+
