@@ -24,7 +24,6 @@ import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.domain.AccurateAsOfDate;
 import gov.healthit.chpl.domain.Job;
 import gov.healthit.chpl.domain.concept.JobTypeConcept;
-import gov.healthit.chpl.dto.MeaningfulUseAccurateAsOfDTO;
 import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.dto.job.JobTypeDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -32,7 +31,6 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.JobManager;
-import gov.healthit.chpl.manager.MeaningfulUseManager;
 import gov.healthit.chpl.util.FileUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -45,8 +43,6 @@ public class MeaningfulUseController {
     private final JobTypeConcept allowedJobType = JobTypeConcept.MUU_UPLOAD;
     @Autowired
     CertifiedProductManager cpManager;
-    @Autowired
-    MeaningfulUseManager muManager;
     @Autowired
     JobManager jobManager;
     @Autowired

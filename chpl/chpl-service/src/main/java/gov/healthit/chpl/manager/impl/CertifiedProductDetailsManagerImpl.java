@@ -29,6 +29,7 @@ import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.CertifiedProductTestingLabDAO;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
+import gov.healthit.chpl.dao.MeaningfulUseUserDAO;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
@@ -51,6 +52,7 @@ import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.MacraMeasure;
+import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.TestFunctionality;
@@ -77,6 +79,7 @@ import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
+import gov.healthit.chpl.dto.MeaningfulUseUserDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
@@ -124,6 +127,9 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
     private CertificationStatusDAO certStatusDao;
 
     @Autowired
+    private MeaningfulUseUserDAO muuDao;
+
+    @Autowired
     private CertificationResultRules certRules;
 
     @Autowired
@@ -140,13 +146,13 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 
     @Autowired
     private TestingFunctionalityManager testFunctionalityManager;
-    
+
     @Autowired
     private Environment env;
 
     private CQMCriterionDAO cqmCriterionDAO;
     private MacraMeasureDAO macraDao;
-    
+
     private List<CQMCriterion> cqmCriteria = new ArrayList<CQMCriterion>();
     private List<MacraMeasure> macraMeasures = new ArrayList<MacraMeasure>();
 
@@ -315,7 +321,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         searchDetails.setCqmResults(
                 getCqmResultDetails(cqmResultsFuture, dto.getYear()));
         searchDetails.setCertificationEvents(getCertificationStatusEvents(dto.getId()));
-
+        searchDetails.setMeaningfulUseUserHistory(getMeaningfulUseUserHistory(dto.getId()));
         // get first-level parents and children
         searchDetails.getIcs().setParents(populateParents(parentsFuture, searchDetails));
         searchDetails.getIcs().setChildren(populateChildren(childrenFuture, searchDetails));
@@ -334,8 +340,8 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
                 getCertifiedProductParents(dto.getId(), retrieveAsynchronously);
 
         CertifiedProductSearchDetails searchDetails = getCertifiedProductSearchDetails(dto);
-
         searchDetails.setCertificationEvents(getCertificationStatusEvents(dto.getId()));
+        searchDetails.setMeaningfulUseUserHistory(getMeaningfulUseUserHistory(dto.getId()));
 
         // get first-level parents and children
         searchDetails.getIcs().setParents(populateParents(parentsFuture, searchDetails));
@@ -476,6 +482,20 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
             certEvents.add(cse);
         }
         return certEvents;
+    }
+
+    private List<MeaningfulUseUser> getMeaningfulUseUserHistory(final Long certifiedProductId)
+            throws EntityRetrievalException {
+
+        List<MeaningfulUseUser> muuHistory = new ArrayList<MeaningfulUseUser>();
+        List<MeaningfulUseUserDTO> muuDtos = muuDao
+                .findByCertifiedProductId(certifiedProductId);
+
+        for (MeaningfulUseUserDTO muuDto : muuDtos) {
+            MeaningfulUseUser muu = new MeaningfulUseUser(muuDto);
+            muuHistory.add(muu);
+        }
+        return muuHistory;
     }
 
     private void loadCriteriaMacraMeasures() {
@@ -715,7 +735,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
             }
         }
         String criteriaNumber = cr.getNumber();
-        
+
         return testFunctionalityManager.getTestFunctionalities(criteriaNumber, edition, practiceTypeId);
     }
 
@@ -759,7 +779,6 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         searchDetails.setCountClosedSurveillance(dto.getCountClosedSurveillance());
         searchDetails.setCountOpenNonconformities(dto.getCountOpenNonconformities());
         searchDetails.setCountClosedNonconformities(dto.getCountClosedNonconformities());
-        searchDetails.setNumMeaningfulUse(dto.getNumMeaningfulUse());
         searchDetails.setSurveillance(survManager.getByCertifiedProduct(dto.getId()));
         searchDetails.setQmsStandards(getCertifiedProductQmsStandards(dto.getId()));
         searchDetails.setTargetedUsers(getCertifiedProductTargetedUsers(dto.getId()));

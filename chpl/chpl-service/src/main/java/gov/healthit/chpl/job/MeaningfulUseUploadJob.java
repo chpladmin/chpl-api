@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.domain.MeaningfulUseUser;
+import gov.healthit.chpl.domain.MeaningfulUseUserRecord;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.entity.job.JobStatusType;
@@ -49,7 +49,7 @@ public class MeaningfulUseUploadJob extends RunnableJob {
         super.run();
 
         double jobPercentComplete = 0;
-        Set<MeaningfulUseUser> muusToUpdate = new LinkedHashSet<MeaningfulUseUser>();
+        Set<MeaningfulUseUserRecord> muusToUpdate = new LinkedHashSet<MeaningfulUseUserRecord>();
         Set<String> uniqueMuusFromFile = new LinkedHashSet<String>();
 
         BufferedReader reader = null;
@@ -76,7 +76,7 @@ public class MeaningfulUseUploadJob extends RunnableJob {
                 CSVRecord heading = null;
                 for (int i = 1; i <= records.size(); i++) {
                     CSVRecord currRecord = records.get(i - 1);
-                    MeaningfulUseUser muu = new MeaningfulUseUser();
+                    MeaningfulUseUserRecord muu = new MeaningfulUseUserRecord();
 
                     // add header if something similar to "chpl_product_number"
                     // and "num_meaningful_use" exists
@@ -116,7 +116,7 @@ public class MeaningfulUseUploadJob extends RunnableJob {
                             Integer dupLineNumber = null;
                             // get line number with duplicate
                             // chpl_product_number
-                            for (MeaningfulUseUser entry : muusToUpdate) {
+                            for (MeaningfulUseUserRecord entry : muusToUpdate) {
                                 if (entry.getProductNumber().equals(muu.getProductNumber())) {
                                     dupLineNumber = entry.getCsvLineNumber();
                                 }
@@ -152,7 +152,7 @@ public class MeaningfulUseUploadJob extends RunnableJob {
         }
 
         // now load everything that was parsed
-        for (MeaningfulUseUser muu : muusToUpdate) {
+        for (MeaningfulUseUserRecord muu : muusToUpdate) {
             if (StringUtils.isEmpty(muu.getError())) {
                 try {
                     // If bad input, add error for this MeaningfulUseUser and
