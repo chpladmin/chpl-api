@@ -13,11 +13,22 @@ import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 
+/**
+ * Helper class for unit tests.
+ * Has methods designed to generate mock objects to avoid having to put them in the test database
+ */
 public class CertifiedProductValidationTestHelper {
 
+    /** Database ID for 2015 Edition. */
     public static final Long EDITION_2015_ID = 3L;
+    /** Database ID for 2014 Edition. */
     public static final Long EDITION_2014_ID = 2L;
-    
+
+    /**
+     * Create a mock pending certified product.
+     * @param year the edition of the listing
+     * @return a mock pending certified product
+     */
     public static PendingCertifiedProductDTO createPendingListing(final String year) {
         PendingCertifiedProductDTO pendingListing = new PendingCertifiedProductDTO();
         String certDateString = "11-09-2016";
@@ -43,6 +54,11 @@ public class CertifiedProductValidationTestHelper {
         return pendingListing;
     }
 
+    /**
+     * Create a pending certification result.
+     * @param number the certified criteria number
+     * @return a mock pending certification result
+     */
     public static PendingCertificationResultDTO createPendingCertResult(final String number) {
         PendingCertificationResultDTO pendingCertResult = new PendingCertificationResultDTO();
         pendingCertResult.setPendingCertifiedProductId(1L);
@@ -66,6 +82,12 @@ public class CertifiedProductValidationTestHelper {
         return pendingCertResult;
     }
 
+    /**
+     * Create a mock certified product.
+     * @param year the edition of the listing
+     * @param legacy true iff it should be a legacy style listing
+     * @return the mock certified product
+     */
     public static CertifiedProductSearchDetails createListing(final String year, final boolean legacy) {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
         String certDateString = "11-09-2016";
@@ -87,7 +109,7 @@ public class CertifiedProductValidationTestHelper {
             listing.getCertificationEdition().put("id", "2");
             listing.getPracticeType().put("name", "Ambulatory");
             listing.getClassificationType().put("name", "Modular EHR");
-            if(!legacy) {
+            if (!legacy) {
                 listing.setChplProductNumber("14.07.07.2642.IC04.36.00.1.160402");
             } else {
                 listing.setChplProductNumber("CHP-008119");
@@ -98,11 +120,21 @@ public class CertifiedProductValidationTestHelper {
         listing.setIcs(ics);
         return listing;
     }
-    
+
+    /**
+     * Create a non-legacy mock certified product.
+     * @param year the edition of the listing
+     * @return the mock certified product
+     */
     public static CertifiedProductSearchDetails createListing(final String year) {
         return createListing(year, false);
     }
 
+    /**
+     * Create a mock certification result.
+     * @param number the certified criteria number
+     * @return a pending certification result
+     */
     public static CertificationResult createCertResult(final String number) {
         CertificationResult certResult = new CertificationResult();
         certResult.setId(1L);
@@ -113,7 +145,7 @@ public class CertifiedProductValidationTestHelper {
         certResult.setGap(null);
         certResult.setNumber(number);
         certResult.setPrivacySecurityFramework("Approach 1 Approach 2");
-        certResult.setSed(null);
+        certResult.setSed(false);
         certResult.setG1Success(false);
         certResult.setG2Success(false);
         certResult.setTestDataUsed(null);
