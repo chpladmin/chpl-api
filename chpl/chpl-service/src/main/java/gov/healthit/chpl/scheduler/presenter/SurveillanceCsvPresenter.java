@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -201,8 +203,7 @@ public class SurveillanceCsvPresenter {
         } else {
             result.add("");
         }
-        result.add(dateTimeFormatter.format(LocalDateTime.ofInstant(Instant.ofEpochMilli(
-                surv.getLastModifiedDate().getTime()), ZoneId.systemDefault())));
+        result.add(surv.getLastModifiedDate().toInstant().atOffset(ZoneOffset.UTC).format(dateTimeFormatter));
         return result;
     }
 
@@ -304,8 +305,7 @@ public class SurveillanceCsvPresenter {
         } else {
             ncRow.add("");
         }
-        ncRow.add(dateTimeFormatter.format(LocalDateTime.ofInstant(Instant.ofEpochMilli(
-                nc.getLastModifiedDate().getTime()), ZoneId.systemDefault())));
+        ncRow.add(nc.getLastModifiedDate().toInstant().atOffset(ZoneOffset.UTC).format(dateTimeFormatter));
         return ncRow;
     }
 
