@@ -26,7 +26,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.job.PoolB;
+import gov.healthit.chpl.job.SimpleObjectPool;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProduct2014CsvPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductCsvPresenter;
@@ -66,17 +66,15 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         LOGGER.info("********* Starting the Certified Product Downloadable Resource Creator job for " + edition + ". *********");
         try {
             List<CertifiedProductDetailsDTO> listings = getRelevantListings();
+            listings = listings.subList(1, 25);
             
             initializeWritingToFiles();
 
             List<CompletableFuture<CertifiedProductSearchDetails>> futures = 
                     new ArrayList<CompletableFuture<CertifiedProductSearchDetails>>();
             
-            List<CertifiedProductSearchDetails> x = new ArrayList<CertifiedProductSearchDetails>();
-            for (int i = 1 ; i <= 20 ; i++) {
-                x.add(new CertifiedProductSearchDetails());
-            }
-            PoolB<CertifiedProductSearchDetails> pool = new PoolB<CertifiedProductSearchDetails>(x);
+            //This should be initialized to a number greater than the number of threads being used
+            SimpleObjectPool<CertifiedProductSearchDetails> pool = getInitializedObjectPool(5);
             
             for (CertifiedProductDetailsDTO dto : listings) {
                 CompletableFuture<CertifiedProductSearchDetails> cpCompletableFuture =
@@ -113,10 +111,12 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
             //Block execution until all of the listings have been written
             CompletableFuture<Void> allTasks =
                     CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()]));
+            
             allTasks.get();
             
             //This is horrible - need to figure out a way around it...
-            Thread.sleep(3000);
+            //Think this is because async tasks are complete, but the last 'accept' has not completed 
+            Thread.sleep(1000);
             
             //Finish writing files and close streams
             completeWritingToFiles();
@@ -130,18 +130,13 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         LOGGER.info("********* Completed the Certified Product Downloadable Resource Creator job for " + edition + ". *********");
     }
 
-    private CertifiedProductSearchDetails getCertifiedProductSearchDetails(Long id) {
-        CertifiedProductSearchDetails cpDTO = null;
-        try {
-            cpDTO = cpdManager.getCertifiedProductDetails(id);
-            LOGGER.info("Finishing Details for: " + id);
-            
-        } catch (EntityRetrievalException e) {
-            LOGGER.error(e);
+    private SimpleObjectPool<CertifiedProductSearchDetails> getInitializedObjectPool(Integer size) {
+        List<CertifiedProductSearchDetails> x = new ArrayList<CertifiedProductSearchDetails>();
+        for (int i = 1 ; i <= size ; i++) {
+            x.add(new CertifiedProductSearchDetails());
         }
-        return cpDTO;
+        return new SimpleObjectPool<CertifiedProductSearchDetails>(x);
     }
-    
     private void initializeWritingToFiles() throws IOException {
         xmlPresenter = new CertifiedProductXmlPresenter();
         xmlPresenter.setLogger(LOGGER);
