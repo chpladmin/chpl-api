@@ -21,7 +21,6 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.job.SimpleObjectPool;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProduct2014CsvPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductCsvPresenter;
@@ -39,7 +38,6 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
     private CertifiedProductXmlPresenter xmlPresenter;
     private CertifiedProductCsvPresenter csvPresenter;
     private static final int SECONDS_PER_MINUTE = 60;
-    private static final int OBJECT_POOL_SIZE = 5;
     private String edition;
 
     @Autowired
@@ -71,9 +69,6 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
             List<CompletableFuture<CertifiedProductSearchDetails>> futures =
                     new ArrayList<CompletableFuture<CertifiedProductSearchDetails>>();
 
-            //This should be initialized to a number greater than the number of threads being used
-            SimpleObjectPool<CertifiedProductSearchDetails> pool = getInitializedObjectPool(OBJECT_POOL_SIZE);
-
             for (CertifiedProductDetailsDTO dto : listings) {
                 CompletableFuture<CertifiedProductSearchDetails> cpCompletableFuture =
                     CompletableFuture.supplyAsync(new Supplier<CertifiedProductSearchDetails>() {
@@ -81,7 +76,6 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
                         public CertifiedProductSearchDetails get() {
                             CertifiedProductSearchDetails cpDTO = null;
                             try {
-                                cpDTO = pool.borrow();
                                 cpDTO = cpdManager.getCertifiedProductDetails(dto.getId());
                                 LOGGER.info("Finishing Details for: " + dto.getId());
                             } catch (Exception e) {
@@ -96,7 +90,6 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
                             try {
                                 xmlPresenter.add(cp);
                                 csvPresenter.add(cp);
-                                pool.giveBack(cp);
                             } catch (Exception e) {
                                 LOGGER.error(e.getMessage(), e);
                             }
@@ -127,14 +120,6 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
                 (end.getTime() - start.getTime()) / MILLIS_PER_SECOND / SECONDS_PER_MINUTE);
         LOGGER.info("********* Completed the Certified Product Downloadable Resource Creator job for {}. *********",
                 edition);
-    }
-
-    private SimpleObjectPool<CertifiedProductSearchDetails> getInitializedObjectPool(final Integer size) {
-        List<CertifiedProductSearchDetails> x = new ArrayList<CertifiedProductSearchDetails>();
-        for (int i = 1; i <= size; i++) {
-            x.add(new CertifiedProductSearchDetails());
-        }
-        return new SimpleObjectPool<CertifiedProductSearchDetails>(x);
     }
 
     private void initializeWritingToFiles() throws IOException {
