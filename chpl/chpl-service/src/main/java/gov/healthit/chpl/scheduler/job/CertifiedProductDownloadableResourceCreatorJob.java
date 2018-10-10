@@ -66,7 +66,6 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         LOGGER.info("********* Starting the Certified Product Downloadable Resource Creator job for " + edition + ". *********");
         try {
             List<CertifiedProductDetailsDTO> listings = getRelevantListings();
-            listings = listings.subList(1, 25);
             
             initializeWritingToFiles();
 
