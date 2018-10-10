@@ -105,7 +105,7 @@ public class MeaningfulUseJobControllerTest extends TestCase {
 		try {
 			FileInputStream input = new FileInputStream(file);
 			MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), "text/csv", IOUtils.toByteArray(input));
-			response = muuController.uploadMeaningfulUseUsers(multipartFile);
+			response = muuController.uploadMeaningfulUseUsers(multipartFile, System.currentTimeMillis());
 			input.close();
 			file.delete();
 		} catch(IOException ex) {
@@ -129,7 +129,7 @@ public class MeaningfulUseJobControllerTest extends TestCase {
 		try {
 			FileInputStream input = new FileInputStream(file);
 			MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), "text/csv", IOUtils.toByteArray(input));
-			response = muuController.uploadMeaningfulUseUsers(multipartFile);
+			response = muuController.uploadMeaningfulUseUsers(multipartFile, System.currentTimeMillis());
 			input.close();
 			file.delete();
 		} catch(IOException ex) {
