@@ -29,10 +29,9 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
     private Logger logger;
     private List<CertificationCriterionDTO> applicableCriteria = new ArrayList<CertificationCriterionDTO>();
-    
-    OutputStreamWriter writer = null;
-    CSVPrinter csvPrinter = null;
-    
+    private OutputStreamWriter writer = null;
+    private CSVPrinter csvPrinter = null;
+
     /**
      * Required to setCriteriaNames before calling this function.
      */
@@ -44,7 +43,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
         csvPrinter.printRecord(generateHeaderValues());
         csvPrinter.flush();
     }
-    
+
     @Override
     public synchronized void add(final CertifiedProductSearchDetails data) throws IOException {
         getLogger().info("Adding CP to CSV file: " + data.getId());
@@ -54,18 +53,18 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
             csvPrinter.flush();
         }
     }
-    
+
     @Override
     public void close() throws IOException {
         getLogger().info("Closing the XML file.");
         csvPrinter.close();
         writer.close();
     }
-    
-    public void setLogger(Logger logger) {
+
+    public void setLogger(final Logger logger) {
         this.logger = logger;
     }
-    
+
     public Logger getLogger() {
         if (logger == null) {
             logger = LogManager.getLogger(CertifiedProductXmlPresenter.class);

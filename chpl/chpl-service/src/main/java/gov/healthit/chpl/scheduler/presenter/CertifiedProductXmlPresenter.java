@@ -27,7 +27,8 @@ public class CertifiedProductXmlPresenter implements CertifiedProductPresenter {
 
     private Writer writer = null;
     private XMLStreamWriter streamWriter = null;
-    
+
+    @Override
     public void open(final File file) throws IOException {
         getLogger().info("Opening file, initializing XML doc.");
         try {
@@ -44,7 +45,8 @@ public class CertifiedProductXmlPresenter implements CertifiedProductPresenter {
         }
     }
 
-    public synchronized void add(CertifiedProductSearchDetails cp) throws IOException {
+    @Override
+    public synchronized void add(final CertifiedProductSearchDetails cp) throws IOException {
         try {
             getLogger().info("Adding CP to XML file: " + cp.getId());
             CertifiedProductSearchDetailsXmlGenerator.add(cp, "listing", streamWriter);
@@ -53,7 +55,8 @@ public class CertifiedProductXmlPresenter implements CertifiedProductPresenter {
             throw new IOException("Error adding listing to XML file. - " + e.getMessage(), e);
         }
     }
-    
+
+    @Override
     public void close() throws IOException {
         getLogger().info("Closing the XML file.");
         try {
@@ -65,7 +68,7 @@ public class CertifiedProductXmlPresenter implements CertifiedProductPresenter {
             getLogger().error(e);
         } finally {
             if (streamWriter != null) {
-                try{
+                try {
                     streamWriter.close();
                 } catch (Exception e) {
                     throw new IOException("Error closing XMLStreamWriter", e);
@@ -78,11 +81,11 @@ public class CertifiedProductXmlPresenter implements CertifiedProductPresenter {
             }
         }
     }
-    
+
     @Override
     protected void finalize() throws Throwable {
         super.finalize();
-        
+
         if (streamWriter != null) {
             streamWriter.close();
             streamWriter = null;
@@ -92,11 +95,11 @@ public class CertifiedProductXmlPresenter implements CertifiedProductPresenter {
             writer = null;
         }
     }
-    
-    public void setLogger(Logger logger) {
+
+    public void setLogger(final Logger logger) {
         this.logger = logger;
     }
-    
+
     public Logger getLogger() {
         if (logger == null) {
             logger = LogManager.getLogger(CertifiedProductXmlPresenter.class);
