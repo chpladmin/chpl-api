@@ -71,7 +71,21 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
         result.add("ACB Name");
         result.add("Previous ACB Name");
         result.add("Developer Name");
+        result.add("Vendor Street Address");
+        result.add("Vendor City");
+        result.add("Vendor State");
+        result.add("Vendor Zip Code");
+        result.add("Vendor Website");
+        result.add("Vendor Contact Name");
+        result.add("Vendor Contact Email");
+        result.add("Vendor Contact Phone");
+        result.add("Vendor Contact Friendly Name");
         result.add("Product Name");
+        result.add("Product Contact Name");
+        result.add("Product Contanct Friendly Name");
+        result.add("Product Contact Title");
+        result.add("Product Contact Phone");
+        result.add("Product Contact Email");
         result.add("Version");
         result.add("Total Surveillance Activities");
         result.add("Total Nonconformities");
@@ -97,7 +111,37 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
         result.add(data.getCertifyingBody().get("name").toString());
         result.add(data.getOtherAcb());
         result.add(data.getDeveloper().getName());
+        if(data.getDeveloper().getAddress().getLine2() != null) {
+            result.add(data.getDeveloper().getAddress().getLine1() + result.add(data.getDeveloper().getAddress().getLine2()));
+        }else {
+            result.add(data.getDeveloper().getAddress().getLine1());
+        }
+        result.add(data.getDeveloper().getAddress().getCity());
+        result.add(data.getDeveloper().getAddress().getState());
+        result.add(data.getDeveloper().getAddress().getZipcode());
+        result.add(data.getDeveloper().getWebsite());
+        result.add(data.getDeveloper().getContact().getFullName());
+        result.add(data.getDeveloper().getContact().getEmail());
+        result.add(data.getDeveloper().getContact().getPhoneNumber());
+        if(data.getDeveloper().getContact().getFriendlyName() != null) {
+            result.add(data.getDeveloper().getContact().getFriendlyName());
+        }
         result.add(data.getProduct().getName());
+        if(data.getProduct().getContact().getFullName() != null) {
+            result.add(data.getProduct().getContact().getFullName());
+        }
+        if(data.getProduct().getContact().getFriendlyName() != null) {
+            result.add(data.getProduct().getContact().getFriendlyName());
+        }
+        if(data.getProduct().getContact().getTitle() != null) {
+            result.add(data.getProduct().getContact().getTitle());
+        }
+        if(data.getProduct().getContact().getPhoneNumber() != null) {
+            result.add(data.getProduct().getContact().getPhoneNumber());
+        }
+        if(data.getProduct().getContact().getEmail() != null) {
+            result.add(data.getProduct().getContact().getEmail());
+        }
         result.add(data.getVersion().getVersion());
         result.add(data.getCountSurveillance().toString());
         result.add((data.getCountOpenNonconformities() + data.getCountClosedNonconformities()) + "");
