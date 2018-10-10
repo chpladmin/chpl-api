@@ -43,6 +43,7 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
     private static final int MILLIS_PER_SECOND = 1000;
     private CertifiedProductXmlPresenter xmlPresenter;
     private CertifiedProductCsvPresenter csvPresenter;
+    private static final int SECONDS_PER_MINUTE = 60;
     private String edition;
     
     @Autowired
@@ -54,6 +55,7 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
      */
     public CertifiedProductDownloadableResourceCreatorJob() throws Exception {
         super(LOGGER);
+        edition = "";
     }
 
     @Override
@@ -63,7 +65,8 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
 
         Date start = new Date();
         edition = jobContext.getMergedJobDataMap().getString("edition");
-        LOGGER.info("********* Starting the Certified Product Downloadable Resource Creator job for " + edition + ". *********");
+        LOGGER.info("********* Starting the Certified Product Downloadable Resource Creator job for {}. *********",
+                edition);
         try {
             List<CertifiedProductDetailsDTO> listings = getRelevantListings();
             
@@ -124,9 +127,12 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
             LOGGER.error(e.getMessage(), e);
         }
         Date end = new Date();
-        LOGGER.info("Time to create file(s) for " + edition + " edition: "
-                + ((end.getTime() - start.getTime()) / MILLIS_PER_SECOND) + " seconds");
-        LOGGER.info("********* Completed the Certified Product Downloadable Resource Creator job for " + edition + ". *********");
+        LOGGER.info("Time to create file(s) for {} edition: {} seconds, or {} minutes",
+                edition,
+                (end.getTime() - start.getTime()) / MILLIS_PER_SECOND,
+                (end.getTime() - start.getTime()) / MILLIS_PER_SECOND / SECONDS_PER_MINUTE);
+        LOGGER.info("********* Completed the Certified Product Downloadable Resource Creator job for {}. *********",
+                edition);
     }
 
     private SimpleObjectPool<CertifiedProductSearchDetails> getInitializedObjectPool(Integer size) {

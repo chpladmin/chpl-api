@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -140,8 +141,7 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
             survFields.add("");
         }
         survFields.add(surv.getType().getName());
-        survFields.add(getDateTimeFormatter().format(LocalDateTime.ofInstant(Instant.ofEpochMilli(
-                surv.getLastModifiedDate().getTime()), ZoneId.systemDefault())));
+        survFields.add(surv.getLastModifiedDate().toInstant().atOffset(ZoneOffset.UTC).format(getDateTimeFormatter()));
         return survFields;
     }
 
@@ -259,8 +259,7 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
         } else {
             ncFields.add("N/A");
         }
-        ncFields.add(getDateTimeFormatter().format(LocalDateTime.ofInstant(Instant.ofEpochMilli(
-                nc.getLastModifiedDate().getTime()), ZoneId.systemDefault())));
+        ncFields.add(nc.getLastModifiedDate().toInstant().atOffset(ZoneOffset.UTC).format(getDateTimeFormatter()));
         return ncFields;
     }
 }
