@@ -46,7 +46,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
     }
     
     @Override
-    public void add(final CertifiedProductSearchDetails data) throws IOException {
+    public synchronized void add(final CertifiedProductSearchDetails data) throws IOException {
         getLogger().info("Adding CP to CSV file: " + data.getId());
         List<String> rowValue = generateRowValue(data);
         if (rowValue != null) { // a subclass could return null to skip a row

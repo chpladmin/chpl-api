@@ -44,13 +44,13 @@ public class CertifiedProductXmlPresenter implements CertifiedProductPresenter {
         }
     }
 
-    public void add(CertifiedProductSearchDetails cp) throws IOException {
+    public synchronized void add(CertifiedProductSearchDetails cp) throws IOException {
         try {
             getLogger().info("Adding CP to XML file: " + cp.getId());
             CertifiedProductSearchDetailsXmlGenerator.add(cp, "listing", streamWriter);
             streamWriter.flush();
         } catch (XMLStreamException e) {
-            throw new IOException("Error adding listing to XML file.", e);
+            throw new IOException("Error adding listing to XML file. - " + e.getMessage(), e);
         }
     }
     

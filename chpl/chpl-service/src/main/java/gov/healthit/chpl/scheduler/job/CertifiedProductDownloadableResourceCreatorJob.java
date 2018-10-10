@@ -2,11 +2,15 @@ package gov.healthit.chpl.scheduler.job;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import javax.xml.stream.XMLStreamException;
 
@@ -15,12 +19,15 @@ import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.job.PoolB;
+import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProduct2014CsvPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductCsvPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductXmlPresenter;
@@ -34,8 +41,13 @@ import gov.healthit.chpl.scheduler.presenter.CertifiedProductXmlPresenter;
 public class CertifiedProductDownloadableResourceCreatorJob extends DownloadableResourceCreatorJob {
     private static final Logger LOGGER = LogManager.getLogger("certifiedProductDownloadableResourceCreatorJobLogger");
     private static final int MILLIS_PER_SECOND = 1000;
+    private CertifiedProductXmlPresenter xmlPresenter;
+    private CertifiedProductCsvPresenter csvPresenter;
     private String edition;
-
+    
+    @Autowired
+    private CertifiedProductDetailsManager cpdManager;
+    
     /**
      * Default constructor.
      * @throws Exception if issue with context
@@ -54,10 +66,63 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         LOGGER.info("********* Starting the Certified Product Downloadable Resource Creator job for " + edition + ". *********");
         try {
             List<CertifiedProductDetailsDTO> listings = getRelevantListings();
-            List<Future<CertifiedProductSearchDetails>> futures = getCertifiedProductSearchDetailsFutures(listings);
-            processListingFutures(futures);
+            
+            initializeWritingToFiles();
+
+            List<CompletableFuture<CertifiedProductSearchDetails>> futures = 
+                    new ArrayList<CompletableFuture<CertifiedProductSearchDetails>>();
+            
+            List<CertifiedProductSearchDetails> x = new ArrayList<CertifiedProductSearchDetails>();
+            for (int i = 1 ; i <= 20 ; i++) {
+                x.add(new CertifiedProductSearchDetails());
+            }
+            PoolB<CertifiedProductSearchDetails> pool = new PoolB<CertifiedProductSearchDetails>(x);
+            
+            for (CertifiedProductDetailsDTO dto : listings) {
+                CompletableFuture<CertifiedProductSearchDetails> cpCompletableFuture =
+                    CompletableFuture.supplyAsync(new Supplier<CertifiedProductSearchDetails>() {
+                        @Override
+                        public CertifiedProductSearchDetails get() {
+                            CertifiedProductSearchDetails cpDTO = null;
+                            try {
+                                cpDTO = pool.borrow();
+                                cpDTO = cpdManager.getCertifiedProductDetails(dto.getId());
+                                LOGGER.info("Finishing Details for: " + dto.getId());
+                                
+                            } catch (Exception e) {
+                                LOGGER.error(e);
+                            }
+                            return cpDTO;
+                        }
+                    });
+                    cpCompletableFuture.thenAccept(new Consumer<CertifiedProductSearchDetails>() {
+                        @Override
+                        public void accept(CertifiedProductSearchDetails cp) {
+                            try {
+                                xmlPresenter.add(cp);
+                                csvPresenter.add(cp);
+                                pool.giveBack(cp);
+                            } catch (Exception e) {
+                                LOGGER.error(e.getMessage(), e);
+                            }
+                        }
+                    });
+                    futures.add(cpCompletableFuture);
+            }
+            
+            //Block execution until all of the listings have been written
+            CompletableFuture<Void> allTasks =
+                    CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()]));
+            allTasks.get();
+            
+            //This is horrible - need to figure out a way around it...
+            Thread.sleep(3000);
+            
+            //Finish writing files and close streams
+            completeWritingToFiles();
+            
         } catch (Exception e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
         }
         Date end = new Date();
         LOGGER.info("Time to create file(s) for " + edition + " edition: "
@@ -65,18 +130,39 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         LOGGER.info("********* Completed the Certified Product Downloadable Resource Creator job for " + edition + ". *********");
     }
 
-    private void processListingFutures(List<Future<CertifiedProductSearchDetails>> futures) 
-            throws InterruptedException, ExecutionException, XMLStreamException, IOException {
-        
-        CertifiedProductXmlPresenter xmlPresenter = new CertifiedProductXmlPresenter();
+    private CertifiedProductSearchDetails getCertifiedProductSearchDetails(Long id) {
+        CertifiedProductSearchDetails cpDTO = null;
+        try {
+            cpDTO = cpdManager.getCertifiedProductDetails(id);
+            LOGGER.info("Finishing Details for: " + id);
+            
+        } catch (EntityRetrievalException e) {
+            LOGGER.error(e);
+        }
+        return cpDTO;
+    }
+    
+    private void initializeWritingToFiles() throws IOException {
+        xmlPresenter = new CertifiedProductXmlPresenter();
         xmlPresenter.setLogger(LOGGER);
         xmlPresenter.open(getXmlFile());
         
-        CertifiedProductCsvPresenter csvPresenter = getCsvPresenter();
+        csvPresenter = getCsvPresenter();
         csvPresenter.setLogger(LOGGER);
         List<CertificationCriterionDTO> criteria = getCriteriaDao().findByCertificationEditionYear(edition);
         csvPresenter.setApplicableCriteria(criteria);
         csvPresenter.open(getCsvFile());
+        
+    }
+    
+    private void completeWritingToFiles() throws IOException {
+        xmlPresenter.close();
+        csvPresenter.close();
+    }
+    
+    private void processListingFutures(List<Future<CertifiedProductSearchDetails>> futures) 
+            throws InterruptedException, ExecutionException, XMLStreamException, IOException {
+        
         
         CertifiedProductSearchDetails cp;
         /*
@@ -93,8 +179,6 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
             csvPresenter.add(cp);
             futuresIterator.remove();
         }
-        xmlPresenter.close();
-        csvPresenter.close();
     }
     
     private File getXmlFile() throws IOException {
@@ -146,5 +230,16 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
             throw new IOException("File can not be created");
         }
         return file;
+    }
+    
+    static <T> List<List<T>> chopped(List<T> list, final int size) {
+        List<List<T>> parts = new ArrayList<List<T>>();
+        final int N = list.size();
+        for (int i = 0; i < N; i += size) {
+            parts.add(new ArrayList<T>(
+                list.subList(i, Math.min(N, i + size)))
+            );
+        }
+        return parts;
     }
 }
