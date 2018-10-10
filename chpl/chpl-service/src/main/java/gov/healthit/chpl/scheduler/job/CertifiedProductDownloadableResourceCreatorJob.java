@@ -33,6 +33,7 @@ import gov.healthit.chpl.scheduler.presenter.CertifiedProductXmlPresenter;
 public class CertifiedProductDownloadableResourceCreatorJob extends DownloadableResourceCreatorJob {
     private static final Logger LOGGER = LogManager.getLogger("certifiedProductDownloadableResourceCreatorJobLogger");
     private static final int MILLIS_PER_SECOND = 1000;
+    private static final int SECONDS_PER_MINUTE = 60;
     private String edition;
 
     /**
@@ -41,6 +42,7 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
      */
     public CertifiedProductDownloadableResourceCreatorJob() throws Exception {
         super(LOGGER);
+        edition = "";
     }
 
     @Override
@@ -50,7 +52,8 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
 
         Date start = new Date();
         edition = jobContext.getMergedJobDataMap().getString("edition");
-        LOGGER.info("********* Starting the Certified Product Downloadable Resource Creator job for " + edition + ". *********");
+        LOGGER.info("********* Starting the Certified Product Downloadable Resource Creator job for {}. *********",
+                edition);
         try {
             List<CertifiedProductDetailsDTO> listings = getRelevantListings();
 
@@ -68,9 +71,12 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
             LOGGER.error(e);
         }
         Date end = new Date();
-        LOGGER.info("Time to create file(s) for " + edition + " edition: "
-                + ((end.getTime() - start.getTime()) / MILLIS_PER_SECOND) + " seconds");
-        LOGGER.info("********* Completed the Certified Product Downloadable Resource Creator job for " + edition + ". *********");
+        LOGGER.info("Time to create file(s) for {} edition: {} seconds, or {} minutes",
+                edition,
+                (end.getTime() - start.getTime()) / MILLIS_PER_SECOND,
+                (end.getTime() - start.getTime()) / MILLIS_PER_SECOND / SECONDS_PER_MINUTE);
+        LOGGER.info("********* Completed the Certified Product Downloadable Resource Creator job for {}. *********",
+                edition);
     }
 
     private List<CertifiedProductDetailsDTO> getRelevantListings() throws EntityRetrievalException {

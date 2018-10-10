@@ -2,6 +2,7 @@ package gov.healthit.chpl.scheduler.job;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -30,10 +31,12 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
     private static final Logger LOGGER = LogManager.getLogger("g3Sed2015DownloadableResourceCreatorJobLogger");
     private static final String CRITERIA_NAME = "170.315 (g)(3)";
     private static final String EDITION = "2015";
+    private static final int MILLIS_PER_SECOND = 1000;
+    private static final int SECONDS_PER_MINUTE = 60;
 
     @Autowired
     private SchedulerCertifiedProductSearchDetailsAsync schedulerCertifiedProductSearchDetailsAsync;
-    
+
     /**
      * Default constructor.
      * @throws Exception if issue with context
@@ -47,14 +50,15 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         schedulerCertifiedProductSearchDetailsAsync.setLogger(LOGGER);
 
+        Date start = new Date();
         LOGGER.info("********* Starting the G3 SED 2015 Downloadable Resource Creator job. *********");
         try {
             List<Long> listingIds = getRelevantListingIds();
 
-            List<Future<CertifiedProductSearchDetails>> futures = 
+            List<Future<CertifiedProductSearchDetails>> futures =
                     getCertifiedProductSearchDetailsFuturesFromIds(listingIds);
             Map<Long, CertifiedProductSearchDetails> cpMap = getMapFromFutures(futures);
-            List<CertifiedProductSearchDetails> orderedListings = 
+            List<CertifiedProductSearchDetails> orderedListings =
                     createOrderedListOfCertifiedProductsFromIds(cpMap, listingIds);
 
             File downloadFolder = getDownloadFolder();
@@ -62,6 +66,10 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
         } catch (Exception e) {
             LOGGER.error(e);
         }
+        Date end = new Date();
+        LOGGER.info("Time to create download file for G3 SED: {} seconds, or {} minutes",
+                (end.getTime() - start.getTime()) / MILLIS_PER_SECOND,
+                (end.getTime() - start.getTime()) / MILLIS_PER_SECOND / SECONDS_PER_MINUTE);
         LOGGER.info("********* Completed the G3 SED 2015 Downloadable Resource Creator job. *********");
     }
 
@@ -80,9 +88,9 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
 
     private void writeToFile(final File downloadFolder, final List<CertifiedProductSearchDetails> results)
             throws IOException {
-        String csvFilename = downloadFolder.getAbsolutePath() + 
-                File.separator + 
-                "chpl-sed-all-details.csv";
+        String csvFilename = downloadFolder.getAbsolutePath()
+                + File.separator
+                + "chpl-sed-all-details.csv";
         File csvFile = getFile(csvFilename);
         Sed2015CsvPresenter csvPresenter = new Sed2015CsvPresenter();
         csvPresenter.presentAsFile(csvFile, results);
