@@ -50,7 +50,7 @@ public class MeaningfulUseController {
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public synchronized ResponseEntity<Job> uploadMeaningfulUseUsers(
             @RequestParam("file") MultipartFile file,
-            @RequestParam("date") Long date)
+            @RequestParam("accurate_as_of") Long date)
             throws EntityRetrievalException, EntityCreationException, ValidationException,
             MaxUploadSizeExceededException {
 

@@ -90,7 +90,7 @@ public class DecertifiedDeveloperDTOTest {
 		dto3.setAcbList(acbList3);
 		dto3.setDeveloperId(developerId3);
 		dto3.setDeveloperStatus(developerStatus3);
-		dto3.setNumMeaningfulUse(numMeaningfulUse3);
+		dto3.incrementNumMeaningfulUse(numMeaningfulUse3);
 		assertTrue(dto3 != null);
 		
 		Long developerId4 = -1L; 
