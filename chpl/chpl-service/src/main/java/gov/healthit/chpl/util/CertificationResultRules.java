@@ -110,6 +110,8 @@ public class CertificationResultRules {
             LOGGER.error(se.getMessage(), se);
         } catch (final IOException ioe) {
             LOGGER.error(ioe.getMessage(), ioe);
+        } finally {
+            try { xmlInput.close(); } catch(Exception ignore) {}
         }
     }
 

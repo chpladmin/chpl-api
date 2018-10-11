@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -66,6 +67,7 @@ public class MeaningfulUseUploadJob extends RunnableJob {
         this.job = job;
     }
 
+    @Transactional
     public void run() {
         super.run();
 
@@ -201,8 +203,18 @@ public class MeaningfulUseUploadJob extends RunnableJob {
                         MeaningfulUseUserDTO muuDto = new MeaningfulUseUserDTO();
                         muuDto.setMuuDate(muuDate);
                         muuDto.setMuuCount(muu.getNumberOfUsers());
-                        CertifiedProductDTO cpOldStyle = cpDao.getByChplNumber(muu.getProductNumber());
-                        CertifiedProductDetailsDTO cpNewStyle = cpDao.getByChplUniqueId(muu.getProductNumber());
+                        CertifiedProductDTO cpOldStyle = null;
+                        try {
+                            cpOldStyle = cpDao.getByChplNumber(muu.getProductNumber());
+                        } catch(Exception ex) {
+                            LOGGER.warn("Searching for CHPL ID " + muu.getProductNumber() + " as old style ID and got exception: " + ex.getMessage());
+                        }
+                        CertifiedProductDetailsDTO cpNewStyle = null;
+                        try {
+                            cpNewStyle = cpDao.getByChplUniqueId(muu.getProductNumber());
+                        } catch(Exception ex) {
+                            LOGGER.warn("Searching for CHPL ID " + muu.getProductNumber() + " as new style ID and got exception: " + ex.getMessage());
+                        }
                         if (cpOldStyle != null) {
                             muuDto.setCertifiedProductId(cpOldStyle.getId());
                         } else if (cpNewStyle != null) {

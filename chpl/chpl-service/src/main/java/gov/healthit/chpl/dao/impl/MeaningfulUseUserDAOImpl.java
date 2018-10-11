@@ -96,7 +96,7 @@ public class MeaningfulUseUserDAOImpl extends BaseDAOImpl implements MeaningfulU
         Query query = entityManager.createQuery("SELECT muu "
                 + "FROM MeaningfulUseUserEntity muu "
                 + "WHERE muu.id = :entityid "
-                + "AND (NOT muu.deleted = true",
+                + "AND (NOT muu.deleted = true)",
                 MeaningfulUseUserEntity.class);
         query.setParameter("entityid", id);
         List<MeaningfulUseUserEntity> result = query.getResultList();
