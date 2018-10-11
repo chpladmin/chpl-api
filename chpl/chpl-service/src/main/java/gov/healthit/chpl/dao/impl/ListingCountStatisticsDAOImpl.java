@@ -34,6 +34,7 @@ public class ListingCountStatisticsDAOImpl extends BaseDAOImpl implements Listin
     }
 
     @Override
+    @Transactional
     public void delete(final Long id) throws EntityRetrievalException {
         ListingCountStatisticsEntity toDelete = getEntityById(id);
 
@@ -45,6 +46,7 @@ public class ListingCountStatisticsDAOImpl extends BaseDAOImpl implements Listin
     }
 
     @Override
+    @Transactional
     public ListingCountStatisticsEntity create(final ListingCountStatisticsDTO dto)
             throws EntityCreationException, EntityRetrievalException {
         ListingCountStatisticsEntity entity = new ListingCountStatisticsEntity();
