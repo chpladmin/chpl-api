@@ -165,7 +165,7 @@ public class ApiExceptionControllerAdvice {
     @ExceptionHandler(IOException.class)
     @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     public ResponseEntity<ErrorJSONObject> exceptionHandler(IOException e, HttpServletRequest request) {
-        if (StringUtils.containsIgnoreCase(ExceptionUtils.getRootCauseMessage(e), "An established connection was aborted by the software in your host machine")) {
+        if (StringUtils.containsIgnoreCase(ExceptionUtils.getRootCauseMessage(e), "Broken pipe")) {
             LOGGER.info("Broke Pipe IOException occurred: " + request.getMethod() + " " + request.getRequestURL());
             LOGGER.error(e.getMessage(),e);
             return null; //socket is closed, cannot return any response    
