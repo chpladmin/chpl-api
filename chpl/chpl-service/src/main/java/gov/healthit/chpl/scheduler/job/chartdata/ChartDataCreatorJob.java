@@ -75,7 +75,7 @@ public final class ChartDataCreatorJob extends QuartzJob {
         LOGGER.info("Certified Product Count: " + certifiedProducts.size());
 
         analyzeSed(certifiedProducts);
-        //analyzeProducts(certifiedProducts);
+        analyzeProducts(certifiedProducts);
         analyzeDevelopers(certifiedProducts);
         analyzeListingCounts(certifiedProducts);
         analyzeNonconformity();
