@@ -1,4 +1,4 @@
-package gov.healthit.chpl.app.chartdata;
+package gov.healthit.chpl.scheduler.job.chartdata;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,10 +8,8 @@ import java.util.Map.Entry;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.SedParticipantStatisticsCountDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -21,28 +19,31 @@ import gov.healthit.chpl.dto.SedParticipantStatisticsCountDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
-
 /**
- * Populates the sed_participant_statistics_count table with summarized count information.
+ * Populates the sed_participant_statistics_count table with summarized count
+ * information.
+ * 
  * @author TYoung
  *
  */
 public class SedParticipantsStatisticCountCalculator {
-    private static final Logger LOGGER = LogManager.getLogger(SedParticipantsStatisticCountCalculator.class);
-    private ChartDataApplicationEnvironment appEnvironment;
+    private static final Logger LOGGER = LogManager.getLogger("chartDataCreatorJobLogger");
+
+    @Autowired
     private SedParticipantStatisticsCountDAO sedParticipantStatisticsCountDAO;
-    private JpaTransactionManager txnManager;
-    private TransactionTemplate txnTemplate;
+
+    public SedParticipantsStatisticCountCalculator() {
+        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+    }
 
     /**
-     * This method calculates the participant counts and saves them to the sed_participant_statisitics_count table.
-     * @param certifiedProductSearchDetails List of CertifiedProductSearchDetails objects
-     * @param appEnvironment the ChartDataApplicationEnvironment (provides access to Spring managed beans)
+     * This method calculates the participant counts and saves them to the
+     * sed_participant_statisitics_count table.
+     * 
+     * @param certifiedProductSearchDetails
+     *            List of CertifiedProductSearchDetails objects
      */
-    public void run(final List<CertifiedProductSearchDetails> certifiedProductSearchDetails,
-            final ChartDataApplicationEnvironment appEnvironment) {
-        this.appEnvironment = appEnvironment;
-        initialize();
+    public void run(final List<CertifiedProductSearchDetails> certifiedProductSearchDetails) {
 
         Map<Long, Long> counts = getCounts(certifiedProductSearchDetails);
 
@@ -51,21 +52,8 @@ public class SedParticipantsStatisticCountCalculator {
         save(counts);
     }
 
-    private void initialize() {
-        sedParticipantStatisticsCountDAO = (SedParticipantStatisticsCountDAO) appEnvironment
-                .getSpringManagedObject("sedParticipantStatisticsCountDAO");
-        txnManager = (JpaTransactionManager) appEnvironment.getSpringManagedObject("transactionManager");
-        txnTemplate = new TransactionTemplate(txnManager);
-    }
-
     private void save(final Map<Long, Long> counts) {
-        txnTemplate.execute(new TransactionCallbackWithoutResult() {
-
-            @Override
-            protected void doInTransactionWithoutResult(final TransactionStatus arg0) {
-                saveSedParticipantCounts(counts);
-            }
-        });
+        saveSedParticipantCounts(counts);
     }
 
     private void saveSedParticipantCounts(final Map<Long, Long> counts) {

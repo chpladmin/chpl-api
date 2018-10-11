@@ -1,4 +1,4 @@
-package gov.healthit.chpl.app.chartdata;
+package gov.healthit.chpl.scheduler.job.chartdata;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,10 +8,8 @@ import java.util.Map.Entry;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.ParticipantAgeStatisticsDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -23,27 +21,30 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 /**
- * Populates the participant_age_statistics table with summarized count information.
+ * Populates the participant_age_statistics table with summarized count
+ * information.
+ * 
  * @author TYoung
  *
  */
 public class ParticipantAgeStatisticsCalculator {
-    private static final Logger LOGGER = LogManager.getLogger(ParticipantAgeStatisticsCalculator.class);
+    private static final Logger LOGGER = LogManager.getLogger("chartDataCreatorJobLogger");
 
-    private ChartDataApplicationEnvironment appEnvironment;
+    @Autowired
     private ParticipantAgeStatisticsDAO participantAgeStatisticsDAO;
-    private JpaTransactionManager txnManager;
-    private TransactionTemplate txnTemplate;
+
+    public ParticipantAgeStatisticsCalculator() {
+        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+    }
 
     /**
-     * This method calculates the participant counts and saves them to the participant_age_statistics table.
-     * @param certifiedProductSearchDetails List of CertifiedProductSearchDetails objects
-     * @param appEnvironment the ChartDataApplicationEnvironment (provides access to Spring managed beans)
+     * This method calculates the participant counts and saves them to the
+     * participant_age_statistics table.
+     * 
+     * @param certifiedProductSearchDetails
+     *            List of CertifiedProductSearchDetails objects
      */
-    public void run(final List<CertifiedProductSearchDetails> certifiedProductSearchDetails,
-            final ChartDataApplicationEnvironment appEnvironment) {
-        this.appEnvironment = appEnvironment;
-        initialize();
+    public void run(final List<CertifiedProductSearchDetails> certifiedProductSearchDetails) {
 
         Map<Long, Long> ageCounts = getCounts(certifiedProductSearchDetails);
 
@@ -58,16 +59,10 @@ public class ParticipantAgeStatisticsCalculator {
         }
     }
 
-    private void initialize() {
-        participantAgeStatisticsDAO = (ParticipantAgeStatisticsDAO)
-                appEnvironment.getSpringManagedObject("participantAgeStatisticsDAO");
-        txnManager = (JpaTransactionManager) appEnvironment.getSpringManagedObject("transactionManager");
-        txnTemplate = new TransactionTemplate(txnManager);
-    }
-
     private Map<Long, Long> getCounts(final List<CertifiedProductSearchDetails> certifiedProductSearchDetails) {
-        //The key = testParticpantAgeId
-        //The value = count of participants that fall into the associated testParticipantAgeId
+        // The key = testParticpantAgeId
+        // The value = count of participants that fall into the associated
+        // testParticipantAgeId
         Map<Long, Long> ageMap = new HashMap<Long, Long>();
 
         List<TestParticipant> uniqueParticipants = getUniqueParticipants(certifiedProductSearchDetails);
@@ -99,22 +94,16 @@ public class ParticipantAgeStatisticsCalculator {
     }
 
     private void save(final List<ParticipantAgeStatisticsEntity> entities) {
-        txnTemplate.execute(new TransactionCallbackWithoutResult() {
+        try {
+            deleteExistingPartcipantAgeStatistics();
+        } catch (EntityRetrievalException e) {
+            LOGGER.error("Error occured while deleting existing ParticipantAgeStatistics.", e);
+            return;
+        }
 
-            @Override
-            protected void doInTransactionWithoutResult(final TransactionStatus arg0) {
-                try {
-                    deleteExistingPartcipantAgeStatistics();
-                } catch (EntityRetrievalException e) {
-                    LOGGER.error("Error occured while deleting existing ParticipantAgeStatistics.", e);
-                    return;
-                }
-
-                for (ParticipantAgeStatisticsEntity entity : entities) {
-                    saveParticipantAgeStatistic(entity);
-                }
-            }
-        });
+        for (ParticipantAgeStatisticsEntity entity : entities) {
+            saveParticipantAgeStatistic(entity);
+        }
     }
 
     private List<ParticipantAgeStatisticsEntity> convertAgeCountMapToListOfParticipantAgeStatistics(
@@ -133,8 +122,8 @@ public class ParticipantAgeStatisticsCalculator {
         try {
             ParticipantAgeStatisticsDTO dto = new ParticipantAgeStatisticsDTO(entity);
             participantAgeStatisticsDAO.create(dto);
-            LOGGER.info("Saved ParticipantAgeStatisticsDTO [Age Id: " + dto.getTestParticipantAgeId()
-                    + ", Count:" + dto.getAgeCount() + "]");
+            LOGGER.info("Saved ParticipantAgeStatisticsDTO [Age Id: " + dto.getTestParticipantAgeId() + ", Count:"
+                    + dto.getAgeCount() + "]");
         } catch (EntityCreationException | EntityRetrievalException e) {
             LOGGER.error("Error occured while inserting counts.", e);
             return;

@@ -67,6 +67,25 @@
                 <cron-expression>0 0 4 1/1 * ? *</cron-expression> <!-- At 0400 UTC every day -->
             </cron>
         </trigger>
+        <!-- Chart data creator -->
+        <job>
+            <name>chartDataCreator</name>
+            <group>systemJobs</group>
+            <description>Generates the chart data</description>
+            <job-class>gov.healthit.chpl.scheduler.job.chartdata.ChartDataCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+        <trigger>
+            <cron>
+                <name>generateChartData</name>
+                <group>chartDataCreatorTrigger</group>
+                <job-name>chartDataCreator</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 30 02 * * ?</cron-expression> <!-- At 0230 UTC every day -->
+            </cron>
+        </trigger>
         
         <!-- API Key Delete Job -->
         <job>
