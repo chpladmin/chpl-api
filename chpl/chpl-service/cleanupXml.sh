@@ -50,10 +50,18 @@ fi
 echo "Deleting $edition edition files more than $numdays days old from $xmlFolder";
 if [ "$dflag" = true ]; then
     echo "  including those from the first of the month"
+    echo " before:"
+    find $xmlFolder -type f -mtime +$numdays -regex $expression
     find $xmlFolder -type f -mtime +$numdays -regex $expression \
          -delete
+    echo " after:"
+    find $xmlFolder -type f -mtime +$numdays -regex $expression
 else
     echo "  excepting those from the first of the month"
+    echo " before:"
+    find $xmlFolder -type f -mtime +$numdays -regex $expression
     find $xmlFolder -type f -mtime +$numdays -regex $expression \
          -exec sh -c 'test $(LC_TIME=C date +%d -r "$1") = 01 || rm "$1"' -- {} \;
+    echo " after:"
+    find $xmlFolder -type f -mtime +$numdays -regex $expression
 fi
