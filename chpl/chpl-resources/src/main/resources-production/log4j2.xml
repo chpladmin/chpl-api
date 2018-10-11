@@ -173,6 +173,9 @@
         <Logger name="summaryStatisticsCreatorJobLogger" level="INFO" additivity="false">
             <AppenderRef ref="summaryStatisticsCreatorJob" />
         </Logger>
+        <Logger name="chartDataCreatorJobLogger" level="INFO" additivity="false">
+            <AppenderRef ref="chartDataCreatorJob" />
+        </Logger>
         <Logger name="certifiedProductDownloadableResourceCreatorJobLogger" level="INFO" additivity="false">
             <AppenderRef ref="certifiedProductDownloadableResourceCreatorJob" />
         </Logger>
