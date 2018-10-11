@@ -28,6 +28,15 @@
                 <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
             </Policies>
         </RollingFile>
+        <RollingFile name="chartDataCreatorJob" fileName="${logDir}/scheduler/chartDataCreatorJob.log"
+                     filePattern="${logDir}/scheduler/history/chartDataCreatorJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile>
         <RollingFile name="certifiedProductDownloadableResourceCreatorJob" fileName="${logDir}/scheduler/certifiedProductDownloadableResourceCreatorJob.log"
                      filePattern="${logDir}/scheduler/history/certifiedProductDownloadableResourceCreatorJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
@@ -164,6 +173,9 @@
         </Logger>
         <Logger name="summaryStatisticsCreatorJobLogger" level="INFO" additivity="false">
             <AppenderRef ref="summaryStatisticsCreatorJob" />
+        </Logger>
+        <Logger name="chartDataCreatorJobLogger" level="INFO" additivity="false">
+            <AppenderRef ref="chartDataCreatorJob" />
         </Logger>
         <Logger name="certifiedProductDownloadableResourceCreatorJobLogger" level="INFO" additivity="false">
             <AppenderRef ref="certifiedProductDownloadableResourceCreatorJob" />

@@ -1,4 +1,4 @@
-package gov.healthit.chpl.app.chartdata;
+package gov.healthit.chpl.scheduler.job.chartdata;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,10 +7,8 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.ParticipantGenderStatisticsDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -22,28 +20,30 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 /**
- * Populates the participant_gender_statistics table with summarized count information.
+ * Populates the participant_gender_statistics table with summarized count
+ * information.
+ * 
  * @author TYoung
  *
  */
 public class ParticipantGenderStatisticsCalculator {
-    private static final Logger LOGGER = LogManager.getLogger(ParticipantGenderStatisticsCalculator.class);
+    private static final Logger LOGGER = LogManager.getLogger("chartDataCreatorJobLogger");
 
-    private ChartDataApplicationEnvironment appEnvironment;
+    @Autowired
     private ParticipantGenderStatisticsDAO participantGenderStatisticsDAO;
-    private JpaTransactionManager txnManager;
-    private TransactionTemplate txnTemplate;
+
+    public ParticipantGenderStatisticsCalculator() {
+        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+    }
 
     /**
-     * This method calculates the participant gender counts and saves them to the
-     * participant_education_statistics table.
-     * @param certifiedProductSearchDetails List of CertifiedProductSearchDetails objects
-     * @param appEnvironment the ChartDataApplicationEnvironment (provides access to Spring managed beans)
+     * This method calculates the participant gender counts and saves them to
+     * the participant_education_statistics table.
+     * 
+     * @param certifiedProductSearchDetails
+     *            List of CertifiedProductSearchDetails objects
      */
-    public void run(final List<CertifiedProductSearchDetails> certifiedProductSearchDetails,
-            final ChartDataApplicationEnvironment appEnvironment) {
-        this.appEnvironment = appEnvironment;
-        initialize();
+    public void run(final List<CertifiedProductSearchDetails> certifiedProductSearchDetails) {
 
         ParticipantGenderStatisticsEntity entity = getCounts(certifiedProductSearchDetails);
 
@@ -55,12 +55,6 @@ public class ParticipantGenderStatisticsCalculator {
     private void logCounts(final ParticipantGenderStatisticsEntity entity) {
         LOGGER.info("Total Female Count: " + entity.getFemaleCount());
         LOGGER.info("Total Male Count: " + entity.getMaleCount());
-    }
-    private void initialize() {
-        participantGenderStatisticsDAO = (ParticipantGenderStatisticsDAO)
-                appEnvironment.getSpringManagedObject("participantGenderStatisticsDAO");
-        txnManager = (JpaTransactionManager) appEnvironment.getSpringManagedObject("transactionManager");
-        txnTemplate = new TransactionTemplate(txnManager);
     }
 
     private ParticipantGenderStatisticsEntity getCounts(
@@ -79,19 +73,17 @@ public class ParticipantGenderStatisticsCalculator {
             } else {
                 entity.setUnknownCount(entity.getUnknownCount() + 1L);
             }
-            
+
         }
         return entity;
     }
 
     private boolean isParticipantFemale(final TestParticipant participant) {
-        return participant.getGender().equalsIgnoreCase("F")
-                || participant.getGender().equalsIgnoreCase("Female");
+        return participant.getGender().equalsIgnoreCase("F") || participant.getGender().equalsIgnoreCase("Female");
     }
 
     private boolean isParticipantMale(final TestParticipant participant) {
-        return participant.getGender().equalsIgnoreCase("M")
-                || participant.getGender().equalsIgnoreCase("Male");
+        return participant.getGender().equalsIgnoreCase("M") || participant.getGender().equalsIgnoreCase("Male");
     }
 
     private List<TestParticipant> getUniqueParticipants(
@@ -110,13 +102,7 @@ public class ParticipantGenderStatisticsCalculator {
     }
 
     private void save(final ParticipantGenderStatisticsEntity entity) {
-        txnTemplate.execute(new TransactionCallbackWithoutResult() {
-
-            @Override
-            protected void doInTransactionWithoutResult(final TransactionStatus arg0) {
-                saveSedParticipantGenderStatistics(entity);
-            }
-        });
+        saveSedParticipantGenderStatistics(entity);
     }
 
     private void saveSedParticipantGenderStatistics(final ParticipantGenderStatisticsEntity entity) {
@@ -131,8 +117,8 @@ public class ParticipantGenderStatisticsCalculator {
         try {
             ParticipantGenderStatisticsDTO dto = new ParticipantGenderStatisticsDTO(entity);
             participantGenderStatisticsDAO.create(dto);
-            LOGGER.info("Saved ParticipantGenderStatisticsDTO [Female: " + dto.getFemaleCount()
-                    + ", Male:" + dto.getMaleCount() + "]");
+            LOGGER.info("Saved ParticipantGenderStatisticsDTO [Female: " + dto.getFemaleCount() + ", Male:"
+                    + dto.getMaleCount() + "]");
         } catch (EntityCreationException | EntityRetrievalException e) {
             LOGGER.error("Error occured while inserting counts.", e);
             return;
