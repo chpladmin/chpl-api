@@ -1,8 +1,13 @@
 package gov.healthit.chpl;
 
+import java.io.IOException;
+
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
+import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.TypeMismatchException;
@@ -10,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import gov.healthit.chpl.auth.json.ErrorJSONObject;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
@@ -156,6 +162,19 @@ public class ApiExceptionControllerAdvice {
                 HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(IOException.class)
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+    public ResponseEntity<ErrorJSONObject> exceptionHandler(IOException e, HttpServletRequest request) {
+        if (StringUtils.containsIgnoreCase(ExceptionUtils.getRootCauseMessage(e), "An established connection was aborted by the software in your host machine")) {
+            LOGGER.info("Broke Pipe IOException occurred: " + request.getMethod() + " " + request.getRequestURL());
+            LOGGER.error(e.getMessage(),e);
+            return null; //socket is closed, cannot return any response    
+        } else {
+            return new ResponseEntity<ErrorJSONObject>(
+                    new ErrorJSONObject(e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
+    
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorJSONObject> exception(final Exception e) {
         LOGGER.error("Caught exception.", e);
