@@ -64,14 +64,6 @@ public class MeaningfulUseUploadJob extends RunnableJob {
                 LOGGER.error(msg);
                 addJobMessage(msg);
                 updateStatus(100, JobStatusType.Error);
-                try {
-                    parser.close();
-                } catch (Exception ignore) {
-                }
-                try {
-                    reader.close();
-                } catch (Exception ignore) {
-                }
             } else {
                 CSVRecord heading = null;
                 for (int i = 1; i <= records.size(); i++) {
@@ -141,11 +133,16 @@ public class MeaningfulUseUploadJob extends RunnableJob {
             LOGGER.error(msg);
             addJobMessage(msg);
             updateStatus(100, JobStatusType.Error);
+        } finally {
             try {
-                parser.close();
+                if (parser != null && !parser.isClosed()) {
+                    parser.close();
+                }
             } catch (Exception ignore) {
+                
             }
             try {
+                if (reader != null)
                 reader.close();
             } catch (Exception ignore) {
             }

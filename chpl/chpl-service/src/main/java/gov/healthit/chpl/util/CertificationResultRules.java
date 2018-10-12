@@ -46,15 +46,6 @@ public class CertificationResultRules {
     private Map<String, List<CertificationResultOption>> rules = new HashMap<String, List<CertificationResultOption>>();
 
     public CertificationResultRules() {
-        ClassPathResource cpr = new ClassPathResource("certificationResultRules.xml");
-        InputStream xmlInput = null;
-        try {
-            xmlInput = cpr.getInputStream();
-        } catch (final IOException ioEx) {
-            LOGGER.fatal("Could not load rules file.", ioEx);
-            return;
-        }
-
         Document dom;
         // Make an instance of the DocumentBuilderFactory
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -63,42 +54,46 @@ public class CertificationResultRules {
         dbf.setExpandEntityReferences(true);
         dbf.setIgnoringComments(true);
         dbf.setIgnoringElementContentWhitespace(true);
-
+        
+        ClassPathResource cpr = new ClassPathResource("certificationResultRules.xml");
+        
         try {
-            // use the factory to take an instance of the document builder
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            // parse using the builder to get the DOM mapping of the
-            // XML file
-            dom = db.parse(xmlInput);
-            Element doc = dom.getDocumentElement();
-            NodeList certNodes = doc.getElementsByTagName("certificationResult");
-            for (int i = 0; i < certNodes.getLength(); i++) {
-                Element certNode = (Element) certNodes.item(i);
-                String certNumber = getTextValue(certNode, "number");
-                NodeList propertiesNodes = certNode.getElementsByTagName("properties");
-                if (propertiesNodes.getLength() == 1) {
-                    Element certProperties = (Element) propertiesNodes.item(0);
-                    NodeList certPropertiesNodes = certProperties.getChildNodes();
-                    for (int j = 0; j < certPropertiesNodes.getLength(); j++) {
-                        Node propertyNode = certPropertiesNodes.item(j);
-                        if (propertyNode instanceof Element) {
-                            Element propertyElement = (Element) propertyNode;
-                            String propName = propertyElement.getNodeName();
-                            String propValue = propertyElement.getTextContent();
-                            boolean canHaveProperty = new Boolean(propValue).booleanValue();
-                            CertificationResultOption option = new CertificationResultOption();
-                            option.setOptionName(propName);
-                            if(propName.equals("gap")){
-                            	option.setCanHaveOption(true);
-                            }else{
-                            	option.setCanHaveOption(canHaveProperty);
-                            }
-                            if (rules.get(certNumber) == null) {
-                                List<CertificationResultOption> options = new ArrayList<CertificationResultOption>();
-                                options.add(option);
-                                rules.put(certNumber, options);
-                            } else {
-                                rules.get(certNumber).add(option);
+            try (InputStream xmlInput = cpr.getInputStream()) {
+                // use the factory to take an instance of the document builder
+                DocumentBuilder db = dbf.newDocumentBuilder();
+                // parse using the builder to get the DOM mapping of the
+                // XML file
+                dom = db.parse(xmlInput);
+                Element doc = dom.getDocumentElement();
+                NodeList certNodes = doc.getElementsByTagName("certificationResult");
+                for (int i = 0; i < certNodes.getLength(); i++) {
+                    Element certNode = (Element) certNodes.item(i);
+                    String certNumber = getTextValue(certNode, "number");
+                    NodeList propertiesNodes = certNode.getElementsByTagName("properties");
+                    if (propertiesNodes.getLength() == 1) {
+                        Element certProperties = (Element) propertiesNodes.item(0);
+                        NodeList certPropertiesNodes = certProperties.getChildNodes();
+                        for (int j = 0; j < certPropertiesNodes.getLength(); j++) {
+                            Node propertyNode = certPropertiesNodes.item(j);
+                            if (propertyNode instanceof Element) {
+                                Element propertyElement = (Element) propertyNode;
+                                String propName = propertyElement.getNodeName();
+                                String propValue = propertyElement.getTextContent();
+                                boolean canHaveProperty = new Boolean(propValue).booleanValue();
+                                CertificationResultOption option = new CertificationResultOption();
+                                option.setOptionName(propName);
+                                if(propName.equals("gap")){
+                                	option.setCanHaveOption(true);
+                                }else{
+                                	option.setCanHaveOption(canHaveProperty);
+                                }
+                                if (rules.get(certNumber) == null) {
+                                    List<CertificationResultOption> options = new ArrayList<CertificationResultOption>();
+                                    options.add(option);
+                                    rules.put(certNumber, options);
+                                } else {
+                                    rules.get(certNumber).add(option);
+                                }
                             }
                         }
                     }

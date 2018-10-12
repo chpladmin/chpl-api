@@ -15,17 +15,17 @@ public class FileUtils {
     private static final Logger LOGGER = LogManager.getLogger(FileUtils.class);
 
     public static String readFileAsString(MultipartFile file) throws ValidationException {
-     // read the file into a string
+        //read the file into a string
         StringBuffer data = new StringBuffer();
-        BufferedReader reader = null;
         try {
-            reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
-            String line = null;
-            while ((line = reader.readLine()) != null) {
-                if (data.length() > 0) {
-                    data.append(System.getProperty("line.separator"));
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+                String line = null;
+                while ((line = reader.readLine()) != null) {
+                    if (data.length() > 0) {
+                        data.append(System.getProperty("line.separator"));
+                    }
+                    data.append(line);
                 }
-                data.append(line);
             }
         } catch (final IOException ex) {
             String msg = "Could not read file: " + ex.getMessage();

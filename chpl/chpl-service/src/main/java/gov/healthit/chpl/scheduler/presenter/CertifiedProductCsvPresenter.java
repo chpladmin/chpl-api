@@ -26,7 +26,7 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
  * @author alarned
  *
  */
-public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
+public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, AutoCloseable {
     private Logger logger;
     private List<CertificationCriterionDTO> applicableCriteria = new ArrayList<CertificationCriterionDTO>();
     private OutputStreamWriter writer = null;
