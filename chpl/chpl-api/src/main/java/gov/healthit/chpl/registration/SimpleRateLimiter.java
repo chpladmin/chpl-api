@@ -11,7 +11,7 @@ public class SimpleRateLimiter {
     private TimeUnit timePeriod;
     private ScheduledExecutorService scheduler;
 
-    SimpleRateLimiter(int permits, TimeUnit timePeriod) {
+    SimpleRateLimiter(final int permits, final TimeUnit timePeriod) {
         this.semaphore = new Semaphore(permits);
         this.maxPermits = permits;
         this.timePeriod = timePeriod;

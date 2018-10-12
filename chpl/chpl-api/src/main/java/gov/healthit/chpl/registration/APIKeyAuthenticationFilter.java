@@ -21,6 +21,9 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ApiKeyManager;
 
+/**
+ * Filter used to ensure calls to API that require an API-Key have a valid API-Key.
+ */
 public class APIKeyAuthenticationFilter extends GenericFilterBean {
     private static final Logger LOGGER = LogManager.getLogger(APIKeyAuthenticationFilter.class);
     public static final String[] ALLOWED_REQUEST_PATHS = {
@@ -29,16 +32,23 @@ public class APIKeyAuthenticationFilter extends GenericFilterBean {
 
     private ApiKeyManager apiKeyManager;
 
-    public APIKeyAuthenticationFilter(ApiKeyManager apiKeyManager) {
+    /**
+     * Constructor with key manager.
+     * @param apiKeyManager the api key manager
+     */
+    public APIKeyAuthenticationFilter(final ApiKeyManager apiKeyManager) {
         this.apiKeyManager = apiKeyManager;
     }
 
     @Override
-    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException,
-            ServletException {
-
-        HttpServletRequest request = (HttpServletRequest) req;
-
+    public void doFilter(final ServletRequest req, final ServletResponse res, final FilterChain chain)
+            throws IOException, ServletException {
+        HttpServletRequest request = null;
+        if (req instanceof javax.servlet.http.HttpServletRequest) {
+            request = (HttpServletRequest) req;
+        } else {
+            throw new ServletException("Request was not correct type");
+        }
         String requestPath;
         if (request.getQueryString() == null) {
             requestPath = request.getRequestURI();
@@ -50,7 +60,7 @@ public class APIKeyAuthenticationFilter extends GenericFilterBean {
         String keyFromHeader = request.getHeader("API-Key");
         String keyFromParam = request.getParameter("api_key");
 
-        if (keyFromHeader == keyFromParam) {
+        if (keyFromHeader != null && keyFromHeader.equals(keyFromParam)) {
             key = keyFromHeader;
         } else {
 
@@ -64,7 +74,7 @@ public class APIKeyAuthenticationFilter extends GenericFilterBean {
                         "API key presented in Header does not match API key presented as URL Parameter.");
                 ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
                 String json = ow.writeValueAsString(errorObj);
-                res.getOutputStream().write(json.getBytes());
+                res.getOutputStream().write(json.getBytes("UTF-8"));
             }
         }
 
@@ -80,7 +90,7 @@ public class APIKeyAuthenticationFilter extends GenericFilterBean {
             ErrorJSONObject errorObj = new ErrorJSONObject("API key must be presented in order to use this API");
             ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
             String json = ow.writeValueAsString(errorObj);
-            res.getOutputStream().write(json.getBytes());
+            res.getOutputStream().write(json.getBytes("UTF-8"));
         } else {
             try {
                 ApiKeyDTO retrievedKey = apiKeyManager.findKey(key);
