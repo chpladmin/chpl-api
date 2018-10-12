@@ -109,9 +109,6 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
                 //This is horrible - need to figure out a way around it...
                 //Think this is because async tasks are complete, but the last 'accept' has not completed
                 Thread.sleep(1000);
-
-                //Finish writing files and close streams
-                completeWritingToFiles(xmlPresenter, csvPresenter);
             }
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
@@ -134,12 +131,6 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         List<CertificationCriterionDTO> criteria = getCriteriaDao().findByCertificationEditionYear(edition);
         csvPresenter.setApplicableCriteria(criteria);
         csvPresenter.open(getCsvFile());
-    }
-
-    private void completeWritingToFiles(CertifiedProductXmlPresenter xmlPresenter, 
-            CertifiedProductCsvPresenter csvPresenter) throws IOException {
-        xmlPresenter.close();
-        csvPresenter.close();
     }
 
     private File getXmlFile() throws IOException {
