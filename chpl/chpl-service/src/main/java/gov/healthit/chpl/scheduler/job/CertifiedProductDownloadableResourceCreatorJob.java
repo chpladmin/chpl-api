@@ -5,21 +5,23 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Future;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProduct2014CsvPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductCsvPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductXmlPresenter;
@@ -33,8 +35,13 @@ import gov.healthit.chpl.scheduler.presenter.CertifiedProductXmlPresenter;
 public class CertifiedProductDownloadableResourceCreatorJob extends DownloadableResourceCreatorJob {
     private static final Logger LOGGER = LogManager.getLogger("certifiedProductDownloadableResourceCreatorJobLogger");
     private static final int MILLIS_PER_SECOND = 1000;
+    private CertifiedProductXmlPresenter xmlPresenter;
+    private CertifiedProductCsvPresenter csvPresenter;
     private static final int SECONDS_PER_MINUTE = 60;
     private String edition;
+
+    @Autowired
+    private CertifiedProductDetailsManager cpdManager;
 
     /**
      * Default constructor.
@@ -57,18 +64,54 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         try {
             List<CertifiedProductDetailsDTO> listings = getRelevantListings();
 
-            List<Future<CertifiedProductSearchDetails>> futures = getCertifiedProductSearchDetailsFutures(listings);
-            Map<Long, CertifiedProductSearchDetails> cpMap = getMapFromFutures(futures);
+            initializeWritingToFiles();
 
-            CertifiedProductDownloadResponse results = new CertifiedProductDownloadResponse();
-            results.setListings(createOrderedListOfCertifiedProductsFromIds(
-                    cpMap,
-                    getOriginalCertifiedProductOrder(listings)));
+            List<CompletableFuture<CertifiedProductSearchDetails>> futures =
+                    new ArrayList<CompletableFuture<CertifiedProductSearchDetails>>();
 
-            File downloadFolder = getDownloadFolder();
-            writeToFile(downloadFolder, results);
+            for (CertifiedProductDetailsDTO dto : listings) {
+                CompletableFuture<CertifiedProductSearchDetails> cpCompletableFuture =
+                    CompletableFuture.supplyAsync(new Supplier<CertifiedProductSearchDetails>() {
+                        @Override
+                        public CertifiedProductSearchDetails get() {
+                            CertifiedProductSearchDetails cpDTO = null;
+                            try {
+                                cpDTO = cpdManager.getCertifiedProductDetails(dto.getId());
+                                LOGGER.info("Finishing Details for: " + dto.getId());
+                            } catch (Exception e) {
+                                LOGGER.error(e);
+                            }
+                            return cpDTO;
+                        }
+                    });
+                    cpCompletableFuture.thenAccept(new Consumer<CertifiedProductSearchDetails>() {
+                        @Override
+                        public void accept(final CertifiedProductSearchDetails cp) {
+                            try {
+                                xmlPresenter.add(cp);
+                                csvPresenter.add(cp);
+                            } catch (Exception e) {
+                                LOGGER.error(e.getMessage(), e);
+                            }
+                        }
+                    });
+                    futures.add(cpCompletableFuture);
+            }
+
+            //Block execution until all of the listings have been written
+            CompletableFuture<Void> allTasks =
+                    CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()]));
+
+            allTasks.get();
+
+            //This is horrible - need to figure out a way around it...
+            //Think this is because async tasks are complete, but the last 'accept' has not completed
+            Thread.sleep(1000);
+
+            //Finish writing files and close streams
+            completeWritingToFiles();
         } catch (Exception e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
         }
         Date end = new Date();
         LOGGER.info("Time to create file(s) for {} edition: {} seconds, or {} minutes",
@@ -77,6 +120,37 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
                 (end.getTime() - start.getTime()) / MILLIS_PER_SECOND / SECONDS_PER_MINUTE);
         LOGGER.info("********* Completed the Certified Product Downloadable Resource Creator job for {}. *********",
                 edition);
+    }
+
+    private void initializeWritingToFiles() throws IOException {
+        xmlPresenter = new CertifiedProductXmlPresenter();
+        xmlPresenter.setLogger(LOGGER);
+        xmlPresenter.open(getXmlFile());
+
+        csvPresenter = getCsvPresenter();
+        csvPresenter.setLogger(LOGGER);
+        List<CertificationCriterionDTO> criteria = getCriteriaDao().findByCertificationEditionYear(edition);
+        csvPresenter.setApplicableCriteria(criteria);
+        csvPresenter.open(getCsvFile());
+    }
+
+    private void completeWritingToFiles() throws IOException {
+        xmlPresenter.close();
+        csvPresenter.close();
+    }
+
+    private File getXmlFile() throws IOException {
+        File downloadFolder = getDownloadFolder();
+        String xmlFilename = getFileName(downloadFolder.getAbsolutePath(),
+                getTimestampFormat().format(new Date()), "xml");
+        return getFile(xmlFilename);
+    }
+
+    private File getCsvFile() throws IOException {
+        File downloadFolder = getDownloadFolder();
+        String xmlFilename = getFileName(downloadFolder.getAbsolutePath(),
+                getTimestampFormat().format(new Date()), "csv");
+        return getFile(xmlFilename);
     }
 
     private List<CertifiedProductDetailsDTO> getRelevantListings() throws EntityRetrievalException {
@@ -89,58 +163,14 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         return listingsForEdition;
     }
 
-    private List<Long> getOriginalCertifiedProductOrder(final List<CertifiedProductDetailsDTO> listings) {
-        List<Long> order = new ArrayList<Long>();
-
-        for (CertifiedProductDetailsDTO cp : listings) {
-            order.add(cp.getId());
-        }
-
-        return order;
-    }
-
-    private void writeToFile(final File downloadFolder, final CertifiedProductDownloadResponse results)
-            throws IOException {
-        writeToCsv(downloadFolder, results);
-        writeToXml(downloadFolder, results);
-    }
-
-    private void writeToXml(final File downloadFolder, final CertifiedProductDownloadResponse results)
-            throws IOException {
-        Date start = new Date();
-        String xmlFilename = getFileName(downloadFolder.getAbsolutePath(),
-                getTimestampFormat().format(new Date()), "xml");
-        File xmlFile = getFile(xmlFilename);
-        CertifiedProductXmlPresenter xmlPresenter = new CertifiedProductXmlPresenter();
-        xmlPresenter.presentAsFile(xmlFile, results);
-        Date end = new Date();
-        LOGGER.info("Wrote " + edition + " XML file in "
-                + ((end.getTime() - start.getTime()) / MILLIS_PER_SECOND) + " seconds");
-    }
-
-    private void writeToCsv(final File downloadFolder, final CertifiedProductDownloadResponse results)
-            throws IOException {
-        Date start = new Date();
-        String csvFilename = getFileName(downloadFolder.getAbsolutePath(),
-                getTimestampFormat().format(new Date()), "csv");
-        File csvFile = getFile(csvFilename);
-        CertifiedProductCsvPresenter csvPresenter = getCsvPresenter();
-        List<CertificationCriterionDTO> criteria = getCriteriaDao().findByCertificationEditionYear(edition);
-        csvPresenter.setApplicableCriteria(criteria);
-        csvPresenter.presentAsFile(csvFile, results);
-        Date end = new Date();
-        LOGGER.info("Wrote " + edition  + " CSV file in "
-                + ((end.getTime() - start.getTime()) / MILLIS_PER_SECOND) + " seconds");
-    }
-
     private CertifiedProductCsvPresenter getCsvPresenter() {
-        CertifiedProductCsvPresenter csvPresenter = null;
+        CertifiedProductCsvPresenter presenter = null;
         if (edition.equals("2014")) {
-            csvPresenter = new CertifiedProduct2014CsvPresenter();
+            presenter = new CertifiedProduct2014CsvPresenter();
         } else {
-            csvPresenter = new CertifiedProductCsvPresenter();
+            presenter = new CertifiedProductCsvPresenter();
         }
-        return csvPresenter;
+        return presenter;
     }
 
     private String getFileName(final String path, final String timeStamp, final String extension) {
