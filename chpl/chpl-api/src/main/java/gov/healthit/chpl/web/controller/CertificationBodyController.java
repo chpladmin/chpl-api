@@ -70,7 +70,6 @@ public class CertificationBodyController {
         if (!Util.isUserRoleAdmin() && showDeleted) {
             throw new AccessDeniedException("Only Admins can see deleted ACB's.");
         } else {
-            results = new CertificationBodyResults();
             List<CertificationBodyDTO> acbs = null;
             if (editable) {
                 acbs = acbManager.getAllForUser(showDeleted);

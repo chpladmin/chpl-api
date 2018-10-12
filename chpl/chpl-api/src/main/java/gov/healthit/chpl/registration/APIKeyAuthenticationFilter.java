@@ -100,7 +100,7 @@ public class APIKeyAuthenticationFilter extends GenericFilterBean {
                     ErrorJSONObject errorObj = new ErrorJSONObject("Invalid API Key");
                     ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
                     String json = ow.writeValueAsString(errorObj);
-                    res.getOutputStream().write(json.getBytes());
+                    res.getOutputStream().write(json.getBytes("UTF-8"));
                 } else {
                     try {
                         apiKeyManager.logApiKeyActivity(key, requestPath);

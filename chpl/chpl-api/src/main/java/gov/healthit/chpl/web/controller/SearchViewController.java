@@ -69,10 +69,12 @@ import io.swagger.annotations.ApiOperation;
 @Api
 @RestController
 public class SearchViewController {
+    private static final int BUFFER_SIZE = 1024;
+    private static final int MAX_PAGE_SIZE = 100;
 
     @Autowired
     private Environment env;
-    
+
     @Autowired
     private MessageSource messageSource;
 
@@ -96,18 +98,18 @@ public class SearchViewController {
                     + "any one of the XML files, append ‘&edition=year’ to the end of the query string "
                     + "(e.g., &edition=2015). A separate query is required to download each of the XML files.")
     @RequestMapping(value = "/download", method = RequestMethod.GET, produces = "application/xml")
-    public void download(@RequestParam(value = "edition", required = false) String edition,
-            @RequestParam(value = "format", defaultValue = "xml", required = false) String format,
+    public void download(@RequestParam(value = "edition", required = false) final String editionInput,
+            @RequestParam(value = "format", defaultValue = "xml", required = false) final String formatInput,
             @RequestParam(value = "definition", defaultValue = "false", required = false) final Boolean isDefinition,
             final HttpServletRequest request, final HttpServletResponse response) throws IOException {
         String downloadFileLocation = env.getProperty("downloadFolderPath");
         File downloadFile = new File(downloadFileLocation);
         if (!downloadFile.exists() || !downloadFile.canRead()) {
             response.getWriter()
-                    .write(String.format(
-                            messageSource.getMessage(new DefaultMessageSourceResolvable("resources.noReadPermission"),
-                                    LocaleContextHolder.getLocale()),
-                            downloadFileLocation));
+            .write(String.format(
+                    messageSource.getMessage(new DefaultMessageSourceResolvable("resources.noReadPermission"),
+                            LocaleContextHolder.getLocale()),
+                    downloadFileLocation));
             return;
         }
 
@@ -116,12 +118,14 @@ public class SearchViewController {
             File[] children = downloadFile.listFiles();
             if (children == null || children.length == 0) {
                 response.getWriter()
-                        .write(String.format(
-                                messageSource.getMessage(new DefaultMessageSourceResolvable("resources.noFilesExist"),
-                                        LocaleContextHolder.getLocale()),
-                                downloadFileLocation));
+                .write(String.format(
+                        messageSource.getMessage(new DefaultMessageSourceResolvable("resources.noFilesExist"),
+                                LocaleContextHolder.getLocale()),
+                        downloadFileLocation));
                 return;
             } else {
+                String edition = editionInput;
+                String format = formatInput;
                 if (!StringUtils.isEmpty(edition)) {
                     // make sure it's a 4 character year
                     edition = edition.trim();
@@ -138,7 +142,7 @@ public class SearchViewController {
                     format = "xml";
                 }
 
-                if (isDefinition != null && isDefinition.booleanValue() == true) {
+                if (isDefinition != null && isDefinition.booleanValue()) {
                     String absolutePath = null;
                     if (format.equals("xml")) {
                         String schemaFilename = env.getProperty("schemaXmlName");
@@ -155,9 +159,9 @@ public class SearchViewController {
                         downloadFile = new File(absolutePath);
                         if (!downloadFile.exists()) {
                             response.getWriter()
-                                    .write(String.format(messageSource.getMessage(
-                                            new DefaultMessageSourceResolvable("resources.schemaFileNotFound"),
-                                            LocaleContextHolder.getLocale()), absolutePath));
+                            .write(String.format(messageSource.getMessage(
+                                    new DefaultMessageSourceResolvable("resources.schemaFileNotFound"),
+                                    LocaleContextHolder.getLocale()), absolutePath));
                             return;
                         }
                     }
@@ -179,10 +183,10 @@ public class SearchViewController {
                         downloadFile = newestFileWithFormat;
                     } else {
                         response.getWriter()
-                                .write(String.format(messageSource.getMessage(
-                                        new DefaultMessageSourceResolvable(
-                                                "resources.fileWithEditionAndFormatNotFound"),
-                                        LocaleContextHolder.getLocale()), edition, format));
+                        .write(String.format(messageSource.getMessage(
+                                new DefaultMessageSourceResolvable(
+                                        "resources.fileWithEditionAndFormatNotFound"),
+                                LocaleContextHolder.getLocale()), edition, format));
                         return;
                     }
                 }
@@ -191,109 +195,116 @@ public class SearchViewController {
 
         LOGGER.info("Downloading " + downloadFile.getName());
 
-        FileInputStream inputStream = new FileInputStream(downloadFile);
+        try (FileInputStream inputStream = new FileInputStream(downloadFile);
+                OutputStream outStream = response.getOutputStream()) {
 
-        // set content attributes for the response
-        response.setContentType("application/xml");
-        response.setContentLength((int) downloadFile.length());
+            // set content attributes for the response
+            response.setContentType("application/xml");
+            response.setContentLength((int) downloadFile.length());
 
-        // set headers for the response
-        String headerKey = "Content-Disposition";
-        String headerValue = String.format("attachment; filename=\"%s\"", downloadFile.getName());
-        response.setHeader(headerKey, headerValue);
+            // set headers for the response
+            String headerKey = "Content-Disposition";
+            String headerValue = String.format("attachment; filename=\"%s\"", downloadFile.getName());
+            response.setHeader(headerKey, headerValue);
 
-        // get output stream of the response
-        OutputStream outStream = response.getOutputStream();
-        byte[] buffer = new byte[1024];
-        int bytesRead = -1;
+            byte[] buffer = new byte[BUFFER_SIZE];
+            int bytesRead = -1;
 
-        // write bytes read from the input stream into the output stream
-        while ((bytesRead = inputStream.read(buffer)) != -1) {
-            outStream.write(buffer, 0, bytesRead);
+            // write bytes read from the input stream into the output stream
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outStream.write(buffer, 0, bytesRead);
+            }
         }
-
-        inputStream.close();
-        outStream.close();
     }
 
     @ApiOperation(value = "Search the CHPL",
             notes = "If paging parameters are not specified, the first 20 records are returned by default. "
                     + "All parameters are optional. "
-                    + "Any parameter that can accept multiple things (i.e. certificationStatuses) expects a comma-delimited list of those things (i.e. certificationStatuses = Active,Suspended). "
+                    + "Any parameter that can accept multiple things (i.e. certificationStatuses) expects "
+                    + "a comma-delimited list of those things (i.e. certificationStatuses = Active,Suspended). "
                     + "Date parameters are required to be in the format "
                     + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT + ". ")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "searchTerm",
-                    value = "CHPL ID, Developer (or previous developer) Name, Product Name, ONC-ACB Certification ID", required = false,
-                    dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "certificationStatuses",
-                    value = "A comma-separated list of certification statuses "
-                            + "(ex: \"Active,Retired,Withdrawn by Developer\")).",
-                    required = false, dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "certificationEditions",
-                    value = "A comma-separated list of certification editions to be 'or'ed together (ex: \"2014,2015\" finds listings with either edition 2014 or 2015).",
-                    required = false, dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "certificationCriteria",
-                    value = "A comma-separated list of certification criteria to be queried together (ex: \"170.314 (a)(1),170.314 (a)(2)\" finds listings attesting to either 170.314 (a)(1) or 170.314 (a(2)).",
-                    required = false, dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "certificationCriteriaOperator",
-                    value = "Either AND or OR. Defaults to OR. " + 
-                            "Indicates whether a listing must have all certificationCriteria or may have any one or more of the certificationCriteria.",
-                    required = false, dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "cqms",
-                    value = "A comma-separated list of cqms to be queried together (ex: \"CMS2,CMS9\" finds listings with either CMS2 or CMS9).",
-                    required = false, dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "cqmsCriteriaOperator",
-                value = "Either AND or OR. Defaults to OR. " +
-                        "Indicates whether a listing must have all cqms or may have any one or more of the cqms.",
+        @ApiImplicitParam(name = "searchTerm",
+                value = "CHPL ID, Developer (or previous developer) Name, Product Name, ONC-ACB Certification ID",
+                required = false,
+                dataType = "string", paramType = "query"),
+        @ApiImplicitParam(name = "certificationStatuses",
+        value = "A comma-separated list of certification statuses "
+                + "(ex: \"Active,Retired,Withdrawn by Developer\")).",
                 required = false, dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "certificationBodies",
-                    value = "A comma-separated list of certification body names to be 'or'ed together (ex: \"Drummond,ICSA\" finds listings belonging to either Drummond or ICSA).",
-                    required = false, dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "nonconformityOptions",
-                    value = "A comma-separated list of nonconformity search options. Valid options are "
-                            + "OPEN_NONCONFORMITY, CLOSED_NONCONFORMITY, and NEVER_NONCONFORMITY.",
-                    required = false, dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "nonconformityOptionsOperator",
-                value = "Either AND or OR. Defaults to OR." + 
-                        "Indicates whether a listing must have met all nonconformityOptions specified or may have met any one or more of the nonconformityOptions",
+        @ApiImplicitParam(name = "certificationEditions",
+        value = "A comma-separated list of certification editions to be 'or'ed together "
+                + "(ex: \"2014,2015\" finds listings with either edition 2014 or 2015).",
                 required = false, dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "hasHadSurveillance",
-                    value = "True or False if a listing has ever had surveillance.", required = false,
-                    dataType = "boolean", paramType = "query"),
-            @ApiImplicitParam(name = "developer", value = "The full name of a developer.", required = false,
-                    dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "product", value = "The full name of a product.", required = false,
-                    dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "version", value = "The full name of a version.", required = false,
-                    dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "practiceType",
-                    value = "A practice type (either Ambulatory or Inpatient). Valid only for 2014 listings.",
-                    required = false, dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "certificationDateStart",
-                    value = "To return only listings certified after this date. Required format is "
-                            + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT,
-                    required = false, dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "certificationDateEnd",
-                    value = "To return only listings certified before this date. Required format is "
-                            + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT,
-                    required = false, dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "pageNumber",
-                    value = "Zero-based page number used in concert with pageSize. Defaults to 0.", required = false,
-                    dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "pageSize",
-                    value = "Number of results to return used in concert with pageNumber. Defaults to 20. Maximum allowed page size is 100.",
-                    required = false, dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "orderBy",
-                    value = "What to order by. Options are one of the following: " +
-                            SearchRequest.ORDER_BY_DEVELOPER + ", " + SearchRequest.ORDER_BY_PRODUCT + ", " +
-                            SearchRequest.ORDER_BY_VERSION + ", " + SearchRequest.ORDER_BY_CERTIFICATION_EDITION + ", " +
-                            ", or " + SearchRequest.ORDER_BY_CERTIFICATION_BODY + ", " + 
-                            ". Defaults to " + SearchRequest.ORDER_BY_PRODUCT + ".",
-                    required = false, dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "sortDescending",
-                    value = "Use to specify the direction of the sort. Defaults to false (ascending sort).",
-                    required = false, dataType = "boolean", paramType = "query")
+        @ApiImplicitParam(name = "certificationCriteria",
+        value = "A comma-separated list of certification criteria to be queried together "
+                + "(ex: \"170.314 (a)(1),170.314 (a)(2)\" finds listings "
+                + "attesting to either 170.314 (a)(1) or 170.314 (a(2)).",
+                required = false, dataType = "string", paramType = "query"),
+        @ApiImplicitParam(name = "certificationCriteriaOperator",
+        value = "Either AND or OR. Defaults to OR. "
+                + "Indicates whether a listing must have all certificationCriteria or "
+                + "may have any one or more of the certificationCriteria.",
+                required = false, dataType = "string", paramType = "query"),
+        @ApiImplicitParam(name = "cqms",
+        value = "A comma-separated list of cqms to be queried together (ex: \"CMS2,CMS9\" "
+                + "finds listings with either CMS2 or CMS9).",
+                required = false, dataType = "string", paramType = "query"),
+        @ApiImplicitParam(name = "cqmsCriteriaOperator",
+        value = "Either AND or OR. Defaults to OR. "
+                + "Indicates whether a listing must have all cqms or may have any one or more of the cqms.",
+                required = false, dataType = "string", paramType = "query"),
+        @ApiImplicitParam(name = "certificationBodies",
+        value = "A comma-separated list of certification body names to be 'or'ed together "
+                + "(ex: \"Drummond,ICSA\" finds listings belonging to either Drummond or ICSA).",
+                required = false, dataType = "string", paramType = "query"),
+        @ApiImplicitParam(name = "nonconformityOptions",
+        value = "A comma-separated list of nonconformity search options. Valid options are "
+                + "OPEN_NONCONFORMITY, CLOSED_NONCONFORMITY, and NEVER_NONCONFORMITY.",
+                required = false, dataType = "string", paramType = "query"),
+        @ApiImplicitParam(name = "nonconformityOptionsOperator",
+        value = "Either AND or OR. Defaults to OR."
+                 + "Indicates whether a listing must have met all nonconformityOptions "
+                + "specified or may have met any one or more of the nonconformityOptions",
+                required = false, dataType = "string", paramType = "query"),
+        @ApiImplicitParam(name = "hasHadSurveillance",
+        value = "True or False if a listing has ever had surveillance.", required = false,
+        dataType = "boolean", paramType = "query"),
+        @ApiImplicitParam(name = "developer", value = "The full name of a developer.", required = false,
+        dataType = "string", paramType = "query"),
+        @ApiImplicitParam(name = "product", value = "The full name of a product.", required = false,
+        dataType = "string", paramType = "query"),
+        @ApiImplicitParam(name = "version", value = "The full name of a version.", required = false,
+        dataType = "string", paramType = "query"),
+        @ApiImplicitParam(name = "practiceType",
+        value = "A practice type (either Ambulatory or Inpatient). Valid only for 2014 listings.",
+        required = false, dataType = "string", paramType = "query"),
+        @ApiImplicitParam(name = "certificationDateStart",
+        value = "To return only listings certified after this date. Required format is "
+                + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT,
+                required = false, dataType = "string", paramType = "query"),
+        @ApiImplicitParam(name = "certificationDateEnd",
+        value = "To return only listings certified before this date. Required format is "
+                + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT,
+                required = false, dataType = "string", paramType = "query"),
+        @ApiImplicitParam(name = "pageNumber",
+        value = "Zero-based page number used in concert with pageSize. Defaults to 0.", required = false,
+        dataType = "string", paramType = "query"),
+        @ApiImplicitParam(name = "pageSize",
+        value = "Number of results to return used in concert with pageNumber. "
+                + "Defaults to 20. Maximum allowed page size is 100.",
+                required = false, dataType = "string", paramType = "query"),
+        @ApiImplicitParam(name = "orderBy",
+        value = "What to order by. Options are one of the following: "
+                + SearchRequest.ORDER_BY_DEVELOPER + ", " + SearchRequest.ORDER_BY_PRODUCT + ", "
+                + SearchRequest.ORDER_BY_VERSION + ", " + SearchRequest.ORDER_BY_CERTIFICATION_EDITION + ", "
+                + ", or " + SearchRequest.ORDER_BY_CERTIFICATION_BODY + ", "
+                + ". Defaults to " + SearchRequest.ORDER_BY_PRODUCT + ".",
+                required = false, dataType = "string", paramType = "query"),
+        @ApiImplicitParam(name = "sortDescending",
+        value = "Use to specify the direction of the sort. Defaults to false (ascending sort).",
+        required = false, dataType = "boolean", paramType = "query")
     })
     @RequestMapping(value = "/search", method = RequestMethod.GET, produces = {
             "application/json; charset=utf-8", "application/xml"
@@ -301,37 +312,37 @@ public class SearchViewController {
     public @ResponseBody SearchResponse searchGet(
             @RequestParam(value = "searchTerm", required = false, defaultValue = "") String searchTerm,
             @RequestParam(value = "certificationStatuses", required = false,
-                    defaultValue = "") String certificationStatusesDelimited,
+            defaultValue = "") String certificationStatusesDelimited,
             @RequestParam(value = "certificationEditions", required = false,
-                    defaultValue = "") String certificationEditionsDelimited,
+            defaultValue = "") String certificationEditionsDelimited,
             @RequestParam(value = "certificationCriteria", required = false,
-                    defaultValue = "") String certificationCriteriaDelimited,
+            defaultValue = "") String certificationCriteriaDelimited,
             @RequestParam(value = "certificationCriteriaOperator", required = false,
-                    defaultValue = "OR") String certificationCriteriaOperatorStr,
+            defaultValue = "OR") String certificationCriteriaOperatorStr,
             @RequestParam(value = "cqms", required = false, defaultValue = "") String cqmsDelimited,
             @RequestParam(value = "cqmsOperator", required = false,
-                defaultValue = "OR") String cqmsOperatorStr,
+            defaultValue = "OR") String cqmsOperatorStr,
             @RequestParam(value = "certificationBodies", required = false,
-                    defaultValue = "") String certificationBodiesDelimited,
+            defaultValue = "") String certificationBodiesDelimited,
             @RequestParam(value = "hasHadSurveillance", required = false,
-                    defaultValue = "") String hasHadSurveillanceStr,
+            defaultValue = "") String hasHadSurveillanceStr,
             @RequestParam(value = "nonconformityOptions", required = false,
-                    defaultValue = "") String nonconformityOptionsDelimited,
+            defaultValue = "") String nonconformityOptionsDelimited,
             @RequestParam(value = "nonconformityOptionsOperator", required = false,
-                defaultValue = "OR") String nonconformityOptionsOperator,
+            defaultValue = "OR") String nonconformityOptionsOperator,
             @RequestParam(value = "developer", required = false, defaultValue = "") String developer,
             @RequestParam(value = "product", required = false, defaultValue = "") String product,
             @RequestParam(value = "version", required = false, defaultValue = "") String version,
             @RequestParam(value = "practiceType", required = false, defaultValue = "") String practiceType,
             @RequestParam(value = "certificationDateStart", required = false,
-                    defaultValue = "") String certificationDateStart,
+            defaultValue = "") String certificationDateStart,
             @RequestParam(value = "certificationDateEnd", required = false,
-                    defaultValue = "") String certificationDateEnd,
+            defaultValue = "") String certificationDateEnd,
             @RequestParam(value = "pageNumber", required = false, defaultValue = "0") Integer pageNumber,
             @RequestParam(value = "pageSize", required = false, defaultValue = "20") Integer pageSize,
             @RequestParam(value = "orderBy", required = false, defaultValue = "product") String orderBy,
             @RequestParam(value = "sortDescending", required = false, defaultValue = "false") Boolean sortDescending)
-            throws InvalidArgumentsException, EntityRetrievalException {
+                    throws InvalidArgumentsException, EntityRetrievalException {
 
         SearchRequest searchRequest = new SearchRequest();
         if (searchTerm != null) {
@@ -342,7 +353,7 @@ public class SearchViewController {
             certificationStatusesDelimited = certificationStatusesDelimited.trim();
             if (!StringUtils.isEmpty(certificationStatusesDelimited)) {
                 String[] certificationStatusArr = certificationStatusesDelimited.split(",");
-                if (certificationStatusArr != null && certificationStatusArr.length > 0) {
+                if (certificationStatusArr.length > 0) {
                     Set<String> certificationStatuses = new HashSet<String>();
                     Set<KeyValueModel> availableCertificationStatuses = searchMenuManager.getCertificationStatuses();
 
@@ -360,7 +371,7 @@ public class SearchViewController {
             certificationEditionsDelimited = certificationEditionsDelimited.trim();
             if (!StringUtils.isEmpty(certificationEditionsDelimited)) {
                 String[] certificationEditionsArr = certificationEditionsDelimited.split(",");
-                if (certificationEditionsArr != null && certificationEditionsArr.length > 0) {
+                if (certificationEditionsArr.length > 0) {
                     Set<String> certificationEditions = new HashSet<String>();
                     Set<KeyValueModel> availableCertificationEditions = searchMenuManager.getEditionNames(false);
 
@@ -379,7 +390,7 @@ public class SearchViewController {
             certificationCriteriaDelimited = certificationCriteriaDelimited.trim();
             if (!StringUtils.isEmpty(certificationCriteriaDelimited)) {
                 String[] certificationCriteriaArr = certificationCriteriaDelimited.split(",");
-                if (certificationCriteriaArr != null && certificationCriteriaArr.length > 0) {
+                if (certificationCriteriaArr.length > 0) {
                     Set<String> certificationCriterion = new HashSet<String>();
                     Set<DescriptiveModel> availableCriterion = searchMenuManager
                             .getCertificationCriterionNumbers(false);
@@ -404,7 +415,7 @@ public class SearchViewController {
             cqmsDelimited = cqmsDelimited.trim();
             if (!StringUtils.isEmpty(cqmsDelimited)) {
                 String[] cqmsArr = cqmsDelimited.split(",");
-                if (cqmsArr != null && cqmsArr.length > 0) {
+                if (cqmsArr.length > 0) {
                     Set<String> cqms = new HashSet<String>();
                     Set<DescriptiveModel> availableCqms = searchMenuManager.getCQMCriterionNumbers(false);
 
@@ -428,7 +439,7 @@ public class SearchViewController {
             certificationBodiesDelimited = certificationBodiesDelimited.trim();
             if (!StringUtils.isEmpty(certificationBodiesDelimited)) {
                 String[] certificationBodiesArr = certificationBodiesDelimited.split(",");
-                if (certificationBodiesArr != null && certificationBodiesArr.length > 0) {
+                if (certificationBodiesArr.length > 0) {
                     Set<String> certBodies = new HashSet<String>();
                     Set<KeyValueModel> availableCertBodies = searchMenuManager.getCertBodyNames(true);
 
@@ -442,23 +453,23 @@ public class SearchViewController {
             }
         }
 
-        if(!StringUtils.isEmpty(hasHadSurveillanceStr)) {
-            if(!hasHadSurveillanceStr.equalsIgnoreCase(Boolean.TRUE.toString()) && 
-               !hasHadSurveillanceStr.equalsIgnoreCase(Boolean.FALSE.toString())) {
-                String err = String.format(
-                        messageSource.getMessage(new DefaultMessageSourceResolvable("search.hasHadSurveillance.invalid"),
-                                LocaleContextHolder.getLocale()),
+        if (!StringUtils.isEmpty(hasHadSurveillanceStr)) {
+            if (!hasHadSurveillanceStr.equalsIgnoreCase(Boolean.TRUE.toString())
+                    && !hasHadSurveillanceStr.equalsIgnoreCase(Boolean.FALSE.toString())) {
+                String err = String.format(messageSource.getMessage(
+                        new DefaultMessageSourceResolvable("search.hasHadSurveillance.invalid"),
+                        LocaleContextHolder.getLocale()),
                         hasHadSurveillanceStr);
                 throw new InvalidArgumentsException(err);
             }
             Boolean hasHadSurveillance = Boolean.parseBoolean(hasHadSurveillanceStr);
             searchRequest.getSurveillance().setHasHadSurveillance(hasHadSurveillance);
         }
-        
+
         if (!StringUtils.isEmpty(nonconformityOptionsDelimited)) {
             nonconformityOptionsDelimited = nonconformityOptionsDelimited.trim();
             String[] nonconformityOptionsArr = nonconformityOptionsDelimited.split(",");
-            if (nonconformityOptionsArr != null && nonconformityOptionsArr.length > 0) {
+            if (nonconformityOptionsArr.length > 0) {
                 Set<NonconformitySearchOptions> nonconformitySearchOptions = new HashSet<NonconformitySearchOptions>();
                 for (int i = 0; i < nonconformityOptionsArr.length; i++) {
                     String nonconformityOptionParam = nonconformityOptionsArr[i].trim();
@@ -467,27 +478,27 @@ public class SearchViewController {
                         if (ncOpt != null) {
                             nonconformitySearchOptions.add(ncOpt);
                         } else {
-                            String err = String.format(
-                                    messageSource.getMessage(new DefaultMessageSourceResolvable("search.nonconformitySearchOption.invalid"),
-                                            LocaleContextHolder.getLocale()),
-                                    nonconformityOptionParam, NonconformitySearchOptions.CLOSED_NONCONFORMITY.name() 
+                            String err = String.format(messageSource.getMessage(
+                                    new DefaultMessageSourceResolvable("search.nonconformitySearchOption.invalid"),
+                                    LocaleContextHolder.getLocale()),
+                                    nonconformityOptionParam, NonconformitySearchOptions.CLOSED_NONCONFORMITY.name()
                                     + ", " + NonconformitySearchOptions.NEVER_NONCONFORMITY.name()
                                     + ", or " + NonconformitySearchOptions.OPEN_NONCONFORMITY.name());
                             throw new InvalidArgumentsException(err);
                         }
                     } catch (Exception ex) {
-                        String err = String.format(
-                                messageSource.getMessage(new DefaultMessageSourceResolvable("search.nonconformitySearchOption.invalid"),
-                                        LocaleContextHolder.getLocale()),
-                                nonconformityOptionParam, NonconformitySearchOptions.CLOSED_NONCONFORMITY.name() 
+                        String err = String.format(messageSource.getMessage(
+                                new DefaultMessageSourceResolvable("search.nonconformitySearchOption.invalid"),
+                                LocaleContextHolder.getLocale()),
+                                nonconformityOptionParam, NonconformitySearchOptions.CLOSED_NONCONFORMITY.name()
                                 + ", " + NonconformitySearchOptions.NEVER_NONCONFORMITY.name()
                                 + ", or " + NonconformitySearchOptions.OPEN_NONCONFORMITY.name());
                         throw new InvalidArgumentsException(err);
                     }
                 }
                 searchRequest.getSurveillance().setNonconformityOptions(nonconformitySearchOptions);
-                
-                if(!StringUtils.isEmpty(nonconformityOptionsOperator)) {
+
+                if (!StringUtils.isEmpty(nonconformityOptionsOperator)) {
                     nonconformityOptionsOperator = nonconformityOptionsOperator.trim();
                     SearchSetOperator ncOperator = validateSearchSetOperator(nonconformityOptionsOperator);
                     searchRequest.getSurveillance().setNonconformityOptionsOperator(ncOperator);
@@ -531,7 +542,7 @@ public class SearchViewController {
                 searchRequest.setCertificationDateStart(certificationDateStart);
             }
         }
-        
+
         if (!StringUtils.isEmpty(certificationDateEnd)) {
             certificationDateEnd = certificationDateEnd.trim();
             if (!StringUtils.isEmpty(certificationDateEnd)) {
@@ -542,12 +553,12 @@ public class SearchViewController {
         validatePageSize(pageSize);
         orderBy = orderBy.trim();
         validateOrderBy(orderBy);
-        
+
         searchRequest.setPageNumber(pageNumber);
         searchRequest.setPageSize(pageSize);
         searchRequest.setOrderBy(orderBy);
         searchRequest.setSortDescending(sortDescending);
-        
+
         //trim everything
         searchRequest.cleanAllParameters();
         return certifiedProductSearchManager.search(searchRequest);
@@ -558,48 +569,48 @@ public class SearchViewController {
             notes = "Search the CHPL by specifycing multiple fields of the data to search. "
                     + "If paging fields are not specified, the first 20 records are returned by default.")
     @RequestMapping(value = "/search", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
-    public @ResponseBody SearchResponse searchPost(@RequestBody SearchRequest searchRequest)
+    produces = "application/json; charset=utf-8")
+    public @ResponseBody SearchResponse searchPost(@RequestBody final SearchRequest searchRequest)
             throws InvalidArgumentsException, EntityRetrievalException {
         //trim everything
         searchRequest.cleanAllParameters();
-        
-        if(searchRequest.getCertificationStatuses() != null && searchRequest.getCertificationStatuses().size() > 0) {
+
+        if (searchRequest.getCertificationStatuses() != null && searchRequest.getCertificationStatuses().size() > 0) {
             Set<KeyValueModel> availableCertificationStatuses = searchMenuManager.getCertificationStatuses();
-            for(String certStatusName : searchRequest.getCertificationStatuses()) {
+            for (String certStatusName : searchRequest.getCertificationStatuses()) {
                 validateCertificationStatus(certStatusName, availableCertificationStatuses);
             }
         }
-        
-        if(searchRequest.getCertificationEditions() != null && searchRequest.getCertificationEditions().size() > 0) {
+
+        if (searchRequest.getCertificationEditions() != null && searchRequest.getCertificationEditions().size() > 0) {
             Set<KeyValueModel> availableCertificationEditions = searchMenuManager.getEditionNames(false);
-            for(String certEditionName : searchRequest.getCertificationEditions()) {
+            for (String certEditionName : searchRequest.getCertificationEditions()) {
                 validateCertificationEdition(certEditionName, availableCertificationEditions);
             }
         }
-        
-        if(searchRequest.getCertificationCriteria() != null && searchRequest.getCertificationCriteria().size() > 0) {
+
+        if (searchRequest.getCertificationCriteria() != null && searchRequest.getCertificationCriteria().size() > 0) {
             Set<DescriptiveModel> availableCriterion = searchMenuManager
                     .getCertificationCriterionNumbers(false);
-            for(String criteria : searchRequest.getCertificationCriteria()) {
+            for (String criteria : searchRequest.getCertificationCriteria()) {
                 validateCertificationCriteria(criteria, availableCriterion);
             }
         }
-        
-        if(searchRequest.getCqms() != null && searchRequest.getCqms().size() > 0) {
+
+        if (searchRequest.getCqms() != null && searchRequest.getCqms().size() > 0) {
             Set<DescriptiveModel> availableCqms = searchMenuManager.getCQMCriterionNumbers(false);
-            for(String cqm : searchRequest.getCqms()) {
+            for (String cqm : searchRequest.getCqms()) {
                 validateCqm(cqm, availableCqms);
             }
         }
-        
-        if(searchRequest.getCertificationBodies() != null && searchRequest.getCertificationBodies().size() > 0) {
+
+        if (searchRequest.getCertificationBodies() != null && searchRequest.getCertificationBodies().size() > 0) {
             Set<KeyValueModel> availableCertBodies = searchMenuManager.getCertBodyNames(true);
-            for(String certBody : searchRequest.getCertificationBodies()) {
+            for (String certBody : searchRequest.getCertificationBodies()) {
                 validateCertificationBody(certBody, availableCertBodies);
             }
         }
-        
+
         validatePracticeTypeParameter(searchRequest.getPracticeType());
         validateCertificationDateParameter(searchRequest.getCertificationDateStart());
         validateCertificationDateParameter(searchRequest.getCertificationDateEnd());
@@ -608,8 +619,8 @@ public class SearchViewController {
         return certifiedProductSearchManager.search(searchRequest);
     }
 
-    private void validateCertificationBody(String certBodyParam,
-            Set<KeyValueModel> availableCertBodies) throws InvalidArgumentsException {
+    private void validateCertificationBody(final String certBodyParam,
+            final Set<KeyValueModel> availableCertBodies) throws InvalidArgumentsException {
         boolean found = false;
         for (KeyValueModel currAvailableCertBody : availableCertBodies) {
             if (currAvailableCertBody.getName().equalsIgnoreCase(certBodyParam)) {
@@ -623,11 +634,11 @@ public class SearchViewController {
                     certBodyParam);
             LOGGER.error(err);
             throw new InvalidArgumentsException(err);
-        }    
+        }
     }
-    
-    private void validateCqm(String cqmParam, 
-            Set<DescriptiveModel> availableCqms) throws InvalidArgumentsException {
+
+    private void validateCqm(final String cqmParam,
+            final Set<DescriptiveModel> availableCqms) throws InvalidArgumentsException {
         boolean found = false;
         for (DescriptiveModel currAvailableCqm : availableCqms) {
             if (currAvailableCqm.getName().equalsIgnoreCase(cqmParam)) {
@@ -641,11 +652,11 @@ public class SearchViewController {
                     cqmParam);
             LOGGER.error(err);
             throw new InvalidArgumentsException(err);
-        }           
+        }
     }
-    
-    private void validateCertificationCriteria(String certCriteriaParam, 
-            Set<DescriptiveModel> availableCriterion) throws InvalidArgumentsException {
+
+    private void validateCertificationCriteria(final String certCriteriaParam,
+            final Set<DescriptiveModel> availableCriterion) throws InvalidArgumentsException {
         boolean found = false;
         for (DescriptiveModel currAvailableCriteria : availableCriterion) {
             if (currAvailableCriteria.getName().equalsIgnoreCase(certCriteriaParam)) {
@@ -659,11 +670,11 @@ public class SearchViewController {
                     certCriteriaParam);
             LOGGER.error(err);
             throw new InvalidArgumentsException(err);
-        }            
+        }
     }
-    
-    private void validateCertificationEdition(String certEditionParam,
-            Set<KeyValueModel> availableCertificationEditions) throws InvalidArgumentsException {
+
+    private void validateCertificationEdition(final String certEditionParam,
+            final Set<KeyValueModel> availableCertificationEditions) throws InvalidArgumentsException {
         boolean found = false;
         for (KeyValueModel currAvailableEdition : availableCertificationEditions) {
             if (currAvailableEdition.getName().equalsIgnoreCase(certEditionParam)) {
@@ -679,9 +690,9 @@ public class SearchViewController {
             throw new InvalidArgumentsException(err);
         }
     }
-    
-    private void validateCertificationStatus(String certStatusParam, 
-            Set<KeyValueModel> availableCertificationStatuses) throws InvalidArgumentsException {
+
+    private void validateCertificationStatus(final String certStatusParam,
+            final Set<KeyValueModel> availableCertificationStatuses) throws InvalidArgumentsException {
         boolean found = false;
         for (KeyValueModel currAvailableCertStatus : availableCertificationStatuses) {
             if (currAvailableCertStatus.getName().equalsIgnoreCase(certStatusParam)) {
@@ -697,12 +708,13 @@ public class SearchViewController {
             throw new InvalidArgumentsException(err);
         }
     }
-    
-    private SearchSetOperator validateSearchSetOperator(String searchSetOperator) throws InvalidArgumentsException {
+
+    private SearchSetOperator validateSearchSetOperator(final String searchSetOperator)
+            throws InvalidArgumentsException {
         SearchSetOperator result = null;
         try {
             SearchSetOperator operatorEnum = SearchSetOperator.valueOf(searchSetOperator);
-            if(operatorEnum != null) {
+            if (operatorEnum != null) {
                 result = operatorEnum;
             } else {
                 String err = String.format(
@@ -711,7 +723,7 @@ public class SearchViewController {
                         searchSetOperator, SearchSetOperator.OR + " or " + SearchSetOperator.AND);
                 throw new InvalidArgumentsException(err);
             }
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             String err = String.format(
                     messageSource.getMessage(new DefaultMessageSourceResolvable("search.searchOperator.invalid"),
                             LocaleContextHolder.getLocale()),
@@ -720,8 +732,8 @@ public class SearchViewController {
         }
         return result;
     }
-    
-    private void validatePracticeTypeParameter(String practiceType) throws InvalidArgumentsException {
+
+    private void validatePracticeTypeParameter(final String practiceType) throws InvalidArgumentsException {
         if (!StringUtils.isEmpty(practiceType)) {
             Set<KeyValueModel> availablePracticeTypes = searchMenuManager.getPracticeTypeNames();
             boolean found = false;
@@ -738,11 +750,11 @@ public class SearchViewController {
                         practiceType);
                 LOGGER.error(err);
                 throw new InvalidArgumentsException(err);
-            } 
-        }    
+            }
+        }
     }
-    
-    private void validateCertificationDateParameter(String dateStr) throws InvalidArgumentsException {
+
+    private void validateCertificationDateParameter(final String dateStr) throws InvalidArgumentsException {
         SimpleDateFormat format = new SimpleDateFormat(SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
         if (dateStr != null) {
             if (!StringUtils.isEmpty(dateStr)) {
@@ -750,7 +762,8 @@ public class SearchViewController {
                     format.parse(dateStr);
                 } catch (final ParseException ex) {
                     String err = String.format(
-                            messageSource.getMessage(new DefaultMessageSourceResolvable("search.certificationDate.invalid"),
+                            messageSource.getMessage(
+                                    new DefaultMessageSourceResolvable("search.certificationDate.invalid"),
                                     LocaleContextHolder.getLocale()),
                             dateStr, SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
                     LOGGER.error(err);
@@ -759,9 +772,9 @@ public class SearchViewController {
             }
         }
     }
-    
-    private void validatePageSize(Integer pageSize) throws InvalidArgumentsException {
-        if(pageSize > 100) {
+
+    private void validatePageSize(final Integer pageSize) throws InvalidArgumentsException {
+        if (pageSize > MAX_PAGE_SIZE) {
             String err = String.format(
                     messageSource.getMessage(new DefaultMessageSourceResolvable("search.pageSize.invalid"),
                             LocaleContextHolder.getLocale()),
@@ -769,80 +782,84 @@ public class SearchViewController {
             throw new InvalidArgumentsException(err);
         }
     }
-    
-    private void validateOrderBy(String orderBy) throws InvalidArgumentsException {
-        if(!orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_CERTIFICATION_BODY) && 
-            !orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_CERTIFICATION_EDITION) && 
-            !orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_DEVELOPER) && 
-            !orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_PRODUCT) && 
-            !orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_VERSION)) {
+
+    private void validateOrderBy(final String orderBy) throws InvalidArgumentsException {
+        if (!orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_CERTIFICATION_BODY)
+                && !orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_CERTIFICATION_EDITION)
+                && !orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_DEVELOPER)
+                && !orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_PRODUCT)
+                && !orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_VERSION)) {
             String err = String.format(
-                messageSource.getMessage(new DefaultMessageSourceResolvable("search.orderBy.invalid"),
-                        LocaleContextHolder.getLocale()),
-                orderBy, SearchRequest.ORDER_BY_CERTIFICATION_BODY + ", " + 
-                    SearchRequest.ORDER_BY_CERTIFICATION_EDITION + ", " + 
-                    SearchRequest.ORDER_BY_DEVELOPER + ", " + 
-                    SearchRequest.ORDER_BY_PRODUCT + ", or " +
-                    SearchRequest.ORDER_BY_VERSION);
+                    messageSource.getMessage(new DefaultMessageSourceResolvable("search.orderBy.invalid"),
+                            LocaleContextHolder.getLocale()),
+                    orderBy, SearchRequest.ORDER_BY_CERTIFICATION_BODY + ", "
+                            + SearchRequest.ORDER_BY_CERTIFICATION_EDITION + ", "
+                            + SearchRequest.ORDER_BY_DEVELOPER + ", "
+                            + SearchRequest.ORDER_BY_PRODUCT + ", or "
+                            + SearchRequest.ORDER_BY_VERSION);
             throw new InvalidArgumentsException(err);
         }
     }
-    
+
     @Secured({
-            Authority.ROLE_ADMIN, Authority.ROLE_ACB
+        Authority.ROLE_ADMIN, Authority.ROLE_ACB
     })
     @ApiOperation(value = "Get all possible types of jobs that can be created in the system.")
     @RequestMapping(value = "/data/job_types", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody Set<KeyValueModel> getJobTypes() {
         return searchMenuManager.getJobTypes();
     }
 
     @Secured({
-            Authority.ROLE_ADMIN, Authority.ROLE_ACB
+        Authority.ROLE_ADMIN, Authority.ROLE_ACB
     })
     @ApiOperation(value = "Get all possible types of notifications that a user can sign up for.")
     @RequestMapping(value = "/data/notification_types", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody Set<NotificationType> getNotificationTypes() {
         return searchMenuManager.getNotificationTypes();
     }
 
     @Secured({
-            Authority.ROLE_ADMIN
+        Authority.ROLE_ADMIN
     })
     @ApiOperation(value = "Get all fuzzy matching choices for the items that be fuzzy matched.")
     @RequestMapping(value = "/data/fuzzy_choices", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    public @ResponseBody Set<FuzzyChoices> getFuzzyChoices() throws EntityRetrievalException, JsonParseException, JsonMappingException, IOException {
+    produces = "application/json; charset=utf-8")
+    public @ResponseBody Set<FuzzyChoices> getFuzzyChoices()
+            throws EntityRetrievalException, JsonParseException, JsonMappingException, IOException {
         return searchMenuManager.getFuzzyChoices();
     }
 
     @Deprecated
     @ApiOperation(value = "DEPRECATED.  Change existing fuzzy matching choices.",
-            notes = "Only CHPL users with ROLE_ADMIN are able to update fuzzy matching choices.")
-    @RequestMapping(value = "/data/fuzzy_choices/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
-    public FuzzyChoices updateFuzzyChoicesDeprecated(@RequestBody FuzzyChoices fuzzyChoices) throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException, EntityCreationException, IOException {
-        
-        return updateFuzzyChoices(fuzzyChoices);
-    }
-    
-    @ApiOperation(value = "Change existing fuzzy matching choices.",
-            notes = "Only CHPL users with ROLE_ADMIN are able to update fuzzy matching choices.")
-    @RequestMapping(value = "/data/fuzzy_choices/{fuzzyChoiceId}", method = RequestMethod.PUT, 
-                    consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
-    public FuzzyChoices updateFuzzyChoicesForSearching(@RequestBody FuzzyChoices fuzzyChoices) 
-            throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException, 
+    notes = "Only CHPL users with ROLE_ADMIN are able to update fuzzy matching choices.")
+    @RequestMapping(value = "/data/fuzzy_choices/update", method = RequestMethod.POST,
+    consumes = MediaType.APPLICATION_JSON_VALUE,
+    produces = "application/json; charset=utf-8")
+    public FuzzyChoices updateFuzzyChoicesDeprecated(@RequestBody final FuzzyChoices fuzzyChoices)
+            throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
             EntityCreationException, IOException {
-        
+
         return updateFuzzyChoices(fuzzyChoices);
     }
 
-    private FuzzyChoices updateFuzzyChoices(FuzzyChoices fuzzyChoices) 
-                throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException, 
-                EntityCreationException, IOException {
-        
+    @ApiOperation(value = "Change existing fuzzy matching choices.",
+            notes = "Only CHPL users with ROLE_ADMIN are able to update fuzzy matching choices.")
+    @RequestMapping(value = "/data/fuzzy_choices/{fuzzyChoiceId}", method = RequestMethod.PUT,
+    consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+    public FuzzyChoices updateFuzzyChoicesForSearching(@RequestBody final FuzzyChoices fuzzyChoices)
+            throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
+            EntityCreationException, IOException {
+
+        return updateFuzzyChoices(fuzzyChoices);
+    }
+
+    private FuzzyChoices updateFuzzyChoices(final FuzzyChoices fuzzyChoices)
+            throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
+            EntityCreationException, IOException {
+
         FuzzyChoicesDTO toUpdate = new FuzzyChoicesDTO();
         toUpdate.setId(fuzzyChoices.getId());
         toUpdate.setFuzzyType(FuzzyType.getValue(fuzzyChoices.getFuzzyType()));
@@ -856,7 +873,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible classifications in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/classification_types", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody Set<KeyValueModel> getClassificationNames() {
         return searchMenuManager.getClassificationNames();
     }
@@ -864,7 +881,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible certificaiton editions in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/certification_editions", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody Set<KeyValueModel> getEditionNames() {
         return searchMenuManager.getEditionNames(false);
     }
@@ -872,7 +889,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible certification statuses in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/certification_statuses", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody Set<KeyValueModel> getCertificationStatuses() {
         return searchMenuManager.getCertificationStatuses();
     }
@@ -880,7 +897,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible practice types in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/practice_types", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody Set<KeyValueModel> getPracticeTypeNames() {
         return searchMenuManager.getPracticeTypeNames();
     }
@@ -888,7 +905,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible product names in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/products", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody Set<KeyValueModelStatuses> getProductNames() {
         return searchMenuManager.getProductNames();
     }
@@ -896,7 +913,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible developer names in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/developers", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody Set<KeyValueModelStatuses> getDeveloperNames() {
         return searchMenuManager.getDeveloperNames();
     }
@@ -904,7 +921,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible ACBs in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/certification_bodies", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody Set<KeyValueModel> getCertBodyNames() {
         return searchMenuManager.getCertBodyNames(false);
     }
@@ -912,7 +929,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible education types in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/education_types", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody SearchOption getEducationTypes() {
         Set<KeyValueModel> data = searchMenuManager.getEducationTypes();
         SearchOption result = new SearchOption();
@@ -924,7 +941,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible test participant age ranges in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/age_ranges", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody SearchOption getAgeRanges() {
         Set<KeyValueModel> data = searchMenuManager.getAgeRanges();
         SearchOption result = new SearchOption();
@@ -936,7 +953,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible test functionality options in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/test_functionality", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody SearchOption getTestFunctionality() {
         Set<TestFunctionality> data = searchMenuManager.getTestFunctionality();
         SearchOption result = new SearchOption();
@@ -948,7 +965,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible test tool options in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/test_tools", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody SearchOption getTestTools() {
         Set<KeyValueModel> data = searchMenuManager.getTestTools();
         SearchOption result = new SearchOption();
@@ -960,7 +977,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible test procedure options in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/test_procedures", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody SearchOption getTestProcedures() {
         Set<CriteriaSpecificDescriptiveModel> data = searchMenuManager.getTestProcedures();
         SearchOption result = new SearchOption();
@@ -968,11 +985,11 @@ public class SearchViewController {
         result.setData(data);
         return result;
     }
-    
+
     @ApiOperation(value = "Get all possible test data options in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/test_data", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody SearchOption getTestData() {
         Set<CriteriaSpecificDescriptiveModel> data = searchMenuManager.getTestData();
         SearchOption result = new SearchOption();
@@ -980,11 +997,11 @@ public class SearchViewController {
         result.setData(data);
         return result;
     }
-    
+
     @ApiOperation(value = "Get all possible test standard options in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/test_standards", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody SearchOption getTestStandards() {
         Set<TestStandard> data = searchMenuManager.getTestStandards();
         SearchOption result = new SearchOption();
@@ -996,7 +1013,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible qms standard options in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/qms_standards", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody SearchOption getQmsStandards() {
         Set<KeyValueModel> data = searchMenuManager.getQmsStandards();
         SearchOption result = new SearchOption();
@@ -1008,7 +1025,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible targeted user options in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/targeted_users", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody SearchOption getTargetedUsers() {
         Set<KeyValueModel> data = searchMenuManager.getTargetedUesrs();
         SearchOption result = new SearchOption();
@@ -1020,7 +1037,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible UCD process options in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/ucd_processes", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody SearchOption getUcdProcesses() {
         Set<KeyValueModel> data = searchMenuManager.getUcdProcesses();
         SearchOption result = new SearchOption();
@@ -1032,7 +1049,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible accessibility standard options in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/accessibility_standards", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody SearchOption getAccessibilityStandards() {
         Set<KeyValueModel> data = searchMenuManager.getAccessibilityStandards();
         SearchOption result = new SearchOption();
@@ -1044,7 +1061,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible macra measure options in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/macra_measures", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody SearchOption getMacraMeasures() {
         Set<CriteriaSpecificDescriptiveModel> data = searchMenuManager.getMacraMeasures();
         SearchOption result = new SearchOption();
@@ -1055,7 +1072,7 @@ public class SearchViewController {
 
     @ApiOperation(value = "Get all possible developer status options in the CHPL")
     @RequestMapping(value = "/data/developer_statuses", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody SearchOption getDeveloperStatuses() {
         Set<KeyValueModel> data = searchMenuManager.getDeveloperStatuses();
         SearchOption result = new SearchOption();
@@ -1066,7 +1083,7 @@ public class SearchViewController {
 
     @ApiOperation(value = "Get all possible surveillance type options in the CHPL")
     @RequestMapping(value = "/data/surveillance_types", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody SearchOption getSurveillanceTypes() {
         Set<KeyValueModel> data = searchMenuManager.getSurveillanceTypes();
         SearchOption result = new SearchOption();
@@ -1077,7 +1094,7 @@ public class SearchViewController {
 
     @ApiOperation(value = "Get all possible surveillance result type options in the CHPL")
     @RequestMapping(value = "/data/surveillance_result_types", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody SearchOption getSurveillanceResultTypes() {
         Set<KeyValueModel> data = searchMenuManager.getSurveillanceResultTypes();
         SearchOption result = new SearchOption();
@@ -1088,7 +1105,7 @@ public class SearchViewController {
 
     @ApiOperation(value = "Get all possible surveillance requirement type options in the CHPL")
     @RequestMapping(value = "/data/surveillance_requirement_types", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody SearchOption getSurveillanceRequirementTypes() {
         Set<KeyValueModel> data = searchMenuManager.getSurveillanceRequirementTypes();
         SearchOption result = new SearchOption();
@@ -1099,7 +1116,7 @@ public class SearchViewController {
 
     @ApiOperation(value = "Get all possible surveillance requirement options in the CHPL")
     @RequestMapping(value = "/data/surveillance_requirements", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody SurveillanceRequirementOptions getSurveillanceRequirementOptions() {
         SurveillanceRequirementOptions data = searchMenuManager.getSurveillanceRequirementOptions();
         return data;
@@ -1107,7 +1124,7 @@ public class SearchViewController {
 
     @ApiOperation(value = "Get all possible nonconformity status type options in the CHPL")
     @RequestMapping(value = "/data/nonconformity_status_types", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody SearchOption getNonconformityStatusTypes() {
         Set<KeyValueModel> data = searchMenuManager.getNonconformityStatusTypes();
         SearchOption result = new SearchOption();
@@ -1118,7 +1135,7 @@ public class SearchViewController {
 
     @ApiOperation(value = "Get all possible nonconformity type options in the CHPL")
     @RequestMapping(value = "/data/nonconformity_types", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody SearchOption getNonconformityTypeOptions() {
         Set<KeyValueModel> data = searchMenuManager.getNonconformityTypeOptions();
         SearchOption result = new SearchOption();
@@ -1129,7 +1146,7 @@ public class SearchViewController {
 
     @ApiOperation(value = "Get all available pending listing upload template versions.")
     @RequestMapping(value = "/data/upload_template_versions", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody SearchOption getUploadTemplateVersions() {
         Set<UploadTemplateVersion> data = searchMenuManager.getUploadTemplateVersions();
         SearchOption result = new SearchOption();
@@ -1141,14 +1158,11 @@ public class SearchViewController {
     @ApiOperation(value = "Get all search options in the CHPL",
             notes = "This returns all of the other /data/{something} results in one single response.")
     @RequestMapping(value = "/data/search_options", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody PopulateSearchOptions getPopulateSearchData(
-            @RequestParam(value = "simple", required = false) Boolean simple,
-            @RequestParam(value = "showDeleted", required = false, defaultValue = "false") Boolean showDeleted)
-            throws EntityRetrievalException {
-        if (simple == null) {
-            simple = false;
-        }
+            @RequestParam(value = "simple", required = false, defaultValue = "false") final Boolean simple,
+            @RequestParam(value = "showDeleted", required = false, defaultValue = "false") final Boolean showDeleted)
+                    throws EntityRetrievalException {
 
         PopulateSearchOptions searchOptions = new PopulateSearchOptions();
         searchOptions.setCertBodyNames(searchMenuManager.getCertBodyNames(showDeleted));
@@ -1167,7 +1181,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all developer decertifications in the CHPL",
             notes = "This returns all decertified developers.")
     @RequestMapping(value = "/decertifications/developers", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody DecertifiedDeveloperResults getDecertifiedDevelopers() throws EntityRetrievalException {
         DecertifiedDeveloperResults ddr = new DecertifiedDeveloperResults();
         List<DecertifiedDeveloperResult> results = developerManager.getDecertifiedDevelopers();

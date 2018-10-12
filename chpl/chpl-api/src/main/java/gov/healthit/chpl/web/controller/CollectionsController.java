@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -73,7 +74,7 @@ public class CollectionsController {
             String[] fieldNames = delimitedFieldNames.split(",");
             List<String> requiredFields = new ArrayList<String>(fieldNames.length);
             for (int i = 0; i < fieldNames.length; i++) {
-                requiredFields.add(fieldNames[i].toUpperCase());
+                requiredFields.add(fieldNames[i].toUpperCase(Locale.ENGLISH));
             }
 
             // compare all the field names in the results with the required
