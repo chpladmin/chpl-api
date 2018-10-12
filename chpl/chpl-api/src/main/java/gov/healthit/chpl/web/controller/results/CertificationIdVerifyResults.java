@@ -5,14 +5,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Results object when verifying Certification IDs "en masse".
+ */
 public class CertificationIdVerifyResults implements Serializable {
     private static final long serialVersionUID = -3582436342627660622L;
-    List<VerifyResult> results = new ArrayList<VerifyResult>();
+    private List<VerifyResult> results = new ArrayList<VerifyResult>();
 
+    /** Default constructor. */
     public CertificationIdVerifyResults() {
     }
 
-    public CertificationIdVerifyResults(Map<String, Boolean> map) {
+    /**
+     * Constructed from a map.
+     * @param map the map
+     */
+    public CertificationIdVerifyResults(final Map<String, Boolean> map) {
         this.importMap(map);
     }
 
@@ -20,18 +28,27 @@ public class CertificationIdVerifyResults implements Serializable {
         return this.results;
     }
 
-    private void importMap(Map<String, Boolean> map) {
-        for (String id : map.keySet()) {
-            VerifyResult item = new VerifyResult(id, map.get(id));
+    private void importMap(final Map<String, Boolean> map) {
+        for (Map.Entry<String, Boolean> entry : map.entrySet()) {
+            VerifyResult item = new VerifyResult(entry.getKey(), entry.getValue());
             this.results.add(item);
         }
     }
 
-    static public class VerifyResult {
+    /**
+     * Single result inside Cert ID verification result.
+     */
+    public static class VerifyResult implements Serializable {
+        private static final long serialVersionUID = -85566386396366634L;
         private String id;
         private boolean valid;
 
-        public VerifyResult(String id, Boolean valid) {
+        /**
+         * Constructor based on id and validity.
+         * @param id the id
+         * @param valid whether or not the CMS ID is valid
+         */
+        public VerifyResult(final String id, final Boolean valid) {
             this.id = id;
             this.valid = valid;
         }
@@ -51,7 +68,5 @@ public class CertificationIdVerifyResults implements Serializable {
         public void setValid(final boolean valid) {
             this.valid = valid;
         }
-
     }
-
 }

@@ -97,7 +97,7 @@ public class CollectionsController {
                     Class searchResultFieldTypeClazz = searchResultField.getType();
                     // find the setter method that accepts the correct type
                     String firstUppercaseChar = searchResultField.getName().charAt(0) + "";
-                    firstUppercaseChar = firstUppercaseChar.toUpperCase();
+                    firstUppercaseChar = firstUppercaseChar.toUpperCase(Locale.ENGLISH);
                     String setterMethodName = "set" + firstUppercaseChar + searchResultField.getName().substring(1);
                     try {
                         Method setter = CertifiedProductFlatSearchResult.class.getMethod(setterMethodName,
