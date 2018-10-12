@@ -90,31 +90,28 @@ public class JSONWebKeyRsaJoseJImpl implements JSONWebKey {
 
 	
 	public void saveKey(String keyPairPath){
-		
-		try {
-			
-			File file = new File(keyPairPath);
-			file.getParentFile().mkdirs();
-			FileOutputStream fileOut = new FileOutputStream(file);
-			ObjectOutputStream out = new ObjectOutputStream(fileOut);
-			out.writeObject(rsaJsonWebKey);
-			out.close();
-			fileOut.close();
-			
-		} catch (IOException e) {
-			logger.error("Error saving key: " , e);
-		}
+
+	    try {
+
+	        File file = new File(keyPairPath);
+	        file.getParentFile().mkdirs();
+	        try (FileOutputStream fileOut = new FileOutputStream(file); 
+	                ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
+	            out.writeObject(rsaJsonWebKey);
+	        }
+
+
+	    } catch (IOException e) {
+	        logger.error("Error saving key: " , e);
+	    }
 	}
 	
 	public void loadSavedKey(String keyPairPath) throws IOException, ClassNotFoundException {
-		
-		FileInputStream fileIn = new FileInputStream(keyPairPath);
-		ObjectInputStream is = new ObjectInputStream(fileIn);
-		
-		rsaJsonWebKey = (RsaJsonWebKey) is.readObject();
-		
-		is.close();
-		fileIn.close();
-		
+
+	    try (FileInputStream fileIn = new FileInputStream(keyPairPath);
+	            ObjectInputStream is = new ObjectInputStream(fileIn)){
+	        rsaJsonWebKey = (RsaJsonWebKey) is.readObject();
+	    }
+
 	}
 }
