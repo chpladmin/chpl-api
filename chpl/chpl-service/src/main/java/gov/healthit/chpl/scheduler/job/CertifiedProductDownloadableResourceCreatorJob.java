@@ -47,7 +47,7 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
      * @throws Exception if issue with context
      */
     public CertifiedProductDownloadableResourceCreatorJob() throws Exception {
-        super(LOGGER);
+        super(LOGGER, "CP Download file job - ");
         edition = "";
     }
 
