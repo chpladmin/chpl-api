@@ -18,7 +18,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 
@@ -27,40 +26,51 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
  * @author alarned
  *
  */
-public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
-    private static final Logger LOGGER = LogManager.getLogger(CertifiedProduct2014CsvPresenter.class);
+public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, AutoCloseable {
+    private Logger logger;
     private List<CertificationCriterionDTO> applicableCriteria = new ArrayList<CertificationCriterionDTO>();
+    private OutputStreamWriter writer = null;
+    private CSVPrinter csvPrinter = null;
 
     /**
-     * Required to setCriteriaNames before calling this function. Returns number
-     * of rows printed (minus the header)
+     * Required to setCriteriaNames before calling this function.
      */
     @Override
-    public int presentAsFile(final File file, final CertifiedProductDownloadResponse cpList) {
-        int numRows = 0;
-        OutputStreamWriter writer = null;
-        CSVPrinter csvPrinter = null;
-        try {
-            writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
-            csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL);
-
-            csvPrinter.printRecord(generateHeaderValues());
-
-            for (CertifiedProductSearchDetails data : cpList.getListings()) {
-                List<String> rowValue = generateRowValue(data);
-                if (rowValue != null) { // a subclass could return null to skip a row
-                    csvPrinter.printRecord(rowValue);
-                    numRows++;
-                }
-            }
-            csvPrinter.close();
-            writer.close();
-        } catch (final IOException ex) {
-            LOGGER.error("Could not write file " + file.getName(), ex);
-        }
-        return numRows;
+    public void open(final File file) throws IOException {
+        getLogger().info("Opening file, initializing CSV doc.");
+        writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
+        csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL);
+        csvPrinter.printRecord(generateHeaderValues());
+        csvPrinter.flush();
     }
 
+    @Override
+    public synchronized void add(final CertifiedProductSearchDetails data) throws IOException {
+        getLogger().info("Adding CP to CSV file: " + data.getId());
+        List<String> rowValue = generateRowValue(data);
+        if (rowValue != null) { // a subclass could return null to skip a row
+            csvPrinter.printRecord(rowValue);
+            csvPrinter.flush();
+        }
+    }
+
+    @Override
+    public void close() throws IOException {
+        getLogger().info("Closing the XML file.");
+        csvPrinter.close();
+        writer.close();
+    }
+
+    public void setLogger(final Logger logger) {
+        this.logger = logger;
+    }
+
+    public Logger getLogger() {
+        if (logger == null) {
+            logger = LogManager.getLogger(CertifiedProductXmlPresenter.class);
+        }
+        return logger;
+    }
     protected List<String> generateHeaderValues() {
         List<String> result = new ArrayList<String>();
         result.add("Certification Edition");

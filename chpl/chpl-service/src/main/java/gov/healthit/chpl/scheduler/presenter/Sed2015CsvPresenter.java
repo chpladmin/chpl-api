@@ -31,14 +31,9 @@ public class Sed2015CsvPresenter {
      */
     public int presentAsFile(final File file, final List<CertifiedProductSearchDetails> cpList) {
         int numRows = 0;
-        OutputStreamWriter writer = null;
-        CSVPrinter csvPrinter = null;
-        try {
-            writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
-            csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL);
-
+        try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
+                CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
             csvPrinter.printRecord(generateHeaderValues());
-
             for (CertifiedProductSearchDetails currListing : cpList) {
                 List<List<String>> rows = generateRows(currListing);
                 if (rows != null) { // can return null to skip a row
@@ -48,8 +43,6 @@ public class Sed2015CsvPresenter {
                     }
                 }
             }
-            csvPrinter.close();
-            writer.close();
         } catch (final IOException ex) {
             LOGGER.error("Could not write file " + file.getName(), ex);
         }

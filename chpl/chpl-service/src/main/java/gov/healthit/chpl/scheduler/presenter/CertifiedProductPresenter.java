@@ -1,7 +1,9 @@
 package gov.healthit.chpl.scheduler.presenter;
 
 import java.io.File;
-import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
+import java.io.IOException;
+
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 
 /**
  * Interface for presenting certified products as a file.
@@ -10,10 +12,16 @@ import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
  */
 public interface CertifiedProductPresenter {
     /**
-     * Output domain objects to file.
-     * @param file target file
-     * @param cpList domain objects
-     * @return the number of objects written out
+     * Opens and initializes a file for Certified Products to be written to
+     * @param file - The file where the data will be written
+     * @throws IOException - Error opening or initializing the file
      */
-    int presentAsFile(File file, CertifiedProductDownloadResponse cpList);
+    void open(File file) throws IOException;
+
+    /**
+     * Writes a Certified Product to the open file
+     * @param cp - CertifiedProductSearchDetails
+     * @throws IOException - Error writing to the open file
+     */
+    void add(CertifiedProductSearchDetails cp) throws IOException;
 }

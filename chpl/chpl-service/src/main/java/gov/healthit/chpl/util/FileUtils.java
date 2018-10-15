@@ -15,11 +15,9 @@ public class FileUtils {
     private static final Logger LOGGER = LogManager.getLogger(FileUtils.class);
 
     public static String readFileAsString(MultipartFile file) throws ValidationException {
-     // read the file into a string
+        //read the file into a string
         StringBuffer data = new StringBuffer();
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
             String line = null;
             while ((line = reader.readLine()) != null) {
                 if (data.length() > 0) {
