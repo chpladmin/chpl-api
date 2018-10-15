@@ -89,7 +89,7 @@ public class CertifiedProductUploadHandlerFactoryImpl implements CertifiedProduc
             //from getting appended to the end of the string (\r\n at the end 
             //would not match any of the options in the db)
             writer.printRecord(trimmedHeaderVals);
-        } catch(IOException ex) {
+        } catch (IOException ex) {
             String msg = String
                     .format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.upload.badHeader"),
                             LocaleContextHolder.getLocale()), "a bad header value");

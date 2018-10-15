@@ -465,7 +465,7 @@ public class ActivityManagerImpl implements ActivityManager {
         event.setResponsibleUser(dto.getUser() == null ? null : new User(dto.getUser()));
 
         try (JsonParser origData = factory.createParser(dto.getOriginalData());
-                JsonParser newData = factory.createParser(dto.getNewData());) {
+                JsonParser newData = factory.createParser(dto.getNewData())) {
 
             JsonNode originalJSON = null;
             if (dto.getOriginalData() != null) {

@@ -32,7 +32,7 @@ public class Sed2015CsvPresenter {
     public int presentAsFile(final File file, final List<CertifiedProductSearchDetails> cpList) {
         int numRows = 0;
         try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
-                CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL);) {
+                CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
             csvPrinter.printRecord(generateHeaderValues());
             for (CertifiedProductSearchDetails currListing : cpList) {
                 List<List<String>> rows = generateRows(currListing);

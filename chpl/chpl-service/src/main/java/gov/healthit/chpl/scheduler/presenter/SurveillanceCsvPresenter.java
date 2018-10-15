@@ -51,7 +51,7 @@ public class SurveillanceCsvPresenter {
      */
     public void presentAsFile(final File file, final List<CertifiedProductSearchDetails> cpList) {
         try (FileWriter writer = new FileWriter(file);
-                CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL);) {
+                CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
             csvPrinter.printRecord(generateHeaderValues());
             for (CertifiedProductSearchDetails cp : cpList) {
                 if (cp.getSurveillance() != null && cp.getSurveillance().size() > 0) {

@@ -200,7 +200,7 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
         File temp = null;
         
         try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(temp), Charset.forName("UTF-8").newEncoder());
-            CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL);) {
+            CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
             
             temp = File.createTempFile(reportFilename, ".csv");
             temp.deleteOnExit();
