@@ -114,7 +114,7 @@ public class JSONWebKeyRsaJoseJImpl implements JSONWebKey {
     }
 
     /**
-     * Reads the key from the location spcified in keyLocation
+     * Reads the key from the location specified in keyLocation
      * @param keyPairPath location to read the key from
      */
     public void loadSavedKey(String keyPairPath) throws IOException, ClassNotFoundException {
