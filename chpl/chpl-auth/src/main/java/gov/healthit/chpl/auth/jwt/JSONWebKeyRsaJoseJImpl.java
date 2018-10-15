@@ -29,6 +29,7 @@ public class JSONWebKeyRsaJoseJImpl implements JSONWebKey {
     @Autowired
     private Environment env = null;
     private RsaJsonWebKey rsaJsonWebKey = null;
+    private final static int KEY_BIT_LENGTH = 2048;
 
     Logger logger = LogManager.getLogger(JSONWebKeyRsaJoseJImpl.class.getName());
 
@@ -54,7 +55,7 @@ public class JSONWebKeyRsaJoseJImpl implements JSONWebKey {
                 try {
                     RsaKeyUtil keyUtil = new RsaKeyUtil();
                     KeyPair keyPair;
-                    keyPair = keyUtil.generateKeyPair(2048);
+                    keyPair = keyUtil.generateKeyPair(KEY_BIT_LENGTH);
                     rsaJsonWebKey = (RsaJsonWebKey) PublicJsonWebKey.Factory.newPublicJwk(keyPair.getPublic());
                     rsaJsonWebKey.setPrivateKey(keyPair.getPrivate());
                     saveKey(keyLocation);
