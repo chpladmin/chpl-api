@@ -36,6 +36,10 @@ public class JSONWebKeyRsaJoseJImpl implements JSONWebKey {
     }
 
     @PostConstruct
+    /**
+     * If there is no current key, this method creates one and then places it into the
+     * keyLocation.
+     */
     public void createOrLoadKey() {
         String keyLocation = env.getProperty("keyLocation");
 
@@ -89,6 +93,10 @@ public class JSONWebKeyRsaJoseJImpl implements JSONWebKey {
         return rsaJsonWebKey.getPublicKey();
     }
 
+    /**
+     * Writes a key to the location specified in keyLocation
+     * @param keyPairPath location to write the key to
+     */
     public void saveKey(final String keyPairPath) {
 
         try {
@@ -105,6 +113,10 @@ public class JSONWebKeyRsaJoseJImpl implements JSONWebKey {
         }
     }
 
+    /**
+     * Reads the key from the location spcified in keyLocation
+     * @param keyPairPath location to read the key from
+     */
     public void loadSavedKey(String keyPairPath) throws IOException, ClassNotFoundException {
 
         try (FileInputStream fileIn = new FileInputStream(keyPairPath);
