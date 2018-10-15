@@ -35,8 +35,7 @@ import gov.healthit.chpl.scheduler.presenter.CertifiedProductXmlPresenter;
 public class CertifiedProductDownloadableResourceCreatorJob extends DownloadableResourceCreatorJob {
     private static final Logger LOGGER = LogManager.getLogger("certifiedProductDownloadableResourceCreatorJobLogger");
     private static final int MILLIS_PER_SECOND = 1000;
-    private CertifiedProductXmlPresenter xmlPresenter;
-    private CertifiedProductCsvPresenter csvPresenter;
+    
     private static final int SECONDS_PER_MINUTE = 60;
     private String edition;
 
@@ -61,40 +60,22 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         edition = jobContext.getMergedJobDataMap().getString("edition");
         LOGGER.info("********* Starting the Certified Product Downloadable Resource Creator job for {}. *********",
                 edition);
-        try {
-            List<CertifiedProductDetailsDTO> listings = getRelevantListings();
 
-            initializeWritingToFiles();
+        try (CertifiedProductXmlPresenter xmlPresenter = new CertifiedProductXmlPresenter();
+                CertifiedProductCsvPresenter csvPresenter = getCsvPresenter()) {
+
+            List<CertifiedProductDetailsDTO> listings = getRelevantListings();
+            initializeWritingToFiles(xmlPresenter, csvPresenter);
 
             List<CompletableFuture<CertifiedProductSearchDetails>> futures =
                     new ArrayList<CompletableFuture<CertifiedProductSearchDetails>>();
 
             for (CertifiedProductDetailsDTO dto : listings) {
                 CompletableFuture<CertifiedProductSearchDetails> cpCompletableFuture =
-                    CompletableFuture.supplyAsync(new Supplier<CertifiedProductSearchDetails>() {
-                        @Override
-                        public CertifiedProductSearchDetails get() {
-                            CertifiedProductSearchDetails cpDTO = null;
-                            try {
-                                cpDTO = cpdManager.getCertifiedProductDetails(dto.getId());
-                                LOGGER.info("Finishing Details for: " + dto.getId());
-                            } catch (Exception e) {
-                                LOGGER.error(e);
-                            }
-                            return cpDTO;
-                        }
-                    });
-                    cpCompletableFuture.thenAccept(new Consumer<CertifiedProductSearchDetails>() {
-                        @Override
-                        public void accept(final CertifiedProductSearchDetails cp) {
-                            try {
-                                xmlPresenter.add(cp);
-                                csvPresenter.add(cp);
-                            } catch (Exception e) {
-                                LOGGER.error(e.getMessage(), e);
-                            }
-                        }
-                    });
+                    CompletableFuture.supplyAsync(new SupplierCertifiedProductSearchDetails(dto));
+                    cpCompletableFuture.thenAccept(
+                            new ConsumerCertifiedProductSearchDetails(
+                                    xmlPresenter, csvPresenter));
                     futures.add(cpCompletableFuture);
             }
 
@@ -107,9 +88,6 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
             //This is horrible - need to figure out a way around it...
             //Think this is because async tasks are complete, but the last 'accept' has not completed
             Thread.sleep(1000);
-
-            //Finish writing files and close streams
-            completeWritingToFiles();
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
@@ -122,21 +100,15 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
                 edition);
     }
 
-    private void initializeWritingToFiles() throws IOException {
-        xmlPresenter = new CertifiedProductXmlPresenter();
+    private void initializeWritingToFiles(final CertifiedProductXmlPresenter xmlPresenter, 
+            final CertifiedProductCsvPresenter csvPresenter) throws IOException {
         xmlPresenter.setLogger(LOGGER);
         xmlPresenter.open(getXmlFile());
 
-        csvPresenter = getCsvPresenter();
         csvPresenter.setLogger(LOGGER);
         List<CertificationCriterionDTO> criteria = getCriteriaDao().findByCertificationEditionYear(edition);
         csvPresenter.setApplicableCriteria(criteria);
         csvPresenter.open(getCsvFile());
-    }
-
-    private void completeWritingToFiles() throws IOException {
-        xmlPresenter.close();
-        csvPresenter.close();
     }
 
     private File getXmlFile() throws IOException {
@@ -188,5 +160,46 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
             throw new IOException("File can not be created");
         }
         return file;
+    }
+    
+    class SupplierCertifiedProductSearchDetails implements Supplier<CertifiedProductSearchDetails> {
+        private CertifiedProductDetailsDTO dto;
+
+        public SupplierCertifiedProductSearchDetails(CertifiedProductDetailsDTO dto) {
+            this.dto = dto;
+        }
+
+        @Override
+        public CertifiedProductSearchDetails get() {
+            CertifiedProductSearchDetails cpDTO = null;
+            try {
+                cpDTO = cpdManager.getCertifiedProductDetails(dto.getId());
+                LOGGER.info("Finishing Details for: " + dto.getId());
+            } catch (Exception e) {
+                LOGGER.error(e);
+            }
+            return cpDTO;
+        }
+    }
+    
+    class ConsumerCertifiedProductSearchDetails implements Consumer<CertifiedProductSearchDetails> {
+        private CertifiedProductXmlPresenter xmlPresenter;
+        private CertifiedProductCsvPresenter csvPresenter;
+
+        public ConsumerCertifiedProductSearchDetails (final CertifiedProductXmlPresenter xmlPresenter, 
+                final CertifiedProductCsvPresenter csvPresenter){
+            this.xmlPresenter = xmlPresenter;
+            this.csvPresenter = csvPresenter;
+        }
+        
+        @Override
+        public void accept(final CertifiedProductSearchDetails cp) {
+            try {
+                xmlPresenter.add(cp);
+                csvPresenter.add(cp);
+            } catch (Exception e) {
+                LOGGER.error(e.getMessage(), e);
+            }
+        }
     }
 }

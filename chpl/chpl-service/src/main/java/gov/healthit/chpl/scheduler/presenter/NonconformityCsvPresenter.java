@@ -35,11 +35,9 @@ public class NonconformityCsvPresenter extends SurveillanceCsvPresenter {
 
     @Override
     public void presentAsFile(final File file, final List<CertifiedProductSearchDetails> cpList) {
-        FileWriter writer = null;
-        CSVPrinter csvPrinter = null;
-        try {
-            writer = new FileWriter(file);
-            csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL);
+        try (FileWriter writer = new FileWriter(file);
+                CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
+            
             csvPrinter.printRecord(generateHeaderValues());
 
             for (CertifiedProductSearchDetails cp : cpList) {
@@ -78,14 +76,6 @@ public class NonconformityCsvPresenter extends SurveillanceCsvPresenter {
             }
         } catch (final IOException ex) {
             LOGGER.error("Could not write file " + file.getName(), ex);
-        } finally {
-            try {
-                writer.flush();
-                writer.close();
-                csvPrinter.flush();
-                csvPrinter.close();
-            } catch (Exception ignore) {
-            }
         }
     }
 }

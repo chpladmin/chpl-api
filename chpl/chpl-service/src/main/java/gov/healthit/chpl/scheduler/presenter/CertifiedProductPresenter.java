@@ -24,10 +24,4 @@ public interface CertifiedProductPresenter {
      * @throws IOException - Error writing to the open file
      */
     void add(CertifiedProductSearchDetails cp) throws IOException;
-
-    /**
-     * Finalizes any information for the file and closes the file
-     * @throws IOException - Error writing to file or closing file 
-     */
-    void close() throws IOException;
 }
