@@ -27,6 +27,14 @@ public class CertifiedProduct2014CsvPresenter extends CertifiedProductCsvPresent
         result.add("ACB Name");
         result.add("Previous ACB Name");
         result.add("Developer Name");
+        result.add("Vendor Street Address");
+        result.add("Vendor City");
+        result.add("Vendor State");
+        result.add("Vendor Zip Code");
+        result.add("Vendor Website");
+        result.add("Contact Name");
+        result.add("Contact Email");
+        result.add("Contact Phone");
         result.add("Product Name");
         result.add("Version");
         result.add("Practice Type");
@@ -54,6 +62,18 @@ public class CertifiedProduct2014CsvPresenter extends CertifiedProductCsvPresent
         result.add(data.getCertifyingBody().get("name").toString());
         result.add(data.getOtherAcb());
         result.add(data.getDeveloper().getName());
+        if(data.getDeveloper().getAddress().getLine2() != null) {
+            result.add(data.getDeveloper().getAddress().getLine1() + result.add(data.getDeveloper().getAddress().getLine2()));
+        }else {
+            result.add(data.getDeveloper().getAddress().getLine1());
+        }
+        result.add(data.getDeveloper().getAddress().getCity());
+        result.add(data.getDeveloper().getAddress().getState());
+        result.add(data.getDeveloper().getAddress().getZipcode());
+        result.add(data.getDeveloper().getWebsite());
+        result.add(data.getDeveloper().getContact().getFullName());
+        result.add(data.getDeveloper().getContact().getEmail());
+        result.add(data.getDeveloper().getContact().getPhoneNumber());
         result.add(data.getProduct().getName());
         result.add(data.getVersion().getVersion());
         result.add(data.getPracticeType().get("name").toString());
