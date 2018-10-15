@@ -27,8 +27,8 @@ import org.springframework.stereotype.Service;
 public class JSONWebKeyRsaJoseJImpl implements JSONWebKey {
 
     @Autowired
-    Environment env;
-    RsaJsonWebKey rsaJsonWebKey = null;
+    private Environment env = null;
+    private RsaJsonWebKey rsaJsonWebKey = null;
 
     Logger logger = LogManager.getLogger(JSONWebKeyRsaJoseJImpl.class.getName());
 
@@ -56,7 +56,7 @@ public class JSONWebKeyRsaJoseJImpl implements JSONWebKey {
                     saveKey(keyLocation);
                 } catch (JoseException e) {
 
-                    logger.error("Error creating key: ", e1);
+                    logger.error("Error creating key: ", e);
 
                     throw new RuntimeException(e);
                 }
@@ -89,7 +89,7 @@ public class JSONWebKeyRsaJoseJImpl implements JSONWebKey {
         return rsaJsonWebKey.getPublicKey();
     }
 
-    public void saveKey(String keyPairPath) {
+    public void saveKey(final String keyPairPath) {
 
         try {
 
