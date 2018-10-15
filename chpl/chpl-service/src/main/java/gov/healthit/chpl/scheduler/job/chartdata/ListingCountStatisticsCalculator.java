@@ -1,4 +1,4 @@
-package gov.healthit.chpl.app.chartdata;
+package gov.healthit.chpl.scheduler.job.chartdata;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,10 +7,9 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
@@ -21,54 +20,43 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 /**
- * Populates the listing_count_statistics table with summarized count information.
+ * Populates the listing_count_statistics table with summarized count
+ * information.
+ * 
  * @author alarned
  *
  */
 public class ListingCountStatisticsCalculator {
-    private static final Logger LOGGER = LogManager.getLogger(ListingCountStatisticsCalculator.class);
+    private static final Logger LOGGER = LogManager.getLogger("chartDataCreatorJobLogger");
 
+    @Autowired
     private ListingCountStatisticsDAO statisticsDAO;
+    @Autowired
     private CertificationEditionDAO certificationEditionDAO;
+    @Autowired
     private CertificationStatusDAO certificationStatusDAO;
-    private JpaTransactionManager txnManager;
-    private TransactionTemplate txnTemplate;
 
-    ListingCountStatisticsCalculator(final ChartDataApplicationEnvironment appEnvironment) {
-        statisticsDAO = (ListingCountStatisticsDAO)
-                appEnvironment.getSpringManagedObject("listingCountStatisticsDAO");
-        certificationEditionDAO = (CertificationEditionDAO)
-                appEnvironment.getSpringManagedObject("certificationEditionDAO");
-        certificationStatusDAO = (CertificationStatusDAO)
-                appEnvironment.getSpringManagedObject("certificationStatusDAO");
-        txnManager = (JpaTransactionManager) appEnvironment.getSpringManagedObject("transactionManager");
-        txnTemplate = new TransactionTemplate(txnManager);
-    }
-
-    ListingCountStatisticsCalculator(final ListingCountStatisticsDAO statisticsDAO,
-            final CertificationEditionDAO certificationEditionDAO, final CertificationStatusDAO certificationStatusDAO,
-            final JpaTransactionManager txnManager) {
-        this.statisticsDAO = statisticsDAO;
-        this.certificationEditionDAO = certificationEditionDAO;
-        this.certificationStatusDAO = certificationStatusDAO;
-        this.txnManager = txnManager;
-        this.txnTemplate = new TransactionTemplate(this.txnManager);
+    public ListingCountStatisticsCalculator() {
+        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
     }
 
     /**
-     * Loop through every Listing. For each Listing, the Developer and Product to a HashMap.
-     * The key is of the form <EDITION>-<DEVELOPER NAME> for Developer,
-     * and <EDITION>-<DEVELOPER NAME>-<PRODUCT NAME> for a Product.
+     * Loop through every Listing. For each Listing, the Developer and Product
+     * to a HashMap. The key is of the form <EDITION>-<DEVELOPER NAME> for
+     * Developer, and <EDITION>-<DEVELOPER NAME>-<PRODUCT NAME> for a Product.
      * The key maps to a HashSet of the Statuses of all of the Listings owned.
      *
-     * Then, loop through each item in the sets and add counts as necessary to the Statistics DTOs.
-     * @param listings incoming listings
+     * Then, loop through each item in the sets and add counts as necessary to
+     * the Statistics DTOs.
+     * 
+     * @param listings
+     *            incoming listings
      * @return list of listingCountStatisticsDTOs
      */
     public List<ListingCountStatisticsDTO> getCounts(final List<CertifiedProductFlatSearchResult> listings) {
         HashMap<String, HashSet<String>> developers = new HashMap<String, HashSet<String>>();
         HashMap<String, HashSet<String>> products = new HashMap<String, HashSet<String>>();
-        for (CertifiedProductFlatSearchResult listing: listings) {
+        for (CertifiedProductFlatSearchResult listing : listings) {
             String devKey = listing.getEdition() + "\u263A" + listing.getDeveloper();
             String prodKey = listing.getEdition() + "\u263A" + listing.getDeveloper() + "\u263A" + listing.getProduct();
             if (!developers.containsKey(devKey)) {
@@ -87,8 +75,7 @@ public class ListingCountStatisticsCalculator {
             for (String status : developers.get(developer)) {
                 String key = edition + "-" + status;
                 if (!results.containsKey(key)) {
-                    results.put(key, new ListingCountStatisticsDTO(
-                            certificationEditionDAO.getByYear(edition),
+                    results.put(key, new ListingCountStatisticsDTO(certificationEditionDAO.getByYear(edition),
                             certificationStatusDAO.getByStatusName(status)));
                 }
                 results.get(key).setDeveloperCount(results.get(key).getDeveloperCount() + 1L);
@@ -99,8 +86,7 @@ public class ListingCountStatisticsCalculator {
             for (String status : products.get(product)) {
                 String key = edition + "-" + status;
                 if (!results.containsKey(key)) {
-                    results.put(key, new ListingCountStatisticsDTO(
-                            certificationEditionDAO.getByYear(edition),
+                    results.put(key, new ListingCountStatisticsDTO(certificationEditionDAO.getByYear(edition),
                             certificationStatusDAO.getByStatusName(status)));
                 }
                 results.get(key).setProductCount(results.get(key).getProductCount() + 1L);
@@ -115,7 +101,9 @@ public class ListingCountStatisticsCalculator {
 
     /**
      * Log counts of statistics.
-     * @param dtos statistic objects
+     * 
+     * @param dtos
+     *            statistic objects
      */
     public void logCounts(final List<ListingCountStatisticsDTO> dtos) {
         for (ListingCountStatisticsDTO dto : dtos) {
@@ -125,33 +113,28 @@ public class ListingCountStatisticsCalculator {
 
     /**
      * Save statistics to table.
-     * @param dtos statistics objects
+     * 
+     * @param dtos
+     *            statistics objects
      */
+    @Transactional
     public void save(final List<ListingCountStatisticsDTO> dtos) {
-        txnTemplate.execute(new TransactionCallbackWithoutResult() {
-
-            @Override
-            protected void doInTransactionWithoutResult(final TransactionStatus arg0) {
-                try {
-                    deleteExistingStatistics();
-                } catch (EntityRetrievalException e) {
-                    LOGGER.error("Error occured while deleting existing ListingCountStatistics.", e);
-                    return;
-                }
-                try {
-                    for (ListingCountStatisticsDTO dto : dtos) {
-                        statisticsDAO.create(dto);
-                        LOGGER.info("Saved ListingCountStatisticsDTO"
-                                + dto.toString());
-                    }
-                } catch (EntityCreationException | EntityRetrievalException e) {
-                    LOGGER.error("Error occured while inserting counts.", e);
-                    return;
-                }
+        try {
+            deleteExistingStatistics();
+        } catch (EntityRetrievalException e) {
+            LOGGER.error("Error occured while deleting existing ListingCountStatistics.", e);
+            return;
+        }
+        try {
+            for (ListingCountStatisticsDTO dto : dtos) {
+                statisticsDAO.create(dto);
+                LOGGER.info("Saved ListingCountStatisticsDTO" + dto.toString());
             }
-        });
+        } catch (EntityCreationException | EntityRetrievalException e) {
+            LOGGER.error("Error occured while inserting counts.", e);
+            return;
+        }
     }
-
 
     private void deleteExistingStatistics() throws EntityRetrievalException {
         List<ListingCountStatisticsDTO> dtos = statisticsDAO.findAll();

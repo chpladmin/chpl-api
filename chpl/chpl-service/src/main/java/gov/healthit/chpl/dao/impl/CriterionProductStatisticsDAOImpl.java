@@ -7,6 +7,7 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.CriterionProductStatisticsDAO;
 import gov.healthit.chpl.dto.CriterionProductStatisticsDTO;
@@ -32,6 +33,7 @@ public class CriterionProductStatisticsDAOImpl extends BaseDAOImpl implements Cr
     }
 
     @Override
+    @Transactional
     public void delete(final Long id) throws EntityRetrievalException {
         CriterionProductStatisticsEntity toDelete = getEntityById(id);
 
@@ -43,6 +45,7 @@ public class CriterionProductStatisticsDAOImpl extends BaseDAOImpl implements Cr
     }
 
     @Override
+    @Transactional
     public CriterionProductStatisticsEntity create(final CriterionProductStatisticsDTO dto)
             throws EntityCreationException, EntityRetrievalException {
         CriterionProductStatisticsEntity entity = new CriterionProductStatisticsEntity();

@@ -6,7 +6,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -19,20 +18,21 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.caching.UnitTestRules;
-import gov.healthit.chpl.dao.CertificationEditionDAO;
-import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.ListingCountStatisticsDAO;
 import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.dto.ListingCountStatisticsDTO;
+import gov.healthit.chpl.scheduler.job.chartdata.ListingCountStatisticsCalculator;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
+@TestExecutionListeners({
+        DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
+})
 @DatabaseSetup("classpath:data/testData.xml")
 public class ListingCountStatisticsChartDataAppTest extends TestCase {
 
@@ -47,17 +47,7 @@ public class ListingCountStatisticsChartDataAppTest extends TestCase {
     private ListingCountStatisticsDAO statisticsDAO;
 
     @Autowired
-    private CertificationEditionDAO certificationEditionDAO;
-
-    @Autowired
-    private CertificationStatusDAO certificationStatusDAO;
-
-    @Autowired
     private CertifiedProductSearchDAO certifiedProductSearchDAO;
-
-    @Autowired
-    private JpaTransactionManager txnManager;
-
     @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
@@ -65,8 +55,7 @@ public class ListingCountStatisticsChartDataAppTest extends TestCase {
     @Test
     @Transactional
     public void buildListingCountStatistics() {
-        ListingCountStatisticsCalculator calc = new ListingCountStatisticsCalculator(
-                statisticsDAO, certificationEditionDAO, certificationStatusDAO, txnManager);
+        ListingCountStatisticsCalculator calc = new ListingCountStatisticsCalculator();
         List<ListingCountStatisticsDTO> dtos = statisticsDAO.findAll();
         assertNotNull(dtos);
         assertEquals(STARTING_LENGTH, dtos.size());

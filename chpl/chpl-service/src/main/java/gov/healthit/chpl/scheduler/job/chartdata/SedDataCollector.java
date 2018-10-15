@@ -1,4 +1,4 @@
-package gov.healthit.chpl.app.chartdata;
+package gov.healthit.chpl.scheduler.job.chartdata;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -8,32 +8,43 @@ import java.util.concurrent.Future;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
+import gov.healthit.chpl.scheduler.SchedulerCertifiedProductSearchDetailsAsync;
 
 /**
- * Retrieves all of the 2015 SED Products and their details.  Details are retrieved asynchronously according
- * to the chartDataExecutor defined in AppConfig.
+ * Retrieves all of the 2015 SED Products and their details. Details are
+ * retrieved asynchronously according to the chartDataExecutor defined in
+ * AppConfig.
+ * 
  * @author TYoung
  *
  */
 public class SedDataCollector {
-    private ChartDataApplicationEnvironment appEnvironment;
-    private static final Logger LOGGER = LogManager.getLogger(SedDataCollector.class);
+    private static final Logger LOGGER = LogManager.getLogger("chartDataCreatorJobLogger");
     private static final String EDITION_2015 = "2015";
+
+    @Autowired
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
 
-    SedDataCollector(final ChartDataApplicationEnvironment appEnvironment) {
-        this.appEnvironment = appEnvironment;
-        initialize();
+    @Autowired
+    private SchedulerCertifiedProductSearchDetailsAsync cpsdAsync;
+
+    public SedDataCollector() {
+        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
     }
 
     /**
-     * This method runs the data retrieval process for the 2015 SED products and their details.
-     * @param listings initial set of Listings
+     * This method runs the data retrieval process for the 2015 SED products and
+     * their details.
+     * 
+     * @param listings
+     *            initial set of Listings
      * @return List of CertifiedProductSearchDetails
      */
     public List<CertifiedProductSearchDetails> retreiveData(final List<CertifiedProductFlatSearchResult> listings) {
@@ -64,13 +75,11 @@ public class SedDataCollector {
 
         List<CertifiedProductSearchDetails> details = new ArrayList<CertifiedProductSearchDetails>();
         List<Future<CertifiedProductSearchDetails>> futures = new ArrayList<Future<CertifiedProductSearchDetails>>();
-        DataCollectorAsyncHelper dataCollectorAsyncHelper =
-                (DataCollectorAsyncHelper) appEnvironment.getSpringManagedObject("dataCollectorAsyncHelper");
 
         for (CertifiedProductFlatSearchResult certifiedProduct : certifiedProducts) {
             try {
-                futures.add(dataCollectorAsyncHelper
-                        .getCertifiedProductDetail(certifiedProduct.getId(), certifiedProductDetailsManager));
+                    futures.add(cpsdAsync.getCertifiedProductDetail(certifiedProduct.getId(),
+                            certifiedProductDetailsManager));
             } catch (EntityRetrievalException e) {
                 LOGGER.error("Could not retrieve certified product details for id: " + certifiedProduct.getId(), e);
             }
@@ -89,10 +98,5 @@ public class SedDataCollector {
         LOGGER.info("Time to retrieve details: " + (endTime.getTime() - startTime.getTime()));
 
         return details;
-    }
-
-    private void initialize() {
-        certifiedProductDetailsManager = (CertifiedProductDetailsManager) appEnvironment
-                .getSpringManagedObject("certifiedProductDetailsManager");
     }
 }

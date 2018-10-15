@@ -4,6 +4,7 @@ _Date TBD_
 
 ### New Features
 * Added "last modified date" for surveillance and non-conformities to download files
+* Move generate chart data app to quartz
 
 ### Bugs Fixed
 * Fix creation of public announcement ignoring 'public' checkbox.
