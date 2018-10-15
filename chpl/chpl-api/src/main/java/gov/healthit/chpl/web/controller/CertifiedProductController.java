@@ -90,8 +90,6 @@ import io.swagger.annotations.ApiOperation;
 
 /**
  * Certified Product Controller.
- * @author alarned
- *
  */
 @Api(value = "certified-products")
 @RestController
@@ -179,13 +177,12 @@ public class CertifiedProductController {
     @ApiOperation(value = "Get all details for a specified certified product.",
             notes = "Returns all information in the CHPL related to the specified certified product.")
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/details",
-                    method = RequestMethod.GET,
-                    produces = "application/json; charset=utf-8")
+    method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductById(
             @PathVariable("certifiedProductId") final Long certifiedProductId) throws EntityRetrievalException {
 
-        CertifiedProductSearchDetails certifiedProduct = 
-                cpdManager.getCertifiedProductDetails(Long.valueOf(certifiedProductId));
+        CertifiedProductSearchDetails certifiedProduct = cpdManager.getCertifiedProductDetails(certifiedProductId);
         certifiedProduct = validateCertifiedProduct(certifiedProduct);
 
         return certifiedProduct;
@@ -199,8 +196,8 @@ public class CertifiedProductController {
                     + "/certified_products/YY.99.99.9999.XXXX.99.99.9.YYMMDD/details")
     @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
             + "{addlSoftwareCode}.{certDateCode}/details",
-                    method = RequestMethod.GET,
-                    produces = "application/json; charset=utf-8")
+            method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByChplProductNumber(
             @PathVariable("year") final String year,
             @PathVariable("testingLab") final String testingLab,
@@ -217,7 +214,7 @@ public class CertifiedProductController {
                         versionCode, icsCode, addlSoftwareCode, certDateCode);
 
         CertifiedProductSearchDetails certifiedProduct =
-                cpdManager.getCertifiedProductDetailsByChplProductNumber(chplProductNumber.toString());
+                cpdManager.getCertifiedProductDetailsByChplProductNumber(chplProductNumber);
 
         Validator validator = validatorFactory.getValidator(certifiedProduct);
         if (validator != null) {
@@ -232,8 +229,8 @@ public class CertifiedProductController {
                     + "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call "
                     + "to this service would look like /certified_products/CHP-999999.")
     @RequestMapping(value = "/{chplPrefix}-{identifier}/details",
-                    method = RequestMethod.GET,
-                    produces = "application/json; charset=utf-8")
+    method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByChplProductNumber2(
             @PathVariable("chplPrefix") final String chplPrefix,
             @PathVariable("identifier") final String identifier) throws EntityRetrievalException {
@@ -241,7 +238,7 @@ public class CertifiedProductController {
         String chplProductNumber = chplProductNumberUtil.getChplProductNumber(chplPrefix, identifier);
 
         CertifiedProductSearchDetails certifiedProduct =
-                cpdManager.getCertifiedProductDetailsByChplProductNumber(chplProductNumber.toString());
+                cpdManager.getCertifiedProductDetailsByChplProductNumber(chplProductNumber);
 
         certifiedProduct = validateCertifiedProduct(certifiedProduct);
 
@@ -249,11 +246,11 @@ public class CertifiedProductController {
     }
 
     @ApiOperation(value = "Get all basic information for a specified certified product.  Does not include "
-                            + "the CQM results and certification results.",
+            + "the CQM results and certification results.",
             notes = "Returns basic information in the CHPL related to the specified certified product.  "
                     + "The results will not include the CQM results and certification results.")
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}",
-                    method = RequestMethod.GET,
+    method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByIdBasic(
             @PathVariable("certifiedProductId") final Long certifiedProductId) throws EntityRetrievalException {
@@ -265,17 +262,17 @@ public class CertifiedProductController {
     }
 
     @ApiOperation(value = "Get all basic information for a specified certified product.  Does not include "
-                        + "the CQM results and certification results.",
+            + "the CQM results and certification results.",
             notes = "Returns basic information in the CHPL related to the specified certified product.  "
-                        + "The results will not include the CQM results and certification results.  "
-                        + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
-                        + "{addlSoftwareCode}.{certDateCode} represents a valid CHPL Product Number.  A valid "
-                        + "call to this service would look like /certified_products/YY.99.99.9999.XXXX.99.99.9."
-                        + "YYMMDD.")
+                    + "The results will not include the CQM results and certification results.  "
+                    + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
+                    + "{addlSoftwareCode}.{certDateCode} represents a valid CHPL Product Number.  A valid "
+                    + "call to this service would look like /certified_products/YY.99.99.9999.XXXX.99.99.9."
+                    + "YYMMDD.")
     @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
             + "{addlSoftwareCode}.{certDateCode}",
-                    method = RequestMethod.GET,
-                    produces = "application/json; charset=utf-8")
+            method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByChplProductNumberBasic(
             @PathVariable("year") final String year,
             @PathVariable("testingLab") final String testingLab,
@@ -292,7 +289,7 @@ public class CertifiedProductController {
                         versionCode, icsCode, addlSoftwareCode, certDateCode);
 
         CertifiedProductSearchDetails certifiedProduct =
-                cpdManager.getCertifiedProductDetailsBasicByChplProductNumber(chplProductNumber.toString());
+                cpdManager.getCertifiedProductDetailsBasicByChplProductNumber(chplProductNumber);
 
         certifiedProduct = validateCertifiedProduct(certifiedProduct);
 
@@ -300,14 +297,14 @@ public class CertifiedProductController {
     }
 
     @ApiOperation(value = "Get all basic information for a specified certified product.  Does not include "
-                        + "the CQM results and certification results.",
+            + "the CQM results and certification results.",
             notes = "Returns basic information in the CHPL related to the specified certified product.  "
                     + "The results will not include the CQM results and certification results.  "
                     + "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call to "
                     + "this service would look like /certified_products/CHP-999999.")
     @RequestMapping(value = "/{chplPrefix}-{identifier}",
-                    method = RequestMethod.GET,
-                    produces = "application/json; charset=utf-8")
+    method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByChplProductNumberBasic2(
             @PathVariable("chplPrefix") final String chplPrefix,
             @PathVariable("identifier") final String identifier) throws EntityRetrievalException {
@@ -315,7 +312,7 @@ public class CertifiedProductController {
         String chplProductNumber = chplProductNumberUtil.getChplProductNumber(chplPrefix, identifier);
 
         CertifiedProductSearchDetails certifiedProduct =
-                cpdManager.getCertifiedProductDetailsBasicByChplProductNumber(chplProductNumber.toString());
+                cpdManager.getCertifiedProductDetailsBasicByChplProductNumber(chplProductNumber);
 
         certifiedProduct = validateCertifiedProduct(certifiedProduct);
 
@@ -395,20 +392,22 @@ public class CertifiedProductController {
         return results;
     }
 
-  /**
+    /**
      * Download all SED details that are certified to 170.315(g)(3).
-     * @param response http response
+     * @return an HTTP response
      * @throws EntityRetrievalException if cannot retrieve entity
      * @throws IOException if IO Exception
      */
-    @ApiOperation(value = "Get all of the certification results for a specified certified product based on a CHPL Product Number.",
+    @ApiOperation(value = "Get all of the certification results for a specified certified "
+            + "product based on a CHPL Product Number.",
             notes = "Returns all of the certifiection results in the CHPL related to the specified certified product.  "
-                    + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}."
-                    + "{certDateCode} represents a valid CHPL Product Number.  A valid call to this service would look like "
+                    + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
+                    + "{addlSoftwareCode}.{certDateCode} represents a valid CHPL Product Number. "
+                    + "A valid call to this service would look like "
                     + "/certified_products/YY.99.99.9999.XXXX.99.99.9.YYMMDD/certification_results.")
     @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}"
             + ".{certDateCode}/certification_results", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody CertificationResults getCertificationResultssByCertifiedProductId(
             @PathVariable("year") final String year,
             @PathVariable("testingLab") final String testingLab,
@@ -455,7 +454,7 @@ public class CertifiedProductController {
      * @throws EntityRetrievalException if cannot retrieve entity
      * @throws IOException if IO Exception
      */
-	@ApiOperation(value = "Download all SED details that are certified to 170.315(g)(3).",
+    @ApiOperation(value = "Download all SED details that are certified to 170.315(g)(3).",
             notes = "Download a specific file that is generated overnight.")
     @RequestMapping(value = "/sed_details", method = RequestMethod.GET)
     public void streamSEDDetailsDocumentContents(final HttpServletResponse response)
@@ -465,32 +464,29 @@ public class CertifiedProductController {
         final int bufferSize = 1024;
         byte[] data = Files.readAllBytes(path);
 
-        if (data != null && data.length > 0) {
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(data);
-            // get MIME type of the file
-            String mimeType = "text/csv";
-            // set content attributes for the response
-            response.setContentType(mimeType);
-            response.setContentLength(data.length);
+        if (data.length > 0) {
+            try (ByteArrayInputStream inputStream = new ByteArrayInputStream(data);
+                    OutputStream outStream = response.getOutputStream()) {
 
-            // set headers for the response
-            String headerKey = "Content-Disposition";
-            String headerValue = String.format("attachment; filename=\"%s\"", downloadFile.getName());
-            response.setHeader(headerKey, headerValue);
+                // get MIME type of the file
+                String mimeType = "text/csv";
+                // set content attributes for the response
+                response.setContentType(mimeType);
+                response.setContentLength(data.length);
 
-            // get output stream of the response
-            OutputStream outStream = response.getOutputStream();
+                // set headers for the response
+                String headerKey = "Content-Disposition";
+                String headerValue = String.format("attachment; filename=\"%s\"", downloadFile.getName());
+                response.setHeader(headerKey, headerValue);
 
-            byte[] buffer = new byte[bufferSize];
-            int bytesRead = -1;
+                byte[] buffer = new byte[bufferSize];
+                int bytesRead = -1;
 
-            // write bytes read from the input stream into the output stream
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outStream.write(buffer, 0, bytesRead);
+                // write bytes read from the input stream into the output stream
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outStream.write(buffer, 0, bytesRead);
+                }
             }
-
-            inputStream.close();
-            outStream.close();
         }
     }
 
@@ -518,8 +514,8 @@ public class CertifiedProductController {
                     + "YYMMDD/ics_relationships.")
     @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
             + "{addlSoftwareCode}.{certDateCode}/ics_relationships",
-                    method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+            method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
     public @ResponseBody List<IcsFamilyTreeNode> getIcsFamilyTreeByChplProductNumber(
             @PathVariable("year") final String year,
             @PathVariable("testingLab") final String testingLab,
@@ -569,11 +565,11 @@ public class CertifiedProductController {
      */
     @Deprecated
     @ApiOperation(value = "DEPRECATED.  Update an existing certified product.",
-            notes = "Updates the certified product after first validating the request. The logged in"
-                    + " user must have ROLE_ADMIN or ROLE_ACB and have administrative "
-                    + " authority on the ACB that certified the product. If a different ACB is passed in"
-                    + " as part of the request, an ownership change will take place and the logged in "
-                    + " user must have ROLE_ADMIN.")
+    notes = "Updates the certified product after first validating the request. The logged in"
+            + " user must have ROLE_ADMIN or ROLE_ACB and have administrative "
+            + " authority on the ACB that certified the product. If a different ACB is passed in"
+            + " as part of the request, an ownership change will take place and the logged in "
+            + " user must have ROLE_ADMIN.")
     @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public ResponseEntity<CertifiedProductSearchDetails> updateCertifiedProductDeprecated(
             @RequestBody(required = true) final ListingUpdateRequest updateRequest)
@@ -590,8 +586,8 @@ public class CertifiedProductController {
                     + " authority on the ACB that certified the product. If a different ACB is passed in"
                     + " as part of the request, an ownership change will take place and the logged in "
                     + " user must have ROLE_ADMIN.")
-    @RequestMapping(value = "/{certifiedProductId}", method = RequestMethod.PUT, 
-                    produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/{certifiedProductId}", method = RequestMethod.PUT,
+    produces = "application/json; charset=utf-8")
     public ResponseEntity<CertifiedProductSearchDetails> updateCertifiedProduct(
             @RequestBody(required = true) final ListingUpdateRequest updateRequest)
                     throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
@@ -609,7 +605,7 @@ public class CertifiedProductController {
 
         // clean up what was sent in - some necessary IDs or other fields may be
         // missing
-        Long newAcbId = new Long(updatedListing.getCertifyingBody().get("id").toString());
+        Long newAcbId = Long.valueOf(updatedListing.getCertifyingBody().get("id").toString());
         cpManager.sanitizeUpdatedListingData(newAcbId, updatedListing);
 
         // validate
@@ -651,7 +647,7 @@ public class CertifiedProductController {
                 boolean isDup = cpManager.chplIdExists(updatedListing.getChplProductNumber());
                 if (isDup) {
                     updatedListing.getErrorMessages()
-                    .add(msgUtil.getMessage("listing.chplProductNumber.changedNotUnique", 
+                    .add(msgUtil.getMessage("listing.chplProductNumber.changedNotUnique",
                             updatedListing.getChplProductNumber()));
                 }
             } catch (final EntityRetrievalException ex) {
@@ -659,17 +655,17 @@ public class CertifiedProductController {
         }
 
         if (updatedListing.getErrorMessages() != null && updatedListing.getErrorMessages().size() > 0) {
-            for(String err : updatedListing.getErrorMessages()) {
+            for (String err : updatedListing.getErrorMessages()) {
                 LOGGER.error("Error updating listing " + updatedListing.getChplProductNumber() + ": " + err);
             }
             throw new ValidationException(updatedListing.getErrorMessages(), updatedListing.getWarningMessages());
         }
 
-        Long acbId = new Long(existingListing.getCertifyingBody().get("id").toString());
+        Long acbId = Long.parseLong(existingListing.getCertifyingBody().get("id").toString());
 
-        // if the ACF owner is changed this is a separate action with different
+        // if the ACB owner is changed this is a separate action with different
         // security
-        if (newAcbId != null && acbId.longValue() != newAcbId.longValue()) {
+        if (acbId.longValue() != newAcbId.longValue()) {
             cpManager.changeOwnership(updatedListing.getId(), newAcbId);
             CertifiedProductSearchDetails changedProduct = cpdManager
                     .getCertifiedProductDetails(updatedListing.getId());
@@ -699,6 +695,7 @@ public class CertifiedProductController {
      * Get all pending Certified Products.
      * @return list of pending Listings
      * @throws EntityRetrievalException if cannot retrieve entity
+     * @throws AccessDeniedException if user doesn't have access
      */
     @ApiOperation(value = "List pending certified products.",
             notes = "Pending certified products are created via CSV file upload and are left in the 'pending' state "
@@ -773,8 +770,8 @@ public class CertifiedProductController {
      */
     @Deprecated
     @ApiOperation(value = "DEPRECATED.  Reject a pending certified product.",
-            notes = "Essentially deletes a pending certified product. ROLE_ACB "
-                    + " and administrative authority on the ACB is required.")
+    notes = "Essentially deletes a pending certified product. ROLE_ACB "
+            + " and administrative authority on the ACB is required.")
     @RequestMapping(value = "/pending/{pcpId}/reject", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
     public @ResponseBody String rejectPendingCertifiedProductDeprecated(@PathVariable("pcpId") final Long id)
@@ -788,7 +785,7 @@ public class CertifiedProductController {
             notes = "Essentially deletes a pending certified product. ROLE_ACB "
                     + " and administrative authority on the ACB is required.")
     @RequestMapping(value = "/pending/{pcpId}", method = RequestMethod.DELETE,
-                    produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody String rejectPendingCertifiedProduct(@PathVariable("pcpId") final Long id)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
             AccessDeniedException, ObjectMissingValidationException {
@@ -819,8 +816,8 @@ public class CertifiedProductController {
      */
     @Deprecated
     @ApiOperation(value = "DEPRECATED.  Reject several pending certified products.",
-            notes = "Marks a list of pending certified products as deleted. ROLE_ACB "
-                    + " and administrative authority on the ACB for each pending certified product is required.")
+    notes = "Marks a list of pending certified products as deleted. ROLE_ACB "
+            + " and administrative authority on the ACB for each pending certified product is required.")
     @RequestMapping(value = "/pending/reject", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
     public @ResponseBody String rejectPendingCertifiedProductsDeprecated(@RequestBody final IdListContainer idList)
@@ -879,12 +876,12 @@ public class CertifiedProductController {
      */
     @Deprecated
     @ApiOperation(value = "DEPRECATED.  Confirm a pending certified product.",
-            notes = "Creates a new certified product in the system based on all of the information "
-                    + " passed in on the request. This information may differ from what was previously "
-                    + " entered for the pending certified product during upload. It will first be validated "
-                    + " to check for errors, then a new certified product is created, and the old pending certified"
-                    + " product will be removed. ROLE_ACB "
-                    + " and administrative authority on the ACB is required.")
+    notes = "Creates a new certified product in the system based on all of the information "
+            + " passed in on the request. This information may differ from what was previously "
+            + " entered for the pending certified product during upload. It will first be validated "
+            + " to check for errors, then a new certified product is created, and the old pending certified"
+            + " product will be removed. ROLE_ACB "
+            + " and administrative authority on the ACB is required.")
     @RequestMapping(value = "/pending/confirm", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
     public synchronized ResponseEntity<CertifiedProductSearchDetails> confirmPendingCertifiedProductDprecated(
@@ -918,14 +915,14 @@ public class CertifiedProductController {
 
     private synchronized ResponseEntity<CertifiedProductSearchDetails> addPendingCertifiedProduct(
             final PendingCertifiedProductDetails pendingCp) throws InvalidArgumentsException, ValidationException,
-                    EntityCreationException, EntityRetrievalException, ObjectMissingValidationException,
-                    IOException {
+    EntityCreationException, EntityRetrievalException, ObjectMissingValidationException,
+    IOException {
 
         String acbIdStr = pendingCp.getCertifyingBody().get("id").toString();
         if (StringUtils.isEmpty(acbIdStr)) {
             throw new InvalidArgumentsException("An ACB ID must be supplied in the request body");
         }
-        Long acbId = new Long(acbIdStr);
+        Long acbId = Long.valueOf(acbIdStr);
         if (pcpManager.isPendingListingAvailableForUpdate(acbId, pendingCp.getId())) {
             PendingCertifiedProductDTO pcpDto = new PendingCertifiedProductDTO(pendingCp);
             PendingValidator validator = validatorFactory.getValidator(pcpDto);
@@ -997,12 +994,8 @@ public class CertifiedProductController {
         HttpHeaders responseHeaders = new HttpHeaders();
         List<PendingCertifiedProductDetails> uploadedProducts = new ArrayList<PendingCertifiedProductDetails>();
 
-        BufferedReader reader = null;
-        CSVParser parser = null;
-        try {
-            reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
-            parser = new CSVParser(reader, CSVFormat.EXCEL);
-
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream(), "UTF-8"));
+                CSVParser parser = new CSVParser(reader, CSVFormat.EXCEL)) {
             List<CSVRecord> records = parser.getRecords();
             if (records.size() <= 1) {
                 throw new ValidationException(
@@ -1041,7 +1034,7 @@ public class CertifiedProductController {
                                         CertifiedProductUploadHandler handler = uploadHandlerFactory.getHandler(heading,
                                                 rows);
                                         if (handler.getUploadTemplateVersion() != null
-                                                && handler.getUploadTemplateVersion().getDeprecated() == Boolean.TRUE) {
+                                                && handler.getUploadTemplateVersion().getDeprecated()) {
                                             responseHeaders.set(
                                                     HttpHeaders.WARNING, "299 - \"Deprecated upload template\"");
                                         }
@@ -1066,7 +1059,7 @@ public class CertifiedProductController {
                     try {
                         CertifiedProductUploadHandler handler = uploadHandlerFactory.getHandler(heading, rows);
                         if (handler.getUploadTemplateVersion() != null
-                                && handler.getUploadTemplateVersion().getDeprecated() == Boolean.TRUE) {
+                                && handler.getUploadTemplateVersion().getDeprecated()) {
                             responseHeaders.set(HttpHeaders.WARNING, "299 - \"Deprecated upload template\"");
                         }
                         PendingCertifiedProductEntity pendingCp = handler.handle();
@@ -1112,15 +1105,6 @@ public class CertifiedProductController {
             LOGGER.error("Could not get input stream for uploaded file " + file.getName());
             throw new ValidationException(
                     msgUtil.getMessage("listing.upload.couldNotParse", file.getName()));
-        } finally {
-            try {
-                parser.close();
-            } catch (Exception ignore) {
-            }
-            try {
-                reader.close();
-            } catch (Exception ignore) {
-            }
         }
 
         PendingCertifiedProductResults results = new PendingCertifiedProductResults();
@@ -1146,25 +1130,24 @@ public class CertifiedProductController {
      * @param file
      * @param ex
      */
-    private void sendUploadError(MultipartFile file, Exception ex) {
+    private void sendUploadError(final MultipartFile file, final Exception ex) {
         //get the recipients of this email
         //if there are none specified we won't continue
-        String[] toProperty = env.getProperty("uploadErrorEmailRecipients").split(",");
-        if(toProperty == null || toProperty.length == 0) {
+        if (StringUtils.isEmpty(env.getProperty("uploadErrorEmailRecipients"))) {
             return;
         }
-        List<String> recipients = Arrays.asList(toProperty);
+        List<String> recipients = Arrays.asList(env.getProperty("uploadErrorEmailRecipients").split(","));
 
         //figure out the filename for the attachment
         String originalFilename = file.getOriginalFilename();
         int indexOfExtension = originalFilename.indexOf(".");
         String filenameWithoutExtension = file.getOriginalFilename();
-        if(indexOfExtension >= 0) {
-            filenameWithoutExtension = 
-                    originalFilename.substring(0, indexOfExtension);
+        if (indexOfExtension >= 0) {
+            filenameWithoutExtension
+            = originalFilename.substring(0, indexOfExtension);
         }
         String extension = ".csv";
-        if(indexOfExtension >= 0) {
+        if (indexOfExtension >= 0) {
             extension = originalFilename.substring(indexOfExtension);
         }
 
@@ -1176,31 +1159,27 @@ public class CertifiedProductController {
             file.transferTo(temp);
             attachments = new ArrayList<File>();
             attachments.add(temp);
-        } catch(IOException io) {
+        } catch (IOException io) {
             LOGGER.error("Could not create temporary file for attachment: " + io.getMessage(), io);
         }
 
         //create the email body
-        String htmlBody = "<p>Upload attempted at " + new Date() + 
-                "<br/>Uploaded by " + Util.getUsername() + "</p>";
+        String htmlBody = "<p>Upload attempted at " + new Date()
+                + "<br/>Uploaded by " + Util.getUsername() + "</p>";
         StringWriter writer = new StringWriter();
         ex.printStackTrace(new PrintWriter(writer));
         htmlBody += "<pre>" + writer.toString() + "</pre>";
 
         //build and send the email
         try {
-        EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipients(recipients)
+            EmailBuilder emailBuilder = new EmailBuilder(env);
+            emailBuilder.recipients(recipients)
             .subject(env.getProperty("uploadErrorEmailSubject"))
             .fileAttachments(attachments)
             .htmlMessage(htmlBody)
             .sendEmail();
-        } catch(MessagingException msgEx) {
+        } catch (MessagingException msgEx) {
             LOGGER.error("Could not send team email about failed listing upload.", msgEx);
-        } finally {
-            if(temp != null) {
-                temp.delete();
-            }
         }
     }
 }

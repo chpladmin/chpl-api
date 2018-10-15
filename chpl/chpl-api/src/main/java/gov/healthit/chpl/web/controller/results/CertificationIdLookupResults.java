@@ -11,10 +11,17 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 
+/**
+ * Response object for Cert ID lookup results.
+ */
 public class CertificationIdLookupResults implements Serializable {
     private static final long serialVersionUID = 494982326653301352L;
 
-    static public class Product {
+    /**
+     * Certified product embedded inside response object.
+     */
+    public static class Product implements Serializable {
+        private static final long serialVersionUID = 2970822527765944850L;
         private Long id;
         private String name;
         private String version;
@@ -26,7 +33,11 @@ public class CertificationIdLookupResults implements Serializable {
         private String classification;
         private String additionalSoftware;
 
-        public Product(CertifiedProductDetailsDTO dto) {
+        /** Constructor.
+         *
+         * @param dto object to construct from
+         */
+        public Product(final CertifiedProductDetailsDTO dto) {
             this.id = dto.getId();
             this.name = dto.getProduct().getName();
             this.version = dto.getVersion().getVersion();
@@ -179,5 +190,4 @@ public class CertificationIdLookupResults implements Serializable {
     public void setCqms(final Set<String> cqms) {
         this.cqms = cqms;
     }
-
 }
