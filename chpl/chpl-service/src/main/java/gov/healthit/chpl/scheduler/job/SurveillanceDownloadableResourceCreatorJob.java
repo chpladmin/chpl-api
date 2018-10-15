@@ -35,7 +35,7 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
      * @throws Exception if issue with context
      */
     public SurveillanceDownloadableResourceCreatorJob() throws Exception {
-        super(LOGGER);
+        super(LOGGER, "Surveillance Download file Job - ");
     }
 
     @Override
@@ -71,7 +71,14 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
         LOGGER.info("Finding all listings with surveillance.");
         List<CertifiedProductDetailsDTO> listings = getCertifiedProductDao().findWithSurveillance();
         LOGGER.info("Found " + listings.size() + " listings with surveillance.");
-        return listings;
+        List<CertifiedProductDetailsDTO> ret = new ArrayList<CertifiedProductDetailsDTO>();
+        for (CertifiedProductDetailsDTO dto : listings) {
+            if (dto.getId() > 9300L) {
+                ret.add(dto);
+            }
+        }
+        return ret;
+//        return listings;
     }
 
     private void writeSurveillanceAllFile(final File downloadFolder, final List<CertifiedProductSearchDetails> results)
