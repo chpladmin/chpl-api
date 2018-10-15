@@ -29,8 +29,6 @@ public class FileUtils {
             String msg = "Could not read file: " + ex.getMessage();
             LOGGER.error(msg);
             throw new ValidationException(msg);
-        } finally {
-            try { reader.close(); } catch(Exception ignore) {}
         }
         return data.toString();
     }
