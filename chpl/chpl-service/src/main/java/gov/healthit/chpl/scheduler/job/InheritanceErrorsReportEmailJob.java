@@ -114,35 +114,17 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
     private File getOutputFile(final List<InheritanceErrorsReportDTO> errors) {
         String reportFilename = props.getProperty("inheritanceReportEmailWeeklyFileName");
         File temp = null;
-        OutputStreamWriter writer = null;
-        CSVPrinter csvPrinter = null;
-        try {
+        try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(temp), Charset.forName("UTF-8").newEncoder());
+                CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
             temp = File.createTempFile(reportFilename, ".csv");
             temp.deleteOnExit();
-            writer = new OutputStreamWriter(
-                    new FileOutputStream(temp),
-                    Charset.forName("UTF-8").newEncoder()
-                    );
-            csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL);
             csvPrinter.printRecord(getHeaderRow());
             for (InheritanceErrorsReportDTO error : errors) {
                 List<String> rowValue = generateRowValue(error);
-                csvPrinter.printRecord(rowValue);            }
+                csvPrinter.printRecord(rowValue);            
+            }
         } catch (IOException e) {
             LOGGER.error(e);
-        } finally {
-            try {
-                if (csvPrinter != null) {
-                    csvPrinter.flush();
-                    csvPrinter.close();
-                }
-                if (writer != null) {
-                    writer.flush();
-                    writer.close();
-                }
-            } catch (IOException e) {
-                LOGGER.error(e);
-            }
         }
         return temp;
     }
