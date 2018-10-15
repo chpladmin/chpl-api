@@ -2,7 +2,6 @@ package gov.healthit.chpl.scheduler.job;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -71,14 +70,7 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
         LOGGER.info("Finding all listings with surveillance.");
         List<CertifiedProductDetailsDTO> listings = getCertifiedProductDao().findWithSurveillance();
         LOGGER.info("Found " + listings.size() + " listings with surveillance.");
-        List<CertifiedProductDetailsDTO> ret = new ArrayList<CertifiedProductDetailsDTO>();
-        for (CertifiedProductDetailsDTO dto : listings) {
-            if (dto.getId() > 9300L) {
-                ret.add(dto);
-            }
-        }
-        return ret;
-//        return listings;
+        return listings;
     }
 
     private void writeSurveillanceAllFile(final File downloadFolder, final List<CertifiedProductSearchDetails> results)
