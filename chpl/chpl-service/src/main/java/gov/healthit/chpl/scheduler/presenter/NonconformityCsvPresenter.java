@@ -35,42 +35,40 @@ public class NonconformityCsvPresenter extends SurveillanceCsvPresenter {
 
     @Override
     public void presentAsFile(final File file, final List<CertifiedProductSearchDetails> cpList) {
-        try {
-            try (FileWriter writer = new FileWriter(file);
-                    CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
-                
-                csvPrinter.printRecord(generateHeaderValues());
-    
-                for (CertifiedProductSearchDetails cp : cpList) {
-                    if (cp.getSurveillance() != null && cp.getSurveillance().size() > 0) {
-                        for (Surveillance currSurveillance : cp.getSurveillance()) {
-                            // note if this surveillance has any nonconformities
-                            boolean hasNc = false;
-                            if (currSurveillance.getRequirements() != null
-                                    && currSurveillance.getRequirements().size() > 0) {
-                                // marks requirements for removal if they have no
-                                // nonconformities
-                                List<SurveillanceRequirement> reqsToRemove = new ArrayList<SurveillanceRequirement>();
-                                for (SurveillanceRequirement req : currSurveillance.getRequirements()) {
-                                    if (req.getNonconformities() != null && req.getNonconformities().size() > 0) {
-                                        hasNc = true;
-                                    } else {
-                                        reqsToRemove.add(req);
-                                    }
-                                }
-    
-                                // remove requirements without nonconformities
-                                for (SurveillanceRequirement reqToRemove : reqsToRemove) {
-                                    currSurveillance.getRequirements().remove(reqToRemove);
+        try (FileWriter writer = new FileWriter(file);
+                CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
+            
+            csvPrinter.printRecord(generateHeaderValues());
+
+            for (CertifiedProductSearchDetails cp : cpList) {
+                if (cp.getSurveillance() != null && cp.getSurveillance().size() > 0) {
+                    for (Surveillance currSurveillance : cp.getSurveillance()) {
+                        // note if this surveillance has any nonconformities
+                        boolean hasNc = false;
+                        if (currSurveillance.getRequirements() != null
+                                && currSurveillance.getRequirements().size() > 0) {
+                            // marks requirements for removal if they have no
+                            // nonconformities
+                            List<SurveillanceRequirement> reqsToRemove = new ArrayList<SurveillanceRequirement>();
+                            for (SurveillanceRequirement req : currSurveillance.getRequirements()) {
+                                if (req.getNonconformities() != null && req.getNonconformities().size() > 0) {
+                                    hasNc = true;
+                                } else {
+                                    reqsToRemove.add(req);
                                 }
                             }
-    
-                            if (hasNc) {
-                                // write out surveillance with nonconformities only
-                                List<List<String>> rowValues = generateMultiRowValue(cp, currSurveillance);
-                                for (List<String> rowValue : rowValues) {
-                                    csvPrinter.printRecord(rowValue);
-                                }
+
+                            // remove requirements without nonconformities
+                            for (SurveillanceRequirement reqToRemove : reqsToRemove) {
+                                currSurveillance.getRequirements().remove(reqToRemove);
+                            }
+                        }
+
+                        if (hasNc) {
+                            // write out surveillance with nonconformities only
+                            List<List<String>> rowValues = generateMultiRowValue(cp, currSurveillance);
+                            for (List<String> rowValue : rowValues) {
+                                csvPrinter.printRecord(rowValue);
                             }
                         }
                     }

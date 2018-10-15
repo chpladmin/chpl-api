@@ -60,56 +60,34 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         edition = jobContext.getMergedJobDataMap().getString("edition");
         LOGGER.info("********* Starting the Certified Product Downloadable Resource Creator job for {}. *********",
                 edition);
-        try {
+
+        try (CertifiedProductXmlPresenter xmlPresenter = new CertifiedProductXmlPresenter();
+                CertifiedProductCsvPresenter csvPresenter = getCsvPresenter()) {
+
             List<CertifiedProductDetailsDTO> listings = getRelevantListings();
-            
-            try (CertifiedProductXmlPresenter xmlPresenter = new CertifiedProductXmlPresenter();
-                    CertifiedProductCsvPresenter csvPresenter = getCsvPresenter()) {
+            initializeWritingToFiles(xmlPresenter, csvPresenter);
 
-                initializeWritingToFiles(xmlPresenter, csvPresenter);
+            List<CompletableFuture<CertifiedProductSearchDetails>> futures =
+                    new ArrayList<CompletableFuture<CertifiedProductSearchDetails>>();
 
-                List<CompletableFuture<CertifiedProductSearchDetails>> futures =
-                        new ArrayList<CompletableFuture<CertifiedProductSearchDetails>>();
-    
-                for (CertifiedProductDetailsDTO dto : listings) {
-                    CompletableFuture<CertifiedProductSearchDetails> cpCompletableFuture =
-                        CompletableFuture.supplyAsync(new Supplier<CertifiedProductSearchDetails>() {
-                            @Override
-                            public CertifiedProductSearchDetails get() {
-                                CertifiedProductSearchDetails cpDTO = null;
-                                try {
-                                    cpDTO = cpdManager.getCertifiedProductDetails(dto.getId());
-                                    LOGGER.info("Finishing Details for: " + dto.getId());
-                                } catch (Exception e) {
-                                    LOGGER.error(e);
-                                }
-                                return cpDTO;
-                            }
-                        });
-                        cpCompletableFuture.thenAccept(new Consumer<CertifiedProductSearchDetails>() {
-                            @Override
-                            public void accept(final CertifiedProductSearchDetails cp) {
-                                try {
-                                    xmlPresenter.add(cp);
-                                    csvPresenter.add(cp);
-                                } catch (Exception e) {
-                                    LOGGER.error(e.getMessage(), e);
-                                }
-                            }
-                        });
-                        futures.add(cpCompletableFuture);
-                }
-    
-                //Block execution until all of the listings have been written
-                CompletableFuture<Void> allTasks =
-                        CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()]));
-
-                allTasks.get();
-
-                //This is horrible - need to figure out a way around it...
-                //Think this is because async tasks are complete, but the last 'accept' has not completed
-                Thread.sleep(1000);
+            for (CertifiedProductDetailsDTO dto : listings) {
+                CompletableFuture<CertifiedProductSearchDetails> cpCompletableFuture =
+                    CompletableFuture.supplyAsync(new SupplierCertifiedProductSearchDetails(dto));
+                    cpCompletableFuture.thenAccept(
+                            new ConsumerCertifiedProductSearchDetails(
+                                    xmlPresenter, csvPresenter));
+                    futures.add(cpCompletableFuture);
             }
+
+            //Block execution until all of the listings have been written
+            CompletableFuture<Void> allTasks =
+                    CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()]));
+
+            allTasks.get();
+
+            //This is horrible - need to figure out a way around it...
+            //Think this is because async tasks are complete, but the last 'accept' has not completed
+            Thread.sleep(1000);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
@@ -122,8 +100,8 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
                 edition);
     }
 
-    private void initializeWritingToFiles(CertifiedProductXmlPresenter xmlPresenter, 
-            CertifiedProductCsvPresenter csvPresenter) throws IOException {
+    private void initializeWritingToFiles(final CertifiedProductXmlPresenter xmlPresenter, 
+            final CertifiedProductCsvPresenter csvPresenter) throws IOException {
         xmlPresenter.setLogger(LOGGER);
         xmlPresenter.open(getXmlFile());
 
@@ -182,5 +160,46 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
             throw new IOException("File can not be created");
         }
         return file;
+    }
+    
+    class SupplierCertifiedProductSearchDetails implements Supplier<CertifiedProductSearchDetails> {
+        private CertifiedProductDetailsDTO dto;
+
+        public SupplierCertifiedProductSearchDetails(CertifiedProductDetailsDTO dto) {
+            this.dto = dto;
+        }
+
+        @Override
+        public CertifiedProductSearchDetails get() {
+            CertifiedProductSearchDetails cpDTO = null;
+            try {
+                cpDTO = cpdManager.getCertifiedProductDetails(dto.getId());
+                LOGGER.info("Finishing Details for: " + dto.getId());
+            } catch (Exception e) {
+                LOGGER.error(e);
+            }
+            return cpDTO;
+        }
+    }
+    
+    class ConsumerCertifiedProductSearchDetails implements Consumer<CertifiedProductSearchDetails> {
+        private CertifiedProductXmlPresenter xmlPresenter;
+        private CertifiedProductCsvPresenter csvPresenter;
+
+        public ConsumerCertifiedProductSearchDetails (final CertifiedProductXmlPresenter xmlPresenter, 
+                final CertifiedProductCsvPresenter csvPresenter){
+            this.xmlPresenter = xmlPresenter;
+            this.csvPresenter = csvPresenter;
+        }
+        
+        @Override
+        public void accept(final CertifiedProductSearchDetails cp) {
+            try {
+                xmlPresenter.add(cp);
+                csvPresenter.add(cp);
+            } catch (Exception e) {
+                LOGGER.error(e.getMessage(), e);
+            }
+        }
     }
 }

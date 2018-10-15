@@ -17,15 +17,13 @@ public class FileUtils {
     public static String readFileAsString(MultipartFile file) throws ValidationException {
         //read the file into a string
         StringBuffer data = new StringBuffer();
-        try {
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
-                String line = null;
-                while ((line = reader.readLine()) != null) {
-                    if (data.length() > 0) {
-                        data.append(System.getProperty("line.separator"));
-                    }
-                    data.append(line);
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                if (data.length() > 0) {
+                    data.append(System.getProperty("line.separator"));
                 }
+                data.append(line);
             }
         } catch (final IOException ex) {
             String msg = "Could not read file: " + ex.getMessage();

@@ -146,15 +146,13 @@ public class QuestionableActivityEmailJob extends QuartzJob {
 
     private File getOutputFile(final List<List<String>> rows, final String reportFilename) {
         File temp = null;
-        try {
-            try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(temp), Charset.forName("UTF-8").newEncoder());
-                    CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL);) {
-                temp = File.createTempFile(reportFilename, ".csv");
-                temp.deleteOnExit();
-                csvPrinter.printRecord(getHeaderRow());
-                for (List<String> rowValue : rows) {
-                    csvPrinter.printRecord(rowValue);
-                }
+        try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(temp), Charset.forName("UTF-8").newEncoder());
+                CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL);) {
+            temp = File.createTempFile(reportFilename, ".csv");
+            temp.deleteOnExit();
+            csvPrinter.printRecord(getHeaderRow());
+            for (List<String> rowValue : rows) {
+                csvPrinter.printRecord(rowValue);
             }
         } catch (IOException e) {
             LOGGER.error(e);

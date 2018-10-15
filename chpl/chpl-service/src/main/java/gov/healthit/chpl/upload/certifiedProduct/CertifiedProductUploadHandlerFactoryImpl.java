@@ -84,13 +84,11 @@ public class CertifiedProductUploadHandlerFactoryImpl implements CertifiedProduc
         
         StringBuffer buf = new StringBuffer();
         
-        try {
-            try (CSVPrinter writer = new CSVPrinter(buf, CSVFormat.EXCEL.withRecordSeparator(""))) {
-                //adding a blank char as the record separator prevents an \r\n char 
-                //from getting appended to the end of the string (\r\n at the end 
-                //would not match any of the options in the db)
-                writer.printRecord(trimmedHeaderVals);
-            }
+        try (CSVPrinter writer = new CSVPrinter(buf, CSVFormat.EXCEL.withRecordSeparator(""))) {
+            //adding a blank char as the record separator prevents an \r\n char 
+            //from getting appended to the end of the string (\r\n at the end 
+            //would not match any of the options in the db)
+            writer.printRecord(trimmedHeaderVals);
         } catch(IOException ex) {
             String msg = String
                     .format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.upload.badHeader"),
