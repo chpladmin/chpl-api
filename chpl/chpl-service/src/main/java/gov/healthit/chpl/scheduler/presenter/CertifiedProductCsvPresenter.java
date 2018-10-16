@@ -92,7 +92,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         result.add("Vendor Contact Friendly Name");
         result.add("Product Name");
         result.add("Product Contact Name");
-        result.add("Product Contanct Friendly Name");
+        result.add("Product Contact Friendly Name");
         result.add("Product Contact Title");
         result.add("Product Contact Phone");
         result.add("Product Contact Email");
