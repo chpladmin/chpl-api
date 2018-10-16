@@ -23,6 +23,7 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 
 /**
  * Present objects as CSV file.
+ * 
  * @author alarned
  *
  */
@@ -71,6 +72,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         }
         return logger;
     }
+
     protected List<String> generateHeaderValues() {
         List<String> result = new ArrayList<String>();
         result.add("Certification Edition");
@@ -121,9 +123,10 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         result.add(data.getCertifyingBody().get("name").toString());
         result.add(data.getOtherAcb());
         result.add(data.getDeveloper().getName());
-        if(data.getDeveloper().getAddress().getLine2() != null) {
-            result.add(data.getDeveloper().getAddress().getLine1() + result.add(data.getDeveloper().getAddress().getLine2()));
-        }else {
+        if (data.getDeveloper().getAddress().getLine2() != null) {
+            result.add(data.getDeveloper().getAddress().getLine1()
+                    + result.add(data.getDeveloper().getAddress().getLine2()));
+        } else {
             result.add(data.getDeveloper().getAddress().getLine1());
         }
         result.add(data.getDeveloper().getAddress().getCity());
@@ -133,23 +136,23 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         result.add(data.getDeveloper().getContact().getFullName());
         result.add(data.getDeveloper().getContact().getEmail());
         result.add(data.getDeveloper().getContact().getPhoneNumber());
-        if(data.getDeveloper().getContact().getFriendlyName() != null) {
+        if (data.getDeveloper().getContact().getFriendlyName() != null) {
             result.add(data.getDeveloper().getContact().getFriendlyName());
         }
         result.add(data.getProduct().getName());
-        if(data.getProduct().getContact().getFullName() != null) {
+        if (data.getProduct().getContact().getFullName() != null) {
             result.add(data.getProduct().getContact().getFullName());
         }
-        if(data.getProduct().getContact().getFriendlyName() != null) {
+        if (data.getProduct().getContact().getFriendlyName() != null) {
             result.add(data.getProduct().getContact().getFriendlyName());
         }
-        if(data.getProduct().getContact().getTitle() != null) {
+        if (data.getProduct().getContact().getTitle() != null) {
             result.add(data.getProduct().getContact().getTitle());
         }
-        if(data.getProduct().getContact().getPhoneNumber() != null) {
+        if (data.getProduct().getContact().getPhoneNumber() != null) {
             result.add(data.getProduct().getContact().getPhoneNumber());
         }
-        if(data.getProduct().getContact().getEmail() != null) {
+        if (data.getProduct().getContact().getEmail() != null) {
             result.add(data.getProduct().getContact().getEmail());
         }
         result.add(data.getVersion().getVersion());
