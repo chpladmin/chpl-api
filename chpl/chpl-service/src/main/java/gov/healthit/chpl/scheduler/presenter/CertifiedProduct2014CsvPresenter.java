@@ -73,9 +73,21 @@ public class CertifiedProduct2014CsvPresenter extends CertifiedProductCsvPresent
         result.add(data.getDeveloper().getAddress().getState());
         result.add(data.getDeveloper().getAddress().getZipcode());
         result.add(data.getDeveloper().getWebsite());
-        result.add(data.getDeveloper().getContact().getFullName());
-        result.add(data.getDeveloper().getContact().getEmail());
-        result.add(data.getDeveloper().getContact().getPhoneNumber());
+        if (!data.getProduct().getContact().getFullName().isEmpty()) {
+            result.add(data.getProduct().getContact().getFullName());
+        } else {
+            result.add(data.getDeveloper().getContact().getFullName());
+        }
+        if (!data.getProduct().getContact().getEmail().isEmpty()) {
+            result.add(data.getProduct().getContact().getEmail());
+        } else {
+            result.add(data.getDeveloper().getContact().getEmail());
+        }
+        if (!data.getProduct().getContact().getPhoneNumber().isEmpty()) {
+            result.add(data.getProduct().getContact().getPhoneNumber());
+        } else {
+            result.add(data.getDeveloper().getContact().getPhoneNumber());
+        }
         result.add(data.getProduct().getName());
         result.add(data.getVersion().getVersion());
         result.add(data.getPracticeType().get("name").toString());
