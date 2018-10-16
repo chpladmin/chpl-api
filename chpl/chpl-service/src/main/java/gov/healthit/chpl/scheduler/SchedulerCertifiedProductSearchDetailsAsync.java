@@ -2,8 +2,6 @@ package gov.healthit.chpl.scheduler;
 
 import java.util.concurrent.Future;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
@@ -19,9 +17,6 @@ import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
  */
 @Service("schedulerCertifiedProductSearchDetailsAsync")
 public class SchedulerCertifiedProductSearchDetailsAsync {
-    private Logger logger;
-    private String prefix = "";
-
     /**
      * Retrieves the associated CertifiedProductionSearchDetails object as a Future<>.
      * @param id id associated to the requested CertifiedProductionSearchDetails object
@@ -34,22 +29,6 @@ public class SchedulerCertifiedProductSearchDetailsAsync {
             final Long id, final CertifiedProductDetailsManager certifiedProductDetailsManager)
                 throws EntityRetrievalException {
         CertifiedProductSearchDetails dto = certifiedProductDetailsManager.getCertifiedProductDetails(id);
-        getLogger().info("{}Finishing Details for: {}", this.prefix, id);
         return new AsyncResult<CertifiedProductSearchDetails>(dto);
-    }
-    
-    public void setLogger(Logger logger) {
-        this.logger = logger;
-    }
-    
-    public Logger getLogger() {
-        if (logger == null) {
-            logger = LogManager.getLogger(SchedulerCertifiedProductSearchDetailsAsync.class);
-        }
-        return logger;
-    }
-    
-    public void setPrefix(final String prefix) {
-        this.prefix = prefix;
     }
 }
