@@ -2,6 +2,9 @@
 ## Version 17.1.0
 _Date TBD_
 
+### Backwards compatibility breaking features
+* Removed deprecated /certified_products/meaningful_use/upload. Use /meaningful_use/upload instead.
+
 ### New Features
 * Added "last modified date" for surveillance and non-conformities to download files
 * Move generate chart data app to quartz
@@ -14,6 +17,7 @@ _Date TBD_
   * Added totals for Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2014 Listings
   * Added totals for Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2015 Listings
   * Added active ACBs (when broken out) where the total for the ACB is 0
+* Allow editing of meaningful use user count and history of muu counts for individual listings.
 
 ### Bugs Fixed
 * Fix creation of public announcement ignoring 'public' checkbox.
