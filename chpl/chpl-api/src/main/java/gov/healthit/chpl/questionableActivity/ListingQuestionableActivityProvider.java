@@ -1,5 +1,6 @@
 package gov.healthit.chpl.questionableActivity;
 
+import java.io.Serializable;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -21,8 +22,6 @@ import gov.healthit.chpl.entity.CertificationStatusType;
 
 /**
  * Parses activity on Listings to see if there are questionable activities.
- * @author alarned
- *
  */
 @Component
 public class ListingQuestionableActivityProvider {
@@ -247,7 +246,7 @@ public class ListingQuestionableActivityProvider {
                             && !newCqm.getNqfNumber().equals("N/A") && !origCqm.getNqfNumber().equals("N/A")
                             && newCqm.getNqfNumber().equals(origCqm.getNqfNumber())) {
                         // NQF is the same if the NQF numbers are equal
-                        if (origCqm.isSuccess() == Boolean.FALSE && newCqm.isSuccess() == Boolean.TRUE) {
+                        if (!origCqm.isSuccess() && newCqm.isSuccess()) {
                             //orig did not have this cqm but new does so it was added
                             QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
                             activity.setBefore(null);
@@ -258,7 +257,7 @@ public class ListingQuestionableActivityProvider {
                     } else if (newCqm.getCmsId() != null && origCqm.getCmsId() != null
                             && newCqm.getCmsId().equals(origCqm.getCmsId())) {
                         // CMS is the same if the CMS ID and version is equal
-                        if (origCqm.isSuccess() == Boolean.FALSE && newCqm.isSuccess() == Boolean.TRUE) {
+                        if (!origCqm.isSuccess() && newCqm.isSuccess()) {
                             //orig did not have this cqm but new does so it was added
                             QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
                             activity.setBefore(null);
@@ -296,7 +295,7 @@ public class ListingQuestionableActivityProvider {
                             && !newCqm.getNqfNumber().equals("N/A") && !origCqm.getNqfNumber().equals("N/A")
                             && newCqm.getNqfNumber().equals(origCqm.getNqfNumber())) {
                         // NQF is the same if the NQF numbers are equal
-                        if (origCqm.isSuccess() == Boolean.TRUE && newCqm.isSuccess() == Boolean.FALSE) {
+                        if (origCqm.isSuccess() && !newCqm.isSuccess()) {
                             //orig did have this cqm but new does not so it was removed
                             QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
                             activity.setBefore(
@@ -308,7 +307,7 @@ public class ListingQuestionableActivityProvider {
                     } else if (newCqm.getCmsId() != null && origCqm.getCmsId() != null
                             && newCqm.getCmsId().equals(origCqm.getCmsId())) {
                         // CMS is the same if the CMS ID and version is equal
-                        if (origCqm.isSuccess() == Boolean.TRUE && newCqm.isSuccess() == Boolean.FALSE) {
+                        if (origCqm.isSuccess() && !newCqm.isSuccess()) {
                             //orig did not have this cqm but new does so it was added
                             QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
                             activity.setBefore(
@@ -348,7 +347,7 @@ public class ListingQuestionableActivityProvider {
             for (CertificationResult origCertResult : origListing.getCertificationResults()) {
                 for (CertificationResult newCertResult : newListing.getCertificationResults()) {
                     if (origCertResult.getNumber().equals(newCertResult.getNumber())) {
-                        if (origCertResult.isSuccess() == Boolean.FALSE && newCertResult.isSuccess() == Boolean.TRUE) {
+                        if (!origCertResult.isSuccess() && newCertResult.isSuccess()) {
                             //orig did not have this cert result but new does so it was added
                             QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
                             activity.setBefore(null);
@@ -381,7 +380,7 @@ public class ListingQuestionableActivityProvider {
             for (CertificationResult origCertResult : origListing.getCertificationResults()) {
                 for (CertificationResult newCertResult : newListing.getCertificationResults()) {
                     if (origCertResult.getNumber().equals(newCertResult.getNumber())) {
-                        if (origCertResult.isSuccess() == Boolean.TRUE && newCertResult.isSuccess() == Boolean.FALSE) {
+                        if (origCertResult.isSuccess() && !newCertResult.isSuccess()) {
                             //orig did have this cert result but new does not so it was removed
                             QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
                             activity.setBefore(origCertResult.getNumber());
@@ -465,7 +464,9 @@ public class ListingQuestionableActivityProvider {
         return activity;
     }
 
-    class CertificationStatusEventComparator implements Comparator<CertificationStatusEvent> {
+    static class CertificationStatusEventComparator implements Comparator<CertificationStatusEvent>, Serializable {
+        private static final long serialVersionUID = 1315674742856524797L;
+
         @Override
         public int compare(final CertificationStatusEvent a, final CertificationStatusEvent b) {
             return a.getEventDate().longValue() < b.getEventDate().longValue()

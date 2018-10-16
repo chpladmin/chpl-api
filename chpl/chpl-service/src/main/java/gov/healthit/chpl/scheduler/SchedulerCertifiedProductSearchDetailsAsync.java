@@ -20,6 +20,7 @@ import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 @Service("schedulerCertifiedProductSearchDetailsAsync")
 public class SchedulerCertifiedProductSearchDetailsAsync {
     private Logger logger;
+    private String prefix = "";
 
     /**
      * Retrieves the associated CertifiedProductionSearchDetails object as a Future<>.
@@ -33,7 +34,7 @@ public class SchedulerCertifiedProductSearchDetailsAsync {
             final Long id, final CertifiedProductDetailsManager certifiedProductDetailsManager)
                 throws EntityRetrievalException {
         CertifiedProductSearchDetails dto = certifiedProductDetailsManager.getCertifiedProductDetails(id);
-        getLogger().info("Finishing Details for: " + id);
+        getLogger().info("{}Finishing Details for: {}", this.prefix, id);
         return new AsyncResult<CertifiedProductSearchDetails>(dto);
     }
     
@@ -46,5 +47,9 @@ public class SchedulerCertifiedProductSearchDetailsAsync {
             logger = LogManager.getLogger(SchedulerCertifiedProductSearchDetailsAsync.class);
         }
         return logger;
+    }
+    
+    public void setPrefix(final String prefix) {
+        this.prefix = prefix;
     }
 }

@@ -42,7 +42,7 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
      * @throws Exception if issue with context
      */
     public G3Sed2015DownloadableResourceCreatorJob() throws Exception {
-        super(LOGGER);
+        super(LOGGER, "SED download file job - ");
     }
 
     @Override
