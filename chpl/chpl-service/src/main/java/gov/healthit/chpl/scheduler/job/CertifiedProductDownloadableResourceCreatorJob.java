@@ -54,7 +54,6 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        getCertifiedProductDetailsAsyncRetrievalHelper().setLogger(LOGGER);
 
         Date start = new Date();
         edition = jobContext.getMergedJobDataMap().getString("edition");

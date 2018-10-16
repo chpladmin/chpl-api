@@ -2,7 +2,6 @@ package gov.healthit.chpl.scheduler.job;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -41,7 +40,6 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        getCertifiedProductDetailsAsyncRetrievalHelper().setLogger(LOGGER);
 
         LOGGER.info("********* Starting the Surveillance Downloadable Resource Creator job. *********");
         try {

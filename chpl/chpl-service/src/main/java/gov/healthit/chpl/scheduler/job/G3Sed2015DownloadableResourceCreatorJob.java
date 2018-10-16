@@ -48,7 +48,6 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        schedulerCertifiedProductSearchDetailsAsync.setLogger(LOGGER);
 
         Date start = new Date();
         LOGGER.info("********* Starting the G3 SED 2015 Downloadable Resource Creator job. *********");
