@@ -34,7 +34,7 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
      * @throws Exception if issue with context
      */
     public SurveillanceDownloadableResourceCreatorJob() throws Exception {
-        super(LOGGER);
+        super(LOGGER, "Surveillance Download file Job - ");
     }
 
     @Override
