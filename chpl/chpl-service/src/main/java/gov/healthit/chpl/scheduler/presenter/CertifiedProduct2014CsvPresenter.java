@@ -32,9 +32,9 @@ public class CertifiedProduct2014CsvPresenter extends CertifiedProductCsvPresent
         result.add("Vendor State");
         result.add("Vendor Zip Code");
         result.add("Vendor Website");
-        result.add("Contact Name");
-        result.add("Contact Email");
-        result.add("Contact Phone");
+        result.add("Vendor Contact Name");
+        result.add("Vendor Contact Email");
+        result.add("Vendor Contact Phone");
         result.add("Product Name");
         result.add("Version");
         result.add("Practice Type");
