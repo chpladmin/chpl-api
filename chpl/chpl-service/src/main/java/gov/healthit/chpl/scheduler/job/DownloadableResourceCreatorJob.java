@@ -29,6 +29,7 @@ import gov.healthit.chpl.scheduler.SchedulerCertifiedProductSearchDetailsAsync;
  */
 public abstract class DownloadableResourceCreatorJob extends QuartzJob {
     private SimpleDateFormat timestampFormat;
+    private String prefix;
 
     @Autowired
     private SchedulerCertifiedProductSearchDetailsAsync schedulerCertifiedProductSearchDetailsAsync;
@@ -50,9 +51,14 @@ public abstract class DownloadableResourceCreatorJob extends QuartzJob {
 
     private Logger logger;
 
-    public DownloadableResourceCreatorJob(Logger logger) {
+    public DownloadableResourceCreatorJob(final Logger logger, final String prefix) {
         timestampFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
+        this.prefix = prefix;
         setLogger(logger);
+    }
+
+    public DownloadableResourceCreatorJob(final Logger logger) {
+        this(logger, "");
     }
 
     protected List<Future<CertifiedProductSearchDetails>> getCertifiedProductSearchDetailsFutures(
@@ -60,6 +66,7 @@ public abstract class DownloadableResourceCreatorJob extends QuartzJob {
 
         List<Future<CertifiedProductSearchDetails>> futures = new ArrayList<Future<CertifiedProductSearchDetails>>();
         SchedulerCertifiedProductSearchDetailsAsync cpsdAsync = getCertifiedProductDetailsAsyncRetrievalHelper();
+        cpsdAsync.setPrefix(this.prefix);
         
         for (CertifiedProductDetailsDTO currListing : listings) {
             try {

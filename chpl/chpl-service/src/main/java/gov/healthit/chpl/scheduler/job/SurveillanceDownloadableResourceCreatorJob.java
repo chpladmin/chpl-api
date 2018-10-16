@@ -2,7 +2,6 @@ package gov.healthit.chpl.scheduler.job;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -35,7 +34,7 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
      * @throws Exception if issue with context
      */
     public SurveillanceDownloadableResourceCreatorJob() throws Exception {
-        super(LOGGER);
+        super(LOGGER, "Surveillance Download file Job - ");
     }
 
     @Override
