@@ -66,7 +66,6 @@ public abstract class DownloadableResourceCreatorJob extends QuartzJob {
 
         List<Future<CertifiedProductSearchDetails>> futures = new ArrayList<Future<CertifiedProductSearchDetails>>();
         SchedulerCertifiedProductSearchDetailsAsync cpsdAsync = getCertifiedProductDetailsAsyncRetrievalHelper();
-        cpsdAsync.setPrefix(this.prefix);
         
         for (CertifiedProductDetailsDTO currListing : listings) {
             try {
