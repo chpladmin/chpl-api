@@ -1,6 +1,5 @@
 package gov.healthit.chpl.dao;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -14,9 +13,6 @@ public interface CertifiedProductDAO {
     CertifiedProductDTO create(CertifiedProductDTO product) throws EntityCreationException;
 
     CertifiedProductDTO update(CertifiedProductDTO product) throws EntityRetrievalException;
-
-    CertifiedProductDTO updateMeaningfulUseUsers(CertifiedProductDTO product)
-            throws EntityRetrievalException, IOException;
 
     void delete(Long productId);
 

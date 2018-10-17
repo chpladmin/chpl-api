@@ -486,72 +486,73 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 
     public List<DecertifiedDeveloperDTO> getDecertifiedDevelopers() {
 
-        Query getDecertifiedDevelopers = entityManager.createQuery(
+        Query bannedListingsQuery = entityManager.createQuery(
                 "FROM CertifiedProductDetailsEntity "
                         + "WHERE developerStatusName IN (:banned) AND deleted = false AND acbIsDeleted = false",
                         CertifiedProductDetailsEntity.class);
-        getDecertifiedDevelopers.setParameter("banned", String.valueOf(DeveloperStatusType.UnderCertificationBanByOnc));
-        List<CertifiedProductDetailsEntity> result = getDecertifiedDevelopers.getResultList();
-        List<DecertifiedDeveloperDTO> dtoList = new ArrayList<DecertifiedDeveloperDTO>();
+        bannedListingsQuery.setParameter("banned", String.valueOf(DeveloperStatusType.UnderCertificationBanByOnc));
+        List<CertifiedProductDetailsEntity> bannedListings = bannedListingsQuery.getResultList();
+        List<DecertifiedDeveloperDTO> decertifiedDevelopers = new ArrayList<DecertifiedDeveloperDTO>();
         // populate dtoList from result
-        for (CertifiedProductDetailsEntity e : result) {
-            LOGGER.debug("CertifiedProductDetailsEntity: " + e.getDeveloperId() + " " + e.getCertificationBodyId() + " "
-                    + e.getMeaningfulUseUsers());
-            Boolean dtoIsInList = false;
-            if (dtoList.size() > 0) {
-                for (DecertifiedDeveloperDTO dto : dtoList) {
-                    LOGGER.debug("DeveloperDecertifiedDTO: " + dto.getDeveloperId() + " " + dto.getAcbIdList() + " "
-                            + dto.getNumMeaningfulUse());
+        for (CertifiedProductDetailsEntity currListing : bannedListings) {
+            LOGGER.debug("CertifiedProductDetailsEntity: " + currListing.getDeveloperId() + " " + currListing.getCertificationBodyId() + " "
+                    + currListing.getMeaningfulUseUsers());
+            Boolean devExists = false;
+            if (decertifiedDevelopers.size() > 0) {
+                for (DecertifiedDeveloperDTO currDev : decertifiedDevelopers) {
+                    LOGGER.debug("DeveloperDecertifiedDTO: " + currDev.getDeveloperId() + " " + currDev.getAcbIdList() + " "
+                            + currDev.getNumMeaningfulUse());
                     // if developer already exists, update it to include ACB and
                     // aggregate numMeaningfulUse
-                    if (dto.getDeveloperId().equals(e.getDeveloperId())) {
-                        LOGGER.debug(dto.getDeveloperId() + " == " + e.getDeveloperId());
+                    if (currDev.getDeveloperId().equals(currListing.getDeveloperId())) {
+                        LOGGER.debug(currDev.getDeveloperId() + " == " + currListing.getDeveloperId());
+                        currDev.setDeveloperStatus(currListing.getDeveloperStatusName());
+                        LOGGER.debug("set dto dev status to " + currListing.getDeveloperStatusName());
+                        currDev.setDecertificationDate(currListing.getDeveloperStatusDate());
+                        LOGGER.debug("set dev decert date to " + currListing.getDeveloperStatusDate());
                         // If this developer is not associated with the ACB, add
                         // the ACB
-                        if (!dto.getAcbIdList().contains(e.getCertificationBodyId())) {
-                            LOGGER.debug("dto does not contain " + e.getCertificationBodyName());
-                            dto.addAcb(e.getCertificationBodyId());
-                            LOGGER.debug("added acb " + e.getCertificationBodyId() + " to dto with dev id == "
-                                    + dto.getDeveloperId());
-                            dto.setDeveloperStatus(e.getDeveloperStatusName());
-                            LOGGER.debug("set dto dev status to " + e.getDeveloperStatusName());
-                            dto.setDecertificationDate(e.getDeveloperStatusDate());
-                            LOGGER.debug("set dev decert date to " + e.getDeveloperStatusDate());
-                            if (dto.getNumMeaningfulUse() != null) {
-                                dto.setNumMeaningfulUse(e.getMeaningfulUseUsers());
-                                LOGGER.debug("adding numMeaningfulUse to dto with value " + e.getMeaningfulUseUsers());
-                            } else {
-                                dto.setNumMeaningfulUse(e.getMeaningfulUseUsers());
-                                LOGGER.debug("set dto numMeaningfulUse to value " + e.getMeaningfulUseUsers());
-                            }
-                            dtoIsInList = true;
-                            break;
+                        if (!currDev.getAcbIdList().contains(currListing.getCertificationBodyId())) {
+                            LOGGER.debug("dto does not contain " + currListing.getCertificationBodyName());
+                            currDev.addAcb(currListing.getCertificationBodyId());
                         }
-                        // if developer exists and is associated with ACB, add
-                        // numMeaningfulUse for this CP
-                        else {
-                            if (e.getMeaningfulUseUsers() != null) {
-                                dto.setNumMeaningfulUse(e.getMeaningfulUseUsers());
-                                LOGGER.debug(
-                                        "adding to dto's numMeaningfulUse with value " + e.getMeaningfulUseUsers());
-                            }
-                            dtoIsInList = true;
-                            break;
+                        LOGGER.debug("added acb " + currListing.getCertificationBodyId() + " to dto with dev id == "
+                                + currDev.getDeveloperId());
+                        //aggregate meaningful use count for existing developer
+                        if (currListing.getMeaningfulUseUsers() != null) {
+                            currDev.incrementNumMeaningfulUse(currListing.getMeaningfulUseUsers());
+                            LOGGER.debug("added numMeaningfulUse to dto with value " + currListing.getMeaningfulUseUsers());
                         }
+                        //check earliest vs latest meaningful use dates for existing developer
+                        if (currListing.getMeaningfulUseUsersDate() != null) {
+                            if (currDev.getEarliestNumMeaningfulUseDate() == null) {
+                                currDev.setEarliestNumMeaningfulUseDate(currListing.getMeaningfulUseUsersDate());
+                            } else if (currListing.getMeaningfulUseUsersDate().getTime() < currDev.getEarliestNumMeaningfulUseDate().getTime()) {
+                                currDev.setEarliestNumMeaningfulUseDate(currListing.getMeaningfulUseUsersDate());
+                            }
+                            if (currDev.getLatestNumMeaningfulUseDate() == null) {
+                                currDev.setLatestNumMeaningfulUseDate(currListing.getMeaningfulUseUsersDate());
+                            } else if(currListing.getMeaningfulUseUsersDate().getTime() > currDev.getLatestNumMeaningfulUseDate().getTime()) {
+                                currDev.setLatestNumMeaningfulUseDate(currListing.getMeaningfulUseUsersDate());
+                            }
+                        }
+                        devExists = true;
+                        break;
                     }
                 }
             }
-            if (!dtoIsInList) {
+            if (!devExists) {
                 List<Long> acbList = new ArrayList<Long>();
-                acbList.add(e.getCertificationBodyId());
-                DecertifiedDeveloperDTO newDto = new DecertifiedDeveloperDTO(e.getDeveloperId(), acbList,
-                        e.getDeveloperStatusName(), e.getDeveloperStatusDate(), e.getMeaningfulUseUsers());
-                dtoList.add(newDto);
-                LOGGER.debug("adding newDto to list with values: " + e.getMeaningfulUseUsers());
+                acbList.add(currListing.getCertificationBodyId());
+                DecertifiedDeveloperDTO decertDev = new DecertifiedDeveloperDTO(currListing.getDeveloperId(), acbList,
+                        currListing.getDeveloperStatusName(), currListing.getDeveloperStatusDate(), currListing.getMeaningfulUseUsers());
+                decertDev.setEarliestNumMeaningfulUseDate(currListing.getMeaningfulUseUsersDate());
+                decertDev.setLatestNumMeaningfulUseDate(currListing.getMeaningfulUseUsersDate());
+                decertifiedDevelopers.add(decertDev);
             }
         }
 
-        return dtoList;
+        return decertifiedDevelopers;
     }
 
     private void create(DeveloperEntity entity) {

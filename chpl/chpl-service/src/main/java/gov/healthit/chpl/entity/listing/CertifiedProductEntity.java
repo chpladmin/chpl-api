@@ -102,10 +102,6 @@ public class CertifiedProductEntity {
     @Column(name = "other_acb", length = OTHER_ACB_LENGTH)
     private String otherAcb;
 
-    @Basic(optional = true)
-    @Column(name = "meaningful_use_users", nullable = true)
-    private Long meaningfulUseUsers;
-
     @Column(name = "transparency_attestation_url")
     private String transparencyAttestationUrl;
 
@@ -369,14 +365,6 @@ public class CertifiedProductEntity {
 
     public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public Long getMeaningfulUseUsers() {
-        return meaningfulUseUsers;
-    }
-
-    public void setMeaningfulUseUsers(final Long meaningfulUseUsers) {
-        this.meaningfulUseUsers = meaningfulUseUsers;
     }
 
     public String getTransparencyAttestationUrl() {

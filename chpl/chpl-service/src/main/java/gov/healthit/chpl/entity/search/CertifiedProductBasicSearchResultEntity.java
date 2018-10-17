@@ -78,6 +78,17 @@ public class CertifiedProductBasicSearchResultEntity {
     @Column(name = "meaningful_use_users")
     private Long meaningfulUseUserCount;
 
+    @Column(name = "meaningful_use_users_date")
+    private Date meaningfulUseUserDate;
+
+    public Date getMeaningfulUseUserDate() {
+        return meaningfulUseUserDate;
+    }
+
+    public void setMeaningfulUseUserDate(Date meaningfulUseUserDate) {
+        this.meaningfulUseUserDate = meaningfulUseUserDate;
+    }
+
     @Column(name = "certs")
     private String certs; // comma-separated list of all certification criteria
     // met by the certified product
