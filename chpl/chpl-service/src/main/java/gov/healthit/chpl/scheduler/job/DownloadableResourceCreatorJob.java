@@ -29,7 +29,6 @@ import gov.healthit.chpl.scheduler.SchedulerCertifiedProductSearchDetailsAsync;
  */
 public abstract class DownloadableResourceCreatorJob extends QuartzJob {
     private SimpleDateFormat timestampFormat;
-    private String prefix;
 
     @Autowired
     private SchedulerCertifiedProductSearchDetailsAsync schedulerCertifiedProductSearchDetailsAsync;
@@ -51,14 +50,9 @@ public abstract class DownloadableResourceCreatorJob extends QuartzJob {
 
     private Logger logger;
 
-    public DownloadableResourceCreatorJob(final Logger logger, final String prefix) {
+    public DownloadableResourceCreatorJob(Logger logger) {
         timestampFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
-        this.prefix = prefix;
         setLogger(logger);
-    }
-
-    public DownloadableResourceCreatorJob(final Logger logger) {
-        this(logger, "");
     }
 
     protected List<Future<CertifiedProductSearchDetails>> getCertifiedProductSearchDetailsFutures(
