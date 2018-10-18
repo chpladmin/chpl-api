@@ -13,7 +13,6 @@ import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestProcedureDAO;
-import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultMacraMeasureDTO;
@@ -22,7 +21,6 @@ import gov.healthit.chpl.dto.PendingCertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestTaskParticipantDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.PendingCqmCertificationCriterionDTO;
@@ -31,9 +29,7 @@ import gov.healthit.chpl.dto.PendingTestTaskDTO;
 import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
-import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.util.CertificationResultRules;
-import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 import gov.healthit.chpl.validation.pendingListing.reviewer.RequiredDataReviewer;
@@ -97,11 +93,9 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     private List<String> d2d10Criterion = new ArrayList<String>();
 
     @Autowired private MacraMeasureDAO macraDao;
-    @Autowired private TestToolDAO testToolDao;
     @Autowired private TestFunctionalityDAO testFuncDao;
     @Autowired private TestProcedureDAO testProcDao;
     @Autowired private TestDataDAO testDataDao;
-    @Autowired private ChplProductNumberUtil productNumUtil;
     @Autowired private ErrorMessageUtil msgUtil;
 
     /**

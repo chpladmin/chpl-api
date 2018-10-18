@@ -31,7 +31,7 @@ public class AmbulatoryRequiredTestToolReviewer implements Reviewer {
 
                 if (!gapEligibleAndTrue
                         && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED)
-                        && ValidationUtils.containsCert(cert, TEST_TOOL_CHECK_CERTS)
+                        && !ValidationUtils.containsCert(cert, TEST_TOOL_CHECK_CERTS)
                         && (cert.getTestToolsUsed() == null || cert.getTestToolsUsed().size() == 0)) {
                     listing.getErrorMessages()
                     .add(msgUtil.getMessage("listing.criteria.missingTestTool", cert.getNumber()));
