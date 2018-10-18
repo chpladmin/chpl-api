@@ -577,7 +577,8 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
         listing.setChplProductNumber(queryResult.getChplProductNumber());
         listing.setCertificationStatus(queryResult.getCertificationStatus());
         listing.setNumMeaningfulUse(queryResult.getMeaningfulUseUserCount());
-        listing.setNumMeaningfulUseDate(queryResult.getMeaningfulUseUsersDate().getTime());
+        listing.setNumMeaningfulUseDate(
+                queryResult.getMeaningfulUseUsersDate() != null ? queryResult.getMeaningfulUseUsersDate().getTime() : null);
         listing.setTransparencyAttestationUrl(queryResult.getTransparencyAttestationUrl());
         listing.setEdition(queryResult.getEdition());
         listing.setAcb(queryResult.getAcbName());
