@@ -42,14 +42,15 @@ public class TestToolReviewer implements Reviewer {
                             listing.getErrorMessages().add(
                                     msgUtil.getMessage("listing.criteria.missingTestToolName", cert.getNumber()));
                         } else {
+                            //require test tool version
+                            if (StringUtils.isEmpty(testTool.getVersion())) {
+                                listing.getErrorMessages().add(
+                                        msgUtil.getMessage("listing.criteria.missingTestToolVersion",
+                                                testTool.getName(), cert.getNumber()));
+                            }
+
                             TestToolDTO foundTestTool = testToolDao.getByName(testTool.getName());
                             if (foundTestTool != null) {
-                                //require test tool version
-                                if (StringUtils.isEmpty(testTool.getVersion())) {
-                                    listing.getErrorMessages().add(
-                                            msgUtil.getMessage("listing.criteria.missingTestToolVersion",
-                                                    testTool.getName(), cert.getNumber()));
-                                }
                                 //retired tools aren't allowed
                                 if (foundTestTool.isRetired() && icsCodeInteger != null
                                         && icsCodeInteger.intValue() == 0) {
