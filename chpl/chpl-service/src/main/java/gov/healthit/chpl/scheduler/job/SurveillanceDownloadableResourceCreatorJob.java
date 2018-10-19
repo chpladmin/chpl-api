@@ -34,13 +34,12 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
      * @throws Exception if issue with context
      */
     public SurveillanceDownloadableResourceCreatorJob() throws Exception {
-        super(LOGGER, "Surveillance Download file Job - ");
+        super(LOGGER);
     }
 
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        getCertifiedProductDetailsAsyncRetrievalHelper().setLogger(LOGGER);
 
         LOGGER.info("********* Starting the Surveillance Downloadable Resource Creator job. *********");
         try {

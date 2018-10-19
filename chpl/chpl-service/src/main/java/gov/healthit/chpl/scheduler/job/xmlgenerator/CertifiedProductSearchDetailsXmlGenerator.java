@@ -47,6 +47,7 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
                 sw.writeEndElement();
             }
             CertificationStatusEventXmlGenerator.add(cp.getCertificationEvents(), "certificationEvents", sw);
+            MeaningfulUseUserXmlGenerator.add(cp.getMeaningfulUseUserHistory(), "meaningfulUseUserHistory", sw);
             CertificationResultXmlGenerator.add(cp.getCertificationResults(), "certificationResults", sw);
             if (cp.getCertifyingBody() != null && cp.getCertifyingBody().size() > 0) {
                 sw.writeStartElement("certifyingBody");
@@ -90,7 +91,6 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
             InheritedCertificationStatusXmlGenerator.add(cp.getIcs(), "ics", sw);
             createSimpleElement(cp.getId(), "id", sw);
             createSimpleElement(cp.getLastModifiedDate(), "lastModifiedDate", sw);
-            createSimpleElement(cp.getNumMeaningfulUse(), "numMeaningfulUse", sw);
             createSimpleElement(cp.getOtherAcb(), "otherAcb", sw);
             if (cp.getPracticeType() != null && cp.getPracticeType().size() > 0) {
                 sw.writeStartElement("practiceType");

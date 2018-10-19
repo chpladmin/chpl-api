@@ -533,10 +533,6 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return numMeaningfulUse;
     }
 
-    public void setNumMeaningfulUse(final Long numMeaningfulUse) {
-        this.numMeaningfulUse = numMeaningfulUse;
-    }
-
     public Integer getCountSurveillance() {
         return countSurveillance;
     }

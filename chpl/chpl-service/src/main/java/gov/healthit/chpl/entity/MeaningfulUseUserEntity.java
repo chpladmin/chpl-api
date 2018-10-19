@@ -11,20 +11,33 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+/**
+ * Database mapping for meaningful use user table.
+ * @author kekey
+ *
+ */
 @Entity
-@Table(name = "muu_accurate_as_of_date")
-public class MeaningfulUseAccurateAsOfEntity implements Cloneable, Serializable {
-    private static final long serialVersionUID = -1463562876433962214L;
+@Table(name = "meaningful_use_user")
+public class MeaningfulUseUserEntity implements Cloneable, Serializable {
+    private static final long serialVersionUID = -1463562876433665214L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "muu_accurate_as_of_date_id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @Basic(optional = false)
-    @Column(name = "accurate_as_of_date", updatable = true, nullable = false)
-    private Date accurateAsOfDate;
+    @Column(name = "certified_product_id")
+    private Long certifiedProductId;
+
+    @Basic(optional = false)
+    @Column(name = "meaningful_use_users")
+    private Long muuCount;
+
+    @Basic(optional = false)
+    @Column(name = "meaningful_use_users_date")
+    private Date muuDate;
 
     @Column(name = "deleted")
     private Boolean deleted;
@@ -46,12 +59,28 @@ public class MeaningfulUseAccurateAsOfEntity implements Cloneable, Serializable 
         this.id = id;
     }
 
-    public Date getAccurateAsOfDate() {
-        return accurateAsOfDate;
+    public Long getCertifiedProductId() {
+        return certifiedProductId;
     }
 
-    public void setAccurateAsOfDate(final Date accurateAsOfDate) {
-        this.accurateAsOfDate = accurateAsOfDate;
+    public void setCertifiedProductId(final Long certifiedProductId) {
+        this.certifiedProductId = certifiedProductId;
+    }
+
+    public Long getMuuCount() {
+        return muuCount;
+    }
+
+    public void setMuuCount(final Long muuCount) {
+        this.muuCount = muuCount;
+    }
+
+    public Date getMuuDate() {
+        return muuDate;
+    }
+
+    public void setMuuDate(final Date muuDate) {
+        this.muuDate = muuDate;
     }
 
     public Boolean getDeleted() {

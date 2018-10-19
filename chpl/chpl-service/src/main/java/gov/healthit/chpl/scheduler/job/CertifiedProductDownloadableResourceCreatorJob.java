@@ -2,26 +2,21 @@ package gov.healthit.chpl.scheduler.job;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
+import java.util.concurrent.Future;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProduct2014CsvPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductCsvPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductXmlPresenter;
@@ -39,22 +34,18 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
     private static final int SECONDS_PER_MINUTE = 60;
     private String edition;
 
-    @Autowired
-    private CertifiedProductDetailsManager cpdManager;
-
     /**
      * Default constructor.
      * @throws Exception if issue with context
      */
     public CertifiedProductDownloadableResourceCreatorJob() throws Exception {
-        super(LOGGER, "CP Download file job - ");
+        super(LOGGER);
         edition = "";
     }
 
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        getCertifiedProductDetailsAsyncRetrievalHelper().setLogger(LOGGER);
 
         Date start = new Date();
         edition = jobContext.getMergedJobDataMap().getString("edition");
@@ -65,29 +56,19 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
                 CertifiedProductCsvPresenter csvPresenter = getCsvPresenter()) {
 
             List<CertifiedProductDetailsDTO> listings = getRelevantListings();
+            List<Future<CertifiedProductSearchDetails>> futures =
+                    getCertifiedProductSearchDetailsFutures(listings);
+
             initializeWritingToFiles(xmlPresenter, csvPresenter);
-
-            List<CompletableFuture<CertifiedProductSearchDetails>> futures =
-                    new ArrayList<CompletableFuture<CertifiedProductSearchDetails>>();
-
-            for (CertifiedProductDetailsDTO dto : listings) {
-                CompletableFuture<CertifiedProductSearchDetails> cpCompletableFuture =
-                    CompletableFuture.supplyAsync(new SupplierCertifiedProductSearchDetails(dto));
-                    cpCompletableFuture.thenAccept(
-                            new ConsumerCertifiedProductSearchDetails(
-                                    xmlPresenter, csvPresenter));
-                    futures.add(cpCompletableFuture);
+            for (Future<CertifiedProductSearchDetails> future : futures) {
+                CertifiedProductSearchDetails details = future.get();
+                LOGGER.info("Complete retrieving details for id: " + details.getId());
+                xmlPresenter.add(details);
+                csvPresenter.add(details);
             }
 
-            //Block execution until all of the listings have been written
-            CompletableFuture<Void> allTasks =
-                    CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()]));
+            //Closing of xmlPresenter and csvPresenter happen due to try-with-resources
 
-            allTasks.get();
-
-            //This is horrible - need to figure out a way around it...
-            //Think this is because async tasks are complete, but the last 'accept' has not completed
-            Thread.sleep(1000);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
@@ -160,46 +141,5 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
             throw new IOException("File can not be created");
         }
         return file;
-    }
-    
-    class SupplierCertifiedProductSearchDetails implements Supplier<CertifiedProductSearchDetails> {
-        private CertifiedProductDetailsDTO dto;
-
-        public SupplierCertifiedProductSearchDetails(CertifiedProductDetailsDTO dto) {
-            this.dto = dto;
-        }
-
-        @Override
-        public CertifiedProductSearchDetails get() {
-            CertifiedProductSearchDetails cpDTO = null;
-            try {
-                cpDTO = cpdManager.getCertifiedProductDetails(dto.getId());
-                LOGGER.info("Finishing Details for: " + dto.getId());
-            } catch (Exception e) {
-                LOGGER.error(e);
-            }
-            return cpDTO;
-        }
-    }
-    
-    class ConsumerCertifiedProductSearchDetails implements Consumer<CertifiedProductSearchDetails> {
-        private CertifiedProductXmlPresenter xmlPresenter;
-        private CertifiedProductCsvPresenter csvPresenter;
-
-        public ConsumerCertifiedProductSearchDetails (final CertifiedProductXmlPresenter xmlPresenter, 
-                final CertifiedProductCsvPresenter csvPresenter){
-            this.xmlPresenter = xmlPresenter;
-            this.csvPresenter = csvPresenter;
-        }
-        
-        @Override
-        public void accept(final CertifiedProductSearchDetails cp) {
-            try {
-                xmlPresenter.add(cp);
-                csvPresenter.add(cp);
-            } catch (Exception e) {
-                LOGGER.error(e.getMessage(), e);
-            }
-        }
     }
 }

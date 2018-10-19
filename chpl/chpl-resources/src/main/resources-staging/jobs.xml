@@ -50,7 +50,7 @@
                 <job-name>downloadFileJob2015</job-name>
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 30 4 * * ?</cron-expression> <!-- At 0430 UTC every day -->
+                <cron-expression>0 0 5 * * ?</cron-expression> <!-- At 0500 UTC every day -->
             </cron>
         </trigger>
 
@@ -75,7 +75,7 @@
                 <job-name>downloadFileJob2014</job-name>
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 35 4 * * ?</cron-expression> <!-- At 0435 UTC every day -->
+                <cron-expression>0 30 6 * * ?</cron-expression> <!-- At 0630 UTC every day -->
             </cron>
         </trigger>
 
@@ -120,7 +120,7 @@
                 <job-name>g3Sed2015DownloadFileJob</job-name>
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 50 4 * * ?</cron-expression> <!-- At 0450 UTC every day -->
+                <cron-expression>0 30 3 * * ?</cron-expression> <!-- At 0330 UTC every day -->
             </cron>
         </trigger>
 
@@ -140,7 +140,7 @@
                 <job-name>surveillanceDownloadFileJob</job-name>
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 55 4 * * ?</cron-expression> <!-- At 0455 UTC every day -->
+                <cron-expression>0 15 4 * * ?</cron-expression> <!-- At 0415 UTC every day -->
             </cron>
         </trigger>
 
