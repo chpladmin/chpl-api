@@ -48,9 +48,9 @@ public class RunnableJobFactory {
         result.setJob(job);
         if (Util.getCurrentUser() == null || Util.getCurrentUser().getId() == null) {
             JWTAuthenticatedUser jobUser = new JWTAuthenticatedUser();
-            jobUser.setFirstName(job.getUser().getFirstName());
+            jobUser.setFullName(job.getUser().getFullName());
             jobUser.setId(job.getUser().getId());
-            jobUser.setLastName(job.getUser().getLastName());
+            jobUser.setFriendlyName(job.getUser().getFriendlyName());
             jobUser.setSubjectName(job.getUser().getSubjectName());
             
             //add granted authorities which are like ROLE_ACB, ROLE_ADMIN, etc.

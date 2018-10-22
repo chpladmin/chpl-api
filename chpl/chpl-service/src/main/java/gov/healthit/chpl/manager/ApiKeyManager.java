@@ -2,8 +2,6 @@ package gov.healthit.chpl.manager;
 
 import java.util.List;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.domain.ApiKeyActivity;
@@ -39,4 +37,6 @@ public interface ApiKeyManager {
 
     List<ApiKeyActivity> getApiKeyActivity(String keyString, Integer pageNumber, Integer pageSize)
             throws EntityRetrievalException;
+    
+    ApiKeyDTO updateApiKey(ApiKeyDTO dto) throws EntityRetrievalException;
 }

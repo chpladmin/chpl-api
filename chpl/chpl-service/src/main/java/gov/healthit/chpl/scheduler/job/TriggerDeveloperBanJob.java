@@ -3,7 +3,9 @@ package gov.healthit.chpl.scheduler.job;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 
 import javax.mail.MessagingException;
@@ -15,8 +17,11 @@ import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.auth.SendMailUtil;
+import gov.healthit.chpl.auth.EmailBuilder;
 import gov.healthit.chpl.util.Util;
 
 /**
@@ -25,10 +30,13 @@ import gov.healthit.chpl.util.Util;
  *
  */
 public class TriggerDeveloperBanJob implements Job {
-    private static final Logger LOGGER = LogManager.getLogger(TriggerDeveloperBanJob.class);
+    private static final Logger LOGGER = LogManager.getLogger("triggerDeveloperBanJobLogger");
     private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
     private Properties properties = null;
 
+    @Autowired
+    private Environment env;
+    
     /**
      * Default constructor.
      * @throws IOException if unable to load properties
@@ -53,12 +61,18 @@ public class TriggerDeveloperBanJob implements Job {
      */
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
+        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+        
+        LOGGER.info("********* Starting the Trigger Developer Ban job. *********");
+        
         String[] recipients = jobContext.getMergedJobDataMap().getString("email").split("\u263A");
+        
         try {
             sendEmail(jobContext, recipients);
         } catch (IOException | MessagingException e) {
-            e.printStackTrace();
+            LOGGER.error(e);
         }
+        LOGGER.info("********* Completed the Trigger Developer Ban job. *********");
     }
 
     private void sendEmail(final JobExecutionContext jobContext, final String[] recipients)
@@ -67,11 +81,17 @@ public class TriggerDeveloperBanJob implements Job {
         String subject = "NEED TO REVIEW: Certification Status of listing set to \""
                 + jobContext.getMergedJobDataMap().getString("status") + "\"";
         String htmlMessage = createHtmlEmailBody(jobContext);
-
-        LOGGER.info("Sending email to {} with subject {} and content {}",
-                String.join(",", recipients), subject, htmlMessage);
-        SendMailUtil mailUtil = new SendMailUtil();
-        mailUtil.sendEmail(null, recipients, subject, htmlMessage, null, properties);
+        
+        LOGGER.info("Sending email to: " + jobContext.getMergedJobDataMap().getString("email"));
+        LOGGER.info("Message to be sent: " + htmlMessage);
+        
+        List<String> addresses = Arrays.asList(recipients); 
+        
+        EmailBuilder emailBuilder = new EmailBuilder(env);
+        emailBuilder.recipients(addresses)
+                        .subject(subject)
+                        .htmlMessage(htmlMessage)
+                        .sendEmail();
     }
 
     private String createHtmlEmailBody(final JobExecutionContext jobContext) {
@@ -90,7 +110,7 @@ public class TriggerDeveloperBanJob implements Job {
                 jdm.getString("developer"),                                             // developer name
                 jdm.getString("acb"),                                                   // ACB name
                 Util.getDateFormatter().format(new Date(jdm.getLong("changeDate"))),    // date of change
-                jdm.getString("firstName") + " " + jdm.getString("lastName"),           // user making change
+                jdm.getString("fullName"),                                              // user making change
                 jdm.getString("status"),                                                // target status
                 Util.getDateFormatter().format(new Date(jdm.getLong("effectiveDate"))), // effective date of change
                 (openNcs != 1 ? "were" : "was"), openNcs, (openNcs != 1 ? "ies" : "y"), // formatted counts of open

@@ -1,6 +1,10 @@
 package gov.healthit.chpl.domain.statistics;
 
-public class CertifiedBodyStatistics extends Statistic {
+import java.io.Serializable;
+
+public class CertifiedBodyStatistics extends Statistic implements Serializable  {
+    private static final long serialVersionUID = -2104318867819249394L;
+
     private String certificationStatusName;
     private Long totalDevelopersWithListings;
     private Long totalListings;

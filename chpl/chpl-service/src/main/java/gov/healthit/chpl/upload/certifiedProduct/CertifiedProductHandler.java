@@ -145,7 +145,7 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
 
         // look for contact in db
         ContactDTO contactToFind = new ContactDTO();
-        contactToFind.setLastName(developerContactName);
+        contactToFind.setFriendlyName(developerContactName);
         contactToFind.setEmail(developerEmail);
         contactToFind.setPhoneNumber(developerPhone);
         ContactDTO foundContact = contactDao.getByValues(contactToFind);
@@ -341,6 +341,10 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         if (value.equalsIgnoreCase("t") || value.equalsIgnoreCase("true") || value.equalsIgnoreCase("yes")
                 || value.equalsIgnoreCase("y")) {
             return true;
+        }
+        if (value.equalsIgnoreCase("f") || value.equalsIgnoreCase("false") || value.equalsIgnoreCase("no")
+                || value.equalsIgnoreCase("n")) {
+            return false;
         }
 
         try {

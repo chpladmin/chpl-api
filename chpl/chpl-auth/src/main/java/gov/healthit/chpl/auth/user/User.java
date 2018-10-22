@@ -10,60 +10,45 @@ import org.springframework.security.core.userdetails.UserDetails;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 
 public interface User extends UserDetails , Authentication {
-	
-	public Long getId();	
-	public String getSubjectName();
-	public void setSubjectName(String subject);
-	
-	public void setFirstName(String firstName);
-	public String getFirstName();
-	public void setLastName(String lastName);
-	public String getLastName();
-	
-	public Set<GrantedPermission> getPermissions();
-	public void addPermission(GrantedPermission permission);
-	public void removePermission(String permissionValue);
 
-	
-	// UserDetails interface
-	@Override
-	public String getPassword();
+    Long getId();
+    String getSubjectName();
+    void setSubjectName(String subject);
 
-	@Override
-	public String getUsername();
+    void setFullName(String fullName);
+    String getFullName();
+    void setFriendlyName(String friendlyName);
+    String getFriendlyName();
 
-	@Override
-	public boolean isAccountNonExpired();
+    Set<GrantedPermission> getPermissions();
+    void addPermission(GrantedPermission permission);
+    void removePermission(String permissionValue);
 
-	@Override
-	public boolean isAccountNonLocked();
+    // UserDetails interface
+    @Override String getPassword();
 
-	@Override
-	public boolean isCredentialsNonExpired();
+    @Override String getUsername();
 
-	@Override
-	public boolean isEnabled();
-	
-	// Authentication Interface
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities();
+    @Override boolean isAccountNonExpired();
 
-	@Override
-	public Object getCredentials();
+    @Override boolean isAccountNonLocked();
 
-	@Override
-	public Object getDetails();
+    @Override boolean isCredentialsNonExpired();
 
-	@Override
-	public Object getPrincipal();
-	
-	@Override
-	public boolean isAuthenticated();
+    @Override boolean isEnabled();
 
-	@Override
-	public void setAuthenticated(boolean arg0) throws IllegalArgumentException;
-	
-	@Override
-	public String getName();
-	
+    // Authentication Interface
+    @Override Collection<? extends GrantedAuthority> getAuthorities();
+
+    @Override Object getCredentials();
+
+    @Override Object getDetails();
+
+    @Override Object getPrincipal();
+
+    @Override boolean isAuthenticated();
+
+    @Override void setAuthenticated(boolean arg0) throws IllegalArgumentException;
+
+    @Override String getName();
 }

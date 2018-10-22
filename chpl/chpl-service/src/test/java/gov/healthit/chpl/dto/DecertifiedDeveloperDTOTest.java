@@ -45,7 +45,7 @@ public class DecertifiedDeveloperDTOTest {
 	@BeforeClass
 	public static void setUpClass() throws Exception {
 		authUser = new JWTAuthenticatedUser();
-		authUser.setFirstName("Admin");
+		authUser.setFullName("Admin");
 		authUser.setId(-2L);
 		authUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 	}
@@ -90,7 +90,7 @@ public class DecertifiedDeveloperDTOTest {
 		dto3.setAcbList(acbList3);
 		dto3.setDeveloperId(developerId3);
 		dto3.setDeveloperStatus(developerStatus3);
-		dto3.setNumMeaningfulUse(numMeaningfulUse3);
+		dto3.incrementNumMeaningfulUse(numMeaningfulUse3);
 		assertTrue(dto3 != null);
 		
 		Long developerId4 = -1L; 

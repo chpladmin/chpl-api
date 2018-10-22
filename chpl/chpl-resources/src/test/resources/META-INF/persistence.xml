@@ -40,7 +40,7 @@
         <class>gov.healthit.chpl.entity.IncumbentDevelopersStatisticsEntity</class>
         <class>gov.healthit.chpl.entity.ListingCountStatisticsEntity</class>
         <class>gov.healthit.chpl.entity.MacraMeasureEntity</class>
-        <class>gov.healthit.chpl.entity.MeaningfulUseAccurateAsOfEntity</class>
+        <class>gov.healthit.chpl.entity.MeaningfulUseUserEntity</class>
         <class>gov.healthit.chpl.entity.NonconformityStatusEntity</class>
         <class>gov.healthit.chpl.entity.PracticeTypeEntity</class>
         <class>gov.healthit.chpl.entity.ProductActiveOwnerEntity</class>
@@ -93,6 +93,7 @@
         <class>gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity</class>
         <class>gov.healthit.chpl.entity.listing.CertifiedProductEntity</class>
         <class>gov.healthit.chpl.entity.listing.CertifiedProductQmsStandardEntity</class>
+        <class>gov.healthit.chpl.entity.listing.CertifiedProductSummaryEntity</class>
         <class>gov.healthit.chpl.entity.listing.CertifiedProductTargetedUserEntity</class>
         <class>gov.healthit.chpl.entity.listing.CertifiedProductTestingLabMapEntity</class>
         <class>gov.healthit.chpl.entity.listing.ListingToListingMapEntity</class>
@@ -150,7 +151,7 @@
             <property name="hibernate.format_sql" value="false" />
             <property name="hibernate.driver_class" value="org.postgresql.Driver" />
             <property name="hibernate.connection.datasource"
-                value="java:comp/env/jdbc/openchpl" />
+                value="java:comp/env/jdbc/openchpl_test" />
             <property name="hibernate.dialect"
                 value="org.hibernate.dialect.PostgreSQLDialect" />
             <property name="hibernate.flush_before_completion"

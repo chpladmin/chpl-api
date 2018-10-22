@@ -56,9 +56,9 @@ public class ProductControllerTest {
 	@BeforeClass
 	public static void setUpClass() throws Exception {
 		adminUser = new JWTAuthenticatedUser();
-		adminUser.setFirstName("Administrator");
+		adminUser.setFullName("Administrator");
 		adminUser.setId(-2L);
-		adminUser.setLastName("Administrator");
+		adminUser.setFriendlyName("Administrator");
 		adminUser.setSubjectName("admin");
 		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 	}
@@ -128,15 +128,15 @@ public class ProductControllerTest {
         
         request.getProduct().setContact(new Contact());
         request.getProduct().getContact().setContactId(1l);
-        request.getProduct().getContact().setFirstName("FName");
-        request.getProduct().getContact().setLastName("LName");
+        request.getProduct().getContact().setFullName("FName");
+        request.getProduct().getContact().setFriendlyName("LName");
         request.getProduct().getContact().setEmail("abc@xyz.com");
         request.getProduct().getContact().setPhoneNumber("7175551212");
         productController.updateProduct(request);
         
         Product p = productController.getProductById(-1l);
         
-        assertEquals("FName", p.getContact().getFirstName());
+        assertEquals("FName", p.getContact().getFullName());
         
     }
 }

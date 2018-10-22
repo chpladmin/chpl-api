@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -73,7 +72,7 @@ public class CertifiedProductDaoTest {
     @BeforeClass
     public static void setUpClass() {
         authUser = new JWTAuthenticatedUser();
-        authUser.setFirstName("Admin");
+        authUser.setFullName("Admin");
         authUser.setId(ADMIN_ID);
         authUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
     }
@@ -148,29 +147,6 @@ public class CertifiedProductDaoTest {
         products = productDao.getDetailsByChplNumbers(chplProductNumbers);
         assertNotNull(products);
         assertEquals(expectedCount, products.size());
-    }
-
-    /**
-     * Given that I am ROLE_ONC_STAFF or ROLE_ADMIN
-     * when I update a CHPL Product Number's count of meaningfulUseUsers
-     * then the database shows the change for only the CHPL Product Number's meaningfulUseUsers.
-     * @throws EntityRetrievalException if cannot retrieve entity
-     * @throws IOException if IO Exception
-     */
-    @Test
-    @Transactional(readOnly = true)
-    @Rollback
-    public void updateMeaningfulUseUsers() throws EntityRetrievalException, IOException {
-        SecurityContextHolder.getContext().setAuthentication(authUser);
-        CertifiedProductDTO dto = new CertifiedProductDTO();
-        dto.setChplProductNumber("CHP-024050");
-        dto.setMeaningfulUseUsers(DELETED_LISTING_ID);
-        CertifiedProductDTO dtoResponse = new CertifiedProductDTO();
-        dtoResponse = productDao.updateMeaningfulUseUsers(dto);
-        assertNotNull(dtoResponse);
-        assertTrue(dtoResponse.getChplProductNumber().equalsIgnoreCase("CHP-024050"));
-        assertTrue(dtoResponse.getMeaningfulUseUsers() == DELETED_LISTING_ID);
-        assertTrue(dtoResponse.getCertificationEditionId() != null);
     }
 
     /**

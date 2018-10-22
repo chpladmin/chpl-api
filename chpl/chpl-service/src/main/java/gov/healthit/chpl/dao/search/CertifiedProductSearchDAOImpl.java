@@ -147,7 +147,7 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
         sql += "WHERE listing_row >= :firstResult AND listing_row < :lastResult ";
         //this is the end, matches up with the beginning sql
         sql += ") filtered_listings_with_rows "
-                + "INNER JOIN openchpl.certified_product_search_result "
+                + "INNER JOIN " + SCHEMA_NAME + ".certified_product_search_result "
                 + "ON filtered_listings_with_rows.certified_product_id = "
                 + "certified_product_search_result.certified_product_id "
                 + "ORDER BY listing_row ";
@@ -206,25 +206,25 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
             }
         }
         sql += ", cp.certified_product_id) listing_row "
-                + "FROM openchpl.certified_product cp ";
+                + "FROM " + SCHEMA_NAME + ".certified_product cp ";
 
         //join in developer, product, and vendor for use in creating chpl id
         sql += "INNER JOIN (SELECT product_version_id, version as \"product_version\", product_id "
-                + "FROM openchpl.product_version) version "
+                + "FROM " + SCHEMA_NAME + ".product_version) version "
                 + "ON cp.product_version_id = version.product_version_id ";
         if (!StringUtils.isEmpty(searchRequest.getVersion())) {
             sql += " AND UPPER(product_version) LIKE :versionName ";
         }
 
         sql += "INNER JOIN (SELECT product_id, vendor_id, name as \"product_name\" "
-                + "FROM openchpl.product) product "
+                + "FROM " + SCHEMA_NAME + ".product) product "
                 + "ON version.product_id = product.product_id ";
         if (!StringUtils.isEmpty(searchRequest.getProduct())) {
             sql += " AND UPPER(product_name) LIKE :productName ";
         }
 
         sql += "INNER JOIN (SELECT vendor_id, name as \"vendor_name\", vendor_code "
-                + "FROM openchpl.vendor) vendor "
+                + "FROM " + SCHEMA_NAME + ".vendor) vendor "
                 + "ON product.vendor_id = vendor.vendor_id ";
         if (!StringUtils.isEmpty(searchRequest.getDeveloper())) {
             sql += " AND UPPER(vendor_name) LIKE :developerName ";
@@ -233,7 +233,7 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
         //join in certification editions for creating chpl id
         sql += " INNER JOIN "
                 + "(SELECT certification_edition_id, year "
-                + "FROM openchpl.certification_edition) edition "
+                + "FROM " + SCHEMA_NAME + ".certification_edition) edition "
                 + "ON cp.certification_edition_id = edition.certification_edition_id ";
         if (searchRequest.getCertificationEditions() != null && searchRequest.getCertificationEditions().size() > 0) {
             sql += "AND year IN (:editions) ";
@@ -243,7 +243,7 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
         sql += "INNER JOIN "
                 + "(SELECT certification_body_id, name as \"certification_body_name\", "
                 + "acb_code as \"certification_body_code\" "
-                + "FROM openchpl.certification_body) acb "
+                + "FROM " + SCHEMA_NAME + ".certification_body) acb "
                 + "ON cp.certification_body_id = acb.certification_body_id ";
         if (searchRequest.getCertificationBodies() != null && searchRequest.getCertificationBodies().size() > 0) {
             sql += "AND UPPER(certification_body_name) IN (:acbNames) ";
@@ -253,8 +253,8 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
         sql += "LEFT JOIN "
                 + "(SELECT name as \"history_vendor_name\", "
                 + "product_owner_history_map.product_id as \"history_product_id\" "
-                + "FROM openchpl.vendor "
-                + "JOIN openchpl.product_owner_history_map "
+                + "FROM " + SCHEMA_NAME + ".vendor "
+                + "JOIN " + SCHEMA_NAME + ".product_owner_history_map "
                 + "ON vendor.vendor_id = product_owner_history_map.vendor_id "
                 + "WHERE product_owner_history_map.deleted = false) prev_vendor_owners "
                 + "ON prev_vendor_owners.history_product_id = product.product_id ";
@@ -264,12 +264,12 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
             sql += "INNER JOIN "
                     + "(SELECT certStatus.certification_status as \"certification_status_name\", "
                     + "cse.certified_product_id as \"certified_product_id\" "
-                    + "FROM openchpl.certification_status_event cse "
-                    + "INNER JOIN openchpl.certification_status certStatus ON "
+                    + "FROM " + SCHEMA_NAME + ".certification_status_event cse "
+                    + "INNER JOIN " + SCHEMA_NAME + ".certification_status certStatus ON "
                     + "cse.certification_status_id = certStatus.certification_status_id "
                     + "INNER JOIN "
                     + "(SELECT certified_product_id, extract(epoch from MAX(event_date)) event_date "
-                    + "FROM openchpl.certification_status_event "
+                    + "FROM " + SCHEMA_NAME + ".certification_status_event "
                     + "GROUP BY certified_product_id) maxCse "
                     + "ON cse.certified_product_id = maxCse.certified_product_id "
                     + "AND extract(epoch from cse.event_date) = maxCse.event_date "
@@ -283,7 +283,7 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
                 || !StringUtils.isEmpty(searchRequest.getCertificationDateEnd())) {
             sql += "INNER JOIN "
                     + "(SELECT MIN(event_date) as \"certification_date\", certified_product_id "
-                    + "FROM openchpl.certification_status_event "
+                    + "FROM " + SCHEMA_NAME + ".certification_status_event "
                     + "WHERE certification_status_id = 1 "
                     + "GROUP BY (certified_product_id)) certStatusEvent "
                     + "ON cp.certified_product_id = certStatusEvent.certified_product_id ";
@@ -299,7 +299,7 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
         if (!StringUtils.isEmpty(searchRequest.getPracticeType())) {
             sql += "INNER JOIN "
                     + "(SELECT practice_type_id, name as \"practice_type_name\" "
-                    + "FROM openchpl.practice_type) prac "
+                    + "FROM " + SCHEMA_NAME + ".practice_type) prac "
                     + "ON cp.practice_type_id = prac.practice_type_id "
                     + "AND UPPER(practice_type_name) LIKE :practiceTypeName ";
         }
@@ -309,8 +309,8 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
             String criteriaSql = "INNER JOIN "
                     + "(SELECT certification_criterion.number as \"cert_number\", "
                     + "certification_result.certified_product_id "
-                    + "FROM openchpl.certification_result "
-                    + "JOIN openchpl.certification_criterion "
+                    + "FROM " + SCHEMA_NAME + ".certification_result "
+                    + "JOIN " + SCHEMA_NAME + ".certification_criterion "
                     + "ON certification_criterion.certification_criterion_id = "
                     + "certification_result.certification_criterion_id "
                     + "AND certification_criterion.deleted = false "
@@ -339,7 +339,7 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
         if (searchRequest.getCqms() != null && searchRequest.getCqms().size() > 0) {
             String cqmSql = "INNER JOIN "
                     + "(SELECT COALESCE(cms_id, 'NQF-'||nqf_number) as \"cqm_number\", certified_product_id "
-                    + "FROM openchpl.cqm_result, openchpl.cqm_criterion "
+                    + "FROM " + SCHEMA_NAME + ".cqm_result, " + SCHEMA_NAME + ".cqm_criterion "
                     + "WHERE cqm_criterion.cqm_criterion_id = cqm_result.cqm_criterion_id "
                     + "AND cqm_criterion.deleted = false "
                     + "AND cqm_result.success = true "
@@ -365,29 +365,29 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
         //surveillance and nonconformity counts
         sql += "LEFT JOIN "
                 + "(SELECT certified_product_id, count(*) as \"count_surveillance_activities\" "
-                + "FROM openchpl.surveillance "
-                + "WHERE openchpl.surveillance.deleted <> true "
+                + "FROM " + SCHEMA_NAME + ".surveillance "
+                + "WHERE " + SCHEMA_NAME + ".surveillance.deleted <> true "
                 + "GROUP BY certified_product_id) survs "
                 + "ON cp.certified_product_id = survs.certified_product_id "
                 + "LEFT JOIN "
                 + "(SELECT certified_product_id, count(*) as \"count_open_nonconformities\" "
-                + "FROM openchpl.surveillance surv "
-                + "JOIN openchpl.surveillance_requirement surv_req ON surv.id = "
+                + "FROM " + SCHEMA_NAME + ".surveillance surv "
+                + "JOIN " + SCHEMA_NAME + ".surveillance_requirement surv_req ON surv.id = "
                 + "surv_req.surveillance_id AND surv_req.deleted <> true "
-                + "JOIN openchpl.surveillance_nonconformity surv_nc ON surv_req.id = "
+                + "JOIN " + SCHEMA_NAME + ".surveillance_nonconformity surv_nc ON surv_req.id = "
                 + "surv_nc.surveillance_requirement_id AND surv_nc.deleted <> true "
-                + "JOIN openchpl.nonconformity_status nc_status ON surv_nc.nonconformity_status_id = nc_status.id "
+                + "JOIN " + SCHEMA_NAME + ".nonconformity_status nc_status ON surv_nc.nonconformity_status_id = nc_status.id "
                 + "WHERE surv.deleted <> true AND nc_status.name = 'Open' "
                 + "GROUP BY certified_product_id) nc_open "
                 + "ON cp.certified_product_id = nc_open.certified_product_id "
                 + "LEFT JOIN "
                 + "(SELECT certified_product_id, count(*) as \"count_closed_nonconformities\" "
-                + "FROM openchpl.surveillance surv "
-                + "JOIN openchpl.surveillance_requirement surv_req ON surv.id = "
+                + "FROM " + SCHEMA_NAME + ".surveillance surv "
+                + "JOIN " + SCHEMA_NAME + ".surveillance_requirement surv_req ON surv.id = "
                 + "surv_req.surveillance_id AND surv_req.deleted <> true "
-                + "JOIN openchpl.surveillance_nonconformity surv_nc ON surv_req.id = "
+                + "JOIN " + SCHEMA_NAME + ".surveillance_nonconformity surv_nc ON surv_req.id = "
                 + "surv_nc.surveillance_requirement_id AND surv_nc.deleted <> true "
-                + "JOIN openchpl.nonconformity_status nc_status ON surv_nc.nonconformity_status_id = nc_status.id "
+                + "JOIN " + SCHEMA_NAME + ".nonconformity_status nc_status ON surv_nc.nonconformity_status_id = nc_status.id "
                 + "WHERE surv.deleted <> true AND nc_status.name = 'Closed' "
                 + "GROUP BY certified_product_id) nc_closed "
                 + "ON cp.certified_product_id = nc_closed.certified_product_id";
@@ -404,7 +404,7 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
             if (searchTerm.startsWith("CHP-")
                     || Pattern.matches(CertifiedProductDTO.CHPL_PRODUCT_NUMBER_SEARCH_REGEX, searchTerm.trim())) {
                 sql += "AND "
-                        + "UPPER(openchpl.get_chpl_product_number_as_text(cp.certified_product_id)) LIKE :searchTerm";
+                        + "UPPER(" + SCHEMA_NAME + ".get_chpl_product_number_as_text(cp.certified_product_id)) LIKE :searchTerm";
             } else {
                 sql += "AND"
                         + "(UPPER(vendor_name) LIKE :searchTerm OR "
@@ -577,6 +577,8 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
         listing.setChplProductNumber(queryResult.getChplProductNumber());
         listing.setCertificationStatus(queryResult.getCertificationStatus());
         listing.setNumMeaningfulUse(queryResult.getMeaningfulUseUserCount());
+        listing.setNumMeaningfulUseDate(
+                queryResult.getMeaningfulUseUsersDate() != null ? queryResult.getMeaningfulUseUsersDate().getTime() : null);
         listing.setTransparencyAttestationUrl(queryResult.getTransparencyAttestationUrl());
         listing.setEdition(queryResult.getEdition());
         listing.setAcb(queryResult.getAcbName());
@@ -623,9 +625,12 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
             result.setAcbCertificationId(dbResult.getAcbCertificationId());
             result.setPracticeType(dbResult.getPracticeTypeName());
             result.setDeveloper(dbResult.getDeveloper());
+            result.setDeveloperStatus(dbResult.getDeveloperStatus());
             result.setProduct(dbResult.getProduct());
             result.setVersion(dbResult.getVersion());
             result.setNumMeaningfulUse(dbResult.getMeaningfulUseUserCount());
+            result.setNumMeaningfulUseDate(dbResult.getMeaningfulUseUserDate() != null
+                    ? dbResult.getMeaningfulUseUserDate().getTime() : null);
             result.setDecertificationDate(
                     dbResult.getDecertificationDate() == null ? null : dbResult.getDecertificationDate().getTime());
             result.setCertificationDate(dbResult.getCertificationDate().getTime());

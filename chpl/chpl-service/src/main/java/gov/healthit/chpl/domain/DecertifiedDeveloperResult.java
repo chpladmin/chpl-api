@@ -12,24 +12,32 @@ public class DecertifiedDeveloperResult implements Serializable {
     private List<CertificationBody> certifyingBody;
     private Date decertificationDate;
     private Long estimatedUsers;
+    private Long earliestMeaningfulUseDate;
+    private Long latestMeaningfulUseDate;
 
     public DecertifiedDeveloperResult() {
     }
 
     public DecertifiedDeveloperResult(Developer developer, List<CertificationBody> certifyingBody,
-            Date decertificationDate, Long estimatedUsers) {
+            Date decertificationDate, Long estimatedUsers, Date earliestMeaningfulUseDate,
+            Date latestMeaningfulUseDate) {
         this.developer = developer;
         this.certifyingBody = certifyingBody;
         this.decertificationDate = decertificationDate;
         this.estimatedUsers = estimatedUsers;
+        this.earliestMeaningfulUseDate = earliestMeaningfulUseDate.getTime();
+        this.latestMeaningfulUseDate = latestMeaningfulUseDate.getTime();
     }
 
     public DecertifiedDeveloperResult(DeveloperDTO developerDTO, List<CertificationBody> certifyingBody,
-            Date decertificationDate, Long estimatedUsers) {
+            Date decertificationDate, Long estimatedUsers, Date earliestMeaningfulUseDate,
+            Date latestMeaningfulUseDate) {
         this.developer = new Developer(developerDTO);
         this.certifyingBody = certifyingBody;
         this.decertificationDate = decertificationDate;
         this.estimatedUsers = estimatedUsers;
+        this.earliestMeaningfulUseDate = earliestMeaningfulUseDate.getTime();
+        this.latestMeaningfulUseDate = latestMeaningfulUseDate.getTime();
     }
 
     public Developer getDeveloper() {
@@ -62,5 +70,21 @@ public class DecertifiedDeveloperResult implements Serializable {
 
     public void setDecertificationDate(final Date decertificationDate) {
         this.decertificationDate = decertificationDate;
+    }
+
+    public Long getEarliestMeaningfulUseDate() {
+        return earliestMeaningfulUseDate;
+    }
+
+    public void setEarliestMeaningfulUseDate(Long earliestMeaningfulUseDate) {
+        this.earliestMeaningfulUseDate = earliestMeaningfulUseDate;
+    }
+
+    public Long getLatestMeaningfulUseDate() {
+        return latestMeaningfulUseDate;
+    }
+
+    public void setLatestMeaningfulUseDate(Long latestMeaningfulUseDate) {
+        this.latestMeaningfulUseDate = latestMeaningfulUseDate;
     };
 }

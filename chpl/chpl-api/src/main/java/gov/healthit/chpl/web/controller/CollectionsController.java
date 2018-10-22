@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -46,7 +47,7 @@ public class CollectionsController {
     @RequestMapping(value = "/certified_products", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody String getAllCertifiedProducts(
-            @RequestParam(value = "fields", required = false) String delimitedFieldNames)
+            @RequestParam(value = "fields", required = false) final String delimitedFieldNames)
             throws JsonProcessingException {
 
         List<CertifiedProductFlatSearchResult> cachedSearchResults = certifiedProductSearchManager.search();
@@ -63,8 +64,8 @@ public class CollectionsController {
             // them
             // by setting fields to null but do not want to overwrite the cached
             // data
-            List<CertifiedProductFlatSearchResult> mutableSearchResults = new ArrayList<CertifiedProductFlatSearchResult>(
-                    cachedSearchResults.size());
+            List<CertifiedProductFlatSearchResult> mutableSearchResults
+            = new ArrayList<CertifiedProductFlatSearchResult>(cachedSearchResults.size());
             for (CertifiedProductFlatSearchResult cachedSearchResult : cachedSearchResults) {
                 mutableSearchResults.add(new CertifiedProductFlatSearchResult(cachedSearchResult));
             }
@@ -73,7 +74,7 @@ public class CollectionsController {
             String[] fieldNames = delimitedFieldNames.split(",");
             List<String> requiredFields = new ArrayList<String>(fieldNames.length);
             for (int i = 0; i < fieldNames.length; i++) {
-                requiredFields.add(fieldNames[i].toUpperCase());
+                requiredFields.add(fieldNames[i].toUpperCase(Locale.ENGLISH));
             }
 
             // compare all the field names in the results with the required
@@ -96,7 +97,7 @@ public class CollectionsController {
                     Class searchResultFieldTypeClazz = searchResultField.getType();
                     // find the setter method that accepts the correct type
                     String firstUppercaseChar = searchResultField.getName().charAt(0) + "";
-                    firstUppercaseChar = firstUppercaseChar.toUpperCase();
+                    firstUppercaseChar = firstUppercaseChar.toUpperCase(Locale.ENGLISH);
                     String setterMethodName = "set" + firstUppercaseChar + searchResultField.getName().substring(1);
                     try {
                         Method setter = CertifiedProductFlatSearchResult.class.getMethod(setterMethodName,
@@ -148,7 +149,7 @@ public class CollectionsController {
         return developerResults;
     }
 
-    private List<Field> getAllInheritedFields(Class clazz, List<Field> fields) {
+    private List<Field> getAllInheritedFields(final Class clazz, final List<Field> fields) {
         Class superClazz = clazz.getSuperclass();
         if (superClazz != null) {
             getAllInheritedFields(superClazz, fields);

@@ -1,6 +1,5 @@
 package gov.healthit.chpl.dao.impl;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -171,33 +170,6 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 
     @Override
     @Transactional(readOnly = false)
-    public CertifiedProductDTO updateMeaningfulUseUsers(final CertifiedProductDTO dto)
-            throws EntityRetrievalException, IOException {
-        if (dto.getChplProductNumber() == null || dto.getMeaningfulUseUsers() == null) {
-            throw new IOException(
-                    "Must provide a CertifiedProductDTO with a valid CHPL Product Number and meaningfulUseUsers");
-        }
-
-        CertifiedProductEntity cpEntityLegacy = getEntityByChplNumber(dto.getChplProductNumber());
-        if (cpEntityLegacy != null) {
-            cpEntityLegacy.setMeaningfulUseUsers(dto.getMeaningfulUseUsers());
-            cpEntityLegacy.setLastModifiedDate(new Date());
-            cpEntityLegacy.setLastModifiedUser(Util.getCurrentUser().getId());
-            update(cpEntityLegacy);
-            return new CertifiedProductDTO(cpEntityLegacy);
-        } else {
-            CertifiedProductDetailsDTO cpDetails = getByChplUniqueId(dto.getChplProductNumber());
-            CertifiedProductEntity cpEntity9Part = getEntityById(cpDetails.getId());
-            cpEntity9Part.setMeaningfulUseUsers(dto.getMeaningfulUseUsers());
-            cpEntity9Part.setLastModifiedDate(new Date());
-            cpEntity9Part.setLastModifiedUser(Util.getCurrentUser().getId());
-            update(cpEntity9Part);
-            return new CertifiedProductDTO(cpEntity9Part);
-        }
-    }
-
-    @Override
-    @Transactional(readOnly = false)
     public void delete(final Long productId) {
         // TODO: How to delete this without leaving orphans
         Query query = entityManager.createQuery(
@@ -279,7 +251,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
     public List<CertifiedProductDetailsDTO> findWithInheritance() {
 
         List<CertifiedProductDetailsEntity> entities = entityManager.createQuery(
-                "SELECT DISTINCT cp " + "FROM CertifiedProductDetailsEntity cp " + "WHERE (icsCode > 0 OR ics = true)",
+                "SELECT DISTINCT cp " + "FROM CertifiedProductDetailsEntity cp " + "WHERE (icsCode != '0' OR ics = true)",
                 CertifiedProductDetailsEntity.class).getResultList();
 
         List<CertifiedProductDetailsDTO> products = new ArrayList<>();

@@ -1,5 +1,6 @@
 package gov.healthit.chpl.web.controller;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -22,6 +23,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.Address;
+import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
@@ -36,6 +38,7 @@ import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.web.controller.results.DeveloperResults;
@@ -101,7 +104,8 @@ public class DeveloperController {
             produces = "application/json; charset=utf-8")
     public ResponseEntity<Developer> updateDeveloperDeprecated(
             @RequestBody(required = true) final UpdateDevelopersRequest developerInfo) throws InvalidArgumentsException,
-            EntityCreationException, EntityRetrievalException, JsonProcessingException, ValidationException {
+            EntityCreationException, EntityRetrievalException, JsonProcessingException,
+            ValidationException, MissingReasonException {
         return update(developerInfo);
     }
 
@@ -117,13 +121,15 @@ public class DeveloperController {
             produces = "application/json; charset=utf-8")
     public ResponseEntity<Developer> updateDeveloper(
             @RequestBody(required = true) final UpdateDevelopersRequest developerInfo) throws InvalidArgumentsException,
-            EntityCreationException, EntityRetrievalException, JsonProcessingException, ValidationException {
+            EntityCreationException, EntityRetrievalException, JsonProcessingException,
+            ValidationException, MissingReasonException {
         return update(developerInfo);
     }
 
-    private ResponseEntity<Developer> update(final UpdateDevelopersRequest developerInfo)
-            throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException, JsonProcessingException,
-            ValidationException {
+    private synchronized ResponseEntity<Developer> update(final UpdateDevelopersRequest developerInfo)
+            throws InvalidArgumentsException, EntityCreationException,
+            EntityRetrievalException, JsonProcessingException,
+            ValidationException, MissingReasonException {
 
         DeveloperDTO result = null;
         HttpHeaders responseHeaders = new HttpHeaders();
@@ -141,7 +147,7 @@ public class DeveloperController {
                     && developerInfo.getDeveloper().getStatusEvents().size() > 0) {
                 List<String> statusErrors = validateDeveloperStatusEvents(
                         developerInfo.getDeveloper().getStatusEvents());
-                if (statusErrors != null && statusErrors.size() > 0) {
+                if (statusErrors.size() > 0) {
                     // can only have one error message here for the status text
                     // so just pick the first one
                     throw new InvalidArgumentsException(statusErrors.get(0));
@@ -174,8 +180,8 @@ public class DeveloperController {
             if (developerContact != null) {
                 ContactDTO toCreateContact = new ContactDTO();
                 toCreateContact.setEmail(developerContact.getEmail());
-                toCreateContact.setFirstName(developerContact.getFirstName());
-                toCreateContact.setLastName(developerContact.getLastName());
+                toCreateContact.setFullName(developerContact.getFullName());
+                toCreateContact.setFriendlyName(developerContact.getFriendlyName());
                 toCreateContact.setPhoneNumber(developerContact.getPhoneNumber());
                 toCreateContact.setTitle(developerContact.getTitle());
                 toCreate.setContact(toCreateContact);
@@ -204,7 +210,7 @@ public class DeveloperController {
                     && developerInfo.getDeveloper().getStatusEvents().size() > 0) {
                 List<String> statusErrors = validateDeveloperStatusEvents(
                         developerInfo.getDeveloper().getStatusEvents());
-                if (statusErrors != null && statusErrors.size() > 0) {
+                if (statusErrors.size() > 0) {
                     // can only have one error message here for the status text
                     // so just pick the first one
                     throw new InvalidArgumentsException(statusErrors.get(0));
@@ -219,6 +225,7 @@ public class DeveloperController {
                     toCreateHistory.setDeveloperId(providedStatusHistory.getDeveloperId());
                     toCreateHistory.setStatus(status);
                     toCreateHistory.setStatusDate(providedStatusHistory.getStatusDate());
+                    toCreateHistory.setReason(providedStatusHistory.getReason());
                     toUpdate.getStatusEvents().add(toCreateHistory);
                 }
             } else {
@@ -240,8 +247,8 @@ public class DeveloperController {
                 Contact developerContact = developerInfo.getDeveloper().getContact();
                 ContactDTO toUpdateContact = new ContactDTO();
                 toUpdateContact.setEmail(developerContact.getEmail());
-                toUpdateContact.setFirstName(developerContact.getFirstName());
-                toUpdateContact.setLastName(developerContact.getLastName());
+                toUpdateContact.setFullName(developerContact.getFullName());
+                toUpdateContact.setFriendlyName(developerContact.getFriendlyName());
                 toUpdateContact.setPhoneNumber(developerContact.getPhoneNumber());
                 toUpdateContact.setTitle(developerContact.getTitle());
                 toUpdate.setContact(toUpdateContact);
@@ -264,22 +271,7 @@ public class DeveloperController {
             errors.add("The developer must have at least a current status specified.");
         } else {
             // sort the status events by date
-            statusEvents.sort(new Comparator<DeveloperStatusEvent>() {
-
-                @Override
-                public int compare(final DeveloperStatusEvent o1, final DeveloperStatusEvent o2) {
-                    if (o1 == null && o2 != null) {
-                        return -1;
-                    } else if (o1 != null && o2 == null) {
-                        return 1;
-                    } else if (o1 == null && o2 == null) {
-                        return 0;
-                    } else {
-                        // neither are null, compare the dates
-                        return o1.getStatusDate().compareTo(o2.getStatusDate());
-                    }
-                }
-            });
+            statusEvents.sort(new DeveloperStatusEventComparator());
 
             // now that the list is sorted by date, make sure no two statuses
             // next to each other are the same
@@ -302,5 +294,23 @@ public class DeveloperController {
             }
         }
         return errors;
+    }
+
+    static class DeveloperStatusEventComparator implements Comparator<DeveloperStatusEvent>, Serializable {
+        private static final long serialVersionUID = 7816629342251138939L;
+
+        @Override
+        public int compare(final DeveloperStatusEvent o1, final DeveloperStatusEvent o2) {
+            if (o1 == null && o2 != null) {
+                return -1;
+            } else if (o1 != null && o2 == null) {
+                return 1;
+            } else if (o1 == null && o2 == null) {
+                return 0;
+            } else {
+                // neither are null, compare the dates
+                return o1.getStatusDate().compareTo(o2.getStatusDate());
+            }
+        }
     }
 }

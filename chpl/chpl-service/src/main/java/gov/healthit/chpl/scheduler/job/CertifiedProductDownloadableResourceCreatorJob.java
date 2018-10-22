@@ -2,12 +2,8 @@ package gov.healthit.chpl.scheduler.job;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import org.apache.logging.log4j.LogManager;
@@ -15,18 +11,12 @@ import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.springframework.beans.BeansException;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
-import gov.healthit.chpl.scheduler.JobConfig;
-import gov.healthit.chpl.scheduler.SchedulerCertifiedProductSearchDetailsAsync;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProduct2014CsvPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductCsvPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductXmlPresenter;
@@ -38,46 +28,82 @@ import gov.healthit.chpl.scheduler.presenter.CertifiedProductXmlPresenter;
  */
 @DisallowConcurrentExecution
 public class CertifiedProductDownloadableResourceCreatorJob extends DownloadableResourceCreatorJob {
-    private static final Logger LOGGER = LogManager.getLogger(CertifiedProductDownloadableResourceCreatorJob.class);
+    private static final Logger LOGGER = LogManager.getLogger("certifiedProductDownloadableResourceCreatorJobLogger");
     private static final int MILLIS_PER_SECOND = 1000;
+    
+    private static final int SECONDS_PER_MINUTE = 60;
     private String edition;
-    private AbstractApplicationContext context;
 
     /**
      * Default constructor.
      * @throws Exception if issue with context
      */
     public CertifiedProductDownloadableResourceCreatorJob() throws Exception {
-        super();
-        setLocalContext();
-        context = new AnnotationConfigApplicationContext(JobConfig.class);
-        initiateSpringBeans(context);
+        super(LOGGER);
+        edition = "";
     }
 
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
+        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+
         Date start = new Date();
         edition = jobContext.getMergedJobDataMap().getString("edition");
-        try {
+        LOGGER.info("********* Starting the Certified Product Downloadable Resource Creator job for {}. *********",
+                edition);
+
+        try (CertifiedProductXmlPresenter xmlPresenter = new CertifiedProductXmlPresenter();
+                CertifiedProductCsvPresenter csvPresenter = getCsvPresenter()) {
+
             List<CertifiedProductDetailsDTO> listings = getRelevantListings();
+            List<Future<CertifiedProductSearchDetails>> futures =
+                    getCertifiedProductSearchDetailsFutures(listings);
 
-            List<Future<CertifiedProductSearchDetails>> futures = getCertifiedProductSearchDetailsFutures(listings);
-            Map<Long, CertifiedProductSearchDetails> cpMap = getMapFromFutures(futures);
+            initializeWritingToFiles(xmlPresenter, csvPresenter);
+            for (Future<CertifiedProductSearchDetails> future : futures) {
+                CertifiedProductSearchDetails details = future.get();
+                LOGGER.info("Complete retrieving details for id: " + details.getId());
+                xmlPresenter.add(details);
+                csvPresenter.add(details);
+            }
 
-            CertifiedProductDownloadResponse results = new CertifiedProductDownloadResponse();
-            results.setListings(createOrderedListOfCertifiedProducts(
-                    cpMap,
-                    getOriginalCertifiedProductOrder(listings)));
+            //Closing of xmlPresenter and csvPresenter happen due to try-with-resources
 
-            File downloadFolder = getDownloadFolder();
-            writeToFile(downloadFolder, results);
         } catch (Exception e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
         }
         Date end = new Date();
-        LOGGER.info("Time to create file(s) for " + edition + " edition: "
-                + ((end.getTime() - start.getTime()) / MILLIS_PER_SECOND) + " seconds");
-        context.close();
+        LOGGER.info("Time to create file(s) for {} edition: {} seconds, or {} minutes",
+                edition,
+                (end.getTime() - start.getTime()) / MILLIS_PER_SECOND,
+                (end.getTime() - start.getTime()) / MILLIS_PER_SECOND / SECONDS_PER_MINUTE);
+        LOGGER.info("********* Completed the Certified Product Downloadable Resource Creator job for {}. *********",
+                edition);
+    }
+
+    private void initializeWritingToFiles(final CertifiedProductXmlPresenter xmlPresenter, 
+            final CertifiedProductCsvPresenter csvPresenter) throws IOException {
+        xmlPresenter.setLogger(LOGGER);
+        xmlPresenter.open(getXmlFile());
+
+        csvPresenter.setLogger(LOGGER);
+        List<CertificationCriterionDTO> criteria = getCriteriaDao().findByCertificationEditionYear(edition);
+        csvPresenter.setApplicableCriteria(criteria);
+        csvPresenter.open(getCsvFile());
+    }
+
+    private File getXmlFile() throws IOException {
+        File downloadFolder = getDownloadFolder();
+        String xmlFilename = getFileName(downloadFolder.getAbsolutePath(),
+                getTimestampFormat().format(new Date()), "xml");
+        return getFile(xmlFilename);
+    }
+
+    private File getCsvFile() throws IOException {
+        File downloadFolder = getDownloadFolder();
+        String xmlFilename = getFileName(downloadFolder.getAbsolutePath(),
+                getTimestampFormat().format(new Date()), "csv");
+        return getFile(xmlFilename);
     }
 
     private List<CertifiedProductDetailsDTO> getRelevantListings() throws EntityRetrievalException {
@@ -90,102 +116,14 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         return listingsForEdition;
     }
 
-    private List<Future<CertifiedProductSearchDetails>> getCertifiedProductSearchDetailsFutures(
-            final List<CertifiedProductDetailsDTO> listings) throws Exception {
-
-        List<Future<CertifiedProductSearchDetails>> futures = new ArrayList<Future<CertifiedProductSearchDetails>>();
-        SchedulerCertifiedProductSearchDetailsAsync cpsdAsync = getCertifiedProductDetailsAsyncRetrievalHelper();
-        
-        for (CertifiedProductDetailsDTO currListing : listings) {
-            try {
-                futures.add(cpsdAsync.getCertifiedProductDetail(currListing.getId(),
-                        getCertifiedProductDetailsManager()));
-            } catch (EntityRetrievalException e) {
-                LOGGER.error("Could not retrieve certified product details for id: " + currListing.getId(), e);
-            }
-        }
-        return futures;
-    }
-
-    private Map<Long, CertifiedProductSearchDetails> getMapFromFutures(
-            final List<Future<CertifiedProductSearchDetails>> futures) {
-        Map<Long, CertifiedProductSearchDetails> cpMap = new HashMap<Long, CertifiedProductSearchDetails>();
-        for (Future<CertifiedProductSearchDetails> future : futures) {
-            try {
-                cpMap.put(future.get().getId(), future.get());
-            } catch (InterruptedException | ExecutionException e) {
-                LOGGER.error("Could not retrieve certified product details for unknown id.", e);
-            }
-        }
-        return cpMap;
-    }
-
-    private List<CertifiedProductSearchDetails> createOrderedListOfCertifiedProducts(
-            final Map<Long, CertifiedProductSearchDetails> certifiedProducts, final List<Long> orderedIds) {
-
-        List<CertifiedProductSearchDetails> ordered = new ArrayList<CertifiedProductSearchDetails>();
-
-        for (Long id : orderedIds) {
-            if (certifiedProducts.containsKey(id)) {
-                ordered.add(certifiedProducts.get(id));
-            }
-        }
-
-        return ordered;
-    }
-
-    private List<Long> getOriginalCertifiedProductOrder(final List<CertifiedProductDetailsDTO> listings) {
-        List<Long> order = new ArrayList<Long>();
-
-        for (CertifiedProductDetailsDTO cp : listings) {
-            order.add(cp.getId());
-        }
-
-        return order;
-    }
-
-    private void writeToFile(final File downloadFolder, final CertifiedProductDownloadResponse results)
-            throws IOException {
-        writeToCsv(downloadFolder, results);
-        writeToXml(downloadFolder, results);
-    }
-
-    private void writeToXml(final File downloadFolder, final CertifiedProductDownloadResponse results)
-            throws IOException {
-        Date start = new Date();
-        String xmlFilename = getFileName(downloadFolder.getAbsolutePath(),
-                getTimestampFormat().format(new Date()), "xml");
-        File xmlFile = getFile(xmlFilename);
-        CertifiedProductXmlPresenter xmlPresenter = new CertifiedProductXmlPresenter();
-        xmlPresenter.presentAsFile(xmlFile, results);
-        Date end = new Date();
-        LOGGER.info("Wrote " + edition + " XML file in "
-                + ((end.getTime() - start.getTime()) / MILLIS_PER_SECOND) + " seconds");
-    }
-
-    private void writeToCsv(final File downloadFolder, final CertifiedProductDownloadResponse results)
-            throws IOException {
-        Date start = new Date();
-        String csvFilename = getFileName(downloadFolder.getAbsolutePath(),
-                getTimestampFormat().format(new Date()), "csv");
-        File csvFile = getFile(csvFilename);
-        CertifiedProductCsvPresenter csvPresenter = getCsvPresenter();
-        List<CertificationCriterionDTO> criteria = getCriteriaDao().findByCertificationEditionYear(edition);
-        csvPresenter.setApplicableCriteria(criteria);
-        csvPresenter.presentAsFile(csvFile, results);
-        Date end = new Date();
-        LOGGER.info("Wrote " + edition  + " CSV file in "
-                + ((end.getTime() - start.getTime()) / MILLIS_PER_SECOND) + " seconds");
-    }
-
     private CertifiedProductCsvPresenter getCsvPresenter() {
-        CertifiedProductCsvPresenter csvPresenter = null;
+        CertifiedProductCsvPresenter presenter = null;
         if (edition.equals("2014")) {
-            csvPresenter = new CertifiedProduct2014CsvPresenter();
+            presenter = new CertifiedProduct2014CsvPresenter();
         } else {
-            csvPresenter = new CertifiedProductCsvPresenter();
+            presenter = new CertifiedProductCsvPresenter();
         }
-        return csvPresenter;
+        return presenter;
     }
 
     private String getFileName(final String path, final String timeStamp, final String extension) {
@@ -203,15 +141,5 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
             throw new IOException("File can not be created");
         }
         return file;
-    }
-
-    private SchedulerCertifiedProductSearchDetailsAsync getCertifiedProductDetailsAsyncRetrievalHelper()
-            throws BeansException {
-        return (SchedulerCertifiedProductSearchDetailsAsync)
-                getApplicationContext().getBean("schedulerCertifiedProductSearchDetailsAsync");
-    }
-
-    private CertifiedProductDetailsManager getCertifiedProductDetailsManager() throws BeansException {
-        return (CertifiedProductDetailsManager) getApplicationContext().getBean("certifiedProductDetailsManager");
     }
 }

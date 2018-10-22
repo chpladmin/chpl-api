@@ -36,20 +36,29 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
                 sw.writeStartElement("certificationEdition");
                 for (Entry<String, Object> entry : cp.getCertificationEdition().entrySet()) {
                     sw.writeStartElement("entry");
-                    createSimpleElement(entry.getKey(), "key", sw);
-                    createSimpleElement(entry.getValue().toString(), "value", sw);
+                    if (entry.getKey() != null) {
+                        createSimpleElement(entry.getKey(), "key", sw);
+                    }
+                    if (entry.getValue() != null) {
+                        createSimpleElement(entry.getValue().toString(), "value", sw);
+                    }
                     sw.writeEndElement();
                 }
                 sw.writeEndElement();
             }
             CertificationStatusEventXmlGenerator.add(cp.getCertificationEvents(), "certificationEvents", sw);
+            MeaningfulUseUserXmlGenerator.add(cp.getMeaningfulUseUserHistory(), "meaningfulUseUserHistory", sw);
             CertificationResultXmlGenerator.add(cp.getCertificationResults(), "certificationResults", sw);
             if (cp.getCertifyingBody() != null && cp.getCertifyingBody().size() > 0) {
                 sw.writeStartElement("certifyingBody");
                 for (Entry<String, Object> entry : cp.getCertifyingBody().entrySet()) {
                     sw.writeStartElement("entry");
-                    createSimpleElement(entry.getKey(), "key", sw);
-                    createSimpleElement(entry.getValue().toString(), "value", sw);
+                    if (entry.getKey() != null) {
+                        createSimpleElement(entry.getKey(), "key", sw);
+                    }
+                    if (entry.getValue() != null) {
+                        createSimpleElement(entry.getValue().toString(), "value", sw);
+                    }
                     sw.writeEndElement();
                 }
                 sw.writeEndElement();
@@ -59,8 +68,12 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
                 sw.writeStartElement("classificationType");
                 for (Entry<String, Object> entry : cp.getClassificationType().entrySet()) {
                     sw.writeStartElement("entry");
-                    createSimpleElement(entry.getKey(), "key", sw);
-                    createSimpleElement(entry.getValue().toString(), "value", sw);
+                    if (entry.getKey() != null) {
+                        createSimpleElement(entry.getKey(), "key", sw);
+                    }
+                    if (entry.getValue() != null) {
+                        createSimpleElement(entry.getValue().toString(), "value", sw);
+                    }
                     sw.writeEndElement();
                 }
                 sw.writeEndElement();
@@ -78,14 +91,17 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
             InheritedCertificationStatusXmlGenerator.add(cp.getIcs(), "ics", sw);
             createSimpleElement(cp.getId(), "id", sw);
             createSimpleElement(cp.getLastModifiedDate(), "lastModifiedDate", sw);
-            createSimpleElement(cp.getNumMeaningfulUse(), "numMeaningfulUse", sw);
             createSimpleElement(cp.getOtherAcb(), "otherAcb", sw);
             if (cp.getPracticeType() != null && cp.getPracticeType().size() > 0) {
                 sw.writeStartElement("practiceType");
                 for (Entry<String, Object> entry : cp.getPracticeType().entrySet()) {
                     sw.writeStartElement("entry");
-                    createSimpleElement(entry.getKey(), "key", sw);
-                    createSimpleElement(entry.getValue().toString(), "value", sw);
+                    if (entry.getKey() != null) {
+                        createSimpleElement(entry.getKey(), "key", sw);
+                    }
+                    if (entry.getValue() != null) {
+                        createSimpleElement(entry.getValue().toString(), "value", sw);
+                    }
                     sw.writeEndElement();
                 }
                 sw.writeEndElement();

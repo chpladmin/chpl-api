@@ -47,6 +47,7 @@ import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.MacraMeasure;
+import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.domain.TestData;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestProcedure;
@@ -94,16 +95,16 @@ public class CertifiedProductManagerTest extends TestCase {
     @BeforeClass
     public static void setUpClass() throws Exception {
         adminUser = new JWTAuthenticatedUser();
-        adminUser.setFirstName("Administrator");
+        adminUser.setFullName("Administrator");
         adminUser.setId(ADMIN_ID);
-        adminUser.setLastName("Administrator");
+        adminUser.setFriendlyName("Administrator");
         adminUser.setSubjectName("admin");
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 
         testUser3 = new JWTAuthenticatedUser();
-        testUser3.setFirstName("Test");
+        testUser3.setFullName("Test");
         testUser3.setId(USER_ID);
-        testUser3.setLastName("User3");
+        testUser3.setFriendlyName("User3");
         testUser3.setSubjectName("testUser3");
         testUser3.getPermissions().add(new GrantedPermission("ROLE_ACB"));
     }
@@ -351,7 +352,7 @@ public class CertifiedProductManagerTest extends TestCase {
         assertNotNull(status.getId());
         assertNotNull(status.getStatus());
         assertNotNull(status.getStatus().getStatusName());
-        assertEquals(DeveloperStatusType.UnderCertificationBanByOnc.toString(), status.getStatus().getStatusName());
+        assertEquals(DeveloperStatusType.Active.toString(), status.getStatus().getStatusName());
     }
 
     @Test
@@ -806,6 +807,87 @@ public class CertifiedProductManagerTest extends TestCase {
         updatedListing = cpdManager.getCertifiedProductDetails(listingId);
         assertNotNull(updatedListing.getAccessibilityStandards());
         assertEquals(origAccStdLength, updatedListing.getAccessibilityStandards().size());
+    }
+
+    /*********************
+     * Meaningful Use crud tests
+     * *************************/
+    @Test
+    @Transactional(readOnly = false)
+    @Rollback
+    public void testAddMeaningfulUseHistoryEntry() throws EntityRetrievalException,
+    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+        final Long acbId = 1L;
+        final Long listingId = 5L;
+        final Long now = System.currentTimeMillis();
+        final Long newMuuCount = 60L;
+
+        CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+        int origMuuCount = existingListing.getMeaningfulUseUserHistory().size();
+        CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+        MeaningfulUseUser newMuu = new MeaningfulUseUser();
+        newMuu.setMuuCount(newMuuCount);
+        newMuu.setMuuDate(now);
+        updatedListing.getMeaningfulUseUserHistory().add(newMuu);
+
+        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+        updateRequest.setListing(updatedListing);
+        cpManager.update(acbId, updateRequest, existingListing);
+
+        updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+        assertNotNull(updatedListing.getMeaningfulUseUserHistory());
+        assertEquals(origMuuCount + 1, updatedListing.getMeaningfulUseUserHistory().size());
+        boolean foundAddedMuu = false;
+        for (MeaningfulUseUser muu : updatedListing.getMeaningfulUseUserHistory()) {
+            if (muu.getMuuCount().longValue() == newMuuCount.longValue() && 
+                    muu.getMuuDate().longValue() == now.longValue()) {
+                foundAddedMuu = true;
+            }
+        }
+        assertTrue(foundAddedMuu);
+    }
+
+    @Test
+    @Transactional(readOnly = false)
+    @Rollback
+    public void testDeleteMeaningfulUseUser()
+            throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+            InvalidArgumentsException, IOException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+        final Long acbId = 1L;
+        final Long listingId = 5L;
+        final Long now = System.currentTimeMillis();
+        final Long newMuuCount = 60L;
+
+        CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+        int origMuuCount = existingListing.getMeaningfulUseUserHistory().size();
+        CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+        MeaningfulUseUser newMuu = new MeaningfulUseUser();
+        newMuu.setMuuCount(newMuuCount);
+        newMuu.setMuuDate(now);
+        updatedListing.getMeaningfulUseUserHistory().add(newMuu);
+
+        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+        updateRequest.setListing(updatedListing);
+        cpManager.update(acbId, updateRequest, existingListing);
+
+        //remove the muu
+        CertifiedProductSearchDetails listingWithMuu = cpdManager.getCertifiedProductDetails(listingId);
+        assertNotNull(updatedListing.getMeaningfulUseUserHistory());
+        assertEquals(origMuuCount + 1, updatedListing.getMeaningfulUseUserHistory().size());
+
+        updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+        updatedListing.getMeaningfulUseUserHistory().clear();
+        updateRequest = new ListingUpdateRequest();
+        updateRequest.setListing(updatedListing);
+        cpManager.update(acbId, updateRequest, listingWithMuu);
+
+        updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+        assertNotNull(updatedListing.getMeaningfulUseUserHistory());
+        assertEquals(0, updatedListing.getMeaningfulUseUserHistory().size());
     }
 
     /*********************
@@ -2483,8 +2565,9 @@ public class CertifiedProductManagerTest extends TestCase {
         assertEquals(6, listings.size());
     }
 
-    private void updateListingStatus(Long acbId, Long listingId, CertificationStatusDTO stat, String reason)
-            throws EntityRetrievalException, EntityCreationException, 
+    private void updateListingStatus(final Long acbId, final Long listingId,
+            final CertificationStatusDTO stat, final String reason)
+            throws EntityRetrievalException, EntityCreationException,
             JsonProcessingException, InvalidArgumentsException, IOException {
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
 

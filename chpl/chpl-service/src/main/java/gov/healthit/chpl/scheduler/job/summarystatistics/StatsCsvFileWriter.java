@@ -1,7 +1,6 @@
 package gov.healthit.chpl.scheduler.job.summarystatistics;
 
 import java.io.FileWriter;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -10,10 +9,13 @@ import java.util.TimeZone;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import gov.healthit.chpl.domain.statistics.Statistics;
 
 public class StatsCsvFileWriter {
+    private Logger logger; 
     // Delimiter used in CSV file
     private static final String NEW_LINE_SEPARATOR = "\n";
 
@@ -27,18 +29,13 @@ public class StatsCsvFileWriter {
             "Total Open NonConformities", "Total Closed NonConformities"
     };
 
-    public static void writeCsvFile(String fileName, List<Statistics> statsCsvOutput) {
-        FileWriter fileWriter = null;
-        CSVPrinter csvFilePrinter = null;
+    public void writeCsvFile(String fileName, List<Statistics> statsCsvOutput) {
+        
         CSVFormat csvFileFormat = CSVFormat.DEFAULT.withRecordSeparator(NEW_LINE_SEPARATOR);
         SimpleDateFormat dateFormat = new SimpleDateFormat("E MMM dd yyyy");
 
-        try {
-            // initialize FileWriter object
-            fileWriter = new FileWriter(fileName);
-
-            // initialize CSVPrinter object
-            csvFilePrinter = new CSVPrinter(fileWriter, csvFileFormat);
+        try (FileWriter fileWriter = new FileWriter(fileName);
+                CSVPrinter csvFilePrinter = new CSVPrinter(fileWriter, csvFileFormat)) {
 
             csvFilePrinter.printRecord(FILE_HEADER);
 
@@ -67,22 +64,20 @@ public class StatsCsvFileWriter {
                 statRecord.add(String.valueOf(stat.getTotalClosedNonconformities()));
                 csvFilePrinter.printRecord(statRecord);
             }
-
-            System.out.println("CSV file was created successfully!");
-
+            getLogger().info("CSV file was created successfully!");
         } catch (Exception e) {
-            System.out.println("Error in CsvFileWriter!");
-            e.printStackTrace();
-        } finally {
-            try {
-                fileWriter.flush();
-                fileWriter.close();
-                csvFilePrinter.close();
-            } catch (final IOException e) {
-                System.out.println("Error while flushing/closing fileWriter/csvPrinter!");
-                e.printStackTrace();
-            }
+            getLogger().error(e);
         }
     }
 
+    public void setLogger(Logger logger) {
+        this.logger = logger;
+    }
+    
+    public Logger getLogger() {
+        if (logger == null) {
+            logger = LogManager.getLogger(StatsCsvFileWriter.class);
+        }
+        return logger;
+    }
 }

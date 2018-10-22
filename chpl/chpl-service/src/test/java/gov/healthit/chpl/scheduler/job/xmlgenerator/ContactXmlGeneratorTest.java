@@ -14,64 +14,62 @@ import org.junit.Test;
 import gov.healthit.chpl.domain.Contact;
 
 public class ContactXmlGeneratorTest {
-    
-    
+
     @Test
     public void addContactTest() throws XMLStreamException, IOException {
-        Contact contact = 
-                getContact(1l, "abc@def.com", "John", "Doe", "5555551212", "Mr.");
-        
+        Contact contact = getContact(1L, "abc@def.com", "John", "Doe", "5555551212", "Mr.");
+
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
         StringWriter stringOut = new StringWriter();
         XMLStreamWriter writer = factory.createXMLStreamWriter(stringOut);
-        
+
         ContactXmlGenerator.addContact(contact, "contact", writer);
         writer.close();
-        
-        String expected = "<contact><contactId>1</contactId><email>abc@def.com</email><firstName>John</firstName><lastName>Doe</lastName><phoneNumber>5555551212</phoneNumber><title>Mr.</title></contact>";
+
+        String expected = "<contact><contactId>1</contactId><email>abc@def.com</email><fullName>John</fullName><friendlyName>Doe</friendlyName><phoneNumber>5555551212</phoneNumber><title>Mr.</title></contact>";
         assertEquals(expected, stringOut.toString());
         stringOut.close();
     }
-    
+
     @Test
     public void addContactTestWithANullValue() throws XMLStreamException, IOException {
-        Contact contact = 
-                getContact(1l, null, "John", "Doe", "5555551212", "Mr.");
-        
+        Contact contact = getContact(1L, null, "John", "Doe", "5555551212", "Mr.");
+
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
         StringWriter stringOut = new StringWriter();
         XMLStreamWriter writer = factory.createXMLStreamWriter(stringOut);
-        
+
         ContactXmlGenerator.addContact(contact, "contact", writer);
         writer.close();
-        
-        String expected = "<contact><contactId>1</contactId><firstName>John</firstName><lastName>Doe</lastName><phoneNumber>5555551212</phoneNumber><title>Mr.</title></contact>";
+
+        String expected = "<contact><contactId>1</contactId><fullName>John</fullName><friendlyName>Doe</friendlyName><phoneNumber>5555551212</phoneNumber><title>Mr.</title></contact>";
         assertEquals(expected, stringOut.toString());
         stringOut.close();
     }
-    
+
     @Test
     public void addContactTestWithANullContact() throws XMLStreamException, IOException {
         Contact contact = null;
-        
+
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
         StringWriter stringOut = new StringWriter();
         XMLStreamWriter writer = factory.createXMLStreamWriter(stringOut);
-        
+
         ContactXmlGenerator.addContact(contact, "contact", writer);
         writer.close();
-        
+
         String expected = "";
         assertEquals(expected, stringOut.toString());
         stringOut.close();
     }
-    
-    private Contact getContact(Long contactId, String email, String firstName, String lastName, String phoneNumber, String title) {
+
+    private Contact getContact(final Long contactId, final String email, final String fullName,
+            final String friendlyName, final String phoneNumber, final String title) {
         Contact c = new Contact();
         c.setContactId(contactId);
         c.setEmail(email);
-        c.setFirstName(firstName);
-        c.setLastName(lastName);
+        c.setFullName(fullName);
+        c.setFriendlyName(friendlyName);
         c.setPhoneNumber(phoneNumber);
         c.setTitle(title);
         return c;

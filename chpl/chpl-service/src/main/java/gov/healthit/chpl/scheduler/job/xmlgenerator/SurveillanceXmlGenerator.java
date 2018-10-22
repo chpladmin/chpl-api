@@ -7,8 +7,19 @@ import javax.xml.stream.XMLStreamWriter;
 
 import gov.healthit.chpl.domain.Surveillance;
 
+/**
+ * Generate &lt;surveillances&gt;&lt;surveillance&gt;&lt;/surveillance&gt;&lt;/surveillances&gt; nodes.
+ */
 public class SurveillanceXmlGenerator extends XmlGenerator {
-    public static void add(List<Surveillance> surveillances, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
+    /**
+     * Add surveillances to root.
+     * @param surveillances surveillances to add
+     * @param rootNodeName root node name
+     * @param sw stream writer
+     * @throws XMLStreamException if exception during writing process
+     */
+    public static void add(final List<Surveillance> surveillances, final String rootNodeName, final XMLStreamWriter sw)
+            throws XMLStreamException {
         if (surveillances != null) {
             sw.writeStartElement(rootNodeName);
             for (Surveillance s : surveillances) {
@@ -17,10 +28,18 @@ public class SurveillanceXmlGenerator extends XmlGenerator {
             sw.writeEndElement();
         }
     }
-    
-    public static void add(Surveillance surveillance, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
+
+    /**
+     * Add a single surveillance.
+     * @param surveillance the surveillance
+     * @param rootNodeName root node name
+     * @param sw stream writer
+     * @throws XMLStreamException if exception during writing process
+     */
+    public static void add(final Surveillance surveillance, final String rootNodeName, final XMLStreamWriter sw)
+            throws XMLStreamException {
         if (surveillance != null) {
-            sw.writeStartElement(rootNodeName);;
+            sw.writeStartElement(rootNodeName);
             CertifiedProductXmlGenerator.add(surveillance.getCertifiedProduct(), "certifiedProduct", sw);
             createSimpleElement(surveillance.getEndDate(), "endDate", sw);
             createSimpleElement(surveillance.getFriendlyId(), "friendlyId", sw);
@@ -29,6 +48,7 @@ public class SurveillanceXmlGenerator extends XmlGenerator {
             SurveillanceRequirementXmlGenerator.add(surveillance.getRequirements(), "surveilledRequirements", sw);
             createSimpleElement(surveillance.getStartDate(), "startDate", sw);
             SurveillanceTypeXmlGenerator.addSurveillanceType(surveillance.getType(), "type", sw);
+            createSimpleElement(surveillance.getLastModifiedDate(), "lastModifiedDate", sw);
             sw.writeEndElement();
         }
     }

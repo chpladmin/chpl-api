@@ -159,6 +159,33 @@ public class ChplProductNumberUtil {
         return false;
     }
 
+    public Integer getIcsCode(String chplProductNumber) {
+        Integer icsCode = null;
+        if(!isLegacy(chplProductNumber)) {
+            String[] uniqueIdParts = chplProductNumber.split("\\.");
+            icsCode = Integer.valueOf(uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX]);
+        }
+        return icsCode;
+    }
+
+    public boolean hasIcsConflict(String uniqueId, Boolean hasIcs) {
+        boolean hasIcsConflict = false;
+        String[] uniqueIdParts = uniqueId.split("\\.");
+        if(uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
+            Integer icsCodeInteger = Integer.valueOf(uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX]);
+            if (icsCodeInteger != null && icsCodeInteger.intValue() == 0) {
+                if (hasIcs != null && hasIcs.equals(Boolean.TRUE)) {
+                    hasIcsConflict = true;
+                }
+            } else if (hasIcs == null || hasIcs.equals(Boolean.FALSE)
+                    && icsCodeInteger != null
+                    && icsCodeInteger.intValue() > 0) {
+                hasIcsConflict = true;
+            }
+        }
+        return hasIcsConflict;
+    }
+
     private String[] splitUniqueIdParts(final String uniqueId) {
         String[] uniqueIdParts = uniqueId.split("\\.");
         if (uniqueIdParts == null || uniqueIdParts.length != CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
