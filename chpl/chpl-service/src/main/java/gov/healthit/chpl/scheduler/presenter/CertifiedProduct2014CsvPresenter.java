@@ -63,30 +63,52 @@ public class CertifiedProduct2014CsvPresenter extends CertifiedProductCsvPresent
         result.add(data.getCertifyingBody().get("name").toString());
         result.add(data.getOtherAcb());
         result.add(data.getDeveloper().getName());
-        if (data.getDeveloper().getAddress().getLine2() != null) {
-            result.add(data.getDeveloper().getAddress().getLine1()
-                    + result.add(data.getDeveloper().getAddress().getLine2()));
+        if(data.getDeveloper().getAddress() != null) {
+            if (data.getDeveloper().getAddress().getLine1() != null 
+                    && data.getDeveloper().getAddress().getLine2() != null) {
+                result.add(data.getDeveloper().getAddress().getLine1() +
+                        data.getDeveloper().getAddress().getLine2());
+            } else {
+                result.add(data.getDeveloper().getAddress().getLine1() == null 
+                        ? "" : data.getDeveloper().getAddress().getLine1());
+            }
+            result.add(data.getDeveloper().getAddress().getCity() == null 
+                    ? "" : data.getDeveloper().getAddress().getCity());
+            result.add(data.getDeveloper().getAddress().getState() == null 
+                    ? "" : data.getDeveloper().getAddress().getState());
+            result.add(data.getDeveloper().getAddress().getZipcode() == null 
+                    ? "" : data.getDeveloper().getAddress().getZipcode());
         } else {
-            result.add(data.getDeveloper().getAddress().getLine1());
+            result.add("");
+            result.add("");
+            result.add("");
+            result.add("");
         }
-        result.add(data.getDeveloper().getAddress().getCity());
-        result.add(data.getDeveloper().getAddress().getState());
-        result.add(data.getDeveloper().getAddress().getZipcode());
-        result.add(data.getDeveloper().getWebsite());
-        if (!data.getProduct().getContact().getFullName().isEmpty()) {
-            result.add(data.getProduct().getContact().getFullName());
+        result.add(data.getDeveloper().getWebsite() == null
+                ? "" : data.getDeveloper().getWebsite());
+        if(data.getProduct().getContact() != null) {
+            if (data.getProduct().getContact().getFullName() != null) {
+                result.add(data.getProduct().getContact().getFullName());
+            } else {
+                result.add(data.getDeveloper().getContact().getFullName() == null
+                        ? "" : data.getDeveloper().getContact().getFullName());
+            }
+            if (data.getProduct().getContact().getEmail() != null) {
+                result.add(data.getProduct().getContact().getEmail());
+            } else {
+                result.add(data.getDeveloper().getContact().getEmail() == null
+                        ? "" : data.getDeveloper().getContact().getEmail());
+            }
+            if (data.getProduct().getContact().getPhoneNumber() != null) {
+                result.add(data.getProduct().getContact().getPhoneNumber());
+            } else {
+                result.add(data.getDeveloper().getContact().getPhoneNumber() == null
+                        ? "" : data.getDeveloper().getContact().getPhoneNumber());
+            }
         } else {
-            result.add(data.getDeveloper().getContact().getFullName());
-        }
-        if (!data.getProduct().getContact().getEmail().isEmpty()) {
-            result.add(data.getProduct().getContact().getEmail());
-        } else {
-            result.add(data.getDeveloper().getContact().getEmail());
-        }
-        if (!data.getProduct().getContact().getPhoneNumber().isEmpty()) {
-            result.add(data.getProduct().getContact().getPhoneNumber());
-        } else {
-            result.add(data.getDeveloper().getContact().getPhoneNumber());
+            result.add("");
+            result.add("");
+            result.add("");
         }
         result.add(data.getProduct().getName());
         result.add(data.getVersion().getVersion());
