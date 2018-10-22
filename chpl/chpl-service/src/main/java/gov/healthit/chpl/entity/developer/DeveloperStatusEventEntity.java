@@ -49,6 +49,7 @@ public class DeveloperStatusEventEntity implements Cloneable, Serializable {
 
     @Column(name = "status_date")
     private Date statusDate;
+
     @Column(name = "deleted")
     private Boolean deleted;
 

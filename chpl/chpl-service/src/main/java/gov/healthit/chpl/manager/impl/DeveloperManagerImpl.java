@@ -3,6 +3,7 @@ package gov.healthit.chpl.manager.impl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,6 +36,7 @@ import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
+import gov.healthit.chpl.dto.DeveloperStatusEventPair;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.entity.AttestationType;
@@ -98,7 +100,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    //@Transactional(readOnly = true)
     public DeveloperDTO getById(final Long id) throws EntityRetrievalException {
         DeveloperDTO developer = developerDao.getById(id);
         List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
@@ -123,6 +125,16 @@ public class DeveloperManagerImpl implements DeveloperManager {
                 developer.getTransparencyAttestationMappings().add(map);
             }
         }
+        
+        //Remove any deleted status events
+        Iterator<DeveloperStatusEventDTO> iterator = developer.getStatusEvents().iterator();
+        while (iterator.hasNext()) {
+            DeveloperStatusEventDTO event = iterator.next();
+            if (event.getDeleted()) {
+                iterator.remove();
+            }
+        }
+        
         return developer;
     }
 
@@ -155,6 +167,8 @@ public class DeveloperManagerImpl implements DeveloperManager {
 
         //if any of the statuses (new, old, or any other status in the history)
         //is Under Certification Ban by ONC make sure there is a reason given
+        LOGGER.info("Original Developer Status Event count = " + beforeDev.getStatusEvents().size());
+        LOGGER.info("Updated Developer Status Event count = " + updatedDev.getStatusEvents().size());
         for (DeveloperStatusEventDTO statusEvent: updatedDev.getStatusEvents()) {
             if (statusEvent.getStatus().getStatusName().equals(
                     DeveloperStatusType.UnderCertificationBanByOnc.toString())
@@ -239,6 +253,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
                         && !Util.isUserRoleAdmin())) {
 
             developerDao.update(updatedDev);
+
             updateStatusHistory(beforeDev, updatedDev);
 
             List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
@@ -282,49 +297,9 @@ public class DeveloperManagerImpl implements DeveloperManager {
         List<DeveloperStatusEventPair> statusEventsToUpdate = new ArrayList<DeveloperStatusEventPair>();
         List<DeveloperStatusEventDTO> statusEventsToRemove = new ArrayList<DeveloperStatusEventDTO>();
 
-        // figure out which status events to add
-        if (updatedDev.getStatusEvents() != null && updatedDev.getStatusEvents().size() > 0) {
-            if (beforeDev.getStatusEvents() == null || beforeDev.getStatusEvents().size() == 0) {
-                // current developer has none, add all from the update
-                for (DeveloperStatusEventDTO statusEvent : updatedDev.getStatusEvents()) {
-                    statusEventsToAdd.add(statusEvent);
-                }
-            } else if (beforeDev.getStatusEvents().size() > 0) {
-                // current developer has at least one status event,
-                // compare to the updated developer to see if any status(es) are different
-                for (DeveloperStatusEventDTO updatedStatusEvent : updatedDev.getStatusEvents()) {
-                    boolean inExistingStatusHistory = false;
-                    for (DeveloperStatusEventDTO existingStatusEvent : beforeDev.getStatusEvents()) {
-                        if (updatedStatusEvent.matches(existingStatusEvent)) {
-                            inExistingStatusHistory = true;
-                            statusEventsToUpdate.add(new DeveloperStatusEventPair(
-                                    existingStatusEvent, updatedStatusEvent));
-                        }
-                    }
-
-                    if (!inExistingStatusHistory) {
-                        statusEventsToAdd.add(updatedStatusEvent);
-                    }
-                }
-            }
-        }
-
-        // figure out which status event(s) to remove
-        if (beforeDev.getStatusEvents() != null && beforeDev.getStatusEvents().size() > 0) {
-            // if the updated developer has none, that's an error
-            if (updatedDev.getStatusEvents().size() > 0) {
-                for (DeveloperStatusEventDTO existingStatusEvent : beforeDev.getStatusEvents()) {
-                    boolean inUpdatedStatusHistory = false;
-                    for (DeveloperStatusEventDTO updatedStatusEvent : updatedDev.getStatusEvents()) {
-                        inUpdatedStatusHistory = !inUpdatedStatusHistory
-                                ? existingStatusEvent.matches(updatedStatusEvent) : inUpdatedStatusHistory;
-                    }
-                    if (!inUpdatedStatusHistory) {
-                        statusEventsToRemove.add(existingStatusEvent);
-                    }
-                }
-            }
-        }
+        statusEventsToUpdate = DeveloperStatusEventsHelper.getUpdatedEvents(beforeDev.getStatusEvents(), updatedDev.getStatusEvents());
+        statusEventsToRemove = DeveloperStatusEventsHelper.getRemovedEvents(beforeDev.getStatusEvents(), updatedDev.getStatusEvents());
+        statusEventsToAdd = DeveloperStatusEventsHelper.getAddedEvents(beforeDev.getStatusEvents(), updatedDev.getStatusEvents());
 
         for (DeveloperStatusEventPair toUpdate : statusEventsToUpdate) {
             boolean hasChanged = false;
@@ -342,15 +317,18 @@ public class DeveloperManagerImpl implements DeveloperManager {
             if (hasChanged) {
                 DeveloperStatusEventDTO dseToUpdate = toUpdate.getUpdated();
                 dseToUpdate.setDeveloperId(beforeDev.getId());
+                LOGGER.info("Status Events Id to Update: " + dseToUpdate.getId());
                 developerDao.updateDeveloperStatusEvent(dseToUpdate);
             }
         }
 
+        LOGGER.info("Status Events to Add count: " + statusEventsToAdd.size());
         for (DeveloperStatusEventDTO toAdd : statusEventsToAdd) {
             toAdd.setDeveloperId(beforeDev.getId());
             developerDao.createDeveloperStatusEvent(toAdd);
         }
 
+        LOGGER.info("Status Events to Remove count: " + statusEventsToRemove.size());
         for (DeveloperStatusEventDTO toRemove : statusEventsToRemove) {
             developerDao.deleteDeveloperStatusEvent(toRemove);
         }
@@ -500,6 +478,14 @@ public class DeveloperManagerImpl implements DeveloperManager {
         return createdDeveloper;
     }
 
+    public static List<DeveloperStatusEventDTO> cloneDeveloperStatusEventList(List<DeveloperStatusEventDTO> original) {
+        List<DeveloperStatusEventDTO> clone = new ArrayList<DeveloperStatusEventDTO>();
+        for (DeveloperStatusEventDTO event : original) {
+            clone.add(new DeveloperStatusEventDTO(event));
+        }
+        return clone;
+    }
+
     private Set<String> getDuplicateChplProductNumberErrorMessages(
             final List<DuplicateChplProdNumber> duplicateChplProdNumbers) {
 
@@ -598,10 +584,11 @@ public class DeveloperManagerImpl implements DeveloperManager {
             for (DeveloperStatusEventDTO origStatusHistory : original.getStatusEvents()) {
                 boolean foundMatchInChanged = false;
                 for (DeveloperStatusEventDTO changedStatusHistory : changed.getStatusEvents()) {
-                    if (origStatusHistory.getStatus().getId().longValue() == changedStatusHistory.getStatus().getId()
-                            .longValue()
-                            && origStatusHistory.getStatusDate().getTime() == changedStatusHistory.getStatusDate()
-                            .getTime()) {
+                    if (origStatusHistory.getStatus().getId() != null
+                            && changedStatusHistory.getStatus().getId() != null
+                            && origStatusHistory.getStatus().getId().equals(changedStatusHistory.getStatus().getId())
+                            && origStatusHistory.getStatusDate().getTime()
+                                == changedStatusHistory.getStatusDate().getTime()) {
                         foundMatchInChanged = true;
                     }
                 }
@@ -629,71 +616,22 @@ public class DeveloperManagerImpl implements DeveloperManager {
         return ret;
     }
 
-    private class DeveloperStatusEventPair {
-        private DeveloperStatusEventDTO orig;
-        private DeveloperStatusEventDTO updated;
-
-        DeveloperStatusEventPair() { }
-
-        DeveloperStatusEventPair(final DeveloperStatusEventDTO orig,
-                final DeveloperStatusEventDTO updated) {
-
-            this.orig = orig;
-            this.updated = updated;
-        }
-
-        public DeveloperStatusEventDTO getOrig() {
-            return orig;
-        }
-
-        public void setOrig(final DeveloperStatusEventDTO orig) {
-            this.orig = orig;
-        }
-
-        public DeveloperStatusEventDTO getUpdated() {
-            return updated;
-        }
-
-        public void setUpdated(final DeveloperStatusEventDTO updated) {
-            this.updated = updated;
-        }
-
-    }
-
     private class DuplicateChplProdNumber {
         private String origChplProductNumberA;
         private String origChplProductNumberB;
-        private String newChplProductNumber;
 
         public DuplicateChplProdNumber(final String origChplProductNumberA, final String origChplProductNumberB,
                 final String newChplProductNumber) {
             this.origChplProductNumberA = origChplProductNumberA;
             this.origChplProductNumberB = origChplProductNumberB;
-            this.newChplProductNumber = newChplProductNumber;
         }
 
         public String getOrigChplProductNumberA() {
             return origChplProductNumberA;
         }
 
-        public void setOrigChplProductNumberA(final String origChplProductNumberA) {
-            this.origChplProductNumberA = origChplProductNumberA;
-        }
-
         public String getOrigChplProductNumberB() {
             return origChplProductNumberB;
-        }
-
-        public void setOrigChplProductNumberB(final String origChplProductNumberB) {
-            this.origChplProductNumberB = origChplProductNumberB;
-        }
-
-        public String getNewChplProductNumber() {
-            return newChplProductNumber;
-        }
-
-        public void setNewChplProductNumber(final String newChplProductNumber) {
-            this.newChplProductNumber = newChplProductNumber;
         }
 
         @Override
