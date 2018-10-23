@@ -87,24 +87,19 @@ public class CertifiedProduct2014CsvPresenter extends CertifiedProductCsvPresent
         result.add(data.getDeveloper().getWebsite() == null
                 ? "" : data.getDeveloper().getWebsite());
         if(data.getProduct().getContact() != null) {
-            if (data.getProduct().getContact().getFullName() != null) {
-                result.add(data.getProduct().getContact().getFullName());
-            } else {
-                result.add(data.getDeveloper().getContact().getFullName() == null
-                        ? "" : data.getDeveloper().getContact().getFullName());
-            }
-            if (data.getProduct().getContact().getEmail() != null) {
-                result.add(data.getProduct().getContact().getEmail());
-            } else {
-                result.add(data.getDeveloper().getContact().getEmail() == null
-                        ? "" : data.getDeveloper().getContact().getEmail());
-            }
-            if (data.getProduct().getContact().getPhoneNumber() != null) {
-                result.add(data.getProduct().getContact().getPhoneNumber());
-            } else {
-                result.add(data.getDeveloper().getContact().getPhoneNumber() == null
-                        ? "" : data.getDeveloper().getContact().getPhoneNumber());
-            }
+            result.add(data.getProduct().getContact().getFullName() == null
+                    ? "" : data.getProduct().getContact().getFullName());
+            result.add(data.getProduct().getContact().getEmail() == null
+                    ? "" : data.getProduct().getContact().getEmail());
+            result.add(data.getProduct().getContact().getPhoneNumber() == null
+                    ? "" : data.getProduct().getContact().getPhoneNumber());
+        } else if (data.getDeveloper().getContact() != null){
+            result.add(data.getDeveloper().getContact().getFullName() == null
+                    ? "" : data.getDeveloper().getContact().getFullName());
+            result.add(data.getDeveloper().getContact().getEmail() == null
+                    ? "" : data.getDeveloper().getContact().getEmail());
+            result.add(data.getDeveloper().getContact().getPhoneNumber() == null
+                    ? "" : data.getDeveloper().getContact().getPhoneNumber());
         } else {
             result.add("");
             result.add("");
