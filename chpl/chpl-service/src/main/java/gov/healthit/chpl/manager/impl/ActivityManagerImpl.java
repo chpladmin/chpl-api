@@ -63,6 +63,7 @@ public class ActivityManagerImpl implements ActivityManager {
     public void addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
             Object newData) throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
+        LOGGER.info("Called ActivityManagerImpl.addActivity()[1]");
         String originalDataStr = JSONUtils.toJSON(originalData);
         String newDataStr = JSONUtils.toJSON(newData);
 
@@ -99,6 +100,7 @@ public class ActivityManagerImpl implements ActivityManager {
     @Transactional
     public void addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
             Object newData, String reason) throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+        LOGGER.info("Called ActivityManagerImpl.addActivity()[2]");
         this.addActivity(concept, objectId, activityDescription, originalData, newData);
     }
     
@@ -107,7 +109,7 @@ public class ActivityManagerImpl implements ActivityManager {
     public void addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
             Object newData, Long asUser)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
-
+        LOGGER.info("Called ActivityManagerImpl.addActivity()[3]");
         String originalDataStr = JSONUtils.toJSON(originalData);
         String newDataStr = JSONUtils.toJSON(newData);
 
@@ -145,7 +147,7 @@ public class ActivityManagerImpl implements ActivityManager {
     public void addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
             Object newData, Date timestamp)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
-
+        LOGGER.info("Called ActivityManagerImpl.addActivity()[4]");
         String originalDataStr = JSONUtils.toJSON(originalData);
         String newDataStr = JSONUtils.toJSON(newData);
 

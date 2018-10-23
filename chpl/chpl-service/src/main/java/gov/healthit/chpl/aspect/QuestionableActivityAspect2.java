@@ -2,6 +2,8 @@ package gov.healthit.chpl.aspect;
 
 import java.util.Date;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +24,7 @@ import gov.healthit.chpl.manager.QuestionableActivityManager;
 @Component
 @Aspect
 public class QuestionableActivityAspect2 implements EnvironmentAware {
-    @Autowired 
+    private static final Logger LOGGER = LogManager.getLogger(QuestionableActivityAspect2.class);
     private Environment env;
     private CertifiedProductDAO listingDao;
     private QuestionableActivityManager questionableActivityManager;
@@ -59,6 +61,7 @@ public class QuestionableActivityAspect2 implements EnvironmentAware {
     public void checkQuestionableActivityWithReason(final ActivityConcept concept,
             final Long objectId, String activityDescription, final Object originalData,
             final Object newData, final String reason) {
+        LOGGER.info("Called QuestionableActivityAspect2.checkQuestionableActivityWithReason()");
         if (originalData == null || newData == null
                 || !originalData.getClass().equals(newData.getClass())
                 || Util.getCurrentUser() == null) {
@@ -110,6 +113,7 @@ public class QuestionableActivityAspect2 implements EnvironmentAware {
             + "args(concept,objectId,activityDescription,originalData,newData,..)")
     public void checkQuestionableActivity(final ActivityConcept concept,
             final Long objectId, final String activityDescription, final Object originalData, final Object newData) {
+        LOGGER.info("Called QuestionableActivityAspect2.checkQuestionableActivity()");
         if (originalData == null || newData == null
                 || !originalData.getClass().equals(newData.getClass())
                 || Util.getCurrentUser() == null) {

@@ -3,6 +3,8 @@ package gov.healthit.chpl.manager.impl;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,34 +33,41 @@ import gov.healthit.chpl.util.CertificationResultRules;
 
 @Service("questionableActivityManager")
 public class QuestionableActivityManagerImpl implements QuestionableActivityManager {
+    private static final Logger LOGGER = LogManager.getLogger(QuestionableActivityManagerImpl.class);
     private long listingActivityThresholdMillis = -1;
-    private static final long MILLIS_PER_DAY = 24 * 60 * 60 * 1000;
     private List<QuestionableActivityTriggerDTO> triggerTypes;
-    
-    @Autowired 
     private DeveloperQuestionableActivityProvider developerQuestionableActivityProvider;
-    
-    @Autowired 
     private ProductQuestionableActivityProvider productQuestionableActivityProvider;
-    
-    @Autowired 
     private VersionQuestionableActivityProvider versionQuestionableActivityProvider;
-    
-    @Autowired 
     private ListingQuestionableActivityProvider listingQuestionableActivityProvider;
-    
-    @Autowired 
     private CertificationResultQuestionableActivityProvider certResultQuestionableActivityProvider;
-    
-    @Autowired 
     private CertificationResultRules certResultRules;
-    
-    @Autowired 
     private QuestionableActivityDAO questionableActivityDao;
-    
-    @Autowired 
     private CertifiedProductDAO listingDao;
     
+    @Autowired
+    public QuestionableActivityManagerImpl(
+            DeveloperQuestionableActivityProvider developerQuestionableActivityProvider,
+            ProductQuestionableActivityProvider productQuestionableActivityProvider,
+            VersionQuestionableActivityProvider versionQuestionableActivityProvider,
+            ListingQuestionableActivityProvider listingQuestionableActivityProvider,
+            CertificationResultQuestionableActivityProvider certResultQuestionableActivityProvider,
+            CertificationResultRules certResultRules,
+            QuestionableActivityDAO questionableActivityDao,
+            CertifiedProductDAO listingDao) {
+        
+        this.developerQuestionableActivityProvider = developerQuestionableActivityProvider;
+        this.productQuestionableActivityProvider = productQuestionableActivityProvider;
+        this.versionQuestionableActivityProvider = versionQuestionableActivityProvider;
+        this.listingQuestionableActivityProvider = listingQuestionableActivityProvider;
+        this.certResultQuestionableActivityProvider = certResultQuestionableActivityProvider;
+        this.certResultRules = certResultRules;
+        this.questionableActivityDao = questionableActivityDao;
+        this.listingDao = listingDao;
+        
+        triggerTypes = questionableActivityDao.getAllTriggers();
+    }
+
     /**
      * checks for developer name changes, current status change, or status history change (add remove and edit)
      * @param origDeveloper
@@ -79,6 +88,7 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
 
         devActivity = developerQuestionableActivityProvider.checkCurrentStatusChanged(origDeveloper, newDeveloper);
         if (devActivity != null) {
+            LOGGER.info("Question Activity Event - DEVELOPER_STATUS_EDITED");
             createDeveloperActivity(devActivity, newDeveloper.getId(), activityDate,
                     activityUser, QuestionableActivityTriggerConcept.DEVELOPER_STATUS_EDITED);
         }
@@ -86,6 +96,7 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
         devActivities = developerQuestionableActivityProvider.checkStatusHistoryAdded(
                 origDeveloper.getStatusEvents(), newDeveloper.getStatusEvents());
         for (QuestionableActivityDeveloperDTO currDevActivity : devActivities) {
+            LOGGER.info("Question Activity Event - DEVELOPER_STATUS_HISTORY_ADDED");
             createDeveloperActivity(currDevActivity, newDeveloper.getId(), activityDate,
                     activityUser, QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_ADDED);
         }
@@ -93,6 +104,7 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
         devActivities = developerQuestionableActivityProvider.checkStatusHistoryRemoved(
                 origDeveloper.getStatusEvents(), newDeveloper.getStatusEvents());
         for (QuestionableActivityDeveloperDTO currDevActivity : devActivities) {
+            LOGGER.info("Question Activity Event - DEVELOPER_STATUS_HISTORY_REMOVED");
             createDeveloperActivity(currDevActivity, newDeveloper.getId(), activityDate,
                     activityUser, QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_REMOVED);
         }
@@ -100,6 +112,7 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
         devActivities = developerQuestionableActivityProvider.checkStatusHistoryItemEdited(
                 origDeveloper.getStatusEvents(), newDeveloper.getStatusEvents());
         for (QuestionableActivityDeveloperDTO currDevActivity : devActivities) {
+            LOGGER.info("Question Activity Event - DEVELOPER_STATUS_HISTORY_EDITED");
             createDeveloperActivity(currDevActivity, newDeveloper.getId(), activityDate,
                     activityUser, QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_EDITED);
         }

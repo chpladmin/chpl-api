@@ -253,9 +253,11 @@ public class DeveloperManagerImpl implements DeveloperManager {
                         && !Util.isUserRoleAdmin())) {
 
             developerDao.update(updatedDev);
-
+            
+            LOGGER.info("Calling DeveloperManagerImpl.updateStatusHistory()");
             updateStatusHistory(beforeDev, updatedDev);
-
+            LOGGER.info("Completed DeveloperManagerImpl.updateStatusHistory()");
+            
             List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
             if (availableAcbs != null && availableAcbs.size() > 0) {
                 for (CertificationBodyDTO acb : availableAcbs) {
@@ -283,8 +285,10 @@ public class DeveloperManagerImpl implements DeveloperManager {
                 }
             }
         }
-
+        
+        LOGGER.info("Calling DeveloperManagerImpl.getById()");
         DeveloperDTO after = getById(updatedDev.getId());
+        LOGGER.info("Before ActivityManagerImpl.addActivity()");
         activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, after.getId(),
                 "Developer " + updatedDev.getName() + " was updated.", beforeDev, after);
         return after;
