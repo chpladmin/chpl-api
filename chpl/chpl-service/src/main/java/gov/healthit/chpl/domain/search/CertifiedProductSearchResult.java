@@ -89,6 +89,7 @@ public class CertifiedProductSearchResult implements Serializable {
 
     private Long decertificationDate;
     private Long numMeaningfulUse;
+    private Long numMeaningfulUseDate;
     private String transparencyAttestationUrl;
 
     /**
@@ -119,6 +120,7 @@ public class CertifiedProductSearchResult implements Serializable {
         this.openNonconformityCount = other.getOpenNonconformityCount();
         this.closedNonconformityCount = other.getClosedNonconformityCount();
         this.numMeaningfulUse = other.getNumMeaningfulUse();
+        this.numMeaningfulUseDate = other.getNumMeaningfulUseDate();
         this.transparencyAttestationUrl = other.getTransparencyAttestationUrl();
     }
 
@@ -256,6 +258,14 @@ public class CertifiedProductSearchResult implements Serializable {
 
     public void setNumMeaningfulUse(final Long numMeaningfulUse) {
         this.numMeaningfulUse = numMeaningfulUse;
+    }
+
+    public Long getNumMeaningfulUseDate() {
+        return numMeaningfulUseDate;
+    }
+
+    public void setNumMeaningfulUseDate(final Long numMeaningfulUseDate) {
+        this.numMeaningfulUseDate = numMeaningfulUseDate;
     }
 
     public String getTransparencyAttestationUrl() {

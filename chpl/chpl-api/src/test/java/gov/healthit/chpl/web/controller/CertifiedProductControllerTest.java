@@ -1258,14 +1258,11 @@ public class CertifiedProductControllerTest {
     @Transactional
     @Test
     public void getCertifiedProductDetailsResultReturnsNumMeaningfulUse() throws EntityRetrievalException {
-        final Long cpId = 6L;
-        final int expectedCount = 12;
-
-        CertifiedProductSearchDetails resp = certifiedProductController.getCertifiedProductById(cpId);
-        assertTrue("Response should contain results but is null", resp != null);
-        assertTrue("Response should contain certified product with numMeaningfulUse == 12"
-                + " but contains numMeaningfulUse of " + resp.getNumMeaningfulUse(),
-                resp.getNumMeaningfulUse() == expectedCount);
+        CertifiedProductSearchDetails resp = certifiedProductController.getCertifiedProductById(6L);
+        assertNotNull(resp);
+        assertNotNull(resp.getMeaningfulUseUserHistory());
+        assertEquals(1, resp.getMeaningfulUseUserHistory().size());
+        assertEquals(12, resp.getMeaningfulUseUserHistory().get(0).getMuuCount().longValue());
     }
 
     @Transactional

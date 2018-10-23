@@ -569,7 +569,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 
             DecertifiedDeveloperResult decertifiedDeveloper = new DecertifiedDeveloperResult(
                     developerDao.getById(dto.getDeveloperId()), certifyingBody, dto.getDecertificationDate(),
-                    dto.getNumMeaningfulUse());
+                    dto.getNumMeaningfulUse(), dto.getEarliestNumMeaningfulUseDate(), dto.getLatestNumMeaningfulUseDate());
             decertifiedDeveloperResults.add(decertifiedDeveloper);
         }
         return decertifiedDeveloperResults;

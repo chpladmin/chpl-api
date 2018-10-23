@@ -1,67 +1,73 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
+import gov.healthit.chpl.dto.MeaningfulUseUserDTO;
 
+/**
+ * Domain-level container for meaningful use user counts.
+ * @author kekey
+ *
+ */
 public class MeaningfulUseUser implements Serializable {
-    private static final long serialVersionUID = -4837801214615959268L;
-    private String productNumber;
-    private Long certifiedProductId;
-    private Long numberOfUsers;
-    private Integer csvLineNumber;
-    private String error;
+    private static final long serialVersionUID = -4803363243075068608L;
 
+    private Long id;
+    private Long muuCount;
+    private Long muuDate;
+
+    /**
+     * Default constructor.
+     */
     public MeaningfulUseUser() {
+    };
+
+    /**
+     * Constructor to create from DTO object.
+     * @param dto
+     */
+    public MeaningfulUseUser(final MeaningfulUseUserDTO dto) {
+        this.id = dto.getId();
+        this.muuCount = dto.getMuuCount();
+        this.muuDate = dto.getMuuDate().getTime();
+    };
+
+    public Long getId() {
+        return id;
     }
 
-    public MeaningfulUseUser(String productNumber, Long numberOfUsers) {
-        this.productNumber = productNumber;
-        this.numberOfUsers = numberOfUsers;
+    public void setId(final Long id) {
+        this.id = id;
     }
 
-    public MeaningfulUseUser(String productNumber, Long certifiedProductId, Long numberOfUsers, Integer csvLineNumber) {
-        this.productNumber = productNumber;
-        this.certifiedProductId = certifiedProductId;
-        this.numberOfUsers = numberOfUsers;
-        this.csvLineNumber = csvLineNumber;
+    public Long getMuuCount() {
+        return muuCount;
     }
 
-    public void setCertifiedProductId(final Long certifiedProductId) {
-        this.certifiedProductId = certifiedProductId;
+    public void setMuuCount(final Long muuCount) {
+        this.muuCount = muuCount;
     }
 
-    public Long getCertifiedProductId() {
-        return this.certifiedProductId;
+    public Long getMuuDate() {
+        return muuDate;
     }
 
-    public void setProductNumber(final String productNumber) {
-        this.productNumber = productNumber;
+    public void setMuuDate(final Long muuDate) {
+        this.muuDate = muuDate;
     }
 
-    public String getProductNumber() {
-        return this.productNumber;
+    /**
+     * Check to see if this muu matches another one.
+     * @param other muu to check against
+     * @return true if the IDs match
+     */
+    public boolean matches(final MeaningfulUseUser other) {
+        boolean result = false;
+
+        if (this.getId() != null && other.getId() != null
+                && this.getId().longValue() == other.getId().longValue()) {
+            result = true;
+        }
+        return result;
     }
 
-    public Long getNumberOfUsers() {
-        return numberOfUsers;
-    }
-
-    public void setNumberOfUsers(final Long numberOfUsers) {
-        this.numberOfUsers = numberOfUsers;
-    }
-
-    public Integer getCsvLineNumber() {
-        return csvLineNumber;
-    }
-
-    public void setCsvLineNumber(final Integer csvLineNumber) {
-        this.csvLineNumber = csvLineNumber;
-    }
-
-    public String getError() {
-        return error;
-    }
-
-    public void setError(final String error) {
-        this.error = error;
-    }
 }

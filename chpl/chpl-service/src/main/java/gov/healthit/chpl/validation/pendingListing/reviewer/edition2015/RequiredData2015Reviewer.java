@@ -13,7 +13,6 @@ import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestProcedureDAO;
-import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultMacraMeasureDTO;
@@ -22,7 +21,6 @@ import gov.healthit.chpl.dto.PendingCertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestTaskParticipantDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.PendingCqmCertificationCriterionDTO;
@@ -31,9 +29,7 @@ import gov.healthit.chpl.dto.PendingTestTaskDTO;
 import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
-import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.util.CertificationResultRules;
-import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 import gov.healthit.chpl.validation.pendingListing.reviewer.RequiredDataReviewer;
@@ -97,11 +93,9 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     private List<String> d2d10Criterion = new ArrayList<String>();
 
     @Autowired private MacraMeasureDAO macraDao;
-    @Autowired private TestToolDAO testToolDao;
     @Autowired private TestFunctionalityDAO testFuncDao;
     @Autowired private TestProcedureDAO testProcDao;
     @Autowired private TestDataDAO testDataDao;
-    @Autowired private ChplProductNumberUtil productNumUtil;
     @Autowired private ErrorMessageUtil msgUtil;
 
     /**
@@ -531,55 +525,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                         && (cert.getTestTools() == null || cert.getTestTools().size() == 0)) {
                     listing.getErrorMessages().add(
                             msgUtil.getMessage("listing.criteria.missingTestTool", cert.getNumber()));
-                }
-
-                //check all the supplied test tools for validity and completeness
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED)
-                        && cert.getTestTools() != null && cert.getTestTools().size() > 0) {
-                    for (PendingCertificationResultTestToolDTO pendingTestTool : cert.getTestTools()) {
-                        TestToolDTO foundTestTool = null;
-                        //no new test tools are allowed to be added 
-                        //so make sure a test tool by this name exists
-                        if (pendingTestTool.getTestToolId() == null) {
-                            foundTestTool = testToolDao.getByName(pendingTestTool.getName());
-                            if (foundTestTool == null || foundTestTool.getId() == null) {
-                                listing.getErrorMessages().add(
-                                        msgUtil.getMessage("listing.criteria.invalidTestToolName", cert.getNumber(), pendingTestTool.getName()));
-                            }
-                        } else {
-                            foundTestTool = testToolDao.getById(pendingTestTool.getTestToolId());
-                            if (foundTestTool == null || foundTestTool.getId() == null) {
-                                listing.getErrorMessages().add(
-                                        msgUtil.getMessage("listing.criteria.invalidTestToolId", cert.getNumber(), pendingTestTool.getTestToolId()));
-                            }
-                        }
-
-                        if(foundTestTool != null) {
-                            //require test tool version
-                            if(StringUtils.isEmpty(pendingTestTool.getVersion())) {
-                                listing.getErrorMessages().add(
-                                        msgUtil.getMessage("listing.criteria.missingTestToolVersion", pendingTestTool.getName(), cert.getNumber()));
-                            }
-
-                            // Allow retired test tool only if listing ICS = true
-                            Integer icsCodeInteger = productNumUtil.getIcsCode(listing.getUniqueId());
-                            if (foundTestTool.isRetired() && icsCodeInteger.intValue() == 0) {
-                                if (productNumUtil.hasIcsConflict(listing.getUniqueId(), listing.getIcs())) {
-                                    //the ics code is 0 but we can't be sure that's what the user meant
-                                    //because the ICS value in the file is 1 (hence the conflict), 
-                                    //so issue a warning since the listing may or may not truly have ICS
-                                    listing.getWarningMessages().add(
-                                            msgUtil.getMessage("listing.criteria.retiredTestToolNotAllowed", 
-                                                    foundTestTool.getName(), cert.getNumber()));
-                                } else {
-                                    //the listing does not have ICS so retired tools are definitely not allowed - error
-                                    listing.getErrorMessages().add(
-                                            msgUtil.getMessage("listing.criteria.retiredTestToolNotAllowed", 
-                                                    foundTestTool.getName(), cert.getNumber()));
-                                }
-                            }
-                        }
-                    }
                 }
 
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)

@@ -947,29 +947,6 @@ public class CertifiedProductController {
     }
 
     /**
-     * Upload a file to update number of MUU for each Listing.
-     * @param file the file to upload
-     * @return status of the action
-     * @throws EntityCreationException if entity can not be created
-     * @throws EntityRetrievalException if entity can not be retrieved
-     * @throws ValidationException if validation fails
-     * @throws MaxUploadSizeExceededException if file is too large
-     */
-    @ApiOperation(value = "DEPRECATED. Upload a file to update the number "
-            + "of meaningful use users for each CHPL Product Number",
-            notes = "Accepts a CSV file with chpl_product_number and num_meaningful_use_users "
-                    + "to update the number of meaningful use users for each CHPL Product Number."
-                    + " The user uploading the file must have ROLE_ADMIN or ROLE_ONC_STAFF ")
-    @RequestMapping(value = "/meaningful_use_users/upload", method = RequestMethod.POST,
-    produces = "application/json; charset=utf-8")
-    @Deprecated
-    public @ResponseBody ResponseEntity<Job> uploadMeaningfulUseUsers(@RequestParam("file") final MultipartFile file)
-            throws EntityCreationException, EntityRetrievalException, ValidationException,
-            MaxUploadSizeExceededException {
-        return meaningfulUseController.uploadMeaningfulUseUsers(file);
-    }
-
-    /**
      * Upload a file with certified products.
      * @param file the file
      * @return the list of pending listings

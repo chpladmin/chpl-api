@@ -464,34 +464,35 @@ public class ActivityManagerImpl implements ActivityManager {
         event.setConcept(dto.getConcept());
         event.setResponsibleUser(dto.getUser() == null ? null : new User(dto.getUser()));
 
-        try (JsonParser origData = factory.createParser(dto.getOriginalData());
-                JsonParser newData = factory.createParser(dto.getNewData())) {
-
-            JsonNode originalJSON = null;
-            if (dto.getOriginalData() != null) {
+        JsonNode originalJSON = null;
+        if (dto.getOriginalData() != null) {
+            try (JsonParser origData = factory.createParser(dto.getOriginalData())) {
                 originalJSON = jsonMapper.readTree(origData);
             }
-    
-            JsonNode newJSON = null;
-            if (dto.getNewData() != null) {
+        }
+
+        JsonNode newJSON = null;
+        if (dto.getNewData() != null) {
+            try (JsonParser newData = factory.createParser(dto.getNewData())) {
                 newJSON = jsonMapper.readTree(newData);
+
             }
-    
-            event.setOriginalData(originalJSON);
-            event.setNewData(newJSON);
-    
-            if (event instanceof ProductActivityEvent && event.getNewData() != null) {
-                JsonNode devIdNode = event.getNewData().get("developerId");
-                Long devId = devIdNode.asLong();
-                if (devId != null) {
-                    try {
-                        DeveloperDTO dev = devDao.getById(devId);
-                        if (dev != null) {
-                            ((ProductActivityEvent) event).setDeveloper(new Developer(dev));
-                        }
-                    } catch (final EntityRetrievalException ex) {
-                        LOGGER.error("Could not get developer with id " + devId);
+        }
+
+        event.setOriginalData(originalJSON);
+        event.setNewData(newJSON);
+
+        if (event instanceof ProductActivityEvent && event.getNewData() != null) {
+            JsonNode devIdNode = event.getNewData().get("developerId");
+            Long devId = devIdNode.asLong();
+            if (devId != null) {
+                try {
+                    DeveloperDTO dev = devDao.getById(devId);
+                    if (dev != null) {
+                        ((ProductActivityEvent) event).setDeveloper(new Developer(dev));
                     }
+                } catch (final EntityRetrievalException ex) {
+                    LOGGER.error("Could not get developer with id " + devId);
                 }
             }
         }
