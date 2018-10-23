@@ -23,8 +23,8 @@ import gov.healthit.chpl.manager.QuestionableActivityManager;
 
 @Component
 @Aspect
-public class QuestionableActivityAspect2 implements EnvironmentAware {
-    private static final Logger LOGGER = LogManager.getLogger(QuestionableActivityAspect2.class);
+public class QuestionableActivityListener implements EnvironmentAware {
+    private static final Logger LOGGER = LogManager.getLogger(QuestionableActivityListener.class);
     private Environment env;
     private CertifiedProductDAO listingDao;
     private QuestionableActivityManager questionableActivityManager;
@@ -33,7 +33,7 @@ public class QuestionableActivityAspect2 implements EnvironmentAware {
     private static final long MILLIS_PER_DAY = 24 * 60 * 60 * 1000;
     
     @Autowired
-    public QuestionableActivityAspect2(Environment env, final CertifiedProductDAO listingDao, final QuestionableActivityManager questionableActivityManager) {
+    public QuestionableActivityListener(Environment env, final CertifiedProductDAO listingDao, final QuestionableActivityManager questionableActivityManager) {
         this.env = env;
         this.listingDao = listingDao;
         this.questionableActivityManager = questionableActivityManager;
