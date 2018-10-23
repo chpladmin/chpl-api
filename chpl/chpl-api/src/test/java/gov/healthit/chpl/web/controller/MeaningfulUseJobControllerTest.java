@@ -1,13 +1,11 @@
 package gov.healthit.chpl.web.controller;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -21,6 +19,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
@@ -38,24 +37,16 @@ import org.springframework.web.multipart.MultipartFile;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.Job;
 import gov.healthit.chpl.domain.MeaningfulUseUserRecord;
-import gov.healthit.chpl.dto.ContactDTO;
-import gov.healthit.chpl.dto.job.JobDTO;
-import gov.healthit.chpl.dto.job.JobTypeDTO;
-import gov.healthit.chpl.entity.job.JobStatusType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.job.MeaningfulUseUploadJob;
 import gov.healthit.chpl.manager.JobManager;
 import junit.framework.TestCase;
 
@@ -76,7 +67,6 @@ public class MeaningfulUseJobControllerTest extends TestCase {
 	@Autowired JobManager jobManager;
 	@Autowired UserManager userManager;
 	@Autowired CertifiedProductDAO cpDao;
-	@Autowired MeaningfulUseUploadJob muuJob;
 	
 	@Rule
     @Autowired
