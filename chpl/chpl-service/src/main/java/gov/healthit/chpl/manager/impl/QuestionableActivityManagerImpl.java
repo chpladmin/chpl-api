@@ -44,18 +44,29 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
     private CertificationResultRules certResultRules;
     private QuestionableActivityDAO questionableActivityDao;
     private CertifiedProductDAO listingDao;
-    
+
+    /**
+     * Autowired constructor for dependency injection.
+     * @param developerQuestionableActivityProvider - DeveloperQuestionableActivityProvider
+     * @param productQuestionableActivityProvider - ProductQuestionableActivityProvider
+     * @param versionQuestionableActivityProvider - VersionQuestionableActivityProvider
+     * @param listingQuestionableActivityProvider - ListingQuestionableActivityProvider
+     * @param certResultQuestionableActivityProvider - CertificationResultQuestionableActivityProvider
+     * @param certResultRules - CertificationResultRules
+     * @param questionableActivityDao - QuestionableActivityDAO
+     * @param listingDao - CertifiedProductDAO
+     */
     @Autowired
     public QuestionableActivityManagerImpl(
-            DeveloperQuestionableActivityProvider developerQuestionableActivityProvider,
-            ProductQuestionableActivityProvider productQuestionableActivityProvider,
-            VersionQuestionableActivityProvider versionQuestionableActivityProvider,
-            ListingQuestionableActivityProvider listingQuestionableActivityProvider,
-            CertificationResultQuestionableActivityProvider certResultQuestionableActivityProvider,
-            CertificationResultRules certResultRules,
-            QuestionableActivityDAO questionableActivityDao,
-            CertifiedProductDAO listingDao) {
-        
+            final DeveloperQuestionableActivityProvider developerQuestionableActivityProvider,
+            final ProductQuestionableActivityProvider productQuestionableActivityProvider,
+            final VersionQuestionableActivityProvider versionQuestionableActivityProvider,
+            final ListingQuestionableActivityProvider listingQuestionableActivityProvider,
+            final CertificationResultQuestionableActivityProvider certResultQuestionableActivityProvider,
+            final CertificationResultRules certResultRules,
+            final QuestionableActivityDAO questionableActivityDao,
+            final CertifiedProductDAO listingDao) {
+
         this.developerQuestionableActivityProvider = developerQuestionableActivityProvider;
         this.productQuestionableActivityProvider = productQuestionableActivityProvider;
         this.versionQuestionableActivityProvider = versionQuestionableActivityProvider;
@@ -64,17 +75,10 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
         this.certResultRules = certResultRules;
         this.questionableActivityDao = questionableActivityDao;
         this.listingDao = listingDao;
-        
         triggerTypes = questionableActivityDao.getAllTriggers();
     }
 
-    /**
-     * checks for developer name changes, current status change, or status history change (add remove and edit)
-     * @param origDeveloper
-     * @param newDeveloper
-     * @param activityDate
-     * @param activityUser
-     */
+    @Override
     public void checkDeveloperQuestionableActivity(final DeveloperDTO origDeveloper, final DeveloperDTO newDeveloper,
              final Date activityDate, final Long activityUser) {
         QuestionableActivityDeveloperDTO devActivity = null;
@@ -118,13 +122,7 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
         }
     }
 
-    /**
-     * checks for product name change, current owner change, owner history change (add remove and edit)
-     * @param origProduct
-     * @param newProduct
-     * @param activityDate
-     * @param activityUser
-     */
+    @Override
     public void checkProductQuestionableActivity(final ProductDTO origProduct, final ProductDTO newProduct,
             final Date activityDate, final Long activityUser) {
         QuestionableActivityProductDTO productActivity = null;
@@ -164,13 +162,7 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
         }
     }
 
-    /**
-     * checks for version name change
-     * @param origVersion
-     * @param newVersion
-     * @param activityDate
-     * @param activityUser
-     */
+    @Override
     public void checkVersionQuestionableActivity(final ProductVersionDTO origVersion,
             final ProductVersionDTO newVersion, final Date activityDate, final Long activityUser) {
         QuestionableActivityVersionDTO activity
@@ -181,14 +173,7 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
         }
     }
 
-    /**
-     * checks for various listing changes - add or remove certs and cqms, deleting surveillance,
-     * editing certification date.
-     * @param origListing
-     * @param newListing
-     * @param activityDate
-     * @param activityUser
-     */
+    @Override
     public void checkListingQuestionableActivity(final CertifiedProductSearchDetails origListing,
             final CertifiedProductSearchDetails newListing, final Date activityDate, final Long activityUser,
             final String activityReason) {
@@ -277,14 +262,7 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
         }
     }
 
-    /**
-     * checks for changes to listing certification results; g1/g2 boolean changes, macra measures added
-     * or removed for g1/g2, or changes to gap
-     * @param origCertResult
-     * @param newCertResult
-     * @param activityDate
-     * @param activityUser
-     */
+    @Override
     public void checkCertificationResultQuestionableActivity(final CertificationResult origCertResult,
             final CertificationResult newCertResult, final Date activityDate, final Long activityUser,
             final String activityReason) {

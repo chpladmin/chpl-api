@@ -6,70 +6,52 @@ import java.util.Locale;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.dao.QuestionableActivityDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.SimpleExplainableAction;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityTriggerDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
-import gov.healthit.chpl.manager.QuestionableActivityManager;
-import gov.healthit.chpl.questionableactivity.CertificationResultQuestionableActivityProvider;
 import gov.healthit.chpl.questionableactivity.ListingQuestionableActivityProvider;
 
 @Component
 @Aspect
-public class QuestionableActivityAspect implements EnvironmentAware {
-    private Environment env;
+public class QuestionableActivityAspect {
     private MessageSource messageSource;
     private CertifiedProductDetailsManager cpdManager;
-    private QuestionableActivityDAO questionableActivityDao;
-    private CertifiedProductDAO listingDao;
     private ListingQuestionableActivityProvider listingQuestionableActivityProvider;
-    private QuestionableActivityManager questionableActivityManager;
-    private List<QuestionableActivityTriggerDTO> triggerTypes;
-    private long listingActivityThresholdMillis = -1;
-    private static final long MILLIS_PER_DAY = 24 * 60 * 60 * 1000;
 
+    /**
+     * Autowired constructor for dependency injection 
+     * @param messageSource
+     * @param cpdManager
+     * @param listingDao
+     * @param listingQuestionableActivityProvider
+     */
     @Autowired
-    public QuestionableActivityAspect(final Environment env, final MessageSource messageSource,
-            final CertifiedProductDetailsManager cpdManager, final QuestionableActivityDAO questionableActivityDao,
-            final CertifiedProductDAO listingDao,
-            final ListingQuestionableActivityProvider listingQuestionableActivityProvider,
-            final CertificationResultQuestionableActivityProvider certResultQuestionableActivityProvider,
-            final QuestionableActivityManager questionableActivityManager) {
+    public QuestionableActivityAspect(final MessageSource messageSource,
+            final CertifiedProductDetailsManager cpdManager, final CertifiedProductDAO listingDao,
+            final ListingQuestionableActivityProvider listingQuestionableActivityProvider) {
 
-        this.env = env;
         this.messageSource = messageSource;
         this.cpdManager = cpdManager;
-        this.questionableActivityDao = questionableActivityDao;
-        this.listingDao = listingDao;
         this.listingQuestionableActivityProvider = listingQuestionableActivityProvider;
-        this.questionableActivityManager = questionableActivityManager;
     }
 
-    @Override
-    public void setEnvironment(final Environment e) {
-        this.env = e;
-        String activityThresholdDaysStr = env.getProperty("questionableActivityThresholdDays");
-        int activityThresholdDays = Integer.parseInt(activityThresholdDaysStr);
-        listingActivityThresholdMillis = activityThresholdDays * MILLIS_PER_DAY;
-
-        triggerTypes = questionableActivityDao.getAllTriggers();
-    }
-
+    /**
+     * @param updateRequest
+     * @throws EntityRetrievalException
+     * @throws MissingReasonException
+     */
     @Before("execution(* "
             + "gov.healthit.chpl.web.controller.CertifiedProductController.updateCertifiedProductDeprecated(..)) && "
             + "args(updateRequest,..)")
@@ -78,6 +60,11 @@ public class QuestionableActivityAspect implements EnvironmentAware {
         checkReasonProvidedIfRequiredOnListingUpdate(updateRequest);
     }
 
+    /**
+     * @param updateRequest
+     * @throws EntityRetrievalException
+     * @throws MissingReasonException
+     */
     @Before("execution(* gov.healthit.chpl.web.controller.CertifiedProductController.updateCertifiedProduct(..)) && "
             + "args(updateRequest,..)")
     public void checkReasonProvidedIfRequiredOnListingUpdate(final ListingUpdateRequest updateRequest)
@@ -120,6 +107,11 @@ public class QuestionableActivityAspect implements EnvironmentAware {
         }
     }
 
+    /**
+     * @param surveillanceId
+     * @param requestBody
+     * @throws MissingReasonException
+     */
     @Before("execution(* gov.healthit.chpl.web.controller.SurveillanceController.deleteSurveillance(..)) && "
             + "args(surveillanceId,requestBody,..)")
     public void checkReasonProvidedIfRequiredOnSurveillanceUpdate(final Long surveillanceId,

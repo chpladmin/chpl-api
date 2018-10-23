@@ -79,9 +79,10 @@ public class DeveloperQuestionableActivityProvider {
          List<QuestionableActivityDeveloperDTO> statusAddedActivities
              = new ArrayList<QuestionableActivityDeveloperDTO>();
 
-         List<DeveloperStatusEventDTO> addedStatuses = DeveloperStatusEventsHelper.getAddedEvents(origStatuses, newStatuses);
+         List<DeveloperStatusEventDTO> addedStatuses =
+                 DeveloperStatusEventsHelper.getAddedEvents(origStatuses, newStatuses);
          for (DeveloperStatusEventDTO newStatusEvent : addedStatuses) {
-             QuestionableActivityDeveloperDTO activity = 
+             QuestionableActivityDeveloperDTO activity =
                      getQuestionableActivityDeveloper(null, getFormattedStatus(newStatusEvent));
              statusAddedActivities.add(activity);
          }
@@ -99,10 +100,11 @@ public class DeveloperQuestionableActivityProvider {
 
         List<QuestionableActivityDeveloperDTO> statusRemovedActivities
             = new ArrayList<QuestionableActivityDeveloperDTO>();
-        
-        List<DeveloperStatusEventDTO> removedStatuses = DeveloperStatusEventsHelper.getRemovedEvents(origStatuses, newStatuses);
+
+        List<DeveloperStatusEventDTO> removedStatuses =
+                DeveloperStatusEventsHelper.getRemovedEvents(origStatuses, newStatuses);
         for (DeveloperStatusEventDTO newStatusEvent : removedStatuses) {
-            QuestionableActivityDeveloperDTO activity = 
+            QuestionableActivityDeveloperDTO activity =
                     getQuestionableActivityDeveloper(getFormattedStatus(newStatusEvent), null);
             statusRemovedActivities.add(activity);
         }
@@ -120,56 +122,28 @@ public class DeveloperQuestionableActivityProvider {
 
         List<QuestionableActivityDeveloperDTO> statusEditedActivities
             = new ArrayList<QuestionableActivityDeveloperDTO>();
-//        if (origStatuses != null
-//                && origStatuses.size() > 0
-//                && newStatuses != null
-//                && newStatuses.size() > 0) {
-//            for (DeveloperStatusEventDTO origStatusEvent : origStatuses) {
-//                boolean statusEdited = false;
-//                DeveloperStatusEventDTO matchingNewStatusEvent = null;
-//                for (DeveloperStatusEventDTO newStatusEvent : newStatuses) {
-//                    if (origStatusEvent.getId().equals(newStatusEvent.getId())) {
-//                        matchingNewStatusEvent = newStatusEvent;
-//                        //same status id, check if the status name and date are still the same
-//                        if (origStatusEvent.getStatusDate().getTime() != newStatusEvent.getStatusDate().getTime()) {
-//                            statusEdited = true;
-//                        } else if (origStatusEvent.getStatus().getId().longValue()
-//                                != newStatusEvent.getStatus().getId().longValue()) {
-//                            statusEdited = true;
-//                        }
-//                    }
-//                }
-//                //orig dev status history item was edited
-//                if (statusEdited) {
-//                    QuestionableActivityDeveloperDTO activity = new QuestionableActivityDeveloperDTO();
-//                    activity.setBefore(origStatusEvent.getStatus().getStatusName()
-//                            + " (" + Util.getDateFormatter().format(origStatusEvent.getStatusDate()) + ")");
-//                    activity.setAfter(matchingNewStatusEvent.getStatus().getStatusName()
-//                            +  " (" + Util.getDateFormatter().format(matchingNewStatusEvent.getStatusDate()) + ")");
-//                    statusEditedActivities.add(activity);
-//                }
-//            }
-//        }
-        List<DeveloperStatusEventPair> eventPairs = DeveloperStatusEventsHelper.getUpdatedEvents(origStatuses, newStatuses);
+        List<DeveloperStatusEventPair> eventPairs =
+                DeveloperStatusEventsHelper.getUpdatedEvents(origStatuses, newStatuses);
         for (DeveloperStatusEventPair eventPair : eventPairs) {
-            QuestionableActivityDeveloperDTO activity = 
+            QuestionableActivityDeveloperDTO activity =
                     getQuestionableActivityDeveloper(
-                            getFormattedStatus(eventPair.getOrig()), 
+                            getFormattedStatus(eventPair.getOrig()),
                             getFormattedStatus(eventPair.getUpdated()));
             statusEditedActivities.add(activity);
         }
         return statusEditedActivities;
     }
 
-    private QuestionableActivityDeveloperDTO getQuestionableActivityDeveloper(String before, String after) {
+    private QuestionableActivityDeveloperDTO getQuestionableActivityDeveloper(final String before,
+            final String after) {
         QuestionableActivityDeveloperDTO activity = new QuestionableActivityDeveloperDTO();
         activity.setBefore(before);
         activity.setAfter(after);
         return activity;
     }
 
-    private String getFormattedStatus(DeveloperStatusEventDTO statusEvent) {
-        return statusEvent.getStatus().getStatusName() + " (" 
+    private String getFormattedStatus(final DeveloperStatusEventDTO statusEvent) {
+        return statusEvent.getStatus().getStatusName() + " ("
                 + Util.getDateFormatter().format(statusEvent.getStatusDate()) + ")";
     }
 }

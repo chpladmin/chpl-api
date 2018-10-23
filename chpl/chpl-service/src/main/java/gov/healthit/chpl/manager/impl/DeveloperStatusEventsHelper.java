@@ -8,8 +8,21 @@ import java.util.List;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventPair;
 
+/**
+ * Providers helper methods to determine added, updated, removed events between 2 lists of DeveloperStatusEventDTOs.
+ * @author TYoung
+ *
+ */
 public class DeveloperStatusEventsHelper {
-    public static List<DeveloperStatusEventDTO> getAddedEvents(List<DeveloperStatusEventDTO> originalEvents, List<DeveloperStatusEventDTO> updatedEvents) {
+
+    /**
+     * Determine if an event was added.
+     * @param originalEvents - List<DeveloperStatusEventDTO>
+     * @param updatedEvents - List<DeveloperStatusEventDTO>
+     * @return List<DeveloperStatusEventDTO>
+     */
+    public static List<DeveloperStatusEventDTO> getAddedEvents(final List<DeveloperStatusEventDTO> originalEvents,
+            final List<DeveloperStatusEventDTO> updatedEvents) {
         List<DeveloperStatusEventDTO> originalStatuses =
                 cloneDeveloperStatusEventList(originalEvents);
         List<DeveloperStatusEventDTO> updatedStatuses =
@@ -18,8 +31,15 @@ public class DeveloperStatusEventsHelper {
         updatedStatuses.removeAll(originalStatuses);
         return updatedStatuses;
     }
-    
-    public static List<DeveloperStatusEventDTO> getRemovedEvents(List<DeveloperStatusEventDTO> originalEvents, List<DeveloperStatusEventDTO> updatedEvents) {
+
+    /**
+     * Determine if an event was removed.
+     * @param originalEvents - List<DeveloperStatusEventDTO>
+     * @param updatedEvents - List<DeveloperStatusEventDTO>
+     * @return List<DeveloperStatusEventDTO>
+     */
+    public static List<DeveloperStatusEventDTO> getRemovedEvents(final List<DeveloperStatusEventDTO> originalEvents,
+            final List<DeveloperStatusEventDTO> updatedEvents) {
         List<DeveloperStatusEventDTO> originalStatuses =
                 cloneDeveloperStatusEventList(originalEvents);
         List<DeveloperStatusEventDTO> updatedStatuses =
@@ -28,15 +48,22 @@ public class DeveloperStatusEventsHelper {
         originalStatuses.removeAll(updatedStatuses);
         return originalStatuses;
     }
-    
-    public static List<DeveloperStatusEventPair> getUpdatedEvents(List<DeveloperStatusEventDTO> originalEvents, List<DeveloperStatusEventDTO> updatedEvents) {
+
+    /**
+     * Determine if an event was updated.
+     * @param originalEvents - List<DeveloperStatusEventDTO>
+     * @param updatedEvents - List<DeveloperStatusEventDTO>
+     * @return List<DeveloperStatusEventDTO>
+     */
+    public static List<DeveloperStatusEventPair> getUpdatedEvents(final List<DeveloperStatusEventDTO> originalEvents,
+            final List<DeveloperStatusEventDTO> updatedEvents) {
         List<DeveloperStatusEventPair> statuses = new ArrayList<DeveloperStatusEventPair>();
-        
         for (DeveloperStatusEventDTO updatedStatusEvent : updatedEvents) {
             for (DeveloperStatusEventDTO existingStatusEvent : originalEvents) {
                 if (updatedStatusEvent.equals(existingStatusEvent)) {
                     if (!nullSafeEquals(updatedStatusEvent.getReason(), existingStatusEvent.getReason())
-                            || !nullSafeDateEquals(updatedStatusEvent.getStatusDate(), existingStatusEvent.getStatusDate())
+                            || !nullSafeDateEquals(
+                                    updatedStatusEvent.getStatusDate(), existingStatusEvent.getStatusDate())
                             || !nullSafeEquals(updatedStatusEvent.getStatus().getStatusName(),
                                     existingStatusEvent.getStatus().getStatusName())) {
 
@@ -49,7 +76,6 @@ public class DeveloperStatusEventsHelper {
         return statuses;
     }
 
-    
     private static boolean nullSafeDateEquals(final Date obj1, final Date obj2) {
         if (obj1 == null || obj2 == null) {
             return true;
@@ -65,29 +91,23 @@ public class DeveloperStatusEventsHelper {
             } else {
                 return false;
             }
-            
         }
-            
     }
-    
+
     private static boolean nullSafeEquals(final Object obj1, final Object obj2) {
         if (obj1 == null || obj2 == null) {
             return true;
         } else {
             return obj1.equals(obj2);
         }
-            
     }
-    
-        
-    
-    
-    
-    private static List<DeveloperStatusEventDTO> cloneDeveloperStatusEventList(List<DeveloperStatusEventDTO> original) {
+
+    private static List<DeveloperStatusEventDTO> cloneDeveloperStatusEventList(
+            final List<DeveloperStatusEventDTO> original) {
         List<DeveloperStatusEventDTO> clone = new ArrayList<DeveloperStatusEventDTO>();
         if (original == null) {
-            return clone; 
-        } else { 
+            return clone;
+        } else {
             for (DeveloperStatusEventDTO event : original) {
                 clone.add(new DeveloperStatusEventDTO(event));
             }

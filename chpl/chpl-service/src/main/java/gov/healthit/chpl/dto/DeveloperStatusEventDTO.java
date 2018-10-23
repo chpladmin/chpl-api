@@ -38,9 +38,9 @@ public class DeveloperStatusEventDTO implements Serializable {
         this.reason = entity.getReason();
         this.setDeleted(entity.getDeleted());
     }
-    
+
     /**
-     * Copy constructor
+     * Copy constructor.
      * @param dto the DeveloperStatusEventDTO to copy
      */
     public DeveloperStatusEventDTO(final DeveloperStatusEventDTO dto) {
@@ -116,7 +116,7 @@ public class DeveloperStatusEventDTO implements Serializable {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
@@ -134,7 +134,7 @@ public class DeveloperStatusEventDTO implements Serializable {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 }

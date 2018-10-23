@@ -53,32 +53,49 @@ import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 
+/**
+ * Implementation of DeveloperManager class.
+ * @author TYoung
+ *
+ */
 @Service
 public class DeveloperManagerImpl implements DeveloperManager {
     private static final Logger LOGGER = LogManager.getLogger(DeveloperManagerImpl.class);
 
-    @Autowired
     private DeveloperDAO developerDao;
-
-    @Autowired
     private ProductManager productManager;
-
-    @Autowired
     private CertificationBodyManager acbManager;
-
-    @Autowired
     private CertificationBodyDAO certificationBodyDao;
-
-    @Autowired
     private CertifiedProductDAO certifiedProductDAO;
-
-    @Autowired
     private ChplProductNumberUtil chplProductNumberUtil;
-
-    @Autowired
     private ActivityManager activityManager;
+    private ErrorMessageUtil msgUtil;
 
-    @Autowired private ErrorMessageUtil msgUtil;
+    /**
+     * Autowired constructor for dependency injection.
+     * @param developerDao
+     * @param productManager
+     * @param acbManager
+     * @param certificationBodyDao
+     * @param certifiedProductDAO
+     * @param chplProductNumberUtil
+     * @param activityManager
+     * @param msgUtil
+     */
+    @Autowired
+    public DeveloperManagerImpl(final DeveloperDAO developerDao, final ProductManager productManager,
+            final CertificationBodyManager acbManager, final CertificationBodyDAO certificationBodyDao,
+            final CertifiedProductDAO certifiedProductDAO, final ChplProductNumberUtil chplProductNumberUtil,
+            final ActivityManager activityManager, final ErrorMessageUtil msgUtil) {
+        this.developerDao = developerDao;
+        this.productManager = productManager;
+        this.acbManager = acbManager;
+        this.certificationBodyDao = certificationBodyDao;
+        this.certifiedProductDAO = certifiedProductDAO;
+        this.chplProductNumberUtil = chplProductNumberUtil;
+        this.activityManager = activityManager;
+        this.msgUtil = msgUtil;
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -234,11 +251,10 @@ public class DeveloperManagerImpl implements DeveloperManager {
                     throw new EntityCreationException(msg);
                 }
             }
-    
+
             if (beforeDev.getContact() != null && beforeDev.getContact().getId() != null) {
                 updatedDev.getContact().setId(beforeDev.getContact().getId());
             }
-    
             // if either the before or updated statuses are active and the user is
             // ROLE_ADMIN
             // OR if before status is active and user is not ROLE_ADMIN - proceed
@@ -247,11 +263,10 @@ public class DeveloperManagerImpl implements DeveloperManager {
                     && Util.isUserRoleAdmin())
                     || (currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
                             && !Util.isUserRoleAdmin())) {
-    
+
                 developerDao.update(updatedDev);
-                
                 updateStatusHistory(beforeDev, updatedDev);
-                
+
                 List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
                 if (availableAcbs != null && availableAcbs.size() > 0) {
                     for (CertificationBodyDTO acb : availableAcbs) {
@@ -293,9 +308,12 @@ public class DeveloperManagerImpl implements DeveloperManager {
         List<DeveloperStatusEventPair> statusEventsToUpdate = new ArrayList<DeveloperStatusEventPair>();
         List<DeveloperStatusEventDTO> statusEventsToRemove = new ArrayList<DeveloperStatusEventDTO>();
 
-        statusEventsToUpdate = DeveloperStatusEventsHelper.getUpdatedEvents(beforeDev.getStatusEvents(), updatedDev.getStatusEvents());
-        statusEventsToRemove = DeveloperStatusEventsHelper.getRemovedEvents(beforeDev.getStatusEvents(), updatedDev.getStatusEvents());
-        statusEventsToAdd = DeveloperStatusEventsHelper.getAddedEvents(beforeDev.getStatusEvents(), updatedDev.getStatusEvents());
+        statusEventsToUpdate = DeveloperStatusEventsHelper.getUpdatedEvents(
+                beforeDev.getStatusEvents(), updatedDev.getStatusEvents());
+        statusEventsToRemove = DeveloperStatusEventsHelper.getRemovedEvents(
+                beforeDev.getStatusEvents(), updatedDev.getStatusEvents());
+        statusEventsToAdd = DeveloperStatusEventsHelper.getAddedEvents(
+                beforeDev.getStatusEvents(), updatedDev.getStatusEvents());
 
         for (DeveloperStatusEventPair toUpdate : statusEventsToUpdate) {
             boolean hasChanged = false;
@@ -474,7 +492,13 @@ public class DeveloperManagerImpl implements DeveloperManager {
         return createdDeveloper;
     }
 
-    public static List<DeveloperStatusEventDTO> cloneDeveloperStatusEventList(List<DeveloperStatusEventDTO> original) {
+    /**
+     * Clones a list of DeveloperStatusEventDTO.
+     * @param original - List<DeveloperStatusEventDTO>
+     * @return List<DeveloperStatusEventDTO>
+     */
+    public static List<DeveloperStatusEventDTO> cloneDeveloperStatusEventList(
+            final List<DeveloperStatusEventDTO> original) {
         List<DeveloperStatusEventDTO> clone = new ArrayList<DeveloperStatusEventDTO>();
         for (DeveloperStatusEventDTO event : original) {
             clone.add(new DeveloperStatusEventDTO(event));
@@ -561,7 +585,8 @@ public class DeveloperManagerImpl implements DeveloperManager {
 
             DecertifiedDeveloperResult decertifiedDeveloper = new DecertifiedDeveloperResult(
                     developerDao.getById(dto.getDeveloperId()), certifyingBody, dto.getDecertificationDate(),
-                    dto.getNumMeaningfulUse(), dto.getEarliestNumMeaningfulUseDate(), dto.getLatestNumMeaningfulUseDate());
+                    dto.getNumMeaningfulUse(), dto.getEarliestNumMeaningfulUseDate(),
+                    dto.getLatestNumMeaningfulUseDate());
             decertifiedDeveloperResults.add(decertifiedDeveloper);
         }
         return decertifiedDeveloperResults;
@@ -616,7 +641,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
         private String origChplProductNumberA;
         private String origChplProductNumberB;
 
-        public DuplicateChplProdNumber(final String origChplProductNumberA, final String origChplProductNumberB,
+        DuplicateChplProdNumber(final String origChplProductNumberA, final String origChplProductNumberB,
                 final String newChplProductNumber) {
             this.origChplProductNumberA = origChplProductNumberA;
             this.origChplProductNumberB = origChplProductNumberB;
