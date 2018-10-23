@@ -92,7 +92,6 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
 
         devActivity = developerQuestionableActivityProvider.checkCurrentStatusChanged(origDeveloper, newDeveloper);
         if (devActivity != null) {
-            LOGGER.info("Question Activity Event - DEVELOPER_STATUS_EDITED");
             createDeveloperActivity(devActivity, newDeveloper.getId(), activityDate,
                     activityUser, QuestionableActivityTriggerConcept.DEVELOPER_STATUS_EDITED);
         }
@@ -100,7 +99,6 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
         devActivities = developerQuestionableActivityProvider.checkStatusHistoryAdded(
                 origDeveloper.getStatusEvents(), newDeveloper.getStatusEvents());
         for (QuestionableActivityDeveloperDTO currDevActivity : devActivities) {
-            LOGGER.info("Question Activity Event - DEVELOPER_STATUS_HISTORY_ADDED");
             createDeveloperActivity(currDevActivity, newDeveloper.getId(), activityDate,
                     activityUser, QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_ADDED);
         }
@@ -108,7 +106,6 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
         devActivities = developerQuestionableActivityProvider.checkStatusHistoryRemoved(
                 origDeveloper.getStatusEvents(), newDeveloper.getStatusEvents());
         for (QuestionableActivityDeveloperDTO currDevActivity : devActivities) {
-            LOGGER.info("Question Activity Event - DEVELOPER_STATUS_HISTORY_REMOVED");
             createDeveloperActivity(currDevActivity, newDeveloper.getId(), activityDate,
                     activityUser, QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_REMOVED);
         }
@@ -116,7 +113,6 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
         devActivities = developerQuestionableActivityProvider.checkStatusHistoryItemEdited(
                 origDeveloper.getStatusEvents(), newDeveloper.getStatusEvents());
         for (QuestionableActivityDeveloperDTO currDevActivity : devActivities) {
-            LOGGER.info("Question Activity Event - DEVELOPER_STATUS_HISTORY_EDITED");
             createDeveloperActivity(currDevActivity, newDeveloper.getId(), activityDate,
                     activityUser, QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_EDITED);
         }

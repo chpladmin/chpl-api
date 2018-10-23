@@ -182,8 +182,6 @@ public class DeveloperManagerImpl implements DeveloperManager {
 
         //if any of the statuses (new, old, or any other status in the history)
         //is Under Certification Ban by ONC make sure there is a reason given
-        LOGGER.info("Original Developer Status Event count = " + beforeDev.getStatusEvents().size());
-        LOGGER.info("Updated Developer Status Event count = " + updatedDev.getStatusEvents().size());
         for (DeveloperStatusEventDTO statusEvent: updatedDev.getStatusEvents()) {
             if (statusEvent.getStatus().getStatusName().equals(
                     DeveloperStatusType.UnderCertificationBanByOnc.toString())
@@ -331,18 +329,15 @@ public class DeveloperManagerImpl implements DeveloperManager {
             if (hasChanged) {
                 DeveloperStatusEventDTO dseToUpdate = toUpdate.getUpdated();
                 dseToUpdate.setDeveloperId(beforeDev.getId());
-                LOGGER.info("Status Events Id to Update: " + dseToUpdate.getId());
                 developerDao.updateDeveloperStatusEvent(dseToUpdate);
             }
         }
 
-        LOGGER.info("Status Events to Add count: " + statusEventsToAdd.size());
         for (DeveloperStatusEventDTO toAdd : statusEventsToAdd) {
             toAdd.setDeveloperId(beforeDev.getId());
             developerDao.createDeveloperStatusEvent(toAdd);
         }
 
-        LOGGER.info("Status Events to Remove count: " + statusEventsToRemove.size());
         for (DeveloperStatusEventDTO toRemove : statusEventsToRemove) {
             developerDao.deleteDeveloperStatusEvent(toRemove);
         }

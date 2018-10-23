@@ -31,11 +31,11 @@ public class QuestionableActivityAspect {
     private ListingQuestionableActivityProvider listingQuestionableActivityProvider;
 
     /**
-     * Autowired constructor for dependency injection 
-     * @param messageSource
-     * @param cpdManager
-     * @param listingDao
-     * @param listingQuestionableActivityProvider
+     * Autowired constructor for dependency injection.
+     * @param messageSource - MessageSource
+     * @param cpdManager - CertifiedProductDetailsManager
+     * @param listingDao - CertifiedProductDAO
+     * @param listingQuestionableActivityProvider - ListingQuestionableActivityProvider
      */
     @Autowired
     public QuestionableActivityAspect(final MessageSource messageSource,
@@ -48,7 +48,7 @@ public class QuestionableActivityAspect {
     }
 
     /**
-     * @param updateRequest
+     * @param updateRequest - ListingUpdateRequest
      * @throws EntityRetrievalException
      * @throws MissingReasonException
      */
