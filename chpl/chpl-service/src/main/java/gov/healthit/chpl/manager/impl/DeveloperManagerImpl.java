@@ -125,16 +125,14 @@ public class DeveloperManagerImpl implements DeveloperManager {
                 developer.getTransparencyAttestationMappings().add(map);
             }
         }
-        
+
         //Remove any deleted status events
         Iterator<DeveloperStatusEventDTO> iterator = developer.getStatusEvents().iterator();
         while (iterator.hasNext()) {
-            DeveloperStatusEventDTO event = iterator.next();
-            if (event.getDeleted()) {
+            if (iterator.next().getDeleted()) {
                 iterator.remove();
             }
         }
-        
         return developer;
     }
 
@@ -226,69 +224,63 @@ public class DeveloperManagerImpl implements DeveloperManager {
             // if the developer is not active and not going to be active
             // only its current status can be updated
             updateStatusHistory(beforeDev, updatedDev);
-            return getById(updatedDev.getId());
-        }
-
-        /*
-         * Check to see that the Developer's website is valid.
-         */
-        if (!StringUtils.isEmpty(updatedDev.getWebsite())) {
-            if (!ValidationUtils.isWellFormedUrl(updatedDev.getWebsite())) {
-                String msg = msgUtil.getMessage("developer.websiteIsInvalid");
-                throw new EntityCreationException(msg);
+        } else {
+            /*
+             * Check to see that the Developer's website is valid.
+             */
+            if (!StringUtils.isEmpty(updatedDev.getWebsite())) {
+                if (!ValidationUtils.isWellFormedUrl(updatedDev.getWebsite())) {
+                    String msg = msgUtil.getMessage("developer.websiteIsInvalid");
+                    throw new EntityCreationException(msg);
+                }
             }
-        }
-
-        if (beforeDev.getContact() != null && beforeDev.getContact().getId() != null) {
-            updatedDev.getContact().setId(beforeDev.getContact().getId());
-        }
-
-        // if either the before or updated statuses are active and the user is
-        // ROLE_ADMIN
-        // OR if before status is active and user is not ROLE_ADMIN - proceed
-        if (((currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
-                || newDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()))
-                && Util.isUserRoleAdmin())
-                || (currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
-                        && !Util.isUserRoleAdmin())) {
-
-            developerDao.update(updatedDev);
-            
-            LOGGER.info("Calling DeveloperManagerImpl.updateStatusHistory()");
-            updateStatusHistory(beforeDev, updatedDev);
-            LOGGER.info("Completed DeveloperManagerImpl.updateStatusHistory()");
-            
-            List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
-            if (availableAcbs != null && availableAcbs.size() > 0) {
-                for (CertificationBodyDTO acb : availableAcbs) {
-                    DeveloperACBMapDTO existingMap = developerDao.getTransparencyMapping(updatedDev.getId(),
-                            acb.getId());
-                    if (existingMap == null) {
-                        DeveloperACBMapDTO developerMappingToCreate = new DeveloperACBMapDTO();
-                        developerMappingToCreate.setAcbId(acb.getId());
-                        developerMappingToCreate.setDeveloperId(beforeDev.getId());
-                        for (DeveloperACBMapDTO attMap : updatedDev.getTransparencyAttestationMappings()) {
-                            if (attMap.getAcbName().equals(acb.getName())) {
-                                developerMappingToCreate
-                                .setTransparencyAttestation(attMap.getTransparencyAttestation());
-                                developerDao.createTransparencyMapping(developerMappingToCreate);
+    
+            if (beforeDev.getContact() != null && beforeDev.getContact().getId() != null) {
+                updatedDev.getContact().setId(beforeDev.getContact().getId());
+            }
+    
+            // if either the before or updated statuses are active and the user is
+            // ROLE_ADMIN
+            // OR if before status is active and user is not ROLE_ADMIN - proceed
+            if (((currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
+                    || newDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()))
+                    && Util.isUserRoleAdmin())
+                    || (currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
+                            && !Util.isUserRoleAdmin())) {
+    
+                developerDao.update(updatedDev);
+                
+                updateStatusHistory(beforeDev, updatedDev);
+                
+                List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
+                if (availableAcbs != null && availableAcbs.size() > 0) {
+                    for (CertificationBodyDTO acb : availableAcbs) {
+                        DeveloperACBMapDTO existingMap = developerDao.getTransparencyMapping(updatedDev.getId(),
+                                acb.getId());
+                        if (existingMap == null) {
+                            DeveloperACBMapDTO developerMappingToCreate = new DeveloperACBMapDTO();
+                            developerMappingToCreate.setAcbId(acb.getId());
+                            developerMappingToCreate.setDeveloperId(beforeDev.getId());
+                            for (DeveloperACBMapDTO attMap : updatedDev.getTransparencyAttestationMappings()) {
+                                if (attMap.getAcbName().equals(acb.getName())) {
+                                    developerMappingToCreate
+                                    .setTransparencyAttestation(attMap.getTransparencyAttestation());
+                                    developerDao.createTransparencyMapping(developerMappingToCreate);
+                                }
                             }
-                        }
-                    } else {
-                        for (DeveloperACBMapDTO attMap : updatedDev.getTransparencyAttestationMappings()) {
-                            if (attMap.getAcbName().equals(acb.getName())) {
-                                existingMap.setTransparencyAttestation(attMap.getTransparencyAttestation());
-                                developerDao.updateTransparencyMapping(existingMap);
+                        } else {
+                            for (DeveloperACBMapDTO attMap : updatedDev.getTransparencyAttestationMappings()) {
+                                if (attMap.getAcbName().equals(acb.getName())) {
+                                    existingMap.setTransparencyAttestation(attMap.getTransparencyAttestation());
+                                    developerDao.updateTransparencyMapping(existingMap);
+                                }
                             }
                         }
                     }
                 }
             }
         }
-        
-        LOGGER.info("Calling DeveloperManagerImpl.getById()");
         DeveloperDTO after = getById(updatedDev.getId());
-        LOGGER.info("Before ActivityManagerImpl.addActivity()");
         activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, after.getId(),
                 "Developer " + updatedDev.getName() + " was updated.", beforeDev, after);
         return after;

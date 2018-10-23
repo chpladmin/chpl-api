@@ -39,6 +39,7 @@ import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.ValidationUtils;
 
 @Repository("developerDAO")
 public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
@@ -589,14 +590,10 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
         DeveloperEntity entity = null;
 
         Query query = entityManager
-                .createQuery("SELECT DISTINCT v from " + "DeveloperEntity v " 
-                        + "LEFT OUTER JOIN FETCH v.address "
-                        + "LEFT OUTER JOIN FETCH v.contact " 
-                        + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
+                .createQuery("SELECT DISTINCT v from " + "DeveloperEntity v " + "LEFT OUTER JOIN FETCH v.address "
+                        + "LEFT OUTER JOIN FETCH v.contact " + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
                         + "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
-                        + "where (NOT v.deleted = true) "
-                        + "AND (NOT statusEvents.deleted = true) "
-                        + "AND (v.id = :entityid) ", DeveloperEntity.class);
+                        + "where (NOT v.deleted = true) AND (v.id = :entityid) ", DeveloperEntity.class);
         query.setParameter("entityid", id);
         List<DeveloperEntity> result = query.getResultList();
 
