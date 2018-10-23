@@ -19,14 +19,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.dao.MeaningfulUseUserDAO;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.ListingUpdateRequest;
+import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.domain.MeaningfulUseUserRecord;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.dto.MeaningfulUseUserDTO;
 import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.entity.job.JobStatusType;
+import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 
 /**
@@ -43,13 +43,10 @@ public class MeaningfulUseUploadJob extends RunnableJob {
     private static final Integer FILE_PARSED_PERCENT = 10;
 
     @Autowired
+    private CertifiedProductDetailsManager cpdManager;
+
+    @Autowired
     private CertifiedProductManager cpManager;
-
-    @Autowired
-    private CertifiedProductDAO cpDao;
-
-    @Autowired
-    private MeaningfulUseUserDAO muuDao;
 
     /**
      * Default constructor.
@@ -67,6 +64,11 @@ public class MeaningfulUseUploadJob extends RunnableJob {
         this.job = job;
     }
 
+    /**
+     * Parse the job data, in this case the contents of a csv file that was
+     * saved to the job object in the database.
+     * Get the details of each listing and add the MUU count provided.
+     */
     @Transactional
     public void run() {
         super.run();
@@ -200,33 +202,34 @@ public class MeaningfulUseUploadJob extends RunnableJob {
                         addJobMessage("Line " + muu.getCsvLineNumber() +
                                 ": Field \"num_meaningful_users\" is missing.");
                     } else {
-                        MeaningfulUseUserDTO muuDto = new MeaningfulUseUserDTO();
-                        muuDto.setMuuDate(muuDate);
-                        muuDto.setMuuCount(muu.getNumberOfUsers());
-                        CertifiedProductDTO cpOldStyle = null;
+                        MeaningfulUseUser muuToAdd = new MeaningfulUseUser();
+                        muuToAdd.setMuuDate(muuDate.getTime());
+                        muuToAdd.setMuuCount(muu.getNumberOfUsers());
+                        //make sure the listing is valid and get the details
+                        //object so that it can be updated
+                        CertifiedProductSearchDetails existingListing = null;
+                        CertifiedProductSearchDetails updatedListing = null;
                         try {
-                            cpOldStyle = cpDao.getByChplNumber(muu.getProductNumber());
-                        } catch(Exception ex) {
-                            LOGGER.warn("Searching for CHPL ID " + muu.getProductNumber() + " as old style ID and got exception: " + ex.getMessage());
-                        }
-                        CertifiedProductDetailsDTO cpNewStyle = null;
-                        try {
-                            cpNewStyle = cpDao.getByChplUniqueId(muu.getProductNumber());
-                        } catch(Exception ex) {
-                            LOGGER.warn("Searching for CHPL ID " + muu.getProductNumber() + " as new style ID and got exception: " + ex.getMessage());
-                        }
-                        if (cpOldStyle != null) {
-                            muuDto.setCertifiedProductId(cpOldStyle.getId());
-                        } else if (cpNewStyle != null) {
-                            muuDto.setCertifiedProductId(cpNewStyle.getId());
-                        }
-
-                        if (muuDto.getCertifiedProductId() != null && muuDto.getCertifiedProductId() > 0) {
-                            muuDao.create(muuDto);
-                        } else {
+                            existingListing =
+                                    cpdManager.getCertifiedProductDetailsByChplProductNumber(muu.getProductNumber());
+                            updatedListing =
+                                    cpdManager.getCertifiedProductDetailsByChplProductNumber(muu.getProductNumber());
+                        } catch (EntityRetrievalException ex) {
+                            LOGGER.warn("Searching for CHPL ID " + muu.getProductNumber()
+                                + " encountered exception: " + ex.getMessage());
                             addJobMessage("Line " + muu.getCsvLineNumber()
                                 + ": Field \"chpl_product_number\" with value \"" + muu.getProductNumber()
                                 + "\" is invalid. " + "The provided \"chpl_product_number\" does not exist.");
+                        }
+
+                        if (updatedListing != null) {
+                            updatedListing.getMeaningfulUseUserHistory().add(muuToAdd);
+                            Long listingAcbId = Long.parseLong(updatedListing.getCertifyingBody().get("id").toString());
+                            ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+                            updateRequest.setListing(updatedListing);
+                            updateRequest.setReason("User " + getUser().getUsername()
+                                    + " updated MUU count via upload file.");
+                            cpManager.update(listingAcbId, updateRequest, existingListing);
                         }
                     }
                 } catch (Exception ex) {
@@ -246,21 +249,5 @@ public class MeaningfulUseUploadJob extends RunnableJob {
         }
 
         this.complete();
-    }
-
-    public CertifiedProductManager getCpManager() {
-        return cpManager;
-    }
-
-    public void setCpManager(final CertifiedProductManager cpManager) {
-        this.cpManager = cpManager;
-    }
-
-    public CertifiedProductDAO getCpDao() {
-        return cpDao;
-    }
-
-    public void setCpDao(final CertifiedProductDAO cpDao) {
-        this.cpDao = cpDao;
     }
 }
