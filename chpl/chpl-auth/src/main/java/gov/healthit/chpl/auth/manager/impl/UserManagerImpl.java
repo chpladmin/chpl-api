@@ -1,6 +1,8 @@
 package gov.healthit.chpl.auth.manager.impl;
 
 import java.security.SecureRandom;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -19,8 +21,10 @@ import com.nulabinc.zxcvbn.Strength;
 import com.nulabinc.zxcvbn.Zxcvbn;
 
 import gov.healthit.chpl.auth.dao.UserDAO;
+import gov.healthit.chpl.auth.dao.UserResetTokenDAO;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
+import gov.healthit.chpl.auth.dto.UserResetTokenDTO;
 import gov.healthit.chpl.auth.entity.UserEntity;
 import gov.healthit.chpl.auth.json.User;
 import gov.healthit.chpl.auth.json.UserCreationJSONObject;
@@ -63,6 +67,9 @@ public class UserManagerImpl implements UserManager {
 
     @Autowired
     private UserDAO userDAO;
+    
+    @Autowired 
+    private UserResetTokenDAO userResetTokenDAO;
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -238,16 +245,16 @@ public class UserManagerImpl implements UserManager {
 
     }
 
-    //no auth needed. create a random string and assign it to the user
+    //no auth needed. create a random string and create a new reset token row for the user
     @Override
     @Transactional
-    public String resetUserPassword(final String username, final String email) throws UserRetrievalException {
+    public UserResetTokenDTO createResetUserPasswordToken(final String username, final String email) throws UserRetrievalException {
         UserDTO foundUser = userDAO.findUserByNameAndEmail(username, email);
         if (foundUser == null) {
             throw new UserRetrievalException("Cannot find user with name " + username + " and email address " + email);
         }
 
-        //create new password
+        //create user password reset token
         char[] buf = new char[GENERATED_PASSWORD_LENGTH];
 
         for (int idx = 0; idx < buf.length; ++idx) {
@@ -257,11 +264,31 @@ public class UserManagerImpl implements UserManager {
 
         //encode new password
         String encodedPassword = encodePassword(password);
+        
+        // delete all previous tokens from that user that are in the table
+        userResetTokenDAO.deletePreviousUserTokens(foundUser.getId());
 
-        //update the userDTO with the new password
-        userDAO.updatePassword(foundUser.getSubjectName(), encodedPassword);
-
-        return password;
+        //create new row in reset token table
+        UserResetTokenDTO userResetToken = userResetTokenDAO.create(encodedPassword, foundUser.getId());
+        
+        return userResetToken;
+    }
+    
+    // checks that the token was made in the last 24 hours
+    private boolean isTokenValid(UserResetTokenDTO userResetToken) {
+        Instant then = userResetToken.getCreationDate().toInstant();
+        Instant now = Instant.now();
+        Instant twentyFourHoursEarlier = now.minus( 24 , ChronoUnit.HOURS );
+        return (!then.isBefore(twentyFourHoursEarlier)) && then.isBefore(now) ;
+    }
+    
+    public boolean authorizePasswordReset(String token) {
+        UserResetTokenDTO userResetToken = userResetTokenDAO.findByAuthToken(token);
+        
+        if(userResetToken != null && isTokenValid(userResetToken)) {
+            return true;
+        }
+        return false;
     }
 
     @Override

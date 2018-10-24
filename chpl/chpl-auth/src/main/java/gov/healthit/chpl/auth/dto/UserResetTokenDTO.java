@@ -1,0 +1,85 @@
+package gov.healthit.chpl.auth.dto;
+
+import java.util.Date;
+
+import gov.healthit.chpl.auth.entity.UserResetTokenEntity;
+import gov.healthit.chpl.auth.user.User;
+
+public class UserResetTokenDTO {
+
+    private static final long serialVersionUID = 1L;
+    private Long id;
+    private String userResetToken;
+    private Long userId;
+    private User user;
+    private Date creationDate;
+    private boolean deleted;
+
+
+    public UserResetTokenDTO(final UserResetTokenEntity entity) {
+        if (entity != null) {
+            this.id = entity.getId();
+            this.userResetToken = entity.getUserResetToken();
+            this.userId = entity.getUserId();
+            this.user = entity.getUser();
+            this.creationDate = entity.getCreationDate();
+            this.deleted = entity.getDeleted();
+        }
+    }
+
+
+    public Long getId() {
+        return id;
+    }
+
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+
+    public String getUserResetToken() {
+        return userResetToken;
+    }
+
+
+    public void setUserResetToken(String userResetToken) {
+        this.userResetToken = userResetToken;
+    }
+
+
+    public User getUser() {
+        return user;
+    }
+
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+}

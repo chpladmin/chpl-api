@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,6 +24,7 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.authentication.Authenticator;
 import gov.healthit.chpl.auth.authentication.LoginCredentials;
 import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.auth.dto.UserResetTokenDTO;
 import gov.healthit.chpl.auth.json.UserResetPasswordJSONObject;
 import gov.healthit.chpl.auth.jwt.JWTCreationException;
 import gov.healthit.chpl.auth.manager.UserManager;
@@ -131,26 +133,22 @@ public class AuthenticationController{
 
 	
 	@ApiOperation(value="Reset a user's password.", 
-			notes="This service generates a new password, saves it to the user's account "
-					+ " and sends an email to the address associated with the user's account "
-					+ " containing the new password.")
+			notes="")
 	@RequestMapping(value="/reset_password", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
 	public String resetPassword(@RequestBody UserResetPasswordJSONObject userInfo) 
 			throws UserRetrievalException, MessagingException {		
 
-		String newPassword = userManager.resetUserPassword(userInfo.getUserName(), userInfo.getEmail());
-
-		String htmlMessage = "<p>Hi, <br/>"
-       			+ "Your CHPL account password has been reset. Your new password is: </p>"
-				+ "<pre>" + newPassword + "</pre>"
-       			+ "<p>Click the link below to login to your account."
-       			+ "<br/>" +
-       			env.getProperty("chplUrlBegin") + "/#/admin" +
-       			"</p>"
-       			+ "<p>Take care,<br/> " +
-				 "The Open Data CHPL Team</p>";
+	    UserResetTokenDTO userResetTokenDTO = userManager.createResetUserPasswordToken(userInfo.getUserName(), userInfo.getEmail());
+	    String htmlMessage = "<p>Hi, <br/>"
+                + "Please follow this link to reset your password </p>"
+                + "<pre>" +  env.getProperty("chplUrlBegin") + "/authorize_password_reset?token=" + userResetTokenDTO.getUserResetToken() + "</pre>"
+                + "<p>Click the link below to login to your account."
+                + "<br/>" +
+                "</p>"
+                + "<p>Take care,<br/> " +
+                 "The Open Data CHPL Team</p>";
 		String[] toEmails = {userInfo.getEmail()};
 
 		EmailBuilder emailBuilder = new EmailBuilder(env);
@@ -159,7 +157,16 @@ public class AuthenticationController{
 		                .htmlMessage(htmlMessage)
 		                .sendEmail();
 		
-		return "{\"passwordReset\" : true }";
-	
+		return "{\"passwordResetEmailSent\" : true }";
 	}
+	
+	@ApiOperation(value="Reset a user's password.", 
+            notes="")
+    @RequestMapping(value="/authorize_password_reset", method= RequestMethod.POST, 
+            consumes= MediaType.APPLICATION_JSON_VALUE,
+            produces="application/json; charset=utf-8")
+    public String authorizePasswordReset(@PathVariable String token) {     
+	    boolean userResetTokenDTO = userManager.authorizePasswordReset(token);
+        
+    }
 }
