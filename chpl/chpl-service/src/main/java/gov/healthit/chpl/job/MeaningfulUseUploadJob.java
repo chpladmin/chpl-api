@@ -16,18 +16,18 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.dao.MeaningfulUseUserDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.ListingUpdateRequest;
-import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.domain.MeaningfulUseUserRecord;
+import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.dto.MeaningfulUseUserDTO;
 import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.entity.job.JobStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
-import gov.healthit.chpl.manager.CertifiedProductManager;
 
 /**
  * Upload a potentially large amount of MUU data in the background.
@@ -46,7 +46,10 @@ public class MeaningfulUseUploadJob extends RunnableJob {
     private CertifiedProductDetailsManager cpdManager;
 
     @Autowired
-    private CertifiedProductManager cpManager;
+    private ActivityManager activityManager;
+
+    @Autowired
+    private MeaningfulUseUserDAO muuDao;
 
     /**
      * Default constructor.
@@ -69,7 +72,6 @@ public class MeaningfulUseUploadJob extends RunnableJob {
      * saved to the job object in the database.
      * Get the details of each listing and add the MUU count provided.
      */
-    @Transactional
     public void run() {
         super.run();
 
@@ -202,17 +204,11 @@ public class MeaningfulUseUploadJob extends RunnableJob {
                         addJobMessage("Line " + muu.getCsvLineNumber() +
                                 ": Field \"num_meaningful_users\" is missing.");
                     } else {
-                        MeaningfulUseUser muuToAdd = new MeaningfulUseUser();
-                        muuToAdd.setMuuDate(muuDate.getTime());
-                        muuToAdd.setMuuCount(muu.getNumberOfUsers());
                         //make sure the listing is valid and get the details
                         //object so that it can be updated
                         CertifiedProductSearchDetails existingListing = null;
-                        CertifiedProductSearchDetails updatedListing = null;
                         try {
                             existingListing =
-                                    cpdManager.getCertifiedProductDetailsByChplProductNumber(muu.getProductNumber());
-                            updatedListing =
                                     cpdManager.getCertifiedProductDetailsByChplProductNumber(muu.getProductNumber());
                         } catch (EntityRetrievalException ex) {
                             LOGGER.warn("Searching for CHPL ID " + muu.getProductNumber()
@@ -222,14 +218,21 @@ public class MeaningfulUseUploadJob extends RunnableJob {
                                 + "\" is invalid. " + "The provided \"chpl_product_number\" does not exist.");
                         }
 
-                        if (updatedListing != null) {
-                            updatedListing.getMeaningfulUseUserHistory().add(muuToAdd);
-                            Long listingAcbId = Long.parseLong(updatedListing.getCertifyingBody().get("id").toString());
-                            ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-                            updateRequest.setListing(updatedListing);
-                            updateRequest.setReason("User " + getUser().getUsername()
-                                    + " updated MUU count via upload file.");
-                            cpManager.update(listingAcbId, updateRequest, existingListing);
+                        if (existingListing != null) {
+                            //add a meaningful use entry
+                            MeaningfulUseUserDTO muuDto = new MeaningfulUseUserDTO();
+                            muuDto.setCertifiedProductId(existingListing.getId());
+                            muuDto.setMuuCount(muu.getNumberOfUsers());
+                            muuDto.setMuuDate(muuDate);
+                            muuDao.create(muuDto);
+
+                            //write activity for the listing update
+                            CertifiedProductSearchDetails updatedListing =
+                                    cpdManager.getCertifiedProductDetails(existingListing.getId());
+                            activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, existingListing.getId(),
+                                    "Updated certified product " + updatedListing.getChplProductNumber() + ".", existingListing,
+                                    updatedListing, 
+                                    "User " + getUser().getUsername() + " updated MUU count via upload file.");
                         }
                     }
                 } catch (Exception ex) {
