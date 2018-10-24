@@ -117,7 +117,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
     }
 
     @Override
-    //@Transactional(readOnly = true)
+    @Transactional(readOnly = true)
     public DeveloperDTO getById(final Long id) throws EntityRetrievalException {
         DeveloperDTO developer = developerDao.getById(id);
         List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
