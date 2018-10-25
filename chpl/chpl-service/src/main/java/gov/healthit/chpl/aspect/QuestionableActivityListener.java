@@ -13,16 +13,14 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.manager.QuestionableActivityManager;
 
-/**
- * @author TYoung
- * Checks for and adds Questionable Activity when appropriate.
- */
 @Component
 @Aspect
 public class QuestionableActivityListener implements EnvironmentAware {
@@ -33,16 +31,9 @@ public class QuestionableActivityListener implements EnvironmentAware {
 
     private long listingActivityThresholdMillis = -1;
     private static final long MILLIS_PER_DAY = 24 * 60 * 60 * 1000;
-
-    /**
-     * Autowired constructor for dependency injection.
-     * @param env - Environment
-     * @param listingDao - CertifiedProductDAO
-     * @param questionableActivityManager - QuestionableActivityManager
-     */
+    
     @Autowired
-    public QuestionableActivityListener(final Environment env, final CertifiedProductDAO listingDao,
-            final QuestionableActivityManager questionableActivityManager) {
+    public QuestionableActivityListener(Environment env, final CertifiedProductDAO listingDao, final QuestionableActivityManager questionableActivityManager) {
         this.env = env;
         this.listingDao = listingDao;
         this.questionableActivityManager = questionableActivityManager;
@@ -58,16 +49,70 @@ public class QuestionableActivityListener implements EnvironmentAware {
 
     /**
      * Any activity added with a reason would be handled here.
-     * @param concept - ActivityConcept
-     * @param objectId - Long
-     * @param activityDescription - String
-     * @param originalData - Object
-     * @param newData - Object
+     * @param concept
+     * @param objectId
+     * @param activityDescription
+     * @param originalData
+     * @param newData
+     * @param reason
      */
     @After("execution(* gov.healthit.chpl.manager.impl.ActivityManagerImpl.addActivity(..)) && "
+            + "args(concept,objectId,activityDescription,originalData,newData,reason,..)")
+    public void checkQuestionableActivityWithReason(final ActivityConcept concept,
+            final Long objectId, String activityDescription, final Object originalData,
+            final Object newData, final String reason) {
+        LOGGER.info("Called QuestionableActivityAspect2.checkQuestionableActivityWithReason()");
+        if (originalData == null || newData == null
+                || !originalData.getClass().equals(newData.getClass())
+                || Util.getCurrentUser() == null) {
+            return;
+        }
+
+        //all questionable activity from this action should have the exact same date and user id
+        Date activityDate = new Date();
+        Long activityUser = Util.getCurrentUser().getId();
+
+        if (originalData instanceof CertifiedProductSearchDetails
+                && newData instanceof CertifiedProductSearchDetails) {
+            CertifiedProductSearchDetails origListing = (CertifiedProductSearchDetails) originalData;
+            CertifiedProductSearchDetails newListing = (CertifiedProductSearchDetails) newData;
+
+            //look for any of the listing questionable activity
+            questionableActivityManager.checkListingQuestionableActivity(origListing, newListing, activityDate, activityUser, reason);
+
+            //check for cert result questionable activity
+            //outside of the acceptable activity threshold
+
+            //get confirm date of the listing to check against the threshold
+            Date confirmDate = listingDao.getConfirmDate(origListing.getId());
+            if (confirmDate != null && newListing.getLastModifiedDate() != null
+                    && (newListing.getLastModifiedDate().longValue()
+                            - confirmDate.getTime() > listingActivityThresholdMillis)) {
+
+                //look for certification result questionable activity
+                if (origListing.getCertificationResults() != null && origListing.getCertificationResults().size() > 0
+                        && newListing.getCertificationResults() != null
+                        && newListing.getCertificationResults().size() > 0) {
+
+                    //all cert results are in the details so find matches based on the
+                    //original and new criteria number fields
+                    for (CertificationResult origCertResult : origListing.getCertificationResults()) {
+                        for (CertificationResult newCertResult : newListing.getCertificationResults()) {
+                            if (origCertResult.getNumber().equals(newCertResult.getNumber())) {
+                                questionableActivityManager.checkCertificationResultQuestionableActivity(origCertResult, newCertResult,
+                                        activityDate, activityUser, reason);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @After("execution(* gov.healthit.chpl.manager.impl.ActivityManagerImpl.addActivity(..)) && "
             + "args(concept,objectId,activityDescription,originalData,newData,..)")
-    public void checkQuestionableActivity(final ActivityConcept concept, final Long objectId,
-            final String activityDescription, final Object originalData, final Object newData) {
+    public void checkQuestionableActivity(final ActivityConcept concept,
+            final Long objectId, final String activityDescription, final Object originalData, final Object newData) {
         LOGGER.info("Called QuestionableActivityAspect2.checkQuestionableActivity()");
         if (originalData == null || newData == null
                 || !originalData.getClass().equals(newData.getClass())
@@ -82,18 +127,15 @@ public class QuestionableActivityListener implements EnvironmentAware {
         if (originalData instanceof DeveloperDTO && newData instanceof DeveloperDTO) {
             DeveloperDTO origDeveloper = (DeveloperDTO) originalData;
             DeveloperDTO newDeveloper = (DeveloperDTO) newData;
-            questionableActivityManager.checkDeveloperQuestionableActivity(
-                    origDeveloper, newDeveloper, activityDate, activityUser);
+            questionableActivityManager.checkDeveloperQuestionableActivity(origDeveloper, newDeveloper, activityDate, activityUser);
         } else if (originalData instanceof ProductDTO && newData instanceof ProductDTO) {
             ProductDTO origProduct = (ProductDTO) originalData;
             ProductDTO newProduct = (ProductDTO) newData;
-            questionableActivityManager.checkProductQuestionableActivity(
-                    origProduct, newProduct, activityDate, activityUser);
+            questionableActivityManager.checkProductQuestionableActivity(origProduct, newProduct, activityDate, activityUser);
         } else if (originalData instanceof ProductVersionDTO && newData instanceof ProductVersionDTO) {
             ProductVersionDTO origVersion = (ProductVersionDTO) originalData;
             ProductVersionDTO newVersion = (ProductVersionDTO) newData;
-            questionableActivityManager.checkVersionQuestionableActivity(
-                    origVersion, newVersion, activityDate, activityUser);
+            questionableActivityManager.checkVersionQuestionableActivity(origVersion, newVersion, activityDate, activityUser);
         }
     }
 
