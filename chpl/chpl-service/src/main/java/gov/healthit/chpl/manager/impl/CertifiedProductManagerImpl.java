@@ -1158,65 +1158,69 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         Long listingId = updatedListing.getId();
         Long productVersionId = new Long(updatedListing.getVersion().getVersionId());
         CertificationStatus updatedStatus = updatedListing.getCurrentStatus().getStatus();
-
-        // look at the updated status and see if a developer ban is appropriate
-        CertificationStatusDTO updatedStatusDto = certStatusDao.getById(updatedStatus.getId());
-        DeveloperDTO cpDeveloper = developerDao.getByVersion(productVersionId);
-        if (cpDeveloper == null) {
-            LOGGER.error("Could not find developer for product version with id " + productVersionId);
-            throw new EntityNotFoundException(
-                    "No developer could be located for the certified product in the update. Update cannot continue.");
-        }
-        DeveloperStatusDTO newDevStatusDto = null;
-        switch (CertificationStatusType.getValue(updatedStatusDto.getStatus())) {
-        case SuspendedByOnc:
-        case TerminatedByOnc:
-            // only onc admin can do this and it always triggers developer ban
-            if (Util.isUserRoleAdmin()) {
-                // find the new developer status
-                if (updatedStatusDto.getStatus().equals(CertificationStatusType.SuspendedByOnc.toString())) {
-                    newDevStatusDto = devStatusDao.getByName(DeveloperStatusType.SuspendedByOnc.toString());
-                } else if (updatedStatusDto.getStatus()
-                        .equals(CertificationStatusType.TerminatedByOnc.toString())) {
-                    newDevStatusDto = devStatusDao.getByName(DeveloperStatusType.UnderCertificationBanByOnc.toString());
+        CertificationStatus existingStatus = existingListing.getCurrentStatus().getStatus();
+        //if listing status has changed that may trigger other changes
+        //to developer status
+        if (ObjectUtils.notEqual(updatedStatus.getName(), existingStatus.getName())) {
+            // look at the updated status and see if a developer ban is appropriate
+            CertificationStatusDTO updatedStatusDto = certStatusDao.getById(updatedStatus.getId());
+            DeveloperDTO cpDeveloper = developerDao.getByVersion(productVersionId);
+            if (cpDeveloper == null) {
+                LOGGER.error("Could not find developer for product version with id " + productVersionId);
+                throw new EntityNotFoundException(
+                        "No developer could be located for the certified product in the update. Update cannot continue.");
+            }
+            DeveloperStatusDTO newDevStatusDto = null;
+            switch (CertificationStatusType.getValue(updatedStatusDto.getStatus())) {
+            case SuspendedByOnc:
+            case TerminatedByOnc:
+                // only onc admin can do this and it always triggers developer ban
+                if (Util.isUserRoleAdmin()) {
+                    // find the new developer status
+                    if (updatedStatusDto.getStatus().equals(CertificationStatusType.SuspendedByOnc.toString())) {
+                        newDevStatusDto = devStatusDao.getByName(DeveloperStatusType.SuspendedByOnc.toString());
+                    } else if (updatedStatusDto.getStatus()
+                            .equals(CertificationStatusType.TerminatedByOnc.toString())) {
+                        newDevStatusDto = devStatusDao.getByName(DeveloperStatusType.UnderCertificationBanByOnc.toString());
+                    }
+                } else if (!Util.isUserRoleAdmin()) {
+                    LOGGER.error("User " + Util.getUsername()
+                    + " does not have ROLE_ADMIN and cannot change the status of developer for certified product with id "
+                    + listingId);
+                    throw new AccessDeniedException(
+                            "User does not have admin permission to change " + cpDeveloper.getName() + " status.");
                 }
-            } else if (!Util.isUserRoleAdmin()) {
-                LOGGER.error("User " + Util.getUsername()
-                + " does not have ROLE_ADMIN and cannot change the status of developer for certified product with id "
-                + listingId);
-                throw new AccessDeniedException(
-                        "User does not have admin permission to change " + cpDeveloper.getName() + " status.");
+                break;
+            case WithdrawnByAcb:
+            case WithdrawnByDeveloperUnderReview:
+                // initiate TriggerDeveloperBan job, telling ONC that they might need to ban a Developer
+                if ((Util.isUserRoleAdmin() || Util.isUserRoleAcbAdmin())) {
+                    triggerDeveloperBan(updatedListing);
+                } else if (!Util.isUserRoleAdmin() && !Util.isUserRoleAcbAdmin()) {
+                    LOGGER.error("User " + Util.getUsername()
+                    + " does not have ROLE_ADMIN or ROLE_ACB and cannot change the status of "
+                    + "developer for certified product with id " + listingId);
+                    throw new AccessDeniedException(
+                            "User does not have admin permission to change " + cpDeveloper.getName() + " status.");
+                }
+                break;
+            default:
+                LOGGER.info("New listing status is " + updatedStatusDto.getStatus()
+                + " which does not trigger a developer ban.");
+                break;
             }
-            break;
-        case WithdrawnByAcb:
-        case WithdrawnByDeveloperUnderReview:
-            // initiate TriggerDeveloperBan job, telling ONC that they might need to ban a Developer
-            if ((Util.isUserRoleAdmin() || Util.isUserRoleAcbAdmin())) {
-                triggerDeveloperBan(updatedListing);
-            } else if (!Util.isUserRoleAdmin() && !Util.isUserRoleAcbAdmin()) {
-                LOGGER.error("User " + Util.getUsername()
-                + " does not have ROLE_ADMIN or ROLE_ACB and cannot change the status of "
-                + "developer for certified product with id " + listingId);
-                throw new AccessDeniedException(
-                        "User does not have admin permission to change " + cpDeveloper.getName() + " status.");
-            }
-            break;
-        default:
-            LOGGER.info("New listing status is " + updatedStatusDto.getStatus()
-            + " which does not trigger a developer ban.");
-            break;
-        }
-        if (newDevStatusDto != null) {
-            DeveloperStatusEventDTO statusHistoryToAdd = new DeveloperStatusEventDTO();
-            statusHistoryToAdd.setDeveloperId(cpDeveloper.getId());
-            statusHistoryToAdd.setStatus(newDevStatusDto);
-            statusHistoryToAdd.setStatusDate(new Date());
-            statusHistoryToAdd.setReason(msgUtil.getMessage("developer.statusAutomaticallyChanged"));
-            cpDeveloper.getStatusEvents().add(statusHistoryToAdd);
-            try {
-                developerManager.update(cpDeveloper);
-            } catch(MissingReasonException ignore) {
-                //reason will never be missing since we set it above
+            if (newDevStatusDto != null) {
+                DeveloperStatusEventDTO statusHistoryToAdd = new DeveloperStatusEventDTO();
+                statusHistoryToAdd.setDeveloperId(cpDeveloper.getId());
+                statusHistoryToAdd.setStatus(newDevStatusDto);
+                statusHistoryToAdd.setStatusDate(new Date());
+                statusHistoryToAdd.setReason(msgUtil.getMessage("developer.statusAutomaticallyChanged"));
+                cpDeveloper.getStatusEvents().add(statusHistoryToAdd);
+                try {
+                    developerManager.update(cpDeveloper);
+                } catch (MissingReasonException ignore) {
+                    //reason will never be missing since we set it above
+                }
             }
         }
 

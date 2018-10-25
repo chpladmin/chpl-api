@@ -9,6 +9,7 @@ _Date TBD_
 * Properly handle invalid test tools entered into upload files by removing them and informing the user.
 * Make sure test tools are optional for 2014 ambulatory listings on g1, g2, and f3.
 * Write out activity and questionable activity for all developer status changes.
+* Insert listing update activity during meaningful use user uploads.
 
 ---
 
