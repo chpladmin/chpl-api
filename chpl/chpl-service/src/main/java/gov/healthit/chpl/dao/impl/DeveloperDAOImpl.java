@@ -39,7 +39,6 @@ import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.util.ValidationUtils;
 
 @Repository("developerDAO")
 public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
@@ -318,6 +317,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
             statusEventEntity.setDeleted(Boolean.TRUE);
             entityManager.merge(statusEventEntity);
             entityManager.flush();
+            entityManager.clear();
         }
     }
 
@@ -588,7 +588,6 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
     private DeveloperEntity getEntityById(Long id) throws EntityRetrievalException {
 
         DeveloperEntity entity = null;
-
         Query query = entityManager
                 .createQuery("SELECT DISTINCT v from " + "DeveloperEntity v " + "LEFT OUTER JOIN FETCH v.address "
                         + "LEFT OUTER JOIN FETCH v.contact " + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
