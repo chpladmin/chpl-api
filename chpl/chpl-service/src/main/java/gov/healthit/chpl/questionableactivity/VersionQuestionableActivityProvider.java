@@ -1,4 +1,4 @@
-package gov.healthit.chpl.questionableActivity;
+package gov.healthit.chpl.questionableactivity;
 
 import org.springframework.stereotype.Component;
 
