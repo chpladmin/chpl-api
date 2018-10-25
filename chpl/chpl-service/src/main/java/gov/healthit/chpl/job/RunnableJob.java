@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.auth.EmailBuilder;
@@ -26,7 +27,7 @@ public class RunnableJob implements Runnable {
 
     @Autowired
     protected Environment env;
-    
+
     @Autowired
     protected JobDAO jobDao;
     protected JobDTO job;
@@ -56,6 +57,7 @@ public class RunnableJob implements Runnable {
         this.jobDao = jobDao;
     }
 
+    @Transactional
     protected void start() {
         SecurityContextHolder.getContext().setAuthentication(this.user);
         LOGGER.info("Starting " + job.getJobType().getName() + " job for " + job.getUser().getSubjectName());
@@ -66,6 +68,7 @@ public class RunnableJob implements Runnable {
         }
     }
 
+    @Transactional
     protected void updateStatus(double percentComplete, JobStatusType statusType) {
         try {
             jobDao.updateStatus(this.job, (int) percentComplete, statusType);
@@ -74,6 +77,7 @@ public class RunnableJob implements Runnable {
         }
     }
 
+    @Transactional
     protected void addJobMessage(String message) {
         try {
             jobDao.addJobMessage(this.job, message);
@@ -88,6 +92,7 @@ public class RunnableJob implements Runnable {
      * should say the job is done and include any status or messages from the
      * job execution.
      */
+    @Transactional
     public void complete() {
         updateStatus(100, JobStatusType.Complete);
 
