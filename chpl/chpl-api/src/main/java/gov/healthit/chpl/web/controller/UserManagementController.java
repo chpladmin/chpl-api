@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.auth.EmailBuilder;
 import gov.healthit.chpl.auth.Util;
@@ -55,6 +56,7 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.InvitationManager;
 import gov.healthit.chpl.manager.TestingLabManager;
+import gov.healthit.chpl.web.controller.results.ValidationErrorResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -96,7 +98,7 @@ public class UserManagementController {
                     + "the following: 1) /invite 2) /create or /authorize 3) /confirm ")
     @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
-    public User createUserDeprecated(@RequestBody final CreateUserFromInvitationRequest userInfo)
+    public @ResponseBody User createUserDeprecated(@RequestBody final CreateUserFromInvitationRequest userInfo)
             throws InvalidArgumentsException, UserCreationException, UserRetrievalException, EntityRetrievalException,
             MessagingException, JsonProcessingException, EntityCreationException {
 
@@ -109,6 +111,18 @@ public class UserManagementController {
 
         if (userInfo.getUser() == null || userInfo.getUser().getSubjectName() == null) {
             throw new InvalidArgumentsException("Username ('subject name') is required.");
+        }
+
+        ValidationErrorResults errors = new ValidationErrorResults(validateCreateUserFromInvitationRequest(userInfo));
+        if (errors.getValidationErrors().size() > 0) {
+            //Turn validation errors into JSON
+            ObjectMapper objectMapper = new ObjectMapper();
+            throw new InvalidArgumentsException(objectMapper.writeValueAsString(errors));
+        }
+
+        List<String> validationErrors = validateCreateUserFromInvitationRequest(userInfo);
+        if (validationErrors.size() > 0) {
+            
         }
 
         InvitationDTO invitation = invitationManager.getByInvitationHash(userInfo.getHash());
@@ -148,6 +162,29 @@ public class UserManagementController {
         return result;
     }
 
+    private List<String> validateCreateUserFromInvitationRequest(CreateUserFromInvitationRequest request) {
+        List<String> validationErrors = new ArrayList<String>();
+        
+        if (request.getUser().getSubjectName().length() > 25) {
+            validationErrors.add("Username must be less than 25 characters.");
+        }
+        if (request.getUser().getFullName().length() > 500) {
+            validationErrors.add("Full Name must be less than 500 characters.");
+        }
+        if (request.getUser().getFriendlyName().length() > 250) {
+            validationErrors.add("Full Name must be less than 250 characters.");
+        }
+        if (request.getUser().getTitle().length() > 250) {
+            validationErrors.add("Title must be less than 250 characters.");
+        }
+        if (request.getUser().getEmail().length() > 250) {
+            validationErrors.add("Email must be less than 250 characters.");
+        }
+        if (request.getUser().getPhoneNumber().length() > 100) {
+            validationErrors.add("Phone must be less than 100 characters.");
+        }
+        return validationErrors;
+    }
     @ApiOperation(value = "Confirm that a user's email address is valid.",
             notes = "When a new user accepts their invitation to the CHPL they have to provide "
                     + "an email address. They then receive an email prompting them to confirm "

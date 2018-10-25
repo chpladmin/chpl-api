@@ -4,6 +4,7 @@ _Date TBD_
 
 ### New Features
 * Add developer and product contact information to 2014/2015 download file
+* Validate the user information when creating a new user
 
 ### Bugs Fixed
 * Properly handle invalid test tools entered into upload files by removing them and informing the user.
