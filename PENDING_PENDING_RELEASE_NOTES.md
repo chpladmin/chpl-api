@@ -4,6 +4,8 @@ _Date TBD_
 
 ### New Features
 * Add developer and product contact information to 2014/2015 download file
+* Add Quartz job to allow interruption of other jobs
+  * Enhanced "Certified Product Download File generation job" to be interruptable
 
 ### Bugs Fixed
 * Properly handle invalid test tools entered into upload files by removing them and informing the user.
@@ -12,4 +14,3 @@ _Date TBD_
 * Insert listing update activity during meaningful use user uploads.
 
 ---
-
