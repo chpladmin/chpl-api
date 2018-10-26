@@ -16,18 +16,18 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.MeaningfulUseUserDAO;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.MeaningfulUseUserRecord;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.MeaningfulUseUserDTO;
 import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.entity.job.JobStatusType;
-import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 
 /**
  * Upload a potentially large amount of MUU data in the background.
@@ -43,10 +43,10 @@ public class MeaningfulUseUploadJob extends RunnableJob {
     private static final Integer FILE_PARSED_PERCENT = 10;
 
     @Autowired
-    private CertifiedProductManager cpManager;
+    private CertifiedProductDetailsManager cpdManager;
 
     @Autowired
-    private CertifiedProductDAO cpDao;
+    private ActivityManager activityManager;
 
     @Autowired
     private MeaningfulUseUserDAO muuDao;
@@ -67,7 +67,11 @@ public class MeaningfulUseUploadJob extends RunnableJob {
         this.job = job;
     }
 
-    @Transactional
+    /**
+     * Parse the job data, in this case the contents of a csv file that was
+     * saved to the job object in the database.
+     * Get the details of each listing and add the MUU count provided.
+     */
     public void run() {
         super.run();
 
@@ -200,33 +204,35 @@ public class MeaningfulUseUploadJob extends RunnableJob {
                         addJobMessage("Line " + muu.getCsvLineNumber() +
                                 ": Field \"num_meaningful_users\" is missing.");
                     } else {
-                        MeaningfulUseUserDTO muuDto = new MeaningfulUseUserDTO();
-                        muuDto.setMuuDate(muuDate);
-                        muuDto.setMuuCount(muu.getNumberOfUsers());
-                        CertifiedProductDTO cpOldStyle = null;
+                        //make sure the listing is valid and get the details
+                        //object so that it can be updated
+                        CertifiedProductSearchDetails existingListing = null;
                         try {
-                            cpOldStyle = cpDao.getByChplNumber(muu.getProductNumber());
-                        } catch(Exception ex) {
-                            LOGGER.warn("Searching for CHPL ID " + muu.getProductNumber() + " as old style ID and got exception: " + ex.getMessage());
-                        }
-                        CertifiedProductDetailsDTO cpNewStyle = null;
-                        try {
-                            cpNewStyle = cpDao.getByChplUniqueId(muu.getProductNumber());
-                        } catch(Exception ex) {
-                            LOGGER.warn("Searching for CHPL ID " + muu.getProductNumber() + " as new style ID and got exception: " + ex.getMessage());
-                        }
-                        if (cpOldStyle != null) {
-                            muuDto.setCertifiedProductId(cpOldStyle.getId());
-                        } else if (cpNewStyle != null) {
-                            muuDto.setCertifiedProductId(cpNewStyle.getId());
-                        }
-
-                        if (muuDto.getCertifiedProductId() != null && muuDto.getCertifiedProductId() > 0) {
-                            muuDao.create(muuDto);
-                        } else {
+                            existingListing =
+                                    cpdManager.getCertifiedProductDetailsByChplProductNumber(muu.getProductNumber());
+                        } catch (EntityRetrievalException ex) {
+                            LOGGER.warn("Searching for CHPL ID " + muu.getProductNumber()
+                                + " encountered exception: " + ex.getMessage());
                             addJobMessage("Line " + muu.getCsvLineNumber()
                                 + ": Field \"chpl_product_number\" with value \"" + muu.getProductNumber()
                                 + "\" is invalid. " + "The provided \"chpl_product_number\" does not exist.");
+                        }
+
+                        if (existingListing != null) {
+                            //add a meaningful use entry
+                            MeaningfulUseUserDTO muuDto = new MeaningfulUseUserDTO();
+                            muuDto.setCertifiedProductId(existingListing.getId());
+                            muuDto.setMuuCount(muu.getNumberOfUsers());
+                            muuDto.setMuuDate(muuDate);
+                            muuDao.create(muuDto);
+
+                            //write activity for the listing update
+                            CertifiedProductSearchDetails updatedListing =
+                                    cpdManager.getCertifiedProductDetails(existingListing.getId());
+                            activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, existingListing.getId(),
+                                    "Updated certified product " + updatedListing.getChplProductNumber() + ".", existingListing,
+                                    updatedListing, 
+                                    "User " + getUser().getUsername() + " updated MUU count via upload file.");
                         }
                     }
                 } catch (Exception ex) {
@@ -246,21 +252,5 @@ public class MeaningfulUseUploadJob extends RunnableJob {
         }
 
         this.complete();
-    }
-
-    public CertifiedProductManager getCpManager() {
-        return cpManager;
-    }
-
-    public void setCpManager(final CertifiedProductManager cpManager) {
-        this.cpManager = cpManager;
-    }
-
-    public CertifiedProductDAO getCpDao() {
-        return cpDao;
-    }
-
-    public void setCpDao(final CertifiedProductDAO cpDao) {
-        this.cpDao = cpDao;
     }
 }

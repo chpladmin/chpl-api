@@ -12,6 +12,6 @@ _Date TBD_
 * Properly handle invalid test tools entered into upload files by removing them and informing the user
 * Make sure test tools are optional for 2014 ambulatory listings on g1, g2, and f3
 * Remove required productID in /products PUT call that isn't used by the back end
+* Insert listing update activity during meaningful use user uploads
 
 ---
-

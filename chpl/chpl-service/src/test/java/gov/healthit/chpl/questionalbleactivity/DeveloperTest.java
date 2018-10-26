@@ -1,4 +1,4 @@
-package gov.healthit.chpl.questionableActivity;
+package gov.healthit.chpl.questionalbleactivity;
 
 import java.util.Calendar;
 import java.util.Date;
