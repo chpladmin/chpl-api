@@ -24,8 +24,7 @@ public class ScheduledCacheRefreshTasks {
 
     @Autowired
     private Environment env;
-    @Autowired
-    private CacheUtil cacheUtil;
+
     @Autowired
     private PreFetchedCaches preFetchedCaches;
 
@@ -42,11 +41,15 @@ public class ScheduledCacheRefreshTasks {
         }
 
         if (loadCache) {
-            LOGGER.info("Refreshing listings cache.");
-            CacheManager manager = cacheUtil.getMyCacheManager();
+            LOGGER.info("Refreshing listings cache...");
+            LOGGER.info("Getting cache manager.");
+            CacheManager manager = CacheManager.getInstance();
+            LOGGER.info("Got cache manager: " + manager.getName());
             preFetchedCaches.loadPreFetchedBasicSearch();
+            LOGGER.info("Adding cache generation time to prefetched cache.");
             manager.getCache(CacheNames.COLLECTIONS_PREFETCHED_LISTINGS).putQuiet(
                     new Element("CACHE_GENERATION_TIME", (new Date().getTime())));
+            LOGGER.info("Replacing listings cache with prefetched cache.");
             CacheReplacer.replaceCache(manager.getCache(CacheNames.COLLECTIONS_LISTINGS),
                     manager.getCache(CacheNames.COLLECTIONS_PREFETCHED_LISTINGS));
         } else {
