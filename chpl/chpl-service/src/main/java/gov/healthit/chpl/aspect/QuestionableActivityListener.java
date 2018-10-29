@@ -21,6 +21,11 @@ import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.manager.QuestionableActivityManager;
 
+/**
+ * Checks for and adds Questionable Activity when appropriate.
+ * @author TYoung
+ *
+ */
 @Component
 @Aspect
 public class QuestionableActivityListener implements EnvironmentAware {
@@ -33,7 +38,8 @@ public class QuestionableActivityListener implements EnvironmentAware {
     private static final long MILLIS_PER_DAY = 24 * 60 * 60 * 1000;
     
     @Autowired
-    public QuestionableActivityListener(Environment env, final CertifiedProductDAO listingDao, final QuestionableActivityManager questionableActivityManager) {
+    public QuestionableActivityListener(final Environment env, final CertifiedProductDAO listingDao,
+            final QuestionableActivityManager questionableActivityManager) {
         this.env = env;
         this.listingDao = listingDao;
         this.questionableActivityManager = questionableActivityManager;
@@ -49,19 +55,18 @@ public class QuestionableActivityListener implements EnvironmentAware {
 
     /**
      * Any activity added with a reason would be handled here.
-     * @param concept
-     * @param objectId
-     * @param activityDescription
-     * @param originalData
-     * @param newData
-     * @param reason
+     * @param concept - Activity Concept
+     * @param objectId - Long
+     * @param activityDescription - String
+     * @param originalData - Object
+     * @param newData - Object
+     * @param reason - String
      */
     @After("execution(* gov.healthit.chpl.manager.impl.ActivityManagerImpl.addActivity(..)) && "
             + "args(concept,objectId,activityDescription,originalData,newData,reason,..)")
     public void checkQuestionableActivityWithReason(final ActivityConcept concept,
             final Long objectId, String activityDescription, final Object originalData,
             final Object newData, final String reason) {
-        LOGGER.info("Called QuestionableActivityAspect2.checkQuestionableActivityWithReason()");
         if (originalData == null || newData == null
                 || !originalData.getClass().equals(newData.getClass())
                 || Util.getCurrentUser() == null) {
@@ -109,11 +114,18 @@ public class QuestionableActivityListener implements EnvironmentAware {
         }
     }
 
+    /**
+     * Adds Questionable Activity for Developer, Product, or Version when appropriate
+     * @param concept - ActivityConcept
+     * @param objectId - Long
+     * @param activityDescription - String
+     * @param originalData - Object (DeveloperDTO, ProductDTO, or ProductVersionDTO)
+     * @param newData - Object (DeveloperDTO, ProductDTO, or ProductVersionDTO)
+     */
     @After("execution(* gov.healthit.chpl.manager.impl.ActivityManagerImpl.addActivity(..)) && "
             + "args(concept,objectId,activityDescription,originalData,newData,..)")
     public void checkQuestionableActivity(final ActivityConcept concept,
             final Long objectId, final String activityDescription, final Object originalData, final Object newData) {
-        LOGGER.info("Called QuestionableActivityAspect2.checkQuestionableActivity()");
         if (originalData == null || newData == null
                 || !originalData.getClass().equals(newData.getClass())
                 || Util.getCurrentUser() == null) {
