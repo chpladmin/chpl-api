@@ -4,7 +4,6 @@ import java.util.Date;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.CacheStatus;
-import gov.healthit.chpl.caching.CacheUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import net.sf.ehcache.Cache;
@@ -27,8 +25,6 @@ import net.sf.ehcache.CacheManager;
 @RestController
 public class StatusController {
     private static final Logger LOGGER = LogManager.getLogger(StatusController.class);
-    @Autowired
-    private CacheUtil cacheUtil;
 
     /**
      * Get the status, indicating if the server is running at all.
@@ -54,7 +50,7 @@ public class StatusController {
                     notes = "")
     @RequestMapping(value = "/cache_status", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody String getCacheStatus() {
-        CacheManager manager = cacheUtil.getMyCacheManager();
+        CacheManager manager = CacheManager.getInstance();
         Cache basicCache = manager.getCache(CacheNames.COLLECTIONS_LISTINGS);
         if (basicCache == null || basicCache.getKeysNoDuplicateCheck().size() == 0) {
             return "{\"status\": \"" + CacheStatus.INITIALIZING + "\"}";
