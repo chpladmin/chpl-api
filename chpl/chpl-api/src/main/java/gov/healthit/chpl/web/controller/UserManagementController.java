@@ -2,6 +2,7 @@ package gov.healthit.chpl.web.controller;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -25,7 +26,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.auth.EmailBuilder;
 import gov.healthit.chpl.auth.Util;
@@ -52,11 +52,11 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.InvitationManager;
 import gov.healthit.chpl.manager.TestingLabManager;
-import gov.healthit.chpl.web.controller.results.ValidationErrorResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -99,35 +99,28 @@ public class UserManagementController {
     @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public @ResponseBody User createUserDeprecated(@RequestBody final CreateUserFromInvitationRequest userInfo)
-            throws InvalidArgumentsException, UserCreationException, UserRetrievalException, EntityRetrievalException,
-            MessagingException, JsonProcessingException, EntityCreationException {
+            throws ValidationException, EntityRetrievalException, InvalidArgumentsException, UserRetrievalException,
+            UserCreationException, MessagingException, JsonProcessingException, EntityCreationException{
 
         return create(userInfo);
     }
 
     private User create(final CreateUserFromInvitationRequest userInfo)
-            throws InvalidArgumentsException, UserCreationException, UserRetrievalException, EntityRetrievalException,
-            MessagingException, JsonProcessingException, EntityCreationException {
+            throws ValidationException, EntityRetrievalException, InvalidArgumentsException, UserRetrievalException,
+            UserCreationException, MessagingException, JsonProcessingException, EntityCreationException {
 
         if (userInfo.getUser() == null || userInfo.getUser().getSubjectName() == null) {
-            throw new InvalidArgumentsException("Username ('subject name') is required.");
+            throw new ValidationException("Username ('subject name') is required.");
         }
 
-        ValidationErrorResults errors = new ValidationErrorResults(validateCreateUserFromInvitationRequest(userInfo));
-        if (errors.getValidationErrors().size() > 0) {
-            //Turn validation errors into JSON
-            ObjectMapper objectMapper = new ObjectMapper();
-            throw new InvalidArgumentsException(objectMapper.writeValueAsString(errors));
-        }
-
-        List<String> validationErrors = validateCreateUserFromInvitationRequest(userInfo);
-        if (validationErrors.size() > 0) {
-            
+        Set<String> errors = validateCreateUserFromInvitationRequest(userInfo);
+        if (errors.size() > 0) {
+            throw new ValidationException(errors, null);
         }
 
         InvitationDTO invitation = invitationManager.getByInvitationHash(userInfo.getHash());
         if (invitation == null || invitation.isOlderThan(VALID_INVITATION_LENGTH)) {
-            throw new InvalidArgumentsException(
+            throw new ValidationException(
                     "Provided user key is not valid in the database. The user key is valid for up to 3 days from "
                             + "when it is assigned.");
         }
@@ -162,8 +155,8 @@ public class UserManagementController {
         return result;
     }
 
-    private List<String> validateCreateUserFromInvitationRequest(CreateUserFromInvitationRequest request) {
-        List<String> validationErrors = new ArrayList<String>();
+    private Set<String> validateCreateUserFromInvitationRequest(CreateUserFromInvitationRequest request) {
+        Set<String> validationErrors = new HashSet<String>();
         
         if (request.getUser().getSubjectName().length() > 25) {
             validationErrors.add("Username must be less than 25 characters.");
@@ -185,6 +178,7 @@ public class UserManagementController {
         }
         return validationErrors;
     }
+    
     @ApiOperation(value = "Confirm that a user's email address is valid.",
             notes = "When a new user accepts their invitation to the CHPL they have to provide "
                     + "an email address. They then receive an email prompting them to confirm "
