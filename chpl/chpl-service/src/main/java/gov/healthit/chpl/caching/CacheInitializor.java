@@ -120,6 +120,7 @@ public class CacheInitializor {
 
     @Before("@annotation(ClearAllCaches)")
     public void beforeClearAllCachesMethod() {
+        LOGGER.info("Clearing all caches.");
         tClearAllStart = System.currentTimeMillis();
         if (tClearAllEnd != null) {
             tClearAllElapsedSecs = (tClearAllStart - tClearAllEnd) / 1000.0;

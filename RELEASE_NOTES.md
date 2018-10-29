@@ -23,8 +23,8 @@ _22 October 2018_
 ### Bugs Fixed
 * Fix creation of public announcement ignoring 'public' checkbox.
 * Fix incorrect error messages when editing SED = false for a criteria
----
 
+---
 
 ## Version 17.0.0
 _8 October 2018_
@@ -80,7 +80,7 @@ _10 September 2018_
 
 ### Bugs Fixed
 * Extra test data/test procedure/test functionality/etc. no longer appears after attesting to a criteria with previously entered phantom data.
-* Fixed the "basic" certified product service to return the correct additional software code in the CHPL Product Number	
+* Fixed the "basic" certified product service to return the correct additional software code in the CHPL Product Number
 * Fixed XML generation process to properly output `<tasks></tasks>` tag - was previously outputing as `<></>`.
 * Use "full name" and "friendly name" for users/contacts
 * Fix reason required error to show again for certain listing updates.
@@ -510,7 +510,7 @@ _10 October 2017_
   * Add `0 1 1 1,4,7,10 * cd /opt/chpl && ./generateListingResources.sh 2011`
   * Add `0 1 * * * cd /opt/chpl && ./generateListingResources.sh 2014`
   * Add `0 1 * * * cd /opt/chpl && ./generateListingResources.sh 2015`
-  * Add `0 1 * * * cd /opt/chpl && ./generateSurveillanceResources.sh` 
+  * Add `0 1 * * * cd /opt/chpl && ./generateSurveillanceResources.sh`
   * Add lines as well for the cleanup script (may have been done by andlar already)
 * Return HTTP 404 for /certified_products/{id}/details if listing has never existed or has been deleted.
 * Change any URL with an ID in the path to return 404 if that ID is not found.

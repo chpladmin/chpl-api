@@ -510,62 +510,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                             .add(msgUtil.getMessage("listing.criteria.missingTestTool", cert.getNumber()));
                 }
 
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED)
-                        && cert.getTestToolsUsed() != null && cert.getTestToolsUsed().size() > 0) {
-                    for (CertificationResultTestTool testTool : cert.getTestToolsUsed()) {
-                        TestToolDTO foundTestTool = null;
-                        // no new test tools are allowed to be added
-                        // so make sure a test tool by this name exists
-                        if (testTool.getTestToolId() == null) {
-                            foundTestTool = testToolDao.getByName(testTool.getTestToolName());
-                            if (foundTestTool == null || foundTestTool.getId() == null) {
-                                listing.getErrorMessages()
-                                        .add(msgUtil.getMessage("listing.criteria.invalidTestToolName",
-                                                cert.getNumber(), testTool.getTestToolName()));
-                            }
-                        } else {
-                            foundTestTool = testToolDao.getById(testTool.getTestToolId());
-                            if (foundTestTool == null || foundTestTool.getId() == null) {
-                                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.invalidTestToolId",
-                                        cert.getNumber(), testTool.getTestToolId()));
-                            }
-                        }
-
-                        if (foundTestTool != null) {
-                            // require test tool version
-                            if (StringUtils.isEmpty(testTool.getTestToolVersion())) {
-                                listing.getErrorMessages()
-                                        .add(msgUtil.getMessage("listing.criteria.missingTestToolVersion",
-                                                testTool.getTestToolName(), cert.getNumber()));
-                            }
-
-                            // Allow retired test tool only if listing ICS =
-                            // true
-                            Integer icsCodeInteger = productNumUtil.getIcsCode(listing.getChplProductNumber());
-                            if (foundTestTool.isRetired() && icsCodeInteger.intValue() == 0) {
-                                if (productNumUtil.hasIcsConflict(listing.getChplProductNumber(),
-                                        (listing.getIcs() == null ? Boolean.FALSE : listing.getIcs().getInherits()))) {
-                                    // the ics code is 0 but we can't be sure
-                                    // that's what the user meant
-                                    // because the ICS value of the listing is
-                                    // TRUE (hence the conflict),
-                                    // so issue a warning since the listing may
-                                    // or may not truly have ICS
-                                    listing.getWarningMessages()
-                                            .add(msgUtil.getMessage("listing.criteria.retiredTestToolNotAllowed",
-                                                    foundTestTool.getName(), cert.getNumber()));
-                                } else {
-                                    // the listing does not have ICS so retired
-                                    // tools are definitely not allowed - error
-                                    listing.getErrorMessages()
-                                            .add(msgUtil.getMessage("listing.criteria.retiredTestToolNotAllowed",
-                                                    foundTestTool.getName(), cert.getNumber()));
-                                }
-                            }
-                        }
-                    }
-                }
-
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)
                         && cert.getTestFunctionality() != null && cert.getTestFunctionality().size() > 0) {
                     for (CertificationResultTestFunctionality funcMap : cert.getTestFunctionality()) {

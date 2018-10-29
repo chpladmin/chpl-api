@@ -1,6 +1,6 @@
 package gov.healthit.chpl.manager.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -204,6 +204,7 @@ public class DeveloperStatusTest {
         event.setDeveloperId(developerId);
         event.setReason(reason);
         event.setStatusDate(statusDate);
+        event.setDeleted(false);
         DeveloperStatusDTO status = new DeveloperStatusDTO();
         status.setId(1L);
         status.setStatusName(type.toString());
