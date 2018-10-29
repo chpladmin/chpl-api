@@ -12,6 +12,9 @@ import javax.mail.internet.AddressException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
@@ -86,6 +89,8 @@ public class UserManagementController {
     @Autowired
     private Environment env;
 
+    @Autowired private MessageSource messageSource;
+
     private static final Logger LOGGER = LogManager.getLogger(UserManagementController.class);
     private static final long VALID_INVITATION_LENGTH = 3L * 24L * 60L * 60L * 1000L;
     private static final long VALID_CONFIRMATION_LENGTH = 30L * 24L * 60L * 60L * 1000L;
@@ -100,7 +105,7 @@ public class UserManagementController {
     produces = "application/json; charset=utf-8")
     public @ResponseBody User createUserDeprecated(@RequestBody final CreateUserFromInvitationRequest userInfo)
             throws ValidationException, EntityRetrievalException, InvalidArgumentsException, UserRetrievalException,
-            UserCreationException, MessagingException, JsonProcessingException, EntityCreationException{
+            UserCreationException, MessagingException, JsonProcessingException, EntityCreationException {
 
         return create(userInfo);
     }
@@ -155,30 +160,41 @@ public class UserManagementController {
         return result;
     }
 
-    private Set<String> validateCreateUserFromInvitationRequest(CreateUserFromInvitationRequest request) {
+    private Set<String> validateCreateUserFromInvitationRequest(final CreateUserFromInvitationRequest request) {
         Set<String> validationErrors = new HashSet<String>();
-        
-        if (request.getUser().getSubjectName().length() > 25) {
-            validationErrors.add("Username must be less than 25 characters.");
+
+        if (request.getUser().getSubjectName().length() > getMaxLength("subjectName")) {
+            validationErrors.add(getMaxLengthErrorMessage("user.subjectName.maxlength", "subjectName"));
         }
-        if (request.getUser().getFullName().length() > 500) {
-            validationErrors.add("Full Name must be less than 500 characters.");
+        if (request.getUser().getFullName().length() > getMaxLength("fullName")) {
+            validationErrors.add(getMaxLengthErrorMessage("user.fullName.maxlength", "fullName"));
         }
-        if (request.getUser().getFriendlyName().length() > 250) {
-            validationErrors.add("Full Name must be less than 250 characters.");
+        if (request.getUser().getFriendlyName().length() > getMaxLength("friendlyName")) {
+            validationErrors.add(getMaxLengthErrorMessage("user.friendlyName.maxlength", "friendlyName"));
         }
-        if (request.getUser().getTitle().length() > 250) {
-            validationErrors.add("Title must be less than 250 characters.");
+        if (request.getUser().getTitle().length() > getMaxLength("title")) {
+            validationErrors.add(getMaxLengthErrorMessage("user.title.maxlength", "title"));
         }
-        if (request.getUser().getEmail().length() > 250) {
-            validationErrors.add("Email must be less than 250 characters.");
+        if (request.getUser().getEmail().length() > getMaxLength("email")) {
+            validationErrors.add(getMaxLengthErrorMessage("user.email.maxlength", "email"));
         }
-        if (request.getUser().getPhoneNumber().length() > 100) {
-            validationErrors.add("Phone must be less than 100 characters.");
+        if (request.getUser().getPhoneNumber().length() > getMaxLength("phoneNumber")) {
+            validationErrors.add(getMaxLengthErrorMessage("user.phoneNumber.maxlength", "phoneNumber"));
         }
         return validationErrors;
     }
-    
+
+    private Integer getMaxLength(final String field) {
+        return Integer.parseInt(String.format(
+                messageSource.getMessage(new DefaultMessageSourceResolvable("maxLength." + field),
+                        LocaleContextHolder.getLocale())));
+    }
+
+    private String getMaxLengthErrorMessage(final String errorKey, final String field) {
+        return String.format(messageSource.getMessage(new DefaultMessageSourceResolvable(errorKey),
+                        LocaleContextHolder.getLocale()), getMaxLength(field));
+    }
+
     @ApiOperation(value = "Confirm that a user's email address is valid.",
             notes = "When a new user accepts their invitation to the CHPL they have to provide "
                     + "an email address. They then receive an email prompting them to confirm "
