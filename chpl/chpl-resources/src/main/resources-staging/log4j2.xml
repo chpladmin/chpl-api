@@ -151,6 +151,15 @@
                 <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
             </Policies>
         </RollingFile>
+        <RollingFile name="interruptJob" fileName="${logDir}/scheduler/interruptJob.log"
+                     filePattern="${logDir}/scheduler/history/interruptJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile>
     </Appenders>
 
     <Loggers>
@@ -211,6 +220,9 @@
         </Logger>
         <Logger name="questionableActivityEmailJobLogger" level="INFO" additivity="false">
             <AppenderRef ref="questionableActivityEmailJob" />
+        </Logger>
+        <Logger name="interruptJobLogger" level="INFO" additivity="false">
+            <AppenderRef ref="interruptJob" />
         </Logger>
     </Loggers>
 </Configuration>

@@ -3,7 +3,6 @@ package gov.healthit.chpl.manager.impl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -140,14 +139,6 @@ public class DeveloperManagerImpl implements DeveloperManager {
             } else {
                 map.setAcbName(acb.getName());
                 developer.getTransparencyAttestationMappings().add(map);
-            }
-        }
-
-        //Remove any deleted status events
-        Iterator<DeveloperStatusEventDTO> iterator = developer.getStatusEvents().iterator();
-        while (iterator.hasNext()) {
-            if (iterator.next().getDeleted()) {
-                iterator.remove();
             }
         }
         return developer;
