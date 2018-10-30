@@ -9,8 +9,10 @@ import java.util.concurrent.Future;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
+import org.quartz.InterruptableJob;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.quartz.UnableToInterruptJobException;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -27,12 +29,13 @@ import gov.healthit.chpl.scheduler.presenter.CertifiedProductXmlPresenter;
  *
  */
 @DisallowConcurrentExecution
-public class CertifiedProductDownloadableResourceCreatorJob extends DownloadableResourceCreatorJob {
+public class CertifiedProductDownloadableResourceCreatorJob
+extends DownloadableResourceCreatorJob implements InterruptableJob {
     private static final Logger LOGGER = LogManager.getLogger("certifiedProductDownloadableResourceCreatorJobLogger");
     private static final int MILLIS_PER_SECOND = 1000;
-    
     private static final int SECONDS_PER_MINUTE = 60;
     private String edition;
+    private boolean interrupted;
 
     /**
      * Default constructor.
@@ -49,6 +52,7 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
 
         Date start = new Date();
         edition = jobContext.getMergedJobDataMap().getString("edition");
+        interrupted = false;
         LOGGER.info("********* Starting the Certified Product Downloadable Resource Creator job for {}. *********",
                 edition);
 
@@ -61,6 +65,9 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
 
             initializeWritingToFiles(xmlPresenter, csvPresenter);
             for (Future<CertifiedProductSearchDetails> future : futures) {
+                if (interrupted) {
+                    break;
+                }
                 CertifiedProductSearchDetails details = future.get();
                 LOGGER.info("Complete retrieving details for id: " + details.getId());
                 xmlPresenter.add(details);
@@ -73,15 +80,22 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
             LOGGER.error(e.getMessage(), e);
         }
         Date end = new Date();
-        LOGGER.info("Time to create file(s) for {} edition: {} seconds, or {} minutes",
-                edition,
-                (end.getTime() - start.getTime()) / MILLIS_PER_SECOND,
-                (end.getTime() - start.getTime()) / MILLIS_PER_SECOND / SECONDS_PER_MINUTE);
-        LOGGER.info("********* Completed the Certified Product Downloadable Resource Creator job for {}. *********",
-                edition);
+        if (interrupted) {
+            LOGGER.info("Interrupted before files for {} edition after {} seconds, or {} minutes",
+                    edition,
+                    (end.getTime() - start.getTime()) / MILLIS_PER_SECOND,
+                    (end.getTime() - start.getTime()) / MILLIS_PER_SECOND / SECONDS_PER_MINUTE);
+        } else {
+            LOGGER.info("Time to create file(s) for {} edition: {} seconds, or {} minutes",
+                    edition,
+                    (end.getTime() - start.getTime()) / MILLIS_PER_SECOND,
+                    (end.getTime() - start.getTime()) / MILLIS_PER_SECOND / SECONDS_PER_MINUTE);
+            LOGGER.info("********* Completed the Certified Product Downloadable Resource Creator job for {}. *********",
+                    edition);
+        }
     }
 
-    private void initializeWritingToFiles(final CertifiedProductXmlPresenter xmlPresenter, 
+    private void initializeWritingToFiles(final CertifiedProductXmlPresenter xmlPresenter,
             final CertifiedProductCsvPresenter csvPresenter) throws IOException {
         xmlPresenter.setLogger(LOGGER);
         xmlPresenter.open(getXmlFile());
@@ -141,5 +155,11 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
             throw new IOException("File can not be created");
         }
         return file;
+    }
+
+    @Override
+    public void interrupt() throws UnableToInterruptJobException {
+        LOGGER.info("Certified Product download job for edition {} interrupted", edition);
+        interrupted = true;
     }
 }
