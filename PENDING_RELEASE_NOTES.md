@@ -9,6 +9,7 @@ _Date TBD_
 * Add developer and product contact information to 2014/2015 download file
 * Add Quartz job to allow interruption of other jobs
   * Enhanced "Certified Product Download File generation job" to be interruptable
+* Add validation for submitted user information when creating a new user
 
 ### Bugs Fixed
 * Properly handle invalid test tools entered into upload files by removing them and informing the user
