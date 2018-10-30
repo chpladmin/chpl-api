@@ -13,6 +13,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
@@ -164,28 +166,36 @@ public class UserManagementController {
         Set<String> validationErrors = new HashSet<String>();
 
         if (request.getUser().getSubjectName().length() > getMaxLength("subjectName")) {
-            validationErrors.add(errorMessageUtil.getMessage("user.subjectName.maxlength", "subjectName"));
+            validationErrors.add(errorMessageUtil.getMessage("user.subjectName.maxlength",
+                    getMaxLength("subjectName")));
         }
         if (request.getUser().getFullName().length() > getMaxLength("fullName")) {
-            validationErrors.add(errorMessageUtil.getMessage("user.fullName.maxlength", "fullName"));
+            validationErrors.add(errorMessageUtil.getMessage("user.fullName.maxlength",
+                    getMaxLength("fullName")));
         }
         if (request.getUser().getFriendlyName().length() > getMaxLength("friendlyName")) {
-            validationErrors.add(errorMessageUtil.getMessage("user.friendlyName.maxlength", "friendlyName"));
+            validationErrors.add(errorMessageUtil.getMessage("user.friendlyName.maxlength",
+                    getMaxLength("friendlyName")));
         }
         if (request.getUser().getTitle().length() > getMaxLength("title")) {
-            validationErrors.add(errorMessageUtil.getMessage("user.title.maxlength", "title"));
+            validationErrors.add(errorMessageUtil.getMessage("user.title.maxlength",
+                    getMaxLength("title")));
         }
         if (request.getUser().getEmail().length() > getMaxLength("email")) {
-            validationErrors.add(errorMessageUtil.getMessage("user.email.maxlength", "email"));
+            validationErrors.add(errorMessageUtil.getMessage("user.email.maxlength",
+                    getMaxLength("email")));
         }
         if (request.getUser().getPhoneNumber().length() > getMaxLength("phoneNumber")) {
-            validationErrors.add(errorMessageUtil.getMessage("user.phoneNumber.maxlength", "phoneNumber"));
+            validationErrors.add(errorMessageUtil.getMessage("user.phoneNumber.maxlength",
+                    getMaxLength("phoneNumber")));
         }
         return validationErrors;
     }
 
     private Integer getMaxLength(final String field) {
-        return Integer.parseInt(errorMessageUtil.getMessage("maxLength." + field));
+        return Integer.parseInt(String.format(
+                messageSource.getMessage(new DefaultMessageSourceResolvable("maxLength." + field),
+                        LocaleContextHolder.getLocale())));
     }
 
     @ApiOperation(value = "Confirm that a user's email address is valid.",
