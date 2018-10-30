@@ -143,8 +143,7 @@ public class AuthenticationController{
 	    UserResetTokenDTO userResetTokenDTO = userManager.createResetUserPasswordToken(userInfo.getUserName(), userInfo.getEmail());
 	    String htmlMessage = "<p>Hi, <br/>"
                 + "Please follow this link to reset your password </p>"
-                + "<pre>" +  env.getProperty("chplUrlBegin") + "/authorize_password_reset?token=" + userResetTokenDTO.getUserResetToken() + "</pre>"
-                + "<p>Click the link below to login to your account."
+                + "<pre>" +  env.getProperty("chplUrlBegin") + "/auth/authorize_password_reset/" + userResetTokenDTO.getUserResetToken() + "</pre>"
                 + "<br/>" +
                 "</p>"
                 + "<p>Take care,<br/> " +
@@ -160,13 +159,9 @@ public class AuthenticationController{
 		return "{\"passwordResetEmailSent\" : true }";
 	}
 	
-	@ApiOperation(value="Reset a user's password.", 
-            notes="")
-    @RequestMapping(value="/authorize_password_reset", method= RequestMethod.POST, 
-            consumes= MediaType.APPLICATION_JSON_VALUE,
-            produces="application/json; charset=utf-8")
-    public String authorizePasswordReset(@PathVariable String token) {     
-	    boolean userResetTokenDTO = userManager.authorizePasswordReset(token);
-        
+	@ApiOperation(value="Reset a user's password.", notes="")
+    @RequestMapping(value="/authorize_password_reset/{token}", method= RequestMethod.POST)
+    public boolean authorizePasswordReset(@PathVariable("token") final String token) {     
+	    return userManager.authorizePasswordReset(token);
     }
 }

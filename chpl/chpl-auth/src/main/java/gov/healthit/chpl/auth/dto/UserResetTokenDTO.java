@@ -2,8 +2,8 @@ package gov.healthit.chpl.auth.dto;
 
 import java.util.Date;
 
+import gov.healthit.chpl.auth.entity.UserEntity;
 import gov.healthit.chpl.auth.entity.UserResetTokenEntity;
-import gov.healthit.chpl.auth.user.User;
 
 public class UserResetTokenDTO {
 
@@ -11,7 +11,7 @@ public class UserResetTokenDTO {
     private Long id;
     private String userResetToken;
     private Long userId;
-    private User user;
+    private UserEntity user;
     private Date creationDate;
     private boolean deleted;
 
@@ -47,15 +47,15 @@ public class UserResetTokenDTO {
         this.userResetToken = userResetToken;
     }
 
-
-    public User getUser() {
+    public UserEntity getUser() {
         return user;
     }
 
 
-    public void setUser(User user) {
+    public void setUser(UserEntity user) {
         this.user = user;
     }
+
 
     public Date getCreationDate() {
         return creationDate;

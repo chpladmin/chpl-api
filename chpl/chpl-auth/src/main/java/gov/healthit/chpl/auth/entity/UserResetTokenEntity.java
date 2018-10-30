@@ -1,9 +1,6 @@
 package gov.healthit.chpl.auth.entity;
 
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,12 +9,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.user.User;
 
 
@@ -40,8 +34,8 @@ public class UserResetTokenEntity {
     private Long userId;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", unique = true, nullable = false, insertable = false, updatable = false)
-    private User user;
+    @JoinColumn(name = "user_id", unique = true, insertable = false, updatable = false)
+    private UserEntity user;
 
     @Column(name="creation_date")
     private Date creationDate;
@@ -71,11 +65,11 @@ public class UserResetTokenEntity {
         this.userResetToken = userResetToken;
     }
 
-    public User getUser() {
+    public UserEntity getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(UserEntity user) {
         this.user = user;
     }
 

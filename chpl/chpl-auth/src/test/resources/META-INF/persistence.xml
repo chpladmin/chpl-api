@@ -11,11 +11,12 @@
 		<class>gov.healthit.chpl.auth.entity.UserContactEntity</class>
 		<class>gov.healthit.chpl.auth.entity.UserPermissionEntity</class>
 		<class>gov.healthit.chpl.auth.entity.UserPermissionUserMappingEntity</class>
+		<class>gov.healthit.chpl.auth.entity.UserResetTokenEntity</class>
 		<class>gov.healthit.chpl.auth.entity.InvitationEntity</class>
 		<class>gov.healthit.chpl.auth.entity.InvitationPermissionEntity</class>
 		<properties>
-			<property name="hibernate.show_sql" value="false" />
-			<property name="hibernate.format_sql" value="false" />
+			<property name="hibernate.show_sql" value="true" />
+			<property name="hibernate.format_sql" value="true" />
 			<property name="hibernate.driver_class" value="org.postgresql.Driver" />
 			<property name="hibernate.connection.datasource" value="java:/comp/env/jdbc/openchpl_test" />
 			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect" />

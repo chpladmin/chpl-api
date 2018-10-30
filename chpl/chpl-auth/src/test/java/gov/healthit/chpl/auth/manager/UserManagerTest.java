@@ -1,10 +1,14 @@
 package gov.healthit.chpl.auth.manager;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -27,8 +31,10 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.authentication.Authenticator;
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
+import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
+import gov.healthit.chpl.auth.dto.UserResetTokenDTO;
 import gov.healthit.chpl.auth.json.UserCreationJSONObject;
 import gov.healthit.chpl.auth.json.UserInfoJSONObject;
 import gov.healthit.chpl.auth.jwt.JWTCreationException;
@@ -60,6 +66,8 @@ public class UserManagerTest {
     private JWTUserConverter jwtUserConverter;
 
     private static JWTAuthenticatedUser adminUser;
+    
+    private static final String RESET_PASSWORD_TOKEN = "zlhf8n4bfh87kfq";
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -432,4 +440,21 @@ public class UserManagerTest {
 
         return permissions;
     }
+    
+    @Test
+    public void testPasswordResetValid() throws UserRetrievalException {
+        UserResetTokenDTO tokenDTO = userManager.createResetUserPasswordToken("admin", "info@ainq.com");
+        assertNotNull(tokenDTO);
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.HOUR_OF_DAY, -2);
+        Date oneDayAgo = calendar.getTime();
+        tokenDTO.setCreationDate(oneDayAgo);
+        assertTrue(userManager.authorizePasswordReset(tokenDTO.getUserResetToken()));
+    }
+    
+    @Test
+    public void testPasswordResetInvalid() throws UserRetrievalException {
+        assertFalse(userManager.authorizePasswordReset(RESET_PASSWORD_TOKEN));
+    }
+    
 }

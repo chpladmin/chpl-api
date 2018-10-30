@@ -11,20 +11,25 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.auth.BaseDAOImpl;
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.dao.UserResetTokenDAO;
 import gov.healthit.chpl.auth.dto.UserResetTokenDTO;
 import gov.healthit.chpl.auth.entity.UserResetTokenEntity;
 
 @Repository(value="userResetTokenDAO")
-public class UserResetTokenDAOImpl extends BaseDAOImpl {
+public class UserResetTokenDAOImpl extends BaseDAOImpl implements UserResetTokenDAO {
     private static final Logger logger = LogManager.getLogger(UserResetTokenDAOImpl.class);
 
-    
     public UserResetTokenDTO create(String resetToken, Long userId) {
         UserResetTokenEntity entity = new UserResetTokenEntity();
         entity.setUserResetToken(resetToken);
         entity.setUserId(userId);
+        entity.setCreationDate(new Date());
         entity.setLastModifiedDate(new Date());
-        entity.setLastModifiedUser(Util.getCurrentUser().getId());
+        if(Util.getCurrentUser() != null) {
+            entity.setLastModifiedUser(Util.getCurrentUser().getId());
+        } else {
+            entity.setLastModifiedUser(userId);
+        }
         entity.setDeleted(false);
         
         create(entity);
@@ -57,7 +62,7 @@ public class UserResetTokenDAOImpl extends BaseDAOImpl {
         return userResetToken;
     }
     
-    public List<UserResetTokenEntity> getAllEntitiesByUserId(Long id) {
+    private List<UserResetTokenEntity> getAllEntitiesByUserId(Long id) {
         String userQuery = "from UserResetTokenEntity urt"
                 + " where (NOT urt.deleted = true) "
                 + " AND (urt.userId = :userId) ";
@@ -74,10 +79,12 @@ public class UserResetTokenDAOImpl extends BaseDAOImpl {
     
     private void create(final UserResetTokenEntity userResetToken) {
         entityManager.persist(userResetToken);
+        entityManager.flush();
     }
 
     private void update(final UserResetTokenEntity userResetToken) {
         entityManager.merge(userResetToken);
+        entityManager.flush();
     }
 
 }
