@@ -13,8 +13,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
@@ -60,6 +58,7 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.InvitationManager;
 import gov.healthit.chpl.manager.TestingLabManager;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -88,6 +87,9 @@ public class UserManagementController {
 
     @Autowired
     private Environment env;
+    
+    @Autowired
+    private ErrorMessageUtil errorMessageUtil;
 
     @Autowired private MessageSource messageSource;
 
@@ -115,7 +117,7 @@ public class UserManagementController {
             UserCreationException, MessagingException, JsonProcessingException, EntityCreationException {
 
         if (userInfo.getUser() == null || userInfo.getUser().getSubjectName() == null) {
-            throw new ValidationException("Username ('subject name') is required.");
+            throw new ValidationException(errorMessageUtil.getMessage("user.subjectName.required"));
         }
 
         Set<String> errors = validateCreateUserFromInvitationRequest(userInfo);
@@ -125,9 +127,7 @@ public class UserManagementController {
 
         InvitationDTO invitation = invitationManager.getByInvitationHash(userInfo.getHash());
         if (invitation == null || invitation.isOlderThan(VALID_INVITATION_LENGTH)) {
-            throw new ValidationException(
-                    "Provided user key is not valid in the database. The user key is valid for up to 3 days from "
-                            + "when it is assigned.");
+            throw new ValidationException(errorMessageUtil.getMessage("user.providerKey.invalid"));
         }
 
         UserDTO createdUser = invitationManager.createUserFromInvitation(invitation, userInfo.getUser());
@@ -164,35 +164,28 @@ public class UserManagementController {
         Set<String> validationErrors = new HashSet<String>();
 
         if (request.getUser().getSubjectName().length() > getMaxLength("subjectName")) {
-            validationErrors.add(getMaxLengthErrorMessage("user.subjectName.maxlength", "subjectName"));
+            validationErrors.add(errorMessageUtil.getMessage("user.subjectName.maxlength", "subjectName"));
         }
         if (request.getUser().getFullName().length() > getMaxLength("fullName")) {
-            validationErrors.add(getMaxLengthErrorMessage("user.fullName.maxlength", "fullName"));
+            validationErrors.add(errorMessageUtil.getMessage("user.fullName.maxlength", "fullName"));
         }
         if (request.getUser().getFriendlyName().length() > getMaxLength("friendlyName")) {
-            validationErrors.add(getMaxLengthErrorMessage("user.friendlyName.maxlength", "friendlyName"));
+            validationErrors.add(errorMessageUtil.getMessage("user.friendlyName.maxlength", "friendlyName"));
         }
         if (request.getUser().getTitle().length() > getMaxLength("title")) {
-            validationErrors.add(getMaxLengthErrorMessage("user.title.maxlength", "title"));
+            validationErrors.add(errorMessageUtil.getMessage("user.title.maxlength", "title"));
         }
         if (request.getUser().getEmail().length() > getMaxLength("email")) {
-            validationErrors.add(getMaxLengthErrorMessage("user.email.maxlength", "email"));
+            validationErrors.add(errorMessageUtil.getMessage("user.email.maxlength", "email"));
         }
         if (request.getUser().getPhoneNumber().length() > getMaxLength("phoneNumber")) {
-            validationErrors.add(getMaxLengthErrorMessage("user.phoneNumber.maxlength", "phoneNumber"));
+            validationErrors.add(errorMessageUtil.getMessage("user.phoneNumber.maxlength", "phoneNumber"));
         }
         return validationErrors;
     }
 
     private Integer getMaxLength(final String field) {
-        return Integer.parseInt(String.format(
-                messageSource.getMessage(new DefaultMessageSourceResolvable("maxLength." + field),
-                        LocaleContextHolder.getLocale())));
-    }
-
-    private String getMaxLengthErrorMessage(final String errorKey, final String field) {
-        return String.format(messageSource.getMessage(new DefaultMessageSourceResolvable(errorKey),
-                        LocaleContextHolder.getLocale()), getMaxLength(field));
+        return Integer.parseInt(errorMessageUtil.getMessage("maxLength." + field));
     }
 
     @ApiOperation(value = "Confirm that a user's email address is valid.",
