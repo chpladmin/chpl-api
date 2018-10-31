@@ -11,9 +11,9 @@ while getopts 'a:j:g:h?' flag; do
         j) job="${OPTARG}" ;;
         g) group="${OPTARG}" ;;
         *) printf 'Usage: %s: [-a action] [-j jobName] [-g groupName ]
-   -a: action (one of "list" "start" "help"
+   -a: action (one of "list" "start" "help" "interrupt")
    -j: job name (required if -g flag is used)
-   -g: group name
+   -g: group name (optional)
    -h, -?: print this message\n' $0; exit 0 ;;
     esac
 done
