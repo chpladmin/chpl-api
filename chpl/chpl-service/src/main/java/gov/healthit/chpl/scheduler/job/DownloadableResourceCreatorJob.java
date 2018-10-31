@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +51,13 @@ public abstract class DownloadableResourceCreatorJob extends QuartzJob {
 
     private Logger logger;
 
-    public DownloadableResourceCreatorJob(Logger logger) {
+    /**
+     * Default constructor. Notifies CHPL-Service that Job was invoked, sets time stamp format, sets up Job logger
+     * @param logger the specific job's logger
+     */
+    public DownloadableResourceCreatorJob(final Logger logger) {
+        Logger rootLogger = LogManager.getLogger(DownloadableResourceCreatorJob.class);
+        rootLogger.info("Constructor for DownloadableResourceCreatorJob invoked");
         timestampFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
         setLogger(logger);
     }
@@ -60,7 +67,7 @@ public abstract class DownloadableResourceCreatorJob extends QuartzJob {
 
         List<Future<CertifiedProductSearchDetails>> futures = new ArrayList<Future<CertifiedProductSearchDetails>>();
         SchedulerCertifiedProductSearchDetailsAsync cpsdAsync = getCertifiedProductDetailsAsyncRetrievalHelper();
-        
+
         for (CertifiedProductDetailsDTO currListing : listings) {
             try {
                 futures.add(cpsdAsync.getCertifiedProductDetail(currListing.getId(), getCpdManager()));
@@ -76,7 +83,7 @@ public abstract class DownloadableResourceCreatorJob extends QuartzJob {
 
         List<Future<CertifiedProductSearchDetails>> futures = new ArrayList<Future<CertifiedProductSearchDetails>>();
         SchedulerCertifiedProductSearchDetailsAsync cpsdAsync = getCertifiedProductDetailsAsyncRetrievalHelper();
-        
+
         for (Long currListingId : listingIds) {
             try {
                 futures.add(cpsdAsync.getCertifiedProductDetail(currListingId, getCpdManager()));
@@ -101,7 +108,7 @@ public abstract class DownloadableResourceCreatorJob extends QuartzJob {
     }
 
     protected List<CertifiedProductSearchDetails> createOrderedListOfCertifiedProducts(
-            final Map<Long, CertifiedProductSearchDetails> certifiedProducts, 
+            final Map<Long, CertifiedProductSearchDetails> certifiedProducts,
             final List<CertifiedProductDetailsDTO> orderedListings) {
 
         List<CertifiedProductSearchDetails> ordered = new ArrayList<CertifiedProductSearchDetails>();
@@ -179,7 +186,7 @@ public abstract class DownloadableResourceCreatorJob extends QuartzJob {
         this.certificationResultDetailsDao = certificationResultDetailsDao;
     }
 
-    protected void setLogger(Logger logger) {
+    protected void setLogger(final Logger logger) {
         this.logger = logger;
     }
 
