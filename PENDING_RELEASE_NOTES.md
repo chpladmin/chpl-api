@@ -16,5 +16,6 @@ _Date TBD_
 * Make sure test tools are optional for 2014 ambulatory listings on g1, g2, and f3
 * Remove required productID in /products PUT call that isn't used by the back end
 * Insert listing update activity during meaningful use user uploads
+* Update the description of the /certified_products endpoint to indicate that 'versionId' is a required parameter
 
 ---
