@@ -173,13 +173,14 @@ public class UserManagementController {
             validationErrors.add(errorMessageUtil.getMessage("user.fullName.maxlength",
                     getMaxLength("fullName")));
         }
-        if (request.getUser().getFriendlyName().length() > getMaxLength("friendlyName")) {
+        if (!StringUtils.isEmpty(request.getUser().getFriendlyName())
+                && request.getUser().getFriendlyName().length() > getMaxLength("friendlyName")) {
             validationErrors.add(errorMessageUtil.getMessage("user.friendlyName.maxlength",
                     getMaxLength("friendlyName")));
         }
-        if (request.getUser().getTitle().length() > getMaxLength("title")) {
-            validationErrors.add(errorMessageUtil.getMessage("user.title.maxlength",
-                    getMaxLength("title")));
+        if (!StringUtils.isEmpty(request.getUser().getTitle())
+                && request.getUser().getTitle().length() > getMaxLength("title")) {
+            validationErrors.add(errorMessageUtil.getMessage("user.title.maxlength", getMaxLength("title")));
         }
         if (request.getUser().getEmail().length() > getMaxLength("email")) {
             validationErrors.add(errorMessageUtil.getMessage("user.email.maxlength",
