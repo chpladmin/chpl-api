@@ -31,10 +31,6 @@ fuzzyChoiceLimit=1
 enableCacheInitialization=true
 cacheClearTimeoutSecs=15
 cacheInitializeTimeoutSecs=300
-#how long to wait before first loading the prefetched listing cache
-listingCacheRefreshInitialDelayMillis=5000
-#how to long to wait after prefetched listing cache has loaded before starting to load it again
-listingCacheRefreshDelayMillis=60000
 
 #chpl/app/statistics/SummaryStatistics properties
 summaryEmailSubject=CHPL - Weekly Summary Statistics Report (Local)
@@ -116,12 +112,8 @@ smtpPassword=
 
 chplUrlBegin=http://localhost:8000/app
 
-#Asynchronous - should always be true
-asyncEnabled=true
-
-# Scheduler properties
-corePoolSize=10
-maxPoolSize=20
+#Asynchronous - leave false for now
+asyncEnabled=false
 
 ####### Email Builder Settings #######
 #Do we want to 'check' emails before sending them?
