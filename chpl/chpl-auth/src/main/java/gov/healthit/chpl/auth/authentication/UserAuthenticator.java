@@ -64,7 +64,7 @@ public class UserAuthenticator implements Authenticator {
 
             if (user.isCredentialsExpired()) {
                 throw new BadCredentialsException("Account for user " + user.getSubjectName()
-                + " has expired, and user must reset their password.");
+                + " has expired, and user must change their password.");
             }
 
             if (checkPassword(credentials.getPassword(), userManager.getEncodedPassword(user))) {
@@ -173,8 +173,6 @@ public class UserAuthenticator implements Authenticator {
 
         try {
             user = getUser(credentials);
-        } catch (BadCredentialsException e) {
-            throw new BadCredentialsException("Bad username and password combination.");
         } catch (AccountStatusException e1) {
             throw new JWTCreationException(e1.getMessage());
         } catch (UserRetrievalException e2) {

@@ -125,6 +125,12 @@ public class UserManagerImpl implements UserManager {
             userDTO.setAccountLocked(true);
         }
 
+        if (userInfo.getCredentialsExpired() != null) {
+            userDTO.setCredentialsExpired(userInfo.getCredentialsExpired());
+        } else {
+            userDTO.setCredentialsExpired(true);
+        }
+
         if (Boolean.TRUE.equals(userInfo.getComplianceTermsAccepted())) {
             if (userDTO.getComplianceSignatureDate() == null) {
                 userDTO.setComplianceSignatureDate(new Date());

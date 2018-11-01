@@ -54,6 +54,7 @@ public class UserDTO implements UserDetails {
             this.accountExpired = !entity.isAccountNonExpired();
             this.accountLocked = !entity.isAccountNonLocked();
             this.accountEnabled = entity.isEnabled();
+            this.credentialsExpired = entity.isCredentialsExpired();
         }
     }
 
@@ -207,5 +208,25 @@ public class UserDTO implements UserDetails {
 
     public boolean isCredentialsExpired() {
         return credentialsExpired;
+    }
+
+    @Override
+    public String toString() {
+        String ret = "[UserDTO: "
+                + "[id: " + this.id + "]"
+                + "[subjectName: " + this.subjectName + "]"
+                + "[fullName: " + this.fullName + "]"
+                + "[friendlyName: " + this.friendlyName + "]"
+                + "[email: " + this.email + "]"
+                + "[phoneNumber: " + this.phoneNumber + "]"
+                + "[title: " + this.title + "]"
+                + "[signatureDate: " + this.signatureDate + "]"
+                + "[complianceSignatureDate: " + this.complianceSignatureDate + "]"
+                + "[failedLoginCount: " + this.failedLoginCount + "]"
+                + "[accountExpired: " + this.accountExpired + "]"
+                + "[accountLocked: " + this.accountLocked + "]"
+                + "[credentialsExpired: " + this.credentialsExpired + "]"
+                + "[accountEnabled: " + this.accountEnabled + "]]";
+        return ret;
     }
 }
