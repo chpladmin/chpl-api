@@ -37,62 +37,77 @@ import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * CHPL Authentication controller.
- * @author alarned
- *
  */
 @Api(value = "auth")
 @RestController
 @RequestMapping("/auth")
-public class AuthenticationController{
+public class AuthenticationController {
     private static final Logger LOGGER = LogManager.getLogger(AuthenticationController.class);
 
-	@Autowired
-	private Authenticator authenticator;
-	
-	@Autowired
-	private BCryptPasswordEncoder bCryptPasswordEncoder;
-	
-	@Autowired
-	private UserManager userManager;
-	
-	@Autowired private Environment env;
-	
-	//TODO: Create emergency "BUMP TOKENS" method which invalidates all active tokens.
-	
-	@ApiOperation(value="Log in.", 
-			notes="Call this method to authenticate a user. The value returned is that user's "
-					+ "token which must be passed on all subsequent requests in the Authorization header. "
-					+ "Specifically, the Authorization header must have a value of 'Bearer token-that-gets-returned'.")
-	@RequestMapping(value="/authenticate", method= RequestMethod.POST, 
-			consumes= MediaType.APPLICATION_JSON_VALUE,
-			produces="application/json; charset=utf-8")
-	public String authenticateJSON(@RequestBody LoginCredentials credentials) throws JWTCreationException {
-		
-		String jwt = null;
-		jwt = authenticator.getJWT(credentials);
-		String jwtJSON = "{\"token\": \""+jwt+"\"}";
-		
-		return jwtJSON;
-	}
-	
-	@ApiIgnore
-	@RequestMapping(value="/keep_alive", method= RequestMethod.GET,
-			produces="application/json; charset=utf-8")
-	public String keepAlive() throws JWTCreationException {
-		
-		String jwt = authenticator.refreshJWT();
-		
-		String jwtJSON = "{\"token\": \""+jwt+"\"}";
-		
-		return jwtJSON;
-	}
-	
-	@ApiOperation(value="Change password.", 
-			notes="Change the logged in user's password as long as the old password "
-					+ "passed in matches what is stored in the database.")
-	@RequestMapping(value="/change_password", method= RequestMethod.POST,
-			produces="application/json; charset=utf-8")
-	public UpdatePasswordResponse changePassword(@RequestBody final UpdatePasswordRequest request)
+    @Autowired
+    private Authenticator authenticator;
+
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Autowired
+    private UserManager userManager;
+
+    @Autowired private Environment env;
+
+    //TODO: Create emergency "BUMP TOKENS" method which invalidates all active tokens.
+
+    /**
+     * Log in a user.
+     * @param credentials the user's credentials
+     * @return a JWT with an authentication token
+     * @throws JWTCreationException if unable to create the JWT
+     */
+    @ApiOperation(value = "Log in.",
+            notes = "Call this method to authenticate a user. The value returned is that user's "
+                    + "token which must be passed on all subsequent requests in the Authorization header. "
+                    + "Specifically, the Authorization header must have a value of 'Bearer token-that-gets-returned'.")
+    @RequestMapping(value = "/authenticate", method = RequestMethod.POST,
+    consumes = MediaType.APPLICATION_JSON_VALUE,
+    produces = "application/json; charset=utf-8")
+    public String authenticateJSON(@RequestBody final LoginCredentials credentials) throws JWTCreationException {
+
+        String jwt = null;
+        jwt = authenticator.getJWT(credentials);
+        String jwtJSON = "{\"token\": \"" + jwt + "\"}";
+
+        return jwtJSON;
+    }
+
+    /**
+     * Update the user's JWT to keep their session alive.
+     * @return a new JWT with an extended expiration date
+     * @throws JWTCreationException if unable to create the JWT
+     */
+    @ApiIgnore
+    @RequestMapping(value = "/keep_alive", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public String keepAlive() throws JWTCreationException {
+
+        String jwt = authenticator.refreshJWT();
+
+        String jwtJSON = "{\"token\": \"" + jwt + "\"}";
+
+        return jwtJSON;
+    }
+
+    /**
+     * Change a user's password.
+     * @param request the request containing old/new passwords
+     * @return a confirmation response, or an error iff the user's new password does not meet requirements
+     * @throws UserRetrievalException if unable to retrieve the user
+     */
+    @ApiOperation(value = "Change password.",
+            notes = "Change the logged in user's password as long as the old password "
+                    + "passed in matches what is stored in the database.")
+    @RequestMapping(value = "/change_password", method = RequestMethod.POST,
+    produces = "application/json; charset=utf-8")
+    public UpdatePasswordResponse changePassword(@RequestBody final UpdatePasswordRequest request)
             throws UserRetrievalException {
         UpdatePasswordResponse response = new UpdatePasswordResponse();
         if (Util.getCurrentUser() == null) {
@@ -131,37 +146,49 @@ public class AuthenticationController{
         return response;
     }
 
-	
-	@ApiOperation(value="Reset a user's password.", 
-			notes="")
-	@RequestMapping(value="/reset_password", method= RequestMethod.POST, 
-			consumes= MediaType.APPLICATION_JSON_VALUE,
-			produces="application/json; charset=utf-8")
-	public String resetPassword(@RequestBody UserResetPasswordJSONObject userInfo) 
-			throws UserRetrievalException, MessagingException {		
+    /**
+     * Allow a user to reset their password. Sends the user an email with a unique link to let them reset their password
+     * @param userInfo the affected user
+     * @return a JSON message indicating the email was sent
+     * @throws UserRetrievalException if unable to retrieve the user
+     * @throws MessagingException if unable to send the message
+     */
+    @ApiOperation(value = "Reset a user's password.", notes = "")
+    @RequestMapping(value = "/reset_password", method = RequestMethod.POST,
+    consumes = MediaType.APPLICATION_JSON_VALUE,
+    produces = "application/json; charset=utf-8")
+    public String resetPassword(@RequestBody final UserResetPasswordJSONObject userInfo)
+            throws UserRetrievalException, MessagingException {
 
-	    UserResetTokenDTO userResetTokenDTO = userManager.createResetUserPasswordToken(userInfo.getUserName(), userInfo.getEmail());
-	    String htmlMessage = "<p>Hi, <br/>"
+        UserResetTokenDTO userResetTokenDTO = userManager.createResetUserPasswordToken(
+                userInfo.getUserName(), userInfo.getEmail());
+        String htmlMessage = "<p>Hi, <br/>"
                 + "Please follow this link to reset your password </p>"
-                + "<pre>" +  env.getProperty("chplUrlBegin") + "/auth/authorize_password_reset/" + userResetTokenDTO.getUserResetToken() + "</pre>"
-                + "<br/>" +
-                "</p>"
-                + "<p>Take care,<br/> " +
-                 "The Open Data CHPL Team</p>";
-		String[] toEmails = {userInfo.getEmail()};
+                + "<pre>" +  env.getProperty("chplUrlBegin") + "/auth/authorize_password_reset/"
+                + userResetTokenDTO.getUserResetToken() + "</pre>"
+                + "<br/>"
+                + "</p>"
+                + "<p>Take care,<br/> "
+                + "The Open Data CHPL Team</p>";
+        String[] toEmails = {userInfo.getEmail()};
 
-		EmailBuilder emailBuilder = new EmailBuilder(env);
-		emailBuilder.recipients(new ArrayList<String>(Arrays.asList(toEmails)))
-		                .subject("Open Data CHPL Password Reset")
-		                .htmlMessage(htmlMessage)
-		                .sendEmail();
-		
-		return "{\"passwordResetEmailSent\" : true }";
-	}
-	
-	@ApiOperation(value="Reset a user's password.", notes="")
-    @RequestMapping(value="/authorize_password_reset/{token}", method= RequestMethod.POST)
-    public boolean authorizePasswordReset(@PathVariable("token") final String token) {     
-	    return userManager.authorizePasswordReset(token);
+        EmailBuilder emailBuilder = new EmailBuilder(env);
+        emailBuilder.recipients(new ArrayList<String>(Arrays.asList(toEmails)))
+        .subject("Open Data CHPL Password Reset")
+        .htmlMessage(htmlMessage)
+        .sendEmail();
+
+        return "{\"passwordResetEmailSent\" : true }";
+    }
+
+    /**
+     * Allow the user to reset their password given they have the correct token.
+     * @param token the token
+     * @return the results of their reset
+     */
+    @ApiOperation(value = "Reset a user's password.", notes = "")
+    @RequestMapping(value = "/authorize_password_reset/{token}", method = RequestMethod.POST)
+    public boolean authorizePasswordReset(@PathVariable("token") final String token) {
+        return userManager.authorizePasswordReset(token);
     }
 }

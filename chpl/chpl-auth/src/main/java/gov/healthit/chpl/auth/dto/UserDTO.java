@@ -8,6 +8,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import gov.healthit.chpl.auth.entity.UserEntity;
 
+/**
+ * User data transfer object.
+ */
 public class UserDTO implements UserDetails {
 
     private static final long serialVersionUID = 1L;
@@ -110,16 +113,15 @@ public class UserDTO implements UserDetails {
         this.title = title;
     }
 
+    /**
+     * We return null rather than returning authorities here because we
+     * don't actually want the DTO to have granted permissions (those
+     * come from the JWT token).
+     * @return a null collection
+     */
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // We return null rather than returning authorities here because we
-        // don't actually want the DTO to have granted permissions (those
-        // come from the JWT token.)
         return null;
     }
-
-//    public String getName() {
-//        return subjectName;
-//    }
 
     @Override
     public String getUsername() {
