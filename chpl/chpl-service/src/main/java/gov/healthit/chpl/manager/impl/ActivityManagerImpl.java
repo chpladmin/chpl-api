@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -258,7 +259,7 @@ public class ActivityManagerImpl implements ActivityManager {
 
     @Override
     @Transactional
-    // TODO: Fix the @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<ActivityEvent> getAllAcbActivity(boolean showDeleted, Date startDate,
             Date endDate) throws JsonParseException, IOException {
         List<ActivityDTO> acbActivity = activityDAO.findByConcept(
@@ -274,7 +275,7 @@ public class ActivityManagerImpl implements ActivityManager {
     
     @Override
     @Transactional
-    // TODO: Fix the @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     public List<ActivityEvent> getAcbActivity(List<CertificationBodyDTO> acbs, 
             Date startDate, Date endDate) throws JsonParseException, IOException {
 
