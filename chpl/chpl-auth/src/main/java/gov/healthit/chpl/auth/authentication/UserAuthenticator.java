@@ -62,6 +62,11 @@ public class UserAuthenticator implements Authenticator {
                 + " has not accepted the compliance terms and conditions.");
             }
 
+            if (user.isCredentialsExpired()) {
+                throw new BadCredentialsException("Account for user " + user.getSubjectName()
+                + " has expired, and user must reset their password.");
+            }
+
             if (checkPassword(credentials.getPassword(), userManager.getEncodedPassword(user))) {
 
                 try {
