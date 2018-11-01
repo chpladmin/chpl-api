@@ -1,26 +1,32 @@
 package gov.healthit.chpl.auth.user;
 
+/**
+ * Object containing fields required for changing a password.
+ * @author alarned
+ *
+ */
 public class UpdatePasswordRequest {
 
-	private String oldPassword;
-	private String newPassword;
-	
-	public UpdatePasswordRequest(){}
+    private String oldPassword;
+    private String newPassword;
 
-	public String getOldPassword() {
-		return oldPassword;
-	}
+    /** Default constructor. */
+    public UpdatePasswordRequest(){}
 
-	public void setOldPassword(String oldPassword) {
-		this.oldPassword = oldPassword;
-	}
+    public String getOldPassword() {
+        return oldPassword;
+    }
 
-	public String getNewPassword() {
-		return newPassword;
-	}
+    public void setOldPassword(final String oldPassword) {
+        this.oldPassword = oldPassword;
+    }
 
-	public void setNewPassword(String newPassword) {
-		this.newPassword = newPassword;
-	}
-	
+    public String getNewPassword() {
+        return newPassword;
+    }
+
+    public void setNewPassword(final String newPassword) {
+        this.newPassword = newPassword;
+    }
+
 }

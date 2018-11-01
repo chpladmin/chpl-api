@@ -11,8 +11,8 @@ public class PermittedUser implements Serializable {
     private List<String> roles;
     private List<String> permissions;
 
+    /** Default constructor. */
     public PermittedUser() {
-
     }
 
     public User getUser() {
@@ -38,5 +38,4 @@ public class PermittedUser implements Serializable {
     public void setPermissions(final List<String> permissions) {
         this.permissions = permissions;
     }
-
 }

@@ -28,6 +28,7 @@ import gov.healthit.chpl.auth.dto.UserResetTokenDTO;
 import gov.healthit.chpl.auth.json.UserResetPasswordJSONObject;
 import gov.healthit.chpl.auth.jwt.JWTCreationException;
 import gov.healthit.chpl.auth.manager.UserManager;
+import gov.healthit.chpl.auth.user.UpdateExpiredPasswordRequest;
 import gov.healthit.chpl.auth.user.UpdatePasswordRequest;
 import gov.healthit.chpl.auth.user.UpdatePasswordResponse;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
@@ -54,8 +55,6 @@ public class AuthenticationController {
     private UserManager userManager;
 
     @Autowired private Environment env;
-
-    //TODO: Create emergency "BUMP TOKENS" method which invalidates all active tokens.
 
     /**
      * Log in a user.
@@ -119,6 +118,52 @@ public class AuthenticationController {
         if (currUser == null) {
             throw new UserRetrievalException("The user with id " + Util.getCurrentUser().getId()
                     + " could not be found or the logged in user does not have permission to modify their data.");
+        }
+
+        // check the strength of the new password
+        Strength strength = userManager.getPasswordStrength(currUser, request.getNewPassword());
+        if (strength.getScore() < UserManager.MIN_PASSWORD_STRENGTH) {
+            LOGGER.info("Strength results: [warning: {}] [suggestions: {}] [score: {}] [worst case crack time: {}]",
+                    strength.getFeedback().getWarning(),
+                    strength.getFeedback().getSuggestions().toString(),
+                    strength.getScore(),
+                    strength.getCrackTimesDisplay().getOfflineFastHashing1e10PerSecond());
+            response.setStrength(strength);
+            response.setPasswordUpdated(false);
+            return response;
+        }
+
+        // encode the old password passed in to compare
+        String currEncodedPassword = userManager.getEncodedPassword(currUser);
+        boolean oldPasswordMatches = bCryptPasswordEncoder.matches(request.getOldPassword(), currEncodedPassword);
+        if (!oldPasswordMatches) {
+            throw new UserRetrievalException("The provided old password does not match the database.");
+        } else {
+            userManager.updateUserPassword(currUser.getSubjectName(), request.getNewPassword());
+        }
+        response.setPasswordUpdated(true);
+        return response;
+    }
+
+    /**
+     * Change a user's expired password.
+     * @param request the request containing old/new passwords
+     * @return a confirmation response, or an error iff the user's new password does not meet requirements
+     * @throws UserRetrievalException if unable to retrieve the user
+     */
+    @ApiOperation(value = "Change expired password.",
+            notes = "Change a user's expired password as long as the old password "
+                    + "passed in matches what is stored in the database.")
+    @RequestMapping(value = "/change_expired_password", method = RequestMethod.POST,
+    produces = "application/json; charset=utf-8")
+    public UpdatePasswordResponse changeExpiredPassword(@RequestBody final UpdateExpiredPasswordRequest request)
+            throws UserRetrievalException {
+        UpdatePasswordResponse response = new UpdatePasswordResponse();
+
+        // get the user trying to change their password
+        UserDTO currUser = authenticator.getUser(request.getLoginCredentials());
+        if (currUser == null) {
+            throw new UserRetrievalException("Cannot update password; bad username or password");
         }
 
         // check the strength of the new password

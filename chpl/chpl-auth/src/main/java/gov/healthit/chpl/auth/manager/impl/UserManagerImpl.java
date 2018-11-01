@@ -40,9 +40,6 @@ import gov.healthit.chpl.auth.user.UserRetrievalException;
 
 /**
  * Implementation of User Manager.
- * 
- * @author alarned
- *
  */
 @Service
 public class UserManagerImpl implements UserManager {
