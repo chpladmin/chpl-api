@@ -4,6 +4,7 @@ _Date TBD_
 
 ### Backwards compatibility breaking API changes
 * Changed PUT /products call to not accept a productID
+* Updated DELETE of api key to not use body
 
 ### New Features
 * Add developer and product contact information to 2014/2015 download file
@@ -16,5 +17,7 @@ _Date TBD_
 * Make sure test tools are optional for 2014 ambulatory listings on g1, g2, and f3
 * Remove required productID in /products PUT call that isn't used by the back end
 * Insert listing update activity during meaningful use user uploads
+* Update the description of the /certified_products endpoint to indicate that 'versionId' is a required parameter
+* Fixed issue where adding ROLE via POST required body, even though no data was needed
 
 ---
