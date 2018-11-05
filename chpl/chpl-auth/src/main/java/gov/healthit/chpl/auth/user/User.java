@@ -19,7 +19,8 @@ public interface User extends UserDetails , Authentication {
     String getFullName();
     void setFriendlyName(String friendlyName);
     String getFriendlyName();
-
+    boolean getPasswordResetRequired();
+    void setPasswordResetRequired(final boolean setPasswordResetRequired);
     Set<GrantedPermission> getPermissions();
     void addPermission(GrantedPermission permission);
     void removePermission(String permissionValue);

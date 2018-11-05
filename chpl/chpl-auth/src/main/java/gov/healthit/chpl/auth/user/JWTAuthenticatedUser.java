@@ -1,6 +1,5 @@
 package gov.healthit.chpl.auth.user;
 
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -9,9 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 
-
 public class JWTAuthenticatedUser implements User {
-
 
     private static final long serialVersionUID = 1L;
     private Long id;
@@ -23,9 +20,11 @@ public class JWTAuthenticatedUser implements User {
     private final boolean accountLocked = false;
     private final boolean credentialsExpired = false;
     private final boolean accountEnabled = true;
+    private boolean passwordResetRequired = false;
     private boolean authenticated = true;
 
-    public JWTAuthenticatedUser(){
+    /** Default constructor. */
+    public JWTAuthenticatedUser() {
         this.subjectName = null;
     }
 
@@ -37,7 +36,7 @@ public class JWTAuthenticatedUser implements User {
         return subjectName;
     }
 
-    public void setSubjectName(String subject) {
+    public void setSubjectName(final String subject) {
         this.subjectName = subject;
     }
 
@@ -45,7 +44,7 @@ public class JWTAuthenticatedUser implements User {
         return fullName;
     }
 
-    public void setFullName(String fullName) {
+    public void setFullName(final String fullName) {
         this.fullName = fullName;
     }
 
@@ -53,7 +52,7 @@ public class JWTAuthenticatedUser implements User {
         return friendlyName;
     }
 
-    public void setFriendlyName(String friendlyName) {
+    public void setFriendlyName(final String friendlyName) {
         this.friendlyName = friendlyName;
     }
 
@@ -71,7 +70,7 @@ public class JWTAuthenticatedUser implements User {
     }
 
     @Override
-    public void removePermission(String permissionValue){
+    public void removePermission(final String permissionValue){
         this.permissions.remove(new GrantedPermission(permissionValue));
     }
 
@@ -101,7 +100,7 @@ public class JWTAuthenticatedUser implements User {
     }
 
     @Override
-    public void setAuthenticated(boolean arg0) throws IllegalArgumentException {
+    public void setAuthenticated(final boolean arg0) throws IllegalArgumentException {
         this.authenticated = arg0;
     }
 
@@ -114,7 +113,6 @@ public class JWTAuthenticatedUser implements User {
     public String getPassword() {
         return null;
     }
-
 
     @Override
     public String getUsername() {
@@ -145,8 +143,17 @@ public class JWTAuthenticatedUser implements User {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
+    @Override
+    public boolean getPasswordResetRequired() {
+        return passwordResetRequired;
+    }
+
+    @Override
+    public void setPasswordResetRequired(final boolean passwordResetRequired) {
+        this.passwordResetRequired = passwordResetRequired;
+    }
 }
