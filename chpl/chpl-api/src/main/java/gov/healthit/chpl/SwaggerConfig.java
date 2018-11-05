@@ -53,7 +53,7 @@ public class SwaggerConfig implements EnvironmentAware {
                 + "select the \"Certified Health IT Products List (CHPL)\" category.",
                 "https://www.healthit.gov/form/healthit-feedback-form",
                 "");
-        return new ApiInfo("CHPL", "Certified Health IT Product Listing", "18.0.0", "http://terms/of/service.url",
+        return new ApiInfo("CHPL", "Certified Health IT Product Listing", "18.0.0", "",
                 contact, "License Text", "https://github.com/chpladmin/chpl-api/blob/staging/LICENSE");
     }
 
