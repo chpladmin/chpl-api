@@ -141,8 +141,8 @@ public class UserManagementController {
         String htmlMessage = "<p>Thank you for setting up your administrator account on ONC's CHPL. "
                 + "Please click the link below to activate your account: <br/>" + env.getProperty("chplUrlBegin")
                 + "/#/registration/confirm-user/" + invitation.getConfirmToken() + "</p>"
-                + "<p>If you have any questions, please contact the ONC CHPL Team using the "
-                + "<a href=\"https://www.healthit.gov/form/healthit-feedback-form\">Health IT Feedback Form</a>.</p>"
+                + "<p>If you have any issues completing the registration, "
+                + "please contact the ONC CHPL Team at onc_chpl@hhs.gov.</p>"
                 + "<p>The CHPL Team</p>";
 
         String[] toEmails = {
@@ -338,7 +338,9 @@ public class UserManagementController {
                 + "which will allow you to manage certified product listings on the CHPL. "
                 + "Please click the link below to create or update your account: <br/>"
                 + env.getProperty("chplUrlBegin") + "/#/registration/create-user/" + createdInvite.getInviteToken()
-                + "</p>" + "<p>If you have any questions, please contact the ONC CHPL Team at onc_chpl@hhs.gov.</p>"
+                + "</p>"
+                + "<p>If you have any issues completing the registration, "
+                + "please contact the ONC CHPL Team at onc_chpl@hhs.gov.</p>"
                 + "<p>Take care,<br/> " + "The CHPL Team</p>";
 
         String[] toEmails = {
