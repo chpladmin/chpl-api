@@ -142,7 +142,7 @@ public class UserManagementController {
                 + "Please click the link below to activate your account: <br/>" + env.getProperty("chplUrlBegin")
                 + "/#/registration/confirm-user/" + invitation.getConfirmToken() + "</p>"
                 + "<p>If you have any issues completing the registration, "
-                + "please contact the ONC CHPL Team at onc_chpl@hhs.gov.</p>"
+                + "please contact the ONC CHPL Team at <a href=\"mailto:onc_chpl@hhs.gov\">onc_chpl@hhs.gov</a>.</p>"
                 + "<p>The CHPL Team</p>";
 
         String[] toEmails = {
@@ -340,7 +340,7 @@ public class UserManagementController {
                 + env.getProperty("chplUrlBegin") + "/#/registration/create-user/" + createdInvite.getInviteToken()
                 + "</p>"
                 + "<p>If you have any issues completing the registration, "
-                + "please contact the ONC CHPL Team at onc_chpl@hhs.gov.</p>"
+                + "please contact the ONC CHPL Team at <a href=\"mailto:onc_chpl@hhs.gov\">onc_chpl@hhs.gov</a>.</p>"
                 + "<p>Take care,<br/> " + "The CHPL Team</p>";
 
         String[] toEmails = {
