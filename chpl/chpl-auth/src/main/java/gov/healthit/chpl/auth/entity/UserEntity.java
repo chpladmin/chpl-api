@@ -52,6 +52,9 @@ public class UserEntity {
     @Column(name = "compliance_signature")
     private Date complianceSignature;
 
+    @Column(name = "password_reset_required")
+    private boolean passwordResetRequired;
+
     @Column(name = "failed_login_count")
     private int failedLoginCount;
 
@@ -79,6 +82,7 @@ public class UserEntity {
         this.accountLocked = false;
         this.credentialsExpired = false;
         this.accountEnabled = true;
+        this.passwordResetRequired = false;
 
         this.contact = new UserContactEntity();
     }
@@ -94,6 +98,7 @@ public class UserEntity {
         this.accountLocked = false;
         this.credentialsExpired = false;
         this.accountEnabled = true;
+        this.passwordResetRequired = false;
 
         this.contact = new UserContactEntity();
     }
@@ -110,6 +115,7 @@ public class UserEntity {
         this.accountLocked = false;
         this.credentialsExpired = false;
         this.accountEnabled = true;
+        this.passwordResetRequired = false;
 
         this.contact = new UserContactEntity();
     }
@@ -284,5 +290,28 @@ public class UserEntity {
 
     public boolean isAccountEnabled() {
         return accountEnabled;
+    }
+
+    public Boolean getPasswordResetRequired() {
+        return passwordResetRequired;
+    }
+
+    public void setPasswordResetRequired(final Boolean passwordResetRequired) {
+        this.passwordResetRequired = passwordResetRequired;
+    }
+
+    @Override
+    public String toString() {
+        String ret = "[UserEntity: "
+                + "[id: " + this.id + "]"
+                + "[subjectName: " + this.subjectName + "]"
+                + "[contact: " + this.contact + "]"
+                + "[failedLoginCount: " + this.failedLoginCount + "]"
+                + "[accountExpired: " + this.accountExpired + "]"
+                + "[accountLocked: " + this.accountLocked + "]"
+                + "[credentialsExpired: " + this.credentialsExpired + "]"
+                + "[accountEnabled: " + this.accountEnabled + "]"
+                + "[passwordResetRequired: " + this.passwordResetRequired + "]]";
+        return ret;
     }
 }

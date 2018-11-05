@@ -29,6 +29,7 @@ public class UserDTO implements UserDetails {
     private boolean accountLocked;
     private boolean credentialsExpired;
     private boolean accountEnabled;
+    private boolean passwordResetRequired;
 
     /**
      * Default constructor.
@@ -55,6 +56,7 @@ public class UserDTO implements UserDetails {
             this.accountLocked = !entity.isAccountNonLocked();
             this.accountEnabled = entity.isEnabled();
             this.credentialsExpired = entity.isCredentialsExpired();
+            this.passwordResetRequired = entity.getPasswordResetRequired();
         }
     }
 
@@ -210,6 +212,14 @@ public class UserDTO implements UserDetails {
         return credentialsExpired;
     }
 
+    public boolean getPasswordResetRequired() {
+        return passwordResetRequired;
+    }
+
+    public void setPasswordResetRequired(final boolean passwordResetRequired) {
+        this.passwordResetRequired = passwordResetRequired;
+    }
+
     @Override
     public String toString() {
         String ret = "[UserDTO: "
@@ -226,7 +236,8 @@ public class UserDTO implements UserDetails {
                 + "[accountExpired: " + this.accountExpired + "]"
                 + "[accountLocked: " + this.accountLocked + "]"
                 + "[credentialsExpired: " + this.credentialsExpired + "]"
-                + "[accountEnabled: " + this.accountEnabled + "]]";
+                + "[accountEnabled: " + this.accountEnabled + "]"
+                + "[passwordResetRequired: " + this.passwordResetRequired + "]]";
         return ret;
     }
 }

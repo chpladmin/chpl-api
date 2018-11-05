@@ -14,6 +14,7 @@ public class User {
     private Boolean accountLocked;
     private Boolean accountEnabled;
     private Boolean credentialsExpired;
+    private Boolean passwordResetRequired;
     private String hash;
 
     /** Default constructor. */
@@ -35,6 +36,7 @@ public class User {
         this.setAccountEnabled(dto.isAccountEnabled());
         this.setComplianceTermsAccepted(dto.getComplianceSignatureDate() == null ? false : true);
         this.setCredentialsExpired(dto.isCredentialsExpired());
+        this.setPasswordResetRequired(dto.getPasswordResetRequired());
     }
 
     public Long getUserId() {
@@ -131,5 +133,13 @@ public class User {
 
     public void setCredentialsExpired(final Boolean credentialsExpired) {
         this.credentialsExpired = credentialsExpired;
+    }
+
+    public Boolean getPasswordResetRequired() {
+        return passwordResetRequired;
+    }
+
+    public void setPasswordResetRequired(final Boolean passwordResetRequired) {
+        this.passwordResetRequired = passwordResetRequired;
     }
 }

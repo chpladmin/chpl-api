@@ -128,7 +128,13 @@ public class UserManagerImpl implements UserManager {
         if (userInfo.getCredentialsExpired() != null) {
             userDTO.setCredentialsExpired(userInfo.getCredentialsExpired());
         } else {
-            userDTO.setCredentialsExpired(true);
+            userDTO.setCredentialsExpired(false);
+        }
+
+        if (userInfo.getPasswordResetRequired() != null) {
+            userDTO.setPasswordResetRequired(userInfo.getPasswordResetRequired());
+        } else {
+            userDTO.setPasswordResetRequired(false);
         }
 
         if (Boolean.TRUE.equals(userInfo.getComplianceTermsAccepted())) {
@@ -245,7 +251,6 @@ public class UserManagerImpl implements UserManager {
 
         String encodedPassword = encodePassword(password);
         UserDTO userToUpdate = securedUserManager.getBySubjectName(userName);
-        userToUpdate.setCredentialsExpired(false);
         securedUserManager.updatePassword(userToUpdate, encodedPassword);
 
     }

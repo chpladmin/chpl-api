@@ -62,6 +62,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
             userEntity.setAccountExpired(user.isAccountExpired());
             userEntity.setAccountLocked(user.isAccountLocked());
             userEntity.setCredentialsExpired(!user.isCredentialsNonExpired());
+            userEntity.setPasswordResetRequired(user.getPasswordResetRequired());
             userEntity.setLastModifiedUser(Util.getCurrentUser().getId());
             userEntity.setLastModifiedDate(new Date());
             userEntity.setDeleted(false);
@@ -104,6 +105,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
         userEntity.setAccountExpired(user.isAccountExpired());
         userEntity.setAccountLocked(user.isAccountLocked());
         userEntity.setCredentialsExpired(!user.isCredentialsNonExpired());
+        userEntity.setPasswordResetRequired(user.getPasswordResetRequired());
         userEntity.setLastModifiedUser(Util.getCurrentUser().getId());
         userEntity.getContact().setLastModifiedUser(Util.getCurrentUser().getId());
 
@@ -383,6 +385,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 
         UserEntity userEntity = this.getEntityByName(uname);
         userEntity.setPassword(encodedPassword);
+        userEntity.setPasswordResetRequired(false);
         update(userEntity);
 
     }
