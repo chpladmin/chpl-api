@@ -245,6 +245,7 @@ public class UserManagerImpl implements UserManager {
 
         String encodedPassword = encodePassword(password);
         UserDTO userToUpdate = securedUserManager.getBySubjectName(userName);
+        userToUpdate.setCredentialsExpired(false);
         securedUserManager.updatePassword(userToUpdate, encodedPassword);
 
     }

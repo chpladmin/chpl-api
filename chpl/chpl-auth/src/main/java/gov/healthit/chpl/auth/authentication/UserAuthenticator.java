@@ -62,11 +62,6 @@ public class UserAuthenticator implements Authenticator {
                 + " has not accepted the compliance terms and conditions.");
             }
 
-            if (user.isCredentialsExpired()) {
-                throw new BadCredentialsException("Account for user " + user.getSubjectName()
-                + " has expired, and user must change their password.");
-            }
-
             if (checkPassword(credentials.getPassword(), userManager.getEncodedPassword(user))) {
 
                 try {
@@ -107,6 +102,11 @@ public class UserAuthenticator implements Authenticator {
     @Override
     public String getJWT(final UserDTO user) throws JWTCreationException {
 
+        if (user.isCredentialsExpired()) {
+            throw new JWTCreationException("Account for user " + user.getSubjectName()
+            + " has expired, and user must change their password.");
+        }
+
         String jwt = null;
         Map<String, List<String>> claims = new HashMap<String, List<String>>();
         List<String> claimStrings = new ArrayList<String>();
@@ -138,7 +138,10 @@ public class UserAuthenticator implements Authenticator {
         String jwt = null;
 
         if (user != null) {
-
+            if (!user.isCredentialsNonExpired()) {
+                throw new JWTCreationException("Account for user " + user.getSubjectName()
+                + " has expired, and user must change their password.");
+            }
             Map<String, List<String>> claims = new HashMap<String, List<String>>();
             List<String> claimStrings = new ArrayList<String>();
 
