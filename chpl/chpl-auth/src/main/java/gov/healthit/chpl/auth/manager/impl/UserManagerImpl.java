@@ -1,19 +1,24 @@
 package gov.healthit.chpl.auth.manager.impl;
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.nulabinc.zxcvbn.Strength;
+import com.nulabinc.zxcvbn.Zxcvbn;
+
 import gov.healthit.chpl.auth.dao.UserDAO;
-import gov.healthit.chpl.auth.dao.UserPermissionDAO;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.entity.UserEntity;
@@ -28,19 +33,28 @@ import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 
+/**
+ * Implementation of User Manager.
+ * @author alarned
+ *
+ */
 @Service
 public class UserManagerImpl implements UserManager {
+    private static final Logger LOGGER = LogManager.getLogger(UserManagerImpl.class);
 
     private final Random random = new SecureRandom();
-    private static final char[] symbols;
+    private static final char[] SYMBOLS;
     static {
         StringBuilder tmp = new StringBuilder();
-        for (char ch = '0'; ch <= '9'; ++ch)
+        for (char ch = '0'; ch <= '9'; ++ch) {
             tmp.append(ch);
-        for (char ch = 'a'; ch <= 'z'; ++ch)
+        }
+        for (char ch = 'a'; ch <= 'z'; ++ch) {
             tmp.append(ch);
-        symbols = tmp.toString().toCharArray();
+        }
+        SYMBOLS = tmp.toString().toCharArray();
     }
+    private static final int GENERATED_PASSWORD_LENGTH = 15;
 
     @Autowired private Environment env;
 
@@ -51,17 +65,22 @@ public class UserManagerImpl implements UserManager {
     private UserDAO userDAO;
 
     @Autowired
-    UserPermissionDAO userPermissionDAO;
-
-    @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-
 
     @Override
     @Transactional
     public UserDTO create(final UserCreationJSONObject userInfo) throws UserCreationException, UserRetrievalException {
 
         UserDTO user = UserConversionHelper.createDTO(userInfo);
+        Strength strength = getPasswordStrength(user, userInfo.getPassword());
+        if (strength.getScore() < UserManager.MIN_PASSWORD_STRENGTH) {
+            LOGGER.info("Strength results: [warning: {}] [suggestions: {}] [score: {}] [worst case crack time: {}]",
+                    strength.getFeedback().getWarning(),
+                    strength.getFeedback().getSuggestions().toString(),
+                    strength.getScore(),
+                    strength.getCrackTimesDisplay().getOfflineFastHashing1e10PerSecond());
+            throw new UserCreationException("Password is not strong enough");
+        }
         String encodedPassword = encodePassword(userInfo.getPassword());
         user = securedUserManager.create(user, encodedPassword);
         return user;
@@ -124,6 +143,7 @@ public class UserManagerImpl implements UserManager {
         securedUserManager.updateContactInfo(user);
     }
 
+    @Override
     @Transactional
     public void delete(final UserDTO user)
             throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
@@ -148,11 +168,13 @@ public class UserManagerImpl implements UserManager {
         return securedUserManager.getAll();
     }
 
+    @Override
     @Transactional
     public List<UserDTO> getUsersWithPermission(final String permissionName) {
         return securedUserManager.getUsersWithPermission(permissionName);
     }
 
+    @Override
     @Transactional
     public UserDTO getById(final Long id) throws UserRetrievalException {
         return securedUserManager.getById(id);
@@ -226,10 +248,10 @@ public class UserManagerImpl implements UserManager {
         }
 
         //create new password
-        char[] buf = new char[15];
+        char[] buf = new char[GENERATED_PASSWORD_LENGTH];
 
         for (int idx = 0; idx < buf.length; ++idx) {
-            buf[idx] = symbols[random.nextInt(symbols.length)];
+            buf[idx] = SYMBOLS[random.nextInt(SYMBOLS.length)];
         }
         String password = new String(buf);
 
@@ -271,4 +293,20 @@ public class UserManagerImpl implements UserManager {
         UserInfoJSONObject userInfo = new UserInfoJSONObject(user);
         return userInfo;
     }
-}
+
+    @Override
+    public Strength getPasswordStrength(final UserDTO user, final String password) {
+        ArrayList<String> badWords = new ArrayList<String>();
+        badWords.add("chpl");
+        badWords.add(user.getEmail());
+        badWords.add(user.getFullName());
+        badWords.add(user.getUsername());
+        if (user.getFriendlyName() != null) {
+            badWords.add(user.getFriendlyName());
+        }
+
+        Zxcvbn zxcvbn = new Zxcvbn();
+        Strength strength = zxcvbn.measure(password, badWords);
+        return strength;
+    }
+ }

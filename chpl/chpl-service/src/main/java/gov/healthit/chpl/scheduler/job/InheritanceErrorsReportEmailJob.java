@@ -20,9 +20,10 @@ import org.apache.logging.log4j.Logger;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.auth.SendMailUtil;
+import gov.healthit.chpl.auth.EmailBuilder;
 import gov.healthit.chpl.dao.scheduler.InheritanceErrorsReportDAO;
 import gov.healthit.chpl.dto.scheduler.InheritanceErrorsReportDTO;
 
@@ -36,10 +37,12 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("inheritanceErrorsReportEmailJobLogger");
     private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
     private Properties props;
-    
+
     @Autowired
     private InheritanceErrorsReportDAO inheritanceErrorsReportDAO;
-    
+
+    @Autowired
+    private Environment env;
     /**
      * Constructor that initializes the InheritanceErrorsReportEmailJob object.
      * @throws Exception if thrown
@@ -52,10 +55,10 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        
+
         LOGGER.info("********* Starting the Inheritance Error Report Email job. *********");
         LOGGER.info("Sending email to: " + jobContext.getMergedJobDataMap().getString("email"));
-        
+
         List<InheritanceErrorsReportDTO> errors = getAppropriateErrors(jobContext);
         File output = null;
         List<File> files = new ArrayList<File>();
@@ -73,12 +76,20 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
             htmlMessage = props.getProperty("inheritanceReportEmailWeeklyHtmlMessage");
         }
         LOGGER.info("Message to be sent: " + htmlMessage);
-        
-        SendMailUtil mailUtil = new SendMailUtil();
+
         try {
             htmlMessage += createHtmlEmailBody(errors.size(),
                     props.getProperty("inheritanceReportEmailWeeklyNoContent"));
-            mailUtil.sendEmail(to, subject, htmlMessage, files, props);
+
+            List<String> addresses = new ArrayList<String>();
+            addresses.add(to);
+
+            EmailBuilder emailBuilder = new EmailBuilder(env);
+            emailBuilder.recipients(addresses)
+            .subject(subject)
+            .htmlMessage(htmlMessage)
+            .fileAttachments(files)
+            .sendEmail();
         } catch (IOException | MessagingException e) {
             LOGGER.error(e);
         }
@@ -103,31 +114,20 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
     private File getOutputFile(final List<InheritanceErrorsReportDTO> errors) {
         String reportFilename = props.getProperty("inheritanceReportEmailWeeklyFileName");
         File temp = null;
-        OutputStreamWriter writer = null;
-        CSVPrinter csvPrinter = null;
         try {
             temp = File.createTempFile(reportFilename, ".csv");
             temp.deleteOnExit();
-            writer = new OutputStreamWriter(
-                    new FileOutputStream(temp),
-                    Charset.forName("UTF-8").newEncoder()
-                    );
-            csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL);
-            csvPrinter.printRecord(getHeaderRow());
-            for (InheritanceErrorsReportDTO error : errors) {
-                List<String> rowValue = generateRowValue(error);
-                csvPrinter.printRecord(rowValue);            }
-        } catch (IOException e) {
-            LOGGER.error(e);
-        } finally {
-            try {
-                if (csvPrinter != null) {
-                    csvPrinter.flush();
-                    csvPrinter.close();
-                }
-                if (writer != null) {
-                    writer.flush();
-                    writer.close();
+        } catch (IOException ex) {
+            LOGGER.error("Error creating temporary file: " + ex.getMessage(), ex);
+        }
+
+        if (temp != null) {
+        try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(temp), Charset.forName("UTF-8").newEncoder());
+                CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
+                csvPrinter.printRecord(getHeaderRow());
+                for (InheritanceErrorsReportDTO error : errors) {
+                    List<String> rowValue = generateRowValue(error);
+                    csvPrinter.printRecord(rowValue);
                 }
             } catch (IOException e) {
                 LOGGER.error(e);

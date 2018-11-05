@@ -15,16 +15,22 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
+/**
+ * Makes sure test functionality is valid given the practice type
+ * and criteria it is applied to.
+ * @author kekey
+ *
+ */
 @Component("testFunctionalityReviewer")
 public class TestFunctionalityReviewer implements Reviewer {
     private static final String EDITION_2014 = "2014";
-    
+
     @Autowired private TestFunctionalityDAO testFunctionalityDAO;
     @Autowired private CertificationCriterionDAO certificationCriterionDAO;
     @Autowired private ErrorMessageUtil msgUtil;
-    
+
     @Override
-    public void review(CertifiedProductSearchDetails listing) {
+    public void review(final CertifiedProductSearchDetails listing) {
         if (listing.getCertificationResults() != null) {
             for (CertificationResult cr : listing.getCertificationResults()) {
                 if (cr.getTestFunctionality() != null) {

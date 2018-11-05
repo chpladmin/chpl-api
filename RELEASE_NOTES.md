@@ -1,5 +1,94 @@
 # Release Notes
 
+## Version 19.0.0
+_5 November 2018_
+
+### Backwards compatibility breaking API changes
+* Changed PUT /products call to not accept a productID
+* Updated DELETE of api key to not use body
+
+### New Features
+* Add developer and product contact information to 2014/2015 download file
+* Add Quartz job to allow interruption of other jobs
+  * Enhanced "Certified Product Download File generation job" to be interruptable
+* Add validation for submitted user information when creating a new user
+
+### Bugs Fixed
+* Properly handle invalid test tools entered into upload files by removing them and informing the user
+* Make sure test tools are optional for 2014 ambulatory listings on g1, g2, and f3
+* Remove required productID in /products PUT call that isn't used by the back end
+* Insert listing update activity during meaningful use user uploads
+* Update the description of the /certified_products endpoint to indicate that 'versionId' is a required parameter
+* Fixed issue where adding ROLE via POST required body, even though no data was needed
+
+---
+
+## Version 18.0.0
+_22 October 2018_
+
+### Backwards compatibility breaking features
+* Removed deprecated /certified_products/meaningful_use/upload. Use /meaningful_use/upload instead.
+
+### New Features
+* Added "last modified date" for surveillance and non-conformities to download files
+* Move generate chart data app to quartz
+
+### Bugs Fixed
+* Fix creation of public announcement ignoring 'public' checkbox.
+* Fix incorrect errors for changing sed to false for a criteria
+* Modified the Summary Statistics Report email
+  * Re-arranged the order of some headings
+  * Added totals for Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2014 Listings
+  * Added totals for Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2015 Listings
+  * Added active ACBs (when broken out) where the total for the ACB is 0
+* Allow editing of meaningful use user count and history of muu counts for individual listings.
+
+### Bugs Fixed
+* Fix creation of public announcement ignoring 'public' checkbox.
+* Fix incorrect error messages when editing SED = false for a criteria
+
+---
+
+## Version 17.0.0
+_8 October 2018_
+
+### Major Change
+* When retrieving Pending Surveillances, the listing details will no longer be populated
+
+### New Features
+* Move surveillance download file generation into quartz job to allow for better job management.
+* Move SED G3 download file generation into quartz job for allow for better job management.
+* Added scheduled job to send warning to users who have not used thier API key in the last X days
+* Added scheduled job to delete api keys that have not been used in X days
+* Added LastUsedDate and DeleteWarningSentDate to the ./key endpoint return value(s)
+* Add password strength checker implementing [a java fork](https://github.com/nulab/zxcvbn4j) of [zxcvbn](https://github.com/dropbox/zxcvbn) when anyone:
+  * creates a new User
+  * updates a password
+* Add Developer Status to search results view
+* Catch any unexpected error that occurs during a listing upload. Allow the error to be emailed to CHPL team if desired.
+
+### Bugs Fixed
+* Invalid test functionality names are removed and an error is given to the user for 2014 and 2015 uploads.
+* Fix questionable activity report end of the month date rollover.
+
+---
+
+## Version 16.4.0
+_24 September 2018_
+
+### New Features
+* Validate URLs on upload / confirm / edit
+  * Transparency Attestation
+  * SED Report File
+  * Other report file
+  * API Documentation (at criteria level)
+  * Developer website
+* Add info messages for 2014 cms id widget
+* Add info messages for 2014/2015 id widget
+* Move questionable activity email code into quartz job to allow user scheduling.
+
+---
+
 ## Version 16.3.0
 _10 September 2018_
 
@@ -14,7 +103,7 @@ _10 September 2018_
 
 ### Bugs Fixed
 * Extra test data/test procedure/test functionality/etc. no longer appears after attesting to a criteria with previously entered phantom data.
-* Fixed the "basic" certified product service to return the correct additional software code in the CHPL Product Number	
+* Fixed the "basic" certified product service to return the correct additional software code in the CHPL Product Number
 * Fixed XML generation process to properly output `<tasks></tasks>` tag - was previously outputing as `<></>`.
 * Use "full name" and "friendly name" for users/contacts
 * Fix reason required error to show again for certain listing updates.
@@ -444,7 +533,7 @@ _10 October 2017_
   * Add `0 1 1 1,4,7,10 * cd /opt/chpl && ./generateListingResources.sh 2011`
   * Add `0 1 * * * cd /opt/chpl && ./generateListingResources.sh 2014`
   * Add `0 1 * * * cd /opt/chpl && ./generateListingResources.sh 2015`
-  * Add `0 1 * * * cd /opt/chpl && ./generateSurveillanceResources.sh` 
+  * Add `0 1 * * * cd /opt/chpl && ./generateSurveillanceResources.sh`
   * Add lines as well for the cleanup script (may have been done by andlar already)
 * Return HTTP 404 for /certified_products/{id}/details if listing has never existed or has been deleted.
 * Change any URL with an ID in the path to return 404 if that ID is not found.

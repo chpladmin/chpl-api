@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,8 +21,11 @@ import org.apache.logging.log4j.Logger;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.auth.SendMailUtil;
+import gov.healthit.chpl.auth.EmailBuilder;
 
 /**
  * Job run by Scheduler to send email when the cache is "too old".
@@ -31,7 +36,10 @@ public class CacheStatusAgeJob implements Job {
     private static final Logger LOGGER = LogManager.getLogger("cacheStatusAgeJobLogger");
     private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
     private Properties properties = null;
-
+    
+    @Autowired
+    private Environment env;
+    
     /**
      * Default constructor.
      * @throws IOException if unable to load properties
@@ -57,6 +65,7 @@ public class CacheStatusAgeJob implements Job {
      */
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
+        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Cache Status Age job. *********");
         try {
             if (isCacheOld()) {
@@ -111,8 +120,14 @@ public class CacheStatusAgeJob implements Job {
         String htmlMessage = createHtmlEmailBody();
         LOGGER.info("Message to be sent: " + htmlMessage);
         
-        SendMailUtil mailUtil = new SendMailUtil();
-        mailUtil.sendEmail(recipient, subject, htmlMessage, null, properties);
+        List<String> addresses = new ArrayList<String>();
+        addresses.add(recipient);
+        
+        EmailBuilder emailBuilder = new EmailBuilder(env);
+        emailBuilder.recipients(addresses)
+                        .subject(subject)
+                        .htmlMessage(htmlMessage)
+                        .sendEmail();
     }
 
     private String createHtmlEmailBody() {

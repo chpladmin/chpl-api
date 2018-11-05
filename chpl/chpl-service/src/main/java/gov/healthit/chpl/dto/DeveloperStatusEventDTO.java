@@ -2,12 +2,15 @@ package gov.healthit.chpl.dto;
 
 import java.io.Serializable;
 import java.util.Date;
-
-import org.apache.commons.lang.ObjectUtils;
-import org.springframework.util.StringUtils;
+import java.util.Objects;
 
 import gov.healthit.chpl.entity.developer.DeveloperStatusEventEntity;
 
+/**
+ * Developer Status Event DTO.
+ * @author alarned
+ *
+ */
 public class DeveloperStatusEventDTO implements Serializable {
     private static final long serialVersionUID = -2492374479266782228L;
 
@@ -16,17 +19,36 @@ public class DeveloperStatusEventDTO implements Serializable {
     private DeveloperStatusDTO status;
     private Date statusDate;
     private String reason;
+    private Boolean deleted;
 
+    /** Default constructor. */
     public DeveloperStatusEventDTO() {
     }
 
-    public DeveloperStatusEventDTO(DeveloperStatusEventEntity entity) {
+    /**
+     * Constructed from entity.
+     * @param entity the entity
+     */
+    public DeveloperStatusEventDTO(final DeveloperStatusEventEntity entity) {
         this();
         this.id = entity.getId();
         this.developerId = entity.getDeveloperId();
         this.status = new DeveloperStatusDTO(entity.getDeveloperStatus());
         this.statusDate = entity.getStatusDate();
         this.reason = entity.getReason();
+        this.setDeleted(entity.getDeleted());
+    }
+
+    /**
+     * Copy constructor.
+     * @param dto the DeveloperStatusEventDTO to copy
+     */
+    public DeveloperStatusEventDTO(final DeveloperStatusEventDTO dto) {
+        this.id = dto.getId();
+        this.developerId = dto.getDeveloperId();
+        this.status = dto.getStatus(); //Shallow copy
+        this.statusDate = dto.getStatusDate();
+        this.reason = dto.getReason();
     }
 
     public Long getId() {
@@ -65,16 +87,54 @@ public class DeveloperStatusEventDTO implements Serializable {
         return reason;
     }
 
-    public void setReason(String reason) {
+    public void setReason(final String reason) {
         this.reason = reason;
     }
 
-    public boolean matches(DeveloperStatusEventDTO anotherStatusEvent) {
+    /**
+     * Return true iff this DTO matches a different on.
+     * @param anotherStatusEvent the different one
+     * @return true iff this matches
+     */
+    public boolean matches(final DeveloperStatusEventDTO anotherStatusEvent) {
         boolean result = false;
-        if(this.getId() != null && anotherStatusEvent.getId() != null && 
-                this.getId().longValue() == anotherStatusEvent.getId().longValue()) {
+        if (this.getId() != null && anotherStatusEvent.getId() != null
+                && this.getId().longValue() == anotherStatusEvent.getId().longValue()) {
             return true;
         }
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Developer Status Event DTO: ["
+                + "[Developer ID: " + this.developerId + "] "
+                + "[Status Date: " + this.statusDate.toString() + "] "
+                + "[Status: " + this.status.getStatusName() + "] "
+                + "[Reason: " + this.reason + "]"
+                + "]";
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        DeveloperStatusEventDTO dto = (DeveloperStatusEventDTO) obj;
+        return Objects.equals(getId(), dto.getId());
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
     }
 }

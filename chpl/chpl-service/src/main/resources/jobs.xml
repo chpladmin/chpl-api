@@ -6,6 +6,7 @@
     version="2.0">
     <pre-processing-commands>
         <delete-triggers-in-group>triggerJob</delete-triggers-in-group>
+        <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
     </pre-processing-commands>
     <schedule>
         <!-- Cache status age notification -->
@@ -50,7 +51,7 @@
                 <job-name>downloadFileJob2015</job-name>
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 30 4 * * ?</cron-expression> <!-- At 0430 UTC every day -->
+                <cron-expression>0 0 5 * * ?</cron-expression> <!-- At 0500 UTC every day -->
             </cron>
         </trigger>
 
@@ -75,7 +76,7 @@
                 <job-name>downloadFileJob2014</job-name>
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 35 4 * * ?</cron-expression> <!-- At 0435 UTC every day -->
+                <cron-expression>0 30 6 * * ?</cron-expression> <!-- At 0630 UTC every day -->
             </cron>
         </trigger>
 
@@ -104,6 +105,46 @@
             </cron>
         </trigger>
 
+        <!-- Daily G3/SED details generator -->
+        <job>
+            <name>g3Sed2015DownloadFileJob</name>
+            <group>systemJobs</group>
+            <description>Generate SED download files for 2015 listings with G3.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.G3Sed2015DownloadableResourceCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+        <trigger>
+            <cron>
+                <name>g3Sed2015DownloadFileJob</name>
+                <group>downloadFileTrigger</group>
+                <job-name>g3Sed2015DownloadFileJob</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 30 3 * * ?</cron-expression> <!-- At 0330 UTC every day -->
+            </cron>
+        </trigger>
+
+        <!-- Daily surveillance downloads generator -->
+        <job>
+            <name>surveillanceDownloadFileJob</name>
+            <group>systemJobs</group>
+            <description>Generate Surveillance download files.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.SurveillanceDownloadableResourceCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+        <trigger>
+            <cron>
+                <name>surveillanceDownloadFileJob</name>
+                <group>downloadFileTrigger</group>
+                <job-name>surveillanceDownloadFileJob</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 15 4 * * ?</cron-expression> <!-- At 0415 UTC every day -->
+            </cron>
+        </trigger>
+
         <!-- Summary statistics generator -->
         <job>
             <name>summaryStatisticsCreator</name>
@@ -126,7 +167,7 @@
                 <job-name>summaryStatisticsCreator</job-name>
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 3 1 * * ?</cron-expression> <!-- At 0103 UTC every day -->
+                <cron-expression>0 0 4 * * ?</cron-expression> <!-- At 0400 UTC every day -->
             </cron>
         </trigger>
 
@@ -352,6 +393,96 @@
                     <value>Overnight</value>
                 </entry>
             </job-data-map>
+        </job>
+
+        <!-- Questionable Activity data emailer -->
+        <job>
+            <name>Questionable Activity Report</name>
+            <group>chplJobs</group>
+            <description>Sends a report of questionable activity within the last week</description>
+            <job-class>gov.healthit.chpl.scheduler.job.QuestionableActivityEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN</value>
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>WEEKLY</value>
+                </entry>
+            </job-data-map>
+        </job>
+
+        <!-- Chart data creator -->
+        <job>
+            <name>chartDataCreator</name>
+            <group>systemJobs</group>
+            <description>Generates the chart data</description>
+            <job-class>gov.healthit.chpl.scheduler.job.chartdata.ChartDataCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+        <trigger>
+            <cron>
+                <name>generateChartData</name>
+                <group>chartDataCreatorTrigger</group>
+                <job-name>chartDataCreator</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 30 02 * * ?</cron-expression> <!-- At 0230 UTC every day -->
+            </cron>
+        </trigger>
+
+        <!-- API Key Delete Warning Job -->
+        <job>
+            <name>apiKeyDeleteWarningEmailJob</name>
+            <group>systemJobs</group>
+            <description>Send email to API key holders, where the API key hasn't been used in X days</description>
+            <job-class>gov.healthit.chpl.scheduler.job.ApiKeyWarningEmailJob</job-class>
+            <durability>true</durability>
+            <recover>true</recover>
+        </job>
+        <trigger>
+            <cron>
+                <name>apiKeyDeleteWarningEmail</name>
+                <group>apiKeyDeleteWarningEmailTrigger</group>
+                <job-name>apiKeyDeleteWarningEmailJob</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
+                <cron-expression>0 0 4 1/1 * ? *</cron-expression> <!-- At 0400 UTC every day -->
+            </cron>
+        </trigger>
+
+        <!-- API Key Delete Job -->
+        <job>
+            <name>apiKeyDeleteJob</name>
+            <group>systemJobs</group>
+            <description>Send email to API key holders where a warning email has been sent, after x days of inactivity, and delete the key</description>
+            <job-class>gov.healthit.chpl.scheduler.job.ApiKeyDeleteJob</job-class>
+            <durability>true</durability>
+            <recover>true</recover>
+        </job>
+        <trigger>
+            <cron>
+                <name>apiKeyDeleteEmail</name>
+                <group>apiKeyDeleteTrigger</group>
+                <job-name>apiKeyDeleteJob</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
+                <cron-expression>0 30 4 1/1 * ? *</cron-expression> <!-- At 0430 UTC every day -->
+            </cron>
+        </trigger>
+
+        <!-- Job used to trigger interruptions of other jobs -->
+        <job>
+            <name>interruptJob</name>
+            <group>systemJobs</group>
+            <description>Triggers interruption of other running job</description>
+            <job-class>gov.healthit.chpl.scheduler.job.InterruptJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
         </job>
     </schedule>
 </job-scheduling-data>

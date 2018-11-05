@@ -466,14 +466,17 @@ public class ActivityManagerImpl implements ActivityManager {
 
         JsonNode originalJSON = null;
         if (dto.getOriginalData() != null) {
-            JsonParser origData = factory.createParser(dto.getOriginalData());
-            originalJSON = jsonMapper.readTree(origData);
+            try (JsonParser origData = factory.createParser(dto.getOriginalData())) {
+                originalJSON = jsonMapper.readTree(origData);
+            }
         }
 
         JsonNode newJSON = null;
         if (dto.getNewData() != null) {
-            JsonParser newData = factory.createParser(dto.getNewData());
-            newJSON = jsonMapper.readTree(newData);
+            try (JsonParser newData = factory.createParser(dto.getNewData())) {
+                newJSON = jsonMapper.readTree(newData);
+
+            }
         }
 
         event.setOriginalData(originalJSON);

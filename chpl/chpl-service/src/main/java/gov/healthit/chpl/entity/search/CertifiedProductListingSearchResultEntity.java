@@ -35,6 +35,9 @@ public class CertifiedProductListingSearchResultEntity {
     @Column(name = "meaningful_use_users")
     private Long meaningfulUseUserCount;
 
+    @Column(name = "meaningful_use_users_date")
+    private Date meaningfulUseUsersDate;
+
     @Column(name = "transparency_attestation_url")
     private String transparencyAttestationUrl;
 
@@ -247,5 +250,13 @@ public class CertifiedProductListingSearchResultEntity {
 
     public void setCountClosedNonconformities(final Integer countClosedNonconformities) {
         this.countClosedNonconformities = countClosedNonconformities;
+    }
+
+    public Date getMeaningfulUseUsersDate() {
+        return meaningfulUseUsersDate;
+    }
+
+    public void setMeaningfulUseUsersDate(Date meaningfulUseUsersDate) {
+        this.meaningfulUseUsersDate = meaningfulUseUsersDate;
     }
 }

@@ -48,6 +48,11 @@ public class CertifiedProductSearchResult implements Serializable {
     private String developer;
 
     @JsonView({
+        SearchViews.Default.class
+    })
+    private String developerStatus;
+
+    @JsonView({
             SearchViews.Default.class
     })
     private String product;
@@ -84,6 +89,7 @@ public class CertifiedProductSearchResult implements Serializable {
 
     private Long decertificationDate;
     private Long numMeaningfulUse;
+    private Long numMeaningfulUseDate;
     private String transparencyAttestationUrl;
 
     /**
@@ -96,7 +102,7 @@ public class CertifiedProductSearchResult implements Serializable {
      * Constructed from other search result.
      * @param other the other search result
      */
-    public CertifiedProductSearchResult(CertifiedProductSearchResult other) {
+    public CertifiedProductSearchResult(final CertifiedProductSearchResult other) {
         this.id = other.getId();
         this.chplProductNumber = other.getChplProductNumber();
         this.edition = other.getEdition();
@@ -104,6 +110,7 @@ public class CertifiedProductSearchResult implements Serializable {
         this.acbCertificationId = other.getAcbCertificationId();
         this.practiceType = other.getPracticeType();
         this.developer = other.getDeveloper();
+        this.developerStatus = other.getDeveloperStatus();
         this.product = other.getProduct();
         this.version = other.getVersion();
         this.certificationDate = other.getCertificationDate();
@@ -113,6 +120,7 @@ public class CertifiedProductSearchResult implements Serializable {
         this.openNonconformityCount = other.getOpenNonconformityCount();
         this.closedNonconformityCount = other.getClosedNonconformityCount();
         this.numMeaningfulUse = other.getNumMeaningfulUse();
+        this.numMeaningfulUseDate = other.getNumMeaningfulUseDate();
         this.transparencyAttestationUrl = other.getTransparencyAttestationUrl();
     }
 
@@ -162,6 +170,14 @@ public class CertifiedProductSearchResult implements Serializable {
 
     public void setDeveloper(final String developer) {
         this.developer = developer;
+    }
+
+    public String getDeveloperStatus() {
+        return developerStatus;
+    }
+
+    public void setDeveloperStatus(final String developerStatus) {
+        this.developerStatus = developerStatus;
     }
 
     public String getProduct() {
@@ -242,6 +258,14 @@ public class CertifiedProductSearchResult implements Serializable {
 
     public void setNumMeaningfulUse(final Long numMeaningfulUse) {
         this.numMeaningfulUse = numMeaningfulUse;
+    }
+
+    public Long getNumMeaningfulUseDate() {
+        return numMeaningfulUseDate;
+    }
+
+    public void setNumMeaningfulUseDate(final Long numMeaningfulUseDate) {
+        this.numMeaningfulUseDate = numMeaningfulUseDate;
     }
 
     public String getTransparencyAttestationUrl() {

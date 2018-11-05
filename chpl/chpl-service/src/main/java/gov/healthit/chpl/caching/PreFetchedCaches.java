@@ -25,6 +25,7 @@ public class PreFetchedCaches {
     public List<CertifiedProductFlatSearchResult> loadPreFetchedBasicSearch() {
         LOGGER.info("Loading PreFetchedBasicSearch");
         List<CertifiedProductFlatSearchResult> results = certifiedProductSearchDao.getAllCertifiedProducts();
+        LOGGER.info("Completed database call to get all listings.");
         return results;
     }
 }

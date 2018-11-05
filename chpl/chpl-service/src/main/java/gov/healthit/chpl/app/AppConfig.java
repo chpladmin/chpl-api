@@ -120,15 +120,4 @@ public class AppConfig {
         viewResolver.setSuffix(".jsp");
         return viewResolver;
     }
-    
-    @Bean(name = "chartDataExecutor")
-    public TaskExecutor specificTaskExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(10);
-        executor.setMaxPoolSize(20);
-        //executor.setQueueCapacity(11);
-        executor.setThreadNamePrefix("chartDataThread");
-        executor.initialize();
-        return executor;
-    }
 }

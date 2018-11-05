@@ -63,7 +63,7 @@ public class CertificationIdController {
             MediaType.APPLICATION_JSON_VALUE
     })
     public List<SimpleCertificationId> getAll() throws IOException {
-        List<SimpleCertificationId> results = new ArrayList<SimpleCertificationId>();
+        List<SimpleCertificationId> results = null;
         if (Util.isUserRoleAdmin() || Util.isUserRoleOncStaff()) {
             results = certificationIdManager.getAllWithProducts();
         } else {
@@ -90,7 +90,7 @@ public class CertificationIdController {
     })
     public @ResponseBody CertificationIdResults searchCertificationId(
             @RequestParam(required = false) final List<Long> ids) throws InvalidArgumentsException,
-                    CertificationIdException {
+    CertificationIdException {
         return this.findCertificationByProductIds(ids, false);
     }
 
@@ -107,101 +107,103 @@ public class CertificationIdController {
     @ApiOperation(
             value = "DEPRECATED.  Creates a new CMS EHR Certification ID for a collection of products if one does "
                     + "not already exist.",
-            notes = "Retrieves a CMS EHR Certification ID for a collection of products or creates a new one if one "
-                    + "does not already exist. Returns a list of basic product information, "
-                    + "Criteria and CQM calculations, and the associated CMS EHR Certification ID if one exists.")
+                    notes = "Retrieves a CMS EHR Certification ID for a collection of products or creates a new one "
+                            + "if one does not already exist. Returns a list of basic product information, Criteria "
+                            + "and CQM calculations, and the associated CMS EHR Certification ID if one exists.")
     @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = {MediaType.APPLICATION_JSON_VALUE})
+    produces = {
+            MediaType.APPLICATION_JSON_VALUE
+    })
     public @ResponseBody CertificationIdResults createCertificationIdDeprecated(
-            @RequestParam(required = true) final List<Long> ids)
-            throws InvalidArgumentsException, CertificationIdException {
+            @RequestParam(required = true) final List<Long> ids) throws InvalidArgumentsException,
+    CertificationIdException {
         return create(ids);
     }
 
     @ApiOperation(
             value = "Creates a new CMS EHR Certification ID for a collection of products if one does not already "
                     + "exist.",
-            notes = "Retrieves a CMS EHR Certification ID for a collection of products or creates a new one if one "
-                    + "does not already exist. Returns a list of basic product information, Criteria and CQM "
-                    + "calculations, and the associated CMS EHR Certification ID if one exists.")
-    @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = {
-                    MediaType.APPLICATION_JSON_VALUE
-            })
+                    notes = "Retrieves a CMS EHR Certification ID for a collection of products or creates a new one "
+                            + "if one does not already exist. Returns a list of basic product information, Criteria "
+                            + "and CQM calculations, and the associated CMS EHR Certification ID if one exists.")
+    @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = {
+            MediaType.APPLICATION_JSON_VALUE
+    })
     public @ResponseBody CertificationIdResults createCertificationId(
-            @RequestParam(required = true) final List<Long> ids)
-            throws InvalidArgumentsException, CertificationIdException {
+            @RequestParam(required = true) final List<Long> ids) throws InvalidArgumentsException,
+    CertificationIdException {
         return create(ids);
     }
 
-    private CertificationIdResults create(final List<Long> ids)
-            throws InvalidArgumentsException, CertificationIdException {
+    private CertificationIdResults create(final List<Long> ids) throws InvalidArgumentsException,
+    CertificationIdException {
         return this.findCertificationByProductIds(ids, true);
     }
 
-    // **********************************************************************************************************
-    // getCertificationId
-    //
-    // Mapping: /{certificationId}
-    // Params: Boolean includeCriteria
-    // Params: Boolean includeCqms
-    //
-    // Retrieves detailed information about a specific CMS EHR Certification ID
-    // including the list of products
-    // that make it up. It optionally retrieves the Certification Criteria and
-    // CQMs of the products
-    // associated with the CMS EHR Certification ID.
-    // **********************************************************************************************************
+    /**
+     * Retrieves detailed information about a specific CMS EHR Certification ID
+     * including the list of products
+     * that make it up. It optionally retrieves the Certification Criteria and
+     * CQMs of the products
+     * associated with the CMS EHR Certification ID.
+     * @param certificationId ID to look up
+     * @param includeCriteria indicates if should return criteria
+     * @param includeCqms indicates if should return CQMs
+     * @return information about CMS ID
+     * @throws InvalidArgumentsException if arguments are invalid
+     * @throws EntityRetrievalException if couldn't retrieve entity
+     * @throws CertificationIdException if cert id fails
+     */
     @ApiOperation(value = "Get information about a specific EHR Certification ID.",
             notes = "Retrieves detailed information about a specific EHR Certification ID including the list of "
                     + "products that make it up.  This method can be used when verfying a small number of"
                     + "Certification Ids, where the length of the URL, plus the list of IDs, is less than the"
                     + "maximum length URL that your client can handle.")
-    @RequestMapping(value = "/{certificationId}", method = RequestMethod.GET,
-                    produces = {MediaType.APPLICATION_JSON_VALUE})
+    @RequestMapping(value = "/{certificationId}", method = RequestMethod.GET, produces = {
+            MediaType.APPLICATION_JSON_VALUE
+    })
     public @ResponseBody CertificationIdLookupResults getCertificationId(
-            @PathVariable("certificationId") final String certificationId,
-            @RequestParam(required = false, defaultValue = "false") final Boolean includeCriteria,
-            @RequestParam(required = false, defaultValue = "false") final Boolean includeCqms)
-            throws InvalidArgumentsException, EntityRetrievalException, CertificationIdException {
+            @PathVariable("certificationId") final String certificationId, @RequestParam(required = false,
+            defaultValue = "false") final Boolean includeCriteria, @RequestParam(required = false,
+            defaultValue = "false") final Boolean includeCqms) throws InvalidArgumentsException,
+    EntityRetrievalException, CertificationIdException {
         return this.findCertificationIdByCertificationId(certificationId, includeCriteria, includeCqms);
     }
 
-    // **********************************************************************************************************
-    // verifyCertificationId
-    //
-    // Mapping: /verify (POST)
-    //
-    // Verify whether one or more specific EHR Certification ID is valid or not.
-    // **********************************************************************************************************
+    /**
+     * Verify whether one or more specific EHR Certification ID is valid or not.
+     * @param body post body
+     * @return response indicating if IDs are valid
+     * @throws InvalidArgumentsException if arguments are invalid
+     * @throws CertificationIdException if cert id fails
+     */
     @ApiOperation(value = "Verify whether one or more specific EHR Certification IDs are valid or not.",
             notes = "Returns a boolean value for each EHR Certification ID specified.")
     @RequestMapping(value = "/verify", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = {
-                    MediaType.APPLICATION_JSON_VALUE
-            })
+    produces = {
+            MediaType.APPLICATION_JSON_VALUE
+    })
     public @ResponseBody CertificationIdVerifyResults verifyCertificationId(
-            @RequestBody final CertificationIdVerificationBody body)
-            throws InvalidArgumentsException, CertificationIdException {
+            @RequestBody final CertificationIdVerificationBody body) throws InvalidArgumentsException,
+    CertificationIdException {
         return this.verifyCertificationIds(body.getIds());
     }
 
-    // **********************************************************************************************************
-    // verifyCertificationId
-    //
-    // Mapping: /verify (GET)
-    // Params: List ids
-    //
-    // Verify whether one or more specific EHR Certification ID is valid or not.
-    // **********************************************************************************************************
+    /**
+     * Verify whether one or more specific EHR Certification ID is valid or not.
+     * @param certificationIds incoming IDs
+     * @return response indicating if IDs are valid
+     * @throws InvalidArgumentsException if arguments are invalid
+     * @throws CertificationIdException if cert id fails
+     */
     @ApiOperation(value = "Verify whether one or more specific EHR Certification IDs are valid or not.",
             notes = "Returns true or false for each EHR Certification ID specified.")
     @RequestMapping(value = "/verify", method = RequestMethod.GET, produces = {
             MediaType.APPLICATION_JSON_VALUE
     })
     public @ResponseBody CertificationIdVerifyResults verifyCertificationId(
-            @RequestParam("ids") final List<String> certificationIds)
-            throws InvalidArgumentsException, CertificationIdException {
+            @RequestParam("ids") final List<String> certificationIds) throws InvalidArgumentsException,
+    CertificationIdException {
         return this.verifyCertificationIds(certificationIds);
     }
 
@@ -210,8 +212,8 @@ public class CertificationIdController {
     //
     // **********************************************************************************************************
     private CertificationIdLookupResults findCertificationIdByCertificationId(final String certificationId,
-            final Boolean includeCriteria, final Boolean includeCqms)
-                    throws InvalidArgumentsException, EntityRetrievalException, CertificationIdException {
+            final Boolean includeCriteria, final Boolean includeCqms) throws InvalidArgumentsException,
+    EntityRetrievalException, CertificationIdException {
         CertificationIdLookupResults results = new CertificationIdLookupResults();
         try {
             // Lookup the Cert ID
@@ -231,7 +233,7 @@ public class CertificationIdController {
                 List<CertificationIdLookupResults.Product> productList = results.getProducts();
                 for (CertifiedProductDetailsDTO dto : productDtos) {
                     productList.add(new CertificationIdLookupResults.Product(dto));
-                    yearSet.add(new Integer(dto.getYear()));
+                    yearSet.add(Integer.valueOf(dto.getYear()));
                     certProductIds.add(dto.getId());
                 }
 
@@ -300,11 +302,14 @@ public class CertificationIdController {
     // findCertificationByProductIds
     //
     // **********************************************************************************************************
-    private CertificationIdResults findCertificationByProductIds(List<Long> productIdList, final Boolean create)
-            throws InvalidArgumentsException, CertificationIdException {
-
-        if (null == productIdList) {
+    private CertificationIdResults findCertificationByProductIds(
+            final List<Long> productIdListIncoming, final Boolean create)
+                    throws InvalidArgumentsException, CertificationIdException {
+        List<Long> productIdList;
+        if (null == productIdListIncoming) {
             productIdList = new ArrayList<Long>();
+        } else {
+            productIdList = productIdListIncoming;
         }
 
         List<CertifiedProductDetailsDTO> productDtos = new ArrayList<CertifiedProductDetailsDTO>();
@@ -321,7 +326,7 @@ public class CertificationIdController {
         for (CertifiedProductDetailsDTO dto : productDtos) {
             CertificationIdResults.Product p = new CertificationIdResults.Product(dto);
             resultProducts.add(p);
-            yearSet.add(new Integer(dto.getYear()));
+            yearSet.add(Integer.valueOf(dto.getYear()));
         }
         results.setProducts(resultProducts);
         String year = Validator.calculateAttestationYear(yearSet);
@@ -340,8 +345,10 @@ public class CertificationIdController {
         results.setIsValid(isValid);
         results.setMetPercentages(validator.getPercents());
         results.setMetCounts(validator.getCounts());
-        results.setMissingAnd(validator.getMissingAnd());
+        results.setMissingCombo(validator.getMissingCombo());
         results.setMissingOr(validator.getMissingOr());
+        results.setMissingAnd(validator.getMissingAnd());
+        results.setMissingXOr(validator.getMissingXOr());
 
         // Lookup CERT ID
         if (validator.isValid()) {

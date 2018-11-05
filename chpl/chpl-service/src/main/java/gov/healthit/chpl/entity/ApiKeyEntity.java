@@ -31,7 +31,7 @@ public class ApiKeyEntity {
     @Basic(optional = false)
     @Column(name = "name_organization")
     private String nameOrganization;
-    
+
     @Basic(optional = false)
     @Column(name = "whitelisted", nullable = false, insertable = false)
     private Boolean whitelisted;
@@ -51,6 +51,12 @@ public class ApiKeyEntity {
     @Basic(optional = false)
     @Column(name = "deleted", nullable = false)
     private Boolean deleted;
+
+    @Column(name = "last_used_date", nullable = false)
+    private Date lastUsedDate;
+
+    @Column(name = "delete_warning_sent_date", nullable = true)
+    private Date deleteWarningSentDate;
 
     public Long getId() {
         return id;
@@ -83,12 +89,12 @@ public class ApiKeyEntity {
     public void setNameOrganization(final String nameOrganization) {
         this.nameOrganization = nameOrganization;
     }
-    
+
     public Boolean getWhitelisted() {
         return whitelisted;
     }
 
-    public void setWhitelisted(Boolean whitelisted) {
+    public void setWhitelisted(final Boolean whitelisted) {
         this.whitelisted = whitelisted;
     }
 
@@ -122,6 +128,22 @@ public class ApiKeyEntity {
 
     public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public Date getLastUsedDate() {
+        return lastUsedDate;
+    }
+
+    public void setLastUsedDate(final Date lastUsedDate) {
+        this.lastUsedDate = lastUsedDate;
+    }
+
+    public Date getDeleteWarningSentDate() {
+        return deleteWarningSentDate;
+    }
+
+    public void setDeleteWarningSentDate(final Date deleteWarningSentDate) {
+        this.deleteWarningSentDate = deleteWarningSentDate;
     }
 
 }

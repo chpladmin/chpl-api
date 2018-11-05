@@ -15,30 +15,31 @@ import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestFunctionalityReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnattestedCriteriaWithDataReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnsupportedCharacterReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.UrlReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ValidDataReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.RequiredData2014Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.legacy.LegacyTestToolReviewer;
 
 /**
- * Validation interface for any 2014 listing with CHPL number beginning with CHP-
+ * Validation interface for any 2014 listing with CHPL number beginning with CHP-.
  * @author kekey
  *
  */
 @Component
 public class Edition2014LegacyListingValidator extends Validator {
-    @Autowired 
+    @Autowired
     @Qualifier("developerStatusReviewer")
     private DeveloperStatusReviewer devStatusReviewer;
 
-    @Autowired 
+    @Autowired
     @Qualifier("unsupportedCharacterReviewer")
     private UnsupportedCharacterReviewer unsupportedCharacterReviewer;
 
-    @Autowired 
+    @Autowired
     @Qualifier("fieldLengthReviewer")
     private FieldLengthReviewer fieldLengthReviewer;
 
-    @Autowired 
+    @Autowired
     @Qualifier("requiredData2014Reviewer")
     private RequiredData2014Reviewer requiredFieldReviewer;
 
@@ -46,31 +47,35 @@ public class Edition2014LegacyListingValidator extends Validator {
     @Qualifier("validDataReviewer")
     private ValidDataReviewer validDataReviewer;
 
-    @Autowired 
+    @Autowired
     @Qualifier("certificationStatusReviewer")
     private CertificationStatusReviewer certStatusReviewer;
 
-    @Autowired 
+    @Autowired
     @Qualifier("certificationDateReviewer")
     private CertificationDateReviewer certDateReviewer;
 
-    @Autowired 
+    @Autowired
     @Qualifier("unattestedCriteriaWithDataReviewer")
     private UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer;
 
-    @Autowired 
+    @Autowired
     @Qualifier("legacyTestToolReviewer")
     private LegacyTestToolReviewer ttReviewer;
-    
-    @Autowired 
+
+    @Autowired
     @Qualifier("testFunctionalityReviewer")
     private TestFunctionalityReviewer tfReviewer;
+
+    @Autowired
+    @Qualifier("urlReviewer")
+    private UrlReviewer urlReviewer;
 
     private List<Reviewer> reviewers;
 
     @Override
     public List<Reviewer> getReviewers() {
-        if(reviewers == null) {
+        if (reviewers == null) {
             reviewers = new ArrayList<Reviewer>();
             reviewers.add(devStatusReviewer);
             reviewers.add(unsupportedCharacterReviewer);
@@ -82,6 +87,7 @@ public class Edition2014LegacyListingValidator extends Validator {
             reviewers.add(unattestedCriteriaWithDataReviewer);
             reviewers.add(ttReviewer);
             reviewers.add(tfReviewer);
+            reviewers.add(urlReviewer);
         }
         return reviewers;
     }

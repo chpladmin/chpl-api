@@ -7,6 +7,14 @@ Certification Status,Yes,Active; Suspended by ONC; Suspended by ONC-ACB; Withdra
 ACB Name,Yes,Drummond Group Inc.;InfoGard;ICSA Labs,The ONC-ACB responsible for certifying the listing
 Previous ACB Name,If applicable,<ACB Name> = <Date of Transfer>,"If another ONC-ACB had previously been responsible for certifying the listing, this field displays the previous ONC-ACB, and the date on which the certificate was transferred to the current ONC-ACB"
 Developer Name,Yes,<string>,The name of the developer or vendor of the certified health IT product.
+VENDOR_STREET_ADDRESS__C,Yes,<string>,The street address of the health IT developer.
+VENDOR_CITY__C,Yes,<string>,The city of the health IT developer.
+VENDOR_STATE__C,Yes,<string>,The state of the health IT developer.
+VENDOR_ZIP__C,Yes,<string>,The zip code of the health IT developer.
+VENDOR_WEBSITE__C,Yes,<url>,The website of the health IT developer.
+CONTACT_NAME__C,Yes,<string>,The contact name for the health IT developer.
+EMAIL__C,Yes,<email>,The email address of the health It developer contact.
+PHONE__C,Yes,<phone>,The phone number of the health IT developer contact.
 Product Name,Yes,<string>,The name of the product listed on the CHPL.
 Version,Yes,<string>,The version of the product listed on the CHPL.
 Total Surveillance Activities,Yes,<int>,"The total number of surveillance activities that were conducted for the corresponding listing, regardless of whether or not a non-conformity was found.  For additional information, please see 'Understanding Surveillance Information in the CHPL', available in the CHPL Public User Guide"

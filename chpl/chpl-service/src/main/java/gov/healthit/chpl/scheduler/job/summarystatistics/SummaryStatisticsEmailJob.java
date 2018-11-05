@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -20,17 +22,20 @@ import org.apache.logging.log4j.Logger;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.healthit.chpl.auth.SendMailUtil;
+import gov.healthit.chpl.auth.EmailBuilder;
+import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyAltTestStatistics;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 import gov.healthit.chpl.domain.statistics.Statistics;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.entity.SummaryStatisticsEntity;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 
@@ -43,11 +48,21 @@ import gov.healthit.chpl.scheduler.job.QuartzJob;
 public class SummaryStatisticsEmailJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("summaryStatisticsEmailJobLogger");
     private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
+    private static final int EDITION2014 = 2014;
+    private static final int EDITION2015 = 2015;
 
     @Autowired
     private SummaryStatisticsDAO summaryStatisticsDAO;
 
+    @Autowired
+    private CertificationBodyDAO certificationBodyDAO;
+
+    @Autowired
+    private Environment env;
+
     private Properties props;
+
+    private List<CertificationBodyDTO> activeAcbs;
 
     /**
      * Constructor that initializes the SummaryStatisticsEmailJob object.
@@ -65,6 +80,8 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
             LOGGER.info("********* Starting the Summary Statistics Email job. *********");
             LOGGER.info("Sending email to: " + jobContext.getMergedJobDataMap().getString("email"));
 
+            activeAcbs = certificationBodyDAO.findAll(false);
+
             SummaryStatisticsEntity summaryStatistics = summaryStatisticsDAO.getMostRecent();
             Statistics stats = getStatistics(summaryStatistics);
             String message = createHtmlMessage(stats, summaryStatistics.getEndDate());
@@ -78,11 +95,18 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         }
     }
 
-
     private void sendEmail(final String message, final String address) throws AddressException, MessagingException {
-        SendMailUtil mailUtil = new SendMailUtil();
         String subject = props.getProperty("summaryEmailSubject").toString();
-        mailUtil.sendEmail(address, subject, message, getSummaryStatisticsFile(), props);
+
+        List<String> addresses = new ArrayList<String>();
+        addresses.add(address);
+
+        EmailBuilder emailBuilder = new EmailBuilder(env);
+        emailBuilder.recipients(addresses)
+                        .subject(subject)
+                        .htmlMessage(message)
+                        .fileAttachments(getSummaryStatisticsFile())
+                        .sendEmail();
     }
 
     private List<File> getSummaryStatisticsFile() {
@@ -114,7 +138,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
                 "<ul><li>Open Surveillance Activities - " + stats.getTotalOpenSurveillanceActivities() + "</li>");
 
         emailMessage.append("<ul>");
-        for (CertifiedBodyStatistics stat : stats.getTotalOpenSurveillanceActivitiesByAcb()) {
+        for (CertifiedBodyStatistics stat : getStatistics(stats.getTotalOpenSurveillanceActivitiesByAcb())) {
             emailMessage.append("<li>Certified by ");
             emailMessage.append(stat.getName());
             emailMessage.append(" - ");
@@ -129,7 +153,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         emailMessage.append("<ul><li>Open NCs - " + stats.getTotalOpenNonconformities() + "</li>");
 
         emailMessage.append("<ul>");
-        for (CertifiedBodyStatistics stat : stats.getTotalOpenNonconformitiesByAcb()) {
+        for (CertifiedBodyStatistics stat : getStatistics(stats.getTotalOpenNonconformitiesByAcb())) {
             emailMessage.append("<li>Certified by ");
             emailMessage.append(stat.getName());
             emailMessage.append(" - ");
@@ -154,232 +178,225 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
     }
 
     private String createUniqueDeveloperSection(final Statistics stats) {
-        final int edition2014 = 2014;
-        final int edition2015 = 2015;
-        List<String> uniqueAcbList = new ArrayList<String>();
-        Boolean hasSuspended = false;
         StringBuilder ret = new StringBuilder();
 
         ret.append(
                 "<h4>Total # of Unique Developers (Regardless of Edition) -  " + stats.getTotalDevelopers() + "</h4>");
-        ret.append("<ul><li>Total # of Developers with Active 2014 Listings - "
-                + stats.getTotalDevelopersWithActive2014Listings() + "</li>");
-        ret.append("<ul>");
-        for (CertifiedBodyStatistics cbStat : stats.getTotalDevelopersByCertifiedBodyWithListingsEachYear()) {
-            if (cbStat.getYear() == edition2014 && getActiveDevelopersForAcb(edition2014,
-                    stats.getTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear(),
-                    cbStat.getName()) > 0) {
 
-                ret.append("<li>Certified by " + cbStat.getName() + " - "
-                        + getActiveDevelopersForAcb(edition2014,
-                                stats.getTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear(),
-                                cbStat.getName())
-                        + "</li>");
-            }
-        }
-        ret.append("</ul>");
-        ret.append("<li>Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2014 Listings</li>");
         ret.append("<ul>");
-        for (CertifiedBodyStatistics cbStat : stats
-                .getTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear()) {
-            if (cbStat.getYear() == edition2014
-                    && cbStat.getCertificationStatusName().toLowerCase().contains("suspended")) {
-                if (!uniqueAcbList.contains(cbStat.getName())) {
-                    ret.append("<li>Certified by " + cbStat.getName() + " - "
-                            + getSuspendedDevelopersForAcb(edition2014,
-                                    stats.getTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear(),
-                                    cbStat.getName())
-                            + "</li>");
-                    uniqueAcbList.add(cbStat.getName());
-                    hasSuspended = true;
-                }
-            }
-        }
-        ret.append("</ul>");
-        if (!hasSuspended) {
-            ret.append("<ul><li>No certified bodies have suspended listings</li></ul>");
-        }
 
         ret.append("<li>Total # of Developers with 2014 Listings (Regardless of Status) - "
                 + stats.getTotalDevelopersWith2014Listings() + "</li>");
         ret.append("<ul>");
-        for (CertifiedBodyStatistics cbStat : stats.getTotalDevelopersByCertifiedBodyWithListingsEachYear()) {
-            if (cbStat.getYear() == edition2014 && cbStat.getTotalDevelopersWithListings() > 0) {
-                ret.append("<li>Certified by " + cbStat.getName() + " - "
-                        + cbStat.getTotalDevelopersWithListings() + "</li>");
-            }
+        for (CertifiedBodyStatistics stat
+                : getStatisticsByEdition(
+                        stats.getTotalDevelopersByCertifiedBodyWithListingsEachYear(),
+                        EDITION2014)) {
+            ret.append("<li>Certified by ");
+            ret.append(stat.getName());
+            ret.append(" - ");
+            ret.append(stat.getTotalDevelopersWithListings());
+        }
+        ret.append("</ul>");
+
+        ret.append("<li>Total # of Developers with Active 2014 Listings - "
+                + stats.getTotalDevelopersWithActive2014Listings() + "</li>");
+        ret.append("<ul>");
+
+        for (CertifiedBodyStatistics stat
+                : getStatisticsByStatusAndEdition(
+                        stats.getTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear(),
+                        "Active",
+                        EDITION2014)) {
+            ret.append("<li>Certified by ");
+            ret.append(stat.getName());
+            ret.append(" - ");
+            ret.append(stat.getTotalDevelopersWithListings());
+        }
+        ret.append("</ul>");
+
+        //Calculate 'Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2014 Listings'
+        StringBuilder suspendedDevs2014 = new StringBuilder();
+        Long suspendedDevsTotal = 0L;
+        for (CertifiedBodyStatistics stat
+                : getStatisticsByStatusAndEdition(
+                        stats.getTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear(),
+                        "Suspended",
+                        EDITION2014)) {
+            suspendedDevs2014.append("<li>Certified by ");
+            suspendedDevs2014.append(stat.getName());
+            suspendedDevs2014.append(" - ");
+            suspendedDevs2014.append(stat.getTotalDevelopersWithListings());
+
+            suspendedDevsTotal += stat.getTotalDevelopersWithListings();
+        }
+        //Build the section...
+        ret.append("<li>");
+        ret.append("Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2014 Listings - ");
+        ret.append(suspendedDevsTotal);
+        ret.append("</li>");
+        ret.append("<ul>");
+        ret.append(suspendedDevs2014.toString());
+        ret.append("</ul>");
+
+        ret.append("<li>Total # of Developers with 2015 Listings (Regardless of Status) - "
+                + stats.getTotalDevelopersWith2015Listings() + "</li>");
+        ret.append("<ul>");
+        for (CertifiedBodyStatistics stat
+                : getStatisticsByEdition(
+                        stats.getTotalDevelopersByCertifiedBodyWithListingsEachYear(), EDITION2015)) {
+            ret.append("<li>Certified by ");
+            ret.append(stat.getName());
+            ret.append(" - ");
+            ret.append(stat.getTotalDevelopersWithListings());
         }
         ret.append("</ul>");
 
         ret.append("<li>Total # of Developers with Active 2015 Listings - "
                 + stats.getTotalDevelopersWithActive2015Listings() + "</li>");
         ret.append("<ul>");
-        for (CertifiedBodyStatistics cbStat : stats.getTotalDevelopersByCertifiedBodyWithListingsEachYear()) {
-            if (cbStat.getYear() == edition2015 && getActiveDevelopersForAcb(edition2015,
-                    stats.getTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear(),
-                    cbStat.getName()) > 0) {
-                ret.append("<li>Certified by " + cbStat.getName() + " - "
-                        + getActiveDevelopersForAcb(edition2015,
-                                stats.getTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear(),
-                                cbStat.getName())
-                        + "</li>");
-            }
-        }
-        ret.append("</ul>");
-
-        ret.append("<li>Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2015 Listings</li>");
-        uniqueAcbList.clear(); // make sure not to add one ACB more than once
-        hasSuspended = false;
-        ret.append("<ul>");
-        for (CertifiedBodyStatistics cbStat : stats
-                .getTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear()) {
-            if (cbStat.getYear() == edition2015
-                    && cbStat.getCertificationStatusName().toLowerCase().contains("suspended")) {
-                if (!uniqueAcbList.contains(cbStat.getName())) {
-                    ret.append("<li>Certified by " + cbStat.getName() + " - "
-                            + getSuspendedDevelopersForAcb(edition2015,
-                                    stats.getTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear(),
-                                    cbStat.getName())
-                            + "</li>");
-                    uniqueAcbList.add(cbStat.getName());
-                    hasSuspended = true;
-                }
-            }
-        }
-        ret.append("</ul>");
-        if (!hasSuspended) {
-            ret.append("<ul><li>No certified bodies have suspended listings</li></ul>");
+        for (CertifiedBodyStatistics stat
+                : getStatisticsByStatusAndEdition(
+                        stats.getTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear(),
+                        "Active",
+                        EDITION2015)) {
+            ret.append("<li>Certified by ");
+            ret.append(stat.getName());
+            ret.append(" - ");
+            ret.append(stat.getTotalDevelopersWithListings());
         }
 
-        ret.append("<li>Total # of Developers with 2015 Listings (Regardless of Status) - "
-                + stats.getTotalDevelopersWith2015Listings() + "</li>");
-        ret.append("<ul>");
-        for (CertifiedBodyStatistics cbStat : stats.getTotalDevelopersByCertifiedBodyWithListingsEachYear()) {
-            if (cbStat.getYear() == edition2015 && cbStat.getTotalDevelopersWithListings() > 0) {
-                ret.append("<li>Certified by " + cbStat.getName() + " - "
-                        + cbStat.getTotalDevelopersWithListings() + "</li>");
-            }
+        ret.append("</ul>");
+
+        StringBuilder suspendedDevs2015 = new StringBuilder();
+        Long suspendedDevsTotal2015 = 0L;
+        for (CertifiedBodyStatistics stat
+                : getStatisticsByStatusAndEdition(
+                        stats.getTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear(),
+                        "Suspended",
+                        EDITION2015)) {
+            suspendedDevs2015.append("<li>Certified by ");
+            suspendedDevs2015.append(stat.getName());
+            suspendedDevs2015.append(" - ");
+            suspendedDevs2015.append(stat.getTotalDevelopersWithListings());
+
+            suspendedDevsTotal2015 += stat.getTotalDevelopersWithListings();
         }
-        ret.append("</ul></ul>");
+
+        //Build the section...
+        ret.append("<li>");
+        ret.append("Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2015 Listings - ");
+        ret.append(suspendedDevsTotal2015);
+        ret.append("</li>");
+        ret.append("<ul>");
+        ret.append(suspendedDevs2015.toString());
+        ret.append("</ul>");
+
+        ret.append("</ul>");
         return ret.toString();
     }
 
     private String createUniqueProductSection(final Statistics stats) {
-        final int edition2014 = 2014;
-        final int edition2015 = 2015;
-        List<String> uniqueAcbList = new ArrayList<String>();
-        Boolean hasSuspended = false;
         StringBuilder ret = new StringBuilder();
 
-        ret
-        .append("<h4>Total # of Certified Unique Products "
-                + "(Regardless of Status or Edition - Including 2011) - "
-                + stats.getTotalCertifiedProducts() + "</h4>");
+        ret.append("<h4>Total # of Certified Unique Products Regardless of Status or Edition - Including 2011) - ");
+        ret.append(stats.getTotalCertifiedProducts());
+        ret.append("</h4>");
+
         ret.append("<ul>");
-        ret.append("<li>Total # of Unique Products with 2014 Listings (Regardless of Status) -  "
-                + stats.getTotalCPs2014Listings() + "</li>");
+        ret.append("<li>Total # of Unique Products with 2014 Listings (Regardless of Status) -  ");
+        ret.append(stats.getTotalCPs2014Listings());
+        ret.append("</li>");
         ret.append("<ul>");
-        for (CertifiedBodyStatistics cbStat : stats.getTotalCPListingsEachYearByCertifiedBody()) {
-            if (cbStat.getYear() == edition2014 && cbStat.getTotalListings() > 0) {
-                ret
-                .append("<li>Certified by " + cbStat.getName() + " - " + cbStat.getTotalListings() + "</li>");
-            }
+        for (CertifiedBodyStatistics cbStat
+                : getStatisticsByEdition(stats.getTotalCPListingsEachYearByCertifiedBody(), EDITION2014)) {
+            ret.append("<li>Certified by ");
+            ret.append(cbStat.getName());
+            ret.append(" - ");
+            ret.append(cbStat.getTotalListings());
+            ret.append("</li>");
         }
         ret.append("</ul>");
 
-        ret.append("<li>Total # of Unique Products with Active 2014 Listings - "
-                + stats.getTotalCPsActive2014Listings() + "</li>");
+        ret.append("<li>Total # of Unique Products with Active 2014 Listings - ");
+        ret.append(stats.getTotalCPsActive2014Listings());
+        ret.append("</li>");
         ret.append("<ul>");
-        for (CertifiedBodyStatistics cbStat : stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus()) {
-            if (!uniqueAcbList.contains(cbStat.getName())
-                    && cbStat.getYear() == edition2014 && cbStat.getTotalListings() > 0
-                    && (cbStat.getCertificationStatusName().equalsIgnoreCase("active"))) {
-                ret.append("<li>Certified by " + cbStat.getName() + " - "
-                        + getActiveCPsForAcb(edition2014,
-                                stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(),
-                                cbStat.getName())
-                        + "</li>");
-                uniqueAcbList.add(cbStat.getName());
-            }
+        for (CertifiedBodyStatistics cbStat
+                : getStatisticsByStatusAndEdition(
+                        stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(),
+                        "Active",
+                        EDITION2014)) {
+            ret.append("<li>Certified by ");
+            ret.append(cbStat.getName());
+            ret.append(" - ");
+            ret.append(cbStat.getTotalListings());
+            ret.append("</li>");
         }
         ret.append("</ul>");
 
-        uniqueAcbList.clear();
-        hasSuspended = false;
-        ret
-        .append("<li>Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2014 Listings -  "
-                + stats.getTotalCPsSuspended2014Listings() + "</li>");
+        ret.append("<li>Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2014 Listings -  ");
+        ret.append(stats.getTotalCPsSuspended2014Listings());
+        ret.append("</li>");
         ret.append("<ul>");
-        for (CertifiedBodyStatistics cbStat : stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus()) {
-            if (!uniqueAcbList.contains(cbStat.getName()) && cbStat.getYear().intValue() == edition2014
-                    && cbStat.getTotalListings() > 0
-                    && cbStat.getCertificationStatusName().toLowerCase().contains("suspended")) {
-                ret.append("<li>Certified by " + cbStat.getName() + " - "
-                        + getSuspendedCPsForAcb(edition2014,
-                                stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(),
-                                cbStat.getName())
-                        + "</li>");
-                uniqueAcbList.add(cbStat.getName());
-                hasSuspended = true;
-            }
-        }
-        ret.append("</ul>");
-        if (!hasSuspended) {
-            ret.append("<ul><li>No certified bodies have suspended listings</li></ul>");
-        }
-
-        ret.append("<li>Total # of Unique Products with 2015 Listings (Regardless of Status) -  "
-                + stats.getTotalCPs2015Listings() + "</li>");
-        ret.append("<ul>");
-        for (CertifiedBodyStatistics cbStat : stats.getTotalCPListingsEachYearByCertifiedBody()) {
-            if (cbStat.getYear() == edition2015 && cbStat.getTotalListings() > 0) {
-                ret
-                .append("<li>Certified by " + cbStat.getName() + " - " + cbStat.getTotalListings() + "</li>");
-            }
+        for (CertifiedBodyStatistics cbStat
+                : getStatisticsByStatusAndEdition(
+                        stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(),
+                        "Suspended",
+                        EDITION2014)) {
+            ret.append("<li>Certified by ");
+            ret.append(cbStat.getName());
+            ret.append(" - ");
+            ret.append(cbStat.getTotalListings());
         }
         ret.append("</ul>");
 
-        uniqueAcbList.clear();
-
-        ret.append("<li>Total # of Unique Products with Active 2015 Listings -  "
-                + stats.getTotalCPsActive2015Listings() + "</li>");
+        ret.append("<li>Total # of Unique Products with 2015 Listings (Regardless of Status) -  ");
+        ret.append(stats.getTotalCPs2015Listings());
+        ret.append("</li>");
         ret.append("<ul>");
-        for (CertifiedBodyStatistics cbStat : stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus()) {
-            if (!uniqueAcbList.contains(cbStat.getName())
-                    && cbStat.getYear() == edition2015 && cbStat.getTotalListings() > 0
-                    && (cbStat.getCertificationStatusName().equalsIgnoreCase("active"))) {
-                ret.append("<li>Certified by " + cbStat.getName() + " - "
-                        + getActiveCPsForAcb(edition2015,
-                                stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(),
-                                cbStat.getName())
-                        + "</li>");
-                uniqueAcbList.add(cbStat.getName());
-            }
+        for (CertifiedBodyStatistics cbStat
+                : getStatisticsByEdition(stats.getTotalCPListingsEachYearByCertifiedBody(), EDITION2015)) {
+            ret.append("<li>Certified by ");
+            ret.append(cbStat.getName());
+            ret.append(" - ");
+            ret.append(cbStat.getTotalListings());
+            ret.append("</li>");
         }
         ret.append("</ul>");
 
-        uniqueAcbList.clear();
-        ret.append("<li>Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2015 Listings -  "
-                + stats.getTotalCPsSuspended2015Listings() + "</li>");
+        ret.append("<li>Total # of Unique Products with Active 2015 Listings - ");
+        ret.append(stats.getTotalCPsActive2015Listings());
+        ret.append("</li>");
         ret.append("<ul>");
-        for (CertifiedBodyStatistics cbStat : stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus()) {
-            if (!uniqueAcbList.contains(cbStat.getName())
-                    && cbStat.getYear() == edition2015 && cbStat.getTotalListings() > 0
-                    && cbStat.getCertificationStatusName().toLowerCase().contains("suspended")) {
-                ret.append("<li>Certified by " + cbStat.getName() + " - "
-                        + getSuspendedCPsForAcb(edition2015,
-                                stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(),
-                                cbStat.getName())
-                        + "</li>");
-                uniqueAcbList.add(cbStat.getName());
-                hasSuspended = true;
-            }
+        for (CertifiedBodyStatistics cbStat
+                : getStatisticsByStatusAndEdition(
+                        stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(),
+                        "Active",
+                        EDITION2015)) {
+            ret.append("<li>Certified by ");
+            ret.append(cbStat.getName());
+            ret.append(" - ");
+            ret.append(cbStat.getTotalListings());
+            ret.append("</li>");
         }
         ret.append("</ul>");
-        if (!hasSuspended) {
-            ret.append("<ul><li>No certified bodies have suspended listings</li></ul>");
-        }
 
+        ret.append("<li>Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2015 Listings -  ");
+        ret.append(stats.getTotalCPsSuspended2015Listings());
+        ret.append("</li>");
+        ret.append("<ul>");
+        for (CertifiedBodyStatistics cbStat
+                : getStatisticsByStatusAndEdition(
+                        stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(),
+                        "Suspended",
+                        EDITION2015)) {
+            ret.append("<li>Certified by ");
+            ret.append(cbStat.getName());
+            ret.append(" - ");
+            ret.append(cbStat.getTotalListings());
+        }
+        ret.append("</ul>");
 
         ret.append("<li>Total # of Unique Products with Active Listings (Regardless of Edition) - "
                 + stats.getTotalCPsActiveListings() + "</ul></li>");
@@ -388,50 +405,52 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
     }
 
     private String createListingSection(final Statistics stats) {
-        final int edition2014 = 2014;
-        final int edition2015 = 2015;
         StringBuilder ret = new StringBuilder();
 
-        ret.append(
-                "<h4>Total # of Listings (Regardless of Status or Edition) -  " + stats.getTotalListings() + "</h4>");
-        ret.append("<ul><li>Total # of Active (Including Suspended by ONC/ONC-ACB 2014 Listings) - "
-                + stats.getTotalActive2014Listings() + "</li>");
+        ret.append("<h4>Total # of Listings (Regardless of Status or Edition) -  ");
+        ret.append(stats.getTotalListings());
+        ret.append("</h4>");
 
         ret.append("<ul>");
-        for (CertifiedBodyStatistics cbStat : stats.getTotalActiveListingsByCertifiedBody()) {
-            if (cbStat.getYear() == edition2014 && cbStat.getTotalListings() > 0) {
-                ret
-                .append("<li>Certified by " + cbStat.getName() + " - " + cbStat.getTotalListings() + "</li>");
-            }
+
+        ret.append("<li>Total # of Active (Including Suspended by ONC/ONC-ACB 2014 Listings) - ");
+        ret.append(stats.getTotalActive2014Listings());
+        ret.append("</li>");
+        ret.append("<ul>");
+        for (CertifiedBodyStatistics cbStat
+                : getStatisticsByEdition(stats.getTotalActiveListingsByCertifiedBody(), EDITION2014)) {
+            ret.append("<li>Certified by ");
+            ret.append(cbStat.getName());
+            ret.append(" - ");
+            ret.append(cbStat.getTotalListings());
+            ret.append("</li>");
         }
         ret.append("</ul>");
 
-        ret.append("<li>Total # of Active (Including Suspended by ONC/ONC-ACB 2015 Listings) - "
-                + stats.getTotalActive2015Listings() + "</li>");
+        ret.append("<li>Total # of Active (Including Suspended by ONC/ONC-ACB 2015 Listings) - ");
+        ret.append(stats.getTotalActive2015Listings());
+        ret.append("</li>");
         ret.append("<ul>");
-        for (CertifiedBodyStatistics cbStat : stats.getTotalActiveListingsByCertifiedBody()) {
-            if (cbStat.getYear() == edition2015 && cbStat.getTotalListings() > 0) {
-                ret
-                .append("<li>Certified by " + cbStat.getName() + " - " + cbStat.getTotalListings() + "</li>");
-            }
+        for (CertifiedBodyStatistics cbStat
+                : getStatisticsByEdition(stats.getTotalActiveListingsByCertifiedBody(), EDITION2015)) {
+            ret.append("<li>Certified by ");
+            ret.append(cbStat.getName());
+            ret.append(" - ");
+            ret.append(cbStat.getTotalListings());
+            ret.append("</li>");
         }
         ret.append("</ul>");
 
-        Boolean hasOtherTest = false;
+
         ret.append("<li>Total # of 2015 Listings with Alternative Test Methods -  "
                 + stats.getTotalListingsWithAlternativeTestMethods() + "</li>");
         ret.append("<ul>");
-        for (CertifiedBodyAltTestStatistics cbStat
-                : stats.getTotalListingsWithCertifiedBodyAndAlternativeTestMethods()) {
-            if (cbStat.getTotalListings() > 0) {
-                ret.append("<li>Certified by " + cbStat.getName() + " - "
-                        + cbStat.getTotalListings()
-                        + "</li>");
-                hasOtherTest = true;
-            }
-        }
-        if (!hasOtherTest) {
-            ret.append("<li>No listings have Alternative Test Methods</li>");
+        for (CertifiedBodyAltTestStatistics cbStat : getStatisticsWithAltTestMethods(stats)) {
+            ret.append("<li>Certified by ");
+            ret.append(cbStat.getName());
+            ret.append(" - ");
+            ret.append(cbStat.getTotalListings());
+            ret.append("</li>");
         }
         ret.append("</ul>");
 
@@ -445,51 +464,139 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
 
     }
 
-    private Long getSuspendedDevelopersForAcb(
-            final Integer year, final List<CertifiedBodyStatistics> cbStats, final String acb) {
-        Long count = 0L;
-        for (CertifiedBodyStatistics cbStat : cbStats) {
-            if (cbStat.getYear().equals(year) && cbStat.getName().equalsIgnoreCase(acb)
-                    && cbStat.getCertificationStatusName().toLowerCase().contains("suspended")) {
-                count = count + cbStat.getTotalDevelopersWithListings();
-            }
+    private List<CertifiedBodyStatistics> getStatistics(final List<CertifiedBodyStatistics> stats) {
+        List<CertifiedBodyStatistics> acbStats = new ArrayList<CertifiedBodyStatistics>();
+        //All the existing stats
+        for (CertifiedBodyStatistics cbStat : stats) {
+            acbStats.add(cbStat);
         }
-        return count;
+        addMissingAcbStatistics(acbStats, null);
+        return acbStats;
     }
 
-    private Long getActiveDevelopersForAcb(
-            final Integer year, final List<CertifiedBodyStatistics> cbStats, final String acb) {
-        Long count = 0L;
-        for (CertifiedBodyStatistics cbStat : cbStats) {
-            if (cbStat.getYear().equals(year) && cbStat.getName().equalsIgnoreCase(acb)
-                    && (cbStat.getCertificationStatusName().toLowerCase().equalsIgnoreCase("active"))) {
-                count = count + cbStat.getTotalDevelopersWithListings();
+    private List<CertifiedBodyStatistics> getStatisticsByStatusAndEdition(
+            final List<CertifiedBodyStatistics> stats, final String statusName, final Integer edition) {
+
+        List<CertifiedBodyStatistics> acbStats = new ArrayList<CertifiedBodyStatistics>();
+        //Filter the existing stats
+        for (CertifiedBodyStatistics cbStat : stats) {
+            if (cbStat.getYear().equals(edition)
+                    && cbStat.getCertificationStatusName().toLowerCase().contains(statusName.toLowerCase())) {
+                acbStats.add(cbStat);
             }
         }
-        return count;
+        addMissingAcbStatistics(acbStats, edition);
+        return acbStats;
     }
 
-    private Long getActiveCPsForAcb(final Integer year, final List<CertifiedBodyStatistics> cbStats, final String acb) {
-        Long count = 0L;
-        for (CertifiedBodyStatistics cbStat : cbStats) {
-            if (cbStat.getYear().equals(year) && cbStat.getName().equalsIgnoreCase(acb)
-                    && (cbStat.getCertificationStatusName().toLowerCase().equalsIgnoreCase("active"))) {
-                count = count + cbStat.getTotalListings();
+    private List<CertifiedBodyStatistics> getStatisticsByEdition(
+            final List<CertifiedBodyStatistics> stats, final Integer edition) {
+
+        List<CertifiedBodyStatistics> acbStats = new ArrayList<CertifiedBodyStatistics>();
+        //Filter the existing stats
+        for (CertifiedBodyStatistics cbStat : stats) {
+            if (cbStat.getYear().equals(edition)) {
+                acbStats.add(cbStat);
             }
         }
-        return count;
+        addMissingAcbStatistics(acbStats, edition);
+        return acbStats;
     }
 
-    private Long getSuspendedCPsForAcb(
-            final Integer year, final List<CertifiedBodyStatistics> cbStats, final String acb) {
-        Long count = 0L;
-        for (CertifiedBodyStatistics cbStat : cbStats) {
-            if (cbStat.getYear().equals(year) && cbStat.getName().equalsIgnoreCase(acb)
-                    && cbStat.getCertificationStatusName().toLowerCase().contains("suspended")) {
-                count = count + cbStat.getTotalListings();
+    //Parameter intentionally not 'final'.  This way we don;t have to copy the values passed in to a 
+    //new list.
+    private void addMissingAcbStatistics(List<CertifiedBodyStatistics> acbStats, final Integer edition) {
+        //Add statistics for missing active ACBs
+        acbStats.addAll(getMissingAcbStats(acbStats, edition));
+
+        Collections.sort(acbStats, new Comparator<CertifiedBodyStatistics>() {
+            public int compare(final CertifiedBodyStatistics obj1, final CertifiedBodyStatistics obj2) {
+                return obj1.getName().compareTo(obj2.getName());
+            }
+        });
+    }
+
+    private List<CertifiedBodyStatistics> getMissingAcbStats(
+            final List<CertifiedBodyStatistics> statistics, final Integer edition) {
+
+        List<CertifiedBodyStatistics> updatedStats = new ArrayList<CertifiedBodyStatistics>();
+        //Make sure all active ACBs are in the resultset
+        for (CertificationBodyDTO acb : activeAcbs) {
+            if (!isAcbInStatistics(acb, statistics)) {
+                updatedStats.add(getNewCertifiedBodyStatistic(acb.getName(), edition));
             }
         }
-        return count;
+        return updatedStats;
+    }
+
+    private Boolean isAcbInStatistics(final CertificationBodyDTO acb, final List<CertifiedBodyStatistics> stats) {
+        for (CertifiedBodyStatistics stat : stats) {
+            if (stat.getName().equals(acb.getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private CertifiedBodyStatistics getNewCertifiedBodyStatistic(final String acbName, final Integer year) {
+        CertifiedBodyStatistics stat = new CertifiedBodyStatistics();
+        stat.setName(acbName);
+        stat.setTotalDevelopersWithListings(0L);
+        stat.setTotalListings(0L);
+        stat.setYear(year);
+        return stat;
+    }
+
+    private List<CertifiedBodyAltTestStatistics> getStatisticsWithAltTestMethods(final Statistics stats) {
+        List<CertifiedBodyAltTestStatistics> acbStats = new ArrayList<CertifiedBodyAltTestStatistics>();
+        //Filter the existing stats
+        for (CertifiedBodyAltTestStatistics cbStat
+                : stats.getTotalListingsWithCertifiedBodyAndAlternativeTestMethods()) {
+
+            acbStats.add(cbStat);
+        }
+        //Add statistics for missing active ACBs
+        acbStats.addAll(getMissingAcbWithAltTestMethodsStats(acbStats));
+
+        Collections.sort(acbStats, new Comparator<CertifiedBodyAltTestStatistics>() {
+            public int compare(final CertifiedBodyAltTestStatistics obj1, final CertifiedBodyAltTestStatistics obj2) {
+                return obj1.getName().compareTo(obj2.getName());
+            }
+        });
+
+        return acbStats;
+    }
+
+    private List<CertifiedBodyAltTestStatistics> getMissingAcbWithAltTestMethodsStats(
+            final List<CertifiedBodyAltTestStatistics> statistics) {
+
+        List<CertifiedBodyAltTestStatistics> updatedStats = new ArrayList<CertifiedBodyAltTestStatistics>();
+        //Make sure all active ACBs are in the resultset
+        for (CertificationBodyDTO acb : activeAcbs) {
+            if (!isAcbWithAltTestMethodsInStatistics(acb, statistics)) {
+                updatedStats.add(getNewCertifiedBodyWithAltTestMethodsStatistic(acb.getName()));
+            }
+        }
+        return updatedStats;
+    }
+
+    private CertifiedBodyAltTestStatistics getNewCertifiedBodyWithAltTestMethodsStatistic(final String acbName) {
+        CertifiedBodyAltTestStatistics stat = new CertifiedBodyAltTestStatistics();
+        stat.setName(acbName);
+        stat.setTotalDevelopersWithListings(0L);
+        stat.setTotalListings(0L);
+        return stat;
+    }
+
+    private Boolean isAcbWithAltTestMethodsInStatistics(
+            final CertificationBodyDTO acb, final List<CertifiedBodyAltTestStatistics> stats) {
+
+        for (CertifiedBodyAltTestStatistics stat : stats) {
+            if (stat.getName().equals(acb.getName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private Properties loadProperties() throws IOException {
@@ -504,9 +611,5 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
             in.close();
         }
         return props;
-    }
-
-    public void setSummaryStatisticsDAO(final SummaryStatisticsDAO summaryStatisticsDAO) {
-        this.summaryStatisticsDAO = summaryStatisticsDAO;
     }
 }

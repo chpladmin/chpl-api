@@ -1,6 +1,7 @@
 package gov.healthit.chpl.web.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -21,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.SendMailUtil;
+import gov.healthit.chpl.auth.EmailBuilder;
 import gov.healthit.chpl.domain.ApiKey;
 import gov.healthit.chpl.domain.ApiKeyActivity;
 import gov.healthit.chpl.domain.ApiKeyRegistration;
@@ -39,9 +40,6 @@ public class ApiKeyController {
 
     @Autowired
     private ApiKeyManager apiKeyManager;
-
-    @Autowired
-    private SendMailUtil sendMailService;
 
     @Autowired
     private Environment env;
@@ -86,6 +84,7 @@ public class ApiKeyController {
         toCreate.setEmail(registration.getEmail());
         toCreate.setNameOrganization(registration.getName());
         toCreate.setCreationDate(now);
+        toCreate.setLastUsedDate(now);
         toCreate.setLastModifiedDate(now);
         toCreate.setLastModifiedUser(-3L);
         toCreate.setDeleted(false);
@@ -108,23 +107,23 @@ public class ApiKeyController {
             @RequestHeader(value = "API-Key", required = false) final String userApiKey,
             @RequestParam(value = "apiKey", required = false) final String userApiKeyParam) throws Exception {
 
-        return delete(key, userApiKey, userApiKeyParam);
+        return delete(key.getKey(), userApiKey, userApiKeyParam);
     }
 
     @ApiOperation(value = "Remove an API key.", notes = "This service is only available to CHPL users with ROLE_ADMIN.")
-    @RequestMapping(value = "/{apiKey}", method = RequestMethod.DELETE, consumes = MediaType.APPLICATION_JSON_VALUE,
+    @RequestMapping(value = "/{key}", method = RequestMethod.DELETE,
             produces = "application/json; charset=utf-8")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public String revoke(@RequestBody final ApiKey key,
+    public String revoke(@PathVariable("key") final String key,
             @RequestHeader(value = "API-Key", required = false) final String userApiKey,
             @RequestParam(value = "apiKey", required = false) final String userApiKeyParam) throws Exception {
 
         return delete(key, userApiKey, userApiKeyParam);
     }
 
-    private String delete(final ApiKey key, final String userApiKey, final String userApiKeyParam) throws Exception {
+    private String delete(final String key, final String userApiKey, final String userApiKeyParam) throws Exception {
 
-        String keyToRevoke = key.getKey();
+        String keyToRevoke = key;
         if (keyToRevoke.equals(userApiKey) || keyToRevoke.equals(userApiKeyParam)) {
             throw new Exception("A user can not delete their own API key.");
         }
@@ -147,6 +146,8 @@ public class ApiKeyController {
             apiKey.setName(dto.getNameOrganization());
             apiKey.setEmail(dto.getEmail());
             apiKey.setKey(dto.getApiKey());
+            apiKey.setLastUsedDate(dto.getLastUsedDate());
+            apiKey.setDeleteWarningSentDate(dto.getDeleteWarningSentDate());
             keys.add(apiKey);
         }
 
@@ -268,6 +269,11 @@ public class ApiKeyController {
         String[] toEmails = {
                 email
         };
-        sendMailService.sendEmail(toEmails, null, subject, htmlMessage);
+        
+        EmailBuilder emailBuilder = new EmailBuilder(env);
+        emailBuilder.recipients(new ArrayList<String>(Arrays.asList(toEmails)))
+                        .subject(subject)
+                        .htmlMessage(htmlMessage)
+                        .sendEmail();
     }
 }

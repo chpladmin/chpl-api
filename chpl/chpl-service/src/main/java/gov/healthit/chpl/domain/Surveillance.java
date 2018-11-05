@@ -13,6 +13,9 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+/**
+ * Domain object for Surveillance.
+ */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Surveillance implements Serializable {
@@ -82,10 +85,17 @@ public class Surveillance implements Serializable {
 
     @XmlTransient
     private Set<String> errorMessages;
-    
+
     @XmlTransient
     private Set<String> warningMessages;
 
+    /**
+     * Date of the last modification of the surveillance.
+     */
+    @XmlElement(required = true)
+    private Date lastModifiedDate;
+
+    /** Default constructor. */
     public Surveillance() {
         this.requirements = new LinkedHashSet<SurveillanceRequirement>();
         this.errorMessages = new HashSet<String>();
@@ -99,7 +109,7 @@ public class Surveillance implements Serializable {
     public void setErrorMessages(final Set<String> errors) {
         this.errorMessages = errors;
     }
-    
+
     public Set<String> getWarningMessages() {
         return warningMessages;
     }
@@ -188,4 +198,11 @@ public class Surveillance implements Serializable {
         this.authority = authority;
     }
 
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
 }
