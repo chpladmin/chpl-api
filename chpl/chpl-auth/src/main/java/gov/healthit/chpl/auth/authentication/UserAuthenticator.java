@@ -103,11 +103,6 @@ public class UserAuthenticator implements Authenticator {
     @Override
     public String getJWT(final UserDTO user) throws JWTCreationException {
 
-        if (user.getPasswordResetRequired()) {
-            throw new JWTCreationException("Account for user " + user.getSubjectName()
-            + " has expired, and user must change their password.");
-        }
-
         String jwt = null;
         Map<String, List<String>> claims = new HashMap<String, List<String>>();
         List<String> claimStrings = new ArrayList<String>();
@@ -139,10 +134,6 @@ public class UserAuthenticator implements Authenticator {
         String jwt = null;
 
         if (user != null) {
-            if (user.getPasswordResetRequired()) {
-                throw new JWTCreationException("Account for user " + user.getSubjectName()
-                + " has expired, and user must change their password.");
-            }
             Map<String, List<String>> claims = new HashMap<String, List<String>>();
             List<String> claimStrings = new ArrayList<String>();
 

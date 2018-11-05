@@ -61,6 +61,7 @@ public class AuthenticationController {
      * @param credentials the user's credentials
      * @return a JWT with an authentication token
      * @throws JWTCreationException if unable to create the JWT
+     * @throws UserRetrievalException if user is required to change their password
      */
     @ApiOperation(value = "Log in.",
             notes = "Call this method to authenticate a user. The value returned is that user's "
@@ -69,10 +70,13 @@ public class AuthenticationController {
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST,
     consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
-    public String authenticateJSON(@RequestBody final LoginCredentials credentials) throws JWTCreationException {
+    public String authenticateJSON(@RequestBody final LoginCredentials credentials) throws JWTCreationException, UserRetrievalException {
 
         String jwt = null;
         jwt = authenticator.getJWT(credentials);
+        if (Util.getCurrentUser() != null && Util.getCurrentUser().getPasswordResetRequired()) {
+            throw new UserRetrievalException("The user is required to change their password on next log in.");
+        }
         String jwtJSON = "{\"token\": \"" + jwt + "\"}";
 
         return jwtJSON;
@@ -150,6 +154,7 @@ public class AuthenticationController {
      * @param request the request containing old/new passwords
      * @return a confirmation response, or an error iff the user's new password does not meet requirements
      * @throws UserRetrievalException if unable to retrieve the user
+     * @throws JWTCreationException if cannot create a JWT
      */
     @ApiOperation(value = "Change expired password.",
             notes = "Change a user's expired password as long as the old password "
@@ -157,10 +162,11 @@ public class AuthenticationController {
     @RequestMapping(value = "/change_expired_password", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
     public UpdatePasswordResponse changeExpiredPassword(@RequestBody final UpdateExpiredPasswordRequest request)
-            throws UserRetrievalException {
+            throws UserRetrievalException, JWTCreationException {
         UpdatePasswordResponse response = new UpdatePasswordResponse();
 
         // get the user trying to change their password
+        String jwt = authenticator.getJWT(request.getLoginCredentials());
         UserDTO currUser = authenticator.getUser(request.getLoginCredentials());
         if (currUser == null) {
             throw new UserRetrievalException("Cannot update password; bad username or password");

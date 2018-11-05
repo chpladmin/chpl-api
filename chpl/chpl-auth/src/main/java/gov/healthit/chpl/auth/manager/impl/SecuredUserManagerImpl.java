@@ -42,7 +42,7 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
     private UserContactDAO userContactDAO;
 
     @Autowired
-    UserPermissionDAO userPermissionDAO;
+    private UserPermissionDAO userPermissionDAO;
 
     @Autowired
     private MutableAclService mutableAclService;
@@ -52,7 +52,7 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_INVITED_USER_CREATOR') or "
             + "hasRole('ROLE_ACB') or hasRole('ROLE_USER_CREATOR')")
-    public UserDTO create(UserDTO user, final String encodedPassword) 
+    public UserDTO create(UserDTO user, final String encodedPassword)
             throws UserCreationException, UserRetrievalException {
 
         user = userDAO.create(user, encodedPassword);
@@ -70,13 +70,13 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
-    public void updateContactInfo(final UserEntity user){
+    public void updateContactInfo(final UserEntity user) {
         userContactDAO.update(user.getContact());
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Transactional
-    public void delete(final UserDTO user) throws UserRetrievalException, 
+    public void delete(final UserDTO user) throws UserRetrievalException,
     UserPermissionRetrievalException, UserManagementException {
         //find the granted permissions for this user and remove them
         Set<UserPermissionDTO> permissions = getGrantedPermissionsForUser(user);
@@ -98,7 +98,7 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
 
 
     @PostFilter("hasRole('ROLE_ADMIN') or hasPermission(filterObject, 'read') or hasPermission(filterObject, admin)")
-    public List<UserDTO> getAll(){
+    public List<UserDTO> getAll() {
         return userDAO.findAll();
     }
 
@@ -195,7 +195,7 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
 
     @Override
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
-    public void updatePassword(final UserDTO user, final String encodedPassword) throws UserRetrievalException{
+    public void updatePassword(final UserDTO user, final String encodedPassword) throws UserRetrievalException {
         userDAO.updatePassword(user.getSubjectName(), encodedPassword);
     }
 
@@ -225,6 +225,4 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
     public UserDTO getBySubjectName(final String userName) throws UserRetrievalException {
         return userDAO.getByName(userName);
     }
-
-
 }
