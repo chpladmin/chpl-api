@@ -62,7 +62,7 @@ public class JobManagerImpl extends ApplicationObjectSupport implements JobManag
      * a configurable window of time
      */
     @Transactional
-    //TODO: fix the @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC_STAFF')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC_STAFF')")
     public List<JobDTO> getAllJobs() {
         String completedJobThresholdDaysStr = env.getProperty("jobThresholdDays").trim();
         Integer completedJobThresholdDays = 0;
