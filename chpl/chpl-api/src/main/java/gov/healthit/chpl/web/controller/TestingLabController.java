@@ -237,18 +237,38 @@ public class TestingLabController {
 
     }
 
-    @ApiOperation(value = "Restore a deleted ATL.",
-            notes = "ATLs are unique in the CHPL in that they can be restored after a delete."
-                    + " The logged in user must have ROLE_ADMIN.")
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED. Restore a deleted ATL.",
+    notes = "ATLs are unique in the CHPL in that they can be restored after a delete."
+            + " The logged in user must have ROLE_ADMIN.")
     @RequestMapping(value = "/{atlId}/undelete", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
-    public String undeleteAtl(@PathVariable("atlId") final Long atlId)
+    public String undeleteAtlDeprecated(@PathVariable("atlId") final Long atlId)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
 
         TestingLabDTO toResurrect = atlManager.getById(atlId, true);
         atlManager.undelete(toResurrect);
         return "{\"resurrectedAtl\" : true}";
 
+    }
+
+    @ApiOperation(value = "Restore a deleted ATL.",
+            notes = "ATLs are unique in the CHPL in that they can be restored after a delete."
+                    + " The logged in user must have ROLE_ADMIN.")
+    @RequestMapping(value = "/{atlId}/undelete", method = RequestMethod.PUT,
+    produces = "application/json; charset=utf-8")
+    public String undeleteAtl(@PathVariable("atlId") final Long atlId)
+            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
+
+        return undelete(atlId);
+    }
+
+    private String undelete(final Long atlId)
+            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
+
+        TestingLabDTO toResurrect = atlManager.getById(atlId, true);
+        atlManager.undelete(toResurrect);
+        return "{\"resurrectedAtl\" : true}";
     }
 
     @Deprecated
