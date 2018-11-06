@@ -42,8 +42,7 @@ public class JobController {
             jobDtos = jobManager.getAllJobs();
         } else {
             UserDTO currentUser = new UserDTO();
-            //currentUser.setId(Util.getCurrentUser().getId());
-            currentUser.setId(30L);
+            currentUser.setId(Util.getCurrentUser().getId());
             try {
                 jobDtos = jobManager.getJobsForUser(currentUser);
             } catch (EntityRetrievalException ex) {

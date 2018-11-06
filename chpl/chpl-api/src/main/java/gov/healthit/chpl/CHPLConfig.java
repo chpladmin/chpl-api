@@ -57,7 +57,7 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
 
     @Autowired
     private ObjectFactory<ApiKeyManager> apiKeyManagerObjectFactory;
-    
+
     private Environment env;
 
     @Override
