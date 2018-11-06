@@ -18,12 +18,16 @@ import org.springframework.transaction.annotation.Transactional;
 import com.nulabinc.zxcvbn.Strength;
 
 import gov.healthit.chpl.auth.authentication.Authenticator;
+import gov.healthit.chpl.auth.authentication.JWTUserConverter;
 import gov.healthit.chpl.auth.authentication.LoginCredentials;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.jwt.JWTCreationException;
+import gov.healthit.chpl.auth.jwt.JWTValidationException;
 import gov.healthit.chpl.auth.manager.UserManager;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.UpdateExpiredPasswordRequest;
 import gov.healthit.chpl.auth.user.UpdatePasswordResponse;
+import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 
 /**
@@ -37,6 +41,9 @@ public class AuthenticationControllerTest {
 
     @Mock
     private Authenticator authenticator;
+
+    @Mock
+    private JWTUserConverter userConverter;
 
     @Mock
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -57,10 +64,12 @@ public class AuthenticationControllerTest {
      * OCD-2531: require users to change passwords.
      * @throws UserRetrievalException if user cannot be found
      * @throws JWTCreationException if JWT cannot be created
+     * @throws JWTValidationException  if JWT cannot be validated
      */
     @Transactional
     @Test
-    public void userCanUpdatePasswordWhenCredentialsExpired() throws UserRetrievalException, JWTCreationException {
+    public void userCanUpdatePasswordWhenCredentialsExpired()
+            throws UserRetrievalException, JWTCreationException, JWTValidationException {
         UpdateExpiredPasswordRequest req = new UpdateExpiredPasswordRequest();
         Strength strength = new Strength();
         req.setNewPassword("newPassword");
@@ -72,10 +81,17 @@ public class AuthenticationControllerTest {
         when(userManager.getPasswordStrength(any(UserDTO.class), anyString())).thenReturn(strength);
         when(userManager.getEncodedPassword(any(UserDTO.class))).thenReturn("encodedPassword");
         when(authenticator.getUser(any(LoginCredentials.class))).thenReturn(getUserDtoTest());
+        when(authenticator.getJWT(any(UserDTO.class))).thenReturn("a string");
+        when(userConverter.getAuthenticatedUser(anyString())).thenReturn(getUserTest());
         when(bCryptPasswordEncoder.matches(anyString(), anyString())).thenReturn(true);
 
         UpdatePasswordResponse resp = myController.changeExpiredPassword(req);
         assertTrue(resp.isPasswordUpdated());
+    }
+
+    private User getUserTest() {
+        User user = new JWTAuthenticatedUser();
+        return user;
     }
 
     private UserDTO getUserDtoTest() {

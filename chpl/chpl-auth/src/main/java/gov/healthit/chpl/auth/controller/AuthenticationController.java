@@ -57,10 +57,12 @@ public class AuthenticationController {
 
     @Autowired
     private UserManager userManager;
-    @Autowired
 
+    @Autowired
     private JWTUserConverter userConverter;
-    @Autowired private Environment env;
+
+    @Autowired
+    private Environment env;
 
     /**
      * Log in a user.
