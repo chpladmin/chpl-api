@@ -1,7 +1,6 @@
 package gov.healthit.chpl.auth.manager.impl;
 
 import java.security.SecureRandom;
-import java.text.DateFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
