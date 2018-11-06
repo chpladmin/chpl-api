@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,15 +23,18 @@ import com.nulabinc.zxcvbn.Strength;
 import gov.healthit.chpl.auth.EmailBuilder;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.authentication.Authenticator;
+import gov.healthit.chpl.auth.authentication.JWTUserConverter;
 import gov.healthit.chpl.auth.authentication.LoginCredentials;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserResetTokenDTO;
 import gov.healthit.chpl.auth.json.UserResetPasswordJSONObject;
 import gov.healthit.chpl.auth.jwt.JWTCreationException;
+import gov.healthit.chpl.auth.jwt.JWTValidationException;
 import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.user.UpdateExpiredPasswordRequest;
 import gov.healthit.chpl.auth.user.UpdatePasswordRequest;
 import gov.healthit.chpl.auth.user.UpdatePasswordResponse;
+import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -53,7 +57,9 @@ public class AuthenticationController {
 
     @Autowired
     private UserManager userManager;
+    @Autowired
 
+    private JWTUserConverter userConverter;
     @Autowired private Environment env;
 
     /**
@@ -70,11 +76,13 @@ public class AuthenticationController {
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST,
     consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
-    public String authenticateJSON(@RequestBody final LoginCredentials credentials) throws JWTCreationException, UserRetrievalException {
+    public String authenticateJSON(@RequestBody final LoginCredentials credentials)
+            throws JWTCreationException, UserRetrievalException {
 
         String jwt = null;
         jwt = authenticator.getJWT(credentials);
-        if (Util.getCurrentUser() != null && Util.getCurrentUser().getPasswordResetRequired()) {
+        UserDTO user = authenticator.getUser(credentials);
+        if (user != null && user.getPasswordResetRequired()) {
             throw new UserRetrievalException("The user is required to change their password on next log in.");
         }
         String jwtJSON = "{\"token\": \"" + jwt + "\"}";
@@ -155,6 +163,7 @@ public class AuthenticationController {
      * @return a confirmation response, or an error iff the user's new password does not meet requirements
      * @throws UserRetrievalException if unable to retrieve the user
      * @throws JWTCreationException if cannot create a JWT
+     * @throws JWTValidationException if cannot validate JWT
      */
     @ApiOperation(value = "Change expired password.",
             notes = "Change a user's expired password as long as the old password "
@@ -162,11 +171,10 @@ public class AuthenticationController {
     @RequestMapping(value = "/change_expired_password", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
     public UpdatePasswordResponse changeExpiredPassword(@RequestBody final UpdateExpiredPasswordRequest request)
-            throws UserRetrievalException, JWTCreationException {
+            throws UserRetrievalException, JWTCreationException, JWTValidationException {
         UpdatePasswordResponse response = new UpdatePasswordResponse();
 
         // get the user trying to change their password
-        String jwt = authenticator.getJWT(request.getLoginCredentials());
         UserDTO currUser = authenticator.getUser(request.getLoginCredentials());
         if (currUser == null) {
             throw new UserRetrievalException("Cannot update password; bad username or password");
@@ -174,7 +182,8 @@ public class AuthenticationController {
 
         // check the strength of the new password
         Strength strength = userManager.getPasswordStrength(currUser, request.getNewPassword());
-        if (strength.getScore() < UserManager.MIN_PASSWORD_STRENGTH) {
+        if (strength.getScore() < UserManager.MIN_PASSWORD_STRENGTH
+                || request.getNewPassword().equals(request.getOldPassword())) {
             LOGGER.info("Strength results: [warning: {}] [suggestions: {}] [score: {}] [worst case crack time: {}]",
                     strength.getFeedback().getWarning(),
                     strength.getFeedback().getSuggestions().toString(),
@@ -182,6 +191,7 @@ public class AuthenticationController {
                     strength.getCrackTimesDisplay().getOfflineFastHashing1e10PerSecond());
             response.setStrength(strength);
             response.setPasswordUpdated(false);
+            response.getSuggestions().add("New password cannot match old password");
             return response;
         }
 
@@ -191,7 +201,11 @@ public class AuthenticationController {
         if (!oldPasswordMatches) {
             throw new UserRetrievalException("The provided old password does not match the database.");
         } else {
+            String jwt = authenticator.getJWT(currUser);
+            User authenticatedUser = userConverter.getAuthenticatedUser(jwt);
+            SecurityContextHolder.getContext().setAuthentication(authenticatedUser);
             userManager.updateUserPassword(currUser.getSubjectName(), request.getNewPassword());
+            SecurityContextHolder.getContext().setAuthentication(null);
         }
         response.setPasswordUpdated(true);
         return response;
