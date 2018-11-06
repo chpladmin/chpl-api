@@ -564,7 +564,7 @@ public class SurveillanceController implements MessageSourceAware {
     }
 
     @ApiOperation(value = "Reject (effectively delete) a pending surveillance item.")
-    @RequestMapping(value = "/pending/{pendingSurvId}/reject", method = RequestMethod.DELETE,
+    @RequestMapping(value = "/pending/{pendingSurvId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public @ResponseBody String rejectPendingSurveillance(@PathVariable("pendingSurvId") final Long id)
             throws EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException,
@@ -595,7 +595,7 @@ public class SurveillanceController implements MessageSourceAware {
     @ApiOperation(value = "Reject several pending surveillance.",
             notes = "Marks a list of pending surveillance as deleted. ROLE_ACB "
                     + " and administrative authority on the ACB for each pending surveillance is required.")
-    @RequestMapping(value = "/pending/reject", method = RequestMethod.DELETE,
+    @RequestMapping(value = "/pending", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public @ResponseBody String rejectPendingSurveillance(@RequestBody final IdListContainer idList)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
