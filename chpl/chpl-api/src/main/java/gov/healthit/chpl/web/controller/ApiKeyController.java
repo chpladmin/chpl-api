@@ -11,7 +11,6 @@ import javax.mail.internet.AddressException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -112,7 +111,6 @@ public class ApiKeyController {
     @ApiOperation(value = "Remove an API key.", notes = "This service is only available to CHPL users with ROLE_ADMIN.")
     @RequestMapping(value = "/{key}", method = RequestMethod.DELETE,
             produces = "application/json; charset=utf-8")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String revoke(@PathVariable("key") final String key,
             @RequestHeader(value = "API-Key", required = false) final String userApiKey,
             @RequestParam(value = "apiKey", required = false) final String userApiKeyParam) throws Exception {
