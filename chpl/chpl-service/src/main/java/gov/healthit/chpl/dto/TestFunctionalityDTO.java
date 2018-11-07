@@ -11,7 +11,6 @@ public class TestFunctionalityDTO implements Serializable {
     private String number;
     private String year;
     private PracticeTypeDTO practiceType;
-    private CertificationCriterionDTO certificationCriterion;
 
     public TestFunctionalityDTO() {
     }
@@ -25,9 +24,6 @@ public class TestFunctionalityDTO implements Serializable {
         }
         if (entity.getPracticeType() != null) {
             this.setPracticeType(new PracticeTypeDTO(entity.getPracticeType()));
-        }
-        if (entity.getCertificationCriterion() != null) {
-            this.setCertificationCriterion(new CertificationCriterionDTO(entity.getCertificationCriterion()));
         }
     }
 
@@ -75,19 +71,5 @@ public class TestFunctionalityDTO implements Serializable {
      */
     public void setPracticeType(final PracticeTypeDTO practiceType) {
         this.practiceType = practiceType;
-    }
-
-    /**
-     * @return the certificationCriterion
-     */
-    public CertificationCriterionDTO getCertificationCriterion() {
-        return certificationCriterion;
-    }
-
-    /**
-     * @param certificationCriterion the certificationCriterion to set
-     */
-    public void setCertificationCriterion(final CertificationCriterionDTO certificationCriterion) {
-        this.certificationCriterion = certificationCriterion;
     }
 }
