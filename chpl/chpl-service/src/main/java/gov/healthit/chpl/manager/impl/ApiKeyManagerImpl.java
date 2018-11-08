@@ -71,7 +71,7 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 
     @Override
     @Transactional
-    //TODO: fix the @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void deleteKey(final String keyString)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
 
@@ -148,7 +148,7 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 
     @Override
     @Transactional
-    //TODO: fix the @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
     public List<ApiKeyActivity> getApiKeyActivity(final String keyString,
             final Integer pageNumber, final Integer pageSize) throws EntityRetrievalException {
 
@@ -179,7 +179,7 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
     }
 
     @Override
-    //TODO: fix the @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<ApiKeyDTO> findAll() {
         return apiKeyDAO.findAll();
     }
@@ -224,7 +224,7 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
      * Returns: list of ApiKeyActivity
      */
     @Override
-    //TODO: fix the @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
     public List<ApiKeyActivity> getApiKeyActivity(final String apiKeyFilter, final Integer pageNumber,
             final Integer pageSize, final boolean dateAscending, final Long startDateMilli, final Long endDateMilli)
                     throws EntityRetrievalException {

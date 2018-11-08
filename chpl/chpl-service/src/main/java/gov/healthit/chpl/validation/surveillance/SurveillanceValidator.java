@@ -33,6 +33,7 @@ import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 
 /**
@@ -56,6 +57,8 @@ public class SurveillanceValidator implements MessageSourceAware {
     private CertificationCriterionDAO criterionDao;
     @Autowired
     private MessageSource messageSource;
+    @Autowired
+    private ErrorMessageUtil msgUtil;
 
     /**
      * Validate a surveillance.
@@ -87,25 +90,16 @@ public class SurveillanceValidator implements MessageSourceAware {
                         if (cpDetails != null) {
                             surv.setCertifiedProduct(new CertifiedProduct(cpDetails));
                         } else {
-                            surv.getErrorMessages().add(
-                                    String.format(
-                                            messageSource.getMessage(
-                                                    new DefaultMessageSourceResolvable(
-                                                            "surveillance.certifiedProductIdNotFound"),
-                                                    LocaleContextHolder.getLocale()),
-                                            chplId, chplProduct.getId()));
+                            surv.getErrorMessages().add(msgUtil.getMessage("surveillance.certifiedProductIdNotFound",
+                                    chplId, chplProduct.getId()));
                         }
                     } else {
                         surv.getErrorMessages()
-                        .add(String.format(messageSource.getMessage(
-                                new DefaultMessageSourceResolvable("surveillance.productIdNotFound"),
-                                LocaleContextHolder.getLocale()), chplId));
+                        .add(msgUtil.getMessage("surveillance.productIdNotFound", chplId));
                     }
                 } catch (final EntityRetrievalException ex) {
                     surv.getErrorMessages()
-                    .add(String.format(messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("surveillance.productDetailsRetrievalException"),
-                            LocaleContextHolder.getLocale()), chplId));
+                    .add(msgUtil.getMessage("surveillance.productDetailsRetrievalException", chplId));
                 }
             } else {
                 try {
@@ -114,15 +108,11 @@ public class SurveillanceValidator implements MessageSourceAware {
                         surv.setCertifiedProduct(new CertifiedProduct(cpDetails));
                     } else {
                         surv.getErrorMessages()
-                        .add(String.format(messageSource.getMessage(
-                                new DefaultMessageSourceResolvable("surveillance.productUniqueIdNotFound"),
-                                LocaleContextHolder.getLocale()), chplId));
+                        .add(msgUtil.getMessage("surveillance.productUniqueIdNotFound", chplId));
                     }
                 } catch (final EntityRetrievalException ex) {
                     surv.getErrorMessages()
-                    .add(String.format(messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("surveillance.productDetailsRetrievalException"),
-                            LocaleContextHolder.getLocale()), chplId));
+                    .add(msgUtil.getMessage("surveillance.productDetailsRetrievalException", chplId));
                 }
             }
         } else if (surv.getCertifiedProduct().getId() != null) {
@@ -130,9 +120,8 @@ public class SurveillanceValidator implements MessageSourceAware {
                 cpDetails = cpDao.getDetailsById(surv.getCertifiedProduct().getId());
             } catch (final EntityRetrievalException ex) {
                 surv.getErrorMessages()
-                .add(String.format(messageSource.getMessage(
-                        new DefaultMessageSourceResolvable("surveillance.detailsNotFoundForCertifiedProduct"),
-                        LocaleContextHolder.getLocale()), surv.getCertifiedProduct().getId()));
+                .add(msgUtil.getMessage("surveillance.detailsNotFoundForCertifiedProduct",
+                        surv.getCertifiedProduct().getId()));
             }
             surv.setCertifiedProduct(new CertifiedProduct(cpDetails));
         }
@@ -142,28 +131,22 @@ public class SurveillanceValidator implements MessageSourceAware {
                     surv.getCertifiedProduct().getId(), surv.getSurveillanceIdToReplace());
             if (existing == null) {
                 surv.getErrorMessages()
-                .add(String.format(messageSource.getMessage(
-                        new DefaultMessageSourceResolvable("surveillance.surveillanceIdNotFound"),
-                        LocaleContextHolder.getLocale()), surv.getSurveillanceIdToReplace()));
+                .add(msgUtil.getMessage("surveillance.surveillanceIdNotFound", surv.getSurveillanceIdToReplace()));
             }
         }
 
         if (surv.getStartDate() == null) {
             surv.getErrorMessages()
-            .add(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.startDateRequired"),
-                    LocaleContextHolder.getLocale()));
+            .add(msgUtil.getMessage("surveillance.startDateRequired"));
         }
 
         if (surv.getType() == null) {
-            surv.getErrorMessages().add(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("surveillance.typeRequired"), LocaleContextHolder.getLocale()));
+            surv.getErrorMessages().add(msgUtil.getMessage("surveillance.typeRequired"));
         } else if (surv.getType().getId() == null || surv.getType().getId().longValue() <= 0) {
             SurveillanceType survType = survDao.findSurveillanceType(surv.getType().getName());
             if (survType == null) {
                 surv.getErrorMessages()
-                .add(String.format(messageSource.getMessage(
-                        new DefaultMessageSourceResolvable("surveillance.typeMismatch"),
-                        LocaleContextHolder.getLocale()), surv.getType().getName()));
+                .add(msgUtil.getMessage("surveillance.typeMismatch", surv.getType().getName()));
             } else {
                 surv.setType(survType);
             }
@@ -171,9 +154,7 @@ public class SurveillanceValidator implements MessageSourceAware {
             SurveillanceType survType = survDao.findSurveillanceType(surv.getType().getId());
             if (survType == null) {
                 surv.getErrorMessages()
-                .add(String.format(messageSource.getMessage(
-                        new DefaultMessageSourceResolvable("surveillance.typeNotFound"),
-                        LocaleContextHolder.getLocale()), surv.getType().getId()));
+                .add(msgUtil.getMessage("surveillance.typeNotFound", surv.getType().getId()));
             } else {
                 surv.setType(survType);
             }
@@ -185,17 +166,13 @@ public class SurveillanceValidator implements MessageSourceAware {
                 && surv.getType().getName().equalsIgnoreCase("Randomized")) {
             if (surv.getRandomizedSitesUsed() == null || surv.getRandomizedSitesUsed().intValue() < 0) {
                 surv.getErrorMessages()
-                .add(messageSource.getMessage(
-                        new DefaultMessageSourceResolvable("surveillance.randomizedNonzeroValue"),
-                        LocaleContextHolder.getLocale()));
+                .add(msgUtil.getMessage("surveillance.randomizedNonzeroValue"));
             }
         } else if (surv.getType() != null && surv.getType().getName() != null
                 && !surv.getType().getName().equalsIgnoreCase("Randomized")) {
             if (surv.getRandomizedSitesUsed() != null && surv.getRandomizedSitesUsed().intValue() >= 0) {
                 surv.getErrorMessages()
-                .add(String.format(messageSource.getMessage(
-                        new DefaultMessageSourceResolvable("surveillance.randomizedSitesNotApplicable"),
-                        LocaleContextHolder.getLocale()), surv.getType().getName()));
+                .add(msgUtil.getMessage("surveillance.randomizedSitesNotApplicable", surv.getType().getName()));
             }
         }
 
@@ -228,33 +205,24 @@ public class SurveillanceValidator implements MessageSourceAware {
             final List<CertificationResultDetailsDTO> certResults) {
         if (surv.getRequirements() == null || surv.getRequirements().size() == 0) {
             surv.getErrorMessages()
-            .add(String.format(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("surveillance.requirementIsRequiredForProduct"),
-                    LocaleContextHolder.getLocale()), surv.getCertifiedProduct().getChplProductNumber()));
+            .add(msgUtil.getMessage("surveillance.requirementIsRequiredForProduct",
+                    surv.getCertifiedProduct().getChplProductNumber()));
         } else {
             for (SurveillanceRequirement req : surv.getRequirements()) {
                 if (StringUtils.isEmpty(req.getRequirement())) {
                     surv.getErrorMessages()
-                    .add(messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("surveillance.requirementIsRequired"),
-                            LocaleContextHolder.getLocale()));
+                    .add(msgUtil.getMessage("surveillance.requirementIsRequired"));
                 }
 
                 if (req.getType() == null) {
                     surv.getErrorMessages()
-                    .add(String.format(messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("surveillance.typeMissingForRequirement"),
-                            LocaleContextHolder.getLocale()), req.getRequirement()));
+                    .add(msgUtil.getMessage("surveillance.typeMissingForRequirement", req.getRequirement()));
                 } else if (req.getType().getId() == null || req.getType().getId().longValue() <= 0) {
                     SurveillanceRequirementType reqType = survDao
                             .findSurveillanceRequirementType(req.getType().getName());
                     if (reqType == null) {
                         surv.getErrorMessages()
-                        .add(String.format(
-                                messageSource.getMessage(
-                                        new DefaultMessageSourceResolvable(
-                                                "surveillance.typeNameMissingForRequirement"),
-                                        LocaleContextHolder.getLocale()),
+                        .add(msgUtil.getMessage("surveillance.typeNameMissingForRequirement",
                                 req.getType().getName(), req.getRequirement()));
                     } else {
                         req.setType(reqType);
@@ -263,12 +231,7 @@ public class SurveillanceValidator implements MessageSourceAware {
                     SurveillanceRequirementType reqType = survDao
                             .findSurveillanceRequirementType(req.getType().getId());
                     if (reqType == null) {
-                        surv.getErrorMessages().add(
-                                String.format(
-                                        messageSource.getMessage(
-                                                new DefaultMessageSourceResolvable(
-                                                        "surveillance.typeIdMissingForRequirement"),
-                                                LocaleContextHolder.getLocale()),
+                        surv.getErrorMessages().add(msgUtil.getMessage("surveillance.typeIdMissingForRequirement",
                                         req.getType().getId(), req.getRequirement()));
                     } else {
                         req.setType(reqType);
@@ -300,11 +263,7 @@ public class SurveillanceValidator implements MessageSourceAware {
                         }
                         if (criterion == null) {
                             surv.getErrorMessages()
-                            .add(String.format(
-                                    messageSource.getMessage(
-                                            new DefaultMessageSourceResolvable(
-                                                    "surveillance.requirementInvalidForRequirementType"),
-                                            LocaleContextHolder.getLocale()),
+                            .add(msgUtil.getMessage("surveillance.requirementInvalidForRequirementType",
                                     req.getRequirement(), req.getType().getName()));
                         }
                     } else if (req.getType().getName().equals(TRANSPARENCY_REQUIREMENT_TYPE)) {
@@ -322,17 +281,13 @@ public class SurveillanceValidator implements MessageSourceAware {
                     }
                 } else {
                     surv.getErrorMessages()
-                    .add(String.format(messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("surveillance.requirementMustHaveValue"),
-                            LocaleContextHolder.getLocale()), req.getRequirement()));
+                    .add(msgUtil.getMessage("surveillance.requirementMustHaveValue", req.getRequirement()));
                 }
 
                 if (surv.getEndDate() != null) {
                     if (req.getResult() == null) {
                         surv.getErrorMessages()
-                        .add(String.format(messageSource.getMessage(
-                                new DefaultMessageSourceResolvable("surveillance.resultNotFound"),
-                                LocaleContextHolder.getLocale()), req.getRequirement()));
+                        .add(msgUtil.getMessage("surveillance.resultNotFound", req.getRequirement()));
                     }
                 }
 
@@ -340,12 +295,7 @@ public class SurveillanceValidator implements MessageSourceAware {
                         && (req.getResult().getId() == null || req.getResult().getId().longValue() <= 0)) {
                     SurveillanceResultType resType = survDao.findSurveillanceResultType(req.getResult().getName());
                     if (resType == null) {
-                        surv.getErrorMessages().add(
-                                String.format(
-                                        messageSource.getMessage(
-                                                new DefaultMessageSourceResolvable(
-                                                        "surveillance.resultWithNameNotFound"),
-                                                LocaleContextHolder.getLocale()),
+                        surv.getErrorMessages().add(msgUtil.getMessage("surveillance.resultWithNameNotFound",
                                         req.getResult().getName(), req.getRequirement()));
                     } else {
                         req.setResult(resType);
@@ -354,10 +304,7 @@ public class SurveillanceValidator implements MessageSourceAware {
                     SurveillanceResultType resType = survDao.findSurveillanceResultType(req.getResult().getId());
                     if (resType == null) {
                         surv.getErrorMessages()
-                        .add(String.format(
-                                messageSource.getMessage(
-                                        new DefaultMessageSourceResolvable("surveillance.resultWithIdNotFound"),
-                                        LocaleContextHolder.getLocale()),
+                        .add(msgUtil.getMessage("surveillance.resultWithIdNotFound",
                                 req.getResult().getId(), req.getRequirement()));
                     } else {
                         req.setResult(resType);
@@ -388,17 +335,12 @@ public class SurveillanceValidator implements MessageSourceAware {
                 // there should be nonconformities
                 if (req.getNonconformities() == null || req.getNonconformities().size() == 0) {
                     surv.getErrorMessages()
-                    .add(String.format(messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("surveillance.nonConformityNotFound"),
-                            LocaleContextHolder.getLocale()), req.getRequirement()));
+                    .add(msgUtil.getMessage("surveillance.nonConformityNotFound", req.getRequirement()));
                 } else {
                     for (SurveillanceNonconformity nc : req.getNonconformities()) {
                         if (StringUtils.isEmpty(nc.getNonconformityType())) {
                             surv.getErrorMessages()
-                            .add(String.format(messageSource.getMessage(
-                                    new DefaultMessageSourceResolvable(
-                                            "surveillance.nonConformityTypeRequired"),
-                                    LocaleContextHolder.getLocale()), req.getRequirement()));
+                            .add(msgUtil.getMessage("surveillance.nonConformityTypeRequired", req.getRequirement()));
                         } else {
                             // non-conformity type is not empty. is a
                             // certification criteria or just a string?
@@ -430,11 +372,7 @@ public class SurveillanceValidator implements MessageSourceAware {
                                         && !NonconformityType.L.getName().equals(nc.getNonconformityType())
                                         && !NonconformityType.OTHER.getName().equals(nc.getNonconformityType())) {
                                     surv.getErrorMessages()
-                                    .add(String.format(
-                                            messageSource.getMessage(
-                                                    new DefaultMessageSourceResolvable(
-                                                            "surveillance.nonConformityTypeMatchException"),
-                                                    LocaleContextHolder.getLocale()),
+                                    .add(msgUtil.getMessage("surveillance.nonConformityTypeMatchException",
                                             nc.getNonconformityType(), NonconformityType.K1.getName(),
                                             NonconformityType.K2.getName(), NonconformityType.L.getName(),
                                             NonconformityType.OTHER.getName()));
@@ -444,22 +382,14 @@ public class SurveillanceValidator implements MessageSourceAware {
 
                         if (nc.getStatus() == null) {
                             surv.getErrorMessages()
-                            .add(String.format(
-                                    messageSource.getMessage(
-                                            new DefaultMessageSourceResolvable(
-                                                    "surveillance.nonConformityStatusNotFound"),
-                                            LocaleContextHolder.getLocale()),
+                            .add(msgUtil.getMessage("surveillance.nonConformityStatusNotFound",
                                     req.getRequirement(), nc.getNonconformityType()));
                         } else if (nc.getStatus().getId() == null || nc.getStatus().getId().longValue() <= 0) {
                             SurveillanceNonconformityStatus ncStatus = survDao
                                     .findSurveillanceNonconformityStatusType(nc.getStatus().getName());
                             if (ncStatus == null) {
                                 surv.getErrorMessages()
-                                .add(String.format(
-                                        messageSource.getMessage(
-                                                new DefaultMessageSourceResolvable(
-                                                        "surveillance.nonConformityStatusWithNameNotFound"),
-                                                LocaleContextHolder.getLocale()),
+                                .add(msgUtil.getMessage("surveillance.nonConformityStatusWithNameNotFound",
                                         nc.getStatus().getName(), req.getRequirement(),
                                         nc.getNonconformityType()));
                             } else {
@@ -470,11 +400,7 @@ public class SurveillanceValidator implements MessageSourceAware {
                                     .findSurveillanceNonconformityStatusType(nc.getStatus().getId());
                             if (ncStatus == null) {
                                 surv.getErrorMessages()
-                                .add(String.format(
-                                        messageSource.getMessage(
-                                                new DefaultMessageSourceResolvable(
-                                                        "surveillance.nonConformityStatusWithIdNotFound"),
-                                                LocaleContextHolder.getLocale()),
+                                .add(msgUtil.getMessage("surveillance.nonConformityStatusWithIdNotFound",
                                         nc.getStatus().getId(), req.getRequirement(),
                                         nc.getNonconformityType()));
                             } else {
@@ -485,72 +411,41 @@ public class SurveillanceValidator implements MessageSourceAware {
                         if (!StringUtils.isEmpty(nc.getCapApprovalDate())
                                 && StringUtils.isEmpty(nc.getCapMustCompleteDate())) {
                             surv.getErrorMessages()
-                            .add(String.format(
-                                    messageSource.getMessage(
-                                            new DefaultMessageSourceResolvable(
-                                                    "surveillance.dateCAPMustCompleteIsRequired"),
-                                            LocaleContextHolder.getLocale()),
+                            .add(msgUtil.getMessage("surveillance.dateCAPMustCompleteIsRequired",
                                     req.getRequirement(), nc.getNonconformityType()));
                         }
 
                         if (!StringUtils.isEmpty(nc.getCapEndDate()) && StringUtils.isEmpty(nc.getCapStartDate())) {
-                            surv.getErrorMessages().add(
-                                    String.format(
-                                            messageSource.getMessage(
-                                                    new DefaultMessageSourceResolvable(
-                                                            "surveillance.dateCAPStartIsRequired"),
-                                                    LocaleContextHolder.getLocale()),
+                            surv.getErrorMessages().add(msgUtil.getMessage("surveillance.dateCAPStartIsRequired",
                                             req.getRequirement(), nc.getNonconformityType()));
                         }
 
                         if (!StringUtils.isEmpty(nc.getCapEndDate()) && StringUtils.isEmpty(nc.getCapApprovalDate())) {
                             surv.getErrorMessages()
-                            .add(String.format(
-                                    messageSource.getMessage(
-                                            new DefaultMessageSourceResolvable(
-                                                    "surveillance.dateCAPApprovalIsRequired"),
-                                            LocaleContextHolder.getLocale()),
+                            .add(msgUtil.getMessage("surveillance.dateCAPApprovalIsRequired",
                                     req.getRequirement(), nc.getNonconformityType()));
                         }
 
                         if (!StringUtils.isEmpty(nc.getCapEndDate()) && !StringUtils.isEmpty(nc.getCapStartDate())
                                 && nc.getCapEndDate().compareTo(nc.getCapStartDate()) < 0) {
                             surv.getErrorMessages()
-                            .add(String.format(
-                                    messageSource.getMessage(
-                                            new DefaultMessageSourceResolvable(
-                                                    "surveillance.dateCAPEndNotGreaterThanDateCAPStart"),
-                                            LocaleContextHolder.getLocale()),
+                            .add(msgUtil.getMessage("surveillance.dateCAPEndNotGreaterThanDateCAPStart",
                                     req.getRequirement(), nc.getNonconformityType()));
                         }
 
                         if (nc.getDateOfDetermination() == null) {
                             surv.getErrorMessages()
-                            .add(String.format(
-                                    messageSource.getMessage(
-                                            new DefaultMessageSourceResolvable(
-                                                    "surveillance.dateOfDeterminationIsRequired"),
-                                            LocaleContextHolder.getLocale()),
+                            .add(msgUtil.getMessage("surveillance.dateOfDeterminationIsRequired",
                                     req.getRequirement(), nc.getNonconformityType()));
                         }
 
                         if (StringUtils.isEmpty(nc.getSummary())) {
-                            surv.getErrorMessages().add(
-                                    String.format(
-                                            messageSource.getMessage(
-                                                    new DefaultMessageSourceResolvable(
-                                                            "surveillance.summaryIsRequired"),
-                                                    LocaleContextHolder.getLocale()),
+                            surv.getErrorMessages().add(msgUtil.getMessage("surveillance.summaryIsRequired",
                                             req.getRequirement(), nc.getNonconformityType()));
                         }
 
                         if (StringUtils.isEmpty(nc.getFindings())) {
-                            surv.getErrorMessages().add(
-                                    String.format(
-                                            messageSource.getMessage(
-                                                    new DefaultMessageSourceResolvable(
-                                                            "surveillance.findingsAreRequired"),
-                                                    LocaleContextHolder.getLocale()),
+                            surv.getErrorMessages().add(msgUtil.getMessage("surveillance.findingsAreRequired",
                                             req.getRequirement(), nc.getNonconformityType()));
                         }
 
@@ -561,31 +456,19 @@ public class SurveillanceValidator implements MessageSourceAware {
                                 && surv.getType().getName().equalsIgnoreCase("Randomized")) {
                             if (nc.getSitesPassed() == null || nc.getSitesPassed().intValue() < 0) {
                                 surv.getErrorMessages()
-                                .add(String.format(
-                                        messageSource.getMessage(
-                                                new DefaultMessageSourceResolvable(
-                                                        "surveillance.numberOfSitesPassedIsRequired"),
-                                                LocaleContextHolder.getLocale()),
+                                .add(msgUtil.getMessage("surveillance.numberOfSitesPassedIsRequired",
                                         req.getRequirement(), nc.getNonconformityType()));
                             }
 
                             if (nc.getTotalSites() == null || nc.getTotalSites().intValue() < 0) {
                                 surv.getErrorMessages()
-                                .add(String.format(
-                                        messageSource.getMessage(
-                                                new DefaultMessageSourceResolvable(
-                                                        "surveillance.totalNumberOfSitesIsRequired"),
-                                                LocaleContextHolder.getLocale()),
+                                .add(msgUtil.getMessage("surveillance.totalNumberOfSitesIsRequired",
                                         req.getRequirement(), nc.getNonconformityType()));
                             }
 
                             if (nc.getSitesPassed() > nc.getTotalSites()) {
                                 surv.getErrorMessages()
-                                .add(String.format(
-                                        messageSource.getMessage(
-                                                new DefaultMessageSourceResolvable(
-                                                        "surveillance.tooManySitesPassed"),
-                                                LocaleContextHolder.getLocale()),
+                                .add(msgUtil.getMessage("surveillance.tooManySitesPassed",
                                         req.getRequirement(), nc.getNonconformityType()));
                             }
 
@@ -602,21 +485,13 @@ public class SurveillanceValidator implements MessageSourceAware {
                                 && !surv.getType().getName().equalsIgnoreCase("Randomized")) {
                             if (nc.getSitesPassed() != null && nc.getSitesPassed().intValue() >= 0) {
                                 surv.getErrorMessages()
-                                .add(String.format(
-                                        messageSource.getMessage(
-                                                new DefaultMessageSourceResolvable(
-                                                        "surveillance.numberOfSitesPassedNotApplicable"),
-                                                LocaleContextHolder.getLocale()),
+                                .add(msgUtil.getMessage("surveillance.numberOfSitesPassedNotApplicable",
                                         req.getRequirement(), nc.getNonconformityType()));
                             }
 
                             if (nc.getTotalSites() != null && nc.getTotalSites().intValue() >= 0) {
                                 surv.getErrorMessages()
-                                .add(String.format(
-                                        messageSource.getMessage(
-                                                new DefaultMessageSourceResolvable(
-                                                        "surveillance.totalNumberOfSitesNotApplicable"),
-                                                LocaleContextHolder.getLocale()),
+                                .add(msgUtil.getMessage("surveillance.totalNumberOfSitesNotApplicable",
                                         req.getRequirement(), nc.getNonconformityType()));
                             }
                         }
@@ -625,22 +500,14 @@ public class SurveillanceValidator implements MessageSourceAware {
                                 && nc.getStatus().getName().equalsIgnoreCase("Closed")) {
                             if (StringUtils.isEmpty(nc.getResolution())) {
                                 surv.getErrorMessages()
-                                .add(String.format(
-                                        messageSource.getMessage(
-                                                new DefaultMessageSourceResolvable(
-                                                        "surveillance.resolutionDescriptionIsRequired"),
-                                                LocaleContextHolder.getLocale()),
+                                .add(msgUtil.getMessage("surveillance.resolutionDescriptionIsRequired",
                                         req.getRequirement(), nc.getNonconformityType()));
                             }
                         } else if (nc.getStatus() != null && nc.getStatus().getName() != null
                                 && nc.getStatus().getName().equalsIgnoreCase("Open")) {
                             if (!StringUtils.isEmpty(nc.getResolution())) {
                                 surv.getErrorMessages()
-                                .add(String.format(
-                                        messageSource.getMessage(
-                                                new DefaultMessageSourceResolvable(
-                                                        "surveillance.resolutionDescriptionNotApplicable"),
-                                                LocaleContextHolder.getLocale()),
+                                .add(msgUtil.getMessage("surveillance.resolutionDescriptionNotApplicable",
                                         req.getRequirement(), nc.getNonconformityType()));
                             }
                             requiresCloseDate = false;
@@ -661,17 +528,13 @@ public class SurveillanceValidator implements MessageSourceAware {
             } else {
                 if (req.getNonconformities() != null && req.getNonconformities().size() > 0) {
                     surv.getErrorMessages()
-                    .add(String.format(messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("surveillance.requirementNonConformityMismatch"),
-                            LocaleContextHolder.getLocale()), req.getRequirement()));
+                    .add(msgUtil.getMessage("surveillance.requirementNonConformityMismatch", req.getRequirement()));
                 }
             }
         }
         if (requiresCloseDate && surv.getEndDate() == null) {
             surv.getErrorMessages()
-            .add(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("surveillance.endDateRequiredNoOpenNonConformities"),
-                    LocaleContextHolder.getLocale()));
+            .add(msgUtil.getMessage("surveillance.endDateRequiredNoOpenNonConformities"));
         }
     }
 
@@ -684,9 +547,7 @@ public class SurveillanceValidator implements MessageSourceAware {
         if (!StringUtils.isEmpty(surv.getAuthority())) {
             if (!surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ADMIN)
                     && !surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB)) {
-                surv.getErrorMessages().add(String.format(
-                        messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.authorityRequired"),
-                                LocaleContextHolder.getLocale()),
+                surv.getErrorMessages().add(msgUtil.getMessage("surveillance.authorityRequired",
                         Authority.ROLE_ADMIN, Authority.ROLE_ACB));
             }
         }
@@ -699,14 +560,10 @@ public class SurveillanceValidator implements MessageSourceAware {
 
     private void addSurveillanceWarningIfNotValid(final Surveillance surv, final String input, final String fieldName) {
         if (!ValidationUtils.isValidUtf8(input)) {
-            surv.getWarningMessages().add(String.format(
-                    messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.badCharacterFound"),
-                            LocaleContextHolder.getLocale()), fieldName));
+            surv.getWarningMessages().add(msgUtil.getMessage("surveillance.badCharacterFound", fieldName));
         }
         if (ValidationUtils.hasNewline(input)) {
-            surv.getWarningMessages().add(String.format(
-                    messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.newlineCharacterFound"),
-                            LocaleContextHolder.getLocale()), fieldName));
+            surv.getWarningMessages().add(msgUtil.getMessage("surveillance.newlineCharacterFound", fieldName));
         }
     }
 }
