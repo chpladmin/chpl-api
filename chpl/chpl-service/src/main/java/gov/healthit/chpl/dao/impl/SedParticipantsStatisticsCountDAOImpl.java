@@ -7,6 +7,7 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.SedParticipantStatisticsCountDAO;
 import gov.healthit.chpl.dto.SedParticipantStatisticsCountDTO;
@@ -33,6 +34,7 @@ public class SedParticipantsStatisticsCountDAOImpl extends BaseDAOImpl implement
     }
 
     @Override
+    @Transactional
     public void delete(final Long id) throws EntityRetrievalException {
         SedParticipantStatisticsCountEntity toDelete = getEntityById(id);
 
@@ -44,6 +46,7 @@ public class SedParticipantsStatisticsCountDAOImpl extends BaseDAOImpl implement
     }
 
     @Override
+    @Transactional
     public SedParticipantStatisticsCountEntity create(final SedParticipantStatisticsCountDTO dto)
             throws EntityCreationException, EntityRetrievalException {
 

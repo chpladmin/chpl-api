@@ -40,7 +40,6 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        getCertifiedProductDetailsAsyncRetrievalHelper().setLogger(LOGGER);
 
         LOGGER.info("********* Starting the Surveillance Downloadable Resource Creator job. *********");
         try {

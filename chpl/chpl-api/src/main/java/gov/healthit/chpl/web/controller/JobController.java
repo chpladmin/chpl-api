@@ -30,24 +30,24 @@ public class JobController {
 
     private static final Logger LOGGER = LogManager.getLogger(JobController.class);
     @Autowired
-    JobManager jobManager;
+    private JobManager jobManager;
     @Autowired
-    UserManager userManager;
+    private UserManager userManager;
 
     @ApiOperation(value = "Get the list of all jobs currently running in the system and those"
             + "that have completed within a configurable amount of time (usually a short window like the last 7 days).")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC_STAFF')")
     public @ResponseBody JobResults getAllJobs() throws EntityRetrievalException {
-        List<JobDTO> jobDtos = new ArrayList<JobDTO>();
-        if(Util.isUserRoleAdmin()) {
+        List<JobDTO> jobDtos = null;
+        if (Util.isUserRoleAdmin()) {
             jobDtos = jobManager.getAllJobs();
         } else {
             UserDTO currentUser = new UserDTO();
             currentUser.setId(Util.getCurrentUser().getId());
             try {
                 jobDtos = jobManager.getJobsForUser(currentUser);
-            } catch(EntityRetrievalException ex) {
+            } catch (EntityRetrievalException ex) {
                 String msg = "Could not find jobs for user " + Util.getUsername();
                 LOGGER.error(msg);
                 throw new EntityRetrievalException(msg);

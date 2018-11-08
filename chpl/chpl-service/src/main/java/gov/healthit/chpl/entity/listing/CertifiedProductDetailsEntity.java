@@ -65,6 +65,9 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "meaningful_use_users")
     private Long meaningfulUseUsers;
 
+    @Column(name = "meaningful_use_users_date")
+    private Date meaningfulUseUsersDate;
+
     @Basic(optional = true)
     @Column(name = "sed_testing_end")
     private Date sedTestingEnd;
@@ -807,5 +810,13 @@ public class CertifiedProductDetailsEntity {
 
     public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public Date getMeaningfulUseUsersDate() {
+        return meaningfulUseUsersDate;
+    }
+
+    public void setMeaningfulUseUsersDate(Date meaningfulUseUsersDate) {
+        this.meaningfulUseUsersDate = meaningfulUseUsersDate;
     }
 }

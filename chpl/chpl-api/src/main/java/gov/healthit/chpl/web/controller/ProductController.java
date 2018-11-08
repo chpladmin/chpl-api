@@ -150,7 +150,7 @@ public class ProductController {
                     + " previously assigned to the productIds specified are reassigned to the newly created product. "
                     + "The old products are then deleted. "
                     + " The logged in user must have ROLE_ADMIN or ROLE_ACB. ")
-    @RequestMapping(value = "/{productId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
+    @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public ResponseEntity<Product> updateProduct(
             @RequestBody(required = true) final UpdateProductsRequest productInfo)

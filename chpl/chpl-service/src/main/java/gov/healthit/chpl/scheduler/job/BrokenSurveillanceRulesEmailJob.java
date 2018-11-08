@@ -198,33 +198,21 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
 
     private File getOutputFile(final List<BrokenSurveillanceRulesDTO> errors, final String reportFilename) {
         File temp = null;
-        OutputStreamWriter writer = null;
-        CSVPrinter csvPrinter = null;
         try {
             temp = File.createTempFile(reportFilename, ".csv");
             temp.deleteOnExit();
-            writer = new OutputStreamWriter(
-                    new FileOutputStream(temp),
-                    Charset.forName("UTF-8").newEncoder()
-                    );
-            csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL);
-            csvPrinter.printRecord(getHeaderRow());
-            for (BrokenSurveillanceRulesDTO error : errors) {
-                List<String> rowValue = generateRowValue(error);
-                csvPrinter.printRecord(rowValue);
-                updateSummary(error);
-            }
-        } catch (IOException e) {
-            LOGGER.error(e);
-        } finally {
-            try {
-                if (csvPrinter != null) {
-                    csvPrinter.flush();
-                    csvPrinter.close();
-                }
-                if (writer != null) {
-                    writer.flush();
-                    writer.close();
+        } catch(IOException ex) {
+            LOGGER.error("Could not create temporary file " + ex.getMessage(), ex);
+        }
+
+        if(temp != null) {
+            try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(temp), Charset.forName("UTF-8").newEncoder());
+                CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
+                csvPrinter.printRecord(getHeaderRow());
+                for (BrokenSurveillanceRulesDTO error : errors) {
+                    List<String> rowValue = generateRowValue(error);
+                    csvPrinter.printRecord(rowValue);
+                    updateSummary(error);
                 }
             } catch (IOException e) {
                 LOGGER.error(e);

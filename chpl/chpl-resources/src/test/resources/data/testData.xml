@@ -380,7 +380,7 @@
         creation_date="2016-07-15 13:14:00" last_modified_user="-2"
         last_modified_date="2016-07-15 13:15:00" deleted="false"
         practice_type_id="1" product_classification_type_id="2"
-        meaningful_use_users="12" acb_certification_id="abcdef"
+        acb_certification_id="abcdef"
         ics_code="02" additional_software_code="1" product_code="IC13"
         certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="7"
@@ -389,8 +389,7 @@
         report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2016-07-15 13:14:00" last_modified_user="-2"
         last_modified_date="2016-07-15 13:15:00" deleted="false"
-        practice_type_id="1" product_classification_type_id="2"
-        meaningful_use_users="13" acb_certification_id="abcdef"
+        practice_type_id="1" product_classification_type_id="2" acb_certification_id="abcdef"
         ics_code="01" additional_software_code="1" product_code="IC14"
         certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="8"
@@ -399,8 +398,7 @@
         report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
         last_modified_date="2016-08-20 13:15:00" deleted="false"
-        practice_type_id="1" product_classification_type_id="2"
-        meaningful_use_users="14" acb_certification_id="abcdef"
+        practice_type_id="1" product_classification_type_id="2" acb_certification_id="abcdef"
         ics_code="01" additional_software_code="1" product_code="IC15"
         certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="9"
@@ -409,8 +407,7 @@
         report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
         last_modified_date="2016-08-20 13:15:00" deleted="false"
-        practice_type_id="2" product_classification_type_id="1"
-        meaningful_use_users="15" acb_certification_id="abcdef"
+        practice_type_id="2" product_classification_type_id="1" acb_certification_id="abcdef"
         ics_code="02" additional_software_code="1" product_code="IC16"
         certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="10"
@@ -420,7 +417,7 @@
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
         last_modified_date="2016-08-20 13:15:00" acb_certification_id="abcdef"
         deleted="false" practice_type_id="2"
-        product_classification_type_id="1" meaningful_use_users="16"
+        product_classification_type_id="1" 
         ics_code="00" additional_software_code="1" product_code="IC17"
         certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="11"
@@ -439,7 +436,7 @@
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
         last_modified_date="2016-08-20 13:15:00" deleted="false"
         practice_type_id="2" product_classification_type_id="1"
-        meaningful_use_users="18" acb_certification_id="abcdef"
+        acb_certification_id="abcdef"
         ics_code="01" additional_software_code="1" product_code="IC19"
         certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="13"
@@ -449,7 +446,7 @@
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
         last_modified_date="2016-08-20 13:15:00" deleted="false"
         practice_type_id="2" product_classification_type_id="1"
-        meaningful_use_users="19" acb_certification_id="abcdef"
+        acb_certification_id="abcdef"
         ics_code="01" additional_software_code="1" product_code="IC20"
         certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="14"
@@ -459,7 +456,7 @@
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
         last_modified_date="2016-08-20 13:15:00" deleted="false"
         practice_type_id="2" product_classification_type_id="1"
-        meaningful_use_users="20" acb_certification_id="abcdef"
+        acb_certification_id="abcdef"
         ics_code="01" additional_software_code="1" product_code="IC21"
         certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="15"
@@ -468,8 +465,7 @@
         report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
         last_modified_date="2016-08-20 13:15:00" deleted="false"
-        practice_type_id="2" product_classification_type_id="1"
-        meaningful_use_users="21" acb_certification_id="abcdef"
+        practice_type_id="2" product_classification_type_id="1" acb_certification_id="abcdef"
         ics_code="01" additional_software_code="1" product_code="IC22"
         certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="16"
@@ -478,8 +474,7 @@
         report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
         last_modified_date="2016-08-20 13:15:00" deleted="false"
-        practice_type_id="2" product_classification_type_id="1"
-        meaningful_use_users="22" acb_certification_id="abcdef"
+        practice_type_id="2" product_classification_type_id="1" acb_certification_id="abcdef"
         ics_code="01" additional_software_code="1" product_code="IC23"
         certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="17"
@@ -488,8 +483,7 @@
         report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
         last_modified_date="2016-08-20 13:15:00" deleted="false"
-        practice_type_id="2" product_classification_type_id="1"
-        meaningful_use_users="23" acb_certification_id="abcdef"
+        practice_type_id="2" product_classification_type_id="1" acb_certification_id="abcdef"
         ics_code="01" additional_software_code="1" product_code="IC24"
         certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="18"
@@ -498,8 +492,7 @@
         report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
         last_modified_date="2016-08-20 13:15:00" deleted="false"
-        practice_type_id="2" product_classification_type_id="1"
-        meaningful_use_users="22" acb_certification_id="abcdef"
+        practice_type_id="2" product_classification_type_id="1" acb_certification_id="abcdef"
         ics_code="01" additional_software_code="1" product_code="IC24"
         certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="19"
@@ -508,8 +501,7 @@
         report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
         last_modified_date="2016-08-20 13:15:00" deleted="false"
-        practice_type_id="2" product_classification_type_id="1"
-        meaningful_use_users="23" acb_certification_id="abcdef"
+        practice_type_id="2" product_classification_type_id="1" acb_certification_id="abcdef"
         ics_code="01" additional_software_code="1" product_code="IC24"
         certified_date_code="160402" version_code="36" />
 
@@ -570,6 +562,63 @@
     <certified_product_testing_lab_map
         id="18" certified_product_id="19" testing_lab_id="2"
         last_modified_user="-2" />
+
+    <meaningful_use_user id="-1" certified_product_id="6"
+        meaningful_use_users="12" meaningful_use_users_date="2018-10-10 10:45:00"
+        creation_date="2018-10-10 10:45:00" last_modified_user="-2"
+        last_modified_date="2018-10-10 10:45:00" deleted="false"/>
+    <meaningful_use_user id="-2" certified_product_id="7"
+        meaningful_use_users="13" meaningful_use_users_date="2018-10-10 10:45:00"
+        creation_date="2018-10-10 10:45:00" last_modified_user="-2"
+        last_modified_date="2018-10-10 10:45:00" deleted="false"/>
+    <meaningful_use_user id="-3" certified_product_id="8"
+        meaningful_use_users="14" meaningful_use_users_date="2018-10-10 10:45:00"
+        creation_date="2018-10-10 10:45:00" last_modified_user="-2"
+        last_modified_date="2018-10-10 10:45:00" deleted="false"/>
+     <meaningful_use_user id="-4" certified_product_id="9"
+        meaningful_use_users="15" meaningful_use_users_date="2018-10-10 10:45:00"
+        creation_date="2018-10-10 10:45:00" last_modified_user="-2"
+        last_modified_date="2018-10-10 10:45:00" deleted="false"/>
+     <meaningful_use_user id="-5" certified_product_id="10"
+        meaningful_use_users="16" meaningful_use_users_date="2018-10-10 10:45:00"
+        creation_date="2018-10-10 10:45:00" last_modified_user="-2"
+        last_modified_date="2018-10-10 10:45:00" deleted="false"/>
+      <meaningful_use_user id="-6" certified_product_id="11"
+        meaningful_use_users="17" meaningful_use_users_date="2018-10-10 10:45:00"
+        creation_date="2018-10-10 10:45:00" last_modified_user="-2"
+        last_modified_date="2018-10-10 10:45:00" deleted="false"/>
+    <meaningful_use_user id="-7" certified_product_id="12"
+        meaningful_use_users="18" meaningful_use_users_date="2018-10-10 10:45:00"
+        creation_date="2018-10-10 10:45:00" last_modified_user="-2"
+        last_modified_date="2018-10-10 10:45:00" deleted="false"/>
+    <meaningful_use_user id="-8" certified_product_id="13"
+        meaningful_use_users="19" meaningful_use_users_date="2018-10-10 10:45:00"
+        creation_date="2018-10-10 10:45:00" last_modified_user="-2"
+        last_modified_date="2018-10-10 10:45:00" deleted="false"/>
+    <meaningful_use_user id="-9" certified_product_id="14"
+        meaningful_use_users="20" meaningful_use_users_date="2018-10-10 10:45:00"
+        creation_date="2018-10-10 10:45:00" last_modified_user="-2"
+        last_modified_date="2018-10-10 10:45:00" deleted="false"/>
+    <meaningful_use_user id="-10" certified_product_id="15"
+        meaningful_use_users="21" meaningful_use_users_date="2018-10-10 10:45:00"
+        creation_date="2018-10-10 10:45:00" last_modified_user="-2"
+        last_modified_date="2018-10-10 10:45:00" deleted="false"/>
+    <meaningful_use_user id="-11" certified_product_id="16"
+        meaningful_use_users="22" meaningful_use_users_date="2018-10-10 10:45:00"
+        creation_date="2018-10-10 10:45:00" last_modified_user="-2"
+        last_modified_date="2018-10-10 10:45:00" deleted="false"/>
+    <meaningful_use_user id="-12" certified_product_id="17"
+        meaningful_use_users="23" meaningful_use_users_date="2018-10-10 10:45:00"
+        creation_date="2018-10-10 10:45:00" last_modified_user="-2"
+        last_modified_date="2018-10-10 10:45:00" deleted="false"/>
+    <meaningful_use_user id="-13" certified_product_id="18"
+        meaningful_use_users="24" meaningful_use_users_date="2018-10-10 10:45:00"
+        creation_date="2018-10-10 10:45:00" last_modified_user="-2"
+        last_modified_date="2018-10-10 10:45:00" deleted="false"/>
+    <meaningful_use_user id="-14" certified_product_id="19"
+        meaningful_use_users="25" meaningful_use_users_date="2018-10-10 10:45:00"
+        creation_date="2018-10-10 10:45:00" last_modified_user="-2"
+        last_modified_date="2018-10-10 10:45:00" deleted="false"/>
 
     <certified_product_accessibility_standard
         certified_product_accessibility_standard_id="-1"
@@ -1139,10 +1188,6 @@
         certification_status_id="3" event_date="2016-05-20 13:14:00"
         creation_date="2015-08-20 13:14:00" last_modified_user="-2"
         last_modified_date="2015-08-20 13:15:00" deleted="false" />
-    <muu_accurate_as_of_date
-        muu_accurate_as_of_date_id="1" accurate_as_of_date="2016-11-30 01:00:00"
-        creation_date="2017-01-19 01:00:00" last_modified_date="2017-01-19 01:00:00"
-        last_modified_user="-1" deleted="false" />
 
     <corrective_action_plan
         corrective_action_plan_id="0" certified_product_id="1"

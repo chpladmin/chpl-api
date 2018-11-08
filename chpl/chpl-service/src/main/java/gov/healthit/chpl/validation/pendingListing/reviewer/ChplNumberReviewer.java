@@ -257,12 +257,6 @@ public class ChplNumberReviewer implements Reviewer {
             listing.getErrorMessages()
             .add("Could not parse the certification date part of the product id: " + certifiedDateCode);
         }
-
-        // make sure the unique id is really uniqiue
-        if (!validateUniqueId(listing.getUniqueId())) {
-            listing.getErrorMessages().add("The id " + listing.getUniqueId()
-            + " must be unique among all other certified products but one already exists with this ID.");
-        }
     }
     
     private boolean validateUniqueId(final String chplProductNumber) {

@@ -1,5 +1,55 @@
 # Release Notes
 
+## Version 18.0.0
+_22 October 2018_
+
+### Backwards compatibility breaking features
+* Removed deprecated /certified_products/meaningful_use/upload. Use /meaningful_use/upload instead.
+
+### New Features
+* Added "last modified date" for surveillance and non-conformities to download files
+* Move generate chart data app to quartz
+
+### Bugs Fixed
+* Fix creation of public announcement ignoring 'public' checkbox.
+* Fix incorrect errors for changing sed to false for a criteria
+* Modified the Summary Statistics Report email
+  * Re-arranged the order of some headings
+  * Added totals for Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2014 Listings
+  * Added totals for Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2015 Listings
+  * Added active ACBs (when broken out) where the total for the ACB is 0
+* Allow editing of meaningful use user count and history of muu counts for individual listings.
+
+### Bugs Fixed
+* Fix creation of public announcement ignoring 'public' checkbox.
+* Fix incorrect error messages when editing SED = false for a criteria
+
+---
+
+## Version 17.0.0
+_8 October 2018_
+
+### Major Change
+* When retrieving Pending Surveillances, the listing details will no longer be populated
+
+### New Features
+* Move surveillance download file generation into quartz job to allow for better job management.
+* Move SED G3 download file generation into quartz job for allow for better job management.
+* Added scheduled job to send warning to users who have not used thier API key in the last X days
+* Added scheduled job to delete api keys that have not been used in X days
+* Added LastUsedDate and DeleteWarningSentDate to the ./key endpoint return value(s)
+* Add password strength checker implementing [a java fork](https://github.com/nulab/zxcvbn4j) of [zxcvbn](https://github.com/dropbox/zxcvbn) when anyone:
+  * creates a new User
+  * updates a password
+* Add Developer Status to search results view
+* Catch any unexpected error that occurs during a listing upload. Allow the error to be emailed to CHPL team if desired.
+
+### Bugs Fixed
+* Invalid test functionality names are removed and an error is given to the user for 2014 and 2015 uploads.
+* Fix questionable activity report end of the month date rollover.
+
+---
+
 ## Version 16.4.0
 _24 September 2018_
 
@@ -30,7 +80,7 @@ _10 September 2018_
 
 ### Bugs Fixed
 * Extra test data/test procedure/test functionality/etc. no longer appears after attesting to a criteria with previously entered phantom data.
-* Fixed the "basic" certified product service to return the correct additional software code in the CHPL Product Number	
+* Fixed the "basic" certified product service to return the correct additional software code in the CHPL Product Number
 * Fixed XML generation process to properly output `<tasks></tasks>` tag - was previously outputing as `<></>`.
 * Use "full name" and "friendly name" for users/contacts
 * Fix reason required error to show again for certain listing updates.
@@ -460,7 +510,7 @@ _10 October 2017_
   * Add `0 1 1 1,4,7,10 * cd /opt/chpl && ./generateListingResources.sh 2011`
   * Add `0 1 * * * cd /opt/chpl && ./generateListingResources.sh 2014`
   * Add `0 1 * * * cd /opt/chpl && ./generateListingResources.sh 2015`
-  * Add `0 1 * * * cd /opt/chpl && ./generateSurveillanceResources.sh` 
+  * Add `0 1 * * * cd /opt/chpl && ./generateSurveillanceResources.sh`
   * Add lines as well for the cleanup script (may have been done by andlar already)
 * Return HTTP 404 for /certified_products/{id}/details if listing has never existed or has been deleted.
 * Change any URL with an ID in the path to return 404 if that ID is not found.

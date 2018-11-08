@@ -7,6 +7,7 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.IncumbentDevelopersStatisticsDAO;
 import gov.healthit.chpl.dto.IncumbentDevelopersStatisticsDTO;
@@ -33,6 +34,7 @@ public class IncumbentDevelopersStatisticsDAOImpl extends BaseDAOImpl implements
     }
 
     @Override
+    @Transactional
     public void delete(final Long id) throws EntityRetrievalException {
         IncumbentDevelopersStatisticsEntity toDelete = getEntityById(id);
 
@@ -44,6 +46,7 @@ public class IncumbentDevelopersStatisticsDAOImpl extends BaseDAOImpl implements
     }
 
     @Override
+    @Transactional
     public IncumbentDevelopersStatisticsEntity create(final IncumbentDevelopersStatisticsDTO dto)
             throws EntityCreationException, EntityRetrievalException {
         IncumbentDevelopersStatisticsEntity entity = new IncumbentDevelopersStatisticsEntity();

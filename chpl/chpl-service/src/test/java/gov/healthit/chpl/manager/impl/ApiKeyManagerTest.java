@@ -362,6 +362,7 @@ public class ApiKeyManagerTest extends TestCase {
      *  \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
      * */
     @Transactional
+    @Rollback(true)
     @Test
     public void testGetApiKeyActivityPageSizeNumActivitiesMatchesPageSize()
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {

@@ -1,11 +1,11 @@
 package gov.healthit.chpl.web.controller;
 
-import gov.healthit.chpl.app.chartdata.ExperienceType;
 import gov.healthit.chpl.domain.ParticipantGenderStatistics;
 import gov.healthit.chpl.domain.SedParticipantStatisticsCount;
 import gov.healthit.chpl.dto.ParticipantGenderStatisticsDTO;
 import gov.healthit.chpl.dto.SedParticipantStatisticsCountDTO;
 import gov.healthit.chpl.manager.StatisticsManager;
+import gov.healthit.chpl.scheduler.job.chartdata.ExperienceType;
 import gov.healthit.chpl.web.controller.results.CriterionProductStatisticsResult;
 import gov.healthit.chpl.web.controller.results.IncumbentDevelopersStatisticsResult;
 import gov.healthit.chpl.web.controller.results.ListingCountStatisticsResult;

@@ -1,24 +1,23 @@
 
-## Version 17.0.0
+## Version 19.0.0
 _Date TBD_
 
-### Major Change
-* When retrieving Pending Surveillances, the listing details will no longer be populated
+### Backwards compatibility breaking API changes
+* Changed PUT /products call to not accept a productID
+* Updated DELETE of api key to not use body
 
 ### New Features
-* Move surveillance download file generation into quartz job to allow for better job management.
-* Move SED G3 download file generation into quartz job for allow for better job management.
-* Added scheduled job to send warning to users who have not used thier API key in the last X days
-* Added scheduled job to delete api keys that have not been used in X days
-* Added LastUsedDate and DeleteWarningSentDate to the ./key endpoint return value(s)
-* Add password strength checker implementing [a java fork](https://github.com/nulab/zxcvbn4j) of [zxcvbn](https://github.com/dropbox/zxcvbn) when anyone:
-  * creates a new User
-  * updates a password
-* Add Developer Status to search results view
-* Catch any unexpected error that occurs during a listing upload. Allow the error to be emailed to CHPL team if desired.
+* Add developer and product contact information to 2014/2015 download file
+* Add Quartz job to allow interruption of other jobs
+  * Enhanced "Certified Product Download File generation job" to be interruptable
+* Add validation for submitted user information when creating a new user
 
 ### Bugs Fixed
-* Invalid test functionality names are removed and an error is given to the user for 2014 and 2015 uploads.
-* Fix questionable activity report end of the month date rollover.
+* Properly handle invalid test tools entered into upload files by removing them and informing the user
+* Make sure test tools are optional for 2014 ambulatory listings on g1, g2, and f3
+* Remove required productID in /products PUT call that isn't used by the back end
+* Insert listing update activity during meaningful use user uploads
+* Update the description of the /certified_products endpoint to indicate that 'versionId' is a required parameter
+* Fixed issue where adding ROLE via POST required body, even though no data was needed
 
 ---

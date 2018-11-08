@@ -107,23 +107,23 @@ public class ApiKeyController {
             @RequestHeader(value = "API-Key", required = false) final String userApiKey,
             @RequestParam(value = "apiKey", required = false) final String userApiKeyParam) throws Exception {
 
-        return delete(key, userApiKey, userApiKeyParam);
+        return delete(key.getKey(), userApiKey, userApiKeyParam);
     }
 
     @ApiOperation(value = "Remove an API key.", notes = "This service is only available to CHPL users with ROLE_ADMIN.")
-    @RequestMapping(value = "/{apiKey}", method = RequestMethod.DELETE, consumes = MediaType.APPLICATION_JSON_VALUE,
+    @RequestMapping(value = "/{key}", method = RequestMethod.DELETE,
             produces = "application/json; charset=utf-8")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public String revoke(@RequestBody final ApiKey key,
+    public String revoke(@PathVariable("key") final String key,
             @RequestHeader(value = "API-Key", required = false) final String userApiKey,
             @RequestParam(value = "apiKey", required = false) final String userApiKeyParam) throws Exception {
 
         return delete(key, userApiKey, userApiKeyParam);
     }
 
-    private String delete(final ApiKey key, final String userApiKey, final String userApiKeyParam) throws Exception {
+    private String delete(final String key, final String userApiKey, final String userApiKeyParam) throws Exception {
 
-        String keyToRevoke = key.getKey();
+        String keyToRevoke = key;
         if (keyToRevoke.equals(userApiKey) || keyToRevoke.equals(userApiKeyParam)) {
             throw new Exception("A user can not delete their own API key.");
         }

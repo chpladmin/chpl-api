@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +30,9 @@ import gov.healthit.chpl.domain.SurveillanceRequirement;
  */
 public class SurveillanceCsvPresenter {
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceCsvPresenter.class);
-    protected Properties props;
-    protected DateTimeFormatter dateFormatter;
+    private Properties props;
+    private DateTimeFormatter dateFormatter;
+    private DateTimeFormatter dateTimeFormatter;
 
     /**
      * Constructor with properties.
@@ -38,6 +40,7 @@ public class SurveillanceCsvPresenter {
      */
     public SurveillanceCsvPresenter(final Properties props) {
         dateFormatter = DateTimeFormatter.ofPattern("uuuu/MM/dd");
+        dateTimeFormatter = DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm Z");
         this.props = props;
     }
 
@@ -47,13 +50,9 @@ public class SurveillanceCsvPresenter {
      * @param cpList list of Certified Products
      */
     public void presentAsFile(final File file, final List<CertifiedProductSearchDetails> cpList) {
-        FileWriter writer = null;
-        CSVPrinter csvPrinter = null;
-        try {
-            writer = new FileWriter(file);
-            csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL);
+        try (FileWriter writer = new FileWriter(file);
+                CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
             csvPrinter.printRecord(generateHeaderValues());
-
             for (CertifiedProductSearchDetails cp : cpList) {
                 if (cp.getSurveillance() != null && cp.getSurveillance().size() > 0) {
                     for (Surveillance currSurveillance : cp.getSurveillance()) {
@@ -66,14 +65,6 @@ public class SurveillanceCsvPresenter {
             }
         } catch (final IOException ex) {
             LOGGER.error("Could not write file " + file.getName(), ex);
-        } finally {
-            try {
-                writer.flush();
-                writer.close();
-                csvPrinter.flush();
-                csvPrinter.close();
-            } catch (Exception ignore) {
-            }
         }
     }
 
@@ -199,8 +190,7 @@ public class SurveillanceCsvPresenter {
         } else {
             result.add("");
         }
-        result.add(dateFormatter.format(LocalDateTime.ofInstant(Instant.ofEpochMilli(
-                surv.getLastModifiedDate().getTime()), ZoneId.systemDefault())));
+        result.add(surv.getLastModifiedDate().toInstant().atOffset(ZoneOffset.UTC).format(dateTimeFormatter));
         return result;
     }
 
@@ -302,8 +292,19 @@ public class SurveillanceCsvPresenter {
         } else {
             ncRow.add("");
         }
-        ncRow.add(dateFormatter.format(LocalDateTime.ofInstant(Instant.ofEpochMilli(
-                nc.getLastModifiedDate().getTime()), ZoneId.systemDefault())));
+        ncRow.add(nc.getLastModifiedDate().toInstant().atOffset(ZoneOffset.UTC).format(dateTimeFormatter));
         return ncRow;
+    }
+
+    public final Properties getProps() {
+        return props;
+    }
+
+    public final DateTimeFormatter getDateFormatter() {
+        return dateFormatter;
+    }
+
+    public final DateTimeFormatter getDateTimeFormatter() {
+        return dateTimeFormatter;
     }
 }

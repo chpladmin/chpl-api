@@ -46,15 +46,6 @@ public class CertificationResultRules {
     private Map<String, List<CertificationResultOption>> rules = new HashMap<String, List<CertificationResultOption>>();
 
     public CertificationResultRules() {
-        ClassPathResource cpr = new ClassPathResource("certificationResultRules.xml");
-        InputStream xmlInput = null;
-        try {
-            xmlInput = cpr.getInputStream();
-        } catch (final IOException ioEx) {
-            LOGGER.fatal("Could not load rules file.", ioEx);
-            return;
-        }
-
         Document dom;
         // Make an instance of the DocumentBuilderFactory
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -63,8 +54,10 @@ public class CertificationResultRules {
         dbf.setExpandEntityReferences(true);
         dbf.setIgnoringComments(true);
         dbf.setIgnoringElementContentWhitespace(true);
-
-        try {
+        
+        ClassPathResource cpr = new ClassPathResource("certificationResultRules.xml");
+        
+        try (InputStream xmlInput = cpr.getInputStream()) {
             // use the factory to take an instance of the document builder
             DocumentBuilder db = dbf.newDocumentBuilder();
             // parse using the builder to get the DOM mapping of the
