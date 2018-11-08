@@ -118,12 +118,12 @@ public class SurveillanceValidator implements MessageSourceAware {
         } else if (surv.getCertifiedProduct().getId() != null) {
             try {
                 cpDetails = cpDao.getDetailsById(surv.getCertifiedProduct().getId());
+                surv.setCertifiedProduct(new CertifiedProduct(cpDetails));
             } catch (final EntityRetrievalException ex) {
                 surv.getErrorMessages()
                 .add(msgUtil.getMessage("surveillance.detailsNotFoundForCertifiedProduct",
                         surv.getCertifiedProduct().getId()));
             }
-            surv.setCertifiedProduct(new CertifiedProduct(cpDetails));
         }
 
         if (!StringUtils.isEmpty(surv.getSurveillanceIdToReplace()) && surv.getCertifiedProduct() != null) {
@@ -255,7 +255,7 @@ public class SurveillanceValidator implements MessageSourceAware {
                         if (certResults != null && certResults.size() > 0) {
                             for (CertificationResultDetailsDTO certResult : certResults) {
                                 if (!StringUtils.isEmpty(certResult.getNumber()) && certResult.getSuccess() != null
-                                        && certResult.getSuccess() == Boolean.TRUE
+                                        && certResult.getSuccess()
                                         && certResult.getNumber().equals(req.getRequirement())) {
                                     criterion = criterionDao.getByName(req.getRequirement());
                                 }
@@ -354,7 +354,7 @@ public class SurveillanceValidator implements MessageSourceAware {
                                     for (CertificationResultDetailsDTO certResult : certResults) {
                                         if (!StringUtils.isEmpty(certResult.getNumber())
                                                 && certResult.getSuccess() != null
-                                                && certResult.getSuccess() == Boolean.TRUE
+                                                && certResult.getSuccess()
                                                 && certResult.getNumber().equals(nc.getNonconformityType())) {
                                             criterion = criterionDao.getByName(nc.getNonconformityType());
                                         }
