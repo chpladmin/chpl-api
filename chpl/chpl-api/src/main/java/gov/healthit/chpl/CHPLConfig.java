@@ -7,6 +7,7 @@ import java.util.Locale;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
@@ -55,7 +56,7 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
     private static final int MAX_COOKIE_AGE_SECONDS = 3600;
 
     @Autowired
-    private ApiKeyManager apiKeyManager;
+    private ObjectFactory<ApiKeyManager> apiKeyManagerObjectFactory;
 
     private Environment env;
 
@@ -87,6 +88,7 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
     @Bean
     public APIKeyAuthenticationFilter apiKeyAuthenticationFilter() {
         LOGGER.info("get APIKeyAuthenticationFilter");
+        ApiKeyManager apiKeyManager = this.apiKeyManagerObjectFactory.getObject();
         return new APIKeyAuthenticationFilter(apiKeyManager);
     }
 
