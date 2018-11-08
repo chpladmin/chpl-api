@@ -1,11 +1,8 @@
 package gov.healthit.chpl.aspect;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.TimeZone;
 
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -29,30 +26,36 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
-import gov.healthit.chpl.dao.QuestionableActivityDAO;
-import gov.healthit.chpl.domain.CQMResultDetails;
-import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
+import gov.healthit.chpl.domain.Product;
+import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.UpdateDevelopersRequest;
-import gov.healthit.chpl.domain.concept.QuestionableActivityTriggerConcept;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
+import gov.healthit.chpl.domain.UpdateProductsRequest;
+import gov.healthit.chpl.domain.UpdateVersionsRequest;
+import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
+import gov.healthit.chpl.manager.CertifiedProductSearchManager;
+import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
+import gov.healthit.chpl.web.controller.CertificationBodyController;
 import gov.healthit.chpl.web.controller.CertifiedProductController;
 import gov.healthit.chpl.web.controller.DeveloperController;
+import gov.healthit.chpl.web.controller.ProductController;
+import gov.healthit.chpl.web.controller.ProductVersionController;
 import junit.framework.TestCase;
 
 /**
- * Test Listing updates for questionable activity.
- * @author alarned
+ * Test that certain updates refresh the listing cache as expected
+ * @author kekey
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -65,6 +68,12 @@ import junit.framework.TestCase;
 public class CacheRefreshTest extends TestCase {
 
     @Autowired private DeveloperController developerController;
+    @Autowired private ProductController productController;
+    @Autowired private ProductVersionController versionController;
+    @Autowired private CertificationBodyController acbController;
+    @Autowired private CertifiedProductController cpController;
+    @Autowired private CertifiedProductDetailsManager cpdManager;
+    @Autowired private CertifiedProductSearchManager searchManager;
 
     private static JWTAuthenticatedUser adminUser;
     private static final long ADMIN_ID = -2L;
@@ -97,559 +106,459 @@ public class CacheRefreshTest extends TestCase {
     ValidationException, InvalidArgumentsException, JsonProcessingException,
     MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+        List<CertifiedProductFlatSearchResult> listingsFromDeveloper =
+                new ArrayList<CertifiedProductFlatSearchResult>();
+
+        //get the cache before this update, should pull the listings and cache them
+        List<CertifiedProductFlatSearchResult> allListingsBeforeUpdate = searchManager.search();
+        for(CertifiedProductFlatSearchResult listing : allListingsBeforeUpdate) {
+            if(listing.getDeveloper().equals("Test Developer 1")) {
+                listingsFromDeveloper.add(listing);
+            }
+        }
+        assertTrue(listingsFromDeveloper.size() > 0);
+
+        //update the developer
+        //should trigger the cache refresh
+        Developer devToUpdate = developerController.getDeveloperById(-1L);
         UpdateDevelopersRequest req = new UpdateDevelopersRequest();
-        Developer toUpdate = new Developer();
-        toUpdate.setDeveloperId(-1L);
-        toUpdate.setDeveloperCode("1009");
-        toUpdate.
-        req.setDeveloper(toUpdate);
-        final long cpId = 3L;
-        final long expectedId = 3L;
-        Date beforeActivity = new Date();
-        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(cpId);
-        listing.setAcbCertificationId("NEWACBCERTIFICATIONID");
-        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setListing(listing);
-        updateRequest.setReason("unit test");
-        cpController.updateCertifiedProduct(updateRequest);
-        Date afterActivity = new Date();
+        devToUpdate.setName("Updated Name");
+        req.setDeveloper(devToUpdate);
+        List<Long> idsToUpdate = new ArrayList<Long>();
+        idsToUpdate.add(-1L);
+        req.setDeveloperIds(idsToUpdate);
+        developerController.updateDeveloper(req);
 
-        List<QuestionableActivityListingDTO> activities =
-                qaDao.findListingActivityBetweenDates(beforeActivity, afterActivity);
-        assertNotNull(activities);
-        assertEquals(1, activities.size());
-        QuestionableActivityListingDTO activity = activities.get(0);
-        assertEquals(expectedId, activity.getListingId().longValue());
-        assertNull(activity.getBefore());
-        assertNull(activity.getAfter());
-        assertNotNull(activity.getReason());
-        assertEquals("unit test", activity.getReason());
-        assertEquals(QuestionableActivityTriggerConcept.EDITION_2011_EDITED.getName(), activity.getTrigger().getName());
-
+        //get the cached listings now, should have been updated in the aspect and have
+        //the latest developer stuff
+        List<CertifiedProductFlatSearchResult> allListingsAfterUpdate = searchManager.search();
+        for(CertifiedProductFlatSearchResult listing : allListingsAfterUpdate) {
+            for(CertifiedProductFlatSearchResult listingFromDeveloper : listingsFromDeveloper) {
+                if(listing.getId().longValue() == listingFromDeveloper.getId().longValue()) {
+                    assertEquals(devToUpdate.getName(), listing.getDeveloper());
+                }
+            }
+        }
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
-    @Test(expected = MissingReasonException.class)
+    @Test
     @Transactional
     @Rollback
-    public void testUpdate2011ListingWithoutReason() throws
+    public void testUpdateDeveloperNameDeprecatedRefreshesCache() throws
     EntityCreationException, EntityRetrievalException,
     ValidationException, InvalidArgumentsException, JsonProcessingException,
     MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final long cpId = 3L;
-        final long expectedId = 3L;
-        Date beforeActivity = new Date();
-        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(cpId);
-        listing.setAcbCertificationId("NEWACBCERTIFICATIONID");
-        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setListing(listing);
-        cpController.updateCertifiedProduct(updateRequest);
-        Date afterActivity = new Date();
+        List<CertifiedProductFlatSearchResult> listingsFromDeveloper =
+                new ArrayList<CertifiedProductFlatSearchResult>();
 
-        List<QuestionableActivityListingDTO> activities =
-                qaDao.findListingActivityBetweenDates(beforeActivity, afterActivity);
-        assertNotNull(activities);
-        assertEquals(1, activities.size());
-        QuestionableActivityListingDTO activity = activities.get(0);
-        assertEquals(expectedId, activity.getListingId().longValue());
-        assertNull(activity.getBefore());
-        assertNull(activity.getAfter());
-        assertEquals(QuestionableActivityTriggerConcept.EDITION_2011_EDITED.getName(), activity.getTrigger().getName());
+        //get the cache before this update, should pull the listings and cache them
+        List<CertifiedProductFlatSearchResult> allListingsBeforeUpdate = searchManager.search();
+        for(CertifiedProductFlatSearchResult listing : allListingsBeforeUpdate) {
+            if(listing.getDeveloper().equals("Test Developer 1")) {
+                listingsFromDeveloper.add(listing);
+            }
+        }
+        assertTrue(listingsFromDeveloper.size() > 0);
 
+        //update the developer
+        //should trigger the cache refresh
+        Developer devToUpdate = developerController.getDeveloperById(-1L);
+        UpdateDevelopersRequest req = new UpdateDevelopersRequest();
+        devToUpdate.setName("Updated Name");
+        req.setDeveloper(devToUpdate);
+        List<Long> idsToUpdate = new ArrayList<Long>();
+        idsToUpdate.add(-1L);
+        req.setDeveloperIds(idsToUpdate);
+        developerController.updateDeveloperDeprecated(req);
+
+        //get the cached listings now, should have been updated in the aspect and have
+        //the latest developer stuff
+        List<CertifiedProductFlatSearchResult> allListingsAfterUpdate = searchManager.search();
+        for(CertifiedProductFlatSearchResult listing : allListingsAfterUpdate) {
+            for(CertifiedProductFlatSearchResult listingFromDeveloper : listingsFromDeveloper) {
+                if(listing.getId().longValue() == listingFromDeveloper.getId().longValue()) {
+                    assertEquals(devToUpdate.getName(), listing.getDeveloper());
+                }
+            }
+        }
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
-    @Test(expected = MissingReasonException.class)
+    @Test
     @Transactional
     @Rollback
-    public void testUpdate2011ListingDeprecatedWithoutReason() throws
+    public void testUpdateProductNameRefreshesCache() throws
     EntityCreationException, EntityRetrievalException,
     ValidationException, InvalidArgumentsException, JsonProcessingException,
     MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final long cpId = 3L;
-        final long expectedId = 3L;
-        Date beforeActivity = new Date();
-        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(cpId);
-        listing.setAcbCertificationId("NEWACBCERTIFICATIONID");
+        List<CertifiedProductFlatSearchResult> listingsFromProduct =
+                new ArrayList<CertifiedProductFlatSearchResult>();
+
+        //get the cache before this update, should pull the listings and cache them
+        List<CertifiedProductFlatSearchResult> allListingsBeforeUpdate = searchManager.search();
+        for(CertifiedProductFlatSearchResult listing : allListingsBeforeUpdate) {
+            if(listing.getProduct().equals("Test Product 1")) {
+                listingsFromProduct.add(listing);
+            }
+        }
+        assertTrue(listingsFromProduct.size() > 0);
+
+        //update the product
+        //should trigger the cache refresh
+        Product productToUpdate = productController.getProductById(-1L);
+        UpdateProductsRequest req = new UpdateProductsRequest();
+        productToUpdate.setName("Updated Name");
+        req.setProduct(productToUpdate);
+        List<Long> idsToUpdate = new ArrayList<Long>();
+        idsToUpdate.add(-1L);
+        req.setProductIds(idsToUpdate);
+        productController.updateProduct(req);
+
+        //get the cached listings now, should have been updated in the aspect and have
+        //the latest product name
+        List<CertifiedProductFlatSearchResult> allListingsAfterUpdate = searchManager.search();
+        for(CertifiedProductFlatSearchResult listing : allListingsAfterUpdate) {
+            for(CertifiedProductFlatSearchResult listingFromProduct : listingsFromProduct) {
+                if(listing.getId().longValue() == listingFromProduct.getId().longValue()) {
+                    assertEquals(productToUpdate.getName(), listing.getProduct());
+                }
+            }
+        }
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void testUpdateProductNameDeprecatedRefreshesCache() throws
+    EntityCreationException, EntityRetrievalException,
+    ValidationException, InvalidArgumentsException, JsonProcessingException,
+    MissingReasonException, IOException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+        List<CertifiedProductFlatSearchResult> listingsFromProduct =
+                new ArrayList<CertifiedProductFlatSearchResult>();
+
+        //get the cache before this update, should pull the listings and cache them
+        List<CertifiedProductFlatSearchResult> allListingsBeforeUpdate = searchManager.search();
+        for(CertifiedProductFlatSearchResult listing : allListingsBeforeUpdate) {
+            if(listing.getProduct().equals("Test Product 1")) {
+                listingsFromProduct.add(listing);
+            }
+        }
+        assertTrue(listingsFromProduct.size() > 0);
+
+        //update the product
+        //should trigger the cache refresh
+        Product productToUpdate = productController.getProductById(-1L);
+        UpdateProductsRequest req = new UpdateProductsRequest();
+        productToUpdate.setName("Updated Name");
+        req.setProduct(productToUpdate);
+        List<Long> idsToUpdate = new ArrayList<Long>();
+        idsToUpdate.add(-1L);
+        req.setProductIds(idsToUpdate);
+        productController.updateProductDeprecated(req);
+
+        //get the cached listings now, should have been updated in the aspect and have
+        //the latest product name
+        List<CertifiedProductFlatSearchResult> allListingsAfterUpdate = searchManager.search();
+        for(CertifiedProductFlatSearchResult listing : allListingsAfterUpdate) {
+            for(CertifiedProductFlatSearchResult listingFromProduct : listingsFromProduct) {
+                if(listing.getId().longValue() == listingFromProduct.getId().longValue()) {
+                    assertEquals(productToUpdate.getName(), listing.getProduct());
+                }
+            }
+        }
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void testUpdateVersionRefreshesCache() throws
+    EntityCreationException, EntityRetrievalException,
+    ValidationException, InvalidArgumentsException, JsonProcessingException,
+    MissingReasonException, IOException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+        List<CertifiedProductFlatSearchResult> listingsFromVersion =
+                new ArrayList<CertifiedProductFlatSearchResult>();
+
+        //get the cache before this update, should pull the listings and cache them
+        List<CertifiedProductFlatSearchResult> allListingsBeforeUpdate = searchManager.search();
+        for(CertifiedProductFlatSearchResult listing : allListingsBeforeUpdate) {
+            if(listing.getVersion().equals("2.0")) {
+                listingsFromVersion.add(listing);
+            }
+        }
+        assertTrue(listingsFromVersion.size() > 0);
+
+        //update the version
+        //should trigger the cache refresh
+        ProductVersion versionToUpdate = versionController.getProductVersionById(3L);
+        UpdateVersionsRequest req = new UpdateVersionsRequest();
+        versionToUpdate.setVersion("2.0.Updated");
+        req.setVersion(versionToUpdate);
+        List<Long> idsToUpdate = new ArrayList<Long>();
+        idsToUpdate.add(3L);
+        req.setVersionIds(idsToUpdate);
+        versionController.updateVersion(req);
+
+        //get the cached listings now, should have been updated in the aspect and have
+        //the latest version name
+        List<CertifiedProductFlatSearchResult> allListingsAfterUpdate = searchManager.search();
+        for(CertifiedProductFlatSearchResult listing : allListingsAfterUpdate) {
+            for(CertifiedProductFlatSearchResult listingFromVersion : listingsFromVersion) {
+                if(listing.getId().longValue() == listingFromVersion.getId().longValue()) {
+                    assertEquals(versionToUpdate.getVersion(), listing.getVersion());
+                }
+            }
+        }
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void testUpdateVersionDeprecatedRefreshesCache() throws
+    EntityCreationException, EntityRetrievalException,
+    ValidationException, InvalidArgumentsException, JsonProcessingException,
+    MissingReasonException, IOException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+        List<CertifiedProductFlatSearchResult> listingsFromVersion =
+                new ArrayList<CertifiedProductFlatSearchResult>();
+
+        //get the cache before this update, should pull the listings and cache them
+        List<CertifiedProductFlatSearchResult> allListingsBeforeUpdate = searchManager.search();
+        for(CertifiedProductFlatSearchResult listing : allListingsBeforeUpdate) {
+            if(listing.getVersion().equals("2.0")) {
+                listingsFromVersion.add(listing);
+            }
+        }
+        assertTrue(listingsFromVersion.size() > 0);
+
+        //update the version
+        //should trigger the cache refresh
+        ProductVersion versionToUpdate = versionController.getProductVersionById(3L);
+        UpdateVersionsRequest req = new UpdateVersionsRequest();
+        versionToUpdate.setVersion("2.0.Updated");
+        req.setVersion(versionToUpdate);
+        List<Long> idsToUpdate = new ArrayList<Long>();
+        idsToUpdate.add(3L);
+        req.setVersionIds(idsToUpdate);
+        versionController.updateVersionDeprecated(req);
+
+        //get the cached listings now, should have been updated in the aspect and have
+        //the latest version name
+        List<CertifiedProductFlatSearchResult> allListingsAfterUpdate = searchManager.search();
+        for(CertifiedProductFlatSearchResult listing : allListingsAfterUpdate) {
+            for(CertifiedProductFlatSearchResult listingFromVersion : listingsFromVersion) {
+                if(listing.getId().longValue() == listingFromVersion.getId().longValue()) {
+                    assertEquals(versionToUpdate.getVersion(), listing.getVersion());
+                }
+            }
+        }
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void testUpdateAcbNameRefreshesCache() throws
+    UpdateCertifiedBodyException, EntityRetrievalException, EntityCreationException,
+    JsonProcessingException, InvalidArgumentsException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+        List<CertifiedProductFlatSearchResult> listingsFromAcb =
+                new ArrayList<CertifiedProductFlatSearchResult>();
+
+        //get the cache before this update, should pull the listings and cache them
+        List<CertifiedProductFlatSearchResult> allListingsBeforeUpdate = searchManager.search();
+        for(CertifiedProductFlatSearchResult listing : allListingsBeforeUpdate) {
+            if(listing.getAcb().equals("InfoGard")) {
+                listingsFromAcb.add(listing);
+            }
+        }
+        assertTrue(listingsFromAcb.size() > 0);
+
+        //update the acb name
+        //should trigger the cache refresh
+        CertificationBody acbToUpdate = acbController.getAcbById(-1L);
+        acbToUpdate.setName("InfoGard Updated");
+        acbController.updateAcb(acbToUpdate);
+
+        //get the cached listings now, should have been updated in the aspect and have
+        //the latest acb name
+        List<CertifiedProductFlatSearchResult> allListingsAfterUpdate = searchManager.search();
+        for(CertifiedProductFlatSearchResult updatedListing : allListingsAfterUpdate) {
+            for(CertifiedProductFlatSearchResult listingFromAcb : listingsFromAcb) {
+                if(updatedListing.getId().longValue() == listingFromAcb.getId().longValue()) {
+                    assertEquals(acbToUpdate.getName(), updatedListing.getAcb());
+                }
+            }
+        }
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void testUpdateAcbNameDeprecatedRefreshesCache() throws
+    UpdateCertifiedBodyException, EntityRetrievalException, EntityCreationException,
+    JsonProcessingException, InvalidArgumentsException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+        List<CertifiedProductFlatSearchResult> listingsFromAcb =
+                new ArrayList<CertifiedProductFlatSearchResult>();
+
+        //get the cache before this update, should pull the listings and cache them
+        List<CertifiedProductFlatSearchResult> allListingsBeforeUpdate = searchManager.search();
+        for(CertifiedProductFlatSearchResult listing : allListingsBeforeUpdate) {
+            if(listing.getAcb().equals("InfoGard")) {
+                listingsFromAcb.add(listing);
+            }
+        }
+        assertTrue(listingsFromAcb.size() > 0);
+
+        //update the acb name
+        //should trigger the cache refresh
+        CertificationBody acbToUpdate = acbController.getAcbById(-1L);
+        acbToUpdate.setName("InfoGard Updated");
+        acbController.updateAcbDeprecated(acbToUpdate);
+
+        //get the cached listings now, should have been updated in the aspect and have
+        //the latest acb name
+        List<CertifiedProductFlatSearchResult> allListingsAfterUpdate = searchManager.search();
+        for(CertifiedProductFlatSearchResult updatedListing : allListingsAfterUpdate) {
+            for(CertifiedProductFlatSearchResult listingFromAcb : listingsFromAcb) {
+                if(updatedListing.getId().longValue() == listingFromAcb.getId().longValue()) {
+                    assertEquals(acbToUpdate.getName(), updatedListing.getAcb());
+                }
+            }
+        }
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void testUpdateListingStatusRefreshesCache() throws EntityRetrievalException, EntityCreationException,
+    JsonProcessingException, InvalidArgumentsException, MissingReasonException,
+    ValidationException, IOException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+        CertifiedProductSearchDetails listingToUpdate = cpdManager.getCertifiedProductDetails(1L);
+
+        //get the cache before this update, should pull the listings and cache them
+        List<CertifiedProductFlatSearchResult> allListingsBeforeUpdate = searchManager.search();
+        boolean foundListing = false;
+        for(CertifiedProductFlatSearchResult listing : allListingsBeforeUpdate) {
+            if(listing.getId().longValue() == listingToUpdate.getId().longValue()) {
+                foundListing = true;
+                assertEquals("Active", listing.getCertificationStatus());
+            }
+        }
+        assertTrue(foundListing);
+
+        //update the listing status to retired
+        //should trigger the cache refresh
+        CertificationStatusEvent currentStatus = listingToUpdate.getCurrentStatus();
+        int currStatusIndex = 0;
+        List<CertificationStatusEvent> events = listingToUpdate.getCertificationEvents();
+        for(int i = 0; i < events.size(); i++) {
+            CertificationStatusEvent currEvent = events.get(i);
+            if(currEvent.getId().longValue() == currentStatus.getId().longValue()) {
+                currStatusIndex = i;
+            }
+        }
+        CertificationStatus status = new CertificationStatus();
+        status.setId(2L);
+        status.setName("Retired");
+        currentStatus.setStatus(status);
+        events.set(currStatusIndex, currentStatus);
+        listingToUpdate.setCertificationEvents(events);
+
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setListing(listing);
+        updateRequest.setListing(listingToUpdate);
+        cpController.updateCertifiedProduct(updateRequest);
+
+        //get the cached listings now, should have been updated in the aspect and have
+        //the latest status value
+        List<CertifiedProductFlatSearchResult> allListingsAfterUpdate = searchManager.search();
+        foundListing = false;
+        for(CertifiedProductFlatSearchResult updatedListing : allListingsAfterUpdate) {
+            if(updatedListing.getId().longValue() == listingToUpdate.getId().longValue()) {
+                foundListing = true;
+                assertEquals("Retired", updatedListing.getCertificationStatus());
+            }
+        }
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void testUpdateListingStatusDeprecatedRefreshesCache() throws EntityRetrievalException, EntityCreationException,
+    JsonProcessingException, InvalidArgumentsException, MissingReasonException,
+    ValidationException, IOException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+        CertifiedProductSearchDetails listingToUpdate = cpdManager.getCertifiedProductDetails(1L);
+
+        //get the cache before this update, should pull the listings and cache them
+        List<CertifiedProductFlatSearchResult> allListingsBeforeUpdate = searchManager.search();
+        boolean foundListing = false;
+        for(CertifiedProductFlatSearchResult listing : allListingsBeforeUpdate) {
+            if(listing.getId().longValue() == listingToUpdate.getId().longValue()) {
+                foundListing = true;
+                assertEquals("Active", listing.getCertificationStatus());
+            }
+        }
+        assertTrue(foundListing);
+
+        //update the listing status to retired
+        //should trigger the cache refresh
+        CertificationStatusEvent currentStatus = listingToUpdate.getCurrentStatus();
+        int currStatusIndex = 0;
+        List<CertificationStatusEvent> events = listingToUpdate.getCertificationEvents();
+        for(int i = 0; i < events.size(); i++) {
+            CertificationStatusEvent currEvent = events.get(i);
+            if(currEvent.getId().longValue() == currentStatus.getId().longValue()) {
+                currStatusIndex = i;
+            }
+        }
+        CertificationStatus status = new CertificationStatus();
+        status.setId(2L);
+        status.setName("Retired");
+        currentStatus.setStatus(status);
+        events.set(currStatusIndex, currentStatus);
+        listingToUpdate.setCertificationEvents(events);
+
+        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+        updateRequest.setListing(listingToUpdate);
         cpController.updateCertifiedProductDeprecated(updateRequest);
-        Date afterActivity = new Date();
 
-        List<QuestionableActivityListingDTO> activities =
-                qaDao.findListingActivityBetweenDates(beforeActivity, afterActivity);
-        assertNotNull(activities);
-        assertEquals(1, activities.size());
-        QuestionableActivityListingDTO activity = activities.get(0);
-        assertEquals(expectedId, activity.getListingId().longValue());
-        assertNull(activity.getBefore());
-        assertNull(activity.getAfter());
-        assertEquals(QuestionableActivityTriggerConcept.EDITION_2011_EDITED.getName(), activity.getTrigger().getName());
-
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
-
-    @Test
-    @Transactional
-    @Rollback
-    public void testUpdateCertificationStatusIncludesReason() throws
-    EntityCreationException, EntityRetrievalException,
-    ValidationException, InvalidArgumentsException, JsonProcessingException,
-    MissingReasonException, IOException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-        Date beforeActivity = new Date();
-        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
-        CertificationStatusEvent currentStatus = listing.getCurrentStatus();
-        int currStatusIndex = 0;
-        List<CertificationStatusEvent> events = listing.getCertificationEvents();
-        for(int i = 0; i < events.size(); i++) {
-            CertificationStatusEvent currEvent = events.get(i);
-            if(currEvent.getId().longValue() == currentStatus.getId().longValue()) {
-                currStatusIndex = i;
+        //get the cached listings now, should have been updated in the aspect and have
+        //the latest status value
+        List<CertifiedProductFlatSearchResult> allListingsAfterUpdate = searchManager.search();
+        foundListing = false;
+        for(CertifiedProductFlatSearchResult updatedListing : allListingsAfterUpdate) {
+            if(updatedListing.getId().longValue() == listingToUpdate.getId().longValue()) {
+                foundListing = true;
+                assertEquals("Retired", updatedListing.getCertificationStatus());
             }
         }
-        CertificationStatus status = new CertificationStatus();
-        status.setId(2L);
-        status.setName("Retired");
-        currentStatus.setStatus(status);
-        events.set(currStatusIndex, currentStatus);
-        listing.setCertificationEvents(events);
-
-        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setListing(listing);
-        updateRequest.setReason("unit test");
-        cpController.updateCertifiedProduct(updateRequest);
-        Date afterActivity = new Date();
-
-        List<QuestionableActivityListingDTO> activities =
-                qaDao.findListingActivityBetweenDates(beforeActivity, afterActivity);
-        assertNotNull(activities);
-        assertEquals(1, activities.size());
-        QuestionableActivityListingDTO activity = activities.get(0);
-        assertEquals(1, activity.getListingId().longValue());
-        assertEquals("Active", activity.getBefore());
-        assertEquals("Retired", activity.getAfter());
-        assertNotNull(activity.getReason());
-        assertEquals("unit test", activity.getReason());
-        assertEquals(QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED_CURRENT.getName(),
-                activity.getTrigger().getName());
-
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
-    @Test
-    @Transactional
-    @Rollback
-    public void testUpdateCertificationStatus() throws
-    EntityCreationException, EntityRetrievalException,
-    ValidationException, InvalidArgumentsException, JsonProcessingException,
-    MissingReasonException, IOException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-        Date beforeActivity = new Date();
-        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
-        CertificationStatusEvent currentStatus = listing.getCurrentStatus();
-        int currStatusIndex = 0;
-        List<CertificationStatusEvent> events = listing.getCertificationEvents();
-        for(int i = 0; i < events.size(); i++) {
-            CertificationStatusEvent currEvent = events.get(i);
-            if(currEvent.getId().longValue() == currentStatus.getId().longValue()) {
-                currStatusIndex = i;
-            }
-        }
-        CertificationStatus status = new CertificationStatus();
-        status.setId(2L);
-        status.setName("Retired");
-        currentStatus.setStatus(status);
-        events.set(currStatusIndex, currentStatus);
-        listing.setCertificationEvents(events);
-
-        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setListing(listing);
-        cpController.updateCertifiedProduct(updateRequest);
-        Date afterActivity = new Date();
-
-        List<QuestionableActivityListingDTO> activities =
-                qaDao.findListingActivityBetweenDates(beforeActivity, afterActivity);
-        assertNotNull(activities);
-        assertEquals(1, activities.size());
-        QuestionableActivityListingDTO activity = activities.get(0);
-        assertEquals(1, activity.getListingId().longValue());
-        assertEquals("Active", activity.getBefore());
-        assertEquals("Retired", activity.getAfter());
-        assertNull(activity.getReason());
-        assertEquals(QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED_CURRENT.getName(),
-                activity.getTrigger().getName());
-
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
-
-    @Test
-    @Transactional
-    @Rollback
-    public void testUpdateCertificationStatusDate() throws
-    EntityCreationException, EntityRetrievalException,
-    ValidationException, InvalidArgumentsException, JsonProcessingException,
-    MissingReasonException, IOException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-        Date beforeActivity = new Date();
-        Date eventDate = new Date("2/14/2018");
-        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
-        CertificationStatusEvent currentStatus = listing.getCurrentStatus();
-        int currStatusIndex = 0;
-        List<CertificationStatusEvent> events = listing.getCertificationEvents();
-        for(int i = 0; i < events.size(); i++) {
-            CertificationStatusEvent currEvent = events.get(i);
-            if(currEvent.getId().longValue() == currentStatus.getId().longValue()) {
-                currStatusIndex = i;
-            }
-        }
-        currentStatus.setEventDate(eventDate.getTime());
-        events.set(currStatusIndex, currentStatus);
-        listing.setCertificationEvents(events);
-
-        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setListing(listing);
-        cpController.updateCertifiedProduct(updateRequest);
-        Date afterActivity = new Date();
-
-        List<QuestionableActivityListingDTO> activities =
-                qaDao.findListingActivityBetweenDates(beforeActivity, afterActivity);
-        assertNotNull(activities);
-        assertEquals(1, activities.size());
-        QuestionableActivityListingDTO activity = activities.get(0);
-        assertEquals(1, activity.getListingId().longValue());
-        String timezoneDisplayStd = TimeZone.getDefault().getDisplayName(false, TimeZone.SHORT);
-        String timezoneDisplayDst = TimeZone.getDefault().getDisplayName(true, TimeZone.SHORT);
-        assertEquals("Tue Oct 20 13:14:00 " + timezoneDisplayDst + " 2015", activity.getBefore());
-        assertEquals("Wed Feb 14 00:00:00 " + timezoneDisplayStd + " 2018", activity.getAfter());
-        assertNull(activity.getReason());
-        assertEquals(QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_DATE_EDITED_CURRENT.getName(),
-                activity.getTrigger().getName());
-
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
-
-    @Test
-    @Transactional
-    @Rollback
-    public void testUpdateCertificationStatusHistoryDate() throws
-    EntityCreationException, EntityRetrievalException,
-    ValidationException, InvalidArgumentsException, JsonProcessingException,
-    MissingReasonException, IOException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-        final long dateDifference = 1000L;
-        Date beforeActivity = new Date();
-        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
-        List<CertificationStatusEvent> events = listing.getCertificationEvents();
-        int statusEventIndex = 0;
-        for(int i = 0; i < events.size(); i++) {
-            CertificationStatusEvent currEvent = events.get(i);
-            if(currEvent.getStatus().getName().equals("Withdrawn by Developer")) {
-                statusEventIndex = i;
-            }
-        }
-        CertificationStatusEvent statusEvent = events.get(statusEventIndex);
-        Long beforeEventDate = statusEvent.getEventDate();
-        Long afterEventDate = beforeEventDate - dateDifference;
-        statusEvent.setEventDate(afterEventDate);
-        events.set(statusEventIndex, statusEvent);
-        listing.setCertificationEvents(events);
-
-        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setListing(listing);
-        cpController.updateCertifiedProduct(updateRequest);
-        Date afterActivity = new Date();
-
-        List<QuestionableActivityListingDTO> activities =
-                qaDao.findListingActivityBetweenDates(beforeActivity, afterActivity);
-        assertNotNull(activities);
-        assertEquals(1, activities.size());
-        QuestionableActivityListingDTO activity = activities.get(0);
-        assertEquals(1, activity.getListingId().longValue());
-        String timezoneDisplay = TimeZone.getDefault().getDisplayName(true, TimeZone.SHORT);
-        assertEquals("[Withdrawn by Developer (Sun Sep 20 13:14:00 " + timezoneDisplay + " 2015)]", activity.getBefore());
-        assertEquals("[Withdrawn by Developer (Sun Sep 20 13:13:59 " + timezoneDisplay + " 2015)]", activity.getAfter());
-        assertNull(activity.getReason());
-        assertEquals(QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED_HISTORY.getName(),
-                activity.getTrigger().getName());
-
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
-
-    @Test
-    @Transactional
-    @Rollback
-    public void testUpdateCertificationStatusHistoryStatus() throws
-    EntityCreationException, EntityRetrievalException,
-    ValidationException, InvalidArgumentsException, JsonProcessingException,
-    MissingReasonException, IOException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-        final long statusId = 4L;
-        Date beforeActivity = new Date();
-        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
-        List<CertificationStatusEvent> events = listing.getCertificationEvents();
-        int statusEventIndex = 0;
-        for(int i = 0; i < events.size(); i++) {
-            CertificationStatusEvent currEvent = events.get(i);
-            if(currEvent.getStatus().getName().equals("Withdrawn by Developer")) {
-                statusEventIndex = i;
-            }
-        }
-        CertificationStatusEvent statusEvent = events.get(statusEventIndex);
-        CertificationStatus status = new CertificationStatus();
-        status.setId(statusId);
-        status.setName("Withdrawn by ONC-ACB");
-        statusEvent.setStatus(status);
-        events.set(statusEventIndex, statusEvent);
-        listing.setCertificationEvents(events);
-
-        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setListing(listing);
-        cpController.updateCertifiedProduct(updateRequest);
-        Date afterActivity = new Date();
-
-        List<QuestionableActivityListingDTO> activities =
-                qaDao.findListingActivityBetweenDates(beforeActivity, afterActivity);
-        assertNotNull(activities);
-        assertEquals(1, activities.size());
-        QuestionableActivityListingDTO activity = activities.get(0);
-        assertEquals(1, activity.getListingId().longValue());
-
-        String timezoneDisplayDst = TimeZone.getDefault().getDisplayName(true, TimeZone.SHORT);
-        assertEquals("[Withdrawn by Developer (Sun Sep 20 13:14:00 " + timezoneDisplayDst + " 2015)]", activity.getBefore());
-        assertEquals("[Withdrawn by ONC-ACB (Sun Sep 20 13:14:00 " + timezoneDisplayDst + " 2015)]", activity.getAfter());
-        assertNull(activity.getReason());
-        assertEquals(QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED_HISTORY.getName(),
-                activity.getTrigger().getName());
-
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
-
-    @Test
-    @Transactional
-    @Rollback
-    public void testAddCqm() throws
-    EntityCreationException, EntityRetrievalException,
-    ValidationException, InvalidArgumentsException, JsonProcessingException,
-    MissingReasonException, IOException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-        final long cms82Id = 60L;
-        Date beforeActivity = new Date();
-        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
-        CQMResultDetails addedCqm = new CQMResultDetails();
-        addedCqm.setId(cms82Id);
-        addedCqm.setCmsId("CMS82");
-        addedCqm.setSuccess(Boolean.TRUE);
-        Set<String> successVersions = new HashSet<String>();
-        successVersions.add("v0");
-        addedCqm.setSuccessVersions(successVersions);
-        listing.getCqmResults().add(addedCqm);
-        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setListing(listing);
-        cpController.updateCertifiedProduct(updateRequest);
-        Date afterActivity = new Date();
-
-        List<QuestionableActivityListingDTO> activities =
-                qaDao.findListingActivityBetweenDates(beforeActivity, afterActivity);
-        assertNotNull(activities);
-        assertEquals(1, activities.size());
-        QuestionableActivityListingDTO activity = activities.get(0);
-        assertEquals(1, activity.getListingId().longValue());
-        assertNull(activity.getBefore());
-        assertEquals("CMS82", activity.getAfter());
-        assertNull(activity.getReason());
-        assertEquals(QuestionableActivityTriggerConcept.CQM_ADDED.getName(), activity.getTrigger().getName());
-
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
-
-    @Test
-    @Transactional
-    @Rollback
-    public void testRemoveCqmIncludesReason() throws
-    EntityCreationException, EntityRetrievalException,
-    ValidationException, InvalidArgumentsException, JsonProcessingException,
-    MissingReasonException, IOException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-        Date beforeActivity = new Date();
-        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
-        for (CQMResultDetails cqm : listing.getCqmResults()) {
-            if (cqm.getCmsId() != null && cqm.getCmsId().equals("CMS146")) {
-                cqm.setSuccess(Boolean.FALSE);
-                cqm.setSuccessVersions(null);
-            }
-        }
-
-        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setListing(listing);
-        updateRequest.setReason("unit test");
-        cpController.updateCertifiedProduct(updateRequest);
-        Date afterActivity = new Date();
-
-        List<QuestionableActivityListingDTO> activities =
-                qaDao.findListingActivityBetweenDates(beforeActivity, afterActivity);
-        assertNotNull(activities);
-        assertEquals(1, activities.size());
-        QuestionableActivityListingDTO activity = activities.get(0);
-        assertEquals(1, activity.getListingId().longValue());
-        assertEquals("CMS146", activity.getBefore());
-        assertNull(activity.getAfter());
-        assertNotNull(activity.getReason());
-        assertEquals("unit test", activity.getReason());
-        assertEquals(QuestionableActivityTriggerConcept.CQM_REMOVED.getName(), activity.getTrigger().getName());
-
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
-
-    @Test(expected = MissingReasonException.class)
-    @Transactional
-    @Rollback
-    public void testRemoveCqmWithoutReason() throws
-    EntityCreationException, EntityRetrievalException,
-    ValidationException, InvalidArgumentsException, JsonProcessingException,
-    MissingReasonException, IOException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-        Date beforeActivity = new Date();
-        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
-        for (CQMResultDetails cqm : listing.getCqmResults()) {
-            if (cqm.getCmsId() != null && cqm.getCmsId().equals("CMS146")) {
-                cqm.setSuccess(Boolean.FALSE);
-                cqm.setSuccessVersions(null);
-            }
-        }
-
-        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setListing(listing);
-        cpController.updateCertifiedProduct(updateRequest);
-        Date afterActivity = new Date();
-
-        List<QuestionableActivityListingDTO> activities =
-                qaDao.findListingActivityBetweenDates(beforeActivity, afterActivity);
-        assertNotNull(activities);
-        assertEquals(1, activities.size());
-        QuestionableActivityListingDTO activity = activities.get(0);
-        assertEquals(1, activity.getListingId().longValue());
-        assertEquals("CMS146", activity.getBefore());
-        assertNull(activity.getAfter());
-        assertEquals(QuestionableActivityTriggerConcept.CQM_REMOVED.getName(), activity.getTrigger().getName());
-
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
-
-    @Test
-    @Transactional
-    @Rollback
-    public void testAddCriteria() throws EntityCreationException, EntityRetrievalException, ValidationException,
-    InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-        final int critId = 4;
-        Date beforeActivity = new Date();
-        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
-        for (CertificationResult cert : listing.getCertificationResults()) {
-            if (cert.getId().longValue() == critId) {
-                cert.setSuccess(Boolean.TRUE);
-            }
-        }
-        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setListing(listing);
-        cpController.updateCertifiedProduct(updateRequest);
-        Date afterActivity = new Date();
-
-        List<QuestionableActivityListingDTO> activities = qaDao.findListingActivityBetweenDates(beforeActivity,
-                afterActivity);
-        assertNotNull(activities);
-        assertEquals(1, activities.size());
-        QuestionableActivityListingDTO activity = activities.get(0);
-        assertEquals(1, activity.getListingId().longValue());
-        assertNull(activity.getBefore());
-        assertEquals("170.314 (a)(4)", activity.getAfter());
-        assertNull(activity.getReason());
-        assertEquals(QuestionableActivityTriggerConcept.CRITERIA_ADDED.getName(), activity.getTrigger().getName());
-
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
-
-    @Test
-    @Transactional
-    @Rollback
-    public void testRemoveCriteriaIncludesReason() throws EntityCreationException,
-    EntityRetrievalException, ValidationException,
-    InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-        Date beforeActivity = new Date();
-        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
-        for (CertificationResult cert : listing.getCertificationResults()) {
-            if (cert.getId().longValue() == 1) {
-                cert.setSuccess(Boolean.FALSE);
-            }
-        }
-        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setListing(listing);
-        updateRequest.setReason("unit test");
-        cpController.updateCertifiedProduct(updateRequest);
-        Date afterActivity = new Date();
-
-        List<QuestionableActivityListingDTO> activities = qaDao.findListingActivityBetweenDates(beforeActivity,
-                afterActivity);
-        assertNotNull(activities);
-        assertEquals(1, activities.size());
-        QuestionableActivityListingDTO activity = activities.get(0);
-        assertEquals(1, activity.getListingId().longValue());
-        assertEquals("170.314 (a)(1)", activity.getBefore());
-        assertNull(activity.getAfter());
-        assertNotNull(activity.getReason());
-        assertEquals("unit test", activity.getReason());
-        assertEquals(QuestionableActivityTriggerConcept.CRITERIA_REMOVED.getName(), activity.getTrigger().getName());
-
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
-
-    @Test(expected = MissingReasonException.class)
-    @Transactional
-    @Rollback
-    public void testRemoveCriteriaWithoutReason() throws EntityCreationException,
-    EntityRetrievalException, ValidationException,
-    InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-        Date beforeActivity = new Date();
-        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
-        for (CertificationResult cert : listing.getCertificationResults()) {
-            if (cert.getId().longValue() == 1) {
-                cert.setSuccess(Boolean.FALSE);
-            }
-        }
-        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setListing(listing);
-        cpController.updateCertifiedProduct(updateRequest);
-        Date afterActivity = new Date();
-
-        List<QuestionableActivityListingDTO> activities = qaDao.findListingActivityBetweenDates(beforeActivity,
-                afterActivity);
-        assertNotNull(activities);
-        assertEquals(1, activities.size());
-        QuestionableActivityListingDTO activity = activities.get(0);
-        assertEquals(1, activity.getListingId().longValue());
-        assertEquals("170.314 (a)(1)", activity.getBefore());
-        assertNull(activity.getAfter());
-        assertEquals(QuestionableActivityTriggerConcept.CRITERIA_REMOVED.getName(), activity.getTrigger().getName());
-
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
-    //TODO: add test for surveillance deleted. Need surveillance associated with
-    //product ID 10 to pass surveillance validation
+    //TODO: Add/update/remove surveillance and nonconformities
+    //TODO: Change MUU number via upload (change to a single listing will get caught 
+    //with the update listing aspect
 }

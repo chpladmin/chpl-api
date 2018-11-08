@@ -1,4 +1,4 @@
-package gov.healthit.chpl.aspect;
+package gov.healthit.chpl.listener;
 
 import java.util.List;
 import java.util.Locale;
@@ -25,7 +25,7 @@ import gov.healthit.chpl.questionableactivity.ListingQuestionableActivityProvide
 
 @Component
 @Aspect
-public class QuestionableActivityAspect {
+public class MissingReasonListener {
     private MessageSource messageSource;
     private CertifiedProductDetailsManager cpdManager;
     private ListingQuestionableActivityProvider listingQuestionableActivityProvider;
@@ -38,7 +38,7 @@ public class QuestionableActivityAspect {
      * @param listingQuestionableActivityProvider - ListingQuestionableActivityProvider
      */
     @Autowired
-    public QuestionableActivityAspect(final MessageSource messageSource,
+    public MissingReasonListener(final MessageSource messageSource,
             final CertifiedProductDetailsManager cpdManager, final CertifiedProductDAO listingDao,
             final ListingQuestionableActivityProvider listingQuestionableActivityProvider) {
 

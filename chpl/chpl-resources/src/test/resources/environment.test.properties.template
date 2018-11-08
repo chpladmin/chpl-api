@@ -10,6 +10,10 @@ keyLocation=C:\\CHPL\\keys\\JSONRsaJoseJWebKeyTest.txt
 jobThresholdDays=7
 maxActivityRangeInDays=500
 
+enableCacheInitialization=true
+cacheClearTimeoutSecs=15
+cacheInitializeTimeoutSecs=300
+
 testDbUser=openchpl
 testDbPassword=
 testDbServer=localhost/openchpl_test
