@@ -5,10 +5,6 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.context.MessageSourceAware;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -40,7 +36,7 @@ import gov.healthit.chpl.util.ValidationUtils;
  * Validate surveillance.
  */
 @Component("surveillanceValidator")
-public class SurveillanceValidator implements MessageSourceAware {
+public class SurveillanceValidator  {
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceValidator.class);
 
     private static final String CRITERION_REQUIREMENT_TYPE = "Certified Capability";
@@ -56,8 +52,6 @@ public class SurveillanceValidator implements MessageSourceAware {
     @Autowired
     private CertificationCriterionDAO criterionDao;
     @Autowired
-    private MessageSource messageSource;
-    @Autowired
     private ErrorMessageUtil msgUtil;
 
     /**
@@ -70,15 +64,11 @@ public class SurveillanceValidator implements MessageSourceAware {
         // make sure chpl id is valid
         if (surv.getCertifiedProduct() == null) {
             surv.getErrorMessages()
-            .add(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("surveillance.nullCertifiedProduct"),
-                    LocaleContextHolder.getLocale()));
+            .add(msgUtil.getMessage("surveillance.nullCertifiedProduct"));
         } else if (surv.getCertifiedProduct().getId() == null
                 && surv.getCertifiedProduct().getChplProductNumber() == null) {
             surv.getErrorMessages()
-            .add(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("surveillance.nullCertifiedProductAndChplNumber"),
-                    LocaleContextHolder.getLocale()));
+            .add(msgUtil.getMessage("surveillance.nullCertifiedProductAndChplNumber"));
         } else if (surv.getCertifiedProduct().getId() == null || surv.getCertifiedProduct().getId().longValue() <= 0) {
             // the id is null, try to lookup by unique chpl number
             String chplId = surv.getCertifiedProduct().getChplProductNumber();
@@ -273,10 +263,9 @@ public class SurveillanceValidator implements MessageSourceAware {
                         if (!RequirementTypeEnum.K1.getName().equals(req.getRequirement())
                                 && !RequirementTypeEnum.K2.getName().equals(req.getRequirement())) {
                             surv.getErrorMessages()
-                            .add("The requirement '" + req.getRequirement()
-                            + "' is not valid for requirement type '" + req.getType().getName() + "'. "
-                            + "Valid values are " + RequirementTypeEnum.K1.getName() + " or "
-                            + RequirementTypeEnum.K2.getName());
+                            .add(msgUtil.getMessage("surveillance.requirementInvalidForTransparencyType",
+                                    req.getRequirement(), req.getType().getName(),
+                                    RequirementTypeEnum.K1.getName(), RequirementTypeEnum.K2.getName()));
                         }
                     }
                 } else {
@@ -474,11 +463,7 @@ public class SurveillanceValidator implements MessageSourceAware {
 
                             if (nc.getTotalSites() > surv.getRandomizedSitesUsed()) {
                                 surv.getErrorMessages()
-                                .add(String.format(
-                                        messageSource.getMessage(
-                                                new DefaultMessageSourceResolvable(
-                                                        "surveillance.tooManyTotalSites"),
-                                                LocaleContextHolder.getLocale()),
+                                .add(msgUtil.getMessage("surveillance.tooManyTotalSites",
                                         req.getRequirement(), nc.getNonconformityType()));
                             }
                         } else if (surv.getType() != null && surv.getType().getName() != null
@@ -551,11 +536,6 @@ public class SurveillanceValidator implements MessageSourceAware {
                         Authority.ROLE_ADMIN, Authority.ROLE_ACB));
             }
         }
-    }
-
-    @Override
-    public void setMessageSource(final MessageSource messageSource) {
-        this.messageSource = messageSource;
     }
 
     private void addSurveillanceWarningIfNotValid(final Surveillance surv, final String input, final String fieldName) {
