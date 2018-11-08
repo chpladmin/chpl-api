@@ -66,7 +66,7 @@ public class TestingFunctionalityManagerImpl implements TestingFunctionalityMana
         if (testFunctionalityByCriteria2014.containsKey(criteria)) {
             List<TestFunctionalityDTO> dtos = testFunctionalityByCriteria2014.get(criteria);
             for (TestFunctionalityDTO dto : dtos) {
-                if (dto.getPracticeType().getId() == null || dto.getPracticeType().getId().equals(practiceTypeId)) {
+                if (dto.getPracticeType() == null || dto.getPracticeType().getId().equals(practiceTypeId)) {
                     allowedTestFunctionalities.add(new TestFunctionality(dto));
                 }
             }
