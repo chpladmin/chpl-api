@@ -74,4 +74,6 @@ public interface UserManager {
     UserResetTokenDTO createResetUserPasswordToken(String username, String email) throws UserRetrievalException;
     
     public boolean authorizePasswordReset(String token);
+    
+    public void deletePreviousTokens(String token);
 }

@@ -28,6 +28,7 @@ import gov.healthit.chpl.auth.dto.UserResetTokenDTO;
 import gov.healthit.chpl.auth.json.UserResetPasswordJSONObject;
 import gov.healthit.chpl.auth.jwt.JWTCreationException;
 import gov.healthit.chpl.auth.manager.UserManager;
+import gov.healthit.chpl.auth.user.ResetPasswordRequest;
 import gov.healthit.chpl.auth.user.UpdatePasswordRequest;
 import gov.healthit.chpl.auth.user.UpdatePasswordResponse;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
@@ -130,11 +131,44 @@ public class AuthenticationController{
         response.setPasswordUpdated(true);
         return response;
     }
+	
+	@ApiOperation(value="Reset password.", 
+            notes="Reset the users password.")
+    @RequestMapping(value="/reset_password_request", method= RequestMethod.POST,
+            produces="application/json; charset=utf-8")
+    public UpdatePasswordResponse resetPassword(@RequestBody final ResetPasswordRequest request)
+            throws UserRetrievalException {
+        UpdatePasswordResponse response = new UpdatePasswordResponse();
+        // get the current user
+        UserDTO currUser = userManager.getByName(request.getUserName());
+        if (currUser == null) {
+            throw new UserRetrievalException("The user with id " + Util.getCurrentUser().getId()
+                    + " could not be found or the logged in user does not have permission to modify their data.");
+        }
+        // check the strength of the new password
+        Strength strength = userManager.getPasswordStrength(currUser, request.getNewPassword());
+        if (strength.getScore() < UserManager.MIN_PASSWORD_STRENGTH) {
+            LOGGER.info("Strength results: [warning: {}] [suggestions: {}] [score: {}] [worst case crack time: {}]",
+                    strength.getFeedback().getWarning(),
+                    strength.getFeedback().getSuggestions().toString(),
+                    strength.getScore(),
+                    strength.getCrackTimesDisplay().getOfflineFastHashing1e10PerSecond());
+            response.setStrength(strength);
+            response.setPasswordUpdated(false);
+            return response;
+        }
+        if(userManager.authorizePasswordReset(request.getToken())){
+            userManager.updateUserPassword(currUser.getSubjectName(), request.getNewPassword());
+            userManager.deletePreviousTokens(request.getToken());
+        }
+        response.setPasswordUpdated(true);
+        return response;
+    }
 
 	
 	@ApiOperation(value="Reset a user's password.", 
 			notes="")
-	@RequestMapping(value="/reset_password", method= RequestMethod.POST, 
+	@RequestMapping(value="/email_reset_password", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
 	public String resetPassword(@RequestBody UserResetPasswordJSONObject userInfo) 
@@ -143,7 +177,7 @@ public class AuthenticationController{
 	    UserResetTokenDTO userResetTokenDTO = userManager.createResetUserPasswordToken(userInfo.getUserName(), userInfo.getEmail());
 	    String htmlMessage = "<p>Hi, <br/>"
                 + "Please follow this link to reset your password </p>"
-                + "<pre>" +  env.getProperty("chplUrlBegin") + "/auth/authorize_password_reset/" + userResetTokenDTO.getUserResetToken() + "</pre>"
+                + "<pre>" +  env.getProperty("chplUrlBegin") + "/#/auth/authorize_password_reset/" + userResetTokenDTO.getUserResetToken() + "</pre>"
                 + "<br/>" +
                 "</p>"
                 + "<p>Take care,<br/> " +

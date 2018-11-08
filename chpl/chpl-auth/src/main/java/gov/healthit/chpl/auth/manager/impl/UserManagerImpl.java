@@ -292,6 +292,12 @@ public class UserManagerImpl implements UserManager {
         }
         return false;
     }
+    
+    @Transactional
+    public void deletePreviousTokens(String token) {
+        UserResetTokenDTO userResetToken = userResetTokenDAO.findByAuthToken(token);
+        userResetTokenDAO.deletePreviousUserTokens(userResetToken.getUser().getId());
+    }
 
     @Override
     public String encodePassword(final String password) {
