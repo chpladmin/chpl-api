@@ -15,6 +15,7 @@ import gov.healthit.chpl.validation.listing.reviewer.FieldLengthReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.InheritedCertificationStatusReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.SedG3Reviewer;
+import gov.healthit.chpl.validation.listing.reviewer.TestFunctionalityReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestToolReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestingLabReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnattestedCriteriaWithDataReviewer;
@@ -85,6 +86,10 @@ public class Edition2015ListingValidator extends Validator {
     @Autowired
     @Qualifier("urlReviewer")
     private UrlReviewer urlReviewer;
+    
+    @Autowired
+    @Qualifier("testFunctionalityReviewer")
+    private TestFunctionalityReviewer testFunctionalityReviewer;
 
     private List<Reviewer> reviewers;
 
@@ -106,6 +111,7 @@ public class Edition2015ListingValidator extends Validator {
             reviewers.add(icsReviewer);
             reviewers.add(ttReviewer);
             reviewers.add(urlReviewer);
+            reviewers.add(testFunctionalityReviewer);
         }
         return reviewers;
     }

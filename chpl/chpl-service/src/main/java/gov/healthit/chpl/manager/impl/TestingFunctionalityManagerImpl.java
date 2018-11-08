@@ -50,6 +50,16 @@ public class TestingFunctionalityManagerImpl implements TestingFunctionalityMana
         }
     }
 
+    @Override
+    public Map<String, List<TestFunctionalityDTO>> getTestFunctionalityCriteriaMap2015() {
+        return testFunctionalityByCriteria2015;
+    }
+
+    @Override
+    public Map<String, List<TestFunctionalityDTO>> getTestFunctionalityCriteriaMap2014() {
+        return testFunctionalityByCriteria2014;
+    }
+
     private List<TestFunctionality> get2014TestFunctionalities(final String criteria, final Long practiceTypeId) {
         List<TestFunctionality> allowedTestFunctionalities = new ArrayList<TestFunctionality>();
 

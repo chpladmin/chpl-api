@@ -1,6 +1,7 @@
 package gov.healthit.chpl.dto;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import gov.healthit.chpl.entity.TestFunctionalityEntity;
 
@@ -71,5 +72,18 @@ public class TestFunctionalityDTO implements Serializable {
      */
     public void setPracticeType(final PracticeTypeDTO practiceType) {
         this.practiceType = practiceType;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null)
+            return false;
+        if (getClass() != o.getClass())
+            return false;
+        TestFunctionalityDTO dto = (TestFunctionalityDTO) o;
+        // field comparison
+        return Objects.equals(id, dto.getId());
     }
 }

@@ -1,18 +1,27 @@
 package gov.healthit.chpl.validation.listing.reviewer;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.dao.CertificationCriterionDAO;
+import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
+import gov.healthit.chpl.dto.CertificationEditionDTO;
+import gov.healthit.chpl.dto.TestFunctionalityCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
+import gov.healthit.chpl.manager.TestingFunctionalityManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 /**
@@ -22,12 +31,31 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
  *
  */
 @Component("testFunctionalityReviewer")
-public class TestFunctionalityReviewer implements Reviewer {
+@Transactional
+public class TestFunctionalityReviewer implements Reviewer, ApplicationListener<ContextRefreshedEvent> {
     private static final String EDITION_2014 = "2014";
+    private static final String EDITION_2015 = "2015";
 
-    @Autowired private TestFunctionalityDAO testFunctionalityDAO;
-    @Autowired private CertificationCriterionDAO certificationCriterionDAO;
-    @Autowired private ErrorMessageUtil msgUtil;
+    private TestFunctionalityDAO testFunctionalityDAO;
+    private TestingFunctionalityManager testFunctionalityManager;
+    private ErrorMessageUtil msgUtil;
+    private CertificationEditionDAO editionDAO;
+    private List<CertificationEditionDTO> editionDTOs; 
+    
+    @Autowired
+    public TestFunctionalityReviewer(TestFunctionalityDAO testFunctionalityDAO,
+            TestingFunctionalityManager testFunctionalityManager, CertificationEditionDAO editionDAO,
+            ErrorMessageUtil msgUtil) {
+        this.testFunctionalityDAO = testFunctionalityDAO;
+        this.testFunctionalityManager = testFunctionalityManager;
+        this.editionDAO = editionDAO;
+        this.msgUtil = msgUtil;
+    }
+
+    @Override
+    public void onApplicationEvent(ContextRefreshedEvent event) {
+        editionDTOs = editionDAO.findAll();
+    }
 
     @Override
     public void review(final CertifiedProductSearchDetails listing) {
@@ -47,32 +75,42 @@ public class TestFunctionalityReviewer implements Reviewer {
             final CertificationResult cr, final CertifiedProductSearchDetails listing) {
 
         Set<String> errors = new HashSet<String>();
-        TestFunctionalityDTO tf = getTestFunctionality(crtf.getName());
 
-        Long practiceTypeId = Long.valueOf(listing.getPracticeType().get("id").toString());
-        if (!isTestFunctionalityPracticeTypeValid(practiceTypeId, tf)) {
-            errors.add(getTestFunctionalityPracticeTypeErrorMessage(crtf, cr, listing));
+        CertificationEditionDTO edition = getEditionDTO(getEditionFromListing(listing));
+        TestFunctionalityDTO tf = getTestFunctionality(crtf.getName(), edition.getId());
+        
+        //Only validate practice type for 2014
+        if (getEditionFromListing(listing).equals(EDITION_2014)) {
+            Long practiceTypeId = Long.valueOf(listing.getPracticeType().get("id").toString());
+            if (!isTestFunctionalityPracticeTypeValid(practiceTypeId, tf)) {
+                errors.add(getTestFunctionalityPracticeTypeErrorMessage(crtf, cr, listing));
+            }
         }
 
         String criterionNumber = cr.getNumber();
-        if (!isTestFunctionalityCritierionValid(criterionNumber, tf)) {
-            errors.add(getTestFunctionalityCriterionErrorMessage(crtf, cr, listing));
+        if (!isTestFunctionalityCritierionValid(criterionNumber, tf, edition.getYear())) {
+            errors.add(getTestFunctionalityCriterionErrorMessage(crtf, cr, listing, edition));
         }
         return errors;
     }
 
-    private Boolean isTestFunctionalityCritierionValid(final String certificationCriterionName,
-            final TestFunctionalityDTO tf) {
+    private Boolean isTestFunctionalityCritierionValid(final String criteriaNumber,
+            final TestFunctionalityDTO tf, final String year) {
 
-        if (tf.getCertificationCriterion() != null) {
-            CertificationCriterionDTO cc =
-                    certificationCriterionDAO.getByNameAndYear(certificationCriterionName, EDITION_2014);
-            if (!tf.getCertificationCriterion().getId().equals(cc.getId())) {
-                return false;
-            }
+        List<TestFunctionalityDTO> validTestFunctionalityForCriteria = new ArrayList<TestFunctionalityDTO>();
+        if (year.equals(EDITION_2014) &&
+                testFunctionalityManager.getTestFunctionalityCriteriaMap2014().containsKey(criteriaNumber)) {
+            validTestFunctionalityForCriteria = 
+                    testFunctionalityManager.getTestFunctionalityCriteriaMap2014().get(criteriaNumber);
+        } else if (year.equals(EDITION_2015) &&
+                testFunctionalityManager.getTestFunctionalityCriteriaMap2015().containsKey(criteriaNumber)) {
+            validTestFunctionalityForCriteria = 
+                    testFunctionalityManager.getTestFunctionalityCriteriaMap2015().get(criteriaNumber);
         }
-        return true;
-    }
+        
+        //Is the TestFunctionalityDTO in the valid list (relies on the TestFunctionalityDTO.equals()
+        return validTestFunctionalityForCriteria.contains(tf);
+}
 
     private Boolean isTestFunctionalityPracticeTypeValid(final Long practiceTypeId,
             final TestFunctionalityDTO tf) {
@@ -85,15 +123,10 @@ public class TestFunctionalityReviewer implements Reviewer {
         return true;
     }
 
-    private TestFunctionalityDTO getTestFunctionality(final String number) {
-        Long editionId = 2L;
-        return testFunctionalityDAO.getByNumberAndEdition(number, editionId);
-    }
-
     private String getTestFunctionalityPracticeTypeErrorMessage(final CertificationResultTestFunctionality crtf,
             final CertificationResult cr, final CertifiedProductSearchDetails cp) {
-
-        TestFunctionalityDTO tf = getTestFunctionality(crtf.getName());
+        CertificationEditionDTO editionDTO = getEditionDTO(getEditionFromListing(cp));
+        TestFunctionalityDTO tf = getTestFunctionality(crtf.getName(), editionDTO.getId());
 
         return getTestFunctionalityPracticeTypeErrorMessage(
                 cr.getNumber(),
@@ -111,20 +144,66 @@ public class TestFunctionalityReviewer implements Reviewer {
     }
 
     private String getTestFunctionalityCriterionErrorMessage(final CertificationResultTestFunctionality crtf,
-            final CertificationResult cr, final CertifiedProductSearchDetails cp) {
+            final CertificationResult cr, final CertifiedProductSearchDetails cp, 
+            final CertificationEditionDTO edition) {
 
-        TestFunctionalityDTO tf = getTestFunctionality(crtf.getName());
+        TestFunctionalityDTO tf = getTestFunctionality(crtf.getName(), edition.getId());
         return getTestFunctionalityCriterionErrorMessage(
                 cr.getNumber(),
                 crtf.getName(),
-                tf.getCertificationCriterion().getNumber(),
+                getDelimitedListOfValidCriteriaNumbers(tf, edition),
                 cr.getNumber());
     }
 
     private String getTestFunctionalityCriterionErrorMessage(final String criteriaNumber,
-            final String testFunctionalityNumber, final String validCriterion, final String currentCriterion) {
+            final String testFunctionalityNumber, final String listOfValidCriteria, final String currentCriterion) {
 
         return msgUtil.getMessage("listing.criteria.testFunctionalityCriterionMismatch",
-                criteriaNumber, testFunctionalityNumber, validCriterion, currentCriterion);
+                criteriaNumber, testFunctionalityNumber, listOfValidCriteria, currentCriterion);
+    }
+    
+    private CertificationEditionDTO getEditionDTO(final String year) {
+        for (CertificationEditionDTO dto : editionDTOs) {
+            if (dto.getYear().equals(year)) {
+                return dto;
+            }
+        }
+        return null;
+    }
+    
+    private String getEditionFromListing(final CertifiedProductSearchDetails listing) {
+        String edition = "";
+        if (listing.getCertificationEdition().containsKey("name")) {
+            edition = listing.getCertificationEdition().get("name").toString(); 
+        }
+        return edition;
+    }
+    
+    private TestFunctionalityDTO getTestFunctionality(final String number, final Long editionId) {
+        return testFunctionalityDAO.getByNumberAndEdition(number, editionId);
+    }
+
+    private String getDelimitedListOfValidCriteriaNumbers(final TestFunctionalityDTO tfDTO,
+            final CertificationEditionDTO edition) {
+
+        String criteria = "";
+        List<CertificationCriterionDTO> certDTOs = new ArrayList<CertificationCriterionDTO>();
+        
+        List<TestFunctionalityCriteriaMapDTO> maps = testFunctionalityDAO.getTestFunctionalityCritieriaMaps();
+        for (TestFunctionalityCriteriaMapDTO map : maps) {
+            if (map.getCriteria().getCertificationEdition().equals(edition.getYear())) {
+                if (tfDTO.getId().equals(map.getTestFunctionality().getId()))
+                    certDTOs.add(map.getCriteria());
+            }
+        }
+        
+        Iterator<CertificationCriterionDTO> iter = certDTOs.iterator();
+        while(iter.hasNext()) {
+            criteria += iter.next().getNumber();
+            if (iter.hasNext()) {
+                criteria += ", ";
+            }
+        }
+        return criteria;
     }
 }
