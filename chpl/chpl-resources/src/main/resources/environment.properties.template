@@ -112,8 +112,11 @@ smtpPassword=
 
 chplUrlBegin=http://localhost:8000/app
 
-#Asynchronous - leave false for now
-asyncEnabled=false
+#Asynchronous properties
+#leave listing details false for now
+asyncListingDetailsEnabled=false
+#cache refresh should be true except for unit testing
+asyncCacheRefreshEnabled=true
 
 ####### Email Builder Settings #######
 #Do we want to 'check' emails before sending them?

@@ -32,8 +32,9 @@ rateTokenLimit=5
 # values are: second, minute, hour
 rateLimitTimeUnit=minute
 
-#Asynchronous - should always be false for jUnits to properly work in our environment
-asyncEnabled=false
+#Asynchronous properties - should always be false for jUnits to properly work in our environment
+asyncListingDetailsEnabled=false
+asyncCacheRefreshEnabled=false
 
 # number of tokens per API Key per time unit below
 rateTokenLimit=5

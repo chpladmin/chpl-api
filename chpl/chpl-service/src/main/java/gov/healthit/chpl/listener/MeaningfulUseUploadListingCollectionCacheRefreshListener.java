@@ -1,7 +1,5 @@
 package gov.healthit.chpl.listener;
 
-import java.util.Date;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -10,11 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.caching.CacheReplacer;
 import gov.healthit.chpl.caching.ListingsCollectionCacheUpdater;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
+import gov.healthit.chpl.util.PropertyUtil;
 
 @Component
 @Aspect
@@ -22,6 +17,8 @@ public class MeaningfulUseUploadListingCollectionCacheRefreshListener {
     private static final Logger LOGGER = LogManager.getLogger(MeaningfulUseUploadListingCollectionCacheRefreshListener.class);
     @Autowired
     private ListingsCollectionCacheUpdater cacheUpdater;
+    @Autowired
+    private PropertyUtil propUtil;
 
     /**
      * The meaningful use upload job publishes a certified product activity
@@ -32,9 +29,21 @@ public class MeaningfulUseUploadListingCollectionCacheRefreshListener {
      * and refresh the cache when the entire job is completed.
      */
     @AfterReturning("execution(* gov.healthit.chpl.job.MeaningfulUseUploadJob.run(..))")
-    @Async
     public void afterMeaningfulUseUploadComplete() {
         LOGGER.debug("MUU Upload Complete. Refreshing listings collection cache.");
+        if(propUtil.isAsyncCacheRefreshEnabled()) {
+            refreshCacheAsync();
+        } else {
+            refreshCache();
+        }
+    }
+
+    @Async
+    private void refreshCacheAsync() {
+        cacheUpdater.refreshCache();
+    }
+
+    private void refreshCache() {
         cacheUpdater.refreshCache();
     }
 }

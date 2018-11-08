@@ -246,7 +246,7 @@ public class SurveillanceController implements MessageSourceAware {
             responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
         } catch (final SurveillanceAuthorityAccessDeniedException ex) {
             LOGGER.error("User lacks authority to delete surveillance");
-            throw new SurveillanceAuthorityAccessDeniedException("User lacks authority to delete surveillance");
+            throw new SurveillanceAuthorityAccessDeniedException("User lacks authority to create surveillance");
         }
 
         if (insertedSurv == null) {
