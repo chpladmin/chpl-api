@@ -462,6 +462,7 @@ public class CacheRefreshTest extends TestCase {
     @Test
     @Transactional
     @Rollback
+    @Ignore
     public void testUpdateAcbNameDeprecatedRefreshesCache() throws
     UpdateCertifiedBodyException, EntityRetrievalException, EntityCreationException,
     JsonProcessingException, InvalidArgumentsException {
