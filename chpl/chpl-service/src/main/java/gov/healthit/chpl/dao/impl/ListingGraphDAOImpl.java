@@ -16,10 +16,13 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.ListingGraphDAO;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.ListingToListingMapDTO;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
+import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 import gov.healthit.chpl.entity.listing.ListingToListingMapEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 
@@ -29,6 +32,9 @@ public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO 
     @Autowired
     MessageSource messageSource;
 
+    @Autowired
+    private CertifiedProductDAO certifiedProductDAO;
+    
     @Override
     public ListingToListingMapDTO createListingMap(ListingToListingMapDTO toCreate) throws EntityCreationException {
         ListingToListingMapEntity entity = new ListingToListingMapEntity();
@@ -115,6 +121,33 @@ public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO 
         return result;
     }
 
+    @Override
+    @Transactional
+    public List<CertifiedProductDTO> getParentsNew(Long listingId) {
+        Query query = entityManager.createQuery(
+                    "SELECT listingMap.parentId " 
+                    + "FROM ListingToListingMapEntity listingMap "
+                    + "WHERE listingMap.childId = :childId " 
+                    + "AND listingMap.deleted <> true ",
+                Long.class);
+        query.setParameter("childId", listingId);
+        List<Long> parentIds = query.getResultList();
+
+        List<CertifiedProductDTO> result = new ArrayList<CertifiedProductDTO>();
+        for (Long parentId : parentIds) {
+            Query query2 = entityManager.createQuery(
+                            "SELECT certifiedProduct " 
+                            + "FROM CertifiedProductEntity certifiedProduct "
+                            + "WHERE certifiedProduct.id = :id " 
+                            + "AND certifiedProduct.deleted <> true ",
+                    CertifiedProductEntity.class);
+            query2.setParameter("id", parentId);
+            List<CertifiedProductEntity> parentEntities = query2.getResultList();
+            result.add(new CertifiedProductDTO(parentEntities.get(0)));
+        }
+        return result;
+    }
+
     /**
      * Find the first-level child nodes of a specific listing
      * 
@@ -135,6 +168,33 @@ public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO 
         List<CertifiedProductDetailsDTO> result = new ArrayList<CertifiedProductDetailsDTO>();
         for (CertifiedProductDetailsEntity childEntity : childEntities) {
             result.add(new CertifiedProductDetailsDTO(childEntity));
+        }
+        return result;
+    }
+
+    @Override
+    @Transactional
+    public List<CertifiedProductDTO> getChildrenNew(Long listingId) {
+        Query query = entityManager.createQuery(
+                    "SELECT listingMap.childId " 
+                    + "FROM ListingToListingMapEntity listingMap "
+                    + "WHERE listingMap.parentId = :parentId " 
+                    + "AND listingMap.deleted <> true ",
+                Long.class);
+        query.setParameter("parentId", listingId);
+        List<Long> childIds = query.getResultList();
+
+        List<CertifiedProductDTO> result = new ArrayList<CertifiedProductDTO>();
+        for (Long childId : childIds) {
+            Query query2 = entityManager.createQuery(
+                            "SELECT certifiedProduct " 
+                            + "FROM CertifiedProductEntity certifiedProduct "
+                            + "WHERE certifiedProduct.id = :id " 
+                            + "AND certifiedProduct.deleted <> true ",
+                    CertifiedProductEntity.class);
+            query2.setParameter("id", childId);
+            List<CertifiedProductEntity> parentEntities = query2.getResultList();
+            result.add(new CertifiedProductDTO(parentEntities.get(0)));
         }
         return result;
     }

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,6 +15,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
+import com.google.common.base.Stopwatch;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
@@ -74,6 +77,7 @@ import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.CertificationStatusEventDTO;
 import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
@@ -304,10 +308,11 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 
     private CertifiedProductSearchDetails createCertifiedSearchDetails(final CertifiedProductDetailsDTO dto,
             final Boolean retrieveAsynchronously) throws EntityRetrievalException {
-
-        Future<List<CertifiedProductDetailsDTO>> childrenFuture =
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        
+        Future<List<CertifiedProductDTO>> childrenFuture =
                 getCertifiedProductChildren(dto.getId(), retrieveAsynchronously);
-        Future<List<CertifiedProductDetailsDTO>> parentsFuture =
+        Future<List<CertifiedProductDTO>> parentsFuture =
                 getCertifiedProductParents(dto.getId(), retrieveAsynchronously);
         Future<List<CertificationResultDetailsDTO>> certificationResultsFuture =
                 getCertificationResultDetailsDTOs(dto.getId(), retrieveAsynchronously);
@@ -328,15 +333,18 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 
         searchDetails = populateTestingLab(dto, searchDetails);
 
+        stopwatch.stop();
+        LOGGER.info(Thread.currentThread().getStackTrace()[1].getMethodName() + ": " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        
         return searchDetails;
     }
 
     private CertifiedProductSearchDetails createCertifiedProductDetailsBasic(final CertifiedProductDetailsDTO dto,
             final Boolean retrieveAsynchronously) throws EntityRetrievalException {
 
-        Future<List<CertifiedProductDetailsDTO>> childrenFuture =
+        Future<List<CertifiedProductDTO>> childrenFuture =
                 getCertifiedProductChildren(dto.getId(), retrieveAsynchronously);
-        Future<List<CertifiedProductDetailsDTO>> parentsFuture =
+        Future<List<CertifiedProductDTO>> parentsFuture =
                 getCertifiedProductParents(dto.getId(), retrieveAsynchronously);
 
         CertifiedProductSearchDetails searchDetails = getCertifiedProductSearchDetails(dto);
@@ -355,16 +363,23 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
     private CertifiedProductDetailsDTO getCertifiedProductDetailsDtoByChplProductNumber(final String chplProductNumber)
             throws EntityRetrievalException {
 
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        
         List<CertifiedProductDetailsDTO> dtos =
                 certifiedProductSearchResultDAO.getByChplProductNumber(chplProductNumber);
         if (dtos.size() == 0) {
             throw new EntityRetrievalException("Could not retrieve CertifiedProductSearchDetails.");
         }
+        stopwatch.stop();
+        LOGGER.info(Thread.currentThread().getStackTrace()[1].getMethodName() + ": " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        
         return dtos.get(0);
     }
 
     private CertifiedProductSearchDetails populateTestingLab(final CertifiedProductDetailsDTO dto,
             final CertifiedProductSearchDetails searchDetails) throws EntityRetrievalException {
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        
         List<CertifiedProductTestingLabDTO> testingLabDtos =
                 certifiedProductTestingLabDao.getTestingLabsByCertifiedProductId(dto.getId());
         List<CertifiedProductTestingLab> testingLabResults = new ArrayList<CertifiedProductTestingLab>();
@@ -373,19 +388,26 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
             testingLabResults.add(result);
         }
         searchDetails.setTestingLabs(testingLabResults);
+        
+        stopwatch.stop();
+        LOGGER.info(Thread.currentThread().getStackTrace()[1].getMethodName() + ": " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
         return searchDetails;
     }
 
-    private List<CertifiedProduct> populateParents(final Future<List<CertifiedProductDetailsDTO>> parentsFuture,
+    private List<CertifiedProduct> populateParents(final Future<List<CertifiedProductDTO>> parentsFuture,
             final CertifiedProductSearchDetails searchDetails) throws EntityRetrievalException {
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        
         try {
             List<CertifiedProduct> parents = new ArrayList<CertifiedProduct>();
-            List<CertifiedProductDetailsDTO> parentDTOs = parentsFuture.get();
+            List<CertifiedProductDTO> parentDTOs = parentsFuture.get();
             if (parentDTOs != null && parentDTOs.size() > 0) {
-                for (CertifiedProductDetailsDTO parentDTO : parentDTOs) {
+                for (CertifiedProductDTO parentDTO : parentDTOs) {
                     parents.add(new CertifiedProduct(parentDTO));
                 }
             }
+            stopwatch.stop();
+            LOGGER.info(Thread.currentThread().getStackTrace()[1].getMethodName() + ": " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
             return parents;
         } catch (InterruptedException e) {
             throw new EntityRetrievalException("Error retrieving Parent Listings: " + e.getMessage());
@@ -394,16 +416,21 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         }
     }
 
-    private List<CertifiedProduct> populateChildren(final Future<List<CertifiedProductDetailsDTO>> childrenFuture,
+    private List<CertifiedProduct> populateChildren(final Future<List<CertifiedProductDTO>> childrenFuture,
             final CertifiedProductSearchDetails searchDetails) throws EntityRetrievalException {
+        
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        
         try {
             List<CertifiedProduct> children = new ArrayList<CertifiedProduct>();
-            List<CertifiedProductDetailsDTO> childrenDTOs = childrenFuture.get();
+            List<CertifiedProductDTO> childrenDTOs = childrenFuture.get();
             if (childrenDTOs != null && childrenDTOs.size() > 0) {
-                for (CertifiedProductDetailsDTO childDTO : childrenDTOs) {
+                for (CertifiedProductDTO childDTO : childrenDTOs) {
                     children.add(new CertifiedProduct(childDTO));
                 }
             }
+            stopwatch.stop();
+            LOGGER.info(Thread.currentThread().getStackTrace()[1].getMethodName() + ": " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
             return children;
         } catch (InterruptedException e) {
             throw new EntityRetrievalException("Error retrieving Parent Listings: " + e.getMessage());
@@ -424,6 +451,8 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
             final Future<List<CQMResultDetailsDTO>> cqmResultsFuture, final String year)
                     throws EntityRetrievalException {
 
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        
         List<CQMResultDetails> details = new ArrayList<CQMResultDetails>();
         try {
             List<CQMResultDetailsDTO> cqmResultDTOs = cqmResultsFuture.get();
@@ -433,6 +462,10 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         } catch (ExecutionException e) {
             throw new EntityRetrievalException("Error retrieving CQM Result Details: " + e.getMessage());
         }
+        
+        stopwatch.stop();
+        LOGGER.info(Thread.currentThread().getStackTrace()[1].getMethodName() + ": " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        
         return details;
     }
 
@@ -441,6 +474,8 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
             final CertifiedProductSearchDetails searchDetails)
                     throws EntityRetrievalException {
 
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        
         List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
         try {
             List<CertificationResultDetailsDTO> certificationResultDetailsDTOs =
@@ -454,12 +489,18 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         } catch (ExecutionException e) {
             throw new EntityRetrievalException("Error retrieving Certification Resultss: " + e.getMessage());
         }
+        
+        stopwatch.stop();
+        LOGGER.info(Thread.currentThread().getStackTrace()[1].getMethodName() + ": " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        
         return certificationResults;
     }
 
     private List<CertificationStatusEvent> getCertificationStatusEvents(final Long certifiedProductId)
             throws EntityRetrievalException {
 
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        
         List<CertificationStatusEvent> certEvents = new ArrayList<CertificationStatusEvent>();
         List<CertificationStatusEventDTO> certStatusDtos = certStatusEventDao
                 .findByCertifiedProductId(certifiedProductId);
@@ -481,12 +522,18 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
             cse.setStatus(new CertificationStatus(statusDto));
             certEvents.add(cse);
         }
+        
+        stopwatch.stop();
+        LOGGER.info(Thread.currentThread().getStackTrace()[1].getMethodName() + ": " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        
         return certEvents;
     }
 
     private List<MeaningfulUseUser> getMeaningfulUseUserHistory(final Long certifiedProductId)
             throws EntityRetrievalException {
 
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        
         List<MeaningfulUseUser> muuHistory = new ArrayList<MeaningfulUseUser>();
         List<MeaningfulUseUserDTO> muuDtos = muuDao
                 .findByCertifiedProductId(certifiedProductId);
@@ -495,18 +542,29 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
             MeaningfulUseUser muu = new MeaningfulUseUser(muuDto);
             muuHistory.add(muu);
         }
+        
+        stopwatch.stop();
+        LOGGER.info(Thread.currentThread().getStackTrace()[1].getMethodName() + ": " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        
         return muuHistory;
     }
 
     private void loadCriteriaMacraMeasures() {
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        
         List<MacraMeasureDTO> dtos = macraDao.findAll();
         for (MacraMeasureDTO dto : dtos) {
             MacraMeasure measure = new MacraMeasure(dto);
             macraMeasures.add(measure);
         }
+        
+        stopwatch.stop();
+        LOGGER.info(Thread.currentThread().getStackTrace()[1].getMethodName() + ": " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
     }
 
     private void loadCQMCriteria() {
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        
         List<CQMCriterionDTO> dtos = cqmCriterionDAO.findAll();
         for (CQMCriterionDTO dto : dtos) {
             CQMCriterion criterion = new CQMCriterion();
@@ -522,15 +580,24 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
             criterion.setTitle(dto.getTitle());
             cqmCriteria.add(criterion);
         }
+        
+        stopwatch.stop();
+        LOGGER.info(Thread.currentThread().getStackTrace()[1].getMethodName() + ": " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
     }
 
     private List<CQMCriterion> getAvailableCQMVersions() {
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        
         List<CQMCriterion> criteria = new ArrayList<CQMCriterion>();
         for (CQMCriterion criterion : cqmCriteria) {
             if (!StringUtils.isEmpty(criterion.getCmsId()) && criterion.getCmsId().startsWith("CMS")) {
                 criteria.add(criterion);
             }
         }
+        
+        stopwatch.stop();
+        LOGGER.info(Thread.currentThread().getStackTrace()[1].getMethodName() + ": " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        
         return criteria;
     }
 
@@ -538,6 +605,8 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
             final CertificationResultDetailsDTO certResult,
             final CertifiedProductSearchDetails searchDetails) {
 
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        
         CertificationResult result = new CertificationResult(certResult);
         // override optional boolean values
         if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.GAP)) {
@@ -721,12 +790,17 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 
         result.setAllowedTestFunctionalities(getAvailableTestFunctionalities(result, searchDetails));
 
+        stopwatch.stop();
+        LOGGER.info(Thread.currentThread().getStackTrace()[1].getMethodName() + ": " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        
         return result;
     }
 
     private List<TestFunctionality> getAvailableTestFunctionalities(final CertificationResult cr,
             final CertifiedProductSearchDetails cp) {
 
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        
         String edition = cp.getCertificationEdition().get("name").toString();
         Long practiceTypeId = null;
         if (cp.getPracticeType().containsKey("id")) {
@@ -736,12 +810,17 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         }
         String criteriaNumber = cr.getNumber();
 
+        stopwatch.stop();
+        LOGGER.info(Thread.currentThread().getStackTrace()[1].getMethodName() + ": " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        
         return testFunctionalityManager.getTestFunctionalities(criteriaNumber, edition, practiceTypeId);
     }
 
     private CertifiedProductSearchDetails getCertifiedProductSearchDetails(
             final CertifiedProductDetailsDTO dto) throws EntityRetrievalException {
 
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        
         CertifiedProductSearchDetails searchDetails = new CertifiedProductSearchDetails();
         searchDetails.setId(dto.getId());
         searchDetails.setAcbCertificationId(dto.getAcbCertificationId());
@@ -788,6 +867,9 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         ics.setInherits(dto.getIcs());
         searchDetails.setIcs(ics);
 
+        stopwatch.stop();
+        LOGGER.info(Thread.currentThread().getStackTrace()[1].getMethodName() + ": " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        
         return searchDetails;
     }
 
@@ -833,6 +915,8 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
     }
 
     private List<CertifiedProductTestingLab> getTestingLabs(final Long id) throws EntityRetrievalException {
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        
         List<CertifiedProductTestingLabDTO> testingLabDtos = new ArrayList<CertifiedProductTestingLabDTO>();
         testingLabDtos = certifiedProductTestingLabDao.getTestingLabsByCertifiedProductId(id);
 
@@ -841,12 +925,18 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
             CertifiedProductTestingLab result = new CertifiedProductTestingLab(testingLabDto);
             testingLabResults.add(result);
         }
+        
+        stopwatch.stop();
+        LOGGER.info(Thread.currentThread().getStackTrace()[1].getMethodName() + ": " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        
         return testingLabResults;
     }
 
     private List<CertifiedProductQmsStandard> getCertifiedProductQmsStandards(final Long id)
             throws EntityRetrievalException {
 
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        
         List<CertifiedProductQmsStandardDTO> qmsStandardDTOs = new ArrayList<CertifiedProductQmsStandardDTO>();
         qmsStandardDTOs = certifiedProductQmsStandardDao.getQmsStandardsByCertifiedProductId(id);
 
@@ -855,11 +945,18 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
             CertifiedProductQmsStandard result = new CertifiedProductQmsStandard(qmsStandardResult);
             qmsStandardResults.add(result);
         }
+        
+        stopwatch.stop();
+        LOGGER.info(Thread.currentThread().getStackTrace()[1].getMethodName() + ": " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        
         return qmsStandardResults;
     }
 
     private List<CertifiedProductTargetedUser> getCertifiedProductTargetedUsers(final Long id)
             throws EntityRetrievalException {
+        
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        
         List<CertifiedProductTargetedUserDTO> targetedUserDtos = new ArrayList<CertifiedProductTargetedUserDTO>();
         targetedUserDtos = certifiedProductTargetedUserDao.getTargetedUsersByCertifiedProductId(id);
 
@@ -868,12 +965,18 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
             CertifiedProductTargetedUser result = new CertifiedProductTargetedUser(targetedUserDto);
             targetedUserResults.add(result);
         }
+        
+        stopwatch.stop();
+        LOGGER.info(Thread.currentThread().getStackTrace()[1].getMethodName() + ": " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        
         return targetedUserResults;
     }
 
     private List<CertifiedProductAccessibilityStandard> getCertifiedProductAccessibilityStandards(
             final Long id) throws EntityRetrievalException {
 
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        
         List<CertifiedProductAccessibilityStandardDTO> accessibilityStandardDtos =
                 new ArrayList<CertifiedProductAccessibilityStandardDTO>();
 
@@ -887,12 +990,16 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
                     accessibilityStandardDto);
             accessibilityStandardResults.add(result);
         }
-        return accessibilityStandardResults;
+        
+        stopwatch.stop();
+        LOGGER.info(Thread.currentThread().getStackTrace()[1].getMethodName() + ": " + stopwatch.elapsed(TimeUnit.MILLISECONDS));return accessibilityStandardResults;
     }
 
     private List<CQMResultDetails> getCqmResultDetails(
             final List<CQMResultDetailsDTO> cqmResultDTOs, final String year) {
 
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        
         List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
         for (CQMResultDetailsDTO cqmResultDTO : cqmResultDTOs) {
             boolean existingCms = false;
@@ -956,10 +1063,14 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         for (CQMResultDetails cqmResult : cqmResults) {
             cqmResult.setCriteria(getCqmCriteriaMapping(cqmResult));
         }
+        stopwatch.stop();
+        LOGGER.info(Thread.currentThread().getStackTrace()[1].getMethodName() + ": " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        
         return cqmResults;
     }
 
     private List<CQMResultCertification> getCqmCriteriaMapping(final CQMResultDetails cqmResult) {
+        Stopwatch stopwatch = Stopwatch.createStarted();
         List<CQMResultCertification> cqmResultCertifications = new ArrayList<CQMResultCertification>();
         if (cqmResult.isSuccess() && cqmResult.getId() != null) {
             List<CQMResultCriteriaDTO> criteria = cqmResultDao.getCriteriaForCqmResult(cqmResult.getId());
@@ -975,47 +1086,70 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
                 }
             }
         }
+        stopwatch.stop();
+        LOGGER.info(Thread.currentThread().getStackTrace()[1].getMethodName() + ": " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        
         return cqmResultCertifications;
     }
 
-    private Future<List<CertifiedProductDetailsDTO>> getCertifiedProductChildren(final Long id,
+    private Future<List<CertifiedProductDTO>> getCertifiedProductChildren(final Long id,
             final Boolean retrieveAsynchronously) {
+        Stopwatch stopwatch = Stopwatch.createStarted();
         if (retrieveAsynchronously) {
+            stopwatch.stop();
+            LOGGER.info(Thread.currentThread().getStackTrace()[1].getMethodName() + ": " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
             return async.getCertifiedProductChildren(listingGraphDao, id);
         } else {
+            stopwatch.stop();
+            LOGGER.info(Thread.currentThread().getStackTrace()[1].getMethodName() + ": " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
             return async.getFutureCertifiedProductChildren(listingGraphDao, id);
         }
     }
 
-    private Future<List<CertifiedProductDetailsDTO>> getCertifiedProductParents(final Long id,
+    private Future<List<CertifiedProductDTO>> getCertifiedProductParents(final Long id,
             final Boolean retrieveAsynchronously) {
+        Stopwatch stopwatch = Stopwatch.createStarted();
         if (retrieveAsynchronously) {
+            stopwatch.stop();
+            LOGGER.info(Thread.currentThread().getStackTrace()[1].getMethodName() + ": " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
             return async.getCertifiedProductParent(listingGraphDao, id);
         } else {
+            stopwatch.stop();
+            LOGGER.info(Thread.currentThread().getStackTrace()[1].getMethodName() + ": " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
             return async.getFutureCertifiedProductParent(listingGraphDao, id);
         }
     }
 
     private Future<List<CertificationResultDetailsDTO>> getCertificationResultDetailsDTOs(final Long id,
             final Boolean retrieveAsynchronously) {
+        Stopwatch stopwatch = Stopwatch.createStarted();
         if (retrieveAsynchronously) {
+            stopwatch.stop();
+            LOGGER.info(Thread.currentThread().getStackTrace()[1].getMethodName() + ": " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
             return async.getCertificationResultDetailsDTOs(certificationResultDetailsDAO, id);
         } else {
+            stopwatch.stop();
+            LOGGER.info(Thread.currentThread().getStackTrace()[1].getMethodName() + ": " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
             return async.getFutureCertificationResultDetailsDTOs(certificationResultDetailsDAO, id);
         }
     }
 
     private Future<List<CQMResultDetailsDTO>> getCqmResultDetailsDTOs(final Long id,
             final Boolean retrieveAsynchronously) {
+        Stopwatch stopwatch = Stopwatch.createStarted();
         if (retrieveAsynchronously) {
+            stopwatch.stop();
+            LOGGER.info(Thread.currentThread().getStackTrace()[1].getMethodName() + ": " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
             return async.getCqmResultDetailsDTOs(cqmResultDetailsDAO, id);
         } else {
+            stopwatch.stop();
+            LOGGER.info(Thread.currentThread().getStackTrace()[1].getMethodName() + ": " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
             return async.getFutureCqmResultDetailsDTOs(cqmResultDetailsDAO, id);
         }
     }
 
     private Boolean areAsyncCallsEnabled() {
-        try {
+        Stopwatch stopwatch = Stopwatch.createStarted();try {
             return env.getProperty("asyncEnabled").equalsIgnoreCase("true");
         } catch (java.lang.NullPointerException e) {
             LOGGER.debug("Unable to read asyncEnabled property flag");
