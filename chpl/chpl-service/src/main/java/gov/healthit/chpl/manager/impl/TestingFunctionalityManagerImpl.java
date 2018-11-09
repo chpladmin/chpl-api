@@ -21,7 +21,6 @@ import gov.healthit.chpl.manager.TestingFunctionalityManager;
 @Transactional
 public class TestingFunctionalityManagerImpl implements TestingFunctionalityManager, ApplicationListener<ContextRefreshedEvent> {
 
-    @Autowired
     private TestFunctionalityDAO testFunctionalityDAO;
     
     private Map<String, List<TestFunctionalityDTO>> testFunctionalityByCriteria2015 = 
@@ -29,7 +28,12 @@ public class TestingFunctionalityManagerImpl implements TestingFunctionalityMana
 
     private Map<String, List<TestFunctionalityDTO>> testFunctionalityByCriteria2014 = 
             new HashMap<String, List<TestFunctionalityDTO>>();
-
+    
+    @Autowired
+    public TestingFunctionalityManagerImpl(TestFunctionalityDAO testFunctionalityDAO) {
+        this.testFunctionalityDAO = testFunctionalityDAO;
+    }
+    
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         List<TestFunctionalityCriteriaMapDTO> allMaps = testFunctionalityDAO.getTestFunctionalityCritieriaMaps();
