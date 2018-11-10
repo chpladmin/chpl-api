@@ -3,7 +3,6 @@ package gov.healthit.chpl.dao;
 import java.util.List;
 
 import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.ListingToListingMapDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 
@@ -14,13 +13,9 @@ public interface ListingGraphDAO {
 
     Integer getLargestIcs(List<Long> listingIds);
 
-    List<CertifiedProductDetailsDTO> getParents(Long listingId);
+    List<CertifiedProductDTO> getParents(Long listingId);
 
-    List<CertifiedProductDTO> getParentsNew(Long listingId);
-
-    List<CertifiedProductDetailsDTO> getChildren(Long listingId);
-
-    List<CertifiedProductDTO> getChildrenNew(Long listingId);
+    List<CertifiedProductDTO> getChildren(Long listingId);
 
     ListingToListingMapDTO getListingMap(Long childId, Long parentId);
 }

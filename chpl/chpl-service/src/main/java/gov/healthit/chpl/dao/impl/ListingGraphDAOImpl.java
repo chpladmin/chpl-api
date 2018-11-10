@@ -16,12 +16,9 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.ListingToListingMapDTO;
-import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 import gov.healthit.chpl.entity.listing.ListingToListingMapEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -32,8 +29,6 @@ public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO 
     @Autowired
     MessageSource messageSource;
 
-    @Autowired
-    private CertifiedProductDAO certifiedProductDAO;
     
     @Override
     public ListingToListingMapDTO createListingMap(ListingToListingMapDTO toCreate) throws EntityCreationException {
@@ -106,24 +101,7 @@ public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO 
      */
     @Override
     @Transactional
-    public List<CertifiedProductDetailsDTO> getParents(Long listingId) {
-        Query query = entityManager.createQuery(
-                "SELECT listingMap.parent " + "FROM ListingToListingMapEntity listingMap "
-                        + "WHERE listingMap.childId = :childId " + "AND listingMap.deleted <> true ",
-                CertifiedProductDetailsEntity.class);
-        query.setParameter("childId", listingId);
-        List<CertifiedProductDetailsEntity> parentEntities = query.getResultList();
-
-        List<CertifiedProductDetailsDTO> result = new ArrayList<CertifiedProductDetailsDTO>();
-        for (CertifiedProductDetailsEntity parentEntity : parentEntities) {
-            result.add(new CertifiedProductDetailsDTO(parentEntity));
-        }
-        return result;
-    }
-
-    @Override
-    @Transactional
-    public List<CertifiedProductDTO> getParentsNew(Long listingId) {
+    public List<CertifiedProductDTO> getParents(Long listingId) {
         Query query = entityManager.createQuery(
                     "SELECT listingMap.parentId " 
                     + "FROM ListingToListingMapEntity listingMap "
@@ -132,7 +110,8 @@ public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO 
                 Long.class);
         query.setParameter("childId", listingId);
         List<Long> parentIds = query.getResultList();
-
+        
+        //Retrieve the CertifiedProduct for each parent listing
         List<CertifiedProductDTO> result = new ArrayList<CertifiedProductDTO>();
         for (Long parentId : parentIds) {
             Query query2 = entityManager.createQuery(
@@ -157,24 +136,7 @@ public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO 
      */
     @Override
     @Transactional
-    public List<CertifiedProductDetailsDTO> getChildren(Long listingId) {
-        Query query = entityManager.createQuery(
-                "SELECT listingMap.child " + "FROM ListingToListingMapEntity listingMap "
-                        + "WHERE listingMap.parentId = :parentId " + "AND listingMap.deleted <> true",
-                CertifiedProductDetailsEntity.class);
-        query.setParameter("parentId", listingId);
-        List<CertifiedProductDetailsEntity> childEntities = query.getResultList();
-
-        List<CertifiedProductDetailsDTO> result = new ArrayList<CertifiedProductDetailsDTO>();
-        for (CertifiedProductDetailsEntity childEntity : childEntities) {
-            result.add(new CertifiedProductDetailsDTO(childEntity));
-        }
-        return result;
-    }
-
-    @Override
-    @Transactional
-    public List<CertifiedProductDTO> getChildrenNew(Long listingId) {
+    public List<CertifiedProductDTO> getChildren(Long listingId) {
         Query query = entityManager.createQuery(
                     "SELECT listingMap.childId " 
                     + "FROM ListingToListingMapEntity listingMap "
@@ -184,6 +146,7 @@ public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO 
         query.setParameter("parentId", listingId);
         List<Long> childIds = query.getResultList();
 
+        //Retrieve the CertifiedProduct for each child listing
         List<CertifiedProductDTO> result = new ArrayList<CertifiedProductDTO>();
         for (Long childId : childIds) {
             Query query2 = entityManager.createQuery(

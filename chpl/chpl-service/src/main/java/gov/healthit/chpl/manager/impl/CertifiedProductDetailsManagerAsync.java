@@ -31,11 +31,11 @@ public class CertifiedProductDetailsManagerAsync {
     public Future<List<CertifiedProductDTO>> getFutureCertifiedProductChildren(
             final ListingGraphDAO listingGraphDao, final Long id) {
 
-        LOGGER.info("Starting the retrieval of the Children");
+        LOGGER.debug("Starting the retrieval of the Children");
         Date start = new Date();
-        List<CertifiedProductDTO> children = listingGraphDao.getChildrenNew(id);
+        List<CertifiedProductDTO> children = listingGraphDao.getChildren(id);
         Date end = new Date();
-        LOGGER.info("Time to retrieve Children: " + (end.getTime() - start.getTime()));
+        LOGGER.debug("Time to retrieve Children: " + (end.getTime() - start.getTime()));
         return new AsyncResult<List<CertifiedProductDTO>>(children);
     }
 
@@ -47,11 +47,11 @@ public class CertifiedProductDetailsManagerAsync {
 
     public Future<List<CertifiedProductDTO>> getFutureCertifiedProductParent(
             final ListingGraphDAO listingGraphDao, final Long id) {
-        LOGGER.info("Starting the retrieval of the Parents");
+        LOGGER.debug("Starting the retrieval of the Parents");
         Date start = new Date();
-        List<CertifiedProductDTO> children = listingGraphDao.getParentsNew(id);
+        List<CertifiedProductDTO> children = listingGraphDao.getParents(id);
         Date end = new Date();
-        LOGGER.info("Time to retrieve Parents: " + (end.getTime() - start.getTime()));
+        LOGGER.debug("Time to retrieve Parents: " + (end.getTime() - start.getTime()));
         return new AsyncResult<List<CertifiedProductDTO>>(children);
     }
 
@@ -64,7 +64,7 @@ public class CertifiedProductDetailsManagerAsync {
     public Future<List<CertificationResultDetailsDTO>> getFutureCertificationResultDetailsDTOs(
             final CertificationResultDetailsDAO certificationResultDetailsDAO, final Long id) {
 
-        LOGGER.info("Starting the retrieval of the Certification Result Details");
+        LOGGER.debug("Starting the retrieval of the Certification Result Details");
         Date start = new Date();
         List<CertificationResultDetailsDTO> certificationResultDetailsDTOs = null;
         try {
@@ -74,7 +74,7 @@ public class CertifiedProductDetailsManagerAsync {
             e.printStackTrace();
         }
         Date end = new Date();
-        LOGGER.info("Time to populate Certification Result Details: " + (end.getTime() - start.getTime()));
+        LOGGER.debug("Time to populate Certification Result Details: " + (end.getTime() - start.getTime()));
 
         return new AsyncResult<List<CertificationResultDetailsDTO>>(certificationResultDetailsDTOs);
     }
@@ -88,7 +88,7 @@ public class CertifiedProductDetailsManagerAsync {
     public Future<List<CQMResultDetailsDTO>> getFutureCqmResultDetailsDTOs(
             final CQMResultDetailsDAO cqmResultDetailsDAO, final Long id) {
 
-        LOGGER.info("Starting the retrieval of the CQM Result Details");
+        LOGGER.debug("Starting the retrieval of the CQM Result Details");
         Date start = new Date();
         List<CQMResultDetailsDTO> cqmResultDetailsDTOs = null;
         try {
@@ -97,7 +97,7 @@ public class CertifiedProductDetailsManagerAsync {
             e.printStackTrace();
         }
         Date end = new Date();
-        LOGGER.info("Time to populate CQM Result Details: " + (end.getTime() - start.getTime()));
+        LOGGER.debug("Time to populate CQM Result Details: " + (end.getTime() - start.getTime()));
 
         return new AsyncResult<List<CQMResultDetailsDTO>>(cqmResultDetailsDTOs);
     }
