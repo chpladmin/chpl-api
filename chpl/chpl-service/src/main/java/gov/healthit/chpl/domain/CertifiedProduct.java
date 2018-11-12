@@ -9,7 +9,6 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
@@ -65,23 +64,6 @@ public class CertifiedProduct implements Serializable {
         this.setLastModifiedDate(dto.getLastModifiedDate() != null ? dto.getLastModifiedDate().getTime() + "" : "");
         this.edition = dto.getYear();
         this.certificationDate = (dto.getCertificationDate() != null ? dto.getCertificationDate().getTime() : -1);
-    }
-    
-    public CertifiedProduct(CertifiedProductDTO dto) {
-        this.id = dto.getId();
-        if (!StringUtils.isEmpty(dto.getChplProductNumber())) {
-            this.setChplProductNumber(dto.getChplProductNumber());
-        } else {
-            //this.setChplProductNumber(dto.getYearCode() + "." + dto.getTestingLabCode() + "."
-            //        + dto.getCertificationBodyCode() + "." + dto.getDeveloper().getDeveloperCode() + "."
-            //        + dto.getProductCode() + "." + dto.getVersionCode() + "." + dto.getIcsCode() + "."
-            //        + dto.getAdditionalSoftwareCode() + "." + dto.getCertifiedDateCode());
-            this.setChplProductNumber("NEED TODO");
-        }
-        this.setLastModifiedDate(dto.getLastModifiedDate() != null ? dto.getLastModifiedDate().getTime() + "" : "");
-        this.edition = "NEED TODO";
-        //TODO: 
-        //this.certificationDate = (dto.getCertifiedDateCode() != null ? dto.getCertifiedDateCode() : -1);
     }
 
     public Long getId() {
