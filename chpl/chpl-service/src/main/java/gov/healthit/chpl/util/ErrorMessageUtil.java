@@ -9,8 +9,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class ErrorMessageUtil {
 
-    @Autowired private MessageSource messageSource;
-
+    private MessageSource messageSource;
+    
+    public ErrorMessageUtil() {}
+    
+    @Autowired 
+    public ErrorMessageUtil(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
+    
     public String getMessage(final String messageCode, final Object...inputs) {
         String result = null;
         if(inputs == null || inputs.length == 0) {

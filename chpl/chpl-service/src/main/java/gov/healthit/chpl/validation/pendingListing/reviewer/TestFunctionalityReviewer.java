@@ -76,7 +76,7 @@ public class TestFunctionalityReviewer implements Reviewer, ApplicationListener<
         CertificationEditionDTO edition = getEditionDTO(getEditionFromListing(listing));
         TestFunctionalityDTO tf = getTestFunctionality(crtf.getNumber(), edition.getId());
         
-        //Only validate practice type for 2014
+        //Only validate practice type for 20146
         if (edition.getYear().equals(EDITION_2014)) {
             Long practiceTypeId = listing.getPracticeTypeId();
             if (!isTestFunctionalityPracticeTypeValid(practiceTypeId, tf)) {

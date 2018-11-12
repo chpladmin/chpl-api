@@ -9,27 +9,22 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
+import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.PracticeTypeDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -37,13 +32,14 @@ import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
+import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
+import gov.healthit.chpl.manager.TestingFunctionalityManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.validation.listing.reviewer.TestFunctionalityReviewer;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
+//@RunWith(SpringJUnit4ClassRunner.class)
+//@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
 public class ListingTestFunctionalityReviewerTest {
 
     @Spy
@@ -53,13 +49,16 @@ public class ListingTestFunctionalityReviewerTest {
     private CertificationCriterionDAO certificationCriterionDAO;
     
     @Spy
-    private MessageSource messageSource;
-    
-    @Spy
     private PracticeTypeDAO practiceTypeDAO;
     
-    @Spy
+    @Mock
     private ErrorMessageUtil msgUtil;
+    
+    @Spy
+    private CertificationEditionDAO certificationEditionDAO;
+    
+    @Spy
+    private TestingFunctionalityManager testFunctionalityManager;
     
     @InjectMocks
     private TestFunctionalityReviewer tfReviewer;
@@ -67,20 +66,27 @@ public class ListingTestFunctionalityReviewerTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+
+        Mockito.doReturn("In Criteria 170.314 (a)(6), Test Functionality (a)(6)(11) is for "
+                + "Criteria other and is not valid for Criteria 170.314 (a)(6).")
+            .when(msgUtil).getMessage(
+                ArgumentMatchers.eq("listing.criteria.testFunctionalityCriterionMismatch"),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), 
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
         
-        Mockito.when(messageSource.getMessage(
-                ArgumentMatchers.eq(new DefaultMessageSourceResolvable("listing.criteria.testFunctionalityPracticeTypeMismatch")),
-                ArgumentMatchers.any(Locale.class)))
-            .thenReturn("In Criteria %s, Test Functionality %s is for %s Settings and is not valid for Practice Type %s.");
-        Mockito.when(messageSource.getMessage(
-                ArgumentMatchers.eq(new DefaultMessageSourceResolvable("listing.criteria.testFunctionalityCriterionMismatch")),
-                ArgumentMatchers.eq(LocaleContextHolder.getLocale())))
-            .thenReturn("In Criteria %s, Test Functionality %s is for Criteria %s and is not valid for Criteria Type %s.");
+        Mockito.doReturn("In Criteria 170.314 (a)(6), Test Functionality (a)(6)(11) is for "
+                + "other Settings and is not valid for Practice Type Ambulatory.")
+            .when(msgUtil).getMessage(
+                ArgumentMatchers.eq("listing.criteria.testFunctionalityPracticeTypeMismatch"),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), 
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
+        
+        Mockito.when(certificationEditionDAO.findAll()).thenReturn(getEditions());
+
+        Mockito.when(testFunctionalityManager.getTestFunctionalityCriteriaMap2014()).thenReturn(getTestFunctionalityCriteriaMap2014());
     }
     
     //Case 1: A valid test functionality
-    @Transactional
-    @Rollback(true)
     @Test
     public void validateCertifiedProductTestFunctionality() {
         Mockito.when(testFunctionalityDAO.getByNumberAndEdition(ArgumentMatchers.anyString(), ArgumentMatchers.anyLong()))
@@ -103,6 +109,7 @@ public class ListingTestFunctionalityReviewerTest {
         certResults.add(certResult);
         listing.getCertificationResults().add(certResult);
         
+        tfReviewer.onApplicationEvent(null);
         tfReviewer.review(listing);
         
         assertFalse(doesTestFunctionalityPracticeTypeErrorMessageExist(listing.getErrorMessages()));
@@ -110,23 +117,13 @@ public class ListingTestFunctionalityReviewerTest {
     }
 
     //Case 2: An invalid test functionality based on practice type
-    @Transactional
-    @Rollback(true)
     @Test
     public void validateCertifiedProductTestFunctionalityPracticeTypeMismatch() throws Exception {
         Mockito.when(testFunctionalityDAO.getByNumberAndEdition(ArgumentMatchers.anyString(), ArgumentMatchers.anyLong()))
                 .thenReturn(getTestFunctionalityId_18());
         Mockito.when(certificationCriterionDAO.getByNameAndYear(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
                 .thenReturn(getCertificationCriterion_a6());
-        Mockito.when(messageSource.getMessage(ArgumentMatchers.any(DefaultMessageSourceResolvable.class), ArgumentMatchers.any(Locale.class)))
-                .thenReturn("In Criteria %s, Test Functionality %s is for %s Settings and is not valid for Practice Type %s.");
-        Mockito.doReturn("In Criteria 170.314 (a)(6), Test Functionality (a)(6)(11) is for "
-                + "other Settings and is not valid for Practice Type Ambulatory.")
-        .when(msgUtil).getMessage(
-                ArgumentMatchers.eq("listing.criteria.testFunctionalityPracticeTypeMismatch"),
-                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), 
-                ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
-        
+
         CertifiedProductSearchDetails listing = createListing("2014");
         List<CertificationResult> certResults = new ArrayList<CertificationResult>();
         CertificationResult certResult = createCertResult("170.314 (a)(6)");
@@ -141,34 +138,30 @@ public class ListingTestFunctionalityReviewerTest {
         certResults.add(certResult);
         listing.getCertificationResults().add(certResult);
         
+        tfReviewer.onApplicationEvent(null);
         tfReviewer.review(listing);
         
         assertTrue(doesTestFunctionalityPracticeTypeErrorMessageExist(listing.getErrorMessages()));
     }
 
     //Case 3: An invalid test functionality based on certifcation criterion
-    @Transactional
-    @Rollback(true)
     @Test
     public void validateCertifiedProductTestFunctionalityCertificationCriterionMismatch() {
         Mockito.when(testFunctionalityDAO.getByNumberAndEdition(ArgumentMatchers.anyString(), ArgumentMatchers.anyLong()))
                 .thenReturn(getTestFunctionalityId_7());
+        
         Mockito.when(certificationCriterionDAO.getByNameAndYear(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
                 .thenReturn(getCertificationCriterion_a7());
-        Mockito.doReturn("In Criteria 170.314 (a)(6), Test Functionality (a)(6)(11) is for "
-                + "Criteria other and is not valid for Criteria 170.314 (a)(6).")
-        .when(msgUtil).getMessage(
-                ArgumentMatchers.eq("listing.criteria.testFunctionalityCriterionMismatch"),
-                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), 
-                ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
+        
+        
 
         CertifiedProductSearchDetails listing = createListing("2014");
         List<CertificationResult> certResults = new ArrayList<CertificationResult>();
-        CertificationResult certResult = createCertResult("170.314 (a)(6)");
+        CertificationResult certResult = createCertResult("170.314 (a)(7)");
         CertificationResultTestFunctionality crtf = new CertificationResultTestFunctionality();
         crtf.setDescription("No description required");
         crtf.setId(1l);
-        crtf.setName("(a)(7)(i)");
+        crtf.setName("(a)(6)(i)");
         crtf.setTestFunctionalityId(18l);
         crtf.setYear("2104");
         certResult.setTestFunctionality(new ArrayList<CertificationResultTestFunctionality>());
@@ -176,6 +169,7 @@ public class ListingTestFunctionalityReviewerTest {
         certResults.add(certResult);
         listing.getCertificationResults().add(certResult);
         
+        tfReviewer.onApplicationEvent(null);
         tfReviewer.review(listing);
         
         assertTrue(doesTestFunctionalityCriterionErrorMessageExist(listing.getErrorMessages()));
@@ -299,7 +293,7 @@ public class ListingTestFunctionalityReviewerTest {
         cc.setId(66l);
         cc.setNumber("170.314 (a)(6)");
         
-        tf.setCertificationCriterion(cc);
+        //tf.setCertificationCriterion(cc);
         tf.setPracticeType(pt);
         
         return tf;
@@ -322,9 +316,41 @@ public class ListingTestFunctionalityReviewerTest {
         cc.setId(66l);
         cc.setNumber("170.314 (a)(6)");
         
-        tf.setCertificationCriterion(cc);
+        //tf.setCertificationCriterion(cc);
         tf.setPracticeType(pt);
         
         return tf;
+    }
+    
+    private List<CertificationEditionDTO> getEditions() {
+        List<CertificationEditionDTO> editions = new ArrayList<CertificationEditionDTO>();
+        CertificationEditionDTO edition2011 = new CertificationEditionDTO();
+        edition2011.setId(1l);
+        edition2011.setYear("2011");
+        editions.add(edition2011);
+        
+        CertificationEditionDTO edition2014 = new CertificationEditionDTO();
+        edition2014.setId(2l);
+        edition2014.setYear("2014");
+        editions.add(edition2014);
+        
+        CertificationEditionDTO edition2015 = new CertificationEditionDTO();
+        edition2015.setId(3l);
+        edition2015.setYear("2015");
+        editions.add(edition2015);
+        
+        return editions;
+     }
+    
+    private Map<String, List<TestFunctionalityDTO>> getTestFunctionalityCriteriaMap2014() {
+        Map<String, List<TestFunctionalityDTO>> map = new HashMap<String, List<TestFunctionalityDTO>>();
+        
+        List<TestFunctionalityDTO> tfs = new ArrayList<TestFunctionalityDTO>();
+        tfs.add(getTestFunctionalityId_18());
+        tfs.add(getTestFunctionalityId_7());
+        
+        map.put("170.314 (a)(6)", tfs);
+        
+        return map;
     }
 }
