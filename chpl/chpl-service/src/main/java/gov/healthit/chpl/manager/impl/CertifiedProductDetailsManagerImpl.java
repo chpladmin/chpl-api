@@ -1048,13 +1048,4 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         }
         return null;
     }
-
-    private Boolean areAsyncCallsEnabled() {
-        try {
-            return env.getProperty("asyncEnabled").equalsIgnoreCase("true");
-        } catch (java.lang.NullPointerException e) {
-            LOGGER.debug("Unable to read asyncEnabled property flag");
-            return true;
-        }
-    }
 }
