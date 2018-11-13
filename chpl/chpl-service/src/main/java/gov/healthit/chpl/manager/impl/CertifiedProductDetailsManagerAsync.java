@@ -15,7 +15,7 @@ import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Service("certifiedProductDetailsManagerAsync")
@@ -23,36 +23,36 @@ public class CertifiedProductDetailsManagerAsync {
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductDetailsManagerAsync.class);
 
     @Async
-    public Future<List<CertifiedProductDetailsDTO>> getCertifiedProductChildren(
+    public Future<List<CertifiedProductDTO>> getCertifiedProductChildren(
             final ListingGraphDAO listingGraphDao, final Long id) {
         return getFutureCertifiedProductChildren(listingGraphDao, id);
     }
 
-    public Future<List<CertifiedProductDetailsDTO>> getFutureCertifiedProductChildren(
+    public Future<List<CertifiedProductDTO>> getFutureCertifiedProductChildren(
             final ListingGraphDAO listingGraphDao, final Long id) {
 
         LOGGER.debug("Starting the retrieval of the Children");
         Date start = new Date();
-        List<CertifiedProductDetailsDTO> children = listingGraphDao.getChildren(id);
+        List<CertifiedProductDTO> children = listingGraphDao.getChildren(id);
         Date end = new Date();
         LOGGER.debug("Time to retrieve Children: " + (end.getTime() - start.getTime()));
-        return new AsyncResult<List<CertifiedProductDetailsDTO>>(children);
+        return new AsyncResult<List<CertifiedProductDTO>>(children);
     }
 
     @Async
-    public Future<List<CertifiedProductDetailsDTO>> getCertifiedProductParent(
+    public Future<List<CertifiedProductDTO>> getCertifiedProductParent(
             final ListingGraphDAO listingGraphDao, final Long id) {
         return getFutureCertifiedProductParent(listingGraphDao, id);
     }
 
-    public Future<List<CertifiedProductDetailsDTO>> getFutureCertifiedProductParent(
+    public Future<List<CertifiedProductDTO>> getFutureCertifiedProductParent(
             final ListingGraphDAO listingGraphDao, final Long id) {
         LOGGER.debug("Starting the retrieval of the Parents");
         Date start = new Date();
-        List<CertifiedProductDetailsDTO> children = listingGraphDao.getParents(id);
+        List<CertifiedProductDTO> children = listingGraphDao.getParents(id);
         Date end = new Date();
         LOGGER.debug("Time to retrieve Parents: " + (end.getTime() - start.getTime()));
-        return new AsyncResult<List<CertifiedProductDetailsDTO>>(children);
+        return new AsyncResult<List<CertifiedProductDTO>>(children);
     }
 
     @Async

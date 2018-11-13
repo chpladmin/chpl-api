@@ -8,6 +8,7 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
+import gov.healthit.chpl.dao.ChplProductNumberDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -36,6 +37,9 @@ public class ChplProductNumberUtil {
 
     @Autowired
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
+    
+    @Autowired
+    private ChplProductNumberDAO chplProductNumberDAO;
 
     private static final int CERTIFICATION_EDITION_BEGIN_INDEX = 2;
 
@@ -44,6 +48,15 @@ public class ChplProductNumberUtil {
     private static final int LEGACY_ID_LENGTH = 10;
     private static final String LEGACY_ID_BEGIN = "CHP-";
 
+    /**
+     * Gets the CHPL Product Number as calculated by the DB
+     * @param certifiedProductId - Long
+     * @return - String 
+     */
+    public String generate(Long certifiedProductId) {
+        return chplProductNumberDAO.getChplProductNumber(certifiedProductId);
+    }
+    
     /**
      * Determines what the derived CHPL Product Number will be based on the values passed.
      * @param uniqueId - Unique ID from the product
