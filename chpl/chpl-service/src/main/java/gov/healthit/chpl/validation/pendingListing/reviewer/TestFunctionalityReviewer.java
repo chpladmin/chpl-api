@@ -59,9 +59,20 @@ public class TestFunctionalityReviewer implements Reviewer, ApplicationListener<
         if (listing.getCertificationCriterion() != null) {
             for (PendingCertificationResultDTO cr : listing.getCertificationCriterion()) {
                 if (cr.getTestFunctionality() != null) {
-                    for (PendingCertificationResultTestFunctionalityDTO crtf : cr.getTestFunctionality()) {
-                        listing.getErrorMessages().addAll(
+                    Iterator<PendingCertificationResultTestFunctionalityDTO> crtfIter =
+                            cr.getTestFunctionality().iterator();
+                    while (crtfIter.hasNext()) {
+                        PendingCertificationResultTestFunctionalityDTO crtf = crtfIter.next();
+                        TestFunctionalityDTO tf = getTestFunctionality(crtf.getNumber());
+                        if (tf == null) {
+                            listing.getErrorMessages().add(
+                                    msgUtil.getMessage("listing.criteria.testFunctionalityNotFoundAndRemoved",
+                                    cr.getNumber(), crtf.getNumber()));
+                            crtfIter.remove();
+                        } else {
+                            listing.getErrorMessages().addAll(
                                 getTestingFunctionalityErrorMessages(crtf, cr, listing));
+                        }
                     }
                 }
             }
@@ -198,5 +209,10 @@ public class TestFunctionalityReviewer implements Reviewer, ApplicationListener<
             }
         }
         return criteria;
+    }
+    
+    private TestFunctionalityDTO getTestFunctionality(final String number) {
+        Long editionId = 2L;
+        return testFunctionalityDAO.getByNumberAndEdition(number, editionId);
     }
 }

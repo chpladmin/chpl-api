@@ -44,22 +44,22 @@ public class ListingTestFunctionalityReviewerTest {
 
     @Spy
     private TestFunctionalityDAO testFunctionalityDAO;
-    
+
     @Spy
     private CertificationCriterionDAO certificationCriterionDAO;
-    
+
     @Spy
     private PracticeTypeDAO practiceTypeDAO;
-    
+
     @Mock
     private ErrorMessageUtil msgUtil;
-    
+
     @Spy
     private CertificationEditionDAO certificationEditionDAO;
-    
+
     @Spy
     private TestingFunctionalityManager testFunctionalityManager;
-    
+
     @InjectMocks
     private TestFunctionalityReviewer tfReviewer;
 
@@ -73,19 +73,19 @@ public class ListingTestFunctionalityReviewerTest {
                 ArgumentMatchers.eq("listing.criteria.testFunctionalityCriterionMismatch"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), 
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
-        
+
         Mockito.doReturn("In Criteria 170.314 (a)(6), Test Functionality (a)(6)(11) is for "
                 + "other Settings and is not valid for Practice Type Ambulatory.")
             .when(msgUtil).getMessage(
                 ArgumentMatchers.eq("listing.criteria.testFunctionalityPracticeTypeMismatch"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), 
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
-        
+
         Mockito.when(certificationEditionDAO.findAll()).thenReturn(getEditions());
 
         Mockito.when(testFunctionalityManager.getTestFunctionalityCriteriaMap2014()).thenReturn(getTestFunctionalityCriteriaMap2014());
     }
-    
+
     //Case 1: A valid test functionality
     @Test
     public void validateCertifiedProductTestFunctionality() {
@@ -93,8 +93,7 @@ public class ListingTestFunctionalityReviewerTest {
                 .thenReturn(getTestFunctionalityId_7());
         Mockito.when(certificationCriterionDAO.getByNameAndYear(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
                 .thenReturn(getCertificationCriterion_a6());
-        
-        
+
         CertifiedProductSearchDetails listing = createListing("2014");
         List<CertificationResult> certResults = new ArrayList<CertificationResult>();
         CertificationResult certResult = createCertResult("170.314 (a)(6)");
@@ -108,10 +107,10 @@ public class ListingTestFunctionalityReviewerTest {
         certResult.getTestFunctionality().add(crtf);
         certResults.add(certResult);
         listing.getCertificationResults().add(certResult);
-        
+
         tfReviewer.onApplicationEvent(null);
         tfReviewer.review(listing);
-        
+
         assertFalse(doesTestFunctionalityPracticeTypeErrorMessageExist(listing.getErrorMessages()));
         assertFalse(doesTestFunctionalityCriterionErrorMessageExist(listing.getErrorMessages()));
     }
@@ -137,10 +136,10 @@ public class ListingTestFunctionalityReviewerTest {
         certResult.getTestFunctionality().add(crtf);
         certResults.add(certResult);
         listing.getCertificationResults().add(certResult);
-        
+
         tfReviewer.onApplicationEvent(null);
         tfReviewer.review(listing);
-        
+
         assertTrue(doesTestFunctionalityPracticeTypeErrorMessageExist(listing.getErrorMessages()));
     }
 
@@ -149,11 +148,9 @@ public class ListingTestFunctionalityReviewerTest {
     public void validateCertifiedProductTestFunctionalityCertificationCriterionMismatch() {
         Mockito.when(testFunctionalityDAO.getByNumberAndEdition(ArgumentMatchers.anyString(), ArgumentMatchers.anyLong()))
                 .thenReturn(getTestFunctionalityId_7());
-        
+
         Mockito.when(certificationCriterionDAO.getByNameAndYear(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
                 .thenReturn(getCertificationCriterion_a7());
-        
-        
 
         CertifiedProductSearchDetails listing = createListing("2014");
         List<CertificationResult> certResults = new ArrayList<CertificationResult>();
@@ -168,10 +165,10 @@ public class ListingTestFunctionalityReviewerTest {
         certResult.getTestFunctionality().add(crtf);
         certResults.add(certResult);
         listing.getCertificationResults().add(certResult);
-        
+
         tfReviewer.onApplicationEvent(null);
         tfReviewer.review(listing);
-        
+
         assertTrue(doesTestFunctionalityCriterionErrorMessageExist(listing.getErrorMessages()));
     }
 
@@ -186,7 +183,7 @@ public class ListingTestFunctionalityReviewerTest {
         }
         return false;
     }
-    
+
     private Boolean doesTestFunctionalityCriterionErrorMessageExist(Set<String> errorMessages) {
         for (String error : errorMessages) {
             if (error.contains("In Criteria")
@@ -259,7 +256,6 @@ public class ListingTestFunctionalityReviewerTest {
         cc.setId(66l);
         cc.setNumber("170.314 (a)(6)");
         cc.setTitle("Medication list");
-        
         return cc;
     }
     
@@ -272,7 +268,6 @@ public class ListingTestFunctionalityReviewerTest {
         cc.setId(67l);
         cc.setNumber("170.314 (a)(7)");
         cc.setTitle("Medication allergy list");
-        
         return cc;
     }
     
@@ -281,21 +276,19 @@ public class ListingTestFunctionalityReviewerTest {
         tf.setId(18l);
         tf.setName("(a)(6)(ii)");
         tf.setYear("2014");
-        
+
         PracticeTypeDTO pt = new PracticeTypeDTO();
         pt.setDeleted(false);
         pt.setId(2l);
         pt.setName("Inpatient");
         pt.setDescription("Inpatient");
-        
+
         CertificationCriterionDTO cc = new CertificationCriterionDTO();
         cc.setDeleted(false);
         cc.setId(66l);
         cc.setNumber("170.314 (a)(6)");
-        
-        //tf.setCertificationCriterion(cc);
         tf.setPracticeType(pt);
-        
+
         return tf;
     }
     
@@ -304,21 +297,20 @@ public class ListingTestFunctionalityReviewerTest {
         tf.setId(7l);
         tf.setName("(a)(6)(i)");
         tf.setYear("2014");
-        
+
         PracticeTypeDTO pt = new PracticeTypeDTO();
         pt.setDeleted(false);
         pt.setId(1l);
         pt.setName("Ambulatory");
         pt.setDescription("Ambulatory");
-        
+
         CertificationCriterionDTO cc = new CertificationCriterionDTO();
         cc.setDeleted(false);
         cc.setId(66l);
         cc.setNumber("170.314 (a)(6)");
-        
-        //tf.setCertificationCriterion(cc);
+
         tf.setPracticeType(pt);
-        
+
         return tf;
     }
     
@@ -328,29 +320,29 @@ public class ListingTestFunctionalityReviewerTest {
         edition2011.setId(1l);
         edition2011.setYear("2011");
         editions.add(edition2011);
-        
+
         CertificationEditionDTO edition2014 = new CertificationEditionDTO();
         edition2014.setId(2l);
         edition2014.setYear("2014");
         editions.add(edition2014);
-        
+
         CertificationEditionDTO edition2015 = new CertificationEditionDTO();
         edition2015.setId(3l);
         edition2015.setYear("2015");
         editions.add(edition2015);
-        
+
         return editions;
      }
     
     private Map<String, List<TestFunctionalityDTO>> getTestFunctionalityCriteriaMap2014() {
         Map<String, List<TestFunctionalityDTO>> map = new HashMap<String, List<TestFunctionalityDTO>>();
-        
+
         List<TestFunctionalityDTO> tfs = new ArrayList<TestFunctionalityDTO>();
         tfs.add(getTestFunctionalityId_18());
         tfs.add(getTestFunctionalityId_7());
-        
+
         map.put("170.314 (a)(6)", tfs);
-        
+
         return map;
     }
 }

@@ -59,13 +59,12 @@ public class PendingListingTestFunctionalityReviewerTest {
 
     @Spy
     private ErrorMessageUtil msgUtil;
-    
+
     @Spy
     private CertificationEditionDAO certificationEditionDAO;
     
     @Spy
     private TestingFunctionalityManager testFunctionalityManager;
-
 
     @InjectMocks
     private TestFunctionalityReviewer pendingTfReviewer;
@@ -87,7 +86,12 @@ public class PendingListingTestFunctionalityReviewerTest {
                 ArgumentMatchers.eq("listing.criteria.testFunctionalityPracticeTypeMismatch"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), 
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
-        
+
+        Mockito.doReturn(INVALID_TEST_FUNC_ERROR)
+            .when(msgUtil).getMessage(
+                ArgumentMatchers.eq("listing.criteria.testFunctionalityNotFoundAndRemoved"),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
+
         Mockito.when(certificationEditionDAO.findAll()).thenReturn(getEditions());
 
         Mockito.when(testFunctionalityManager.getTestFunctionalityCriteriaMap2014()).thenReturn(getTestFunctionalityCriteriaMap2014());
@@ -404,30 +408,30 @@ public class PendingListingTestFunctionalityReviewerTest {
         edition2011.setId(1l);
         edition2011.setYear("2011");
         editions.add(edition2011);
-        
+
         CertificationEditionDTO edition2014 = new CertificationEditionDTO();
         edition2014.setId(2l);
         edition2014.setYear("2014");
         editions.add(edition2014);
-        
+
         CertificationEditionDTO edition2015 = new CertificationEditionDTO();
         edition2015.setId(3l);
         edition2015.setYear("2015");
         editions.add(edition2015);
-        
+
         return editions;
      }
 
     private Map<String, List<TestFunctionalityDTO>> getTestFunctionalityCriteriaMap2014() {
         Map<String, List<TestFunctionalityDTO>> map = new HashMap<String, List<TestFunctionalityDTO>>();
-        
+
         List<TestFunctionalityDTO> tfs = new ArrayList<TestFunctionalityDTO>();
         tfs.add(getTestFunctionalityId_18());
         tfs.add(getTestFunctionalityId_7());
-        
+
         map.put("170.314 (a)(6)", tfs);
-        
+
         return map;
     }
-
 }
+
