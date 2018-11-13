@@ -10,7 +10,6 @@ import java.util.concurrent.Future;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -90,6 +89,7 @@ import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.manager.TestingFunctionalityManager;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.PropertyUtil;
 
 /**
  * Certified Product Details Manager implementation.
@@ -152,7 +152,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
     private TestingFunctionalityManager testFunctionalityManager;
 
     @Autowired
-    private Environment env;
+    private PropertyUtil propUtil;
 
     @Autowired
     private ChplProductNumberUtil chplProductNumberUtil;
@@ -192,7 +192,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
             throws EntityRetrievalException {
 
         CertifiedProductDetailsDTO dto = getCertifiedProductDetailsDtoByChplProductNumber(chplProductNumber);
-        return createCertifiedSearchDetails(dto, areAsyncCallsEnabled());
+        return createCertifiedSearchDetails(dto, propUtil.isAsyncListingDetailsEnabled());
     }
 
     @Override
@@ -209,7 +209,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
     public CertifiedProductSearchDetails getCertifiedProductDetails(final Long certifiedProductId)
             throws EntityRetrievalException {
 
-        return getCertifiedProductDetails(certifiedProductId, areAsyncCallsEnabled());
+        return getCertifiedProductDetails(certifiedProductId, propUtil.isAsyncListingDetailsEnabled());
     }
 
 
@@ -227,7 +227,8 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
     public CertifiedProductSearchDetails getCertifiedProductDetailsBasicByChplProductNumber(
             final String chplProductNumber) throws EntityRetrievalException {
 
-        return getCertifiedProductDetailsBasicByChplProductNumber(chplProductNumber, areAsyncCallsEnabled());
+        return getCertifiedProductDetailsBasicByChplProductNumber(
+                chplProductNumber, propUtil.isAsyncListingDetailsEnabled());
     }
 
 
@@ -246,7 +247,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
     public CertifiedProductSearchDetails getCertifiedProductDetailsBasic(final Long certifiedProductId)
             throws EntityRetrievalException {
 
-        return getCertifiedProductDetailsBasic(certifiedProductId, areAsyncCallsEnabled());
+        return getCertifiedProductDetailsBasic(certifiedProductId, propUtil.isAsyncListingDetailsEnabled());
     }
 
     @Override
