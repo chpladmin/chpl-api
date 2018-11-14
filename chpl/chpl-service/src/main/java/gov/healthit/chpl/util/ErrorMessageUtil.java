@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class ErrorMessageUtil {
 
-<<<<<<< HEAD
     private MessageSource messageSource;
     
     public ErrorMessageUtil() {}
@@ -22,16 +21,12 @@ public class ErrorMessageUtil {
         this.messageSource = messageSource;
     }
     
-=======
-    @Autowired private MessageSource messageSource;
-
     /**
      * Retrieve the local encoded message for a given error code.
      * @param messageCode the error code
      * @param inputs values that will go into the error string
      * @return the encoded message, with values inserted
      */
->>>>>>> development
     public String getMessage(final String messageCode, final Object...inputs) {
         String result = null;
         if (inputs == null || inputs.length == 0) {

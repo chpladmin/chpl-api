@@ -25,7 +25,7 @@ import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.ListingGraphDAO;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.ListingToListingMapDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import junit.framework.TestCase;
@@ -84,10 +84,10 @@ public class ListingGraphDaoTest extends TestCase {
 	@Transactional
 	@Rollback(true)
 	public void testGetParentListings() {
-		List<CertifiedProductDetailsDTO> parents = listingGraphDao.getParents(5L);
+		List<CertifiedProductDTO> parents = listingGraphDao.getParents(5L);
 		assertNotNull(parents);
 		assertEquals(2, parents.size());
-		for(CertifiedProductDetailsDTO parent : parents) {
+		for(CertifiedProductDTO parent : parents) {
 			switch(parent.getId().intValue()) {
 			case 6:
 			case 9:
@@ -102,10 +102,10 @@ public class ListingGraphDaoTest extends TestCase {
 	@Transactional
 	@Rollback(true)
 	public void testGetChildListings() {
-		List<CertifiedProductDetailsDTO> children = listingGraphDao.getChildren(9L);
+		List<CertifiedProductDTO> children = listingGraphDao.getChildren(9L);
 		assertNotNull(children);
 		assertEquals(1, children.size());
-		for(CertifiedProductDetailsDTO child : children) {
+		for(CertifiedProductDTO child : children) {
 			switch(child.getId().intValue()) {
 			case 5:
 				break;
