@@ -4,6 +4,11 @@ import java.io.Serializable;
 
 import gov.healthit.chpl.dto.TestingLabDTO;
 
+/**
+ * Testing lab domain object.
+ * @author kekey
+ *
+ */
 public class TestingLab implements Serializable {
     private static final long serialVersionUID = 7787353272569398682L;
     private Long id;
@@ -12,12 +17,19 @@ public class TestingLab implements Serializable {
     private String website;
     private String accredidationNumber;
     private Address address;
-    private boolean isDeleted;
+    private boolean retired;
 
+    /**
+     * No-args constructor.
+     */
     public TestingLab() {
     }
 
-    public TestingLab(TestingLabDTO dto) {
+    /**
+     * Create a testing lab from a DTO.
+     * @param dto
+     */
+    public TestingLab(final TestingLabDTO dto) {
         this.id = dto.getId();
         this.atlCode = dto.getTestingLabCode();
         this.name = dto.getName();
@@ -26,7 +38,7 @@ public class TestingLab implements Serializable {
         if (dto.getAddress() != null) {
             this.address = new Address(dto.getAddress());
         }
-        this.isDeleted = dto.getDeleted();
+        this.retired = dto.isRetired();
     }
 
     public Long getId() {
@@ -77,11 +89,11 @@ public class TestingLab implements Serializable {
         this.accredidationNumber = accredidationNumber;
     }
 
-    public boolean getIsDeleted() {
-        return isDeleted;
+    public boolean isRetired() {
+        return retired;
     }
 
-    public void setIsDeleted(final boolean deleted) {
-        this.isDeleted = deleted;
+    public void setRetired(boolean retired) {
+        this.retired = retired;
     }
 }

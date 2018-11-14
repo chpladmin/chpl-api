@@ -11,13 +11,9 @@ public interface CertificationBodyDAO {
     CertificationBodyDTO create(CertificationBodyDTO acb)
             throws EntityRetrievalException, EntityCreationException;
 
-    void delete(Long acbId);
-
-    List<CertificationBodyDTO> findAll(boolean showDeleted);
+    List<CertificationBodyDTO> findAll();
 
     CertificationBodyDTO getById(Long id) throws EntityRetrievalException;
-
-    CertificationBodyDTO getById(Long id, boolean includeDeleted) throws EntityRetrievalException;
 
     CertificationBodyDTO getByName(String name);
 
