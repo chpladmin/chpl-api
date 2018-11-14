@@ -1,4 +1,4 @@
-    package gov.healthit.chpl.util;
+package gov.healthit.chpl.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
