@@ -86,4 +86,9 @@ public class TestFunctionalityDTO implements Serializable {
         // field comparison
         return Objects.equals(id, dto.getId());
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.id);
+    }
 }

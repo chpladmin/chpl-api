@@ -1,4 +1,4 @@
-package gov.healthit.chpl.validation.listing.reviewer;
+package gov.healthit.chpl.validation.listing.reviewer.edition2014;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -23,6 +23,7 @@ import gov.healthit.chpl.dto.TestFunctionalityCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.manager.TestingFunctionalityManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
 /**
  * Makes sure test functionality is valid given the practice type
@@ -30,12 +31,9 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
  * @author kekey
  *
  */
-@Component("testFunctionalityReviewer")
+@Component("testFunctionality2014Reviewer")
 @Transactional
-public class TestFunctionalityReviewer implements Reviewer, ApplicationListener<ContextRefreshedEvent> {
-    private static final String EDITION_2014 = "2014";
-    private static final String EDITION_2015 = "2015";
-
+public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListener<ContextRefreshedEvent> {
     private TestFunctionalityDAO testFunctionalityDAO;
     private TestingFunctionalityManager testFunctionalityManager;
     private ErrorMessageUtil msgUtil;
@@ -43,7 +41,7 @@ public class TestFunctionalityReviewer implements Reviewer, ApplicationListener<
     private List<CertificationEditionDTO> editionDTOs; 
     
     @Autowired
-    public TestFunctionalityReviewer(TestFunctionalityDAO testFunctionalityDAO,
+    public TestFunctionality2014Reviewer(TestFunctionalityDAO testFunctionalityDAO,
             TestingFunctionalityManager testFunctionalityManager, CertificationEditionDAO editionDAO,
             ErrorMessageUtil msgUtil) {
         this.testFunctionalityDAO = testFunctionalityDAO;
@@ -79,12 +77,9 @@ public class TestFunctionalityReviewer implements Reviewer, ApplicationListener<
         CertificationEditionDTO edition = getEditionDTO(getEditionFromListing(listing));
         TestFunctionalityDTO tf = getTestFunctionality(crtf.getName(), edition.getId());
         
-        //Only validate practice type for 2014
-        if (getEditionFromListing(listing).equals(EDITION_2014)) {
-            Long practiceTypeId = Long.valueOf(listing.getPracticeType().get("id").toString());
-            if (!isTestFunctionalityPracticeTypeValid(practiceTypeId, tf)) {
-                errors.add(getTestFunctionalityPracticeTypeErrorMessage(crtf, cr, listing));
-            }
+        Long practiceTypeId = Long.valueOf(listing.getPracticeType().get("id").toString());
+        if (!isTestFunctionalityPracticeTypeValid(practiceTypeId, tf)) {
+            errors.add(getTestFunctionalityPracticeTypeErrorMessage(crtf, cr, listing));
         }
 
         String criterionNumber = cr.getNumber();
@@ -97,23 +92,14 @@ public class TestFunctionalityReviewer implements Reviewer, ApplicationListener<
     private Boolean isTestFunctionalityCritierionValid(final String criteriaNumber,
             final TestFunctionalityDTO tf, final String year) {
 
-        List<TestFunctionalityDTO> validTestFunctionalityForCriteria = new ArrayList<TestFunctionalityDTO>();
-        if (year.equals(EDITION_2014) &&
-                testFunctionalityManager.getTestFunctionalityCriteriaMap2014().containsKey(criteriaNumber)) {
-            validTestFunctionalityForCriteria = 
-                    testFunctionalityManager.getTestFunctionalityCriteriaMap2014().get(criteriaNumber);
-        } else if (year.equals(EDITION_2015) &&
-                testFunctionalityManager.getTestFunctionalityCriteriaMap2015().containsKey(criteriaNumber)) {
-            validTestFunctionalityForCriteria = 
-                    testFunctionalityManager.getTestFunctionalityCriteriaMap2015().get(criteriaNumber);
-        }
+        List<TestFunctionalityDTO> validTestFunctionalityForCriteria =
+                testFunctionalityManager.getTestFunctionalityCriteriaMap2014().get(criteriaNumber);
         
         //Is the TestFunctionalityDTO in the valid list (relies on the TestFunctionalityDTO.equals()
         return validTestFunctionalityForCriteria.contains(tf);
 }
 
-    private Boolean isTestFunctionalityPracticeTypeValid(final Long practiceTypeId,
-            final TestFunctionalityDTO tf) {
+    private Boolean isTestFunctionalityPracticeTypeValid(final Long practiceTypeId, final TestFunctionalityDTO tf) {
 
         if (tf.getPracticeType() != null) {
             if (!practiceTypeId.equals(tf.getPracticeType().getId())) {

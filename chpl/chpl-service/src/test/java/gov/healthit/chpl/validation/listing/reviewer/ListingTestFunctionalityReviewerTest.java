@@ -37,6 +37,7 @@ import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.manager.TestingFunctionalityManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.validation.listing.reviewer.edition2014.TestFunctionality2014Reviewer;
 
 //@RunWith(SpringJUnit4ClassRunner.class)
 //@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
@@ -61,7 +62,7 @@ public class ListingTestFunctionalityReviewerTest {
     private TestingFunctionalityManager testFunctionalityManager;
 
     @InjectMocks
-    private TestFunctionalityReviewer tfReviewer;
+    private TestFunctionality2014Reviewer tfReviewer;
 
     @Before
     public void setup() {

@@ -1,4 +1,4 @@
-package gov.healthit.chpl.util;
+    package gov.healthit.chpl.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -12,15 +12,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class ErrorMessageUtil {
 
-    private MessageSource messageSource;
-    
-    public ErrorMessageUtil() {}
-    
-    @Autowired 
-    public ErrorMessageUtil(MessageSource messageSource) {
-        this.messageSource = messageSource;
-    }
-    
+    @Autowired private MessageSource messageSource;
+
     /**
      * Retrieve the local encoded message for a given error code.
      * @param messageCode the error code

@@ -14,6 +14,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+/**
+ * @author TYoung
+ * Handles the mapping many-to-many relationship between test_functionality and 
+ * certification_criterion table.
+ *
+ */
 @Entity
 @Table(name = "test_functionality_criteria_map")
 public class TestFunctionalityCriteriaMapEntity implements Serializable{
@@ -36,11 +42,11 @@ public class TestFunctionalityCriteriaMapEntity implements Serializable{
     private TestFunctionalityEntity testFunctionality;
     
     @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false)
+    @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
     private Date creationDate;
     
     @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false)
+    @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
     private Date lastModifiedDate;
     
     @Basic(optional = false)
