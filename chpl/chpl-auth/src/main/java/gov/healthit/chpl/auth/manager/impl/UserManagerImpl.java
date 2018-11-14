@@ -14,6 +14,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +33,9 @@ import gov.healthit.chpl.auth.json.UserCreationJSONObject;
 import gov.healthit.chpl.auth.json.UserInfoJSONObject;
 import gov.healthit.chpl.auth.manager.SecuredUserManager;
 import gov.healthit.chpl.auth.manager.UserManager;
+import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.UserConversionHelper;
 import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserManagementException;
@@ -76,6 +79,22 @@ public class UserManagerImpl implements UserManager {
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+    
+    private void loginAdminUser() {
+        JWTAuthenticatedUser adminUser;
+        adminUser = new JWTAuthenticatedUser();
+        adminUser.setFullName("Administrator");
+        adminUser.setId(-2L);
+        adminUser.setFriendlyName("Administrator");
+        adminUser.setSubjectName("admin");
+        adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+    }
+    
+    private void logoutAdminUser() {
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
 
     @Override
     @Transactional
@@ -239,11 +258,11 @@ public class UserManagerImpl implements UserManager {
     @Override
     @Transactional
     public void updateUserPassword(final String userName, final String password) throws UserRetrievalException {
-
         String encodedPassword = encodePassword(password);
+        loginAdminUser();
         UserDTO userToUpdate = securedUserManager.getBySubjectName(userName);
         securedUserManager.updatePassword(userToUpdate, encodedPassword);
-
+        logoutAdminUser();
     }
 
     // no auth needed. create a random string and create a new reset token row
@@ -285,9 +304,7 @@ public class UserManagerImpl implements UserManager {
     @Transactional
     public boolean authorizePasswordReset(String token) {
         UserResetTokenDTO userResetToken = userResetTokenDAO.findByAuthToken(token);
-
         if (userResetToken != null && isTokenValid(userResetToken)) {
-            userResetTokenDAO.deletePreviousUserTokens(userResetToken.getUser().getId());
             return true;
         }
         return false;
@@ -317,7 +334,10 @@ public class UserManagerImpl implements UserManager {
 
     @Override
     public UserDTO getByName(final String userName) throws UserRetrievalException {
-        return securedUserManager.getBySubjectName(userName);
+        loginAdminUser();
+        UserDTO dto = securedUserManager.getBySubjectName(userName);
+        logoutAdminUser();
+        return dto;
     }
 
     @Override

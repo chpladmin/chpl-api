@@ -28,6 +28,7 @@ import gov.healthit.chpl.auth.dto.UserResetTokenDTO;
 import gov.healthit.chpl.auth.json.UserResetPasswordJSONObject;
 import gov.healthit.chpl.auth.jwt.JWTCreationException;
 import gov.healthit.chpl.auth.manager.UserManager;
+import gov.healthit.chpl.auth.user.AuthorizeToken;
 import gov.healthit.chpl.auth.user.ResetPasswordRequest;
 import gov.healthit.chpl.auth.user.UpdatePasswordRequest;
 import gov.healthit.chpl.auth.user.UpdatePasswordResponse;
@@ -195,7 +196,9 @@ public class AuthenticationController{
 	
 	@ApiOperation(value="Reset a user's password.", notes="")
     @RequestMapping(value="/authorize_password_reset/{token}", method= RequestMethod.POST)
-    public boolean authorizePasswordReset(@PathVariable("token") final String token) {     
-	    return userManager.authorizePasswordReset(token);
+    public AuthorizeToken authorizePasswordReset(@PathVariable("token") final String token) {
+	    AuthorizeToken auth = new AuthorizeToken();
+	    auth.setAuthorized(userManager.authorizePasswordReset(token));
+	    return auth;
     }
 }
