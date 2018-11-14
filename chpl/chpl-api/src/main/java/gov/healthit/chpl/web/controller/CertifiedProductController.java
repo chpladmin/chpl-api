@@ -53,7 +53,6 @@ import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.IdListContainer;
-import gov.healthit.chpl.domain.Job;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
@@ -140,7 +139,7 @@ public class CertifiedProductController {
      */
     @ApiOperation(value = "List all certified products",
             notes = "Default behavior is to return all certified products in the system. "
-                    + " The optional 'versionId' parameter filters the certified products to those"
+                    + " The required 'versionId' parameter filters the certified products to those"
                     + " assigned to that version. The 'editable' parameter will return only those"
                     + " certified products that the logged in user has permission to edit as "
                     + " determined by ACB roles and authorities. Not all information about "

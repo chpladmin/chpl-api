@@ -37,11 +37,12 @@ public class InterruptJob extends QuartzJob {
         if (StringUtils.isEmpty(jobGroup)) {
             jobGroup = "systemJobs";
         }
+        LOGGER.info("Interrupting job with name \"{}\" in group \"{}\"", jobName, jobGroup);
         JobKey jobKey = new JobKey(jobName, jobGroup);
         try {
             scheduler.interrupt(jobKey);
         } catch (UnableToInterruptJobException e) {
-            LOGGER.error("Unable to interrupt job with name {} and group {}", jobName, jobGroup);
+            LOGGER.error("Unable to interrupt job with name \"{}\" in group \"{}\"", jobName, jobGroup);
         }
     }
 }

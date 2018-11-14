@@ -6,6 +6,8 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -32,10 +34,12 @@ import gov.healthit.chpl.questionableactivity.VersionQuestionableActivityProvide
 import gov.healthit.chpl.util.CertificationResultRules;
 
 @Service("questionableActivityManager")
-public class QuestionableActivityManagerImpl implements QuestionableActivityManager {
+public class QuestionableActivityManagerImpl implements QuestionableActivityManager, EnvironmentAware  {
     private static final Logger LOGGER = LogManager.getLogger(QuestionableActivityManagerImpl.class);
+    private static final long MILLIS_PER_DAY = 24 * 60 * 60 * 1000;
     private long listingActivityThresholdMillis = -1;
     private List<QuestionableActivityTriggerDTO> triggerTypes;
+    private Environment env;
     private DeveloperQuestionableActivityProvider developerQuestionableActivityProvider;
     private ProductQuestionableActivityProvider productQuestionableActivityProvider;
     private VersionQuestionableActivityProvider versionQuestionableActivityProvider;
@@ -65,7 +69,8 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
             final CertificationResultQuestionableActivityProvider certResultQuestionableActivityProvider,
             final CertificationResultRules certResultRules,
             final QuestionableActivityDAO questionableActivityDao,
-            final CertifiedProductDAO listingDao) {
+            final CertifiedProductDAO listingDao,
+            final Environment env) {
 
         this.developerQuestionableActivityProvider = developerQuestionableActivityProvider;
         this.productQuestionableActivityProvider = productQuestionableActivityProvider;
@@ -75,7 +80,16 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
         this.certResultRules = certResultRules;
         this.questionableActivityDao = questionableActivityDao;
         this.listingDao = listingDao;
+        this.env = env;
         triggerTypes = questionableActivityDao.getAllTriggers();
+    }
+
+    @Override
+    public void setEnvironment(final Environment e) {
+        this.env = e;
+        String activityThresholdDaysStr = env.getProperty("questionableActivityThresholdDays");
+        int activityThresholdDays = Integer.parseInt(activityThresholdDaysStr);
+        listingActivityThresholdMillis = activityThresholdDays * MILLIS_PER_DAY;
     }
 
     @Override

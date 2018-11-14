@@ -141,7 +141,8 @@ public class UserManagementController {
         String htmlMessage = "<p>Thank you for setting up your administrator account on ONC's CHPL. "
                 + "Please click the link below to activate your account: <br/>" + env.getProperty("chplUrlBegin")
                 + "/#/registration/confirm-user/" + invitation.getConfirmToken() + "</p>"
-                + "<p>If you have any questions, please contact the ONC CHPL Team at onc_chpl@hhs.gov.</p>"
+                + "<p>If you have any issues completing the registration, "
+                + "please contact the ONC CHPL Team at <a href=\"mailto:onc_chpl@hhs.gov\">onc_chpl@hhs.gov</a>.</p>"
                 + "<p>The CHPL Team</p>";
 
         String[] toEmails = {
@@ -173,13 +174,14 @@ public class UserManagementController {
             validationErrors.add(errorMessageUtil.getMessage("user.fullName.maxlength",
                     getMaxLength("fullName")));
         }
-        if (request.getUser().getFriendlyName().length() > getMaxLength("friendlyName")) {
+        if (!StringUtils.isEmpty(request.getUser().getFriendlyName())
+                && request.getUser().getFriendlyName().length() > getMaxLength("friendlyName")) {
             validationErrors.add(errorMessageUtil.getMessage("user.friendlyName.maxlength",
                     getMaxLength("friendlyName")));
         }
-        if (request.getUser().getTitle().length() > getMaxLength("title")) {
-            validationErrors.add(errorMessageUtil.getMessage("user.title.maxlength",
-                    getMaxLength("title")));
+        if (!StringUtils.isEmpty(request.getUser().getTitle())
+                && request.getUser().getTitle().length() > getMaxLength("title")) {
+            validationErrors.add(errorMessageUtil.getMessage("user.title.maxlength", getMaxLength("title")));
         }
         if (request.getUser().getEmail().length() > getMaxLength("email")) {
             validationErrors.add(errorMessageUtil.getMessage("user.email.maxlength",
@@ -336,7 +338,9 @@ public class UserManagementController {
                 + "which will allow you to manage certified product listings on the CHPL. "
                 + "Please click the link below to create or update your account: <br/>"
                 + env.getProperty("chplUrlBegin") + "/#/registration/create-user/" + createdInvite.getInviteToken()
-                + "</p>" + "<p>If you have any questions, please contact the ONC CHPL Team at onc_chpl@hhs.gov.</p>"
+                + "</p>"
+                + "<p>If you have any issues completing the registration, "
+                + "please contact the ONC CHPL Team at <a href=\"mailto:onc_chpl@hhs.gov\">onc_chpl@hhs.gov</a>.</p>"
                 + "<p>Take care,<br/> " + "The CHPL Team</p>";
 
         String[] toEmails = {
@@ -461,7 +465,6 @@ public class UserManagementController {
             notes = "Users may be given ROLE_ADMIN, ROLE_ACB, "
                     + "ROLE_ATL, or ROLE_ONC_STAFF roles within the system.")
     @RequestMapping(value = "/{userName}/roles/{roleName}", method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public String grantUserRole(@PathVariable("userName") final String userName,
             @PathVariable("roleName") final String roleName) throws InvalidArgumentsException, UserRetrievalException,
