@@ -6,9 +6,13 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Component;
 
+/**
+ * Utility functions for dealing with error messages.
+ */
 @Component
 public class ErrorMessageUtil {
 
+<<<<<<< HEAD
     private MessageSource messageSource;
     
     public ErrorMessageUtil() {}
@@ -18,9 +22,19 @@ public class ErrorMessageUtil {
         this.messageSource = messageSource;
     }
     
+=======
+    @Autowired private MessageSource messageSource;
+
+    /**
+     * Retrieve the local encoded message for a given error code.
+     * @param messageCode the error code
+     * @param inputs values that will go into the error string
+     * @return the encoded message, with values inserted
+     */
+>>>>>>> development
     public String getMessage(final String messageCode, final Object...inputs) {
         String result = null;
-        if(inputs == null || inputs.length == 0) {
+        if (inputs == null || inputs.length == 0) {
             result = String.format(
                 messageSource.getMessage(new DefaultMessageSourceResolvable(messageCode),
                         LocaleContextHolder.getLocale()));

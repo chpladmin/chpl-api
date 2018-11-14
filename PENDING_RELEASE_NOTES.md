@@ -5,9 +5,10 @@ _Date TBD_
 ### New Features
 * Update ONC contact information for CHPL API and on user invitation emails.
 * 2015 Functionality testing is restricted by criteria.
+* Check various site counts in surveillance to make sure they are reasonable
+* Refresh the listing collection cache on demand when data has changed vs at timed intervals.
 
 ### Bug Fixes
 * Fix dependency injection problem that prevented implementing security in the chpl-service classes.
 
 ---
-
