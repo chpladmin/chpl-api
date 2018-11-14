@@ -356,7 +356,7 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
             if(cr.getNumber().equals("170.315 (a)(1)")) {
                 foundA1 = true;
                 assertNotNull(cr.getAllowedTestFunctionalities());
-                assertTrue(cr.getAllowedTestFunctionalities().size() == 53);
+                assertEquals(1, cr.getAllowedTestFunctionalities().size());
             }
         }
         assertTrue(foundA1);
@@ -376,7 +376,7 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
             if(cr.getNumber().equals("170.314 (a)(5)")) {
                 foundA5 = true;
                 assertNotNull(cr.getAllowedTestFunctionalities());
-                assertTrue(cr.getAllowedTestFunctionalities().size() == 1);
+                assertEquals(1, cr.getAllowedTestFunctionalities().size());
             }
         }
         assertTrue(foundA5);

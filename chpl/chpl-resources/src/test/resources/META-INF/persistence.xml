@@ -54,6 +54,7 @@
         <class>gov.healthit.chpl.entity.TestDataCriteriaMapEntity</class>
         <class>gov.healthit.chpl.entity.TestDataEntity</class>
         <class>gov.healthit.chpl.entity.TestFunctionalityEntity</class>
+        <class>gov.healthit.chpl.entity.TestFunctionalityCriteriaMapEntity</class>
         <class>gov.healthit.chpl.entity.TestParticipantEntity</class>
         <class>gov.healthit.chpl.entity.TestProcedureCriteriaMapEntity</class>
         <class>gov.healthit.chpl.entity.TestProcedureEntity</class>
