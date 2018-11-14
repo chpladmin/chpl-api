@@ -14,13 +14,13 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.FieldLengthReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.FuzzyMatchReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.InheritedCertificationStatusReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
-import gov.healthit.chpl.validation.pendingListing.reviewer.TestFunctionalityReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.TestToolReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.UnattestedCriteriaWithDataReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.UnsupportedCharacterReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.UrlReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.ValidDataReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.RequiredData2015Reviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.TestFunctionality2015Reviewer;
 
 /**
  * Validation interface for 2015 listings in the pending stage of upload to the CHPL.
@@ -78,8 +78,8 @@ public class Edition2015PendingListingValidator extends PendingValidator {
     private UrlReviewer urlReviewer;
 
     @Autowired
-    @Qualifier("pendingTestFunctionalityReviewer")
-    private TestFunctionalityReviewer testFunctionalityReviewer;
+    @Qualifier("pendingTestFunctionality2015Reviewer")
+    private TestFunctionality2015Reviewer testFunctionalityReviewer;
 
     private List<Reviewer> reviewers;
 

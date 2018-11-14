@@ -35,6 +35,7 @@ import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.manager.TestingFunctionalityManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.validation.pendingListing.reviewer.edition2014.TestFunctionality2014Reviewer;
 
 /**
  * Test for pending test functionality.
@@ -67,7 +68,7 @@ public class PendingListingTestFunctionalityReviewerTest {
     private TestingFunctionalityManager testFunctionalityManager;
 
     @InjectMocks
-    private TestFunctionalityReviewer pendingTfReviewer;
+    private TestFunctionality2014Reviewer pendingTfReviewer;
 
     @Before
     public void setup() {
