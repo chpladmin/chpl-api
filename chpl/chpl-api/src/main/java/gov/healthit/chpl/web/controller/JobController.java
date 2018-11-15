@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.domain.Job;
 import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -30,12 +30,11 @@ public class JobController {
     private static final Logger LOGGER = LogManager.getLogger(JobController.class);
     @Autowired
     private JobManager jobManager;
-    @Autowired
-    private UserManager userManager;
-
+    
     @ApiOperation(value = "Get the list of all jobs currently running in the system and those"
             + "that have completed within a configurable amount of time (usually a short window like the last 7 days).")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @PreAuthorize("isAuthenticated()")
     public @ResponseBody JobResults getAllJobs() throws EntityRetrievalException {
         List<JobDTO> jobDtos = null;
         if (Util.isUserRoleAdmin()) {
