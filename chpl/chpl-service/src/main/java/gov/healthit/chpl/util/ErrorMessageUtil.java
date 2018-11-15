@@ -12,7 +12,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class ErrorMessageUtil {
 
-    @Autowired private MessageSource messageSource;
+    private MessageSource messageSource;
+    
+    @Autowired 
+    public ErrorMessageUtil(final MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
 
     /**
      * Retrieve the local encoded message for a given error code.
