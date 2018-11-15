@@ -200,64 +200,6 @@ public class CertificationBodyController {
     }
 
     @Deprecated
-    @ApiOperation(value = "DEPRECATED.  Delete an ACB.", notes = "The logged in user must have ROLE_ADMIN.")
-    @RequestMapping(value = "/{acbId}/delete", method = RequestMethod.POST,
-            produces = "application/json; charset=utf-8")
-    public String deleteAcbDeprecated(@PathVariable("acbId") final Long acbId)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
-
-        return delete(acbId);
-    }
-
-    @ApiOperation(value = "Delete an ACB.", notes = "The logged in user must have ROLE_ADMIN.")
-    @RequestMapping(value = "/{acbId}", method = RequestMethod.DELETE,
-            produces = "application/json; charset=utf-8")
-    public String deleteAcb(@PathVariable("acbId") final Long acbId)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
-
-        return delete(acbId);
-    }
-
-    private String delete(final Long acbId)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
-
-        CertificationBodyDTO toDelete = acbManager.getById(acbId);
-        acbManager.delete(toDelete);
-        return "{\"deletedAcb\" : true}";
-    }
-
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED.  Restore a deleted ACB.",
-            notes = "ACBs are unique in the CHPL in that they can be restored after a delete."
-                    + " The logged in user must have ROLE_ADMIN.")
-    @RequestMapping(value = "/{acbId}/undelete", method = RequestMethod.POST,
-            produces = "application/json; charset=utf-8")
-    public String undeleteAcbDeprecated(@PathVariable("acbId") final Long acbId)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
-
-        return undelete(acbId);
-    }
-
-    @ApiOperation(value = "Restore a deleted ACB.",
-            notes = "ACBs are unique in the CHPL in that they can be restored after a delete."
-                    + " The logged in user must have ROLE_ADMIN.")
-    @RequestMapping(value = "/{acbId}/undelete", method = RequestMethod.PUT,
-            produces = "application/json; charset=utf-8")
-    public String undeleteAcb(@PathVariable("acbId") final Long acbId)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
-
-        return undelete(acbId);
-    }
-
-    private String undelete(final Long acbId)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
-
-        CertificationBodyDTO toResurrect = acbManager.getById(acbId, true);
-        acbManager.undelete(toResurrect);
-        return "{\"resurrectedAcb\" : true}";
-    }
-
-    @Deprecated
     @ApiOperation(value = "DEPRECATED.  Add a user to an ACB.",
             notes = "The logged in user must have ROLE_ADMIN or ROLE_ACB and have administrative authority on the "
                     + " specified ACB. It is recommended to pass 'ADMIN' in as the 'authority' field"

@@ -8,15 +8,16 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public interface TestingLabDAO {
 
-    TestingLabDTO create(TestingLabDTO dto) throws EntityCreationException, EntityRetrievalException;
+    public TestingLabDTO create(TestingLabDTO dto) throws EntityCreationException, EntityRetrievalException;
 
-    TestingLabDTO update(TestingLabDTO dto) throws EntityRetrievalException;
+    public TestingLabDTO update(TestingLabDTO dto) throws EntityRetrievalException;
 
-    List<TestingLabDTO> findAll();
+    public List<TestingLabDTO> findAll();
+    public List<TestingLabDTO> findAllActive();
 
-    TestingLabDTO getById(Long id) throws EntityRetrievalException;
+    public TestingLabDTO getById(Long id) throws EntityRetrievalException;
 
-    TestingLabDTO getByName(String name);
+    public TestingLabDTO getByName(String name);
 
-    String getMaxCode();
+    public String getMaxCode();
 }

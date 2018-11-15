@@ -125,6 +125,26 @@ public class TestingLabDAOImpl extends BaseDAOImpl implements TestingLabDAO {
     }
 
     /**
+     * Get all activeATLs.
+     */
+    @Override
+    public List<TestingLabDTO> findAllActive() {
+
+        List<TestingLabEntity> entities = entityManager.createQuery(
+                "SELECT atl from TestingLabEntity atl "
+                + "LEFT OUTER JOIN FETCH atl.address "
+                + "WHERE atl.retired = false AND atl.deleted = false", TestingLabEntity.class)
+                    .getResultList();
+        List<TestingLabDTO> dtos = new ArrayList<>();
+
+        for (TestingLabEntity entity : entities) {
+            TestingLabDTO dto = new TestingLabDTO(entity);
+            dtos.add(dto);
+        }
+        return dtos;
+    }
+
+    /**
      * Gets a single ATL by ID.
      */
     @Override

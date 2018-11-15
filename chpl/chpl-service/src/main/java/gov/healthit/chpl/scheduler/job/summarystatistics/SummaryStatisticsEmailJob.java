@@ -80,7 +80,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
             LOGGER.info("********* Starting the Summary Statistics Email job. *********");
             LOGGER.info("Sending email to: " + jobContext.getMergedJobDataMap().getString("email"));
 
-            activeAcbs = certificationBodyDAO.findAll(false);
+            activeAcbs = certificationBodyDAO.findAllActive();
 
             SummaryStatisticsEntity summaryStatistics = summaryStatisticsDAO.getMostRecent();
             Statistics stats = getStatistics(summaryStatistics);

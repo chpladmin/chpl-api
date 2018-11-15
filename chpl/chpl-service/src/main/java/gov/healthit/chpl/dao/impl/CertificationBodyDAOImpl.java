@@ -122,6 +122,25 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
     }
 
     /**
+     * Get all ACBs not marked retired.
+     */
+    public List<CertificationBodyDTO> findAllActive() {
+        List<CertificationBodyEntity> entities = entityManager.createQuery(
+                        "SELECT acb from CertificationBodyEntity acb "
+                        + "LEFT OUTER JOIN FETCH acb.address "
+                        + "WHERE acb.retired = false AND acb.deleted = false",
+                        CertificationBodyEntity.class).getResultList();
+        List<CertificationBodyDTO> acbs = new ArrayList<>();
+
+        for (CertificationBodyEntity entity : entities) {
+            CertificationBodyDTO acb = new CertificationBodyDTO(entity);
+            acbs.add(acb);
+        }
+        return acbs;
+
+    }
+
+    /**
      * Finds an ACB by ID.
      * @param acbId
      * @return the ACB
