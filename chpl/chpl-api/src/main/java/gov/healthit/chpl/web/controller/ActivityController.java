@@ -638,6 +638,10 @@ public class ActivityController {
     @RequestMapping(value = "/users", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForUsers(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
+        if (Util.getCurrentUser() == null) {
+            throw new AccessDeniedException("Access is denied");
+        }
+
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
