@@ -4,6 +4,11 @@ import java.util.Date;
 
 import gov.healthit.chpl.entity.TestFunctionalityCriteriaMapEntity;
 
+/**
+ * Business-layer DTO object for many-to-many relationship betwenn test functionality and certification criterion
+ * @author TYoung
+ *
+ */
 public class TestFunctionalityCriteriaMapDTO {
     private Long id;
     private CertificationCriterionDTO criteria;
