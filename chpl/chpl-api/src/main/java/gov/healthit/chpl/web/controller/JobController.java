@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -34,12 +34,9 @@ public class JobController {
     @ApiOperation(value = "Get the list of all jobs currently running in the system and those"
             + "that have completed within a configurable amount of time (usually a short window like the last 7 days).")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @PreAuthorize("isAuthenticated()")
     public @ResponseBody JobResults getAllJobs() throws EntityRetrievalException {
         List<JobDTO> jobDtos = null;
-        if (Util.getCurrentUser() == null) {
-            throw new AccessDeniedException("Access is denied");
-        }
-        
         if (Util.isUserRoleAdmin()) {
             jobDtos = jobManager.getAllJobs();
         } else {

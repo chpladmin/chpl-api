@@ -18,6 +18,7 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.util.StringUtils;
@@ -587,11 +588,8 @@ public class UserManagementController {
 
     @ApiOperation(value = "View users of the system.", notes = "Only ROLE_ADMIN will be able to see all users.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @PreAuthorize("isAuthenticated()")
     public @ResponseBody UserListJSONObject getUsers() {
-        if (Util.getCurrentUser() == null) {
-            throw new AccessDeniedException("Access is denied");
-        }
-
         List<UserDTO> userList = userManager.getAll();
         List<UserInfoJSONObject> userInfos = new ArrayList<UserInfoJSONObject>();
 
