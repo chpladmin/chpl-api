@@ -47,7 +47,6 @@ public class UserResetTokenDAOImpl extends BaseDAOImpl implements UserResetToken
     
     public UserResetTokenDTO findByAuthToken(String authToken) {
         UserResetTokenDTO userResetToken = null;
-        System.out.println("Getting the reset dao with the follwing authToken: " + authToken);
         String userQuery = "from UserResetTokenEntity urt"
                 + " where (NOT urt.deleted = true) "
                 + " AND (urt.userResetToken = :userResetToken) ";
