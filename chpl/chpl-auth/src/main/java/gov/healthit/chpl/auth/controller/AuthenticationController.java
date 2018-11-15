@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -28,7 +27,6 @@ import gov.healthit.chpl.auth.dto.UserResetTokenDTO;
 import gov.healthit.chpl.auth.json.UserResetPasswordJSONObject;
 import gov.healthit.chpl.auth.jwt.JWTCreationException;
 import gov.healthit.chpl.auth.manager.UserManager;
-import gov.healthit.chpl.auth.user.AuthorizeToken;
 import gov.healthit.chpl.auth.user.ResetPasswordRequest;
 import gov.healthit.chpl.auth.user.UpdatePasswordRequest;
 import gov.healthit.chpl.auth.user.UpdatePasswordResponse;
@@ -195,12 +193,4 @@ public class AuthenticationController{
 		
 		return "{\"passwordResetEmailSent\" : true }";
 	}
-	
-	@ApiOperation(value="Reset a user's password.", notes="")
-    @RequestMapping(value="/authorize_password_reset/{token}", method= RequestMethod.POST)
-    public AuthorizeToken authorizePasswordReset(@PathVariable("token") final String token) {
-	    AuthorizeToken auth = new AuthorizeToken();
-	    auth.setAuthorized(userManager.authorizePasswordReset(token));
-	    return auth;
-    }
 }
