@@ -1,7 +1,6 @@
 package gov.healthit.chpl.auth.manager.impl;
 
 import java.security.SecureRandom;
-import java.text.DateFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -79,7 +78,7 @@ public class UserManagerImpl implements UserManager {
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-    
+
     private void loginAdminUser() {
         JWTAuthenticatedUser adminUser;
         adminUser = new JWTAuthenticatedUser();
@@ -91,7 +90,7 @@ public class UserManagerImpl implements UserManager {
 
         SecurityContextHolder.getContext().setAuthentication(adminUser);
     }
-    
+
     private void logoutAdminUser() {
         SecurityContextHolder.getContext().setAuthentication(null);
     }
@@ -297,10 +296,10 @@ public class UserManagerImpl implements UserManager {
     private boolean isTokenValid(UserResetTokenDTO userResetToken) {
         Date checkDate = userResetToken.getCreationDate();
         Instant now = Instant.now();
-        return (!checkDate.toInstant().isBefore(now.minus(24 , ChronoUnit.HOURS))) 
-            && (checkDate.toInstant().isBefore(now));
+        return (!checkDate.toInstant().isBefore(now.minus(24, ChronoUnit.HOURS)))
+                && (checkDate.toInstant().isBefore(now));
     }
-    
+
     @Transactional
     public boolean authorizePasswordReset(String token) {
         UserResetTokenDTO userResetToken = userResetTokenDAO.findByAuthToken(token);
@@ -309,7 +308,7 @@ public class UserManagerImpl implements UserManager {
         }
         return false;
     }
-    
+
     @Transactional
     public void deletePreviousTokens(String token) {
         UserResetTokenDTO userResetToken = userResetTokenDAO.findByAuthToken(token);

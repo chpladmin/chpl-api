@@ -1,6 +1,7 @@
 package gov.healthit.chpl.auth.entity;
 
 import java.util.Date;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,23 +13,18 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.auth.user.User;
-
-
 @Entity
 @Table(name = "user_reset_token")
 public class UserResetTokenEntity {
 
-    private static final long serialVersionUID = 1L;
-
     @Id
     @Column(name = "user_reset_token_id")
-    @GeneratedValue(strategy  =  GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "user_reset_token", unique = true)
     private String userResetToken;
-    
+
     @Basic(optional = false)
     @Column(name = "user_id")
     private Long userId;
@@ -37,7 +33,7 @@ public class UserResetTokenEntity {
     @JoinColumn(name = "user_id", unique = true, insertable = false, updatable = false)
     private UserEntity user;
 
-    @Column(name="creation_date")
+    @Column(name = "creation_date")
     private Date creationDate;
 
     @Column(name = "last_modified_user")

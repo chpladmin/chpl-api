@@ -69,9 +69,9 @@ public interface UserManager {
      * @param password the password to check
      * @return a Strength object with password strength information
      */
-    Strength getPasswordStrength(UserDTO user, String password);
+    public Strength getPasswordStrength(UserDTO user, String password);
 
-    UserResetTokenDTO createResetUserPasswordToken(String username, String email) throws UserRetrievalException;
+    public UserResetTokenDTO createResetUserPasswordToken(String username, String email) throws UserRetrievalException;
     
     public boolean authorizePasswordReset(String token);
     
