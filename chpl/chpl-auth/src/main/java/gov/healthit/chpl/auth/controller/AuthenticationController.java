@@ -161,8 +161,10 @@ public class AuthenticationController{
         if(userManager.authorizePasswordReset(request.getToken())){
             userManager.updateUserPassword(currUser.getSubjectName(), request.getNewPassword());
             userManager.deletePreviousTokens(request.getToken());
+            response.setPasswordUpdated(true);
+        } else {
+            response.setPasswordUpdated(false);
         }
-        response.setPasswordUpdated(true);
         return response;
     }
 
@@ -178,7 +180,7 @@ public class AuthenticationController{
 	    UserResetTokenDTO userResetTokenDTO = userManager.createResetUserPasswordToken(userInfo.getUserName(), userInfo.getEmail());
 	    String htmlMessage = "<p>Hi, <br/>"
                 + "Please follow this link to reset your password </p>"
-                + "<pre>" +  env.getProperty("chplUrlBegin") + "/#/auth/authorize_password_reset/" + userResetTokenDTO.getUserResetToken() + "</pre>"
+                + "<pre>" +  env.getProperty("chplUrlBegin") + "/#/admin/authorize_password_reset?token=" + userResetTokenDTO.getUserResetToken() + "</pre>"
                 + "<br/>" +
                 "</p>"
                 + "<p>Take care,<br/> " +
