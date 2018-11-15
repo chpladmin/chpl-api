@@ -588,6 +588,9 @@ public class UserManagementController {
     @ApiOperation(value = "View users of the system.", notes = "Only ROLE_ADMIN will be able to see all users.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody UserListJSONObject getUsers() {
+        if (Util.getCurrentUser() == null) {
+            throw new AccessDeniedException("Access is denied");
+        }
 
         List<UserDTO> userList = userManager.getAll();
         List<UserInfoJSONObject> userInfos = new ArrayList<UserInfoJSONObject>();
