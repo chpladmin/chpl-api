@@ -22,6 +22,7 @@ import gov.healthit.chpl.validation.listing.reviewer.UnsupportedCharacterReviewe
 import gov.healthit.chpl.validation.listing.reviewer.UrlReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ValidDataReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredData2015Reviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestFunctionality2015Reviewer;
 
 /**
  * Validation interface for any listing that is already uploaded and confirmed on the CHPL.
@@ -85,6 +86,10 @@ public class Edition2015ListingValidator extends Validator {
     @Autowired
     @Qualifier("urlReviewer")
     private UrlReviewer urlReviewer;
+    
+    @Autowired
+    @Qualifier("testFunctionality2015Reviewer")
+    private TestFunctionality2015Reviewer testFunctionalityReviewer;
 
     private List<Reviewer> reviewers;
 
@@ -106,6 +111,7 @@ public class Edition2015ListingValidator extends Validator {
             reviewers.add(icsReviewer);
             reviewers.add(ttReviewer);
             reviewers.add(urlReviewer);
+            reviewers.add(testFunctionalityReviewer);
         }
         return reviewers;
     }
