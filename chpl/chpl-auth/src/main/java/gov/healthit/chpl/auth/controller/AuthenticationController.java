@@ -139,8 +139,7 @@ public class AuthenticationController {
         // get the current user
         UserDTO currUser = userManager.getByName(request.getUserName());
         if (currUser == null) {
-            throw new UserRetrievalException("The user with id " + Util.getCurrentUser().getId()
-                    + " could not be found or the logged in user does not have permission to modify their data.");
+            throw new UserRetrievalException("The user with username " + request.getUserName() + " cannot be found.");
         }
         // check the strength of the new password
         Strength strength = userManager.getPasswordStrength(currUser, request.getNewPassword());
