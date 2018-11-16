@@ -48,4 +48,12 @@ public class QuestionableActivityDeveloperDTO extends QuestionableActivityDTO {
     public void setReason(String reason) {
         this.reason = reason;
     }
+
+    @Override
+    public String toString() {
+        return "QuestionableActivityDeveloperDTO [developerId=" + developerId + ", developer=" + developer + ", reason="
+                + reason + ", getId()=" + getId() + ", getTriggerId()=" + getTriggerId() + ", getActivityDate()="
+                + getActivityDate() + ", getBefore()=" + getBefore() + ", getAfter()=" + getAfter() + ", getUserId()="
+                + getUserId() + "]";
+    }
 }
