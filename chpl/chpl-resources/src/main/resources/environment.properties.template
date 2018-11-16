@@ -103,6 +103,7 @@ jwtIssuer=ONCCHPL
 jwtAudience=ONCCHPL
 jwtExpirationTimeMinutesInTheFuture=30
 jwtNotBeforeMinutesInThePast=4
+resetLinkExpirationTimeInHours=24
 
 smtpHost=dev
 smtpPort=25
