@@ -63,6 +63,8 @@ public class UserManagerImpl implements UserManager {
         SYMBOLS = tmp.toString().toCharArray();
     }
     private static final int GENERATED_PASSWORD_LENGTH = 15;
+    
+    private static final int HOURS_IN_DAY = 24;
 
     @Autowired
     private Environment env;
@@ -296,7 +298,7 @@ public class UserManagerImpl implements UserManager {
     private boolean isTokenValid(UserResetTokenDTO userResetToken) {
         Date checkDate = userResetToken.getCreationDate();
         Instant now = Instant.now();
-        return (!checkDate.toInstant().isBefore(now.minus(24, ChronoUnit.HOURS)))
+        return (!checkDate.toInstant().isBefore(now.minus(HOURS_IN_DAY, ChronoUnit.HOURS)))
                 && (checkDate.toInstant().isBefore(now));
     }
 
