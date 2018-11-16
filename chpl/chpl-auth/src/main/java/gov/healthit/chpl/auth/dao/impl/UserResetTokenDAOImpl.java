@@ -1,7 +1,6 @@
 package gov.healthit.chpl.auth.dao.impl;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -9,6 +8,7 @@ import javax.persistence.Query;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
+
 import gov.healthit.chpl.auth.BaseDAOImpl;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dao.UserResetTokenDAO;
@@ -23,8 +23,6 @@ public class UserResetTokenDAOImpl extends BaseDAOImpl implements UserResetToken
         UserResetTokenEntity entity = new UserResetTokenEntity();
         entity.setUserResetToken(resetToken);
         entity.setUserId(userId);
-        entity.setCreationDate(new Date());
-        entity.setLastModifiedDate(new Date());
         if (Util.getCurrentUser() != null) {
             entity.setLastModifiedUser(Util.getCurrentUser().getId());
         } else {
