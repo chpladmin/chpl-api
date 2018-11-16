@@ -1,19 +1,17 @@
 package gov.healthit.chpl.auth.manager.impl;
 
-import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,9 +30,7 @@ import gov.healthit.chpl.auth.json.UserCreationJSONObject;
 import gov.healthit.chpl.auth.json.UserInfoJSONObject;
 import gov.healthit.chpl.auth.manager.SecuredUserManager;
 import gov.healthit.chpl.auth.manager.UserManager;
-import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.UserConversionHelper;
 import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserManagementException;
@@ -50,20 +46,6 @@ import gov.healthit.chpl.auth.user.UserRetrievalException;
 public class UserManagerImpl implements UserManager {
     private static final Logger LOGGER = LogManager.getLogger(UserManagerImpl.class);
 
-    private final Random random = new SecureRandom();
-    private static final char[] SYMBOLS;
-    static {
-        StringBuilder tmp = new StringBuilder();
-        for (char ch = '0'; ch <= '9'; ++ch) {
-            tmp.append(ch);
-        }
-        for (char ch = 'a'; ch <= 'z'; ++ch) {
-            tmp.append(ch);
-        }
-        SYMBOLS = tmp.toString().toCharArray();
-    }
-    private static final int GENERATED_PASSWORD_LENGTH = 15;
-
     @Autowired
     private Environment env;
 
@@ -78,22 +60,6 @@ public class UserManagerImpl implements UserManager {
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-
-    private void loginAdminUser() {
-        JWTAuthenticatedUser adminUser;
-        adminUser = new JWTAuthenticatedUser();
-        adminUser.setFullName("Administrator");
-        adminUser.setId(-2L);
-        adminUser.setFriendlyName("Administrator");
-        adminUser.setSubjectName("admin");
-        adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
-
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-    }
-
-    private void logoutAdminUser() {
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
 
     @Override
     @Transactional
@@ -258,10 +224,15 @@ public class UserManagerImpl implements UserManager {
     @Transactional
     public void updateUserPassword(final String userName, final String password) throws UserRetrievalException {
         String encodedPassword = encodePassword(password);
-        loginAdminUser();
         UserDTO userToUpdate = securedUserManager.getBySubjectName(userName);
         securedUserManager.updatePassword(userToUpdate, encodedPassword);
-        logoutAdminUser();
+    }
+    
+    @Override
+    @Transactional
+    public void updateUserPasswordUnsecured(final String userName, final String password) throws UserRetrievalException {
+        String encodedPassword = encodePassword(password);
+        userDAO.updatePassword(userName, encodedPassword);
     }
 
     // no auth needed. create a random string and create a new reset token row
@@ -274,14 +245,8 @@ public class UserManagerImpl implements UserManager {
         if (foundUser == null) {
             throw new UserRetrievalException("Cannot find user with name " + username + " and email address " + email);
         }
-
-        // create user password reset token
-        char[] buf = new char[GENERATED_PASSWORD_LENGTH];
-
-        for (int idx = 0; idx < buf.length; ++idx) {
-            buf[idx] = SYMBOLS[random.nextInt(SYMBOLS.length)];
-        }
-        String password = new String(buf);
+        
+        String password = UUID.randomUUID().toString();
 
         // delete all previous tokens from that user that are in the table
         userResetTokenDAO.deletePreviousUserTokens(foundUser.getId());
@@ -333,10 +298,13 @@ public class UserManagerImpl implements UserManager {
 
     @Override
     public UserDTO getByName(final String userName) throws UserRetrievalException {
-        loginAdminUser();
         UserDTO dto = securedUserManager.getBySubjectName(userName);
-        logoutAdminUser();
         return dto;
+    }
+    
+    @Override
+    public UserDTO getByNameUnsecured(final String userName) throws UserRetrievalException {
+        return userDAO.getByName(userName);
     }
 
     @Override

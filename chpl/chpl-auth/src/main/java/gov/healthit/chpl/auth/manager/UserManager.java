@@ -76,4 +76,8 @@ public interface UserManager {
     public boolean authorizePasswordReset(String token);
     
     public void deletePreviousTokens(String token);
+
+    public UserDTO getByNameUnsecured(String userName) throws UserRetrievalException;
+
+    public void updateUserPasswordUnsecured(String userName, String password) throws UserRetrievalException;
 }

@@ -33,13 +33,13 @@ public class UserResetTokenEntity {
     @JoinColumn(name = "user_id", unique = true, insertable = false, updatable = false)
     private UserEntity user;
 
-    @Column(name = "creation_date")
+    @Column(name = "creation_date", insertable = false, updatable = false)
     private Date creationDate;
 
     @Column(name = "last_modified_user")
     private Long lastModifiedUser;
 
-    @Column(name = "last_modified_date")
+    @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
 
     @Column(name = "deleted")
