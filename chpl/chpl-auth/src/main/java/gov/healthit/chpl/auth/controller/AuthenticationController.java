@@ -22,6 +22,7 @@ import gov.healthit.chpl.auth.EmailBuilder;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.authentication.Authenticator;
 import gov.healthit.chpl.auth.authentication.LoginCredentials;
+import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserResetTokenDTO;
 import gov.healthit.chpl.auth.json.UserResetPasswordJSONObject;
@@ -58,6 +59,9 @@ public class AuthenticationController {
 
     @Autowired
     private Environment env;
+    
+    @Autowired
+    private UserDAO userDAO;
 
     // TODO: Create emergency "BUMP TOKENS" method which invalidates all active
     // tokens.
@@ -137,7 +141,7 @@ public class AuthenticationController {
             throws UserRetrievalException {
         UpdatePasswordResponse response = new UpdatePasswordResponse();
         // get the current user
-        UserDTO currUser = userManager.getByName(request.getUserName());
+        UserDTO currUser = userManager.getByNameUnsecured(request.getUserName());
         if (currUser == null) {
             throw new UserRetrievalException("The user with username " + request.getUserName() + " cannot be found.");
         }
@@ -152,7 +156,7 @@ public class AuthenticationController {
             return response;
         }
         if (userManager.authorizePasswordReset(request.getToken())) {
-            userManager.updateUserPassword(currUser.getSubjectName(), request.getNewPassword());
+            userManager.updateUserPasswordUnsecured(currUser.getSubjectName(), request.getNewPassword());
             userManager.deletePreviousTokens(request.getToken());
             response.setPasswordUpdated(true);
         } else {
@@ -170,7 +174,7 @@ public class AuthenticationController {
         UserResetTokenDTO userResetTokenDTO = userManager.createResetUserPasswordToken(userInfo.getUserName(),
                 userInfo.getEmail());
         String htmlMessage = "<p>Hi, <br/>" + "Please follow this link to reset your password </p>" + "<pre>"
-                + env.getProperty("chplUrlBegin") + "/#/admin/authorizePasswordReset/"
+                + env.getProperty("chplUrlBegin") + "/#/admin/authorizePasswordReset?token="
                 + userResetTokenDTO.getUserResetToken() + "</pre>" + "<br/>" + "</p>" + "<p>Take care,<br/> "
                 + "The Open Data CHPL Team</p>";
         String[] toEmails = {
