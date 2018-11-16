@@ -170,7 +170,7 @@ public class AuthenticationController {
         UserResetTokenDTO userResetTokenDTO = userManager.createResetUserPasswordToken(userInfo.getUserName(),
                 userInfo.getEmail());
         String htmlMessage = "<p>Hi, <br/>" + "Please follow this link to reset your password </p>" + "<pre>"
-                + env.getProperty("chplUrlBegin") + "/#/admin/authorize_password_reset/"
+                + env.getProperty("chplUrlBegin") + "/#/admin/authorizePasswordReset/"
                 + userResetTokenDTO.getUserResetToken() + "</pre>" + "<br/>" + "</p>" + "<p>Take care,<br/> "
                 + "The Open Data CHPL Team</p>";
         String[] toEmails = {
