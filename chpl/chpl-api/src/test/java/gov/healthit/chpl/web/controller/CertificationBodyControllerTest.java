@@ -67,22 +67,6 @@ public class CertificationBodyControllerTest {
 	
 	@Transactional
 	@Test(expected=EntityRetrievalException.class)
-	public void testDeleteAcbByBadId()  
-		throws EntityRetrievalException, IOException, ValidationException, EntityCreationException, UserRetrievalException {
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		acbController.deleteAcb(-100L);
-	}
-	
-	@Transactional
-	@Test(expected=EntityRetrievalException.class)
-	public void testUndeleteAcbByBadId()  
-		throws EntityRetrievalException, IOException, ValidationException, EntityCreationException, UserRetrievalException {
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		acbController.undeleteAcb(-100L);
-	}
-	
-	@Transactional
-	@Test(expected=EntityRetrievalException.class)
 	public void testRemoveUserFromAcbByBadAcbId()  
 		throws EntityRetrievalException, IOException, InvalidArgumentsException, ValidationException, EntityCreationException, UserRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);

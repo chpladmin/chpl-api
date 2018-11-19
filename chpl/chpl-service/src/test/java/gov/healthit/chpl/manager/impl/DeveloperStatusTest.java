@@ -62,9 +62,9 @@ public class DeveloperStatusTest {
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
         
         MockitoAnnotations.initMocks(this);
-        Mockito.when(acbManager.getAllForUser(ArgumentMatchers.anyBoolean()))
+        Mockito.when(acbManager.getAllForUser())
         .thenReturn(new ArrayList<CertificationBodyDTO>());
-        Mockito.when(acbManager.getAll(ArgumentMatchers.anyBoolean()))
+        Mockito.when(acbManager.getAll())
         .thenReturn(new ArrayList<CertificationBodyDTO>());
         Mockito.doReturn(MISSING_REASON_ERROR)
         .when(msgUtil).getMessage(

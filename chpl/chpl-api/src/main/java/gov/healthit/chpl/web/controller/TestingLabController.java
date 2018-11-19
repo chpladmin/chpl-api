@@ -68,24 +68,18 @@ public class TestingLabController {
                     + "this service is to list all of the ATLs in the system that are not deleted.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody TestingLabResults getAtls(
-            @RequestParam(required = false, defaultValue = "false") final boolean editable,
-            @RequestParam(required = false, defaultValue = "false") final boolean showDeleted) {
-        TestingLabResults results = null;
-        if (!Util.isUserRoleAdmin() && showDeleted) {
-            throw new AccessDeniedException("Only Admin can see deleted ATL's.");
+            @RequestParam(required = false, defaultValue = "false") final boolean editable) {
+        TestingLabResults results = new TestingLabResults();
+        List<TestingLabDTO> atls = null;
+        if (editable) {
+            atls = atlManager.getAllForUser();
         } else {
-            results = new TestingLabResults();
-            List<TestingLabDTO> atls = null;
-            if (editable) {
-                atls = atlManager.getAllForUser(showDeleted);
-            } else {
-                atls = atlManager.getAll(showDeleted);
-            }
+            atls = atlManager.getAll();
+        }
 
-            if (atls != null) {
-                for (TestingLabDTO atl : atls) {
-                    results.getAtls().add(new TestingLab(atl));
-                }
+        if (atls != null) {
+            for (TestingLabDTO atl : atls) {
+                results.getAtls().add(new TestingLab(atl));
             }
         }
         return results;
@@ -207,68 +201,6 @@ public class TestingLabController {
         responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
         TestingLab response = new TestingLab(result);
         return new ResponseEntity<TestingLab>(response, responseHeaders, HttpStatus.OK);
-    }
-
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED.  Delete an ATL.", notes = "The logged in user must have ROLE_ADMIN.")
-    @RequestMapping(value = "/{atlId}/delete", method = RequestMethod.POST,
-    produces = "application/json; charset=utf-8")
-    public String deleteAtlDeprecated(@PathVariable("atlId") final Long atlId)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
-
-        return delete(atlId);
-    }
-
-    @ApiOperation(value = "Delete an ATL.", notes = "The logged in user must have ROLE_ADMIN.")
-    @RequestMapping(value = "/{atlId}", method = RequestMethod.DELETE,
-    produces = "application/json; charset=utf-8")
-    public String deleteAtl(@PathVariable("atlId") final Long atlId)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
-
-        return delete(atlId);
-    }
-
-    private String delete(final Long atlId)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
-
-        TestingLabDTO toDelete = atlManager.getById(atlId);
-        atlManager.delete(toDelete);
-        return "{\"deletedAtl\" : true}";
-
-    }
-
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED. Restore a deleted ATL.",
-    notes = "ATLs are unique in the CHPL in that they can be restored after a delete."
-            + " The logged in user must have ROLE_ADMIN.")
-    @RequestMapping(value = "/{atlId}/undelete", method = RequestMethod.POST,
-    produces = "application/json; charset=utf-8")
-    public String undeleteAtlDeprecated(@PathVariable("atlId") final Long atlId)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
-
-        TestingLabDTO toResurrect = atlManager.getById(atlId, true);
-        atlManager.undelete(toResurrect);
-        return "{\"resurrectedAtl\" : true}";
-
-    }
-
-    @ApiOperation(value = "Restore a deleted ATL.",
-            notes = "ATLs are unique in the CHPL in that they can be restored after a delete."
-                    + " The logged in user must have ROLE_ADMIN.")
-    @RequestMapping(value = "/{atlId}/undelete", method = RequestMethod.PUT,
-    produces = "application/json; charset=utf-8")
-    public String undeleteAtl(@PathVariable("atlId") final Long atlId)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
-
-        return undelete(atlId);
-    }
-
-    private String undelete(final Long atlId)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
-
-        TestingLabDTO toResurrect = atlManager.getById(atlId, true);
-        atlManager.undelete(toResurrect);
-        return "{\"resurrectedAtl\" : true}";
     }
 
     @Deprecated

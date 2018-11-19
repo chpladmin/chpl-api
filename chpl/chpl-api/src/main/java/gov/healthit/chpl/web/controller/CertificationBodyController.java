@@ -64,23 +64,19 @@ public class CertificationBodyController {
                     + "behavior of this service is to list all of the ACBs in the system that are not deleted.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody CertificationBodyResults getAcbs(
-            @RequestParam(required = false, defaultValue = "false") final boolean editable,
-            @RequestParam(value = "showDeleted", required = false, defaultValue = "false") final boolean showDeleted) {
+            @RequestParam(required = false, defaultValue = "false") final boolean editable) {
+        //TODO confirm a user is logged in here
         CertificationBodyResults results = new CertificationBodyResults();
-        if (!Util.isUserRoleAdmin() && showDeleted) {
-            throw new AccessDeniedException("Only Admins can see deleted ACB's.");
-        } else {
             List<CertificationBodyDTO> acbs = null;
-            if (editable) {
-                acbs = acbManager.getAllForUser(showDeleted);
-            } else {
-                acbs = acbManager.getAll(showDeleted);
-            }
+        if (editable) {
+            acbs = acbManager.getAllForUser();
+        } else {
+            acbs = acbManager.getAll();
+        }
 
-            if (acbs != null) {
-                for (CertificationBodyDTO acb : acbs) {
-                    results.getAcbs().add(new CertificationBody(acb));
-                }
+        if (acbs != null) {
+            for (CertificationBodyDTO acb : acbs) {
+                results.getAcbs().add(new CertificationBody(acb));
             }
         }
         return results;

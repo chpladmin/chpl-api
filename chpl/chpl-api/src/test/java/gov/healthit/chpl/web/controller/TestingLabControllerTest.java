@@ -67,22 +67,6 @@ public class TestingLabControllerTest {
 	
 	@Transactional
 	@Test(expected=EntityRetrievalException.class)
-	public void testDeleteAtlByBadId()  
-		throws EntityRetrievalException, IOException, ValidationException, EntityCreationException, UserRetrievalException {
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		atlController.deleteAtl(-100L);
-	}
-	
-	@Transactional
-	@Test(expected=EntityRetrievalException.class)
-	public void testUndeleteAtlByBadId()  
-		throws EntityRetrievalException, IOException, ValidationException, EntityCreationException, UserRetrievalException {
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		atlController.undeleteAtl(-100L);
-	}
-	
-	@Transactional
-	@Test(expected=EntityRetrievalException.class)
 	public void testRemoveUserFromAtlByBadAtlId()  
 		throws EntityRetrievalException, IOException, InvalidArgumentsException, ValidationException, EntityCreationException, UserRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
