@@ -14,7 +14,6 @@ import gov.healthit.chpl.validation.listing.reviewer.DeveloperStatusReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.FieldLengthReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.SedG3Reviewer;
-import gov.healthit.chpl.validation.listing.reviewer.TestFunctionalityReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestToolReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestingLabReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnattestedCriteriaWithDataReviewer;
@@ -22,6 +21,7 @@ import gov.healthit.chpl.validation.listing.reviewer.UnsupportedCharacterReviewe
 import gov.healthit.chpl.validation.listing.reviewer.UrlReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ValidDataReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.RequiredData2014Reviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2014.TestFunctionality2014Reviewer;
 
 /**
  * Validation interface for any listing that is already uploaded and confirmed on the CHPL.
@@ -79,8 +79,8 @@ public abstract class Edition2014ListingValidator extends Validator {
     private TestToolReviewer ttReviewer;
 
     @Autowired
-    @Qualifier("testFunctionalityReviewer")
-    private TestFunctionalityReviewer tfReviewer;
+    @Qualifier("testFunctionality2014Reviewer")
+    private TestFunctionality2014Reviewer tfReviewer;
 
     @Autowired
     @Qualifier("urlReviewer")
