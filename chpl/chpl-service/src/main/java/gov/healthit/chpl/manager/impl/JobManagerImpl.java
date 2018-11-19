@@ -41,7 +41,7 @@ public class JobManagerImpl extends ApplicationObjectSupport implements JobManag
 
     @Transactional
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB', 'ROLE_ONC_STAFF')")
-    public JobDTO createJob(JobDTO job) throws EntityCreationException, EntityRetrievalException {
+    public JobDTO createJob(final JobDTO job) throws EntityCreationException, EntityRetrievalException {
         UserDTO user = job.getUser();
         if (user == null || user.getId() == null) {
             throw new EntityRetrievalException("A user is required.");
@@ -53,16 +53,16 @@ public class JobManagerImpl extends ApplicationObjectSupport implements JobManag
 
     @Transactional
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB', 'ROLE_ONC_STAFF')")
-    public JobDTO getJobById(Long jobId) {
+    public JobDTO getJobById(final Long jobId) {
         return jobDao.getById(jobId);
     }
 
     /**
      * Gets the jobs that are either currently running or have completed within
-     * a configurable window of time
+     * a configurable window of time.
      */
     @Transactional
-    //TODO: fix the @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC_STAFF')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC_STAFF')")
     public List<JobDTO> getAllJobs() {
         String completedJobThresholdDaysStr = env.getProperty("jobThresholdDays").trim();
         Integer completedJobThresholdDays = 0;
@@ -84,7 +84,7 @@ public class JobManagerImpl extends ApplicationObjectSupport implements JobManag
     @Override
     @Transactional
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
-    public List<JobDTO> getJobsForUser(UserDTO user) throws EntityRetrievalException {
+    public List<JobDTO> getJobsForUser(final UserDTO user) throws EntityRetrievalException {
         if (user == null || user.getId() == null) {
             throw new EntityRetrievalException("A user is required.");
         }
@@ -100,7 +100,7 @@ public class JobManagerImpl extends ApplicationObjectSupport implements JobManag
     @Override
     @Transactional
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB', 'ROLE_ONC_STAFF')")
-    public boolean start(JobDTO job) throws EntityRetrievalException {
+    public boolean start(final JobDTO job) throws EntityRetrievalException {
         RunnableJob runnableJob = null;
         try {
             runnableJob = jobFactory.getRunnableJob(job);
@@ -111,7 +111,8 @@ public class JobManagerImpl extends ApplicationObjectSupport implements JobManag
         if (runnableJob == null) {
             try {
                 jobDao.delete(job.getId());
-            } catch (Exception ignore) {
+            } catch (Exception e) {
+                LOGGER.error("Unable to delete job with id {}, error {}", job.getId(), e.getMessage());
             }
             return false;
         }

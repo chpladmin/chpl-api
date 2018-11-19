@@ -226,6 +226,7 @@
     <certification_body certification_body_id="-1"
         acb_code="01" name="InfoGard" creation_date="2015-08-27 15:36:44.217"
         last_modified_date="2015-08-27 15:36:44.217" last_modified_user="-2"
+        website="http://www.test.com" address_id="-1"
         deleted="false" />
     <certification_body certification_body_id="-2"
         acb_code="02" name="CCHIT" creation_date="2015-08-27 15:36:44.217"

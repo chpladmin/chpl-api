@@ -18,6 +18,7 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.util.StringUtils;
@@ -141,7 +142,8 @@ public class UserManagementController {
         String htmlMessage = "<p>Thank you for setting up your administrator account on ONC's CHPL. "
                 + "Please click the link below to activate your account: <br/>" + env.getProperty("chplUrlBegin")
                 + "/#/registration/confirm-user/" + invitation.getConfirmToken() + "</p>"
-                + "<p>If you have any questions, please contact the ONC CHPL Team at onc_chpl@hhs.gov.</p>"
+                + "<p>If you have any issues completing the registration, "
+                + "please contact the ONC CHPL Team at <a href=\"mailto:onc_chpl@hhs.gov\">onc_chpl@hhs.gov</a>.</p>"
                 + "<p>The CHPL Team</p>";
 
         String[] toEmails = {
@@ -337,7 +339,9 @@ public class UserManagementController {
                 + "which will allow you to manage certified product listings on the CHPL. "
                 + "Please click the link below to create or update your account: <br/>"
                 + env.getProperty("chplUrlBegin") + "/#/registration/create-user/" + createdInvite.getInviteToken()
-                + "</p>" + "<p>If you have any questions, please contact the ONC CHPL Team at onc_chpl@hhs.gov.</p>"
+                + "</p>"
+                + "<p>If you have any issues completing the registration, "
+                + "please contact the ONC CHPL Team at <a href=\"mailto:onc_chpl@hhs.gov\">onc_chpl@hhs.gov</a>.</p>"
                 + "<p>Take care,<br/> " + "The CHPL Team</p>";
 
         String[] toEmails = {
@@ -584,8 +588,8 @@ public class UserManagementController {
 
     @ApiOperation(value = "View users of the system.", notes = "Only ROLE_ADMIN will be able to see all users.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @PreAuthorize("isAuthenticated()")
     public @ResponseBody UserListJSONObject getUsers() {
-
         List<UserDTO> userList = userManager.getAll();
         List<UserInfoJSONObject> userInfos = new ArrayList<UserInfoJSONObject>();
 
