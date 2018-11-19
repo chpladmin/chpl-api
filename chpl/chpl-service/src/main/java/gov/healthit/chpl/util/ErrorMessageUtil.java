@@ -19,6 +19,10 @@ public class ErrorMessageUtil {
         this.messageSource = messageSource;
     }
 
+    public ErrorMessageUtil() {
+        
+    }
+    
     /**
      * Retrieve the local encoded message for a given error code.
      * @param messageCode the error code
