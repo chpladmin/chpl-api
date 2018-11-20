@@ -34,11 +34,11 @@ public class TestingLab implements Serializable {
         this.atlCode = dto.getTestingLabCode();
         this.name = dto.getName();
         this.website = dto.getWebsite();
+        this.retired = dto.isRetired();
         this.accredidationNumber = dto.getAccredidationNumber();
         if (dto.getAddress() != null) {
             this.address = new Address(dto.getAddress());
         }
-        this.retired = dto.isRetired();
     }
 
     public Long getId() {

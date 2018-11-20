@@ -39,6 +39,7 @@ public class TestingLabDTO implements Serializable {
         this.name = entity.getName();
         this.website = entity.getWebsite();
         this.accredidationNumber = entity.getAccredidationNumber();
+        this.retired = entity.getRetired();
     }
 
     public Long getId() {

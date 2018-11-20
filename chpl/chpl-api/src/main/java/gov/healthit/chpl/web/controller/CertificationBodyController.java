@@ -8,7 +8,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.util.StringUtils;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.json.User;
@@ -169,45 +167,45 @@ public class CertificationBodyController {
 
     private CertificationBody update(final CertificationBody updatedAcb) throws InvalidArgumentsException,
             EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
-        //get the ACB as it is currently in the database to find out if
+        //Get the ACB as it is currently in the database to find out if
         //the retired flag was changed.
-        //done as a separate manager action because security is different
-        //from normal ACB updates - only admins are allowed to retire/unretire
-        //whereas any ACB admin can update other info
+        //Retirement and un-retirement is done as a separate manager action because 
+        //security is different from normal ACB updates - only admins are allowed
+        //whereas an ACB admin can update other info
         CertificationBodyDTO existingAcb = acbManager.getById(updatedAcb.getId());
-        if(existingAcb.isRetired() != updatedAcb.isRetired()) {
-            if(updatedAcb.isRetired()) {
-                //we are retiring this ACB
-                acbManager.retire(updatedAcb.getId());
-            } else {
-                //we are unretiring this ACB
+        if(existingAcb.isRetired() != updatedAcb.isRetired() && updatedAcb.isRetired()) {
+            //we are retiring this ACB - no other updates can happen
+            acbManager.retire(updatedAcb.getId());
+        } else {
+            if(existingAcb.isRetired() != updatedAcb.isRetired() && !updatedAcb.isRetired()) {
+                //unretire the ACB
                 acbManager.unretire(updatedAcb.getId());
             }
+            CertificationBodyDTO toUpdate = new CertificationBodyDTO();
+            toUpdate.setId(updatedAcb.getId());
+            toUpdate.setAcbCode(updatedAcb.getAcbCode());
+            toUpdate.setName(updatedAcb.getName());
+            toUpdate.setRetired(updatedAcb.isRetired());
+            if (StringUtils.isEmpty(updatedAcb.getWebsite())) {
+                throw new InvalidArgumentsException("A website is required to update the certification body");
+            }
+            toUpdate.setWebsite(updatedAcb.getWebsite());
+    
+            if (updatedAcb.getAddress() == null) {
+                throw new InvalidArgumentsException("An address is required to update the certification body");
+            }
+            AddressDTO address = new AddressDTO();
+            address.setId(updatedAcb.getAddress().getAddressId());
+            address.setStreetLineOne(updatedAcb.getAddress().getLine1());
+            address.setStreetLineTwo(updatedAcb.getAddress().getLine2());
+            address.setCity(updatedAcb.getAddress().getCity());
+            address.setState(updatedAcb.getAddress().getState());
+            address.setZipcode(updatedAcb.getAddress().getZipcode());
+            address.setCountry(updatedAcb.getAddress().getCountry());
+            toUpdate.setAddress(address);
+            acbManager.update(toUpdate);
         }
-        CertificationBodyDTO toUpdate = new CertificationBodyDTO();
-        toUpdate.setId(updatedAcb.getId());
-        toUpdate.setAcbCode(updatedAcb.getAcbCode());
-        toUpdate.setName(updatedAcb.getName());
-        toUpdate.setRetired(updatedAcb.isRetired());
-        if (StringUtils.isEmpty(updatedAcb.getWebsite())) {
-            throw new InvalidArgumentsException("A website is required to update the certification body");
-        }
-        toUpdate.setWebsite(updatedAcb.getWebsite());
-
-        if (updatedAcb.getAddress() == null) {
-            throw new InvalidArgumentsException("An address is required to update the certification body");
-        }
-        AddressDTO address = new AddressDTO();
-        address.setId(updatedAcb.getAddress().getAddressId());
-        address.setStreetLineOne(updatedAcb.getAddress().getLine1());
-        address.setStreetLineTwo(updatedAcb.getAddress().getLine2());
-        address.setCity(updatedAcb.getAddress().getCity());
-        address.setState(updatedAcb.getAddress().getState());
-        address.setZipcode(updatedAcb.getAddress().getZipcode());
-        address.setCountry(updatedAcb.getAddress().getCountry());
-        toUpdate.setAddress(address);
-
-        CertificationBodyDTO result = acbManager.update(toUpdate);
+        CertificationBodyDTO result = acbManager.getById(updatedAcb.getId());
         return new CertificationBody(result);
     }
 

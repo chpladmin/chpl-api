@@ -173,44 +173,45 @@ public class TestingLabController {
     EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateTestingLabException {
         //get the ATL as it is currently in the database to find out if
         //the retired flag was changed.
-        //done as a separate manager action because security is different
-        //from normal ATL updates - only admins are allowed to retire/unretire
-        //whereas any ATL admin can update other info
-        TestingLabDTO existingAcb = atlManager.getById(updatedAtl.getId());
-        if(existingAcb.isRetired() != updatedAtl.isRetired()) {
-            if(updatedAtl.isRetired()) {
-                //we are retiring this ATL
-                atlManager.retire(updatedAtl.getId());
-            } else {
-                //we are unretiring this ATL
+        //Retirement and un-retirement is done as a separate manager action because 
+        //security is different from normal ATL updates - only admins are allowed
+        //whereas an ATL admin can update other info
+        TestingLabDTO existingAtl = atlManager.getById(updatedAtl.getId());
+        if(existingAtl.isRetired() != updatedAtl.isRetired() && updatedAtl.isRetired()) {
+            //we are retiring this ATL and no other changes can be made
+            atlManager.retire(updatedAtl.getId());
+        } else {
+            if(existingAtl.isRetired() != updatedAtl.isRetired() && !updatedAtl.isRetired()) {
+                //unretire the ATL
                 atlManager.unretire(updatedAtl.getId());
             }
-        } 
-        TestingLabDTO toUpdate = new TestingLabDTO();
-        toUpdate.setId(updatedAtl.getId());
-        toUpdate.setTestingLabCode(updatedAtl.getAtlCode());
-        toUpdate.setRetired(updatedAtl.isRetired());
-        toUpdate.setAccredidationNumber(updatedAtl.getAccredidationNumber());
-        if (StringUtils.isEmpty(updatedAtl.getName())) {
-            throw new InvalidArgumentsException("A name is required for a testing lab");
+            TestingLabDTO toUpdate = new TestingLabDTO();
+            toUpdate.setId(updatedAtl.getId());
+            toUpdate.setTestingLabCode(updatedAtl.getAtlCode());
+            toUpdate.setRetired(updatedAtl.isRetired());
+            toUpdate.setAccredidationNumber(updatedAtl.getAccredidationNumber());
+            if (StringUtils.isEmpty(updatedAtl.getName())) {
+                throw new InvalidArgumentsException("A name is required for a testing lab");
+            }
+            toUpdate.setName(updatedAtl.getName());
+            toUpdate.setWebsite(updatedAtl.getWebsite());
+    
+            if (updatedAtl.getAddress() == null) {
+                throw new InvalidArgumentsException("An address is required to update the testing lab");
+            }
+            AddressDTO address = new AddressDTO();
+            address.setId(updatedAtl.getAddress().getAddressId());
+            address.setStreetLineOne(updatedAtl.getAddress().getLine1());
+            address.setStreetLineTwo(updatedAtl.getAddress().getLine2());
+            address.setCity(updatedAtl.getAddress().getCity());
+            address.setState(updatedAtl.getAddress().getState());
+            address.setZipcode(updatedAtl.getAddress().getZipcode());
+            address.setCountry(updatedAtl.getAddress().getCountry());
+            toUpdate.setAddress(address);
+            atlManager.update(toUpdate);
         }
-        toUpdate.setName(updatedAtl.getName());
-        toUpdate.setWebsite(updatedAtl.getWebsite());
 
-        if (updatedAtl.getAddress() == null) {
-            throw new InvalidArgumentsException("An address is required to update the testing lab");
-        }
-        AddressDTO address = new AddressDTO();
-        address.setId(updatedAtl.getAddress().getAddressId());
-        address.setStreetLineOne(updatedAtl.getAddress().getLine1());
-        address.setStreetLineTwo(updatedAtl.getAddress().getLine2());
-        address.setCity(updatedAtl.getAddress().getCity());
-        address.setState(updatedAtl.getAddress().getState());
-        address.setZipcode(updatedAtl.getAddress().getZipcode());
-        address.setCountry(updatedAtl.getAddress().getCountry());
-        toUpdate.setAddress(address);
-
-        TestingLabDTO result = atlManager.update(toUpdate);
+        TestingLabDTO result = atlManager.getById(updatedAtl.getId());
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
         TestingLab response = new TestingLab(result);

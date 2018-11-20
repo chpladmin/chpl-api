@@ -8,6 +8,7 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,6 +31,7 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ClearAllCaches;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
@@ -114,7 +116,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @ClearAllCaches
+    @CacheEvict(CacheNames.CERT_BODY_NAMES)
     public CertificationBodyDTO retire(final Long acbId) throws EntityRetrievalException,
         JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
         CertificationBodyDTO result = null;
@@ -130,7 +132,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @ClearAllCaches
+    @CacheEvict(CacheNames.CERT_BODY_NAMES)
     public CertificationBodyDTO unretire(final Long acbId) throws EntityRetrievalException,
         JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
         CertificationBodyDTO result = null;
@@ -138,7 +140,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
         toUpdate.setRetired(false);
         result = certificationBodyDAO.update(toUpdate);
 
-        String activityMsg = "Unetired acb " + toUpdate.getName();
+        String activityMsg = "Unretired acb " + toUpdate.getName();
         activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, result.getId(), activityMsg,
                 toUpdate, result);
         return result;
