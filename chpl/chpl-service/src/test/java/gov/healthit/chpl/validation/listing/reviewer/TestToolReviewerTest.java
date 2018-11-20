@@ -39,27 +39,27 @@ public class TestToolReviewerTest {
             "Test Tool 'Bogus Test Tool' can not be used for criteria '" + C_3
             + "', as it is a retired tool, and this Certified Product does not carry ICS.";
 
-    @Autowired 
+    @Autowired
     private ListingMockUtil mockUtil;
 
     @Autowired
     private MessageSource messageSource;
 
-    @Spy 
+    @Spy
     private TestToolDAO testToolDao;
 
-    @Spy 
+    @Spy
     private ChplProductNumberUtil productNumberUtil;
 
-    @Spy private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
-    
+    @Spy
+    private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
 
     private TestToolReviewer testToolReviewer;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        
+
         testToolReviewer = new TestToolReviewer(testToolDao, msgUtil, productNumberUtil);
 
         Mockito.doReturn(NO_TEST_TOOL_NAME_ERROR)
