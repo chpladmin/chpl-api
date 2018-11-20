@@ -17,10 +17,11 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
@@ -49,6 +50,9 @@ public class PendingListingTestFunctionalityReviewerTest {
             "Criteria 170.314 (a)(6) contains an invalid test functionality"
             + " 'Bad test functionality name'. It has been removed from the pending listing.";
 
+    @Autowired
+    private MessageSource messageSource;
+
     @Spy
     private TestFunctionalityDAO testFunctionalityDAO;
 
@@ -59,7 +63,7 @@ public class PendingListingTestFunctionalityReviewerTest {
     private PracticeTypeDAO practiceTypeDAO;
 
     @Spy
-    private ErrorMessageUtil msgUtil;
+    private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
 
     @Spy
     private CertificationEditionDAO certificationEditionDAO;
@@ -67,12 +71,14 @@ public class PendingListingTestFunctionalityReviewerTest {
     @Spy
     private TestingFunctionalityManager testFunctionalityManager;
 
-    @InjectMocks
     private TestFunctionality2014Reviewer pendingTfReviewer;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+
+        pendingTfReviewer = new TestFunctionality2014Reviewer(testFunctionalityDAO, testFunctionalityManager,
+                certificationEditionDAO, msgUtil);
 
         Mockito.doReturn("In Criteria 170.314 (a)(6), Test Functionality (a)(6)(11) is for "
                 + "Criteria other and is not valid for Criteria 170.314 (a)(6).")
