@@ -2,8 +2,10 @@ package gov.healthit.chpl.validation.pendingListing.reviewer.edition2015;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -614,6 +616,20 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                                 cert.getNumber(), pendingMeasureMap.getEnteredValue()));
                             } else {
                                 pendingMeasureMap.setMacraMeasure(foundMeasure);
+                            }
+                        }
+                    }
+                }
+
+                if (cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 1) {
+                    Map<Long, String> uniqueMacras = new HashMap<Long, String>();
+                    for (PendingCertificationResultMacraMeasureDTO pendingMeasureMap : cert.getG1MacraMeasures()) {
+                        if (pendingMeasureMap != null) {
+                            if (uniqueMacras.containsKey(pendingMeasureMap.getMacraMeasureId())){ //Duplicate
+                                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.invalidG1MacraMeasure", 
+                                        "DUPLICATE", pendingMeasureMap.getEnteredValue()));
+                            } else {
+                                uniqueMacras.put(pendingMeasureMap.getMacraMeasureId(), pendingMeasureMap.getEnteredValue());
                             }
                         }
                     }
