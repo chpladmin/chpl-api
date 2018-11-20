@@ -4,7 +4,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
@@ -65,9 +64,6 @@ public class ChplNumberReviewerTest {
     @Autowired
     private MessageSource messageSource;
 
-    @Autowired
-    private CertifiedProductDAO cpDao;
-
     @Spy
     private CertifiedProductDAO listingDao;
 
@@ -86,7 +82,7 @@ public class ChplNumberReviewerTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        chplNumberReviewer = new ChplNumberReviewer(cpDao, certificationResultManager, msgUtil);
+        chplNumberReviewer = new ChplNumberReviewer(listingDao, certificationResultManager, msgUtil);
 
         Mockito.doReturn(PRODUCT_CODE_ERROR)
         .when(msgUtil).getMessage(
@@ -368,7 +364,6 @@ public class ChplNumberReviewerTest {
     }
 
     @Test
-    @Ignore
     public void testAdditionalSoftwareCodeChanged_IsDuplicate_HasError() {
         try {
             Mockito.when(listingDao.getByChplUniqueId(ArgumentMatchers.anyString()))
@@ -431,7 +426,6 @@ public class ChplNumberReviewerTest {
     }
     
     @Test
-    @Ignore
     public void testCertificationDateChanged_IsDuplicate_HasError() {
         try {
             Mockito.when(listingDao.getByChplUniqueId(ArgumentMatchers.anyString()))
