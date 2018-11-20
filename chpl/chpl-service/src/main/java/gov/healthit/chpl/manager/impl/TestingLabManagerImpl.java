@@ -101,6 +101,36 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
     }
 
     @Transactional
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public TestingLabDTO retire(final Long atlId) throws EntityRetrievalException,
+        JsonProcessingException, EntityCreationException, UpdateTestingLabException {
+        TestingLabDTO result = null;
+        TestingLabDTO toUpdate = testingLabDAO.getById(atlId);
+        toUpdate.setRetired(true);
+        result = testingLabDAO.update(toUpdate);
+
+        String activityMsg = "Retired atl " + toUpdate.getName();
+        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_ATL, result.getId(), activityMsg,
+                toUpdate, result);
+        return result;
+    }
+
+    @Transactional
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public TestingLabDTO unretire(final Long atlId) throws EntityRetrievalException,
+        JsonProcessingException, EntityCreationException, UpdateTestingLabException {
+        TestingLabDTO result = null;
+        TestingLabDTO toUpdate = testingLabDAO.getById(atlId);
+        toUpdate.setRetired(false);
+        result = testingLabDAO.update(toUpdate);
+
+        String activityMsg = "Unetired atl " + toUpdate.getName();
+        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_ATL, result.getId(), activityMsg,
+                toUpdate, result);
+        return result;
+    }
+
+    @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#atl, admin) or hasPermission(#atl, read)")
     public List<UserDTO> getAllUsersOnAtl(final TestingLabDTO atl) {
         ObjectIdentity oid = new ObjectIdentityImpl(TestingLabDTO.class, atl.getId());

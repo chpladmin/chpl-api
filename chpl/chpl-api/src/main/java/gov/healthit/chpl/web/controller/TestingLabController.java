@@ -11,7 +11,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.util.StringUtils;
@@ -25,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.json.User;
@@ -171,29 +169,45 @@ public class TestingLabController {
         return update(atlInfo);
     }
 
-    public ResponseEntity<TestingLab> update(TestingLab atlInfo) throws InvalidArgumentsException,
+    public ResponseEntity<TestingLab> update(TestingLab updatedAtl) throws InvalidArgumentsException,
     EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateTestingLabException {
+        //get the ATL as it is currently in the database to find out if
+        //the retired flag was changed.
+        //done as a separate manager action because security is different
+        //from normal ATL updates - only admins are allowed to retire/unretire
+        //whereas any ATL admin can update other info
+        TestingLabDTO existingAcb = atlManager.getById(updatedAtl.getId());
+        if(existingAcb.isRetired() != updatedAtl.isRetired()) {
+            if(updatedAtl.isRetired()) {
+                //we are retiring this ATL
+                atlManager.retire(updatedAtl.getId());
+            } else {
+                //we are unretiring this ATL
+                atlManager.unretire(updatedAtl.getId());
+            }
+        } 
         TestingLabDTO toUpdate = new TestingLabDTO();
-        toUpdate.setId(atlInfo.getId());
-        toUpdate.setTestingLabCode(atlInfo.getAtlCode());
-        toUpdate.setAccredidationNumber(atlInfo.getAccredidationNumber());
-        if (StringUtils.isEmpty(atlInfo.getName())) {
+        toUpdate.setId(updatedAtl.getId());
+        toUpdate.setTestingLabCode(updatedAtl.getAtlCode());
+        toUpdate.setRetired(updatedAtl.isRetired());
+        toUpdate.setAccredidationNumber(updatedAtl.getAccredidationNumber());
+        if (StringUtils.isEmpty(updatedAtl.getName())) {
             throw new InvalidArgumentsException("A name is required for a testing lab");
         }
-        toUpdate.setName(atlInfo.getName());
-        toUpdate.setWebsite(atlInfo.getWebsite());
+        toUpdate.setName(updatedAtl.getName());
+        toUpdate.setWebsite(updatedAtl.getWebsite());
 
-        if (atlInfo.getAddress() == null) {
+        if (updatedAtl.getAddress() == null) {
             throw new InvalidArgumentsException("An address is required to update the testing lab");
         }
         AddressDTO address = new AddressDTO();
-        address.setId(atlInfo.getAddress().getAddressId());
-        address.setStreetLineOne(atlInfo.getAddress().getLine1());
-        address.setStreetLineTwo(atlInfo.getAddress().getLine2());
-        address.setCity(atlInfo.getAddress().getCity());
-        address.setState(atlInfo.getAddress().getState());
-        address.setZipcode(atlInfo.getAddress().getZipcode());
-        address.setCountry(atlInfo.getAddress().getCountry());
+        address.setId(updatedAtl.getAddress().getAddressId());
+        address.setStreetLineOne(updatedAtl.getAddress().getLine1());
+        address.setStreetLineTwo(updatedAtl.getAddress().getLine2());
+        address.setCity(updatedAtl.getAddress().getCity());
+        address.setState(updatedAtl.getAddress().getState());
+        address.setZipcode(updatedAtl.getAddress().getZipcode());
+        address.setCountry(updatedAtl.getAddress().getCountry());
         toUpdate.setAddress(address);
 
         TestingLabDTO result = atlManager.update(toUpdate);

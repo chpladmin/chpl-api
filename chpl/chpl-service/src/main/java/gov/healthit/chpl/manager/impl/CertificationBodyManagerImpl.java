@@ -113,6 +113,38 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     }
 
     @Transactional
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @ClearAllCaches
+    public CertificationBodyDTO retire(final Long acbId) throws EntityRetrievalException,
+        JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
+        CertificationBodyDTO result = null;
+        CertificationBodyDTO toUpdate = certificationBodyDAO.getById(acbId);
+        toUpdate.setRetired(true);
+        result = certificationBodyDAO.update(toUpdate);
+
+        String activityMsg = "Retired acb " + toUpdate.getName();
+        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, result.getId(), activityMsg,
+                toUpdate, result);
+        return result;
+    }
+
+    @Transactional
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @ClearAllCaches
+    public CertificationBodyDTO unretire(final Long acbId) throws EntityRetrievalException,
+        JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
+        CertificationBodyDTO result = null;
+        CertificationBodyDTO toUpdate = certificationBodyDAO.getById(acbId);
+        toUpdate.setRetired(false);
+        result = certificationBodyDAO.update(toUpdate);
+
+        String activityMsg = "Unetired acb " + toUpdate.getName();
+        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, result.getId(), activityMsg,
+                toUpdate, result);
+        return result;
+    }
+
+    @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#acb, admin) or hasPermission(#acb, read)")
     public List<UserDTO> getAllUsersOnAcb(final CertificationBodyDTO acb) {
         ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());

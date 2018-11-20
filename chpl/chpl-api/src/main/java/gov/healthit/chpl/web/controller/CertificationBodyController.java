@@ -167,28 +167,44 @@ public class CertificationBodyController {
         return update(acbInfo);
     }
 
-    private CertificationBody update(final CertificationBody acbInfo) throws InvalidArgumentsException,
+    private CertificationBody update(final CertificationBody updatedAcb) throws InvalidArgumentsException,
             EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
+        //get the ACB as it is currently in the database to find out if
+        //the retired flag was changed.
+        //done as a separate manager action because security is different
+        //from normal ACB updates - only admins are allowed to retire/unretire
+        //whereas any ACB admin can update other info
+        CertificationBodyDTO existingAcb = acbManager.getById(updatedAcb.getId());
+        if(existingAcb.isRetired() != updatedAcb.isRetired()) {
+            if(updatedAcb.isRetired()) {
+                //we are retiring this ACB
+                acbManager.retire(updatedAcb.getId());
+            } else {
+                //we are unretiring this ACB
+                acbManager.unretire(updatedAcb.getId());
+            }
+        }
         CertificationBodyDTO toUpdate = new CertificationBodyDTO();
-        toUpdate.setId(acbInfo.getId());
-        toUpdate.setAcbCode(acbInfo.getAcbCode());
-        toUpdate.setName(acbInfo.getName());
-        if (StringUtils.isEmpty(acbInfo.getWebsite())) {
+        toUpdate.setId(updatedAcb.getId());
+        toUpdate.setAcbCode(updatedAcb.getAcbCode());
+        toUpdate.setName(updatedAcb.getName());
+        toUpdate.setRetired(updatedAcb.isRetired());
+        if (StringUtils.isEmpty(updatedAcb.getWebsite())) {
             throw new InvalidArgumentsException("A website is required to update the certification body");
         }
-        toUpdate.setWebsite(acbInfo.getWebsite());
+        toUpdate.setWebsite(updatedAcb.getWebsite());
 
-        if (acbInfo.getAddress() == null) {
+        if (updatedAcb.getAddress() == null) {
             throw new InvalidArgumentsException("An address is required to update the certification body");
         }
         AddressDTO address = new AddressDTO();
-        address.setId(acbInfo.getAddress().getAddressId());
-        address.setStreetLineOne(acbInfo.getAddress().getLine1());
-        address.setStreetLineTwo(acbInfo.getAddress().getLine2());
-        address.setCity(acbInfo.getAddress().getCity());
-        address.setState(acbInfo.getAddress().getState());
-        address.setZipcode(acbInfo.getAddress().getZipcode());
-        address.setCountry(acbInfo.getAddress().getCountry());
+        address.setId(updatedAcb.getAddress().getAddressId());
+        address.setStreetLineOne(updatedAcb.getAddress().getLine1());
+        address.setStreetLineTwo(updatedAcb.getAddress().getLine2());
+        address.setCity(updatedAcb.getAddress().getCity());
+        address.setState(updatedAcb.getAddress().getState());
+        address.setZipcode(updatedAcb.getAddress().getZipcode());
+        address.setCountry(updatedAcb.getAddress().getCountry());
         toUpdate.setAddress(address);
 
         CertificationBodyDTO result = acbManager.update(toUpdate);

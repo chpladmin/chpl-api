@@ -16,25 +16,31 @@ import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
 
 public interface TestingLabManager {
 
-    void addPermission(TestingLabDTO atl, Long userId, Permission permission) throws UserRetrievalException;
+    public void addPermission(TestingLabDTO atl, Long userId, Permission permission) throws UserRetrievalException;
 
-    void deletePermission(TestingLabDTO atl, Sid recipient, Permission permission);
+    public void deletePermission(TestingLabDTO atl, Sid recipient, Permission permission);
 
-    void deleteAllPermissionsOnAtl(TestingLabDTO atl, Sid recipient);
+    public void deleteAllPermissionsOnAtl(TestingLabDTO atl, Sid recipient);
 
-    void deletePermissionsForUser(UserDTO userDto) throws UserRetrievalException;
+    public void deletePermissionsForUser(UserDTO userDto) throws UserRetrievalException;
 
-    TestingLabDTO create(TestingLabDTO atl)
+    public TestingLabDTO create(TestingLabDTO atl)
             throws UserRetrievalException, EntityCreationException, EntityRetrievalException, JsonProcessingException;
 
-    TestingLabDTO update(TestingLabDTO atl) throws EntityRetrievalException, JsonProcessingException,
+    public TestingLabDTO update(TestingLabDTO atl) throws EntityRetrievalException, JsonProcessingException,
             EntityCreationException, UpdateTestingLabException;
 
-    List<TestingLabDTO> getAllForUser();
+    public TestingLabDTO retire(final Long atlId) throws EntityRetrievalException,
+        JsonProcessingException, EntityCreationException, UpdateTestingLabException;
 
-    List<TestingLabDTO> getAll();
+    public TestingLabDTO unretire(final Long atlId) throws EntityRetrievalException,
+        JsonProcessingException, EntityCreationException, UpdateTestingLabException;
 
-    TestingLabDTO getById(Long id) throws EntityRetrievalException;
+    public List<TestingLabDTO> getAllForUser();
+
+    public List<TestingLabDTO> getAll();
+
+    public TestingLabDTO getById(Long id) throws EntityRetrievalException;
 
     List<UserDTO> getAllUsersOnAtl(TestingLabDTO atl);
 
