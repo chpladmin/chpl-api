@@ -555,6 +555,9 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             final List<String> activityRow) {
         activityRow.set(DEVELOPER_COL, developerActivity.getDeveloper().getName());
         activityRow.set(ACTIVITY_USER_COL, developerActivity.getUser().getSubjectName());
+        if (developerActivity.getReason() != null) {
+            activityRow.set(ACTIVITY_CERT_STATUS_CHANGE_REASON_COL, developerActivity.getReason());
+        }
 
         if (developerActivity.getTrigger().getName().equals(
                 QuestionableActivityTriggerConcept.DEVELOPER_NAME_EDITED.getName())) {

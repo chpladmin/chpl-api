@@ -44,6 +44,9 @@ public class QuestionableActivityDeveloperEntity implements QuestionableActivity
     @Column(name = "after_data")
     private String after;
     
+    @Column(name = "reason")
+    private String reason;
+    
     @Column(name = "activity_date")
     private Date activityDate;
     
@@ -176,6 +179,23 @@ public class QuestionableActivityDeveloperEntity implements QuestionableActivity
 
     public void setDeveloper(DeveloperEntity developer) {
         this.developer = developer;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
+    @Override
+    public String toString() {
+        return "QuestionableActivityDeveloperEntity [id=" + id + ", triggerId=" + triggerId + ", trigger=" + trigger
+                + ", developerId=" + developerId + ", developer=" + developer + ", before=" + before + ", after="
+                + after + ", reason=" + reason + ", activityDate=" + activityDate + ", userId=" + userId + ", user="
+                + user + ", deleted=" + deleted + ", lastModifiedUser=" + lastModifiedUser + ", creationDate="
+                + creationDate + ", lastModifiedDate=" + lastModifiedDate + "]";
     }
 }
 
