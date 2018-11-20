@@ -17,12 +17,21 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("icsReviewer")
 public class InheritedCertificationStatusReviewer implements Reviewer {
-    @Autowired private CertifiedProductSearchDAO searchDao;
-    @Autowired private ListingGraphDAO inheritanceDao;
-    @Autowired private CertificationEditionDAO certEditionDao;
-    @Autowired private ChplProductNumberUtil productNumUtil;
-    @Autowired private ErrorMessageUtil msgUtil;
-    
+    private CertifiedProductSearchDAO searchDao;
+    private ListingGraphDAO inheritanceDao;
+    private CertificationEditionDAO certEditionDao;
+    private ChplProductNumberUtil productNumUtil;
+    private ErrorMessageUtil msgUtil;
+
+    @Autowired
+    public InheritedCertificationStatusReviewer(CertifiedProductSearchDAO searchDao, ListingGraphDAO inheritanceDao,
+            CertificationEditionDAO certEditionDao, ChplProductNumberUtil productNumUtil, ErrorMessageUtil msgUtil) {
+        this.searchDao = searchDao;
+        this.inheritanceDao = inheritanceDao;
+        this.certEditionDao = certEditionDao;
+        this.productNumUtil = productNumUtil;
+        this.msgUtil = msgUtil;
+    }
 
     public void review(CertifiedProductSearchDetails listing) {
         if (listing.getIcs() == null || listing.getIcs().getInherits() == null) {

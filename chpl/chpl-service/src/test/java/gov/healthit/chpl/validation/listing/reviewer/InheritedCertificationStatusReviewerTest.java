@@ -10,7 +10,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
@@ -47,20 +46,27 @@ public class InheritedCertificationStatusReviewerTest {
     private static final String ICS_NOT_LARGEST_CODE_ERROR = "The ICS Code for this listing was "
             + "given as '1' but it was expected to be one more than the largest inherited ICS code '2'.";
 
-    @Autowired private ListingMockUtil mockUtil;
+    @Autowired
+    private ListingMockUtil mockUtil;
+
+    @Autowired
+    private MessageSource messageSource;
+
     @Spy private ChplProductNumberUtil productNumUtil;
     @Spy private CertifiedProductSearchDAO searchDao;
     @Spy private ListingGraphDAO inheritanceDao;
     @Spy private CertificationEditionDAO certEditionDao;
-    @Spy private MessageSource messageSource;
-    @Spy private ErrorMessageUtil msgUtil;
-    
-    @InjectMocks
+    @Spy private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
+
     private InheritedCertificationStatusReviewer icsReviewer;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+
+        icsReviewer = new InheritedCertificationStatusReviewer(searchDao, inheritanceDao, certEditionDao, productNumUtil,
+                msgUtil);
+
         Mockito.doReturn(ICS_TRUE_NO_PARENTS_ERROR)
         .when(msgUtil).getMessage(ArgumentMatchers.eq("listing.icsTrueAndNoParentsFound"));
         Mockito.doReturn(ICS_UNIQUE_ID_NOT_FOUND_ERROR)
