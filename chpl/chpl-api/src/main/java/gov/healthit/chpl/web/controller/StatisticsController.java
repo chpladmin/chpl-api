@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * The StatisticsController is used to return data that can be used to charting.
- * 
+ *
  * @author TYoung
  *
  */
@@ -41,7 +41,7 @@ public class StatisticsController {
 
     /**
      * Retrieves and returns the Listing counts.
-     * 
+     *
      * @return a JSON representation of an NonconformityTypeStatisticsResult
      *         object
      */
@@ -56,7 +56,7 @@ public class StatisticsController {
 
     /**
      * Retrieves and returns the Listing counts.
-     * 
+     *
      * @return a JSON representation of an ListingCountStatisticsResult object
      */
     @ApiOperation(value = "Get count of Developers and Products with listings.",
@@ -70,7 +70,7 @@ public class StatisticsController {
 
     /**
      * Retrieves and returns the Criterion/Product counts.
-     * 
+     *
      * @return a JSON representation of a CriterionProductStatisticsResult
      *         object
      */
@@ -86,7 +86,7 @@ public class StatisticsController {
 
     /**
      * Retrieves and returns the Incumbent Developer counts.
-     * 
+     *
      * @return a JSON representation of an IncumbentDevelopersStatisticsResult
      *         object
      */
@@ -102,7 +102,7 @@ public class StatisticsController {
 
     /**
      * Retrieves and returns the SED/Participant counts.
-     * 
+     *
      * @return a JSON representation of a SedParticipantStatisticsCountResults
      *         object
      */
@@ -115,7 +115,8 @@ public class StatisticsController {
         List<SedParticipantStatisticsCountDTO> sedParticipantStatisticsCountDTOs = statisticsManager
                 .getAllSedParticipantCounts();
         if (sedParticipantStatisticsCountDTOs != null) {
-            for (SedParticipantStatisticsCountDTO sedParticipantStatisticsCountDTO : sedParticipantStatisticsCountDTOs) {
+            for (SedParticipantStatisticsCountDTO sedParticipantStatisticsCountDTO
+                    : sedParticipantStatisticsCountDTOs) {
                 results.getSedParticipantStatisticsCounts().add(
                         new SedParticipantStatisticsCount(sedParticipantStatisticsCountDTO));
             }
@@ -125,7 +126,7 @@ public class StatisticsController {
 
     /**
      * Retrieves and returns the SED/Participant/Gender counts.
-     * 
+     *
      * @return a JSON representation of a ParticipantGenderStatistics object
      */
     @ApiOperation(value = "Get all Sed/Participant/Gender counts.",
@@ -139,7 +140,7 @@ public class StatisticsController {
 
     /**
      * Retrieves and returns the SED/Participant/Age counts.
-     * 
+     *
      * @return a JSON representation of a ParticipantAgeStatisticsResult object
      */
     @ApiOperation(value = "Get all Sed/Participant/Age counts.",
@@ -154,7 +155,7 @@ public class StatisticsController {
 
     /**
      * Retrieves and returns the SED/Participant/Education counts.
-     * 
+     *
      * @return a JSON representation of a ParticipantEducationStatisticsResult
      *         object
      */
@@ -170,7 +171,7 @@ public class StatisticsController {
 
     /**
      * Retrieves and returns the SED/Participant/Professional Experience counts.
-     * 
+     *
      * @return a JSON representation of a ParticipantExperienceStatisticsResult
      *         object
      */
@@ -187,7 +188,7 @@ public class StatisticsController {
 
     /**
      * Retrieves and returns the SED/Participant/Computer Experience counts.
-     * 
+     *
      * @return a JSON representation of a ParticipantExperienceStatisticsResult
      *         object
      */
@@ -204,7 +205,7 @@ public class StatisticsController {
 
     /**
      * Retrieves and returns the SED/Participant/Product Experience counts.
-     * 
+     *
      * @return a JSON representation of a ParticipantExperienceStatisticsResult
      *         object
      */
