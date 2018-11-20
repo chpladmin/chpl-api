@@ -7,7 +7,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
@@ -59,7 +58,14 @@ public class ChplNumberReviewerTest {
             "The unique id indicates the product does have ICS but the value for Inherited Certification Status is false.";
     private static final String DUPLICATE_CHPLID_ERROR_END = "one already exists with this ID.";
             
-    @Autowired private ListingMockUtil mockUtil;
+    @Autowired 
+    private ListingMockUtil mockUtil;
+
+    @Autowired
+    private MessageSource messageSource;
+
+    @Autowired
+    private CertifiedProductDAO cpDao;
 
     @Spy
     private CertifiedProductDAO listingDao;
@@ -68,20 +74,18 @@ public class ChplNumberReviewerTest {
     private CertificationResultManager certResultManager;
 
     @Spy
-    private MessageSource messageSource;
-
-    @Spy
-    private ErrorMessageUtil msgUtil;
+    private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
 
     @Spy
     private CertificationResultManager certificationResultManager;
 
-    @InjectMocks
     private ChplNumberReviewer chplNumberReviewer;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+
+        chplNumberReviewer = new ChplNumberReviewer(cpDao, certificationResultManager, msgUtil);
 
         Mockito.doReturn(PRODUCT_CODE_ERROR)
         .when(msgUtil).getMessage(
