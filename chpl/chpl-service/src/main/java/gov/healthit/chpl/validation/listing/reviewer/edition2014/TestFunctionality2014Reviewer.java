@@ -96,7 +96,11 @@ public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListe
                 testFunctionalityManager.getTestFunctionalityCriteriaMap2014().get(criteriaNumber);
         
         //Is the TestFunctionalityDTO in the valid list (relies on the TestFunctionalityDTO.equals()
-        return validTestFunctionalityForCriteria.contains(tf);
+        if (validTestFunctionalityForCriteria == null) {
+            return false;
+        } else {
+            return validTestFunctionalityForCriteria.contains(tf);
+        }
 }
 
     private Boolean isTestFunctionalityPracticeTypeValid(final Long practiceTypeId, final TestFunctionalityDTO tf) {

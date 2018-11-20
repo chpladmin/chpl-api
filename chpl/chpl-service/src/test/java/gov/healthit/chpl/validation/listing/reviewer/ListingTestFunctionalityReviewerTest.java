@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
@@ -157,13 +156,12 @@ public class ListingTestFunctionalityReviewerTest {
 
     //Case 3: An invalid test functionality based on certifcation criterion
     @Test
-    @Ignore
     public void validateCertifiedProductTestFunctionalityCertificationCriterionMismatch() {
         Mockito.when(testFunctionalityDAO.getByNumberAndEdition(ArgumentMatchers.anyString(), ArgumentMatchers.anyLong()))
                 .thenReturn(getTestFunctionalityId_7());
 
         Mockito.when(certificationCriterionDAO.getByNameAndYear(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
-                .thenReturn(getCertificationCriterion_a7());
+                .thenReturn(getCertificationCriterion_a6());
 
         CertifiedProductSearchDetails listing = createListing("2014");
         List<CertificationResult> certResults = new ArrayList<CertificationResult>();
