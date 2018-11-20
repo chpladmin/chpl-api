@@ -16,12 +16,16 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
@@ -36,13 +40,16 @@ import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.manager.TestingFunctionalityManager;
+import gov.healthit.chpl.manager.impl.TestingFunctionalityManagerImpl;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.TestFunctionality2014Reviewer;
 
-//@RunWith(SpringJUnit4ClassRunner.class)
-//@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
 public class ListingTestFunctionalityReviewerTest {
-
+    @Autowired
+    private MessageSource messageSource;
+    
     @Spy
     private TestFunctionalityDAO testFunctionalityDAO;
 
@@ -53,20 +60,23 @@ public class ListingTestFunctionalityReviewerTest {
     private PracticeTypeDAO practiceTypeDAO;
 
     @Mock
-    private ErrorMessageUtil msgUtil;
+    private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
 
     @Spy
     private CertificationEditionDAO certificationEditionDAO;
 
     @Spy
-    private TestingFunctionalityManager testFunctionalityManager;
-
-    @InjectMocks
+    private TestingFunctionalityManager testFunctionalityManager =
+        new TestingFunctionalityManagerImpl(testFunctionalityDAO);
+    
     private TestFunctionality2014Reviewer tfReviewer;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+
+        tfReviewer = new TestFunctionality2014Reviewer(testFunctionalityDAO, testFunctionalityManager, 
+                certificationEditionDAO, msgUtil);
 
         Mockito.doReturn("In Criteria 170.314 (a)(6), Test Functionality (a)(6)(11) is for "
                 + "Criteria other and is not valid for Criteria 170.314 (a)(6).")
@@ -151,7 +161,7 @@ public class ListingTestFunctionalityReviewerTest {
                 .thenReturn(getTestFunctionalityId_7());
 
         Mockito.when(certificationCriterionDAO.getByNameAndYear(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
-                .thenReturn(getCertificationCriterion_a7());
+                .thenReturn(getCertificationCriterion_a6());
 
         CertifiedProductSearchDetails listing = createListing("2014");
         List<CertificationResult> certResults = new ArrayList<CertificationResult>();
