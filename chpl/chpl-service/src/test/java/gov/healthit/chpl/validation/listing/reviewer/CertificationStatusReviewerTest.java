@@ -7,11 +7,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -26,17 +26,22 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 public class CertificationStatusReviewerTest {
     private static final String FIRST_STATUS_NOT_ACTIVE_ERROR = 
             "The earliest certification status for any listing on the CHPL must be Active.";
-    @Autowired private ListingMockUtil mockUtil;
+    @Autowired
+    private ListingMockUtil mockUtil;
+    
+    @Autowired
+    private MessageSource messageSource;
 
     @Spy
-    private ErrorMessageUtil msgUtil;
+    private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
 
-    @InjectMocks
     private CertificationStatusReviewer certStatusReviewer;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+
+        certStatusReviewer = new CertificationStatusReviewer(msgUtil);
     }
 
     //Case: A valid active certification status is first

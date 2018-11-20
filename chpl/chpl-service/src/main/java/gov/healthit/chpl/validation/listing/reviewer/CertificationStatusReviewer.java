@@ -11,8 +11,13 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
 public class CertificationStatusReviewer implements Reviewer {
-    @Autowired private ErrorMessageUtil msgUtil;
-    
+    ErrorMessageUtil msgUtil;
+
+    @Autowired
+    public CertificationStatusReviewer(ErrorMessageUtil msgUtil) {
+        this.msgUtil = msgUtil;
+    }
+
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         CertificationStatusEvent  earliestStatus = listing.getOldestStatus();
