@@ -10,8 +10,12 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("certificationDateReviewer")
 public class CertificationDateReviewer implements Reviewer {
-    @Autowired private ErrorMessageUtil msgUtil;
-    
+    private ErrorMessageUtil msgUtil;
+
+    @Autowired
+    public CertificationDateReviewer(ErrorMessageUtil msgUtil) {
+        this.msgUtil = msgUtil;
+    }
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         if (listing.getCertificationDate() > new Date().getTime()) {
