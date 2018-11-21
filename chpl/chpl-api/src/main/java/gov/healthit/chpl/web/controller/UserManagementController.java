@@ -229,19 +229,6 @@ public class UserManagementController {
         return new User(createdUser);
     }
 
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED.  Update an existing user account with new permissions.",
-    notes = "Adds all permissions from the invitation identified by the user key "
-            + "to the appropriate existing user account." + "The correct order to call invitation requests is "
-            + "the following: 1) /invite 2) /create or /authorize 3) /confirm ")
-    @RequestMapping(value = "/authorize", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
-    public String authorizeUserDeprecated(@RequestBody final AuthorizeCredentials credentials)
-            throws InvalidArgumentsException, JWTCreationException, UserRetrievalException, EntityRetrievalException {
-
-        return authorize(credentials);
-    }
-
     @ApiOperation(value = "Update an existing user account with new permissions.",
             notes = "Adds all permissions from the invitation identified by the user key "
                     + "to the appropriate existing user account." + "The correct order to call invitation requests is "
