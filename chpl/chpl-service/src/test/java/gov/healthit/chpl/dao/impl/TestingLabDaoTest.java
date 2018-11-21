@@ -9,6 +9,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.model.AccessControlEntry;
@@ -172,6 +173,8 @@ public class TestingLabDaoTest extends TestCase {
     @Transactional
     @Rollback
     public void testUpdateAtl() {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
         TestingLabDTO toUpdate = atlDao.findAll().get(0);
         toUpdate.setName("UPDATED NAME");
 
@@ -191,12 +194,15 @@ public class TestingLabDaoTest extends TestCase {
             fail("could not find atl!");
             System.out.println(ex.getStackTrace());
         }
+        SecurityContextHolder.getContext().setAuthentication(null);
     }
 
     @Test
     @Transactional
     @Rollback
     public void testRetireAtl() {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
         TestingLabDTO toUpdate = atlDao.findAll().get(0);
         toUpdate.setRetired(true);
 
@@ -216,6 +222,7 @@ public class TestingLabDaoTest extends TestCase {
             fail("could not find atl!");
             System.out.println(ex.getStackTrace());
         }
+        SecurityContextHolder.getContext().setAuthentication(null);
     }
 
     /**

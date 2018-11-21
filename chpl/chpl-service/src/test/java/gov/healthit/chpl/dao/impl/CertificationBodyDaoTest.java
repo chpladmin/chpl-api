@@ -146,6 +146,8 @@ public class CertificationBodyDaoTest extends TestCase {
     @Transactional
     @Rollback
     public void testUpdateAcb() {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
         CertificationBodyDTO toUpdate = acbDao.findAll().get(0);
         toUpdate.setName("UPDATED NAME");
 
@@ -165,12 +167,15 @@ public class CertificationBodyDaoTest extends TestCase {
             fail("could not find acb!");
             System.out.println(ex.getStackTrace());
         }
+        SecurityContextHolder.getContext().setAuthentication(null);
     }
 
     @Test
     @Transactional
     @Rollback
     public void testRetireAcb() {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
         CertificationBodyDTO toUpdate = acbDao.findAll().get(0);
         toUpdate.setRetired(true);
 
@@ -190,6 +195,7 @@ public class CertificationBodyDaoTest extends TestCase {
             fail("could not find acb!");
             System.out.println(ex.getStackTrace());
         }
+        SecurityContextHolder.getContext().setAuthentication(null);
     }
 
     @Test
