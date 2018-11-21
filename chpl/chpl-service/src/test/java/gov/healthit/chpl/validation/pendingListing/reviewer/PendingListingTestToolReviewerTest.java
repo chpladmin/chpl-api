@@ -7,11 +7,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -46,21 +46,25 @@ public class PendingListingTestToolReviewerTest {
             "Test Tool 'Bogus Test Tool' can not be used for criteria '" + B_2
             + "', as it is a retired tool, and this Certified Product does not carry ICS.";
 
+    @Autowired private ListingMockUtil mockUtil;
+    @Autowired private MessageSource messageSource;
+
     @Spy private TestToolDAO testToolDao;
     @Spy private ChplProductNumberUtil productNumberUtil;
-    @Spy private ErrorMessageUtil msgUtil;
+    @Spy private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
     @Spy private CertificationResultRules certRules;
-    @Autowired private ListingMockUtil mockUtil;
+    
 
-    @InjectMocks
     private TestToolReviewer testToolReviewer;
-
-    @InjectMocks
     private AmbulatoryRequiredTestToolReviewer ambulatoryTestToolReviewier;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+        
+        testToolReviewer = new TestToolReviewer(testToolDao, msgUtil, productNumberUtil);
+        ambulatoryTestToolReviewier = new AmbulatoryRequiredTestToolReviewer(msgUtil, certRules);
+        
         Mockito.doReturn(NO_TEST_TOOL_ERROR)
         .when(msgUtil).getMessage(
                 ArgumentMatchers.eq("listing.criteria.missingTestTool"), ArgumentMatchers.anyString());
