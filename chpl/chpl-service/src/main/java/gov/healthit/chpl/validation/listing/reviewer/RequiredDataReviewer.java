@@ -11,8 +11,14 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("requiredDataReviewer")
 public class RequiredDataReviewer implements Reviewer {
-    @Autowired protected ErrorMessageUtil msgUtil;
-    @Autowired protected CertificationResultRules certRules;
+    protected ErrorMessageUtil msgUtil;
+    protected CertificationResultRules certRules;
+
+    @Autowired
+    public RequiredDataReviewer(CertificationResultRules certRules, ErrorMessageUtil msgUtil) {
+        this.certRules = certRules;
+        this.msgUtil = msgUtil;
+    }
 
     @Override
     public void review(final CertifiedProductSearchDetails listing) {

@@ -13,6 +13,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -21,6 +23,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -34,6 +38,8 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
+import gov.healthit.chpl.manager.ProductManager;
+import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -44,10 +50,25 @@ public class DeveloperStatusTest {
     
     private static JWTAuthenticatedUser adminUser;
 
+    @Autowired
+    private MessageSource messageSource;
+
+    @Autowired
+    private ProductManager productManager;
+
+    @Autowired
+    private CertificationBodyDAO certificationBodyDao;
+
+    @Autowired
+    private CertifiedProductDAO certifiedProductDao;
+
+    @Autowired
+    private ChplProductNumberUtil chplProductNumberUtil;
+
     @Spy private DeveloperDAO devDao;
     @Spy private CertificationBodyManager acbManager;
     @Spy private ActivityManager activityManager;
-    @Spy private ErrorMessageUtil msgUtil;
+    @Spy private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
     
     @InjectMocks
     private DeveloperManagerImpl developerManager;
@@ -60,8 +81,17 @@ public class DeveloperStatusTest {
         adminUser.setFriendlyName("Admin");
         adminUser.setSubjectName("admin");
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
-        
+
         MockitoAnnotations.initMocks(this);
+        developerManager = new DeveloperManagerImpl(devDao, 
+                productManager, 
+                acbManager, 
+                certificationBodyDao, 
+                certifiedProductDao, 
+                chplProductNumberUtil, 
+                activityManager, 
+                msgUtil);
+
         Mockito.when(acbManager.getAllForUser())
         .thenReturn(new ArrayList<CertificationBodyDTO>());
         Mockito.when(acbManager.getAll())

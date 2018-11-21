@@ -20,6 +20,8 @@ _Date TBD_
 ### New Features
 * 2015 Functionality testing is restricted by criteria.
 * Add retired flag to ACBs and ATLs to replace the functionality that previously used the deleted flag.
+* Save 'reason' for developer's status change in questionable activivty.
+* Output 'reason' for developer's status change on questionable activity report.
 
 ---
 

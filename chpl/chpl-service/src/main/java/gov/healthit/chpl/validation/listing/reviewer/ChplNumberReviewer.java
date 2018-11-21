@@ -17,10 +17,18 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("chplNumberReviewer")
 public class ChplNumberReviewer implements Reviewer {
-    @Autowired private CertifiedProductDAO cpDao;
-    @Autowired private CertificationResultManager certificationResultManager; 
-    @Autowired private ErrorMessageUtil msgUtil;
-    
+    private CertifiedProductDAO cpDao;
+    private CertificationResultManager certificationResultManager; 
+    private ErrorMessageUtil msgUtil;
+
+    @Autowired
+    public ChplNumberReviewer(CertifiedProductDAO cpDao, CertificationResultManager certificationResultManager,
+            ErrorMessageUtil msgUtil) {
+        this.cpDao = cpDao;
+        this.certificationResultManager = certificationResultManager;
+        this.msgUtil = msgUtil;
+    }
+
     /**
      * Looks at the format of the CHPL Product Number
      * Makes sure each part of the identifier is correctly formatted and is the correct value.

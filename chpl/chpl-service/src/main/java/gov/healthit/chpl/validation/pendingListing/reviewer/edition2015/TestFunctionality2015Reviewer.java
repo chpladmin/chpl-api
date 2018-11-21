@@ -68,7 +68,8 @@ public class TestFunctionality2015Reviewer implements Reviewer {//, ApplicationL
                             cr.getTestFunctionality().iterator();
                     while (crtfIter.hasNext()) {
                         PendingCertificationResultTestFunctionalityDTO crtf = crtfIter.next();
-                        TestFunctionalityDTO tf = getTestFunctionality(crtf.getNumber());
+                        TestFunctionalityDTO tf = 
+                                getTestFunctionality(crtf.getNumber(), getEditionDTO(listing.getCertificationEdition()));
                         if (tf == null) {
                             listing.getErrorMessages().add(
                                     msgUtil.getMessage("listing.criteria.testFunctionalityNotFoundAndRemoved",
@@ -103,7 +104,7 @@ public class TestFunctionality2015Reviewer implements Reviewer {//, ApplicationL
             final TestFunctionalityDTO tf, final String year) {
 
         List<TestFunctionalityDTO> validTestFunctionalityForCriteria =
-                testFunctionalityManager.getTestFunctionalityCriteriaMap2014().get(criteriaNumber);
+                testFunctionalityManager.getTestFunctionalityCriteriaMap2015().get(criteriaNumber);
 
         if (validTestFunctionalityForCriteria == null) {
             return false;
@@ -173,8 +174,7 @@ public class TestFunctionality2015Reviewer implements Reviewer {//, ApplicationL
         return criteria;
     }
     
-    private TestFunctionalityDTO getTestFunctionality(final String number) {
-        Long editionId = 2L;
-        return testFunctionalityDAO.getByNumberAndEdition(number, editionId);
+    private TestFunctionalityDTO getTestFunctionality(final String number, final CertificationEditionDTO edition) {
+        return testFunctionalityDAO.getByNumberAndEdition(number, edition.getId());
     }
 }

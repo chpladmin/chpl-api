@@ -12,7 +12,6 @@ import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestProcedureDAO;
-import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationCriterion;
@@ -20,7 +19,6 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
-import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.MacraMeasure;
@@ -32,9 +30,8 @@ import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
-import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.util.CertificationResultRules;
-import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 import gov.healthit.chpl.validation.listing.reviewer.RequiredDataReviewer;
 
@@ -90,21 +87,20 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     private List<String> g7g8g9Criterion = new ArrayList<String>();
     private List<String> d2d10Criterion = new ArrayList<String>();
 
-    @Autowired
     private MacraMeasureDAO macraDao;
-    @Autowired
-    private TestToolDAO testToolDao;
-    @Autowired
     private TestFunctionalityDAO testFuncDao;
-    @Autowired
     private TestProcedureDAO testProcDao;
-    @Autowired
     private TestDataDAO testDataDao;
-    @Autowired
-    private ChplProductNumberUtil productNumUtil;
 
-    public RequiredData2015Reviewer() {
-        super();
+    @Autowired
+    public RequiredData2015Reviewer(CertificationResultRules certRules, ErrorMessageUtil msgUtil, MacraMeasureDAO macraDao, 
+            TestFunctionalityDAO testFuncDao, TestProcedureDAO testProcDao, TestDataDAO testDataDao) {
+        super(certRules, msgUtil);
+        this.macraDao = macraDao;
+        this.testFuncDao = testFuncDao;
+        this.testProcDao = testProcDao;
+        this.testDataDao = testDataDao;
+
         e2e3Criterion.add("170.315 (e)(2)");
         e2e3Criterion.add("170.315 (e)(3)");
 
