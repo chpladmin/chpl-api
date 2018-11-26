@@ -6,6 +6,7 @@ _Date TBD_
 * 2015 Functionality testing is restricted by criteria.
 * Save 'reason' for developer's status change in questionable activivty.
 * Output 'reason' for developer's status change on questionable activity report.
+* Implement user ability to reset their password using a unique link
 
 ---
 
