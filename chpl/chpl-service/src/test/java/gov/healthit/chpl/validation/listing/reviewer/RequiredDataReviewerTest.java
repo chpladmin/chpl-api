@@ -7,7 +7,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
@@ -38,23 +37,26 @@ public class RequiredDataReviewerTest {
             "A certification status must be provided for every listing on the CHPL.";
     private static final String CRITERIA_MISSING_GAP_ERROR_START = "GAP is required for certification";
 
-    @Autowired private ListingMockUtil mockUtil;
+    @Autowired
+    private ListingMockUtil mockUtil;
+
+    @Autowired
+    private MessageSource messageSource;
 
     @Spy
     private CertificationResultRules certResultRules;
 
     @Spy
-    private MessageSource messageSource;
+    private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
 
-    @Spy
-    private ErrorMessageUtil msgUtil;
-
-    @InjectMocks
     private RequiredDataReviewer requiredDataReivewer;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+        
+        requiredDataReivewer = new RequiredDataReviewer(certResultRules, msgUtil);
+
         Mockito.doReturn(CRITERIA_MISSING_GAP_ERROR_START)
         .when(msgUtil).getMessage(
                 ArgumentMatchers.eq("listing.criteria.missingGap"), ArgumentMatchers.anyString());
