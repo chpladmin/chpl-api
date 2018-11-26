@@ -15,7 +15,6 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
     <build>
         <plugins>
             <plugin>
@@ -68,9 +67,7 @@
         </plugins>
     </reporting>
 
-
     <dependencies>
-
         <!-- Core utilities used by other modules. Define this if you use 
             Spring Utility APIs (org.springframework.core.*/org.springframework.util.*) -->
         <dependency>
@@ -209,7 +206,6 @@
             <artifactId>zxcvbn</artifactId>
             <version>1.2.5</version>
         </dependency>
-
         <!-- for unit/integration testing of the dao calls -->
         <dependency>
             <groupId>org.hamcrest</groupId>
