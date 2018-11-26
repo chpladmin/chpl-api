@@ -12,7 +12,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,12 +24,14 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.authentication.Authenticator;
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
 import gov.healthit.chpl.auth.authentication.LoginCredentials;
+import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserResetTokenDTO;
 import gov.healthit.chpl.auth.json.UserResetPasswordJSONObject;
 import gov.healthit.chpl.auth.jwt.JWTCreationException;
 import gov.healthit.chpl.auth.jwt.JWTValidationException;
 import gov.healthit.chpl.auth.manager.UserManager;
+import gov.healthit.chpl.auth.user.ResetPasswordRequest;
 import gov.healthit.chpl.auth.user.UpdateExpiredPasswordRequest;
 import gov.healthit.chpl.auth.user.UpdatePasswordRequest;
 import gov.healthit.chpl.auth.user.UpdatePasswordResponse;
@@ -42,6 +43,8 @@ import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * CHPL Authentication controller.
+ * @author alarned
+ *
  */
 @Api(value = "auth")
 @RestController
@@ -59,10 +62,17 @@ public class AuthenticationController {
     private UserManager userManager;
 
     @Autowired
+
     private JWTUserConverter userConverter;
 
     @Autowired
     private Environment env;
+
+    @Autowired
+    private UserDAO userDAO;
+
+    // TODO: Create emergency "BUMP TOKENS" method which invalidates all active
+    // tokens.
 
     /**
      * Log in a user.
@@ -138,10 +148,8 @@ public class AuthenticationController {
         Strength strength = userManager.getPasswordStrength(currUser, request.getNewPassword());
         if (strength.getScore() < UserManager.MIN_PASSWORD_STRENGTH) {
             LOGGER.info("Strength results: [warning: {}] [suggestions: {}] [score: {}] [worst case crack time: {}]",
-                    strength.getFeedback().getWarning(),
-                    strength.getFeedback().getSuggestions().toString(),
-                    strength.getScore(),
-                    strength.getCrackTimesDisplay().getOfflineFastHashing1e10PerSecond());
+                    strength.getFeedback().getWarning(), strength.getFeedback().getSuggestions().toString(),
+                    strength.getScore(), strength.getCrackTimesDisplay().getOfflineFastHashing1e10PerSecond());
             response.setStrength(strength);
             response.setPasswordUpdated(false);
             return response;
@@ -214,48 +222,61 @@ public class AuthenticationController {
     }
 
     /**
-     * Allow a user to reset their password. Sends the user an email with a unique link to let them reset their password
-     * @param userInfo the affected user
-     * @return a JSON message indicating the email was sent
-     * @throws UserRetrievalException if unable to retrieve the user
-     * @throws MessagingException if unable to send the message
+     * Allow the user to reset their password given they have the correct token.
+     * @param request the reset request
+     * @return the results of their reset
      */
+    @ApiOperation(value = "Reset password.", notes = "Reset the users password.")
+    @RequestMapping(value = "/reset_password_request", method = RequestMethod.POST,
+            produces = "application/json; charset=utf-8")
+    public UpdatePasswordResponse resetPassword(@RequestBody final ResetPasswordRequest request)
+            throws UserRetrievalException {
+        UpdatePasswordResponse response = new UpdatePasswordResponse();
+        // get the current user
+        UserDTO currUser = userManager.getByNameUnsecured(request.getUserName());
+        if (currUser == null) {
+            throw new UserRetrievalException("The user with username " + request.getUserName() + " cannot be found.");
+        }
+        // check the strength of the new password
+        Strength strength = userManager.getPasswordStrength(currUser, request.getNewPassword());
+        if (strength.getScore() < UserManager.MIN_PASSWORD_STRENGTH) {
+            LOGGER.info("Strength results: [warning: {}] [suggestions: {}] [score: {}] [worst case crack time: {}]",
+                    strength.getFeedback().getWarning(), strength.getFeedback().getSuggestions().toString(),
+                    strength.getScore(), strength.getCrackTimesDisplay().getOfflineFastHashing1e10PerSecond());
+            response.setStrength(strength);
+            response.setPasswordUpdated(false);
+            return response;
+        }
+        if (userManager.authorizePasswordReset(request.getToken())) {
+            userManager.updateUserPasswordUnsecured(currUser.getSubjectName(), request.getNewPassword());
+            userManager.deletePreviousTokens(request.getToken());
+            response.setPasswordUpdated(true);
+        } else {
+            response.setPasswordUpdated(false);
+        }
+        return response;
+    }
+
     @ApiOperation(value = "Reset a user's password.", notes = "")
-    @RequestMapping(value = "/reset_password", method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/email_reset_password", method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public String resetPassword(@RequestBody final UserResetPasswordJSONObject userInfo)
             throws UserRetrievalException, MessagingException {
 
-        UserResetTokenDTO userResetTokenDTO = userManager.createResetUserPasswordToken(
-                userInfo.getUserName(), userInfo.getEmail());
-        String htmlMessage = "<p>Hi, <br/>"
-                + "Please follow this link to reset your password </p>"
-                + "<pre>" +  env.getProperty("chplUrlBegin") + "/auth/authorize_password_reset/"
-                + userResetTokenDTO.getUserResetToken() + "</pre>"
-                + "<br/>"
-                + "</p>"
-                + "<p>Take care,<br/> "
+        UserResetTokenDTO userResetTokenDTO = userManager.createResetUserPasswordToken(userInfo.getUserName(),
+                userInfo.getEmail());
+        String htmlMessage = "<p>Hi, <br/>" + "Please follow this link to reset your password </p>" + "<pre>"
+                + env.getProperty("chplUrlBegin") + "/#/admin/authorizePasswordReset?token="
+                + userResetTokenDTO.getUserResetToken() + "</pre>" + "<br/>" + "</p>" + "<p>Take care,<br/> "
                 + "The Open Data CHPL Team</p>";
-        String[] toEmails = {userInfo.getEmail()};
+        String[] toEmails = {
+                userInfo.getEmail()
+        };
 
         EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipients(new ArrayList<String>(Arrays.asList(toEmails)))
-        .subject("Open Data CHPL Password Reset")
-        .htmlMessage(htmlMessage)
-        .sendEmail();
+        emailBuilder.recipients(new ArrayList<String>(Arrays.asList(toEmails))).subject("Open Data CHPL Password Reset")
+                .htmlMessage(htmlMessage).sendEmail();
 
         return "{\"passwordResetEmailSent\" : true }";
-    }
-
-    /**
-     * Allow the user to reset their password given they have the correct token.
-     * @param token the token
-     * @return the results of their reset
-     */
-    @ApiOperation(value = "Reset a user's password.", notes = "")
-    @RequestMapping(value = "/authorize_password_reset/{token}", method = RequestMethod.POST)
-    public boolean authorizePasswordReset(@PathVariable("token") final String token) {
-        return userManager.authorizePasswordReset(token);
     }
 }

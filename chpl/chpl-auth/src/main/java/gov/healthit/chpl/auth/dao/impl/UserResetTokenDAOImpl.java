@@ -1,7 +1,6 @@
 package gov.healthit.chpl.auth.dao.impl;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -9,13 +8,14 @@ import javax.persistence.Query;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
+
 import gov.healthit.chpl.auth.BaseDAOImpl;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dao.UserResetTokenDAO;
 import gov.healthit.chpl.auth.dto.UserResetTokenDTO;
 import gov.healthit.chpl.auth.entity.UserResetTokenEntity;
 
-@Repository(value="userResetTokenDAO")
+@Repository(value = "userResetTokenDAO")
 public class UserResetTokenDAOImpl extends BaseDAOImpl implements UserResetTokenDAO {
     private static final Logger logger = LogManager.getLogger(UserResetTokenDAOImpl.class);
 
@@ -23,60 +23,55 @@ public class UserResetTokenDAOImpl extends BaseDAOImpl implements UserResetToken
         UserResetTokenEntity entity = new UserResetTokenEntity();
         entity.setUserResetToken(resetToken);
         entity.setUserId(userId);
-        entity.setCreationDate(new Date());
-        entity.setLastModifiedDate(new Date());
-        if(Util.getCurrentUser() != null) {
+        if (Util.getCurrentUser() != null) {
             entity.setLastModifiedUser(Util.getCurrentUser().getId());
         } else {
             entity.setLastModifiedUser(userId);
         }
         entity.setDeleted(false);
-        
+
         create(entity);
         return new UserResetTokenDTO(entity);
     }
-    
+
     public void deletePreviousUserTokens(Long userId) {
         List<UserResetTokenEntity> entities = getAllEntitiesByUserId(userId);
-        
-        for(UserResetTokenEntity entity : entities) {
+
+        for (UserResetTokenEntity entity : entities) {
             entity.setDeleted(true);
             update(entity);
         }
     }
-    
+
     public UserResetTokenDTO findByAuthToken(String authToken) {
         UserResetTokenDTO userResetToken = null;
-        
-        String userQuery = "from UserResetTokenEntity urt"
-                + " where (NOT urt.deleted = true) "
+        String userQuery = "from UserResetTokenEntity urt" + " where (NOT urt.deleted = true) "
                 + " AND (urt.userResetToken = :userResetToken) ";
 
         Query query = entityManager.createQuery(userQuery, UserResetTokenEntity.class);
         query.setParameter("userResetToken", authToken);
         List<UserResetTokenEntity> result = query.getResultList();
-        if (result.size() == 1){
+        if (result.size() == 1) {
             UserResetTokenEntity entity = result.get(0);
             userResetToken = new UserResetTokenDTO(entity);
         }
         return userResetToken;
     }
-    
+
     private List<UserResetTokenEntity> getAllEntitiesByUserId(Long id) {
-        String userQuery = "from UserResetTokenEntity urt"
-                + " where (NOT urt.deleted = true) "
+        String userQuery = "from UserResetTokenEntity urt" + " where (NOT urt.deleted = true) "
                 + " AND (urt.userId = :userId) ";
 
         Query query = entityManager.createQuery(userQuery, UserResetTokenEntity.class);
         query.setParameter("userId", id);
-        
+
         List<UserResetTokenEntity> entities = new ArrayList<UserResetTokenEntity>();
-        if(query.getResultList() != null) {
+        if (query.getResultList() != null) {
             entities = query.getResultList();
         }
         return entities;
     }
-    
+
     private void create(final UserResetTokenEntity userResetToken) {
         entityManager.persist(userResetToken);
         entityManager.flush();

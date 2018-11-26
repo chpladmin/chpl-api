@@ -7,14 +7,12 @@ import gov.healthit.chpl.auth.entity.UserResetTokenEntity;
 
 public class UserResetTokenDTO {
 
-    private static final long serialVersionUID = 1L;
     private Long id;
     private String userResetToken;
     private Long userId;
     private UserEntity user;
     private Date creationDate;
     private boolean deleted;
-
 
     public UserResetTokenDTO(final UserResetTokenEntity entity) {
         if (entity != null) {
@@ -27,21 +25,17 @@ public class UserResetTokenDTO {
         }
     }
 
-
     public Long getId() {
         return id;
     }
-
 
     public void setId(Long id) {
         this.id = id;
     }
 
-
     public String getUserResetToken() {
         return userResetToken;
     }
-
 
     public void setUserResetToken(String userResetToken) {
         this.userResetToken = userResetToken;
@@ -51,21 +45,17 @@ public class UserResetTokenDTO {
         return user;
     }
 
-
     public void setUser(UserEntity user) {
         this.user = user;
     }
-
 
     public Date getCreationDate() {
         return creationDate;
     }
 
-
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
     }
-
 
     public boolean isDeleted() {
         return deleted;

@@ -10,7 +10,6 @@ import java.util.concurrent.Future;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -19,6 +18,7 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
 import gov.healthit.chpl.dao.CQMResultDetailsDAO;
+import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.CertificationStatusEventDAO;
@@ -61,6 +61,7 @@ import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
+import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultMacraMeasureDTO;
@@ -74,6 +75,7 @@ import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.CertificationStatusEventDTO;
 import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
@@ -86,6 +88,8 @@ import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.manager.TestingFunctionalityManager;
 import gov.healthit.chpl.util.CertificationResultRules;
+import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.PropertyUtil;
 
 /**
  * Certified Product Details Manager implementation.
@@ -148,11 +152,18 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
     private TestingFunctionalityManager testFunctionalityManager;
 
     @Autowired
-    private Environment env;
+    private PropertyUtil propUtil;
 
+    @Autowired
+    private ChplProductNumberUtil chplProductNumberUtil;
+
+    @Autowired
+    private CertificationStatusEventDAO certificationStatusEventDAO;
+
+    private CertificationEditionDAO certificationEditionDAO;
+    private List<CertificationEditionDTO> editions = null;
     private CQMCriterionDAO cqmCriterionDAO;
     private MacraMeasureDAO macraDao;
-
     private List<CQMCriterion> cqmCriteria = new ArrayList<CQMCriterion>();
     private List<MacraMeasure> macraMeasures = new ArrayList<MacraMeasure>();
 
@@ -161,17 +172,18 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
      * Default constructor.
      * @param cqmCriterionDAO DAO for CQMs
      * @param macraDao DAO for Macra Measures
-     * @param testFunctionalityDAO DAO for Test Functionality
+     * @param certificationEditionDAO DAO for Certification Edition
      */
     @Autowired
     public CertifiedProductDetailsManagerImpl(final CQMCriterionDAO cqmCriterionDAO,
-                                                final MacraMeasureDAO macraDao) {
-                                                //final TestFunctionalityDAO testFunctionalityDAO) {
+            final MacraMeasureDAO macraDao, final CertificationEditionDAO certificationEditionDAO) {
         this.cqmCriterionDAO = cqmCriterionDAO;
         this.macraDao = macraDao;
+        this.certificationEditionDAO = certificationEditionDAO;
 
         loadCQMCriteria();
         loadCriteriaMacraMeasures();
+        editions = certificationEditionDAO.findAll();
     }
 
     @Override
@@ -180,7 +192,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
             throws EntityRetrievalException {
 
         CertifiedProductDetailsDTO dto = getCertifiedProductDetailsDtoByChplProductNumber(chplProductNumber);
-        return createCertifiedSearchDetails(dto, areAsyncCallsEnabled());
+        return createCertifiedSearchDetails(dto, propUtil.isAsyncListingDetailsEnabled());
     }
 
     @Override
@@ -192,13 +204,12 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         return createCertifiedSearchDetails(dto, retrieveAsynchronously);
     }
 
-
     @Override
     @Transactional
     public CertifiedProductSearchDetails getCertifiedProductDetails(final Long certifiedProductId)
             throws EntityRetrievalException {
 
-        return getCertifiedProductDetails(certifiedProductId, areAsyncCallsEnabled());
+        return getCertifiedProductDetails(certifiedProductId, propUtil.isAsyncListingDetailsEnabled());
     }
 
 
@@ -216,7 +227,8 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
     public CertifiedProductSearchDetails getCertifiedProductDetailsBasicByChplProductNumber(
             final String chplProductNumber) throws EntityRetrievalException {
 
-        return getCertifiedProductDetailsBasicByChplProductNumber(chplProductNumber, areAsyncCallsEnabled());
+        return getCertifiedProductDetailsBasicByChplProductNumber(
+                chplProductNumber, propUtil.isAsyncListingDetailsEnabled());
     }
 
 
@@ -235,7 +247,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
     public CertifiedProductSearchDetails getCertifiedProductDetailsBasic(final Long certifiedProductId)
             throws EntityRetrievalException {
 
-        return getCertifiedProductDetailsBasic(certifiedProductId, areAsyncCallsEnabled());
+        return getCertifiedProductDetailsBasic(certifiedProductId, propUtil.isAsyncListingDetailsEnabled());
     }
 
     @Override
@@ -305,9 +317,9 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
     private CertifiedProductSearchDetails createCertifiedSearchDetails(final CertifiedProductDetailsDTO dto,
             final Boolean retrieveAsynchronously) throws EntityRetrievalException {
 
-        Future<List<CertifiedProductDetailsDTO>> childrenFuture =
+        Future<List<CertifiedProductDTO>> childrenFuture =
                 getCertifiedProductChildren(dto.getId(), retrieveAsynchronously);
-        Future<List<CertifiedProductDetailsDTO>> parentsFuture =
+        Future<List<CertifiedProductDTO>> parentsFuture =
                 getCertifiedProductParents(dto.getId(), retrieveAsynchronously);
         Future<List<CertificationResultDetailsDTO>> certificationResultsFuture =
                 getCertificationResultDetailsDTOs(dto.getId(), retrieveAsynchronously);
@@ -327,16 +339,15 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         searchDetails.getIcs().setChildren(populateChildren(childrenFuture, searchDetails));
 
         searchDetails = populateTestingLab(dto, searchDetails);
-
         return searchDetails;
     }
 
     private CertifiedProductSearchDetails createCertifiedProductDetailsBasic(final CertifiedProductDetailsDTO dto,
             final Boolean retrieveAsynchronously) throws EntityRetrievalException {
 
-        Future<List<CertifiedProductDetailsDTO>> childrenFuture =
+        Future<List<CertifiedProductDTO>> childrenFuture =
                 getCertifiedProductChildren(dto.getId(), retrieveAsynchronously);
-        Future<List<CertifiedProductDetailsDTO>> parentsFuture =
+        Future<List<CertifiedProductDTO>> parentsFuture =
                 getCertifiedProductParents(dto.getId(), retrieveAsynchronously);
 
         CertifiedProductSearchDetails searchDetails = getCertifiedProductSearchDetails(dto);
@@ -376,14 +387,14 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         return searchDetails;
     }
 
-    private List<CertifiedProduct> populateParents(final Future<List<CertifiedProductDetailsDTO>> parentsFuture,
+    private List<CertifiedProduct> populateParents(final Future<List<CertifiedProductDTO>> parentsFuture,
             final CertifiedProductSearchDetails searchDetails) throws EntityRetrievalException {
         try {
             List<CertifiedProduct> parents = new ArrayList<CertifiedProduct>();
-            List<CertifiedProductDetailsDTO> parentDTOs = parentsFuture.get();
+            List<CertifiedProductDTO> parentDTOs = parentsFuture.get();
             if (parentDTOs != null && parentDTOs.size() > 0) {
-                for (CertifiedProductDetailsDTO parentDTO : parentDTOs) {
-                    parents.add(new CertifiedProduct(parentDTO));
+                for (CertifiedProductDTO parentDTO : parentDTOs) {
+                    parents.add(createCertifiedProduct(parentDTO));
                 }
             }
             return parents;
@@ -394,14 +405,14 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         }
     }
 
-    private List<CertifiedProduct> populateChildren(final Future<List<CertifiedProductDetailsDTO>> childrenFuture,
+    private List<CertifiedProduct> populateChildren(final Future<List<CertifiedProductDTO>> childrenFuture,
             final CertifiedProductSearchDetails searchDetails) throws EntityRetrievalException {
         try {
             List<CertifiedProduct> children = new ArrayList<CertifiedProduct>();
-            List<CertifiedProductDetailsDTO> childrenDTOs = childrenFuture.get();
+            List<CertifiedProductDTO> childrenDTOs = childrenFuture.get();
             if (childrenDTOs != null && childrenDTOs.size() > 0) {
-                for (CertifiedProductDetailsDTO childDTO : childrenDTOs) {
-                    children.add(new CertifiedProduct(childDTO));
+                for (CertifiedProductDTO childDTO : childrenDTOs) {
+                    children.add(createCertifiedProduct(childDTO));
                 }
             }
             return children;
@@ -534,8 +545,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         return criteria;
     }
 
-    private CertificationResult getCertificationResult(
-            final CertificationResultDetailsDTO certResult,
+    private CertificationResult getCertificationResult(final CertificationResultDetailsDTO certResult,
             final CertifiedProductSearchDetails searchDetails) {
 
         CertificationResult result = new CertificationResult(certResult);
@@ -718,9 +728,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
                 result.getAllowedMacraMeasures().add(measure);
             }
         }
-
         result.setAllowedTestFunctionalities(getAvailableTestFunctionalities(result, searchDetails));
-
         return result;
     }
 
@@ -735,7 +743,6 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
             }
         }
         String criteriaNumber = cr.getNumber();
-
         return testFunctionalityManager.getTestFunctionalities(criteriaNumber, edition, practiceTypeId);
     }
 
@@ -978,7 +985,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         return cqmResultCertifications;
     }
 
-    private Future<List<CertifiedProductDetailsDTO>> getCertifiedProductChildren(final Long id,
+    private Future<List<CertifiedProductDTO>> getCertifiedProductChildren(final Long id,
             final Boolean retrieveAsynchronously) {
         if (retrieveAsynchronously) {
             return async.getCertifiedProductChildren(listingGraphDao, id);
@@ -987,7 +994,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         }
     }
 
-    private Future<List<CertifiedProductDetailsDTO>> getCertifiedProductParents(final Long id,
+    private Future<List<CertifiedProductDTO>> getCertifiedProductParents(final Long id,
             final Boolean retrieveAsynchronously) {
         if (retrieveAsynchronously) {
             return async.getCertifiedProductParent(listingGraphDao, id);
@@ -1014,12 +1021,31 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         }
     }
 
-    private Boolean areAsyncCallsEnabled() {
-        try {
-            return env.getProperty("asyncEnabled").equalsIgnoreCase("true");
-        } catch (java.lang.NullPointerException e) {
-            LOGGER.debug("Unable to read asyncEnabled property flag");
-            return true;
+    private CertifiedProduct createCertifiedProduct(final CertifiedProductDTO dto) {
+        CertifiedProduct cp = new CertifiedProduct();
+        cp.setId(dto.getId());
+        cp.setChplProductNumber(chplProductNumberUtil.generate(dto.getId()));
+        cp.setLastModifiedDate(dto.getLastModifiedDate() != null ? dto.getLastModifiedDate().getTime() + "" : "");
+        CertificationEditionDTO edition = getEdition(dto.getCertificationEditionId());
+        if (edition != null) {
+            cp.setEdition(edition.getYear());
         }
+        CertificationStatusEventDTO cseDTO =
+                certificationStatusEventDAO.findInitialCertificationEventForCertifiedProduct(dto.getId());
+        if (cseDTO != null) {
+            cp.setCertificationDate(cseDTO.getEventDate().getTime());
+        } else {
+            cp.setCertificationDate(-1);
+        }
+        return cp;
+    }
+
+    private CertificationEditionDTO getEdition(final Long editionId) {
+        for (CertificationEditionDTO dto : this.editions) {
+            if (dto.getId().equals(editionId)) {
+                return dto;
+            }
+        }
+        return null;
     }
 }

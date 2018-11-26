@@ -6,6 +6,7 @@ import com.nulabinc.zxcvbn.Strength;
 
 /**
  * Response class for an update password request.
+ * 
  * @author alarned
  *
  */
@@ -17,11 +18,14 @@ public class UpdatePasswordResponse {
     private int score;
 
     /** Default constructor. */
-    public UpdatePasswordResponse() { }
+    public UpdatePasswordResponse() {
+    }
 
     /**
      * Constructed from Strength object.
-     * @param strength the password strength object
+     * 
+     * @param strength
+     *            the password strength object
      */
     public UpdatePasswordResponse(final Strength strength) {
         setStrength(strength);
@@ -29,7 +33,9 @@ public class UpdatePasswordResponse {
 
     /**
      * Set parameters in this response to match values from passed in object.
-     * @param strength Strength object of password check
+     * 
+     * @param strength
+     *            Strength object of password check
      */
     public void setStrength(final Strength strength) {
         this.warning = strength.getFeedback().getWarning();

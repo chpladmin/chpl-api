@@ -23,9 +23,17 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
  */
 @Component("testToolReviewer")
 public class TestToolReviewer implements Reviewer {
-    @Autowired private TestToolDAO testToolDao;
-    @Autowired private ErrorMessageUtil msgUtil;
-    @Autowired private ChplProductNumberUtil productNumUtil;
+    private TestToolDAO testToolDao;
+    private ErrorMessageUtil msgUtil;
+    private ChplProductNumberUtil productNumUtil;
+
+    @Autowired
+    public TestToolReviewer(TestToolDAO testToolDAO, ErrorMessageUtil msgUtil,
+            ChplProductNumberUtil chplProductNumberUtil) {
+        this.testToolDao = testToolDAO;
+        this.msgUtil = msgUtil;
+        this.productNumUtil = chplProductNumberUtil;
+    }
 
     @Override
     public void review(final CertifiedProductSearchDetails listing) {
