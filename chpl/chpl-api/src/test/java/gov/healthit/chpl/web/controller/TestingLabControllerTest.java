@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -30,54 +31,59 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class })
-@DatabaseSetup("classpath:data/testData.xml") 
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
+@TestExecutionListeners({
+        DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
+})
+@DatabaseSetup("classpath:data/testData.xml")
 public class TestingLabControllerTest {
-	private static JWTAuthenticatedUser adminUser;
-	
-	@Autowired Environment env;
-	
-	@Autowired TestingLabController atlController;
-	
-	@Rule
+    private static JWTAuthenticatedUser adminUser;
+
+    @Autowired
+    Environment env;
+
+    @Autowired
+    TestingLabController atlController;
+
+    @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
-	
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-		adminUser = new JWTAuthenticatedUser();
-		adminUser.setFullName("Administrator");
-		adminUser.setId(-2L);
-		adminUser.setFriendlyName("Administrator");
-		adminUser.setSubjectName("admin");
-		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
-	}
-	
-	@Transactional
-	@Test(expected=EntityRetrievalException.class)
-	public void testGetAtlByBadId() 
-		throws EntityRetrievalException, IOException, ValidationException {
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		atlController.getAtlById(-100L);
-	}
-	
-	@Transactional
-	@Test(expected=EntityRetrievalException.class)
-	public void testRemoveUserFromAtlByBadAtlId()  
-		throws EntityRetrievalException, IOException, InvalidArgumentsException, ValidationException, EntityCreationException, UserRetrievalException {
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		atlController.deleteUserFromAtl(-100L, -2L);
-	}
-	
-	@Transactional
-	@Test(expected=UserRetrievalException.class)
-	public void testRemoveUserFromAtlByBadUserId()  
-		throws EntityRetrievalException, IOException, InvalidArgumentsException, ValidationException, EntityCreationException, UserRetrievalException {
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		atlController.deleteUserFromAtl(-1L, -100L);
-	}
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        adminUser = new JWTAuthenticatedUser();
+        adminUser.setFullName("Administrator");
+        adminUser.setId(-2L);
+        adminUser.setFriendlyName("Administrator");
+        adminUser.setSubjectName("admin");
+        adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+    }
+
+    @Transactional
+    @Test(expected = EntityRetrievalException.class)
+    public void testGetAtlByBadId() throws EntityRetrievalException, IOException, ValidationException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        atlController.getAtlById(-100L);
+    }
+
+    @Transactional
+    @Test(expected = EntityRetrievalException.class)
+    @Rollback
+    public void testRemoveUserFromAtlByBadAtlId() throws EntityRetrievalException, IOException,
+            InvalidArgumentsException, ValidationException, EntityCreationException, UserRetrievalException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        atlController.deleteUserFromAtl(-100L, -2L);
+    }
+
+    @Transactional
+    @Test(expected = UserRetrievalException.class)
+    @Rollback
+    public void testRemoveUserFromAtlByBadUserId() throws EntityRetrievalException, IOException,
+            InvalidArgumentsException, ValidationException, EntityCreationException, UserRetrievalException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        atlController.deleteUserFromAtl(-1L, -100L);
+    }
 }
