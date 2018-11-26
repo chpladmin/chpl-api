@@ -123,13 +123,21 @@ public class RequiredDataReviewer implements Reviewer {
                 }
 
                 if (cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 1) {
-                    listing.getErrorMessages().addAll(
-                            validateMacraMeasuresAreUniqueForCertificationResult(cert.getG1MacraMeasures(), cert.getNumber(), "listing.criteria.duplicateG1MacraMeasure"));
+                    List<String> g1Warnings =
+                            validateMacraMeasuresAreUniqueForCertificationResult(cert.getG1MacraMeasures(), cert.getNumber(), "listing.criteria.duplicateG1MacraMeasure");
+                    if (g1Warnings.size() > 0) {
+                        listing.getWarningMessages().addAll(g1Warnings);
+                        cert.setG1MacraMeasures(removeDuplicateMacraMeasures(cert.getG1MacraMeasures()));
+                    }
                 }
 
                 if (cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 1) {
-                    listing.getErrorMessages().addAll(
-                            validateMacraMeasuresAreUniqueForCertificationResult(cert.getG2MacraMeasures(), cert.getNumber(), "listing.criteria.duplicateG2MacraMeasure"));
+                    List<String> g2Warnings =
+                            validateMacraMeasuresAreUniqueForCertificationResult(cert.getG2MacraMeasures(), cert.getNumber(), "listing.criteria.duplicateG2MacraMeasure");
+                    if (g2Warnings.size() > 0) {
+                        listing.getWarningMessages().addAll(g2Warnings);
+                        cert.setG2MacraMeasures(removeDuplicateMacraMeasures(cert.getG2MacraMeasures()));
+                    }
                 }
             }
         }
@@ -154,5 +162,17 @@ public class RequiredDataReviewer implements Reviewer {
             }
         }
         return messages;
+    }
+    
+    private List<PendingCertificationResultMacraMeasureDTO> removeDuplicateMacraMeasures(List<PendingCertificationResultMacraMeasureDTO> macraMeasures) {
+        List<PendingCertificationResultMacraMeasureDTO> dedupedMacraMeasures = new ArrayList<PendingCertificationResultMacraMeasureDTO>();
+        Map<String, String> uniqueMacras = new HashMap<String, String>();
+        for (PendingCertificationResultMacraMeasureDTO macraMeasure : macraMeasures) {
+            if (macraMeasure != null && !uniqueMacras.containsKey(macraMeasure.getEnteredValue())) {
+                dedupedMacraMeasures.add(macraMeasure);
+                uniqueMacras.put(macraMeasure.getEnteredValue(), macraMeasure.getEnteredValue());
+            }
+        }
+        return dedupedMacraMeasures;
     }
 }
