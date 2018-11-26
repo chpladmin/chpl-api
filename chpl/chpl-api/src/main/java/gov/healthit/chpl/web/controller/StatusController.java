@@ -42,11 +42,9 @@ public class StatusController {
      * @return JSON object with status of load and "age"
      */
     @ApiOperation(
-            value = "Check if the basic search cache has completed loading. "
-                    + "{ status: 'OK', age: long } is returned if it's finished and "
-                    + "{ status: 'INITIALIZING' } is returned if not. "
-                    + "Age indicates the number of miliseconds since the cache "
-                    + "was last refreshed.",
+            value = "Check the status of every cache. "
+                    + "{ status: 'OK' } is returned if all caches are loaded and "
+                    + "{ status: 'PENDING' } is returned if not. ",
                     notes = "")
     @RequestMapping(value = "/cache_status", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody String getCacheStatus() {
