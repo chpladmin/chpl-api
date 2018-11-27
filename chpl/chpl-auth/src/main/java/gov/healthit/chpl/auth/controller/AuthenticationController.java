@@ -62,7 +62,6 @@ public class AuthenticationController {
     private UserManager userManager;
 
     @Autowired
-
     private JWTUserConverter userConverter;
 
     @Autowired
