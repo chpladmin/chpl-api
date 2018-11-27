@@ -7,6 +7,7 @@ _Date TBD_
 * Save 'reason' for developer's status change in questionable activivty.
 * Output 'reason' for developer's status change on questionable activity report.
 * Implement user ability to reset their password using a unique link
+* Change /cache_status endpoint to report "OK" status only when all pre-loaded caches have completed.
 * Add "user must reset password on next login" workflow
   * Gives error when user tries to log in and needs to change password
   * Adds end point to change_expired_password
