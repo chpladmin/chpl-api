@@ -22,6 +22,7 @@ _Date TBD_
 * Add retired flag to ACBs and ATLs to replace the functionality that previously used the deleted flag.
 * Save 'reason' for developer's status change in questionable activivty.
 * Output 'reason' for developer's status change on questionable activity report.
+* Implement user ability to reset their password using a unique link
 
 ---
 

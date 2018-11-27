@@ -7,6 +7,7 @@ import com.nulabinc.zxcvbn.Strength;
 
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
+import gov.healthit.chpl.auth.dto.UserResetTokenDTO;
 import gov.healthit.chpl.auth.json.User;
 import gov.healthit.chpl.auth.json.UserCreationJSONObject;
 import gov.healthit.chpl.auth.json.UserInfoJSONObject;
@@ -56,8 +57,6 @@ public interface UserManager {
 
     void updateUserPassword(String userName, String password) throws UserRetrievalException;
 
-    String resetUserPassword(String username, String email) throws UserRetrievalException;
-
     String getEncodedPassword(UserDTO user) throws UserRetrievalException;
 
     String encodePassword(String password);
@@ -70,5 +69,15 @@ public interface UserManager {
      * @param password the password to check
      * @return a Strength object with password strength information
      */
-    Strength getPasswordStrength(UserDTO user, String password);
+    public Strength getPasswordStrength(UserDTO user, String password);
+
+    public UserResetTokenDTO createResetUserPasswordToken(String username, String email) throws UserRetrievalException;
+    
+    public boolean authorizePasswordReset(String token);
+    
+    public void deletePreviousTokens(String token);
+
+    public UserDTO getByNameUnsecured(String userName) throws UserRetrievalException;
+
+    public void updateUserPasswordUnsecured(String userName, String password) throws UserRetrievalException;
 }
