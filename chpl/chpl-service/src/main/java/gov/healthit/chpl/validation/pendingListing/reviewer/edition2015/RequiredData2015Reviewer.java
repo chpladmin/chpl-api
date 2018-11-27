@@ -96,7 +96,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     private TestFunctionalityDAO testFuncDao;
     private TestProcedureDAO testProcDao;
     private TestDataDAO testDataDao;
-    private ErrorMessageUtil msgUtil;
 
     @Autowired
     public RequiredData2015Reviewer(MacraMeasureDAO macraDao, TestFunctionalityDAO testFuncDao, TestProcedureDAO testProcDao, TestDataDAO testDataDao, ErrorMessageUtil msgUtil, CertificationResultRules certRules) {
@@ -106,7 +105,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         this.testFuncDao = testFuncDao;
         this.testProcDao = testProcDao;
         this.testDataDao = testDataDao;
-        this.msgUtil = msgUtil;
 
         e2e3Criterion.add("170.315 (e)(2)");
         e2e3Criterion.add("170.315 (e)(3)");

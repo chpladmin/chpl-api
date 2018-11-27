@@ -1,9 +1,9 @@
 package gov.healthit.chpl.validation.pendingListing.reviewer;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -96,8 +96,7 @@ public class RequiredDataReviewer implements Reviewer {
 
         for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
             if (cert.getMeetsCriteria() == null) {
-                listing.getErrorMessages()
-                        .add("0 or 1 is required to inidicate whether " + cert.getNumber() + " was met.");
+                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.metInvalid", cert.getNumber()));
             } else if (cert.getMeetsCriteria().booleanValue()) {
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP) && cert.getGap() == null) {
                     listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingGap", cert.getNumber()));
@@ -151,14 +150,12 @@ public class RequiredDataReviewer implements Reviewer {
     
     private List<String> validateMacraMeasuresAreUniqueForCertificationResult(List<PendingCertificationResultMacraMeasureDTO> macraMeasures, String certNumber, String messageCode) {
         List<String> messages = new ArrayList<String>();
-        Map<String, String> uniqueMacras = new HashMap<String, String>();
+        Set<String> uniqueMacras = new HashSet<String>();
         for (PendingCertificationResultMacraMeasureDTO macraMeasure : macraMeasures) {
-            if (macraMeasure != null) {
-                if (uniqueMacras.containsKey(macraMeasure.getEnteredValue())) { // Duplicate
-                    messages.add(msgUtil.getMessage(messageCode, certNumber, macraMeasure.getEnteredValue()));
-                } else {
-                    uniqueMacras.put(macraMeasure.getEnteredValue(), macraMeasure.getEnteredValue());
-                }
+            if (uniqueMacras.contains(macraMeasure.getEnteredValue())) { // Duplicate
+                messages.add(msgUtil.getMessage(messageCode, certNumber, macraMeasure.getEnteredValue()));
+            } else {
+                uniqueMacras.add(macraMeasure.getEnteredValue());
             }
         }
         return messages;
@@ -166,11 +163,11 @@ public class RequiredDataReviewer implements Reviewer {
     
     private List<PendingCertificationResultMacraMeasureDTO> removeDuplicateMacraMeasures(List<PendingCertificationResultMacraMeasureDTO> macraMeasures) {
         List<PendingCertificationResultMacraMeasureDTO> dedupedMacraMeasures = new ArrayList<PendingCertificationResultMacraMeasureDTO>();
-        Map<String, String> uniqueMacras = new HashMap<String, String>();
+        Set<String> uniqueMacras = new HashSet<String>();
         for (PendingCertificationResultMacraMeasureDTO macraMeasure : macraMeasures) {
-            if (macraMeasure != null && !uniqueMacras.containsKey(macraMeasure.getEnteredValue())) {
+            if (!uniqueMacras.contains(macraMeasure.getEnteredValue())) {
                 dedupedMacraMeasures.add(macraMeasure);
-                uniqueMacras.put(macraMeasure.getEnteredValue(), macraMeasure.getEnteredValue());
+                uniqueMacras.add(macraMeasure.getEnteredValue());
             }
         }
         return dedupedMacraMeasures;

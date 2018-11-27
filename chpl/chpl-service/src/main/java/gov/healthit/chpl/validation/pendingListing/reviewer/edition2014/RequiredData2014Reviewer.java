@@ -13,9 +13,6 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.RequiredDataReviewer
 
 @Component("pendingRequiredData2014Reviewer")
 public class RequiredData2014Reviewer extends RequiredDataReviewer {
-    private ErrorMessageUtil msgUtil;
-    private CertificationResultRules certRules;
-
     private static final String[] G3_COMPLEMENTARY_CERTS = {
             "170.314 (a)(1)", "170.314 (a)(2)", "170.314 (a)(6)", "170.314 (a)(7)", "170.314 (a)(8)", "170.314 (a)(16)",
             "170.314 (a)(18)", "170.314 (a)(19)", "170.314 (a)(20)", "170.314 (b)(3)", "170.314 (b)(4)",
@@ -29,8 +26,6 @@ public class RequiredData2014Reviewer extends RequiredDataReviewer {
     @Autowired
     public RequiredData2014Reviewer(ErrorMessageUtil msgUtil, CertificationResultRules certRules) {
         super(msgUtil, certRules);
-        this.msgUtil = msgUtil;
-        this.certRules = certRules;
     }
 
     @Override
