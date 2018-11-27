@@ -47,7 +47,7 @@ public class StatusController {
     @ApiOperation(
             value = "Check the status of every cache. "
                     + "{ status: 'OK' } is returned if all caches are loaded and "
-                    + "{ status: 'PENDING' } is returned if not. ",
+                    + "{ status: 'INITIALIZING' } is returned if not. ",
                     notes = "")
     @RequestMapping(value = "/cache_status", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody CacheStatus getCacheStatus() {
@@ -55,14 +55,14 @@ public class StatusController {
         CacheManager manager = CacheManager.getInstance();
         boolean anyPending = false;
         List<String> cacheNames = CacheInitializor.getPreInitializedCaches();
-        for(int i = 0; i < cacheNames.size(); i++) {
+        for (int i = 0; i < cacheNames.size(); i++) {
             Cache currCache = manager.getCache(cacheNames.get(i));
-            if(currCache == null || currCache.getKeysNoDuplicateCheck().size() == 0) {
+            if (currCache == null || currCache.getKeysNoDuplicateCheck().size() == 0) {
                 anyPending = true;
             }
         }
-        if(anyPending) {
-            response.setStatus(CacheStatusName.PENDING.name());
+        if (anyPending) {
+            response.setStatus(CacheStatusName.INITIALIZING.name());
         } else {
             response.setStatus(CacheStatusName.OK.name());
         }
