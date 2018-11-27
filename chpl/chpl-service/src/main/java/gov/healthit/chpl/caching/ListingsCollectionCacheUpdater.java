@@ -38,9 +38,7 @@ public class ListingsCollectionCacheUpdater {
     private void refreshCache() {
         CacheManager manager = CacheManager.getInstance();
         prefetchedCaches.loadPreFetchedBasicSearch();
-        LOGGER.debug("Adding cache generation time to prefetched cache.");
-        manager.getCache(CacheNames.COLLECTIONS_PREFETCHED_LISTINGS).putQuiet(
-                new Element("CACHE_GENERATION_TIME", (new Date().getTime())));
+        LOGGER.debug("Replacing live listings collection cache with pre-fetched data.");
         CacheReplacer.replaceCache(manager.getCache(CacheNames.COLLECTIONS_LISTINGS),
                 manager.getCache(CacheNames.COLLECTIONS_PREFETCHED_LISTINGS));
     }

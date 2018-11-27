@@ -4,33 +4,35 @@ import java.util.List;
 
 import gov.healthit.chpl.auth.dto.UserDTO;
 
-
 public class UserInfoJSONObject {
-	
-	private User user;
-	private List<String> roles;
-	
-	public UserInfoJSONObject(){}
-	
-	public UserInfoJSONObject(UserDTO dto){
-		this.user = new User(dto);
-	}
 
-	public User getUser() {
-		return user;
-	}
+    private User user;
+    private List<String> roles;
 
-	public void setUser(User user) {
-		this.user = user;
-	}
+    /** Default constructor. */
+    public UserInfoJSONObject(){}
 
-	public List<String> getRoles() {
-		return roles;
-	}
+    /**
+     * Constructed from DTO.
+     * @param dto the dto
+     */
+    public UserInfoJSONObject(final UserDTO dto) {
+        this.user = new User(dto);
+    }
 
-	public void setRoles(List<String> roles) {
-		this.roles = roles;
-	}
+    public User getUser() {
+        return user;
+    }
 
+    public void setUser(final User user) {
+        this.user = user;
+    }
 
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(final List<String> roles) {
+        this.roles = roles;
+    }
 }

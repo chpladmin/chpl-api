@@ -42,7 +42,7 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
     private UserContactDAO userContactDAO;
 
     @Autowired
-    UserPermissionDAO userPermissionDAO;
+    private UserPermissionDAO userPermissionDAO;
 
     @Autowired
     private MutableAclService mutableAclService;
@@ -74,9 +74,9 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Transactional
-    public void delete(final UserDTO user)
-            throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
-        // find the granted permissions for this user and remove them
+    public void delete(final UserDTO user) throws UserRetrievalException,
+    UserPermissionRetrievalException, UserManagementException {
+        //find the granted permissions for this user and remove them
         Set<UserPermissionDTO> permissions = getGrantedPermissionsForUser(user);
         for (UserPermissionDTO permission : permissions) {
             if (permission.getAuthority().equals("ROLE_ADMIN")) {
@@ -220,5 +220,4 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
     public UserDTO getBySubjectName(final String userName) throws UserRetrievalException {
         return userDAO.getByName(userName);
     }
-
 }
