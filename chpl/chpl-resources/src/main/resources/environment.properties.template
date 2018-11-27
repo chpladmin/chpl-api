@@ -70,11 +70,6 @@ inheritanceReportEmailWeeklyFileName=inheritance-validation-weekly-report.csv
 inheritanceReportEmailWeeklyNoContent=<p>No listings were found that do not meet ICS requirements.</p>
 inheritanceReportEmailAcbWeeklyHtmlMessage=<h3>ONC-ACB Weekly ICS Validation Report</h3>
 
-#cache status maximum age email properties
-cacheStatusMaxAge=3600000
-cacheStatusMaxAgeSubject=Listing Cache Maximum Age Reached (LOCAL)
-cacheStatusMaxAgeUrl=http://localhost:8080/chpl-service/cache_status
-
 #listing upload error email properties
 uploadErrorEmailRecipients=test@ainq.com,test2@ainq.com
 uploadErrorEmailSubject=CHPL Listing Upload Error (LOCAL)
@@ -103,6 +98,7 @@ jwtIssuer=ONCCHPL
 jwtAudience=ONCCHPL
 jwtExpirationTimeMinutesInTheFuture=30
 jwtNotBeforeMinutesInThePast=4
+resetLinkExpirationTimeInHours=24
 
 smtpHost=dev
 smtpPort=25

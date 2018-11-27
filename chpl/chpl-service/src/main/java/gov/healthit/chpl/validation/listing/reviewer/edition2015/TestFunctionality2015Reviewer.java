@@ -34,7 +34,7 @@ import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 @Component("testFunctionality2015Reviewer")
 @Transactional
 @DependsOn("certificationEditionDAO")
-public class TestFunctionality2015Reviewer implements Reviewer {//, ApplicationListener<ContextRefreshedEvent> {
+public class TestFunctionality2015Reviewer implements Reviewer {
     private TestFunctionalityDAO testFunctionalityDAO;
     private TestingFunctionalityManager testFunctionalityManager;
     private ErrorMessageUtil msgUtil;
@@ -51,15 +51,10 @@ public class TestFunctionality2015Reviewer implements Reviewer {//, ApplicationL
         this.msgUtil = msgUtil;
     }
 
-        //  @Override
-        //  public void onApplicationEvent(ContextRefreshedEvent event) {
-        //      editionDTOs = editionDAO.findAll();
-        //  }
-  
-      @PostConstruct
-      public void init() {
-          editionDTOs = editionDAO.findAll();
-      }
+    @PostConstruct
+    public void init() {
+        editionDTOs = editionDAO.findAll();
+    }
 
     @Override
     public void review(final CertifiedProductSearchDetails listing) {

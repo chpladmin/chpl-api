@@ -3,6 +3,8 @@ package gov.healthit.chpl.caching;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Future;
 
@@ -26,7 +28,6 @@ public class CacheInitializor {
     private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
     private static Integer initializeTimeoutSecs;
     private static Integer clearAllCachesTimeoutSecs;
-    private CacheManager manager;
     private Long tInitStart;
     private Long tInitEnd;
     private Double tInitElapsedSecs;
@@ -36,7 +37,6 @@ public class CacheInitializor {
     private Future<Boolean> isInitializeSearchOptionsDone;
     private Future<Boolean> isInitializeCertificationIdsGetAllDone;
     private Future<Boolean> isInitializeCertificationIdsGetAllWithProductsDone;
-    private Future<Boolean> isInitializeDecertifiedDevelopers;
     private Future<Boolean> isInitializeBasicSearch;
     private Future<Boolean> isInitializeFindByAcbId;
     private Properties props;
@@ -44,6 +44,27 @@ public class CacheInitializor {
 
     @Autowired
     private AsynchronousCacheInitialization asynchronousCacheInitialization;
+
+    public static List<String> getPreInitializedCaches() {
+        List<String> caches = new ArrayList<String>();
+        caches.add(CacheNames.COLLECTIONS_LISTINGS);
+        caches.add(CacheNames.ALL_CERT_IDS);
+        caches.add(CacheNames.ALL_CERT_IDS_WITH_PRODUCTS);
+        caches.add(CacheNames.FIND_BY_ACB_ID);
+        //search options
+        caches.add(CacheNames.CERT_BODY_NAMES);
+        caches.add(CacheNames.EDITION_NAMES);
+        caches.add(CacheNames.CERTIFICATION_STATUSES);
+        caches.add(CacheNames.PRACTICE_TYPE_NAMES);
+        caches.add(CacheNames.CERTIFICATION_STATUSES);
+        caches.add(CacheNames.PRACTICE_TYPE_NAMES);
+        caches.add(CacheNames.CLASSIFICATION_NAMES);
+        caches.add(CacheNames.PRODUCT_NAMES);
+        caches.add(CacheNames.DEVELOPER_NAMES);
+        caches.add(CacheNames.CQM_CRITERION_NUMBERS);
+        caches.add(CacheNames.CERTIFICATION_CRITERION_NUMBERS);
+        return caches;
+    }
 
     @PostConstruct
     @Async
@@ -71,8 +92,6 @@ public class CacheInitializor {
         }
 
         if (tInitEnd == null || tInitElapsedSecs > initializeTimeoutSecs) {
-            manager = CacheManager.getInstance();
-
             try {
                 if (enableCacheInitializationValue != null && enableCacheInitializationValue.equalsIgnoreCase("true")) {
                     if (isInitializeSearchOptionsDone != null && !isInitializeSearchOptionsDone.isDone()) {
@@ -93,12 +112,6 @@ public class CacheInitializor {
                     }
                     isInitializeCertificationIdsGetAllWithProductsDone = asynchronousCacheInitialization
                             .initializeCertificationIdsGetAllWithProducts();
-
-                    if (isInitializeDecertifiedDevelopers != null && !isInitializeDecertifiedDevelopers.isDone()) {
-                        isInitializeDecertifiedDevelopers.cancel(true);
-                    }
-                    isInitializeDecertifiedDevelopers = asynchronousCacheInitialization
-                            .initializeDecertifiedDevelopers();
 
                     if (isInitializeBasicSearch != null && !isInitializeBasicSearch.isDone()) {
                         isInitializeBasicSearch.cancel(true);
@@ -141,16 +154,12 @@ public class CacheInitializor {
                 isInitializeCertificationIdsGetAllWithProductsDone.cancel(true);
             }
 
-            if (isInitializeDecertifiedDevelopers != null && !isInitializeDecertifiedDevelopers.isDone()) {
-                isInitializeDecertifiedDevelopers.cancel(true);
-            }
-
             if (isInitializeFindByAcbId != null && !isInitializeFindByAcbId.isDone()) {
                 isInitializeFindByAcbId.cancel(true);
             }
 
             LOGGER.info("Clearing all caches before @ClearAllCaches method execution.");
-            manager.clearAll();
+            CacheManager.getInstance().clearAll();
         }
         tClearAllEnd = System.currentTimeMillis();
     }
