@@ -17,7 +17,9 @@ import javax.persistence.Table;
 
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 
-
+/**
+ * Entity for user.
+ */
 @Entity
 @Table(name = "`user`")
 public class UserEntity {
@@ -50,6 +52,9 @@ public class UserEntity {
     @Column(name = "compliance_signature")
     private Date complianceSignature;
 
+    @Column(name = "password_reset_required")
+    private boolean passwordResetRequired;
+
     @Column(name = "failed_login_count")
     private int failedLoginCount;
 
@@ -69,6 +74,7 @@ public class UserEntity {
     @JoinColumn(name = "contact_id", unique = true, nullable = false)
     private UserContactEntity contact;
 
+    /** Default constructor. */
     public UserEntity() {
         this.subjectName = null;
         this.password = null;
@@ -76,10 +82,15 @@ public class UserEntity {
         this.accountLocked = false;
         this.credentialsExpired = false;
         this.accountEnabled = true;
+        this.passwordResetRequired = false;
 
         this.contact = new UserContactEntity();
     }
 
+    /**
+     * Constructor with subjectName.
+     * @param subjectName the user's subjectname / username
+     */
     public UserEntity(final String subjectName) {
         this.subjectName = subjectName;
         this.password = null;
@@ -87,10 +98,16 @@ public class UserEntity {
         this.accountLocked = false;
         this.credentialsExpired = false;
         this.accountEnabled = true;
+        this.passwordResetRequired = false;
 
         this.contact = new UserContactEntity();
     }
 
+    /**
+     * Constructor with un/pw.
+     * @param subjectName the username
+     * @param encodedPassword the password
+     */
     public UserEntity(final String subjectName, final String encodedPassword) {
         this.subjectName = subjectName;
         this.password = encodedPassword;
@@ -98,6 +115,7 @@ public class UserEntity {
         this.accountLocked = false;
         this.credentialsExpired = false;
         this.accountEnabled = true;
+        this.passwordResetRequired = false;
 
         this.contact = new UserContactEntity();
     }
@@ -114,6 +132,10 @@ public class UserEntity {
         return contact.getFullName();
     }
 
+    /**
+     * Set the user's contact's full name value.
+     * @param fullName the new value
+     */
     public void setFullName(final String fullName) {
         contact.setFullName(fullName);
     }
@@ -122,10 +144,18 @@ public class UserEntity {
         return contact.getFriendlyName();
     }
 
+    /**
+     * Set the user's contact's friendly name value.
+     * @param friendlyName the new value
+     */
     public void setFriendlyName(final String friendlyName) {
         contact.setFriendlyName(friendlyName);
     }
 
+    /**
+     * Retrieve the set of permissions the user has.
+     * @return that set
+     */
     public Set<UserPermissionDTO> getPermissions() {
 
         Set<UserPermissionDTO> permissions = new HashSet<UserPermissionDTO>();
@@ -141,7 +171,7 @@ public class UserEntity {
         return password;
     }
 
-    public void setPassword(final String encodedPassword){
+    public void setPassword(final String encodedPassword) {
         this.password = encodedPassword;
     }
 
@@ -260,5 +290,28 @@ public class UserEntity {
 
     public boolean isAccountEnabled() {
         return accountEnabled;
+    }
+
+    public Boolean getPasswordResetRequired() {
+        return passwordResetRequired;
+    }
+
+    public void setPasswordResetRequired(final Boolean passwordResetRequired) {
+        this.passwordResetRequired = passwordResetRequired;
+    }
+
+    @Override
+    public String toString() {
+        String ret = "[UserEntity: "
+                + "[id: " + this.id + "]"
+                + "[subjectName: " + this.subjectName + "]"
+                + "[contact: " + this.contact + "]"
+                + "[failedLoginCount: " + this.failedLoginCount + "]"
+                + "[accountExpired: " + this.accountExpired + "]"
+                + "[accountLocked: " + this.accountLocked + "]"
+                + "[credentialsExpired: " + this.credentialsExpired + "]"
+                + "[accountEnabled: " + this.accountEnabled + "]"
+                + "[passwordResetRequired: " + this.passwordResetRequired + "]]";
+        return ret;
     }
 }
