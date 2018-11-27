@@ -38,9 +38,6 @@ import gov.healthit.chpl.auth.user.UserRetrievalException;
 
 /**
  * Implementation of User Manager.
- * 
- * @author alarned
- *
  */
 @Service
 public class UserManagerImpl implements UserManager {
@@ -110,6 +107,18 @@ public class UserManagerImpl implements UserManager {
             userDTO.setAccountLocked(userInfo.getAccountLocked());
         } else {
             userDTO.setAccountLocked(true);
+        }
+
+        if (userInfo.getCredentialsExpired() != null) {
+            userDTO.setCredentialsExpired(userInfo.getCredentialsExpired());
+        } else {
+            userDTO.setCredentialsExpired(false);
+        }
+
+        if (userInfo.getPasswordResetRequired() != null) {
+            userDTO.setPasswordResetRequired(userInfo.getPasswordResetRequired());
+        } else {
+            userDTO.setPasswordResetRequired(false);
         }
 
         if (Boolean.TRUE.equals(userInfo.getComplianceTermsAccepted())) {
