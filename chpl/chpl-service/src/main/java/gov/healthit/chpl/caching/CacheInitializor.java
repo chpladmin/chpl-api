@@ -37,7 +37,6 @@ public class CacheInitializor {
     private Future<Boolean> isInitializeSearchOptionsDone;
     private Future<Boolean> isInitializeCertificationIdsGetAllDone;
     private Future<Boolean> isInitializeCertificationIdsGetAllWithProductsDone;
-    private Future<Boolean> isInitializeDecertifiedDevelopers;
     private Future<Boolean> isInitializeBasicSearch;
     private Future<Boolean> isInitializeFindByAcbId;
     private Properties props;
@@ -51,7 +50,6 @@ public class CacheInitializor {
         caches.add(CacheNames.COLLECTIONS_LISTINGS);
         caches.add(CacheNames.ALL_CERT_IDS);
         caches.add(CacheNames.ALL_CERT_IDS_WITH_PRODUCTS);
-        caches.add(CacheNames.GET_DECERTIFIED_DEVELOPERS);
         caches.add(CacheNames.FIND_BY_ACB_ID);
         //search options
         caches.add(CacheNames.CERT_BODY_NAMES);
@@ -115,12 +113,6 @@ public class CacheInitializor {
                     isInitializeCertificationIdsGetAllWithProductsDone = asynchronousCacheInitialization
                             .initializeCertificationIdsGetAllWithProducts();
 
-                    if (isInitializeDecertifiedDevelopers != null && !isInitializeDecertifiedDevelopers.isDone()) {
-                        isInitializeDecertifiedDevelopers.cancel(true);
-                    }
-                    isInitializeDecertifiedDevelopers = asynchronousCacheInitialization
-                            .initializeDecertifiedDevelopers();
-
                     if (isInitializeBasicSearch != null && !isInitializeBasicSearch.isDone()) {
                         isInitializeBasicSearch.cancel(true);
                     }
@@ -160,10 +152,6 @@ public class CacheInitializor {
             if (isInitializeCertificationIdsGetAllWithProductsDone != null
                     && !isInitializeCertificationIdsGetAllWithProductsDone.isDone()) {
                 isInitializeCertificationIdsGetAllWithProductsDone.cancel(true);
-            }
-
-            if (isInitializeDecertifiedDevelopers != null && !isInitializeDecertifiedDevelopers.isDone()) {
-                isInitializeDecertifiedDevelopers.cancel(true);
             }
 
             if (isInitializeFindByAcbId != null && !isInitializeFindByAcbId.isDone()) {
