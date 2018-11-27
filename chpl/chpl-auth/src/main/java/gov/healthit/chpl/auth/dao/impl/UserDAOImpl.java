@@ -302,7 +302,6 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
         } else if (result.size() > 1) {
             throw new UserRetrievalException("Data error. Duplicate user name in database.");
         }
-
         return result.get(0);
     }
 

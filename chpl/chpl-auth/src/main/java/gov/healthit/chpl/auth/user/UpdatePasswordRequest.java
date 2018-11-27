@@ -11,7 +11,8 @@ public class UpdatePasswordRequest {
     private String newPassword;
 
     /** Default constructor. */
-    public UpdatePasswordRequest(){}
+    public UpdatePasswordRequest() {
+    }
 
     public String getOldPassword() {
         return oldPassword;

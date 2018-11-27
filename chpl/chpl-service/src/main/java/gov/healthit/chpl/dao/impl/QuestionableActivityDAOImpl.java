@@ -49,6 +49,7 @@ public class QuestionableActivityDAOImpl extends BaseDAOImpl implements Question
             toCreate = new QuestionableActivityDeveloperEntity();
             QuestionableActivityDeveloperEntity developerActivity = (QuestionableActivityDeveloperEntity)toCreate;
             developerActivity.setDeveloperId(((QuestionableActivityDeveloperDTO)dto).getDeveloperId());
+            developerActivity.setReason(((QuestionableActivityDeveloperDTO)dto).getReason());
         } else if(dto instanceof QuestionableActivityListingDTO) {
             toCreate = new QuestionableActivityListingEntity();
             QuestionableActivityListingEntity listingActivity = (QuestionableActivityListingEntity)toCreate;

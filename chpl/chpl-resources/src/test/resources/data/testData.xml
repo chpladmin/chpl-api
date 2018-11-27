@@ -226,6 +226,7 @@
     <certification_body certification_body_id="-1"
         acb_code="01" name="InfoGard" creation_date="2015-08-27 15:36:44.217"
         last_modified_date="2015-08-27 15:36:44.217" last_modified_user="-2"
+        website="http://www.test.com" address_id="-1"
         deleted="false" />
     <certification_body certification_body_id="-2"
         acb_code="02" name="CCHIT" creation_date="2015-08-27 15:36:44.217"
@@ -1715,6 +1716,8 @@
         credentials_expired="FALSE" account_enabled="TRUE"
         creation_date="2015-08-26 12:43:00.015" last_modified_date="2017-04-26 12:43:00.015"
         last_modified_user="-1" deleted="FALSE" contact_id="1" />
+
+  <user_reset_token user_reset_token_id="-1" user_reset_token="zlhf8n4bfh87kfq" user_id="-2" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-2" deleted="FALSE"/>
 
     <global_user_permission_map
         global_user_permission_id="1" user_id="-2"

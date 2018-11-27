@@ -215,8 +215,7 @@ public class ActivityManagerTest extends TestCase {
         assertEquals(0, events.size());
     }
 
-    @Test
-    //TODO: add back in when manager is fixed (expected=AccessDeniedException.class)
+    @Test(expected=AccessDeniedException.class)
     @Transactional
     public void testGetActivityForAcbsAsAtlAdmin() 
             throws JsonParseException, IOException, EntityRetrievalException {
@@ -322,8 +321,7 @@ public class ActivityManagerTest extends TestCase {
                 1L, new Date(0), new Date());
         assertEquals(5, eventsForUser.size());
     }
-    @Test
-    //TODO: add back in when manager is fixed (expected=AccessDeniedException.class)
+    @Test(expected=AccessDeniedException.class)
     @Transactional
     public void testGetActivityForUserInDateRangeAcbAdmin() throws JsonParseException, IOException{
         SecurityContextHolder.getContext().setAuthentication(acbUser);
@@ -332,8 +330,7 @@ public class ActivityManagerTest extends TestCase {
         assertEquals(5, eventsForUser.size());
     }
 
-    @Test
-    //TODO: add back in when manager is fixed (expected=AccessDeniedException.class)
+    @Test(expected=AccessDeniedException.class)
     @Transactional
     public void testGetActivityForUserInDateRangeAtlAdmin() throws JsonParseException, IOException {
         SecurityContextHolder.getContext().setAuthentication(atlUser);

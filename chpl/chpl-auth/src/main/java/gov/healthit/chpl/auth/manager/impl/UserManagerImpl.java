@@ -1,13 +1,12 @@
 package gov.healthit.chpl.auth.manager.impl;
 
-import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,20 +42,6 @@ import gov.healthit.chpl.auth.user.UserRetrievalException;
 @Service
 public class UserManagerImpl implements UserManager {
     private static final Logger LOGGER = LogManager.getLogger(UserManagerImpl.class);
-
-    private final Random random = new SecureRandom();
-    private static final char[] SYMBOLS;
-    static {
-        StringBuilder tmp = new StringBuilder();
-        for (char ch = '0'; ch <= '9'; ++ch) {
-            tmp.append(ch);
-        }
-        for (char ch = 'a'; ch <= 'z'; ++ch) {
-            tmp.append(ch);
-        }
-        SYMBOLS = tmp.toString().toCharArray();
-    }
-    private static final int GENERATED_PASSWORD_LENGTH = 15;
 
     @Autowired
     private Environment env;
@@ -247,11 +232,16 @@ public class UserManagerImpl implements UserManager {
     @Override
     @Transactional
     public void updateUserPassword(final String userName, final String password) throws UserRetrievalException {
-
         String encodedPassword = encodePassword(password);
         UserDTO userToUpdate = securedUserManager.getBySubjectName(userName);
         securedUserManager.updatePassword(userToUpdate, encodedPassword);
-
+    }
+    
+    @Override
+    @Transactional
+    public void updateUserPasswordUnsecured(final String userName, final String password) throws UserRetrievalException {
+        String encodedPassword = encodePassword(password);
+        userDAO.updatePassword(userName, encodedPassword);
     }
 
     // no auth needed. create a random string and create a new reset token row
@@ -264,14 +254,8 @@ public class UserManagerImpl implements UserManager {
         if (foundUser == null) {
             throw new UserRetrievalException("Cannot find user with name " + username + " and email address " + email);
         }
-
-        // create user password reset token
-        char[] buf = new char[GENERATED_PASSWORD_LENGTH];
-
-        for (int idx = 0; idx < buf.length; ++idx) {
-            buf[idx] = SYMBOLS[random.nextInt(SYMBOLS.length)];
-        }
-        String password = new String(buf);
+        
+        String password = UUID.randomUUID().toString();
 
         // delete all previous tokens from that user that are in the table
         userResetTokenDAO.deletePreviousUserTokens(foundUser.getId());
@@ -282,23 +266,27 @@ public class UserManagerImpl implements UserManager {
         return userResetToken;
     }
 
-    // checks that the token was made in the last 24 hours
+    // checks that the token was made in the last x hours
     private boolean isTokenValid(UserResetTokenDTO userResetToken) {
         Date checkDate = userResetToken.getCreationDate();
         Instant now = Instant.now();
-        return (!checkDate.toInstant().isBefore(now.minus(24 , ChronoUnit.HOURS))) 
-            && (checkDate.toInstant().isBefore(now));
+        return (!checkDate.toInstant().isBefore(now.minus(Integer.parseInt(env.getProperty("resetLinkExpirationTimeInHours")), ChronoUnit.HOURS)))
+                && (checkDate.toInstant().isBefore(now));
     }
-    
+
     @Transactional
     public boolean authorizePasswordReset(String token) {
         UserResetTokenDTO userResetToken = userResetTokenDAO.findByAuthToken(token);
-
         if (userResetToken != null && isTokenValid(userResetToken)) {
-            userResetTokenDAO.deletePreviousUserTokens(userResetToken.getUser().getId());
             return true;
         }
         return false;
+    }
+
+    @Transactional
+    public void deletePreviousTokens(String token) {
+        UserResetTokenDTO userResetToken = userResetTokenDAO.findByAuthToken(token);
+        userResetTokenDAO.deletePreviousUserTokens(userResetToken.getUser().getId());
     }
 
     @Override
@@ -319,7 +307,13 @@ public class UserManagerImpl implements UserManager {
 
     @Override
     public UserDTO getByName(final String userName) throws UserRetrievalException {
-        return securedUserManager.getBySubjectName(userName);
+        UserDTO dto = securedUserManager.getBySubjectName(userName);
+        return dto;
+    }
+    
+    @Override
+    public UserDTO getByNameUnsecured(final String userName) throws UserRetrievalException {
+        return userDAO.getByName(userName);
     }
 
     @Override
