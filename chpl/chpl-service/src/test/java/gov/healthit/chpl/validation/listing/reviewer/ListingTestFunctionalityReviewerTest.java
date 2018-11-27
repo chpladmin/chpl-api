@@ -22,6 +22,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.test.context.ContextConfiguration;
@@ -38,15 +40,21 @@ import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.PracticeTypeDTO;
+import gov.healthit.chpl.dto.TestFunctionalityCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
+import gov.healthit.chpl.listing.ListingMockUtil;
 import gov.healthit.chpl.manager.TestingFunctionalityManager;
 import gov.healthit.chpl.manager.impl.TestingFunctionalityManagerImpl;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.TestFunctionality2014Reviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestFunctionality2015Reviewer;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
 public class ListingTestFunctionalityReviewerTest {
+    @Autowired
+    private ListingMockUtil listingMockUtil;
+    
     @Autowired
     private MessageSource messageSource;
     
@@ -70,20 +78,18 @@ public class ListingTestFunctionalityReviewerTest {
         new TestingFunctionalityManagerImpl(testFunctionalityDAO);
     
     private TestFunctionality2014Reviewer tfReviewer;
+    
+    private TestFunctionality2015Reviewer tfReviewer2015;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        tfReviewer = new TestFunctionality2014Reviewer(testFunctionalityDAO, testFunctionalityManager, 
+        tfReviewer = new TestFunctionality2014Reviewer(testFunctionalityDAO, testFunctionalityManager,
                 certificationEditionDAO, msgUtil);
-
-        Mockito.doReturn("In Criteria 170.314 (a)(6), Test Functionality (a)(6)(11) is for "
-                + "Criteria other and is not valid for Criteria 170.314 (a)(6).")
-            .when(msgUtil).getMessage(
-                ArgumentMatchers.eq("listing.criteria.testFunctionalityCriterionMismatch"),
-                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), 
-                ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
+        
+        tfReviewer2015 = new TestFunctionality2015Reviewer(testFunctionalityDAO, testFunctionalityManager,
+                certificationEditionDAO, msgUtil);
 
         Mockito.doReturn("In Criteria 170.314 (a)(6), Test Functionality (a)(6)(11) is for "
                 + "other Settings and is not valid for Practice Type Ambulatory.")
@@ -95,6 +101,24 @@ public class ListingTestFunctionalityReviewerTest {
         Mockito.when(certificationEditionDAO.findAll()).thenReturn(getEditions());
 
         Mockito.when(testFunctionalityManager.getTestFunctionalityCriteriaMap2014()).thenReturn(getTestFunctionalityCriteriaMap2014());
+
+        Mockito.when(testFunctionalityManager.getTestFunctionalityCriteriaMap2015()).thenReturn(getTestFunctionalityCriteriaMap2015());
+
+        Mockito.when(testFunctionalityDAO.getTestFunctionalityCritieriaMaps()).thenReturn(xxxx());
+
+        //TODO - Can this be extracted as some sort of generic method, so it can be used all error messages??
+        Mockito.doAnswer(new Answer<String> () {
+            @Override
+            public String answer(InvocationOnMock invocation) throws Throwable {
+                String message = 
+                        "In Criteria %s, Test Functionality %s is for Criteria %s and is not valid for Criteria %s.";
+                Object[] args = invocation.getArguments();
+                return String.format(message, (String)args[1], (String)args[2], (String)args[3], (String)args[4]);
+            }
+        }).when(msgUtil).getMessage(
+                ArgumentMatchers.eq("listing.criteria.testFunctionalityCriterionMismatch"),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyString());
     }
 
     //Case 1: A valid test functionality
@@ -179,6 +203,56 @@ public class ListingTestFunctionalityReviewerTest {
 
         tfReviewer.onApplicationEvent(null);
         tfReviewer.review(listing);
+
+        assertTrue(doesTestFunctionalityCriterionErrorMessageExist(listing.getErrorMessages()));
+    }
+
+    @Test
+    public void validate2015ListingTestFunctionality_Valid() {
+        Mockito.when(testFunctionalityDAO.getByNumberAndEdition(ArgumentMatchers.anyString(), ArgumentMatchers.anyLong()))
+        .thenReturn(getTestFunctionality(34l, "(b)(1)(ii)(A)(5)(1)", "2015"));
+
+        CertifiedProductSearchDetails listing = createListing("2015");
+        List<CertificationResult> certResults = new ArrayList<CertificationResult>();
+        CertificationResult certResult = createCertResult("170.315 (b)(1)");
+        CertificationResultTestFunctionality crtf = new CertificationResultTestFunctionality();
+        crtf.setDescription("No description required");
+        crtf.setId(1l);
+        crtf.setName("(b)(1)(ii)(A)(5)");
+        crtf.setTestFunctionalityId(34l);
+        crtf.setYear("2105");
+        certResult.setTestFunctionality(new ArrayList<CertificationResultTestFunctionality>());
+        certResult.getTestFunctionality().add(crtf);
+        certResults.add(certResult);
+        listing.getCertificationResults().add(certResult);
+
+        tfReviewer2015.init();
+        tfReviewer2015.review(listing);
+
+        assertFalse(doesTestFunctionalityCriterionErrorMessageExist(listing.getErrorMessages()));
+    }
+
+    @Test
+    public void validate2015ListingTestFunctionality_Invalid() {
+        Mockito.when(testFunctionalityDAO.getByNumberAndEdition(ArgumentMatchers.anyString(), ArgumentMatchers.anyLong()))
+        .thenReturn(getTestFunctionality(33l, "(a)(14)(iii)(A)(2)", "2015"));
+
+        CertifiedProductSearchDetails listing = createListing("2015");
+        List<CertificationResult> certResults = new ArrayList<CertificationResult>();
+        CertificationResult certResult = createCertResult("170.315 (b)(1)");
+        CertificationResultTestFunctionality crtf = new CertificationResultTestFunctionality();
+        crtf.setDescription("No description required");
+        crtf.setId(1l);
+        crtf.setName("(a)(14)(iii)(A)(2)");
+        crtf.setTestFunctionalityId(33l);
+        crtf.setYear("2105");
+        certResult.setTestFunctionality(new ArrayList<CertificationResultTestFunctionality>());
+        certResult.getTestFunctionality().add(crtf);
+        certResults.add(certResult);
+        listing.getCertificationResults().add(certResult);
+
+        tfReviewer2015.init();
+        tfReviewer2015.review(listing);
 
         assertTrue(doesTestFunctionalityCriterionErrorMessageExist(listing.getErrorMessages()));
     }
@@ -356,4 +430,57 @@ public class ListingTestFunctionalityReviewerTest {
 
         return map;
     }
+
+    private Map<String, List<TestFunctionalityDTO>> getTestFunctionalityCriteriaMap2015() {
+        Map<String, List<TestFunctionalityDTO>> map = new HashMap<String, List<TestFunctionalityDTO>>();
+
+        List<TestFunctionalityDTO> tfs = new ArrayList<TestFunctionalityDTO>();
+        tfs.add(getTestFunctionality(34l, "(b)(1)(ii)(A)(5)(i)", "2015"));
+        tfs.add(getTestFunctionality(35l, "(b)(1)(ii)(A)(5)(ii)", "2015"));
+        tfs.add(getTestFunctionality(53l, "(b)(1)(iii)(G)(1)(ii)", "2015"));
+        tfs.add(getTestFunctionality(73l, "(b)(1)(iii)(F)", "2015"));
+        tfs.add(getTestFunctionality(63l, "(b)(1)(iii)(E)", "2015"));
+        tfs.add(getTestFunctionality(57l, "170.102(13)(ii)(C)", "2015"));
+        tfs.add(getTestFunctionality(58l, "170.102(19)(i)", "2015"));
+        tfs.add(getTestFunctionality(58l, "170.102(19)(ii)", "2015"));
+
+        map.put("170.315 (b)(1)", tfs);
+
+        return map;
+    }
+
+    private List<TestFunctionalityCriteriaMapDTO> xxxx() {
+        List<TestFunctionalityCriteriaMapDTO> maps = new ArrayList<TestFunctionalityCriteriaMapDTO>();
+        Long id = 1l;
+        
+        for (List<TestFunctionalityDTO> dtos : getTestFunctionalityCriteriaMap2015().values()) {
+            for (TestFunctionalityDTO dto : dtos) {
+                TestFunctionalityCriteriaMapDTO map = new TestFunctionalityCriteriaMapDTO();
+                CertificationCriterionDTO cc = new CertificationCriterionDTO();
+                cc.setDeleted(false);
+                cc.setId(16l);
+                cc.setNumber("170.315 (b)(1)");
+                cc.setCertificationEdition("2015");
+                
+                map.setCriteria(cc);
+                map.setId(id);
+                map.setTestFunctionality(dto);
+                
+                id++;
+                
+                maps.add(map);
+            }
+        }
+        return maps;
+    }
+    
+    private TestFunctionalityDTO getTestFunctionality(Long id, String number, String edition) {
+        TestFunctionalityDTO tf = new TestFunctionalityDTO();
+        tf.setId(id);
+        tf.setName(number);
+        tf.setYear(edition);
+
+        return tf;
+    }
+    
 }
