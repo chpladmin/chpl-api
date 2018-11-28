@@ -92,17 +92,20 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     private List<String> g7g8g9Criterion = new ArrayList<String>();
     private List<String> d2d10Criterion = new ArrayList<String>();
 
-    @Autowired private MacraMeasureDAO macraDao;
-    @Autowired private TestFunctionalityDAO testFuncDao;
-    @Autowired private TestProcedureDAO testProcDao;
-    @Autowired private TestDataDAO testDataDao;
-    @Autowired private ErrorMessageUtil msgUtil;
+    private MacraMeasureDAO macraDao;
+    private TestFunctionalityDAO testFuncDao;
+    private TestProcedureDAO testProcDao;
+    private TestDataDAO testDataDao;
 
-    /**
-     * Default constructor.
-     */
-    public RequiredData2015Reviewer() {
-        super();
+    @Autowired
+    public RequiredData2015Reviewer(MacraMeasureDAO macraDao, TestFunctionalityDAO testFuncDao, TestProcedureDAO testProcDao, TestDataDAO testDataDao, ErrorMessageUtil msgUtil, CertificationResultRules certRules) {
+        super(msgUtil, certRules);
+
+        this.macraDao = macraDao;
+        this.testFuncDao = testFuncDao;
+        this.testProcDao = testProcDao;
+        this.testDataDao = testDataDao;
+
         e2e3Criterion.add("170.315 (e)(2)");
         e2e3Criterion.add("170.315 (e)(3)");
 
