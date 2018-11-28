@@ -1,10 +1,16 @@
 package gov.healthit.chpl.validation.pendingListing.reviewer;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -13,10 +19,16 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 public class RequiredDataReviewer implements Reviewer {
     private static final String G3_2014 = "170.314 (g)(3)";
     private static final String G3_2015 = "170.315 (g)(3)";
-    
-    @Autowired protected ErrorMessageUtil msgUtil;
-    @Autowired protected CertificationResultRules certRules;
-    
+
+    protected ErrorMessageUtil msgUtil;
+    protected CertificationResultRules certRules;
+
+    @Autowired
+    public RequiredDataReviewer(ErrorMessageUtil msgUtil, CertificationResultRules certRules) {
+        this.msgUtil = msgUtil;
+        this.certRules = certRules;
+    }
+
     @Override
     public void review(PendingCertifiedProductDTO listing) {
         if (listing.getCertificationEditionId() == null && StringUtils.isEmpty(listing.getCertificationEdition())) {
@@ -84,33 +96,47 @@ public class RequiredDataReviewer implements Reviewer {
 
         for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
             if (cert.getMeetsCriteria() == null) {
-                listing.getErrorMessages()
-                .add("0 or 1 is required to inidicate whether " + cert.getNumber() + " was met.");
+                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.metInvalid", cert.getNumber()));
             } else if (cert.getMeetsCriteria().booleanValue()) {
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP) && cert.getGap() == null) {
-                    listing.getErrorMessages().add(
-                            msgUtil.getMessage("listing.criteria.missingGap", cert.getNumber()));
+                    listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingGap", cert.getNumber()));
                 }
 
                 boolean gapEligibleAndTrue = false;
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP)
-                        && cert.getGap() != null && cert.getGap().booleanValue()) {
+                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP) && cert.getGap() != null
+                        && cert.getGap().booleanValue()) {
                     gapEligibleAndTrue = true;
                 }
 
                 if (!gapEligibleAndTrue
                         && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_PROCEDURE)
                         && (cert.getTestProcedures() == null || cert.getTestProcedures().size() == 0)) {
-                    listing.getErrorMessages().add(
-                            msgUtil.getMessage("listing.criteria.missingTestProcedure",
-                            cert.getNumber()));
+                    listing.getErrorMessages()
+                            .add(msgUtil.getMessage("listing.criteria.missingTestProcedure", cert.getNumber()));
                 }
                 if (cert.getSed() != null && cert.getSed().booleanValue()) {
                     foundSedCriteria = true;
                 }
-                if (cert.getNumber().equalsIgnoreCase(G3_2014)
-                        || cert.getNumber().equalsIgnoreCase(G3_2015)) {
+                if (cert.getNumber().equalsIgnoreCase(G3_2014) || cert.getNumber().equalsIgnoreCase(G3_2015)) {
                     attestsToSed = true;
+                }
+
+                if (cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 1) {
+                    List<String> g1Warnings =
+                            validateMacraMeasuresAreUniqueForCertificationResult(cert.getG1MacraMeasures(), cert.getNumber(), "listing.criteria.duplicateG1MacraMeasure");
+                    if (g1Warnings.size() > 0) {
+                        listing.getWarningMessages().addAll(g1Warnings);
+                        cert.setG1MacraMeasures(removeDuplicateMacraMeasures(cert.getG1MacraMeasures()));
+                    }
+                }
+
+                if (cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 1) {
+                    List<String> g2Warnings =
+                            validateMacraMeasuresAreUniqueForCertificationResult(cert.getG2MacraMeasures(), cert.getNumber(), "listing.criteria.duplicateG2MacraMeasure");
+                    if (g2Warnings.size() > 0) {
+                        listing.getWarningMessages().addAll(g2Warnings);
+                        cert.setG2MacraMeasures(removeDuplicateMacraMeasures(cert.getG2MacraMeasures()));
+                    }
                 }
             }
         }
@@ -120,5 +146,30 @@ public class RequiredDataReviewer implements Reviewer {
         if (!foundSedCriteria && attestsToSed) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.foundNoSedCriteriaButAttestingSed"));
         }
+    }
+    
+    private List<String> validateMacraMeasuresAreUniqueForCertificationResult(List<PendingCertificationResultMacraMeasureDTO> macraMeasures, String certNumber, String messageCode) {
+        List<String> messages = new ArrayList<String>();
+        Set<String> uniqueMacras = new HashSet<String>();
+        for (PendingCertificationResultMacraMeasureDTO macraMeasure : macraMeasures) {
+            if (uniqueMacras.contains(macraMeasure.getEnteredValue())) { // Duplicate
+                messages.add(msgUtil.getMessage(messageCode, certNumber, macraMeasure.getEnteredValue()));
+            } else {
+                uniqueMacras.add(macraMeasure.getEnteredValue());
+            }
+        }
+        return messages;
+    }
+    
+    private List<PendingCertificationResultMacraMeasureDTO> removeDuplicateMacraMeasures(List<PendingCertificationResultMacraMeasureDTO> macraMeasures) {
+        List<PendingCertificationResultMacraMeasureDTO> dedupedMacraMeasures = new ArrayList<PendingCertificationResultMacraMeasureDTO>();
+        Set<String> uniqueMacras = new HashSet<String>();
+        for (PendingCertificationResultMacraMeasureDTO macraMeasure : macraMeasures) {
+            if (!uniqueMacras.contains(macraMeasure.getEnteredValue())) {
+                dedupedMacraMeasures.add(macraMeasure);
+                uniqueMacras.add(macraMeasure.getEnteredValue());
+            }
+        }
+        return dedupedMacraMeasures;
     }
 }
