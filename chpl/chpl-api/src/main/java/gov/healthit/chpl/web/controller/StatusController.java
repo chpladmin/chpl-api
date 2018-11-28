@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.caching.CacheInitializor;
 import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.domain.CacheStatus;
-import gov.healthit.chpl.domain.CacheStatusName;
+import gov.healthit.chpl.domain.status.CacheStatus;
+import gov.healthit.chpl.domain.status.CacheStatusName;
+import gov.healthit.chpl.domain.status.ServerStatus;
+import gov.healthit.chpl.domain.status.ServerStatusName;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import net.sf.ehcache.Cache;
@@ -33,11 +35,16 @@ public class StatusController {
      * Get the status, indicating if the server is running at all.
      * @return JSON value that indicates the server is running
      */
-    @ApiOperation(value = "Check that the rest services are up and running.", notes = "")
+    @ApiOperation(
+            value = "Check that the rest services are up and running."
+                    + "{\"status\":\"OK\"} is returned if all is well.",
+                    notes = "")
     @RequestMapping(value = "/status", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody String getStatus() {
+    public @ResponseBody ServerStatus getStatus() {
         LOGGER.warn("/status called");
-        return "{\"status\": \"OK\"}";
+        ServerStatus response = new ServerStatus();
+        response.setStatus(ServerStatusName.OK.name());
+        return response;
     }
 
     /**
@@ -46,7 +53,7 @@ public class StatusController {
      */
     @ApiOperation(
             value = "Check the status of every cache. "
-                    + "{\"status\"OK\"} is returned if all caches are loaded and "
+                    + "{\"status\":\"OK\"} is returned if all caches are loaded and "
                     + "{\"status\":\"INITIALIZING\"} is returned if not. ",
                     notes = "")
     @RequestMapping(value = "/cache_status", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
