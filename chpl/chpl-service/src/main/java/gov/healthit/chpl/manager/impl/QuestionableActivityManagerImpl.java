@@ -114,21 +114,24 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
                 origDeveloper.getStatusEvents(), newDeveloper.getStatusEvents());
         for (QuestionableActivityDeveloperDTO currDevActivity : devActivities) {
             createDeveloperActivity(currDevActivity, newDeveloper.getId(), activityDate,
-                    activityUser, QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_ADDED);
+                    activityUser, QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_ADDED,
+                    currDevActivity.getReason());
         }
 
         devActivities = developerQuestionableActivityProvider.checkStatusHistoryRemoved(
                 origDeveloper.getStatusEvents(), newDeveloper.getStatusEvents());
         for (QuestionableActivityDeveloperDTO currDevActivity : devActivities) {
             createDeveloperActivity(currDevActivity, newDeveloper.getId(), activityDate,
-                    activityUser, QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_REMOVED);
+                    activityUser, QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_REMOVED,
+                    currDevActivity.getReason());
         }
 
         devActivities = developerQuestionableActivityProvider.checkStatusHistoryItemEdited(
                 origDeveloper.getStatusEvents(), newDeveloper.getStatusEvents());
         for (QuestionableActivityDeveloperDTO currDevActivity : devActivities) {
             createDeveloperActivity(currDevActivity, newDeveloper.getId(), activityDate,
-                    activityUser, QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_EDITED);
+                    activityUser, QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_EDITED,
+                    currDevActivity.getReason());
         }
     }
 
@@ -359,15 +362,22 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
     }
 
     private void createDeveloperActivity(final QuestionableActivityDeveloperDTO activity, final Long developerId,
-            final Date activityDate, final Long activityUser, final QuestionableActivityTriggerConcept trigger) {
+            final Date activityDate, final Long activityUser, final QuestionableActivityTriggerConcept trigger,
+            final String reason) {
         activity.setDeveloperId(developerId);
         activity.setActivityDate(activityDate);
         activity.setUserId(activityUser);
+        activity.setReason(reason);
         QuestionableActivityTriggerDTO triggerDto = getTrigger(trigger);
         activity.setTriggerId(triggerDto.getId());
         questionableActivityDao.create(activity);
     }
 
+    private void createDeveloperActivity(final QuestionableActivityDeveloperDTO activity, final Long developerId,
+            final Date activityDate, final Long activityUser, final QuestionableActivityTriggerConcept trigger) {
+        createDeveloperActivity(activity, developerId, activityDate, activityUser, trigger, null);
+    }
+    
     private void createProductActivity(final QuestionableActivityProductDTO activity, final Long productId,
             final Date activityDate, final Long activityUser, final QuestionableActivityTriggerConcept trigger) {
         activity.setProductId(productId);

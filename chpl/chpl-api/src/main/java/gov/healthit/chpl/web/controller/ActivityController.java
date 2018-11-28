@@ -99,7 +99,6 @@ public class ActivityController {
                     + "Those users are allowed to see activity for all certification bodies including that have been deleted. "
                     + "The default behavior is to show activity for non-deleted ACBs.")
     @RequestMapping(value = "/acbs", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     public List<ActivityEvent> activityForACBs(@RequestParam Long start, 
             @RequestParam Long end,
             @RequestParam(value = "showDeleted", required = false, defaultValue = "false") boolean showDeleted)
@@ -125,7 +124,6 @@ public class ActivityController {
                     + "do so if the certification body specified in the path has been deleted. "
                     + "A start and end date may optionally be provided to limit activity results.")
     @RequestMapping(value = "/acbs/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     public List<ActivityEvent> activityForACBById(@PathVariable("id") Long id,
             @RequestParam(required = false) Long start, @RequestParam(required = false) Long end,
             @RequestParam(value = "showDeleted", required = false, defaultValue = "false") boolean showDeleted)
@@ -224,7 +222,6 @@ public class ActivityController {
                     + "Those users are allowed to see activity for all testing labs including that have been deleted. "
                     + "The default behavior is to show activity for non-deleted ATLs.")
     @RequestMapping(value = "/atls", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ATL')")
     public List<ActivityEvent> activityforATLs(@RequestParam Long start, @RequestParam Long end,
             @RequestParam(value = "showDeleted", required = false, defaultValue = "false") boolean showDeleted)
             throws JsonParseException, IOException, ValidationException {
@@ -249,7 +246,6 @@ public class ActivityController {
                     + "do so if the testing lab specified in the path has been deleted. "
                     + "A start and end date may optionally be provided to limit activity results.")
     @RequestMapping(value = "/atls/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ATL')")
     public List<ActivityEvent> activityForATLById(@PathVariable("id") Long id,
             @RequestParam(required = false) Long start, @RequestParam(required = false) Long end,
             @RequestParam(value = "showDeleted", required = false, defaultValue = "false") boolean showDeleted)
@@ -298,7 +294,6 @@ public class ActivityController {
     @ApiOperation(value = "Get auditable data for all API keys",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
     @RequestMapping(value = "/api_keys", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public List<ActivityEvent> activityForApiKeys(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
@@ -508,7 +503,6 @@ public class ActivityController {
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
     @RequestMapping(value = "/pending_certified_products", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     public List<ActivityEvent> activityForPendingCertifiedProducts(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
@@ -525,7 +519,6 @@ public class ActivityController {
             notes = "A start and end date may optionally be provided to limit activity results.")
     @RequestMapping(value = "/pending_certified_products/{id}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     public List<ActivityEvent> activityForPendingCertifiedProductById(@PathVariable("id") Long id,
             @RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end)
@@ -644,7 +637,7 @@ public class ActivityController {
     @ApiOperation(value = "Get auditable data about all CHPL user accounts",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
     @RequestMapping(value = "/users", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ATL', 'ROLE_ACB', 'ROLE_CMS_STAFF', 'ROLE_ONC_STAFF')")
+    @PreAuthorize("isAuthenticated()")
     public List<ActivityEvent> activityForUsers(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
@@ -660,7 +653,6 @@ public class ActivityController {
     @ApiOperation(value = "Get auditable data about a specific CHPL user account.",
             notes = "A start and end date may optionally be provided to limit activity results.")
     @RequestMapping(value = "/users/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ATL', 'ROLE_ACB', 'ROLE_CMS_STAFF', 'ROLE_ONC_STAFF')")
     public List<ActivityEvent> activityForUsers(@PathVariable("id") Long id,
             @RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end)
@@ -746,7 +738,6 @@ public class ActivityController {
                     + "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
     @RequestMapping(value = "/user_activities", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
     public List<UserActivity> activityByUser(@RequestParam Long start,
             @RequestParam Long end)
             throws JsonParseException, IOException, UserRetrievalException, ValidationException {
@@ -761,7 +752,6 @@ public class ActivityController {
                     + "A start and end date may optionally be provided to limit activity results.")
     @RequestMapping(value = "/user_activities/{id}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
     public List<ActivityEvent> activityByUser(@PathVariable("id") Long id,
             @RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end)
@@ -1012,6 +1002,4 @@ public class ActivityController {
                     "Cannot search for activity with a date range more than " + maxActivityRangeInDays + " days.");
         }
     }
-
-    
 }

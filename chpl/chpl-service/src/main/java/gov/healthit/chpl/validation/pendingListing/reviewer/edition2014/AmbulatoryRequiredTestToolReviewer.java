@@ -16,8 +16,14 @@ public class AmbulatoryRequiredTestToolReviewer implements Reviewer {
             "170.314 (g)(1)", "170.314 (g)(2)", "170.314 (f)(3)"
     };
 
-    @Autowired private ErrorMessageUtil msgUtil;
-    @Autowired private CertificationResultRules certRules;
+    private ErrorMessageUtil msgUtil;
+    private CertificationResultRules certRules;
+
+    @Autowired
+    public AmbulatoryRequiredTestToolReviewer(ErrorMessageUtil msgUtil, CertificationResultRules certRules) {
+        this.msgUtil = msgUtil;
+        this.certRules = certRules;
+    }
 
     @Override
     public void review(final PendingCertifiedProductDTO listing) {

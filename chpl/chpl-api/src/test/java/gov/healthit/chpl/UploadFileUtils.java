@@ -15,8 +15,8 @@ public class UploadFileUtils {
     private static final Logger LOGGER = LogManager.getLogger(UploadFileUtils.class);
 
     private static final String UPLOAD_2014 = "2014_V11_hasGAP.csv";
-    private static final String UPLOAD_2015_V12 = "2015_v12_TPTD2_error_free.csv";
-    
+    private static final String UPLOAD_2015_V12 = "2015_Test_ICSA.csv";
+
     public static MultipartFile getUploadFile(final String edition, final String version){
         ClassLoader classLoader = UploadFileUtils.class.getClassLoader();
         File file = null;

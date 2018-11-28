@@ -50,7 +50,7 @@ public class RateLimitingInterceptor extends HandlerInterceptorAdapter implement
 
     private List<String> whitelist = new ArrayList<String>();
 
-    /** Defaul constructor. */
+    /** Default constructor. */
     public RateLimitingInterceptor() {
     }
 

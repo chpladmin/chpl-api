@@ -2,6 +2,7 @@ package gov.healthit.chpl.validation.listing.reviewer.edition2014;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -11,6 +12,7 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.util.CertificationResultRules;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.reviewer.RequiredDataReviewer;
 
 @Component("requiredData2014Reviewer")
@@ -26,6 +28,11 @@ public class RequiredData2014Reviewer extends RequiredDataReviewer {
             "170.314 (c)(1)", "170.314 (c)(2)", "170.314 (c)(3)"
     };
     
+    @Autowired
+    public RequiredData2014Reviewer(CertificationResultRules certRules, ErrorMessageUtil msgUtil) {
+        super(certRules, msgUtil);
+    }
+
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         super.review(listing);
