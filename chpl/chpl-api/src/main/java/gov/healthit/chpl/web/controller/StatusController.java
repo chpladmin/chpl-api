@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import gov.healthit.chpl.caching.CacheInitializor;
 import gov.healthit.chpl.domain.CacheStatusName;
 import io.swagger.annotations.Api;
@@ -49,7 +47,7 @@ public class StatusController {
                     + "{\"status\": \"INITIALIZING\"} is returned if not. ",
                     notes = "")
     @RequestMapping(value = "/cache_status", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody String getCacheStatus() throws JsonProcessingException {
+    public @ResponseBody String getCacheStatus() {
         CacheManager manager = CacheManager.getInstance();
         boolean anyPending = false;
         List<String> cacheNames = CacheInitializor.getPreInitializedCaches();
