@@ -1,6 +1,5 @@
 package gov.healthit.chpl.web.controller;
 
-import java.util.Date;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -11,13 +10,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.PrettyPrinter;
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.caching.CacheInitializor;
-import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.domain.CacheStatus;
 import gov.healthit.chpl.domain.CacheStatusName;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
