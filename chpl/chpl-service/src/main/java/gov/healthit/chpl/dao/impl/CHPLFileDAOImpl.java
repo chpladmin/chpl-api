@@ -32,11 +32,7 @@ public class CHPLFileDAOImpl extends BaseDAOImpl implements CHPLFileDAO {
         insert.setAssociatedDate(dto.getAssociatedDate());
         insert.setCreationDate(new Date());
         insert.setLastModifiedDate(new Date());
-        if (dto.getDeleted() != null) {
-            insert.setDeleted(dto.getDeleted());
-        } else {
-            insert.setDeleted(false);
-        }
+        insert.setDeleted(false);
         if (dto.getLastModifiedUser() != null) {
             insert.setLastModifiedUser(dto.getLastModifiedUser());
         } else {
