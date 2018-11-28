@@ -10,6 +10,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.PrettyPrinter;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import gov.healthit.chpl.caching.CacheInitializor;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.CacheStatus;
@@ -46,12 +51,11 @@ public class StatusController {
      */
     @ApiOperation(
             value = "Check the status of every cache. "
-                    + "{ status: 'OK' } is returned if all caches are loaded and "
-                    + "{ status: 'INITIALIZING' } is returned if not. ",
+                    + "{\"status\": \"OK\"} is returned if all caches are loaded and "
+                    + "{\"status\": \"INITIALIZING\"} is returned if not. ",
                     notes = "")
     @RequestMapping(value = "/cache_status", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody CacheStatus getCacheStatus() {
-        CacheStatus response = new CacheStatus();
+    public @ResponseBody String getCacheStatus() throws JsonProcessingException {
         CacheManager manager = CacheManager.getInstance();
         boolean anyPending = false;
         List<String> cacheNames = CacheInitializor.getPreInitializedCaches();
@@ -62,10 +66,9 @@ public class StatusController {
             }
         }
         if (anyPending) {
-            response.setStatus(CacheStatusName.INITIALIZING.name());
+            return "{\"status\": \"" + CacheStatusName.INITIALIZING.name() + "\"}";
         } else {
-            response.setStatus(CacheStatusName.OK.name());
+            return "{\"status\": \"" + CacheStatusName.OK.name() + "\"}";
         }
-        return response;
     }
 }
