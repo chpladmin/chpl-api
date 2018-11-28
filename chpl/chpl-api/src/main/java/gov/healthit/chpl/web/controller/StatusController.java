@@ -1,6 +1,5 @@
 package gov.healthit.chpl.web.controller;
 
-import java.util.Date;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -11,8 +10,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.caching.CacheInitializor;
-import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.domain.CacheStatus;
 import gov.healthit.chpl.domain.CacheStatusName;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -46,12 +43,11 @@ public class StatusController {
      */
     @ApiOperation(
             value = "Check the status of every cache. "
-                    + "{ status: 'OK' } is returned if all caches are loaded and "
-                    + "{ status: 'INITIALIZING' } is returned if not. ",
+                    + "{\"status\": \"OK\"} is returned if all caches are loaded and "
+                    + "{\"status\": \"INITIALIZING\"} is returned if not. ",
                     notes = "")
     @RequestMapping(value = "/cache_status", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody CacheStatus getCacheStatus() {
-        CacheStatus response = new CacheStatus();
+    public @ResponseBody String getCacheStatus() {
         CacheManager manager = CacheManager.getInstance();
         boolean anyPending = false;
         List<String> cacheNames = CacheInitializor.getPreInitializedCaches();
@@ -62,10 +58,9 @@ public class StatusController {
             }
         }
         if (anyPending) {
-            response.setStatus(CacheStatusName.INITIALIZING.name());
+            return "{\"status\": \"" + CacheStatusName.INITIALIZING.name() + "\"}";
         } else {
-            response.setStatus(CacheStatusName.OK.name());
+            return "{\"status\": \"" + CacheStatusName.OK.name() + "\"}";
         }
-        return response;
     }
 }
