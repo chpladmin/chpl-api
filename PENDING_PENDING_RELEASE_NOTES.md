@@ -16,6 +16,7 @@ _Date TBD_
   * /data/search_options
   * /atls
   * /acbs
+* Removed space following the colon in the /cache_status response. {"status": "OK"} becomes {"status":"OK"}
 
 ### New Features
 * Add retired flag to ACBs and ATLs to replace the functionality that previously used the deleted flag.

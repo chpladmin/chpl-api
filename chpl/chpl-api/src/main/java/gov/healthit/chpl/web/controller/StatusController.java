@@ -46,8 +46,8 @@ public class StatusController {
      */
     @ApiOperation(
             value = "Check the status of every cache. "
-                    + "{ status: 'OK' } is returned if all caches are loaded and "
-                    + "{ status: 'INITIALIZING' } is returned if not. ",
+                    + "{\"status\"OK\"} is returned if all caches are loaded and "
+                    + "{\"status\":\"INITIALIZING\"} is returned if not. ",
                     notes = "")
     @RequestMapping(value = "/cache_status", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody CacheStatus getCacheStatus() {
