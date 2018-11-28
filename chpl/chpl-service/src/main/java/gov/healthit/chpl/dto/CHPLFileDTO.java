@@ -1,67 +1,35 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.dto;
 
 import java.util.Date;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+import gov.healthit.chpl.entity.CHPLFileEntity;
 
-@Entity
-@Table(name = "files")
-public class FilesEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "file_id", nullable = false)
+public class CHPLFileDTO {
     private Long id;
-
-    @Basic(optional = false)
-    @OneToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "file_type_id", nullable = false, insertable = true,
-            updatable = false)
-    private FileTypeEntity fileType;
-
-    @Basic(optional = false)
-    @Column(name = "file_data")
-    private byte[] fileData;
-
-    @Basic(optional = true)
-    @Column(name = "file_name", nullable = true)
+    private FileTypeDTO fileType;
     private String fileName;
-
-    @Basic(optional = true)
-    @Column(name = "content_type", nullable = true)
     private String contentType;
-
-    @Basic(optional = true)
-    @Column(name = "associated_date", nullable = true)
+    private byte[] fileData;
     private Date associatedDate;
-
-    @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false)
     private Date creationDate;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false)
     private Date lastModifiedDate;
-
-    @Basic(optional = false)
-    @NotNull()
-    @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
-
-    @Basic(optional = false)
-    @NotNull()
-    @Column(nullable = false)
     private Boolean deleted;
+
+    public CHPLFileDTO() { }
+
+    public CHPLFileDTO(CHPLFileEntity entity) {
+        this.id = entity.getId();
+        this.fileType = new FileTypeDTO(entity.getFileType());
+        this.fileName = entity.getFileName();
+        this.contentType = entity.getContentType();
+        this.fileData = entity.getFileData();
+        this.associatedDate = entity.getAssociatedDate();
+        this.creationDate = entity.getCreationDate();
+        this.lastModifiedDate = entity.getLastModifiedDate();
+        this.lastModifiedUser = entity.getLastModifiedUser();
+        this.deleted = entity.getDeleted();
+    }
 
     public Long getId() {
         return id;
@@ -103,11 +71,11 @@ public class FilesEntity {
         this.deleted = deleted;
     }
 
-    public FileTypeEntity getFileType() {
+    public FileTypeDTO getFileType() {
         return fileType;
     }
 
-    public void setFileType(final FileTypeEntity fileType) {
+    public void setFileType(final FileTypeDTO fileType) {
         this.fileType = fileType;
     }
 
@@ -142,4 +110,5 @@ public class FilesEntity {
     public void setContentType(final String contentType) {
         this.contentType = contentType;
     }
+
 }

@@ -3,37 +3,36 @@ package gov.healthit.chpl.manager.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.dao.FilesDAO;
+import gov.healthit.chpl.dao.CHPLFileDAO;
+import gov.healthit.chpl.dto.CHPLFileDTO;
 import gov.healthit.chpl.dto.FileTypeDTO;
-import gov.healthit.chpl.dto.FilesDTO;
-import gov.healthit.chpl.entity.FilesEntity;
+import gov.healthit.chpl.entity.CHPLFileEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.manager.FilesManager;
+import gov.healthit.chpl.manager.CHPLFileManager;
 
 @Service
-public class FilesManagerImpl implements FilesManager {
+public class CHPLFilesManagerImpl implements CHPLFileManager {
     private static Long API_DOCUMENTATION_FILE_TYPE = 1l;
-    private FilesDAO filesDAO;
+    private CHPLFileDAO chplFileDAO;
 
     @Autowired
-    public FilesManagerImpl(final FilesDAO filesDAO) {
-        this.filesDAO = filesDAO;
+    public CHPLFilesManagerImpl(final CHPLFileDAO chplFileDAO) {
+        this.chplFileDAO = chplFileDAO;
     }
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public FilesDTO addApiDocumentationFile(final FilesDTO newFileDTO) 
+    //@PreAuthorize("hasRole('ROLE_ADMIN')")
+    public CHPLFileDTO addApiDocumentationFile(final CHPLFileDTO newFileDTO)
             throws EntityCreationException, EntityRetrievalException {
         //Need to delete the existing 'current' file
-        FilesDTO toDelete = getApiDocumentation();
+        CHPLFileDTO toDelete = getApiDocumentation();
         if (toDelete != null) {
-            filesDAO.delete(toDelete.getId());
+            chplFileDAO.delete(toDelete.getId());
         }
 
         //Add the new Api Documentation
@@ -41,19 +40,19 @@ public class FilesManagerImpl implements FilesManager {
         fileTypeDTO.setId(API_DOCUMENTATION_FILE_TYPE);
         newFileDTO.setFileType(fileTypeDTO);
 
-        FilesEntity entity = filesDAO.create(newFileDTO);
+        CHPLFileEntity entity = chplFileDAO.create(newFileDTO);
 
-        FilesDTO created = new FilesDTO(entity);
+        CHPLFileDTO created = new CHPLFileDTO(entity);
 
         return created;
     }
 
     @Override
-    public FilesDTO getApiDocumentation() throws EntityRetrievalException {
+    public CHPLFileDTO getApiDocumentation() throws EntityRetrievalException {
         FileTypeDTO fileTypeDTO = new FileTypeDTO();
         fileTypeDTO.setId(API_DOCUMENTATION_FILE_TYPE);
 
-        List<FilesDTO> dtos = filesDAO.findByFileType(fileTypeDTO);
+        List<CHPLFileDTO> dtos = chplFileDAO.findByFileType(fileTypeDTO);
 
         //Business logic dictates there should only be one active Api Doc file
         if (dtos != null && dtos.size() > 0) {
@@ -62,5 +61,4 @@ public class FilesManagerImpl implements FilesManager {
             return null;
         }
     }
-
 }

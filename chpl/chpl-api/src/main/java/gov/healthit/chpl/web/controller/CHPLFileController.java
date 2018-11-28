@@ -16,26 +16,26 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 
-import gov.healthit.chpl.dto.FilesDTO;
+import gov.healthit.chpl.dto.CHPLFileDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.manager.FilesManager;
+import gov.healthit.chpl.manager.CHPLFileManager;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @Api(value = "files")
 @RestController
 @RequestMapping("/files")
-public class FilesController {
+public class CHPLFileController {
     private static final String APPLICATION_MS_EXCEL =
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
-    private FilesManager filesManager;
+    private CHPLFileManager chplFileManager;
 
     @Autowired
-    public FilesController(final FilesManager filesManager) {
-        this.filesManager = filesManager;
+    public CHPLFileController(final CHPLFileManager chplFileManager) {
+        this.chplFileManager = chplFileManager;
     }
 
     @ApiOperation(value = "Upload an API Documenation file",
@@ -43,7 +43,7 @@ public class FilesController {
     @RequestMapping(value = "/api_documentation",
             method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
-    public synchronized ResponseEntity<FilesDTO> uploadApiDocumentation(
+    public synchronized ResponseEntity<CHPLFileDTO> uploadApiDocumentation(
             final @RequestParam("file") MultipartFile file,
             final @RequestParam("file_update_date") Long date)
             throws EntityRetrievalException, EntityCreationException, ValidationException,
@@ -53,22 +53,22 @@ public class FilesController {
             throw new ValidationException("You cannot upload an empty file!");
         }
 
-        FilesDTO newFileDTO = new FilesDTO();
+        CHPLFileDTO newFileDTO = new CHPLFileDTO();
         newFileDTO.setAssociatedDate(new Date(date));
         newFileDTO.setContentType(file.getContentType());
         newFileDTO.setFileName(file.getOriginalFilename());
         newFileDTO.setFileData(file.getBytes());
 
-        FilesDTO fileDTO = filesManager.addApiDocumentationFile(newFileDTO);
+        CHPLFileDTO fileDTO = chplFileManager.addApiDocumentationFile(newFileDTO);
 
-        return new ResponseEntity<FilesDTO>(fileDTO, HttpStatus.OK);
+        return new ResponseEntity<CHPLFileDTO>(fileDTO, HttpStatus.OK);
     }
 
     @ApiOperation(value = "Retrieve an API Documenation file",
             notes = "Retrieves the current API Documenation file.")
     @RequestMapping(value = "/api_documentation", method = RequestMethod.GET, produces = APPLICATION_MS_EXCEL)
     public synchronized ResponseEntity<byte[]> getApiDocumentationFile() throws EntityRetrievalException {
-        FilesDTO fileDTO = filesManager.getApiDocumentation();
+        CHPLFileDTO fileDTO = chplFileManager.getApiDocumentation();
 
         String filename = "APIDocData-" + getDateAsYYYYMMDD(fileDTO.getAssociatedDate()) + ".xlsx";
 
@@ -84,9 +84,9 @@ public class FilesController {
     @RequestMapping(value = "/api_documentation/details",
         method = RequestMethod.GET,
         produces = "application/json; charset=utf-8")
-    public synchronized ResponseEntity<FilesDTO> getApiDocumentationFileDetails() throws EntityRetrievalException {
-        FilesDTO fileDTO = filesManager.getApiDocumentation();
-        return new ResponseEntity<FilesDTO>(fileDTO, HttpStatus.OK);
+    public synchronized ResponseEntity<CHPLFileDTO> getApiDocumentationFileDetails() throws EntityRetrievalException {
+        CHPLFileDTO fileDTO = chplFileManager.getApiDocumentation();
+        return new ResponseEntity<CHPLFileDTO>(fileDTO, HttpStatus.OK);
     }
 
     private String getDateAsYYYYMMDD(final Date dateToFormat) {
