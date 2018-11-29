@@ -1,6 +1,5 @@
 package gov.healthit.chpl.web.controller;
 
-import java.util.Date;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -11,11 +10,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.caching.CacheInitializor;
-import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.status.CacheStatus;
 import gov.healthit.chpl.domain.status.CacheStatusName;
 import gov.healthit.chpl.domain.status.ServerStatus;
 import gov.healthit.chpl.domain.status.ServerStatusName;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import net.sf.ehcache.Cache;
