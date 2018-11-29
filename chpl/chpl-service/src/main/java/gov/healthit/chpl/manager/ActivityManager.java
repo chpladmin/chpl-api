@@ -23,7 +23,8 @@ public interface ActivityManager {
             Object newData) throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
 
     void addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
-            Object newData, String reason) throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
+            Object newData, String reason)
+                    throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
 
     void addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
             Object newData, Long asUser)
@@ -45,13 +46,13 @@ public interface ActivityManager {
     public List<ActivityEvent> getPublicAnnouncementActivity(Long id,Date startDate,
             Date endDate) throws JsonParseException, IOException;
 
-    List<ActivityEvent> getAllAcbActivity(boolean showDeleted, Date startDate,
+    List<ActivityEvent> getAllAcbActivity(Date startDate,
             Date endDate) throws JsonParseException, IOException;
 
     public List<ActivityEvent> getAcbActivity(List<CertificationBodyDTO> acbs, 
             Date startDate, Date endDate) throws JsonParseException, IOException;
 
-    public List<ActivityEvent> getAllAtlActivity(boolean showDeleted, Date startDate,
+    public List<ActivityEvent> getAllAtlActivity(Date startDate,
             Date endDate) throws JsonParseException, IOException;
 
     public List<ActivityEvent> getAtlActivity(List<TestingLabDTO> atls, Date startDate,
@@ -74,8 +75,6 @@ public interface ActivityManager {
 
     List<ActivityEvent> getApiKeyActivity(Date startDate,
             Date endDate) throws JsonParseException, IOException;
-
-    void deleteActivity(Long toDelete) throws EntityRetrievalException;
 
     List<UserActivity> getActivityByUserInDateRange(Date startDate, Date endDate)
             throws JsonParseException, IOException, UserRetrievalException;

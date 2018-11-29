@@ -173,12 +173,11 @@ public class ListingCollectionCacheRefreshListener {
         }
     }
 
-    @Async
     private void refreshCacheAsync() {
-        cacheUpdater.refreshCache();
+        cacheUpdater.refreshCacheAsync();
     }
 
     private void refreshCache() {
-        cacheUpdater.refreshCache();
+        cacheUpdater.refreshCacheSync();
     }
 }

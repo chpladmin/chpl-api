@@ -94,27 +94,22 @@ public class ActivityController {
     @ApiOperation(value = "Get auditable data for certification bodies.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "
                     + "Only users calling this API with ROLE_ADMIN may set the 'showDeleted' flag to true. "
-                    + "Those users are allowed to see activity for all certification bodies including that have been deleted. "
+                    + "Those users are allowed to see activity for all "
+                    + "certification bodies including that have been deleted. "
                     + "The default behavior is to show activity for non-deleted ACBs.")
     @RequestMapping(value = "/acbs", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForACBs(@RequestParam final Long start,
-            @RequestParam final Long end,
-            @RequestParam(value = "showDeleted", required = false, defaultValue = "false") final boolean showDeleted)
+            @RequestParam final Long end)
                     throws JsonParseException, IOException, ValidationException {
 
-        if (!Util.isUserRoleAdmin() && showDeleted) {
-            LOGGER.warn("Non-admin user " + Util.getUsername() + " tried to see activity for deleted ACBs");
-            throw new AccessDeniedException("Only Admins can see deleted ACB's");
-        } else {
-            Date startDate = new Date(start);
-            Date endDate = new Date(end);
-            validateActivityDates(start, end);
-            if (Util.isUserRoleAdmin()) {
-                return activityManager.getAllAcbActivity(showDeleted, startDate, endDate);
-            }
-            List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser(showDeleted);
-            return activityManager.getAcbActivity(allowedAcbs, startDate, endDate);
+        Date startDate = new Date(start);
+        Date endDate = new Date(end);
+        validateActivityDates(start, end);
+        if (Util.isUserRoleAdmin()) {
+            return activityManager.getAllAcbActivity(startDate, endDate);
         }
+        List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser();
+        return activityManager.getAcbActivity(allowedAcbs, startDate, endDate);
     }
 
     @ApiOperation(value = "Get auditable data for a specific certification body.",
@@ -122,51 +117,51 @@ public class ActivityController {
                     + "do so if the certification body specified in the path has been deleted. "
                     + "A start and end date may optionally be provided to limit activity results.")
     @RequestMapping(value = "/acbs/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+
     public List<ActivityEvent> activityForACBById(@PathVariable("id") final Long id,
-            @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end,
-            @RequestParam(value = "showDeleted", required = false, defaultValue = "false") final boolean showDeleted)
+            @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
-        acbManager.getById(id, showDeleted); // throws 404 if ACB doesn't exist
-
-        if (!Util.isUserRoleAdmin() && showDeleted) {
-            LOGGER.warn("Non-admin user " + Util.getUsername() + " tried to see activity for deleted ACB " + id);
-            throw new AccessDeniedException("Only Admins can see deleted ACB's");
-        } else {
-            //if one of start of end is provided then the other must also be provided.
-            //if neither is provided then query all dates
-            Date startDate = new Date(0);
-            Date endDate = new Date();
-            if (start != null && end != null) {
-                validateActivityDates(start, end);
-                startDate = new Date(start);
-                endDate = new Date(end);
-            } else if (start == null && end != null) {
-                throw new IllegalArgumentException(messageSource.getMessage(
-                        new DefaultMessageSourceResolvable("activity.missingStartHasEnd"),
-                        LocaleContextHolder.getLocale()));
-            } else if (start != null && end == null) {
-                throw new IllegalArgumentException(messageSource.getMessage(
-                        new DefaultMessageSourceResolvable("activity.missingEndHasStart"),
-                        LocaleContextHolder.getLocale()));
-            }
-
-            List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser(showDeleted);
-            CertificationBodyDTO acb = null;
-            for (CertificationBodyDTO allowedAcb : allowedAcbs) {
-                if (allowedAcb.getId().longValue() == id.longValue()) {
-                    acb = allowedAcb;
-                }
-            }
-            if (acb == null) {
-                String err = String.format(messageSource.getMessage(
-                        new DefaultMessageSourceResolvable("acb.accessDenied"),
-                        LocaleContextHolder.getLocale()), Util.getUsername(), id);
-                throw new AccessDeniedException(err);
-            }
-            List<CertificationBodyDTO> acbs = new ArrayList<CertificationBodyDTO>();
-            acbs.add(acb);
-            return activityManager.getAcbActivity(acbs, startDate, endDate);
+        CertificationBodyDTO acb = acbManager.getById(id); // throws 404 if ACB doesn't exist
+        if (acb != null && acb.isRetired() && !Util.isUserRoleAdmin()) {
+            LOGGER.warn("Non-admin user " + Util.getUsername()
+            + " tried to see activity for retired ACB " + acb.getName());
+            throw new AccessDeniedException("Only Admins can see retired ACBs.");
         }
+
+        //if one of start of end is provided then the other must also be provided.
+        //if neither is provided then query all dates
+        Date startDate = new Date(0);
+        Date endDate = new Date();
+        if (start != null && end != null) {
+            validateActivityDates(start, end);
+            startDate = new Date(start);
+            endDate = new Date(end);
+        } else if (start == null && end != null) {
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("activity.missingStartHasEnd"),
+                    LocaleContextHolder.getLocale()));
+        } else if (start != null && end == null) {
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("activity.missingEndHasStart"),
+                    LocaleContextHolder.getLocale()));
+        }
+
+        List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser();
+        acb = null;
+        for (CertificationBodyDTO allowedAcb : allowedAcbs) {
+            if (allowedAcb.getId().longValue() == id.longValue()) {
+                acb = allowedAcb;
+            }
+        }
+        if (acb == null) {
+            String err = String.format(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("acb.accessDenied"),
+                    LocaleContextHolder.getLocale()), Util.getUsername(), id);
+            throw new AccessDeniedException(err);
+        }
+        List<CertificationBodyDTO> acbs = new ArrayList<CertificationBodyDTO>();
+        acbs.add(acb);
+        return activityManager.getAcbActivity(acbs, startDate, endDate);
     }
 
     @ApiOperation(value = "Get auditable data for all announcements",
@@ -220,23 +215,16 @@ public class ActivityController {
                     + "Those users are allowed to see activity for all testing labs including that have been deleted. "
                     + "The default behavior is to show activity for non-deleted ATLs.")
     @RequestMapping(value = "/atls", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ActivityEvent> activityforATLs(@RequestParam final Long start, @RequestParam final Long end,
-            @RequestParam(value = "showDeleted", required = false, defaultValue = "false") final boolean showDeleted)
-                    throws JsonParseException, IOException, ValidationException {
-
-        if (!Util.isUserRoleAdmin() && showDeleted) {
-            LOGGER.warn("Non-admin user " + Util.getUsername() + " tried to see activity for deleted ATLs");
-            throw new AccessDeniedException("Only Admins can see deleted ATL's");
-        } else {
-            Date startDate = new Date(start);
-            Date endDate = new Date(end);
-            validateActivityDates(start, end);
-            if (Util.isUserRoleAdmin()) {
-                return activityManager.getAllAtlActivity(showDeleted, startDate, endDate);
-            }
-            List<TestingLabDTO> allowedAtls = atlManager.getAllForUser(showDeleted);
-            return activityManager.getAtlActivity(allowedAtls, startDate, endDate);
+    public List<ActivityEvent> activityforATLs(@RequestParam final Long start, @RequestParam final Long end)
+            throws JsonParseException, IOException, ValidationException {
+        Date startDate = new Date(start);
+        Date endDate = new Date(end);
+        validateActivityDates(start, end);
+        if (Util.isUserRoleAdmin()) {
+            return activityManager.getAllAtlActivity(startDate, endDate);
         }
+        List<TestingLabDTO> allowedAtls = atlManager.getAllForUser();
+        return activityManager.getAtlActivity(allowedAtls, startDate, endDate);
     }
 
     @ApiOperation(value = "Get auditable data for a specific testing lab.",
@@ -245,48 +233,47 @@ public class ActivityController {
                     + "A start and end date may optionally be provided to limit activity results.")
     @RequestMapping(value = "/atls/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForATLById(@PathVariable("id") final Long id,
-            @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end,
-            @RequestParam(value = "showDeleted", required = false, defaultValue = "false") final boolean showDeleted)
+            @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
-        atlManager.getById(id, showDeleted); // throws 404 if bad id
-
-        if (!Util.isUserRoleAdmin() && showDeleted) {
-            LOGGER.warn("Non-admin user " + Util.getUsername() + " tried to see activity for deleted ATL " + id);
-            throw new AccessDeniedException("Only Admins can see deleted ATL's");
-        } else {
-            //if one of start of end is provided then the other must also be provided.
-            //if neither is provided then query all dates
-            Date startDate = new Date(0);
-            Date endDate = new Date();
-            if (start != null && end != null) {
-                validateActivityDates(start, end);
-                startDate = new Date(start);
-                endDate = new Date(end);
-            } else if (start == null && end != null) {
-                throw new IllegalArgumentException(messageSource.getMessage(
-                        new DefaultMessageSourceResolvable("activity.missingStartHasEnd"),
-                        LocaleContextHolder.getLocale()));
-            } else if (start != null && end == null) {
-                throw new IllegalArgumentException(messageSource.getMessage(
-                        new DefaultMessageSourceResolvable("activity.missingEndHasStart"),
-                        LocaleContextHolder.getLocale()));
-            }
-
-            List<TestingLabDTO> allowedAtls = atlManager.getAllForUser(showDeleted);
-            TestingLabDTO atl = null;
-            for (TestingLabDTO allowedAtl : allowedAtls) {
-                if (allowedAtl.getId().longValue() == id.longValue()) {
-                    atl = allowedAtl;
-                }
-            }
-            if (atl == null) {
-                throw new AccessDeniedException("User " + Util.getUsername() + " does not have access to "
-                        + "activity for testing lab with ID " + id);
-            }
-            List<TestingLabDTO> atls = new ArrayList<TestingLabDTO>();
-            atls.add(atl);
-            return activityManager.getAtlActivity(atls, startDate, endDate);
+        TestingLabDTO atl = atlManager.getById(id); // throws 404 if bad id
+        if (atl != null && atl.isRetired() && !Util.isUserRoleAdmin()) {
+            LOGGER.warn("Non-admin user " + Util.getUsername()
+            + " tried to see activity for retired ATL " + atl.getName());
+            throw new AccessDeniedException("Only Admins can see retired ATLs.");
         }
+
+        //if one of start of end is provided then the other must also be provided.
+        //if neither is provided then query all dates
+        Date startDate = new Date(0);
+        Date endDate = new Date();
+        if (start != null && end != null) {
+            validateActivityDates(start, end);
+            startDate = new Date(start);
+            endDate = new Date(end);
+        } else if (start == null && end != null) {
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("activity.missingStartHasEnd"),
+                    LocaleContextHolder.getLocale()));
+        } else if (start != null && end == null) {
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("activity.missingEndHasStart"),
+                    LocaleContextHolder.getLocale()));
+        }
+
+        List<TestingLabDTO> allowedAtls = atlManager.getAllForUser();
+        atl = null;
+        for (TestingLabDTO allowedAtl : allowedAtls) {
+            if (allowedAtl.getId().longValue() == id.longValue()) {
+                atl = allowedAtl;
+            }
+        }
+        if (atl == null) {
+            throw new AccessDeniedException("User " + Util.getUsername() + " does not have access to "
+                    + "activity for testing lab with ID " + id);
+        }
+        List<TestingLabDTO> atls = new ArrayList<TestingLabDTO>();
+        atls.add(atl);
+        return activityManager.getAtlActivity(atls, startDate, endDate);
     }
 
     @ApiOperation(value = "Get auditable data for all API keys",
@@ -451,7 +438,7 @@ public class ActivityController {
         if (Util.isUserRoleAdmin()) {
             return activityManager.getAllPendingListingActivity(startDate, endDate);
         }
-        List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser(false);
+        List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser();
         return activityManager.getPendingListingActivityByAcb(allowedAcbs, startDate, endDate);
     }
 
@@ -463,7 +450,8 @@ public class ActivityController {
             @RequestParam(required = false) final Long start,
             @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
-        List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser(false);
+        List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser();
+
         //pcpManager will return 404 if the user is not allowed to access it b/c of acb permissions
         PendingCertifiedProductDetails pendingListing = pcpManager.getById(allowedAcbs, id, true);
 
@@ -724,8 +712,9 @@ public class ActivityController {
         allowedUserIds.add(Util.getCurrentUser().getId());
 
         //user can see activity for other users in the same acb
+
         if (Util.isUserRoleAcbAdmin()) {
-            List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser(false);
+            List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser();
             for (CertificationBodyDTO acb : allowedAcbs) {
                 List<UserDTO> acbUsers = acbManager.getAllUsersOnAcb(acb);
                 for (UserDTO user : acbUsers) {
@@ -735,7 +724,7 @@ public class ActivityController {
         }
         //user can see activity for other users in the same atl
         if (Util.isUserRoleAtlAdmin()) {
-            List<TestingLabDTO> allowedAtls = atlManager.getAllForUser(false);
+            List<TestingLabDTO> allowedAtls = atlManager.getAllForUser();
             for (TestingLabDTO atl : allowedAtls) {
                 List<UserDTO> atlUsers = atlManager.getAllUsersOnAtl(atl);
                 for (UserDTO user : atlUsers) {
@@ -762,7 +751,7 @@ public class ActivityController {
 
     private List<ActivityEvent> getActivityEventsForCertifiedProductsByIdAndDateRange(final Long id,
             final Date startDate, final Date endDate)
-            throws JsonParseException, IOException {
+                    throws JsonParseException, IOException {
 
         List<ActivityEvent> events = null;
         ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT;
@@ -865,7 +854,7 @@ public class ActivityController {
 
     private List<ActivityEvent> getActivityEventsForAnnouncement(final Long id,
             final Date startDate, final Date endDate)
-            throws JsonParseException, IOException {
+                    throws JsonParseException, IOException {
         if (Util.getCurrentUser() == null) {
             LOGGER.info("Anonymous user requested public announcement activity "
                     + "for announcement id " + id + " between " + startDate + " and "

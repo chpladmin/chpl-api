@@ -121,7 +121,7 @@ public class SurveillanceController implements MessageSourceAware {
                             LocaleContextHolder.getLocale())));
         }
 
-        List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
+        List<CertificationBodyDTO> acbs = acbManager.getAllForUser();
         List<Surveillance> pendingSurvs = new ArrayList<Surveillance>();
 
         if (acbs != null) {
@@ -485,7 +485,7 @@ public class SurveillanceController implements MessageSourceAware {
     private @ResponseBody String deletePendingSurveillance(final Long id)
             throws EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException,
             JsonProcessingException, EntityRetrievalException, EntityCreationException {
-        List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
+        List<CertificationBodyDTO> acbs = acbManager.getAllForUser();
         survManager.deletePendingSurveillance(acbs, id, false);
         return "{\"success\" : true}";
     }
@@ -509,7 +509,7 @@ public class SurveillanceController implements MessageSourceAware {
         }
 
         ObjectsMissingValidationException possibleExceptions = new ObjectsMissingValidationException();
-        List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
+        List<CertificationBodyDTO> acbs = acbManager.getAllForUser();
         for (Long id : idList.getIds()) {
             try {
                 survManager.deletePendingSurveillance(acbs, id, false);

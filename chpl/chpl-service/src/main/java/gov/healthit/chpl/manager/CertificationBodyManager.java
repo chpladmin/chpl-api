@@ -16,36 +16,35 @@ import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 
 public interface CertificationBodyManager {
 
-    void addPermission(CertificationBodyDTO acb, Long userId, Permission permission)
+    public void addPermission(CertificationBodyDTO acb, Long userId, Permission permission)
             throws UserRetrievalException;
 
-    void deletePermission(CertificationBodyDTO acb, Sid recipient, Permission permission);
+    public void deletePermission(CertificationBodyDTO acb, Sid recipient, Permission permission);
 
-    void deleteAllPermissionsOnAcb(CertificationBodyDTO acb, Sid recipient);
+    public void deleteAllPermissionsOnAcb(CertificationBodyDTO acb, Sid recipient);
 
-    void deletePermissionsForUser(UserDTO userDto) throws UserRetrievalException;
+    public void deletePermissionsForUser(UserDTO userDto) throws UserRetrievalException;
 
-    CertificationBodyDTO create(CertificationBodyDTO acb)
+    public CertificationBodyDTO create(CertificationBodyDTO acb)
             throws UserRetrievalException, EntityCreationException, EntityRetrievalException, JsonProcessingException;
 
-    CertificationBodyDTO update(CertificationBodyDTO acb) throws EntityRetrievalException,
+    public CertificationBodyDTO update(CertificationBodyDTO acb) throws EntityRetrievalException,
             JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException;
 
-    void undelete(CertificationBodyDTO acb)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException;
+    public CertificationBodyDTO retire(Long acbId) throws EntityRetrievalException,
+        JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException;
 
-    void delete(CertificationBodyDTO acb)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException;
+    public CertificationBodyDTO unretire(Long acbId) throws EntityRetrievalException,
+    JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException;
 
-    List<CertificationBodyDTO> getAllForUser(boolean showDeleted);
+    public List<CertificationBodyDTO> getAllForUser();
 
-    List<CertificationBodyDTO> getAll(boolean showDeleted);
+    public List<CertificationBodyDTO> getAll();
+    public List<CertificationBodyDTO> getAllActive();
 
-    CertificationBodyDTO getById(Long id) throws EntityRetrievalException;
+    public CertificationBodyDTO getById(Long id) throws EntityRetrievalException;
 
-    CertificationBodyDTO getById(Long id, boolean includeDeleted) throws EntityRetrievalException;
+    public List<UserDTO> getAllUsersOnAcb(CertificationBodyDTO acb);
 
-    List<UserDTO> getAllUsersOnAcb(CertificationBodyDTO acb);
-
-    List<Permission> getPermissionsForUser(CertificationBodyDTO acb, Sid recipient);
+    public List<Permission> getPermissionsForUser(CertificationBodyDTO acb, Sid recipient);
 }
