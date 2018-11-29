@@ -248,19 +248,7 @@ public class ActivityControllerTest {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		activityController.activityForATLById(-100L, null, null);
 	}
-	
-	@Transactional
-	@Test(expected=EntityRetrievalException.class)
-	public void testGetCertificationActivityWithBadId() 
-		throws EntityRetrievalException, IOException, ValidationException {
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		Calendar start = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        start.set(2015, 9, 1, 0, 0);
-        Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        end.set(2015, 9, 20, 0, 0);
-		activityController.activityForCertificationById(-100L, null, null);
-	}
-	
+
 	@Transactional
 	@Test(expected=EntityRetrievalException.class)
 	public void testGetListingActivityWithBadId() 

@@ -48,19 +48,6 @@ public class MissingReasonListener {
     }
 
     /**
-     * @param updateRequest - ListingUpdateRequest
-     * @throws EntityRetrievalException
-     * @throws MissingReasonException
-     */
-    @Before("execution(* "
-            + "gov.healthit.chpl.web.controller.CertifiedProductController.updateCertifiedProductDeprecated(..)) && "
-            + "args(updateRequest,..)")
-    public void checkReasonProvidedIfRequiredOnListingUpdateDeprecated(final ListingUpdateRequest updateRequest)
-            throws EntityRetrievalException, MissingReasonException {
-        checkReasonProvidedIfRequiredOnListingUpdate(updateRequest);
-    }
-
-    /**
      * @param updateRequest
      * @throws EntityRetrievalException
      * @throws MissingReasonException

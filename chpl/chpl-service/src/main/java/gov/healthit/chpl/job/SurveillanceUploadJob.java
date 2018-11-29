@@ -65,12 +65,9 @@ public class SurveillanceUploadJob extends RunnableJob {
 
         double jobPercentComplete = 0;
         Set<Surveillance> pendingSurvs = new LinkedHashSet<Surveillance>();
-        
-        BufferedReader reader = null;
-        CSVParser parser = null;
-        try {
-            reader = new BufferedReader(new StringReader(job.getData()));
-            parser = new CSVParser(reader, CSVFormat.EXCEL);
+
+        try (BufferedReader reader = new BufferedReader(new StringReader(job.getData()));
+                CSVParser parser = new CSVParser(reader, CSVFormat.EXCEL)) {
 
             List<CSVRecord> records = parser.getRecords();
             if (records.size() <= 1) {
@@ -176,13 +173,6 @@ public class SurveillanceUploadJob extends RunnableJob {
             LOGGER.error(msg);
             addJobMessage(msg);
             updateStatus(100, JobStatusType.Error);
-            try {
-                parser.close();
-            } catch (Exception ignore) {
-            }
-            try {
-                reader.close();
-            } catch (Exception ignore) { }
         }
 
         // now load everything that was parsed

@@ -94,32 +94,6 @@ public class CertificationIdController {
         return this.findCertificationByProductIds(ids, false);
     }
 
-    // **********************************************************************************************************
-    // createCertificationId
-    //
-    // Mapping: /create
-    // Params: List ids
-    //
-    // Creates a new CMS EHR Certification ID for a collection of products if
-    // one does not already exist.
-    // **********************************************************************************************************
-    @Deprecated
-    @ApiOperation(
-            value = "DEPRECATED.  Creates a new CMS EHR Certification ID for a collection of products if one does "
-                    + "not already exist.",
-                    notes = "Retrieves a CMS EHR Certification ID for a collection of products or creates a new one "
-                            + "if one does not already exist. Returns a list of basic product information, Criteria "
-                            + "and CQM calculations, and the associated CMS EHR Certification ID if one exists.")
-    @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = {
-            MediaType.APPLICATION_JSON_VALUE
-    })
-    public @ResponseBody CertificationIdResults createCertificationIdDeprecated(
-            @RequestParam(required = true) final List<Long> ids) throws InvalidArgumentsException,
-    CertificationIdException {
-        return create(ids);
-    }
-
     @ApiOperation(
             value = "Creates a new CMS EHR Certification ID for a collection of products if one does not already "
                     + "exist.",

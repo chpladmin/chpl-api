@@ -3,6 +3,7 @@
 _Date TBD_
 
 ### Backwards compatibility breaking changes
+* Removed all previously deprecated API endpoints
 * Removed the following endpoints:
   * /atls/{id}/delete
   * /atls/{id}/undelete
@@ -21,5 +22,6 @@ _Date TBD_
 
 ### New Features
 * Add retired flag to ACBs and ATLs to replace the functionality that previously used the deleted flag.
+* Add Quartz job to require all users to change password on next login
 
 ---

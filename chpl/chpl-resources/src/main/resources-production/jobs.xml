@@ -17,5 +17,15 @@
     <schedule>
         <!-- Delete from here to "DELETE END MARKER" after PROD push -->
         <!-- DELETE END MARKER -->
+
+        <!-- Job used to trigger mass required password change of almost all users-->
+        <job>
+            <name>massRequirePasswordChangeJob</name>
+            <group>systemJobs</group>
+            <description>Require password change, on next login, of all non-super-admin users</description>
+            <job-class>gov.healthit.chpl.scheduler.job.MassRequirePasswordChangeJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
     </schedule>
 </job-scheduling-data>
