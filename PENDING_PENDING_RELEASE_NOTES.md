@@ -23,5 +23,8 @@ _Date TBD_
 ### New Features
 * Add retired flag to ACBs and ATLs to replace the functionality that previously used the deleted flag.
 * Add Quartz job to require all users to change password on next login
+* Update email notification about potential Developer ban to include:
+  * Reason for status change
+  * Reason for listing change
 
 ---

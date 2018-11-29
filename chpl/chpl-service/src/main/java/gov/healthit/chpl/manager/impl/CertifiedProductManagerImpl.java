@@ -1181,7 +1181,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             case WithdrawnByDeveloperUnderReview:
                 // initiate TriggerDeveloperBan job, telling ONC that they might need to ban a Developer
                 if ((Util.isUserRoleAdmin() || Util.isUserRoleAcbAdmin())) {
-                    triggerDeveloperBan(updatedListing);
+                    triggerDeveloperBan(updatedListing, updateRequest.getReason());
                 } else if (!Util.isUserRoleAdmin() && !Util.isUserRoleAcbAdmin()) {
                     LOGGER.error("User " + Util.getUsername()
                     + " does not have ROLE_ADMIN or ROLE_ACB and cannot change the status of "
@@ -2234,7 +2234,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         }
         return dtos.get(0);
     }
-    private void triggerDeveloperBan(final CertifiedProductSearchDetails updatedListing) {
+    private void triggerDeveloperBan(final CertifiedProductSearchDetails updatedListing, final String reason) {
         Scheduler scheduler;
         try {
             scheduler = getScheduler();
@@ -2256,6 +2256,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                     .usingJobData("effectiveDate", updatedListing.getCurrentStatus().getEventDate())
                     .usingJobData("openNcs", updatedListing.getCountOpenNonconformities())
                     .usingJobData("closedNcs", updatedListing.getCountClosedNonconformities())
+                    .usingJobData("reason", updatedListing.getCurrentStatus().getReason())
+                    .usingJobData("reasonForChange", reason)
                     .build();
             scheduler.scheduleJob(qzTrigger);
         } catch (SchedulerException e) {
