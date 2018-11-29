@@ -15,6 +15,11 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+/**
+ * Testing Lab mapping to database.
+ * @author kekey
+ *
+ */
 @Entity
 @Table(name = "testing_lab")
 public class TestingLabEntity implements Serializable {
@@ -43,16 +48,19 @@ public class TestingLabEntity implements Serializable {
     @Column(name = "website")
     private String website;
 
+    @Column(name = "retired", nullable = false)
+    private Boolean retired;
+
     @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false)
+    @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
     private Date creationDate;
 
     @Basic(optional = false)
-    @Column(name = "deleted", nullable = false)
+    @Column(name = "deleted", nullable = false, insertable = false)
     private Boolean deleted;
 
     @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false)
+    @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
     private Date lastModifiedDate;
 
     @Basic(optional = false)
@@ -236,5 +244,13 @@ public class TestingLabEntity implements Serializable {
 
     public Boolean getDeleted() {
         return deleted;
+    }
+
+    public Boolean getRetired() {
+        return retired;
+    }
+
+    public void setRetired(Boolean retired) {
+        this.retired = retired;
     }
 }

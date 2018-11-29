@@ -109,7 +109,7 @@ public class NotificationManagerImpl implements NotificationManager {
     public List<RecipientWithSubscriptionsDTO> getAll() {
         List<CertificationBodyDTO> acbs = null;
         if (!Util.isUserRoleAdmin()) {
-            acbs = acbManager.getAllForUser(true);
+            acbs = acbManager.getAllForUser();
         }
         List<RecipientWithSubscriptionsDTO> result = notificationDao
                 .getAllNotificationMappings(Util.getCurrentUser().getPermissions(), acbs);
@@ -121,7 +121,7 @@ public class NotificationManagerImpl implements NotificationManager {
     public RecipientWithSubscriptionsDTO getAllForRecipient(Long recipientId) throws EntityRetrievalException {
         List<CertificationBodyDTO> acbs = null;
         if (!Util.isUserRoleAdmin()) {
-            acbs = acbManager.getAllForUser(true);
+            acbs = acbManager.getAllForUser();
         }
         return notificationDao.getAllNotificationMappingsForRecipient(recipientId,
                 Util.getCurrentUser().getPermissions(), acbs);
@@ -158,7 +158,7 @@ public class NotificationManagerImpl implements NotificationManager {
         RecipientDTO recip = notificationDao.getRecipientById(recipientId);
         List<CertificationBodyDTO> acbs = null;
         if (!Util.isUserRoleAdmin()) {
-            acbs = acbManager.getAllForUser(true);
+            acbs = acbManager.getAllForUser();
         }
         // get only the subscriptions the current user should know about and
         // delete those

@@ -13,5 +13,6 @@ _Date TBD_
   * Gives error when user tries to log in and needs to change password
   * Adds end point to change_expired_password
   * Update User edit to allow admins to require password change
+* Add API Documentation file upload and download endpoints
 
 ---

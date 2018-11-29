@@ -8,21 +8,12 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public interface CertificationBodyDAO {
 
-    CertificationBodyDTO create(CertificationBodyDTO acb)
+    public CertificationBodyDTO create(CertificationBodyDTO acb)
             throws EntityRetrievalException, EntityCreationException;
-
-    void delete(Long acbId);
-
-    List<CertificationBodyDTO> findAll(boolean showDeleted);
-
-    CertificationBodyDTO getById(Long id) throws EntityRetrievalException;
-
-    CertificationBodyDTO getById(Long id, boolean includeDeleted) throws EntityRetrievalException;
-
-    CertificationBodyDTO getByName(String name);
-
-    String getMaxCode();
-
-    CertificationBodyDTO update(CertificationBodyDTO contact) throws EntityRetrievalException;
-
+    public List<CertificationBodyDTO> findAll();
+    public List<CertificationBodyDTO> findAllActive();
+    public CertificationBodyDTO getById(Long id) throws EntityRetrievalException;
+    public CertificationBodyDTO getByName(String name);
+    public String getMaxCode();
+    public CertificationBodyDTO update(CertificationBodyDTO contact) throws EntityRetrievalException;
 }

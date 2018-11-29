@@ -123,7 +123,7 @@ public class ActivityControllerTest {
 	public void test_dateValidation_outOfRangeThrowsException() throws EntityRetrievalException, EntityCreationException, IOException, ValidationException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-		activityController.activityForACBs(0L, cal.getTimeInMillis(), false);
+		activityController.activityForACBs(0L, cal.getTimeInMillis());
 	}
 	
 	/** 
@@ -142,7 +142,7 @@ public class ActivityControllerTest {
 		Integer maxActivityRangeInDays = Integer.getInteger(
 		        env.getProperty("maxActivityRangeInDays"), ActivityController.DEFAULT_MAX_ACTIVITY_RANGE_DAYS);
 		calStart.add(Calendar.DATE, -maxActivityRangeInDays + 1);
-		activityController.activityForACBs(calStart.getTimeInMillis(), calEnd.getTimeInMillis(), false);
+		activityController.activityForACBs(calStart.getTimeInMillis(), calEnd.getTimeInMillis());
 	}
 	
 	/** 
@@ -161,7 +161,7 @@ public class ActivityControllerTest {
 		Integer maxActivityRangeInDays = Integer.getInteger(
 		        env.getProperty("maxActivityRangeInDays"), ActivityController.DEFAULT_MAX_ACTIVITY_RANGE_DAYS);
 		calStart.add(Calendar.DATE, -maxActivityRangeInDays);
-		activityController.activityForACBs(calStart.getTimeInMillis(), calEnd.getTimeInMillis(), false);
+		activityController.activityForACBs(calStart.getTimeInMillis(), calEnd.getTimeInMillis());
 	}
 	
 	/** 
@@ -178,7 +178,7 @@ public class ActivityControllerTest {
 		Calendar calEnd = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		Calendar calStart = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		calStart.add(Calendar.DATE, (ActivityController.DEFAULT_MAX_ACTIVITY_RANGE_DAYS+1)*-1);
-		activityController.activityForACBs(calStart.getTimeInMillis(), calEnd.getTimeInMillis(), false);
+		activityController.activityForACBs(calStart.getTimeInMillis(), calEnd.getTimeInMillis());
 	}
 	
 	/** 
@@ -195,7 +195,7 @@ public class ActivityControllerTest {
 		Calendar calEnd = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		Calendar calStart = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		calStart.add(Calendar.DATE, 20);
-		activityController.activityForACBs(calStart.getTimeInMillis(), calEnd.getTimeInMillis(), false);
+		activityController.activityForACBs(calStart.getTimeInMillis(), calEnd.getTimeInMillis());
 	}
 
 	
@@ -204,7 +204,7 @@ public class ActivityControllerTest {
 	public void testGetAcbActivityWithBadId() 
 		throws EntityRetrievalException, IOException, ValidationException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		activityController.activityForACBById(-100L, null, null, false);
+		activityController.activityForACBById(-100L, null, null);
 	}
 	
 	@Transactional
@@ -212,7 +212,7 @@ public class ActivityControllerTest {
     public void testGetAcbActivityAsAdmin() 
         throws EntityRetrievalException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        List<ActivityEvent> userActivity = activityController.activityForACBById(-1L, null, null, false);
+        List<ActivityEvent> userActivity = activityController.activityForACBById(-1L, null, null);
         assertEquals(0, userActivity.size());
     }
 	
@@ -221,7 +221,7 @@ public class ActivityControllerTest {
     public void testGetAcbActivityAsAcbUser() 
         throws EntityRetrievalException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(acbUser);
-        List<ActivityEvent> userActivity = activityController.activityForACBById(-1L, null, null, false);
+        List<ActivityEvent> userActivity = activityController.activityForACBById(-1L, null, null);
         assertEquals(0, userActivity.size());
     }
 	
@@ -230,7 +230,7 @@ public class ActivityControllerTest {
     public void testGetAcbActivityAsAtlUser() 
         throws EntityRetrievalException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(atlUser);
-        activityController.activityForACBById(-1L, null, null, false);
+        activityController.activityForACBById(-1L, null, null);
     }
 	
 	@Transactional
@@ -246,7 +246,7 @@ public class ActivityControllerTest {
 	public void testGetAtlActivityWithBadId() 
 		throws EntityRetrievalException, IOException, ValidationException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		activityController.activityForATLById(-100L, null, null, false);
+		activityController.activityForATLById(-100L, null, null);
 	}
 	
 	@Transactional
