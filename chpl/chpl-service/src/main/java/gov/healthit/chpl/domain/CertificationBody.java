@@ -4,6 +4,11 @@ import java.io.Serializable;
 
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 
+/**
+ * Certification body domain object.
+ * @author kekey
+ *
+ */
 public class CertificationBody implements Serializable {
     private static final long serialVersionUID = 5328477887912042588L;
     private Long id;
@@ -11,12 +16,19 @@ public class CertificationBody implements Serializable {
     private String name;
     private String website;
     private Address address;
-    private boolean isDeleted;
+    private boolean retired;
 
+    /**
+     * No-args constructor.
+     */
     public CertificationBody() {
     }
 
-    public CertificationBody(CertificationBodyDTO dto) {
+    /**
+     * Create a certfication body object from a DTO.
+     * @param dto
+     */
+    public CertificationBody(final CertificationBodyDTO dto) {
         this.id = dto.getId();
         this.acbCode = dto.getAcbCode();
         this.name = dto.getName();
@@ -24,7 +36,7 @@ public class CertificationBody implements Serializable {
         if (dto.getAddress() != null) {
             this.address = new Address(dto.getAddress());
         }
-        this.isDeleted = dto.getDeleted();
+        this.retired = dto.isRetired();
     }
 
     public Long getId() {
@@ -67,12 +79,12 @@ public class CertificationBody implements Serializable {
         this.acbCode = acbCode;
     }
 
-    public boolean getIsDeleted() {
-        return isDeleted;
+    public boolean isRetired() {
+        return retired;
     }
 
-    public void setIsDeleted(final boolean deleted) {
-        this.isDeleted = deleted;
+    public void setRetired(final boolean retired) {
+        this.retired = retired;
     }
 
 }

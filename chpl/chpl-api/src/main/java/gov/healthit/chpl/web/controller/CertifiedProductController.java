@@ -707,7 +707,7 @@ public class CertifiedProductController {
             throw new AccessDeniedException(msgUtil.getMessage("access.pendingCertifiedProducts"));
         }
 
-        List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
+        List<CertificationBodyDTO> acbs = acbManager.getAllForUser();
         List<PendingCertifiedProductDTO> allProductDtos = new ArrayList<PendingCertifiedProductDTO>();
 
         if (acbs != null) {
@@ -751,7 +751,7 @@ public class CertifiedProductController {
     public @ResponseBody PendingCertifiedProductDetails getPendingCertifiedProductById(
             @PathVariable("pcpId") final Long pcpId) throws EntityRetrievalException, EntityNotFoundException,
     AccessDeniedException, ObjectMissingValidationException {
-        List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
+        List<CertificationBodyDTO> acbs = acbManager.getAllForUser();
         PendingCertifiedProductDetails details = pcpManager.getById(acbs, pcpId);
         return details;
     }
@@ -796,7 +796,7 @@ public class CertifiedProductController {
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
             AccessDeniedException, ObjectMissingValidationException {
 
-        List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
+        List<CertificationBodyDTO> acbs = acbManager.getAllForUser();
         pcpManager.deletePendingCertifiedProduct(acbs, id);
         return "{\"success\" : true}";
     }
@@ -846,7 +846,7 @@ public class CertifiedProductController {
         }
 
         ObjectsMissingValidationException possibleExceptions = new ObjectsMissingValidationException();
-        List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
+        List<CertificationBodyDTO> acbs = acbManager.getAllForUser();
         for (Long id : idList.getIds()) {
             try {
                 pcpManager.deletePendingCertifiedProduct(acbs, id);

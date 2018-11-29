@@ -246,7 +246,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
         if (doesUserHavePermissionToJob(getScheduler().getJobDetail(trigger.getJobKey()))) {
             if (!StringUtils.isEmpty(trigger.getJobDataMap().getString("acb"))) {
                 // get acbs user has access to
-                List<CertificationBodyDTO> validAcbs = acbManager.getAllForUser(false);
+                List<CertificationBodyDTO> validAcbs = acbManager.getAllForUser();
                 for (String acb : trigger.getJobDataMap().getString("acb").split("\u263A")) {
                     boolean found = false;
                     for (CertificationBodyDTO validAcb : validAcbs) {
