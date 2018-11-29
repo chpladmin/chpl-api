@@ -155,38 +155,6 @@ public class ListingTest extends TestCase {
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
-    @Test(expected = MissingReasonException.class)
-    @Transactional
-    @Rollback
-    public void testUpdate2011ListingDeprecatedWithoutReason() throws
-    EntityCreationException, EntityRetrievalException,
-    ValidationException, InvalidArgumentsException, JsonProcessingException,
-    MissingReasonException, IOException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-        final long cpId = 3L;
-        final long expectedId = 3L;
-        Date beforeActivity = new Date();
-        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(cpId);
-        listing.setAcbCertificationId("NEWACBCERTIFICATIONID");
-        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setListing(listing);
-        cpController.updateCertifiedProductDeprecated(updateRequest);
-        Date afterActivity = new Date();
-
-        List<QuestionableActivityListingDTO> activities =
-                qaDao.findListingActivityBetweenDates(beforeActivity, afterActivity);
-        assertNotNull(activities);
-        assertEquals(1, activities.size());
-        QuestionableActivityListingDTO activity = activities.get(0);
-        assertEquals(expectedId, activity.getListingId().longValue());
-        assertNull(activity.getBefore());
-        assertNull(activity.getAfter());
-        assertEquals(QuestionableActivityTriggerConcept.EDITION_2011_EDITED.getName(), activity.getTrigger().getName());
-
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
-
     @Test
     @Transactional
     @Rollback
@@ -201,9 +169,9 @@ public class ListingTest extends TestCase {
         CertificationStatusEvent currentStatus = listing.getCurrentStatus();
         int currStatusIndex = 0;
         List<CertificationStatusEvent> events = listing.getCertificationEvents();
-        for(int i = 0; i < events.size(); i++) {
+        for (int i = 0; i < events.size(); i++) {
             CertificationStatusEvent currEvent = events.get(i);
-            if(currEvent.getId().longValue() == currentStatus.getId().longValue()) {
+            if (currEvent.getId().longValue() == currentStatus.getId().longValue()) {
                 currStatusIndex = i;
             }
         }
@@ -250,9 +218,9 @@ public class ListingTest extends TestCase {
         CertificationStatusEvent currentStatus = listing.getCurrentStatus();
         int currStatusIndex = 0;
         List<CertificationStatusEvent> events = listing.getCertificationEvents();
-        for(int i = 0; i < events.size(); i++) {
+        for (int i = 0; i < events.size(); i++) {
             CertificationStatusEvent currEvent = events.get(i);
-            if(currEvent.getId().longValue() == currentStatus.getId().longValue()) {
+            if (currEvent.getId().longValue() == currentStatus.getId().longValue()) {
                 currStatusIndex = i;
             }
         }
@@ -298,9 +266,9 @@ public class ListingTest extends TestCase {
         CertificationStatusEvent currentStatus = listing.getCurrentStatus();
         int currStatusIndex = 0;
         List<CertificationStatusEvent> events = listing.getCertificationEvents();
-        for(int i = 0; i < events.size(); i++) {
+        for (int i = 0; i < events.size(); i++) {
             CertificationStatusEvent currEvent = events.get(i);
-            if(currEvent.getId().longValue() == currentStatus.getId().longValue()) {
+            if (currEvent.getId().longValue() == currentStatus.getId().longValue()) {
                 currStatusIndex = i;
             }
         }
@@ -344,9 +312,9 @@ public class ListingTest extends TestCase {
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
         List<CertificationStatusEvent> events = listing.getCertificationEvents();
         int statusEventIndex = 0;
-        for(int i = 0; i < events.size(); i++) {
+        for (int i = 0; i < events.size(); i++) {
             CertificationStatusEvent currEvent = events.get(i);
-            if(currEvent.getStatus().getName().equals("Withdrawn by Developer")) {
+            if (currEvent.getStatus().getName().equals("Withdrawn by Developer")) {
                 statusEventIndex = i;
             }
         }
@@ -392,9 +360,9 @@ public class ListingTest extends TestCase {
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
         List<CertificationStatusEvent> events = listing.getCertificationEvents();
         int statusEventIndex = 0;
-        for(int i = 0; i < events.size(); i++) {
+        for (int i = 0; i < events.size(); i++) {
             CertificationStatusEvent currEvent = events.get(i);
-            if(currEvent.getStatus().getName().equals("Withdrawn by Developer")) {
+            if (currEvent.getStatus().getName().equals("Withdrawn by Developer")) {
                 statusEventIndex = i;
             }
         }

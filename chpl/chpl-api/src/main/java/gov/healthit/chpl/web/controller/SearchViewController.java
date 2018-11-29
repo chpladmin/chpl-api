@@ -441,7 +441,7 @@ public class SearchViewController {
                 String[] certificationBodiesArr = certificationBodiesDelimited.split(",");
                 if (certificationBodiesArr.length > 0) {
                     Set<String> certBodies = new HashSet<String>();
-                    Set<KeyValueModel> availableCertBodies = searchMenuManager.getCertBodyNames(true);
+                    Set<KeyValueModel> availableCertBodies = searchMenuManager.getCertBodyNames();
 
                     for (int i = 0; i < certificationBodiesArr.length; i++) {
                         String certBodyParam = certificationBodiesArr[i].trim();
@@ -605,7 +605,7 @@ public class SearchViewController {
         }
 
         if (searchRequest.getCertificationBodies() != null && searchRequest.getCertificationBodies().size() > 0) {
-            Set<KeyValueModel> availableCertBodies = searchMenuManager.getCertBodyNames(true);
+            Set<KeyValueModel> availableCertBodies = searchMenuManager.getCertBodyNames();
             for (String certBody : searchRequest.getCertificationBodies()) {
                 validateCertificationBody(certBody, availableCertBodies);
             }
@@ -832,19 +832,6 @@ public class SearchViewController {
         return searchMenuManager.getFuzzyChoices();
     }
 
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED.  Change existing fuzzy matching choices.",
-    notes = "Only CHPL users with ROLE_ADMIN are able to update fuzzy matching choices.")
-    @RequestMapping(value = "/data/fuzzy_choices/update", method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
-    public FuzzyChoices updateFuzzyChoicesDeprecated(@RequestBody final FuzzyChoices fuzzyChoices)
-            throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
-            EntityCreationException, IOException {
-
-        return updateFuzzyChoices(fuzzyChoices);
-    }
-
     @ApiOperation(value = "Change existing fuzzy matching choices.",
             notes = "Only CHPL users with ROLE_ADMIN are able to update fuzzy matching choices.")
     @RequestMapping(value = "/data/fuzzy_choices/{fuzzyChoiceId}", method = RequestMethod.PUT,
@@ -923,7 +910,7 @@ public class SearchViewController {
     @RequestMapping(value = "/data/certification_bodies", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody Set<KeyValueModel> getCertBodyNames() {
-        return searchMenuManager.getCertBodyNames(false);
+        return searchMenuManager.getCertBodyNames();
     }
 
     @ApiOperation(value = "Get all possible education types in the CHPL",
@@ -1160,12 +1147,11 @@ public class SearchViewController {
     @RequestMapping(value = "/data/search_options", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody PopulateSearchOptions getPopulateSearchData(
-            @RequestParam(value = "simple", required = false, defaultValue = "false") final Boolean simple,
-            @RequestParam(value = "showDeleted", required = false, defaultValue = "false") final Boolean showDeleted)
+            @RequestParam(value = "simple", required = false, defaultValue = "false") final Boolean simple)
                     throws EntityRetrievalException {
 
         PopulateSearchOptions searchOptions = new PopulateSearchOptions();
-        searchOptions.setCertBodyNames(searchMenuManager.getCertBodyNames(showDeleted));
+        searchOptions.setCertBodyNames(searchMenuManager.getCertBodyNames());
         searchOptions.setEditions(searchMenuManager.getEditionNames(simple));
         searchOptions.setCertificationStatuses(searchMenuManager.getCertificationStatuses());
         searchOptions.setPracticeTypeNames(searchMenuManager.getPracticeTypeNames());

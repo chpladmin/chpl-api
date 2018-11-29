@@ -114,8 +114,6 @@ public class ActivityManagerTest extends TestCase {
         assertEquals(event.getOriginalData(), null);
         assertEquals(event.getNewData().toString(), JSONUtils.toJSON(developer));
         assertEquals(event.getActivityObjectId(), developer.getId());
-
-        activityManager.deleteActivity(event.getId());
     }
 
 
@@ -152,9 +150,6 @@ public class ActivityManagerTest extends TestCase {
         assertEquals(event.getOriginalData(), null);
         assertEquals(event.getNewData().toString(), JSONUtils.toJSON(developer));
         assertEquals(event.getActivityObjectId(), developer.getId());
-        //assertEquals(event.getActivityDate(), timestamp);
-
-        activityManager.deleteActivity(event.getId());
     }
 
     @Test
@@ -234,6 +229,7 @@ public class ActivityManagerTest extends TestCase {
 
     @Test
     @Transactional
+    @Rollback
     public void testGetActivityForObjectDateRange() throws EntityCreationException, EntityRetrievalException, IOException{
 
         Date fiveDaysAgo = new Date(System.currentTimeMillis() - (5*24*60*60*1000));
@@ -259,7 +255,6 @@ public class ActivityManagerTest extends TestCase {
                 ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, developer.getId() , 
                 fiveDaysAgo, null);
 
-        activityManager.deleteActivity(events.get(0).getId());
         assertEquals(1, events.size());
     }
 

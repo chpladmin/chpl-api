@@ -119,9 +119,9 @@ public class DeveloperManagerImpl implements DeveloperManager {
     @Transactional(readOnly = true)
     public DeveloperDTO getById(final Long id) throws EntityRetrievalException {
         DeveloperDTO developer = developerDao.getById(id);
-        List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
+        List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser();
         if (availableAcbs == null || availableAcbs.size() == 0) {
-            availableAcbs = acbManager.getAll(true);
+            availableAcbs = acbManager.getAll();
         }
         // someone will see either the transparencies that apply to the ACBs to
         // which they have access
@@ -256,7 +256,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
                 developerDao.update(updatedDev);
                 updateStatusHistory(beforeDev, updatedDev);
 
-                List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
+                List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser();
                 if (availableAcbs != null && availableAcbs.size() > 0) {
                     for (CertificationBodyDTO acb : availableAcbs) {
                         DeveloperACBMapDTO existingMap = developerDao.getTransparencyMapping(updatedDev.getId(),
@@ -356,7 +356,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 
         DeveloperDTO created = developerDao.create(dto);
 
-        List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
+        List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser();
         if (availableAcbs != null && availableAcbs.size() > 0) {
             for (CertificationBodyDTO acb : availableAcbs) {
                 for (DeveloperACBMapDTO attMap : dto.getTransparencyAttestationMappings()) {
@@ -416,7 +416,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 
         // check if the transparency attestation for each developer is
         // conflicting
-        List<CertificationBodyDTO> allAcbs = acbManager.getAll(false);
+        List<CertificationBodyDTO> allAcbs = acbManager.getAll();
         for (CertificationBodyDTO acb : allAcbs) {
             AttestationType transparencyAttestation = null;
             for (DeveloperDTO dev : beforeDevelopers) {
@@ -460,7 +460,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
         }
         // - mark the passed in developers as deleted
         for (Long developerId : developerIdsToMerge) {
-            List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
+            List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser();
             if (availableAcbs != null && availableAcbs.size() > 0) {
                 for (CertificationBodyDTO acb : availableAcbs) {
                     developerDao.deleteTransparencyMapping(developerId, acb.getId());

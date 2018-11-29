@@ -43,7 +43,7 @@ public interface SearchMenuManager {
 
     Set<KeyValueModelStatuses> getDeveloperNames();
 
-    Set<KeyValueModel> getCertBodyNames(Boolean showDeleted);
+    Set<KeyValueModel> getCertBodyNames();
 
     Set<KeyValueModel> getAccessibilityStandards();
 

@@ -40,8 +40,8 @@ import junit.framework.TestCase;
         gov.healthit.chpl.CHPLTestConfig.class
 })
 @TestExecutionListeners({
-        DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
-        TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
+    DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
 })
 @DatabaseSetup("classpath:data/testData.xml")
 public class ListingCountStatisticsChartDataAppTest extends TestCase {
@@ -69,12 +69,13 @@ public class ListingCountStatisticsChartDataAppTest extends TestCase {
      */
     @BeforeClass
     public static void setup() throws ServletException {
-        AnnotationConfigWebApplicationContext wac = new AnnotationConfigWebApplicationContext();
-        wac.register(CHPLTestConfig.class);
-        MockServletContext sc = new MockServletContext("");
-        ServletContextListener listener = new ContextLoaderListener(wac);
-        ServletContextEvent event = new ServletContextEvent(sc);
-        listener.contextInitialized(event);
+        try (AnnotationConfigWebApplicationContext wac = new AnnotationConfigWebApplicationContext()) {
+            wac.register(CHPLTestConfig.class);
+            MockServletContext sc = new MockServletContext("");
+            ServletContextListener listener = new ContextLoaderListener(wac);
+            ServletContextEvent event = new ServletContextEvent(sc);
+            listener.contextInitialized(event);
+        }
     }
 
     @Test

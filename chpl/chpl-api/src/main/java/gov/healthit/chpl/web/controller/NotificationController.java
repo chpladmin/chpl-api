@@ -42,7 +42,7 @@ public class NotificationController {
 
     @Autowired
     private NotificationManager notificationManager;
-    
+
     @Autowired
     private MessageSource messageSource;
 
@@ -64,20 +64,9 @@ public class NotificationController {
         return results;
     }
 
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED.  Update the email address and associated subscriptions of the recipient "
-            + "specified.")
-    @RequestMapping(value = "/recipients/{recipientId}/update", method = RequestMethod.POST,
-            produces = "application/json; charset=utf-8")
-    public @ResponseBody Recipient updateRecipientDeprecated(@PathVariable("recipientId") final Long recipientId,
-            @RequestBody final Recipient updatedRecipient) throws InvalidArgumentsException, EntityRetrievalException {
-
-        return updateRecipient(recipientId, updatedRecipient);
-    }
-
     @ApiOperation(value = "Update the email address and associated subscriptions of the recipient specified.")
     @RequestMapping(value = "/recipients/{recipientId}", method = RequestMethod.PUT,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody Recipient updateRecipientForNotifications(@PathVariable("recipientId") final Long recipientId,
             @RequestBody final Recipient updatedRecipient) throws InvalidArgumentsException, EntityRetrievalException {
 
@@ -85,7 +74,7 @@ public class NotificationController {
     }
 
     private Recipient updateRecipient(final Long recipientId, final Recipient updatedRecipient)
-                throws InvalidArgumentsException, EntityRetrievalException {
+            throws InvalidArgumentsException, EntityRetrievalException {
 
         if (recipientId.longValue() != updatedRecipient.getId().longValue()) {
             throw new InvalidArgumentsException(
@@ -166,23 +155,11 @@ public class NotificationController {
         return new Recipient(recipToReturn);
     }
 
-    @Deprecated
-    @ApiOperation(
-            value = "DEPRECATED.  Creates a new recipient with any subscriptions included in the request body. At "
-                    + "least 1 subscription is required.")
-    @RequestMapping(value = "/recipients/create", method = RequestMethod.POST,
-            produces = "application/json; charset=utf-8")
-    public @ResponseBody Recipient createRecipientDeprecated(@RequestBody final Recipient recipientToAdd)
-            throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException {
-
-        return createRecipient(recipientToAdd);
-    }
-
     @ApiOperation(
             value = "Creates a new recipient with any subscriptions included in the request body. At least 1 "
                     + "subscription is required.")
     @RequestMapping(value = "/recipients", method = RequestMethod.POST,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody Recipient createRecipientFornotifications(@RequestBody final Recipient recipientToAdd)
             throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException {
 
@@ -240,22 +217,12 @@ public class NotificationController {
         return null;
     }
 
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED.  Remove subscription(s) for a recipient.")
-    @RequestMapping(value = "/recipients/{recipientId}/delete", method = RequestMethod.POST,
-            produces = "application/json; charset=utf-8")
-    public @ResponseBody void deleteRecipientDeprecated(@PathVariable("recipientId") final Long recipientId)
-            throws EntityRetrievalException, InvalidArgumentsException {
-
-        deleteRecipient(recipientId);
-    }
-
     @ApiOperation(value = "Remove subscription(s) for a recipient.")
     @RequestMapping(value = "/recipients/{recipientId}", method = RequestMethod.DELETE,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody void deleteRecipientForNotifications(
             @PathVariable("recipientId") final Long recipientId)
-            throws EntityRetrievalException, InvalidArgumentsException {
+                    throws EntityRetrievalException, InvalidArgumentsException {
 
         deleteRecipient(recipientId);
     }

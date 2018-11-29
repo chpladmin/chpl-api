@@ -5,8 +5,6 @@ import static springfox.documentation.builders.PathSelectors.regex;
 
 import javax.servlet.ServletContext;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
@@ -28,8 +26,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @PropertySource("classpath:environment.properties")
 @EnableSwagger2
 public class SwaggerConfig implements EnvironmentAware {
-
-    private static final Logger LOGGER = LogManager.getLogger(SwaggerConfig.class);
 
     @Autowired
     private ServletContext context;
@@ -65,8 +61,8 @@ public class SwaggerConfig implements EnvironmentAware {
     private Predicate<String> paths() {
         return or(regex("/acbs.*"), regex("/activity.*"), regex("/announcements.*"), regex("/atls.*"), regex("/auth.*"),
                 regex("/certification_ids.*"), regex("/certified_products.*"), regex("/certified_product_details.*"),
-                regex("/collections.*"), regex("/corrective_action_plan.*"), regex("/data/.*"), regex("/download.*"),
-                regex("/jobs.*"), regex("/key.*"), regex("/meaningful_use"), regex("/notifications.*"), regex("/products.*"), regex("/search.*"),
+                regex("/collections.*"), regex("/data/.*"), regex("/download.*"), regex("/jobs.*"), regex("/key.*"),
+                regex("/meaningful_use"), regex("/notifications.*"), regex("/products.*"), regex("/search.*"),
                 regex("/surveillance.*"), regex("/status"), regex("/cache_status"), regex("/users.*"),
                 regex("/developers.*"), regex("/versions.*"), regex("/decertifications/.*"), regex("/schedules.*"));
     }
