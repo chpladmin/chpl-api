@@ -11,7 +11,6 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
@@ -61,7 +60,6 @@ public class TestFunctionality2015Reviewer implements Reviewer {//, ApplicationL
     }
 
     @Override
-    @Transactional
     public void review(final PendingCertifiedProductDTO listing) {
         if (listing.getCertificationCriterion() != null) {
             for (PendingCertificationResultDTO cr : listing.getCertificationCriterion()) {

@@ -71,6 +71,7 @@ public class TestFunctionalityDAOImpl extends BaseDAOImpl implements TestFunctio
                             + "JOIN FETCH tfcm.testFunctionality tf "
                             + "LEFT OUTER JOIN FETCH tf.practiceType pt "
                             + "JOIN FETCH tfcm.criteria c "
+                            + "JOIN FETCH c.certificationEdition "
                             + "WHERE (NOT tfcm.deleted = true) ", TestFunctionalityCriteriaMapEntity.class)
                 .getResultList();
     }
