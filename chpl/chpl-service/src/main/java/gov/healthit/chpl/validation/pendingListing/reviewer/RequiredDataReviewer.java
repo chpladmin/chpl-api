@@ -147,7 +147,7 @@ public class RequiredDataReviewer implements Reviewer {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.foundNoSedCriteriaButAttestingSed"));
         }
     }
-    
+
     private List<String> validateMacraMeasuresAreUniqueForCertificationResult(List<PendingCertificationResultMacraMeasureDTO> macraMeasures, String certNumber, String messageCode) {
         List<String> messages = new ArrayList<String>();
         Set<String> uniqueMacras = new HashSet<String>();
@@ -161,7 +161,7 @@ public class RequiredDataReviewer implements Reviewer {
         }
         return messages;
     }
-    
+
     private List<PendingCertificationResultMacraMeasureDTO> removeDuplicateMacraMeasures(List<PendingCertificationResultMacraMeasureDTO> macraMeasures) {
         List<PendingCertificationResultMacraMeasureDTO> dedupedMacraMeasures = new ArrayList<PendingCertificationResultMacraMeasureDTO>();
         Set<String> uniqueMacras = new HashSet<String>();
