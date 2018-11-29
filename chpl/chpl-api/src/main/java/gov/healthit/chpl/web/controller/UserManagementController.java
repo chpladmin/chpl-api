@@ -229,19 +229,6 @@ public class UserManagementController {
         return new User(createdUser);
     }
 
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED.  Update an existing user account with new permissions.",
-    notes = "Adds all permissions from the invitation identified by the user key "
-            + "to the appropriate existing user account." + "The correct order to call invitation requests is "
-            + "the following: 1) /invite 2) /create or /authorize 3) /confirm ")
-    @RequestMapping(value = "/authorize", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
-    public String authorizeUserDeprecated(@RequestBody final AuthorizeCredentials credentials)
-            throws InvalidArgumentsException, JWTCreationException, UserRetrievalException, EntityRetrievalException {
-
-        return authorize(credentials);
-    }
-
     @ApiOperation(value = "Update an existing user account with new permissions.",
             notes = "Adds all permissions from the invitation identified by the user key "
                     + "to the appropriate existing user account." + "The correct order to call invitation requests is "
@@ -358,17 +345,6 @@ public class UserManagementController {
         return result;
     }
 
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED.  Modify user information.", notes = "")
-    @RequestMapping(value = "/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
-    public User updateUserDetailsDeprecated(@RequestBody final User userInfo)
-            throws UserRetrievalException, UserPermissionRetrievalException, JsonProcessingException,
-            EntityCreationException, EntityRetrievalException {
-
-        return update(userInfo);
-    }
-
     @ApiOperation(value = "Modify user information.", notes = "")
     @RequestMapping(value = "/{userId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
@@ -395,19 +371,6 @@ public class UserManagementController {
                 updated);
 
         return new User(updated);
-    }
-
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED.  Delete a user.",
-    notes = "Deletes a user account and all associated authorities on ACBs and ATLs. "
-            + "The logged in user must have ROLE_ADMIN.")
-    @RequestMapping(value = "/{userId}/delete", method = RequestMethod.POST,
-    produces = "application/json; charset=utf-8")
-    public String deleteUserDeprecated(@PathVariable("userId") final Long userId)
-            throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException,
-            JsonProcessingException, EntityCreationException, EntityRetrievalException {
-
-        return delete(userId);
     }
 
     @ApiOperation(value = "Delete a user.",
@@ -446,20 +409,6 @@ public class UserManagementController {
                 toDelete, null);
 
         return "{\"deletedUser\" : true}";
-    }
-
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED.  Give additional roles to a user.",
-    notes = "Users may be given ROLE_ADMIN, ROLE_ACB, "
-            + "ROLE_ATL, or ROLE_ONC_STAFF roles within the system.")
-    @RequestMapping(value = "/grant_role", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
-    public String grantUserRoleDeprecated(@RequestBody final GrantRoleJSONObject grantRoleObj)
-            throws InvalidArgumentsException, UserRetrievalException, UserManagementException,
-            UserPermissionRetrievalException, JsonProcessingException, EntityCreationException,
-            EntityRetrievalException {
-
-        return grant(grantRoleObj);
     }
 
     @ApiOperation(value = "Give additional roles to a user.",
@@ -507,21 +456,6 @@ public class UserManagementController {
                 updated);
 
         return "{\"roleAdded\" : true}";
-    }
-
-
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED.  Remove roles previously granted to a user.",
-    notes = "Users may be given ROLE_ADMIN, ROLE_ACB, "
-            + "ROLE_ATL, or ROLE_ONC_STAFF roles within the system.")
-    @RequestMapping(value = "/revoke_role", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
-    public String revokeUserRoleDeprecated(@RequestBody final GrantRoleJSONObject grantRoleObj)
-            throws InvalidArgumentsException, UserRetrievalException, UserManagementException,
-            UserPermissionRetrievalException, JsonProcessingException, EntityCreationException,
-            EntityRetrievalException {
-
-        return revoke(grantRoleObj);
     }
 
     @ApiOperation(value = "Remove roles previously granted to a user.",

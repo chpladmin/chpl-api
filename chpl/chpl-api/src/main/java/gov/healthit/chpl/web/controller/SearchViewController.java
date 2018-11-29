@@ -832,19 +832,6 @@ public class SearchViewController {
         return searchMenuManager.getFuzzyChoices();
     }
 
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED.  Change existing fuzzy matching choices.",
-    notes = "Only CHPL users with ROLE_ADMIN are able to update fuzzy matching choices.")
-    @RequestMapping(value = "/data/fuzzy_choices/update", method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
-    public FuzzyChoices updateFuzzyChoicesDeprecated(@RequestBody final FuzzyChoices fuzzyChoices)
-            throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
-            EntityCreationException, IOException {
-
-        return updateFuzzyChoices(fuzzyChoices);
-    }
-
     @ApiOperation(value = "Change existing fuzzy matching choices.",
             notes = "Only CHPL users with ROLE_ADMIN are able to update fuzzy matching choices.")
     @RequestMapping(value = "/data/fuzzy_choices/{fuzzyChoiceId}", method = RequestMethod.PUT,

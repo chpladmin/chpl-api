@@ -93,11 +93,8 @@ public class MeaningfulUseUploadJob extends RunnableJob {
         Date muuDate = new Date(new Long(muuDateMillis));
         String muuCsv = muuDateCsvSplit[1];
 
-        BufferedReader reader = null;
-        CSVParser parser = null;
-        try {
-            reader = new BufferedReader(new StringReader(muuCsv));
-            parser = new CSVParser(reader, CSVFormat.EXCEL);
+        try (BufferedReader reader = new BufferedReader(new StringReader(muuCsv));
+                CSVParser parser = new CSVParser(reader, CSVFormat.EXCEL)) {
 
             List<CSVRecord> records = parser.getRecords();
             if (records.size() <= 1) {
@@ -182,14 +179,6 @@ public class MeaningfulUseUploadJob extends RunnableJob {
             LOGGER.error(msg);
             addJobMessage(msg);
             updateStatus(COMPLETE_PERCENT, JobStatusType.Error);
-            try {
-                parser.close();
-            } catch (Exception ignore) {
-            }
-            try {
-                reader.close();
-            } catch (Exception ignore) {
-            }
         }
 
         // now load everything that was parsed

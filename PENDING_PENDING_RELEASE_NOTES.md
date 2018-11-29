@@ -3,6 +3,7 @@
 _Date TBD_
 
 ### Backwards compatibility breaking changes
+* Removed all previously deprecated API endpoints
 * Removed the following endpoints:
   * /atls/{id}/delete
   * /atls/{id}/undelete
