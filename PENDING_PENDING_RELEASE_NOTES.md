@@ -23,5 +23,6 @@ _Date TBD_
 ### New Features
 * Add retired flag to ACBs and ATLs to replace the functionality that previously used the deleted flag.
 * Add Quartz job to require all users to change password on next login
+* Prevent users from using the following macra measures which are under review: RT13 EH/CAH Stage 3, RT14 EH/CAH Stage 3, RT15 EH/CAH Stage 3 
 
 ---
