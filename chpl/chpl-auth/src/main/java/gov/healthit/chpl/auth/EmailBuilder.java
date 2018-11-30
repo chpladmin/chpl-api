@@ -74,7 +74,7 @@ public class EmailBuilder {
     public EmailBuilder subject(final String val) {
         subject = val;
         //Add the environment to the subject
-        String environemnt = " [" + env.getProperty("serverEnvironment") + "]";
+        String environemnt = " [" + System.getenv("serverEnvironment") + "]";
         subject = String.format(val, environemnt);
         return this;
     }
@@ -153,17 +153,17 @@ public class EmailBuilder {
     private Properties getProperties() {
         // sets SMTP server properties
         Properties properties = new Properties();
-        properties.put("mail.smtp.host", env.getProperty("smtpHost"));
-        properties.put("mail.smtp.port", env.getProperty("smtpPort"));
+        properties.put("mail.smtp.host", System.getenv("smtpHost"));
+        properties.put("mail.smtp.port", System.getenv("smtpPort"));
         properties.put("mail.smtp.auth", "true");
         properties.put("mail.smtp.starttls.enable", "true");
-        properties.put("smtpUsername", env.getProperty("smtpUsername"));
-        properties.put("smtpPassword", env.getProperty("smtpPassword"));
-        properties.put("smtpFrom", env.getProperty("smtpFrom"));
+        properties.put("smtpUsername", System.getenv("smtpUsername"));
+        properties.put("smtpPassword", System.getenv("smtpPassword"));
+        properties.put("smtpFrom", System.getenv("smtpFrom"));
 
-        LOGGER.debug("Mail Host: " + properties.getProperty("mail.smtp.host"));
-        LOGGER.debug("Mail Port: " + properties.getProperty("mail.smtp.port"));
-        LOGGER.debug("Mail Username :" + env.getProperty("smtpUsername"));
+        LOGGER.debug("Mail Host: " + System.getenv("mail.smtp.host"));
+        LOGGER.debug("Mail Port: " + System.getenv("mail.smtp.port"));
+        LOGGER.debug("Mail Username :" + System.getenv("smtpUsername"));
 
         return properties;
     }
