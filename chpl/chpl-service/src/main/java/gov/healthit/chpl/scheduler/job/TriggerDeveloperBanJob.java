@@ -99,19 +99,25 @@ public class TriggerDeveloperBanJob implements Job {
         JobDataMap jdm = jobContext.getMergedJobDataMap();
         String reasonForStatusChange = jdm.getString("reason");
         if (StringUtils.isEmpty(reasonForStatusChange)) {
-            reasonForStatusChange = "No reason for status change was provided.";
+            reasonForStatusChange = "<strong>ONC-ACB provided reason for status change:</strong> This field is blank";
+        } else {
+            reasonForStatusChange = "<strong>ONC-ACB provided reason for status change:</strong> \""
+                    + reasonForStatusChange + "\"";
         }
         String reasonForListingChange = jdm.getString("reasonForChange");
         if (StringUtils.isEmpty(reasonForListingChange)) {
-            reasonForListingChange = "No reason for listing change was provided.";
+            reasonForListingChange = "<strong>ONC-ACB provided reason for listing change:</strong> This field is blank";
+        } else {
+            reasonForListingChange = "<strong>ONC-ACB provided reason for listing change:</strong> \""
+                    + reasonForListingChange + "\"";
         }
         int openNcs = jdm.getInt("openNcs");
         int closedNcs = jdm.getInt("closedNcs");
         String htmlMessage = String.format("<p>The CHPL Listing <a href=\"%s/#/product/%d\">%s</a>, owned by \"%s\" "
                 + "and certified by \"%s\" has been set on \"%s\" by \"%s\" to a Certification Status of \"%s\" with "
                 + "an effective date of \"%s\".</p>"
-                + "<p><strong>ONC-ACB provided reason for status change:</strong> \"%s\"</p>"
-                + "<p><strong>ONC-ACB provided reason for listing change:</strong> \"%s\"</p>"
+                + "<p>%s</p>"
+                + "<p>%s</p>"
                 + "<p>There %s %d Open Nonconformit%s and %d Closed Nonconformit%s.</p>"
                 + "<p>ONC should review the activity and all details of the listing to determine if "
                 + "this action warrants a ban on the Developer.</p>",

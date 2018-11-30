@@ -1792,8 +1792,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             } else if (toAdd.getStatus().getId() != null) {
                 CertificationStatusDTO statusDto = certStatusDao.getById(toAdd.getStatus().getId());
                 if (statusDto == null) {
-                    String msg = msgUtil.getMessage("listing.badCertificationStatusId", 
-                            toAdd.getStatus().getId()); 
+                    String msg = msgUtil.getMessage("listing.badCertificationStatusId",
+                            toAdd.getStatus().getId());
                     throw new EntityRetrievalException(msg);
                 }
                 statusEventDto.setStatus(statusDto);
@@ -1801,7 +1801,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                 CertificationStatusDTO statusDto = certStatusDao.getByStatusName(toAdd.getStatus().getName());
                 if (statusDto == null) {
                     String msg = msgUtil.getMessage("listing.badCertificationStatusName",
-                            toAdd.getStatus().getName()); 
+                            toAdd.getStatus().getName());
                     throw new EntityRetrievalException(msg);
                 }
                 statusEventDto.setStatus(statusDto);
@@ -1830,13 +1830,13 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                 statusEventDto.setEventDate(new Date(cseToUpdate.getEventDate()));
                 statusEventDto.setReason(cseToUpdate.getReason());
                 if (cseToUpdate.getStatus() == null) {
-                    String msg = msgUtil.getMessage("listing.missingCertificationStatus"); 
+                    String msg = msgUtil.getMessage("listing.missingCertificationStatus");
                     throw new EntityRetrievalException(msg);
                 } else if (cseToUpdate.getStatus().getId() != null) {
                     CertificationStatusDTO statusDto = certStatusDao.getById(cseToUpdate.getStatus().getId());
                     if (statusDto == null) {
                         String msg = msgUtil.getMessage("listing.badCertificationStatusId",
-                                cseToUpdate.getStatus().getId()); 
+                                cseToUpdate.getStatus().getId());
                         throw new EntityRetrievalException(msg);
                     }
                     statusEventDto.setStatus(statusDto);
