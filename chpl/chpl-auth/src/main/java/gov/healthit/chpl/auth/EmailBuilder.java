@@ -74,7 +74,7 @@ public class EmailBuilder {
     public EmailBuilder subject(final String val) {
         subject = val;
         //Add the environment to the subject
-        String environemnt = " [" + System.getenv("serverEnvironment") + "]";
+        String environemnt = " [" + System.getenv("emailSubjectSuffix") + "]";
         subject = String.format(val, environemnt);
         return this;
     }
