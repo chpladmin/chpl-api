@@ -68,10 +68,10 @@ public class TestFunctionalityDAOImpl extends BaseDAOImpl implements TestFunctio
     private List<TestFunctionalityCriteriaMapEntity> getAllMapEntities() {
         return entityManager
                 .createQuery("FROM TestFunctionalityCriteriaMapEntity tfcm "
-                            + "JOIN FETCH tfcm.testFunctionality tf "
-                            + "JOIN FETCH tf.practiceType pt "
+                            + "LEFT OUTER JOIN FETCH tfcm.testFunctionality tf "
+                            + "LEFT OUTER JOIN FETCH tf.practiceType pt "
                             + "LEFT OUTER JOIN FETCH tfcm.criteria c "
-                            + "JOIN FETCH c.certificationEdition "
+                            + "LEFT OUTER JOIN FETCH c.certificationEdition "
                             + "WHERE (NOT tfcm.deleted = true) ", TestFunctionalityCriteriaMapEntity.class)
                 .getResultList();
     }

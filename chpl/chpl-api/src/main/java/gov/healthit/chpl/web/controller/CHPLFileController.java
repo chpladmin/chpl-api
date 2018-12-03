@@ -38,7 +38,7 @@ public class CHPLFileController {
         this.chplFileManager = chplFileManager;
     }
 
-    @ApiOperation(value = "Upload an API Documenation file",
+    @ApiOperation(value = "Upload an API Documentation file",
             notes = "Uploads a new current API Documentation file.")
     @RequestMapping(value = "/api_documentation",
             method = RequestMethod.POST,
@@ -64,8 +64,8 @@ public class CHPLFileController {
         return new ResponseEntity<CHPLFileDTO>(fileDTO, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Retrieve an API Documenation file",
-            notes = "Retrieves the current API Documenation file.")
+    @ApiOperation(value = "Retrieve an API Documentation file",
+            notes = "Retrieves the current API Documentation file.")
     @RequestMapping(value = "/api_documentation", method = RequestMethod.GET, produces = APPLICATION_MS_EXCEL)
     public synchronized ResponseEntity<byte[]> getApiDocumentationFile() throws EntityRetrievalException {
         CHPLFileDTO fileDTO = chplFileManager.getApiDocumentation();
@@ -79,8 +79,8 @@ public class CHPLFileController {
                              .body(fileDTO.getFileData());
     }
 
-    @ApiOperation(value = "Retrieve details about an API Documenation file",
-            notes = "Retrieves the details about the current API Documenation file.")
+    @ApiOperation(value = "Retrieve details about an API Documentation file",
+            notes = "Retrieves the details about the current API Documentation file.")
     @RequestMapping(value = "/api_documentation/details",
         method = RequestMethod.GET,
         produces = "application/json; charset=utf-8")
