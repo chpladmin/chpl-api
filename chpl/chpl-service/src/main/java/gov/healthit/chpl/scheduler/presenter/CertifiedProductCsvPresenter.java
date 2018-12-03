@@ -18,47 +18,59 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 
 /**
  * Present objects as CSV file.
+ * 
  * @author alarned
  *
  */
-public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
-    private static final Logger LOGGER = LogManager.getLogger(CertifiedProduct2014CsvPresenter.class);
+public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, AutoCloseable {
+    private Logger logger;
     private List<CertificationCriterionDTO> applicableCriteria = new ArrayList<CertificationCriterionDTO>();
+    private OutputStreamWriter writer = null;
+    private CSVPrinter csvPrinter = null;
 
     /**
-     * Required to setCriteriaNames before calling this function. Returns number
-     * of rows printed (minus the header)
+     * Required to setCriteriaNames before calling this function.
      */
     @Override
-    public int presentAsFile(final File file, final CertifiedProductDownloadResponse cpList) {
-        int numRows = 0;
-        OutputStreamWriter writer = null;
-        CSVPrinter csvPrinter = null;
-        try {
-            writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
-            csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL);
+    public void open(final File file) throws IOException {
+        getLogger().info("Opening file, initializing CSV doc.");
+        writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
+        csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL);
+        csvPrinter.printRecord(generateHeaderValues());
+        csvPrinter.flush();
+    }
 
-            csvPrinter.printRecord(generateHeaderValues());
-
-            for (CertifiedProductSearchDetails data : cpList.getListings()) {
-                List<String> rowValue = generateRowValue(data);
-                if (rowValue != null) { // a subclass could return null to skip a row
-                    csvPrinter.printRecord(rowValue);
-                    numRows++;
-                }
-            }
-            csvPrinter.close();
-            writer.close();
-        } catch (final IOException ex) {
-            LOGGER.error("Could not write file " + file.getName(), ex);
+    @Override
+    public synchronized void add(final CertifiedProductSearchDetails data) throws IOException {
+        getLogger().info("Adding CP to CSV file: " + data.getId());
+        List<String> rowValue = generateRowValue(data);
+        if (rowValue != null) { // a subclass could return null to skip a row
+            csvPrinter.printRecord(rowValue);
+            csvPrinter.flush();
         }
-        return numRows;
+    }
+
+    @Override
+    public void close() throws IOException {
+        getLogger().info("Closing the XML file.");
+        csvPrinter.close();
+        writer.close();
+    }
+
+    public void setLogger(final Logger logger) {
+        this.logger = logger;
+    }
+
+    public Logger getLogger() {
+        if (logger == null) {
+            logger = LogManager.getLogger(CertifiedProductXmlPresenter.class);
+        }
+        return logger;
     }
 
     protected List<String> generateHeaderValues() {
@@ -71,6 +83,14 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
         result.add("ACB Name");
         result.add("Previous ACB Name");
         result.add("Developer Name");
+        result.add("Vendor Street Address");
+        result.add("Vendor City");
+        result.add("Vendor State");
+        result.add("Vendor Zip Code");
+        result.add("Vendor Website");
+        result.add("Vendor Contact Name");
+        result.add("Vendor Contact Email");
+        result.add("Vendor Contact Phone");
         result.add("Product Name");
         result.add("Version");
         result.add("Total Surveillance Activities");
@@ -97,6 +117,48 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
         result.add(data.getCertifyingBody().get("name").toString());
         result.add(data.getOtherAcb());
         result.add(data.getDeveloper().getName());
+        if(data.getDeveloper().getAddress() != null) {
+            if (data.getDeveloper().getAddress().getLine1() != null 
+                    && data.getDeveloper().getAddress().getLine2() != null) {
+                result.add(data.getDeveloper().getAddress().getLine1()
+                        + data.getDeveloper().getAddress().getLine2());
+            } else {
+                result.add(data.getDeveloper().getAddress().getLine1() == null 
+                        ? "" : data.getDeveloper().getAddress().getLine1());
+            }
+            result.add(data.getDeveloper().getAddress().getCity() == null 
+                    ? "" : data.getDeveloper().getAddress().getCity());
+            result.add(data.getDeveloper().getAddress().getState() == null 
+                    ? "" : data.getDeveloper().getAddress().getState());
+            result.add(data.getDeveloper().getAddress().getZipcode() == null 
+                    ? "" : data.getDeveloper().getAddress().getZipcode());
+        } else {
+            result.add("");
+            result.add("");
+            result.add("");
+            result.add("");
+        }
+        result.add(data.getDeveloper().getWebsite() == null
+                    ? "" : data.getDeveloper().getWebsite());
+        if(data.getProduct().getContact() != null) {
+                result.add(data.getProduct().getContact().getFullName() == null
+                        ? "" : data.getProduct().getContact().getFullName());
+                result.add(data.getProduct().getContact().getEmail() == null
+                        ? "" : data.getProduct().getContact().getEmail());
+                result.add(data.getProduct().getContact().getPhoneNumber() == null
+                        ? "" : data.getProduct().getContact().getPhoneNumber());
+        } else if (data.getDeveloper().getContact() != null){
+            result.add(data.getDeveloper().getContact().getFullName() == null
+                        ? "" : data.getDeveloper().getContact().getFullName());
+            result.add(data.getDeveloper().getContact().getEmail() == null
+                        ? "" : data.getDeveloper().getContact().getEmail());
+            result.add(data.getDeveloper().getContact().getPhoneNumber() == null
+                        ? "" : data.getDeveloper().getContact().getPhoneNumber());
+        } else {
+            result.add("");
+            result.add("");
+            result.add("");
+        }
         result.add(data.getProduct().getName());
         result.add(data.getVersion().getVersion());
         result.add(data.getCountSurveillance().toString());

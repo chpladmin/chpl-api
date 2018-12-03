@@ -10,6 +10,10 @@ keyLocation=C:\\CHPL\\keys\\JSONRsaJoseJWebKeyTest.txt
 jobThresholdDays=7
 maxActivityRangeInDays=500
 
+enableCacheInitialization=true
+cacheClearTimeoutSecs=15
+cacheInitializeTimeoutSecs=300
+
 testDbUser=openchpl
 testDbPassword=
 testDbServer=localhost/openchpl_test
@@ -22,8 +26,15 @@ questionableActivityThresholdDays=30
 fuzzyChoiceThreshold=80
 fuzzyChoiceLimit=1
 
-#Asynchronous - should always be false for jUnits to properly work in our environment
-asyncEnabled=false
+# number of tokens per API Key per time unit below
+rateTokenLimit=5
+# time unit where tokens above will be used
+# values are: second, minute, hour
+rateLimitTimeUnit=minute
+
+#Asynchronous properties - should always be false for jUnits to properly work in our environment
+asyncListingDetailsEnabled=false
+asyncCacheRefreshEnabled=false
 
 # number of tokens per API Key per time unit below
 rateTokenLimit=5

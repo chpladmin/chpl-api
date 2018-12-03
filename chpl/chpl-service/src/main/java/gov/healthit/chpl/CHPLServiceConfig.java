@@ -45,7 +45,7 @@ import gov.healthit.chpl.job.MeaningfulUseUploadJob;
 @EnableWebMvc
 @EnableTransactionManagement(proxyTargetClass = true)
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true, proxyTargetClass = true)
 @EnableAsync
 @EnableAspectJAutoProxy
 @EnableScheduling

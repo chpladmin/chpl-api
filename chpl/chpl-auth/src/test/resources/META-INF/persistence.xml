@@ -11,6 +11,7 @@
 		<class>gov.healthit.chpl.auth.entity.UserContactEntity</class>
 		<class>gov.healthit.chpl.auth.entity.UserPermissionEntity</class>
 		<class>gov.healthit.chpl.auth.entity.UserPermissionUserMappingEntity</class>
+		<class>gov.healthit.chpl.auth.entity.UserResetTokenEntity</class>
 		<class>gov.healthit.chpl.auth.entity.InvitationEntity</class>
 		<class>gov.healthit.chpl.auth.entity.InvitationPermissionEntity</class>
 		<properties>

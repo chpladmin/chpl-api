@@ -40,7 +40,6 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        getCertifiedProductDetailsAsyncRetrievalHelper().setLogger(LOGGER);
 
         LOGGER.info("********* Starting the Surveillance Downloadable Resource Creator job. *********");
         try {
@@ -48,7 +47,7 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
 
             List<Future<CertifiedProductSearchDetails>> futures = getCertifiedProductSearchDetailsFutures(listings);
             Map<Long, CertifiedProductSearchDetails> cpMap = getMapFromFutures(futures);
-            List<CertifiedProductSearchDetails> orderedListings = 
+            List<CertifiedProductSearchDetails> orderedListings =
                     createOrderedListOfCertifiedProducts(cpMap, listings);
 
             File downloadFolder = getDownloadFolder();
@@ -73,77 +72,33 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
         return listings;
     }
 
-//    private List<Future<CertifiedProductSearchDetails>> getCertifiedProductSearchDetailsFutures(
-//            final List<CertifiedProductDetailsDTO> listings) throws Exception {
-//
-//        List<Future<CertifiedProductSearchDetails>> futures = new ArrayList<Future<CertifiedProductSearchDetails>>();
-//        SchedulerCertifiedProductSearchDetailsAsync cpsdAsync = getCertifiedProductDetailsAsyncRetrievalHelper();
-//        
-//        for (CertifiedProductDetailsDTO currListing : listings) {
-//            try {
-//                futures.add(cpsdAsync.getCertifiedProductDetail(currListing.getId(), getCpdManager()));
-//            } catch (EntityRetrievalException e) {
-//                LOGGER.error("Could not retrieve certified product details for id: " + currListing.getId(), e);
-//            }
-//        }
-//        return futures;
-//    }
-
-//    private Map<Long, CertifiedProductSearchDetails> getMapFromFutures(
-//            final List<Future<CertifiedProductSearchDetails>> futures) {
-//        Map<Long, CertifiedProductSearchDetails> cpMap = new HashMap<Long, CertifiedProductSearchDetails>();
-//        for (Future<CertifiedProductSearchDetails> future : futures) {
-//            try {
-//                cpMap.put(future.get().getId(), future.get());
-//            } catch (InterruptedException | ExecutionException e) {
-//                LOGGER.error("Could not retrieve certified product details for unknown id.", e);
-//            }
-//        }
-//        return cpMap;
-//    }
-
-//    private List<CertifiedProductSearchDetails> createOrderedListOfCertifiedProducts(
-//            final Map<Long, CertifiedProductSearchDetails> certifiedProducts, 
-//            final List<CertifiedProductDetailsDTO> orderedListings) {
-//
-//        List<CertifiedProductSearchDetails> ordered = new ArrayList<CertifiedProductSearchDetails>();
-//
-//        for (CertifiedProductDetailsDTO listing : orderedListings) {
-//            if (certifiedProducts.containsKey(listing.getId())) {
-//                ordered.add(certifiedProducts.get(listing.getId()));
-//            }
-//        }
-//
-//        return ordered;
-//    }
-
     private void writeSurveillanceAllFile(final File downloadFolder, final List<CertifiedProductSearchDetails> results)
             throws IOException {
-        String csvFilename = downloadFolder.getAbsolutePath() + 
-                File.separator + 
-                "surveillance-all.csv";
+        String csvFilename = downloadFolder.getAbsolutePath()
+                + File.separator
+                + "surveillance-all.csv";
         File csvFile = getFile(csvFilename);
         SurveillanceCsvPresenter csvPresenter = new SurveillanceCsvPresenter(getProperties());
         csvPresenter.presentAsFile(csvFile, results);
         LOGGER.info("Wrote Surveillance-All CSV file.");
     }
 
-    private void writeSurveillanceWithNonconformitiesFile(final File downloadFolder, final List<CertifiedProductSearchDetails> results)
-            throws IOException {
-        String csvFilename = downloadFolder.getAbsolutePath() + 
-                File.separator + 
-                "surveillance-with-nonconformities.csv";
+    private void writeSurveillanceWithNonconformitiesFile(final File downloadFolder,
+            final List<CertifiedProductSearchDetails> results) throws IOException {
+        String csvFilename = downloadFolder.getAbsolutePath()
+                + File.separator
+                + "surveillance-with-nonconformities.csv";
         File csvFile = getFile(csvFilename);
         NonconformityCsvPresenter csvPresenter = new NonconformityCsvPresenter(getProperties());
         csvPresenter.presentAsFile(csvFile, results);
         LOGGER.info("Wrote Surveillance With Nonconformities CSV file.");
     }
 
-    private void writeSurveillanceBasicReportFile(final File downloadFolder, final List<CertifiedProductSearchDetails> results)
-            throws IOException {
-        String csvFilename = downloadFolder.getAbsolutePath() + 
-                File.separator + 
-                "surveillance-basic-report.csv";
+    private void writeSurveillanceBasicReportFile(final File downloadFolder,
+            final List<CertifiedProductSearchDetails> results) throws IOException {
+        String csvFilename = downloadFolder.getAbsolutePath()
+                + File.separator
+                + "surveillance-basic-report.csv";
         File csvFile = getFile(csvFilename);
         SurveillanceReportCsvPresenter csvPresenter = new SurveillanceReportCsvPresenter(getProperties());
         csvPresenter.presentAsFile(csvFile, results);

@@ -58,26 +58,34 @@ import gov.healthit.chpl.validation.listing.Validator;
 
 /**
  * Tests of the Certified Product validator.
+ * 
  * @author alarned
  *
  */
 
-
-// This test class has a modified configuration to get the tests to work.  The method
-// CertificationResultsManagerImpl.getCertifiedProductHasAdditionalSoftware() does not 
-// work in the test environment, so we are overriding that method.  Since we are not 
-// testing that particular method with these tests, this should be OK.  To do this, we 
+// This test class has a modified configuration to get the tests to work. The
+// method
+// CertificationResultsManagerImpl.getCertifiedProductHasAdditionalSoftware()
+// does not
+// work in the test environment, so we are overriding that method. Since we are
+// not
+// testing that particular method with these tests, this should be OK. To do
+// this, we
 // did the following:
-//      1. Create a new class (MyCertificationResultManager) that extends 
-//          CertificationResultManagerImpl and override the 
-//          getCertifiedProductHasAdditionalSoftware method with a constant value 
-//          of 'false'
-//      2. Created a new Spring configuration class CertifiedProductValidationTestConfig, 
-//          based on the CHPLTestConfig class
-//      3. In the new config class, specify that the CertificationResultManager bean should 
-//          use an instance of MyCertificationResultManager.
-//      4. Modify this test class to use the new spring configuration that was just created:
-//          @ContextConfiguration(classes = { CertifiedProductValidationTestConfig.class })
+// 1. Create a new class (MyCertificationResultManager) that extends
+// CertificationResultManagerImpl and override the
+// getCertifiedProductHasAdditionalSoftware method with a constant value
+// of 'false'
+// 2. Created a new Spring configuration class
+// CertifiedProductValidationTestConfig,
+// based on the CHPLTestConfig class
+// 3. In the new config class, specify that the CertificationResultManager bean
+// should
+// use an instance of MyCertificationResultManager.
+// 4. Modify this test class to use the new spring configuration that was just
+// created:
+// @ContextConfiguration(classes = { CertifiedProductValidationTestConfig.class
+// })
 @Configuration
 @Import(gov.healthit.chpl.CHPLTestConfig.class)
 class CertifiedProductValidationTestConfig {
@@ -88,7 +96,7 @@ class CertifiedProductValidationTestConfig {
     }
 }
 
-class MyCertificationResultManager extends CertificationResultManagerImpl  {
+class MyCertificationResultManager extends CertificationResultManagerImpl {
     @Override
     public boolean getCertifiedProductHasAdditionalSoftware(Long certifiedProductId) {
         return false;
@@ -97,16 +105,18 @@ class MyCertificationResultManager extends CertificationResultManagerImpl  {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { CertifiedProductValidationTestConfig.class })
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class })
+@ContextConfiguration(classes = {
+        CertifiedProductValidationTestConfig.class
+})
+@TestExecutionListeners({
+        DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
+})
 @DatabaseSetup("classpath:data/testData.xml")
 public class CertifiedProductValidationTest {
 
-    private static final String B4_INVALID_TEST_TOOL_NAME_ERROR = "Certification 170.315 (b)(4) contains an "
-            + "invalid test tool name: 'DOES NOT EXIST'.";
+    private static final String B4_INVALID_TEST_TOOL_NAME_ERROR = 
+            "Criteria 170.315 (b)(4) contains an invalid test tool 'DOES NOT EXIST'. It has been removed from the pending listing.";
     private static final String B4_RETIRED_TEST_TOOL_NOT_ALLOWED = "Test Tool 'Transport Testing Tool' can not "
             + "be used for criteria '170.315 (b)(4)', as it is a retired tool, and this "
             + "Certified Product does not carry ICS.";
@@ -134,17 +144,20 @@ public class CertifiedProductValidationTest {
             + "but no measures have been successfully tested for (g)(2).";
     private static final String SED_UCD_MISMATCH_ERROR = "We changed your pending listing to set the SED boolean to "
             + "be true for criteria 170.314 (a)(1) because UCD processes were included for that criteria.";
+    private static final String B_3 = "170.315 (b)(3)";
+    private static final String MISSING_TEST_TASK = "Certification 170.315 (b)(3) requires at least one test task.";
+    private static final String MISSING_UCD_PROCESS = "Certification 170.315 (b)(3) requires at least one UCD process.";
 
     @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
-    
+
     @Autowired
     MacraMeasureDAO mmDao;
 
     @Autowired
     ListingValidatorFactory validatorFactory;
-    
+
     private static JWTAuthenticatedUser adminUser;
     private static final long ADMIN_ID = -2L;
 
@@ -170,7 +183,8 @@ public class CertifiedProductValidationTest {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         PendingCertifiedProductDTO pendingListing = CertifiedProductValidationTestHelper.createPendingListing("2015");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
-        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (b)(4)");
+        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (b)(4)");
         PendingCertificationResultTestToolDTO existingTestTool = new PendingCertificationResultTestToolDTO();
         existingTestTool.setName("Cypress");
         pendingCertResult.getTestTools().add(existingTestTool);
@@ -193,7 +207,8 @@ public class CertifiedProductValidationTest {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         PendingCertifiedProductDTO pendingListing = CertifiedProductValidationTestHelper.createPendingListing("2015");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
-        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (b)(4)");
+        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (b)(4)");
         PendingCertificationResultTestToolDTO existingTestTool = new PendingCertificationResultTestToolDTO();
         existingTestTool.setName("Cypress");
         existingTestTool.setVersion("1.0.0");
@@ -217,7 +232,8 @@ public class CertifiedProductValidationTest {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         PendingCertifiedProductDTO pendingListing = CertifiedProductValidationTestHelper.createPendingListing("2015");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
-        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (b)(4)");
+        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (b)(4)");
         PendingCertificationResultTestToolDTO nonexistentTestTool = new PendingCertificationResultTestToolDTO();
         nonexistentTestTool.setName("DOES NOT EXIST");
         pendingCertResult.getTestTools().add(nonexistentTestTool);
@@ -240,7 +256,8 @@ public class CertifiedProductValidationTest {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         PendingCertifiedProductDTO pendingListing = CertifiedProductValidationTestHelper.createPendingListing("2015");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
-        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (b)(4)");
+        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (b)(4)");
         PendingCertificationResultTestToolDTO existingTestTool = new PendingCertificationResultTestToolDTO();
         existingTestTool.setName("Cypress");
         pendingCertResult.getTestTools().add(existingTestTool);
@@ -264,7 +281,8 @@ public class CertifiedProductValidationTest {
         PendingCertifiedProductDTO pendingListing = CertifiedProductValidationTestHelper.createPendingListing("2015");
         pendingListing.setIcs(Boolean.FALSE);
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
-        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (b)(4)");
+        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (b)(4)");
         PendingCertificationResultTestToolDTO existingTestTool = new PendingCertificationResultTestToolDTO();
         existingTestTool.setName("Transport Testing Tool");
         pendingCertResult.getTestTools().add(existingTestTool);
@@ -289,7 +307,8 @@ public class CertifiedProductValidationTest {
         PendingCertifiedProductDTO pendingListing = CertifiedProductValidationTestHelper.createPendingListing("2015");
         pendingListing.setIcs(Boolean.TRUE);
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
-        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (b)(4)");
+        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (b)(4)");
         PendingCertificationResultTestToolDTO existingTestTool = new PendingCertificationResultTestToolDTO();
         existingTestTool.setName("Transport Testing Tool");
         pendingCertResult.getTestTools().add(existingTestTool);
@@ -315,7 +334,8 @@ public class CertifiedProductValidationTest {
         pendingListing.setUniqueId("15.07.07.2642.IC04.36.01.1.160402");
         pendingListing.setIcs(Boolean.TRUE);
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
-        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (b)(4)");
+        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (b)(4)");
         PendingCertificationResultTestToolDTO existingTestTool = new PendingCertificationResultTestToolDTO();
         existingTestTool.setName("Transport Testing Tool");
         pendingCertResult.getTestTools().add(existingTestTool);
@@ -339,7 +359,8 @@ public class CertifiedProductValidationTest {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         PendingCertifiedProductDTO pendingListing = CertifiedProductValidationTestHelper.createPendingListing("2015");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
-        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (e)(2)");
+        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (e)(2)");
         pendingCertResults.add(pendingCertResult);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
@@ -363,7 +384,8 @@ public class CertifiedProductValidationTest {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         PendingCertifiedProductDTO pendingListing = CertifiedProductValidationTestHelper.createPendingListing("2015");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
-        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (e)(3)");
+        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (e)(3)");
         pendingCertResults.add(pendingCertResult);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
@@ -387,17 +409,23 @@ public class CertifiedProductValidationTest {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         PendingCertifiedProductDTO pendingListing = CertifiedProductValidationTestHelper.createPendingListing("2015");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
-        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (e)(2)");
+        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (e)(2)");
         pendingCertResults.add(pendingCertResult);
-        PendingCertificationResultDTO pendingCertResultD1 = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (d)(1)");
+        PendingCertificationResultDTO pendingCertResultD1 = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (d)(1)");
         pendingCertResults.add(pendingCertResultD1);
-        PendingCertificationResultDTO pendingCertResultD2 = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (d)(2)");
+        PendingCertificationResultDTO pendingCertResultD2 = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (d)(2)");
         pendingCertResults.add(pendingCertResultD2);
-        PendingCertificationResultDTO pendingCertResultD3 = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (d)(3)");
+        PendingCertificationResultDTO pendingCertResultD3 = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (d)(3)");
         pendingCertResults.add(pendingCertResultD3);
-        PendingCertificationResultDTO pendingCertResultD5 = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (d)(5)");
+        PendingCertificationResultDTO pendingCertResultD5 = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (d)(5)");
         pendingCertResults.add(pendingCertResultD5);
-        PendingCertificationResultDTO pendingCertResultD9 = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (d)(9)");
+        PendingCertificationResultDTO pendingCertResultD9 = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (d)(9)");
         pendingCertResults.add(pendingCertResultD9);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
@@ -421,17 +449,23 @@ public class CertifiedProductValidationTest {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         PendingCertifiedProductDTO pendingListing = CertifiedProductValidationTestHelper.createPendingListing("2015");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
-        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (e)(3)");
+        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (e)(3)");
         pendingCertResults.add(pendingCertResult);
-        PendingCertificationResultDTO pendingCertResultD1 = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (d)(1)");
+        PendingCertificationResultDTO pendingCertResultD1 = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (d)(1)");
         pendingCertResults.add(pendingCertResultD1);
-        PendingCertificationResultDTO pendingCertResultD2 = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (d)(2)");
+        PendingCertificationResultDTO pendingCertResultD2 = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (d)(2)");
         pendingCertResults.add(pendingCertResultD2);
-        PendingCertificationResultDTO pendingCertResultD3 = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (d)(3)");
+        PendingCertificationResultDTO pendingCertResultD3 = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (d)(3)");
         pendingCertResults.add(pendingCertResultD3);
-        PendingCertificationResultDTO pendingCertResultD5 = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (d)(5)");
+        PendingCertificationResultDTO pendingCertResultD5 = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (d)(5)");
         pendingCertResults.add(pendingCertResultD5);
-        PendingCertificationResultDTO pendingCertResultD9 = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (d)(9)");
+        PendingCertificationResultDTO pendingCertResultD9 = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (d)(9)");
         pendingCertResults.add(pendingCertResultD9);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
@@ -455,7 +489,8 @@ public class CertifiedProductValidationTest {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         PendingCertifiedProductDTO pendingListing = CertifiedProductValidationTestHelper.createPendingListing("2015");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
-        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (g)(7)");
+        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (g)(7)");
         pendingCertResults.add(pendingCertResult);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
@@ -477,7 +512,8 @@ public class CertifiedProductValidationTest {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         PendingCertifiedProductDTO pendingListing = CertifiedProductValidationTestHelper.createPendingListing("2015");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
-        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (g)(8)");
+        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (g)(8)");
         pendingCertResults.add(pendingCertResult);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
@@ -499,7 +535,8 @@ public class CertifiedProductValidationTest {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         PendingCertifiedProductDTO pendingListing = CertifiedProductValidationTestHelper.createPendingListing("2015");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
-        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (g)(9)");
+        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (g)(9)");
         pendingCertResults.add(pendingCertResult);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
@@ -521,13 +558,17 @@ public class CertifiedProductValidationTest {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         PendingCertifiedProductDTO pendingListing = CertifiedProductValidationTestHelper.createPendingListing("2015");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
-        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (g)(7)");
+        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (g)(7)");
         pendingCertResults.add(pendingCertResult);
-        PendingCertificationResultDTO pendingCertResultD1 = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (d)(1)");
+        PendingCertificationResultDTO pendingCertResultD1 = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (d)(1)");
         pendingCertResults.add(pendingCertResultD1);
-        PendingCertificationResultDTO pendingCertResultD9 = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (d)(9)");
+        PendingCertificationResultDTO pendingCertResultD9 = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (d)(9)");
         pendingCertResults.add(pendingCertResultD9);
-        PendingCertificationResultDTO pendingCertResultD2 = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (d)(2)");
+        PendingCertificationResultDTO pendingCertResultD2 = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (d)(2)");
         pendingCertResults.add(pendingCertResultD2);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
@@ -549,13 +590,17 @@ public class CertifiedProductValidationTest {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         PendingCertifiedProductDTO pendingListing = CertifiedProductValidationTestHelper.createPendingListing("2015");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
-        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (g)(8)");
+        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (g)(8)");
         pendingCertResults.add(pendingCertResult);
-        PendingCertificationResultDTO pendingCertResultD1 = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (d)(1)");
+        PendingCertificationResultDTO pendingCertResultD1 = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (d)(1)");
         pendingCertResults.add(pendingCertResultD1);
-        PendingCertificationResultDTO pendingCertResultD9 = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (d)(9)");
+        PendingCertificationResultDTO pendingCertResultD9 = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (d)(9)");
         pendingCertResults.add(pendingCertResultD9);
-        PendingCertificationResultDTO pendingCertResultD10 = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (d)(10)");
+        PendingCertificationResultDTO pendingCertResultD10 = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (d)(10)");
         pendingCertResults.add(pendingCertResultD10);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
@@ -577,13 +622,17 @@ public class CertifiedProductValidationTest {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         PendingCertifiedProductDTO pendingListing = CertifiedProductValidationTestHelper.createPendingListing("2015");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
-        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (g)(9)");
+        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (g)(9)");
         pendingCertResults.add(pendingCertResult);
-        PendingCertificationResultDTO pendingCertResultD1 = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (d)(1)");
+        PendingCertificationResultDTO pendingCertResultD1 = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (d)(1)");
         pendingCertResults.add(pendingCertResultD1);
-        PendingCertificationResultDTO pendingCertResultD9 = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (d)(9)");
+        PendingCertificationResultDTO pendingCertResultD9 = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (d)(9)");
         pendingCertResults.add(pendingCertResultD9);
-        PendingCertificationResultDTO pendingCertResultD10 = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (d)(10)");
+        PendingCertificationResultDTO pendingCertResultD10 = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (d)(10)");
         pendingCertResults.add(pendingCertResultD10);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
@@ -605,7 +654,8 @@ public class CertifiedProductValidationTest {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         PendingCertifiedProductDTO pendingListing = CertifiedProductValidationTestHelper.createPendingListing("2014");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
-        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper.createPendingCertResult("170.314 (a)(1)");
+        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.314 (a)(1)");
         pendingCertResult.setSed(Boolean.FALSE);
         PendingCertificationResultUcdProcessDTO pendingUcd = new PendingCertificationResultUcdProcessDTO();
         pendingUcd.setUcdProcessDetails("UCD Process Details");
@@ -752,7 +802,7 @@ public class CertifiedProductValidationTest {
     @Test
     public void validateRetiredTestToolNoIcsHasError()
             throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
-        
+
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         CertifiedProductSearchDetails listing = CertifiedProductValidationTestHelper.createListing("2015");
         List<CertificationResult> certResults = new ArrayList<CertificationResult>();
@@ -1101,9 +1151,11 @@ public class CertifiedProductValidationTest {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         PendingCertifiedProductDTO pendingListing = CertifiedProductValidationTestHelper.createPendingListing("2015");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
-        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (g)(1)");
+        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (g)(1)");
         pendingCertResults.add(pendingCertResult);
-        PendingCertificationResultDTO pendingCertResult2 = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (a)(3)");
+        PendingCertificationResultDTO pendingCertResult2 = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (a)(3)");
         pendingCertResults.add(pendingCertResult2);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
@@ -1123,9 +1175,11 @@ public class CertifiedProductValidationTest {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         PendingCertifiedProductDTO pendingListing = CertifiedProductValidationTestHelper.createPendingListing("2015");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
-        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (g)(2)");
+        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (g)(2)");
         pendingCertResults.add(pendingCertResult);
-        PendingCertificationResultDTO pendingCertResult2 = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (a)(3)");
+        PendingCertificationResultDTO pendingCertResult2 = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (a)(3)");
         pendingCertResults.add(pendingCertResult2);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
@@ -1146,14 +1200,16 @@ public class CertifiedProductValidationTest {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         PendingCertifiedProductDTO pendingListing = CertifiedProductValidationTestHelper.createPendingListing("2015");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
-        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (g)(1)");
+        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (g)(1)");
         pendingCertResults.add(pendingCertResult);
-        PendingCertificationResultDTO pendingCertResult2 = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (a)(3)");
+        PendingCertificationResultDTO pendingCertResult2 = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (a)(3)");
         PendingCertificationResultMacraMeasureDTO crmm = new PendingCertificationResultMacraMeasureDTO();
         crmm.setEnteredValue("EH/CAH Stage 3");
         crmm.setMacraMeasureId(macraMeasureId);
-        MacraMeasureDTO mmDto = mmDao
-                .getByCriteriaNumberAndValue(pendingCertResult2.getNumber(), crmm.getEnteredValue());
+        MacraMeasureDTO mmDto = mmDao.getByCriteriaNumberAndValue(pendingCertResult2.getNumber(),
+                crmm.getEnteredValue());
         crmm.setMacraMeasure(mmDto);
         pendingCertResult2.getG1MacraMeasures().add(crmm);
         pendingCertResults.add(pendingCertResult2);
@@ -1176,14 +1232,16 @@ public class CertifiedProductValidationTest {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         PendingCertifiedProductDTO pendingListing = CertifiedProductValidationTestHelper.createPendingListing("2015");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
-        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (g)(2)");
+        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (g)(2)");
         pendingCertResults.add(pendingCertResult);
-        PendingCertificationResultDTO pendingCertResult2 = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (a)(3)");
+        PendingCertificationResultDTO pendingCertResult2 = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (a)(3)");
         PendingCertificationResultMacraMeasureDTO crmm = new PendingCertificationResultMacraMeasureDTO();
         crmm.setEnteredValue("EH/CAH Stage 3");
         crmm.setMacraMeasureId(macraMeasureId);
-        MacraMeasureDTO mmDto = mmDao
-                .getByCriteriaNumberAndValue(pendingCertResult2.getNumber(), crmm.getEnteredValue());
+        MacraMeasureDTO mmDto = mmDao.getByCriteriaNumberAndValue(pendingCertResult2.getNumber(),
+                crmm.getEnteredValue());
         crmm.setMacraMeasure(mmDto);
         pendingCertResult2.getG2MacraMeasures().add(crmm);
         pendingCertResults.add(pendingCertResult2);
@@ -1297,5 +1355,28 @@ public class CertifiedProductValidationTest {
         }
 
         assertFalse(listing.getErrorMessages().contains(MISSING_G2_MACRA_ERROR));
+    }
+
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void validateSEDFalseNoErrors()
+            throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        CertifiedProductSearchDetails listing = CertifiedProductValidationTestHelper.createListing("2015");
+        List<CertificationResult> certResults = new ArrayList<CertificationResult>();
+        CertificationResult certResult = CertifiedProductValidationTestHelper.createCertResult(B_3);
+        certResult.setSed(false);
+        certResults.add(certResult);
+        listing.setCertificationResults(certResults);
+
+        Validator validator = validatorFactory.getValidator(listing);
+        if (validator != null) {
+            validator.validate(listing);
+        }
+
+        System.out.println(listing.getErrorMessages());
+        assertFalse(listing.getErrorMessages().contains(MISSING_UCD_PROCESS));
+        assertFalse(listing.getErrorMessages().contains(MISSING_TEST_TASK));
     }
 }

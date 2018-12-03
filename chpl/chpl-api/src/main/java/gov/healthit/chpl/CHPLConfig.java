@@ -7,6 +7,7 @@ import java.util.Locale;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
@@ -53,17 +54,17 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
     private static final Logger LOGGER = LogManager.getLogger(CHPLConfig.class);
     private static final long MAX_UPLOAD_FILE_SIZE = 5242880;
     private static final int MAX_COOKIE_AGE_SECONDS = 3600;
-    
+
     @Autowired
-    private ApiKeyManager apiKeyManager;
-    
+    private ObjectFactory<ApiKeyManager> apiKeyManagerObjectFactory;
+
     private Environment env;
-    
+
     @Override
-    public void setEnvironment(Environment env) {
+    public void setEnvironment(final Environment env) {
         this.env = env;
     }
-    
+
     @Bean
     public MappingJackson2HttpMessageConverter jsonConverter() {
         MappingJackson2HttpMessageConverter bean = new MappingJackson2HttpMessageConverter();
@@ -87,6 +88,7 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
     @Bean
     public APIKeyAuthenticationFilter apiKeyAuthenticationFilter() {
         LOGGER.info("get APIKeyAuthenticationFilter");
+        ApiKeyManager apiKeyManager = this.apiKeyManagerObjectFactory.getObject();
         return new APIKeyAuthenticationFilter(apiKeyManager);
     }
 
@@ -119,7 +121,7 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
         interceptor.setParamName("lang");
         return interceptor;
     }
-    
+
     @Bean
     public RateLimitingInterceptor rateLimitingInterceptor() {
         RateLimitingInterceptor interceptor = new RateLimitingInterceptor();
@@ -129,7 +131,9 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
         registry.addInterceptor(localeInterceptor());
-        registry.addInterceptor(rateLimitingInterceptor()).addPathPatterns("/**").excludePathPatterns(APIKeyAuthenticationFilter.ALLOWED_REQUEST_PATHS);
+        registry.addInterceptor(rateLimitingInterceptor())
+        .addPathPatterns("/**")
+        .excludePathPatterns(APIKeyAuthenticationFilter.ALLOWED_REQUEST_PATHS);
     }
 
     @Bean

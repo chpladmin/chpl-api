@@ -31,14 +31,13 @@ import gov.healthit.chpl.auth.user.UserRetrievalException;
 
 @Repository(value="userDAO")
 public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
-    private static final Logger logger = LogManager.getLogger(UserDAOImpl.class);
+    private static final Logger LOGGER = LogManager.getLogger(UserDAOImpl.class);
 
     @Autowired
-    UserPermissionDAO userPermissionDAO;
+    private UserPermissionDAO userPermissionDAO;
 
     @Autowired
-    UserContactDAO userContactDAO;
-
+    private UserContactDAO userContactDAO;
 
     @Override
     @Transactional
@@ -47,7 +46,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
         UserEntity userEntity = null;
         try {
             userEntity = getEntityByName(user.getSubjectName());
-        } catch (UserRetrievalException ignore) {}
+        } catch (UserRetrievalException ignore) { }
 
         if (userEntity != null) {
             throw new UserCreationException("user name: " + user.getSubjectName() + " already exists.");
@@ -63,6 +62,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
             userEntity.setAccountExpired(user.isAccountExpired());
             userEntity.setAccountLocked(user.isAccountLocked());
             userEntity.setCredentialsExpired(!user.isCredentialsNonExpired());
+            userEntity.setPasswordResetRequired(user.getPasswordResetRequired());
             userEntity.setLastModifiedUser(Util.getCurrentUser().getId());
             userEntity.setLastModifiedDate(new Date());
             userEntity.setDeleted(false);
@@ -105,6 +105,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
         userEntity.setAccountExpired(user.isAccountExpired());
         userEntity.setAccountLocked(user.isAccountLocked());
         userEntity.setCredentialsExpired(!user.isCredentialsNonExpired());
+        userEntity.setPasswordResetRequired(user.getPasswordResetRequired());
         userEntity.setLastModifiedUser(Util.getCurrentUser().getId());
         userEntity.getContact().setLastModifiedUser(Util.getCurrentUser().getId());
 
@@ -201,7 +202,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
         query.setParameter("subjectName", username);
         query.setParameter("email", email);
         List<UserEntity> result = query.getResultList();
-        if (result.size() >= 1){
+        if (result.size() >= 1) {
             UserEntity entity = result.get(0);
             foundUser = new UserDTO(entity);
         }
@@ -275,7 +276,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
             String msg = String.format(messageSource.getMessage(
                     new DefaultMessageSourceResolvable("user.notFound"), LocaleContextHolder.getLocale()));
             throw new UserRetrievalException(msg);
-        } else if (result.size() > 1){
+        } else if (result.size() > 1) {
             throw new UserRetrievalException("Data error. Duplicate user id in database.");
         }
 
@@ -301,7 +302,6 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
         } else if (result.size() > 1) {
             throw new UserRetrievalException("Data error. Duplicate user name in database.");
         }
-
         return result.get(0);
     }
 
@@ -323,7 +323,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
             if (!permissionExists) {
                 userPermissionDAO.createMapping(userEntity, authority);
             } else {
-                logger.error("Permission " + authority + " already exists for " + uname + ". Not adding anything.");
+                LOGGER.error("Permission " + authority + " already exists for " + uname + ". Not adding anything.");
             }
         }
     }
@@ -384,6 +384,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 
         UserEntity userEntity = this.getEntityByName(uname);
         userEntity.setPassword(encodedPassword);
+        userEntity.setPasswordResetRequired(false);
         update(userEntity);
 
     }
@@ -412,5 +413,4 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
         UserEntity userEntity = getEntityByName(user.getUsername());
         return userEntity.getPassword();
     }
-
 }

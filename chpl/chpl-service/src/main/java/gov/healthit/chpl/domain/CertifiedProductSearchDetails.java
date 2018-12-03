@@ -16,12 +16,8 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import gov.healthit.chpl.dto.CertifiedProductDTO;
-
 /**
  * Certified Product Search Details entity.
- * @author alarned
- *
  */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -239,13 +235,6 @@ public class CertifiedProductSearchDetails implements Serializable {
     private String transparencyAttestationUrl;
 
     /**
-     * Number of meaningful use users for this listing as uploaded by the
-     * certifying body.
-     */
-    @XmlElement(required = false, nillable = true)
-    private Long numMeaningfulUse;
-
-    /**
      * The last time this listing was modified in any way given in milliseconds
      * since epoch.
      */
@@ -316,6 +305,15 @@ public class CertifiedProductSearchDetails implements Serializable {
     @XmlElementWrapper(name = "certificationEvents", nillable = true, required = false)
     @XmlElement(name = "certificationEvent")
     private List<CertificationStatusEvent> certificationEvents = new ArrayList<CertificationStatusEvent>();
+
+    /**
+     * All current and historical values of meaningful use users for this listing
+     * along with the dates each meaningful use user count was valid.
+     * Dates are given in milliseconds since epoch.
+     */
+    @XmlElementWrapper(name = "meaningfulUseUserHistory", nillable = true, required = false)
+    @XmlElement(name = "meaningfulUseEntry")
+    private List<MeaningfulUseUser> meaningfulUseUserHistory = new ArrayList<MeaningfulUseUser>();
 
     /**
      * All data related to safety-enhanced design for this listing.
@@ -608,12 +606,12 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.surveillance = surveillance;
     }
 
-    public Long getNumMeaningfulUse() {
-        return numMeaningfulUse;
+    public List<MeaningfulUseUser> getMeaningfulUseUserHistory() {
+        return meaningfulUseUserHistory;
     }
 
-    public void setNumMeaningfulUse(final Long numMeaningfulUse) {
-        this.numMeaningfulUse = numMeaningfulUse;
+    public void setMeaningfulUseUserHistory(final List<MeaningfulUseUser> meaningfulUseUserHistory) {
+        this.meaningfulUseUserHistory = meaningfulUseUserHistory;
     }
 
     public Integer getCountSurveillance() {
@@ -706,5 +704,24 @@ public class CertifiedProductSearchDetails implements Serializable {
             }
         }
         return oldest;
+    }
+
+    /**
+     * Dynamically determine the current MUU count
+     * by finding the most recent MUU entry for this listing.
+     * @return
+     */
+    public MeaningfulUseUser getCurrentMeaningfulUseUsers() {
+        if (this.getMeaningfulUseUserHistory() == null || this.getMeaningfulUseUserHistory().size() == 0) {
+            return null;
+        }
+
+        MeaningfulUseUser newest = this.getMeaningfulUseUserHistory().get(0);
+        for (MeaningfulUseUser muuItem : this.getMeaningfulUseUserHistory()) {
+            if (muuItem.getMuuDate() > newest.getMuuDate()) {
+                newest = muuItem;
+            }
+        }
+        return newest;
     }
 }

@@ -1,5 +1,7 @@
 package gov.healthit.chpl.validation.listing.reviewer;
 
+import java.util.Iterator;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -10,44 +12,75 @@ import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
+/**
+ * Makes sure a valid test tool was entered by the user - otherwise removes it and includes
+ * an error. Makes sure the version is included with a test tool.
+ * Checks that retired test tools are not used if not appropriate.
+ * @author kekey
+ *
+ */
 @Component("testToolReviewer")
 public class TestToolReviewer implements Reviewer {
-    @Autowired TestToolDAO testToolDao;
-    @Autowired private ChplProductNumberUtil productNumUtil;
+    private TestToolDAO testToolDao;
+    private ErrorMessageUtil msgUtil;
+    private ChplProductNumberUtil productNumUtil;
+
+    @Autowired
+    public TestToolReviewer(TestToolDAO testToolDAO, ErrorMessageUtil msgUtil,
+            ChplProductNumberUtil chplProductNumberUtil) {
+        this.testToolDao = testToolDAO;
+        this.msgUtil = msgUtil;
+        this.productNumUtil = chplProductNumberUtil;
+    }
 
     @Override
-    public void review(CertifiedProductSearchDetails listing) {
+    public void review(final CertifiedProductSearchDetails listing) {
         Integer icsCodeInteger = productNumUtil.getIcsCode(listing.getChplProductNumber());
 
         for (CertificationResult cert : listing.getCertificationResults()) {
-            if(cert.isSuccess()) {
+            if (cert.isSuccess()) {
                 if (cert.getTestToolsUsed() != null && cert.getTestToolsUsed().size() > 0) {
-                    for (CertificationResultTestTool testTool : cert.getTestToolsUsed()) {
+                    Iterator<CertificationResultTestTool> testToolIter = cert.getTestToolsUsed().iterator();
+                    while (testToolIter.hasNext()) {
+                        CertificationResultTestTool testTool = testToolIter.next();
                         if (StringUtils.isEmpty(testTool.getTestToolName())) {
-                            listing.getErrorMessages()
-                            .add("There was no test tool name found for certification " + cert.getNumber() + ".");
+                            listing.getErrorMessages().add(
+                                    msgUtil.getMessage("listing.criteria.missingTestToolName", cert.getNumber()));
                         } else {
+                            //require test tool version if there is a name
+                            if (StringUtils.isEmpty(testTool.getTestToolVersion())) {
+                                listing.getErrorMessages().add(
+                                        msgUtil.getMessage("listing.criteria.missingTestToolVersion",
+                                                testTool.getTestToolName(), cert.getNumber()));
+                            }
+
                             TestToolDTO tt = testToolDao.getByName(testTool.getTestToolName());
-                            if (tt == null) {
-                                listing.getErrorMessages().add("No test tool with " + testTool.getTestToolName()
-                                + " was found for criteria " + cert.getNumber() + ".");
-                            } else if (tt.isRetired() && icsCodeInteger != null && icsCodeInteger.intValue() == 0) {
-                                if (productNumUtil.hasIcsConflict(listing.getChplProductNumber(), 
-                                        (listing.getIcs() == null ? Boolean.FALSE : listing.getIcs().getInherits()))) {
-                                    listing.getWarningMessages().add("Test Tool '" + testTool.getTestToolName()
-                                    + "' can not be used for criteria '" + cert.getNumber()
-                                    + "', as it is a retired tool, and this Certified Product does not carry ICS.");
-                                } else {
-                                    listing.getErrorMessages().add("Test Tool '" + testTool.getTestToolName()
-                                    + "' can not be used for criteria '" + cert.getNumber()
-                                    + "', as it is a retired tool, and this Certified Product does not carry ICS.");
+                            if (tt != null) {
+                                if (tt.isRetired() && icsCodeInteger != null && icsCodeInteger.intValue() == 0) {
+                                    if (productNumUtil.hasIcsConflict(listing.getChplProductNumber(), 
+                                            (listing.getIcs() == null ? Boolean.FALSE : listing.getIcs().getInherits()))) {
+                                        listing.getWarningMessages().add(
+                                                msgUtil.getMessage("listing.criteria.retiredTestToolNotAllowed",
+                                                        testTool.getTestToolName(), cert.getNumber()));
+                                    } else {
+                                        listing.getErrorMessages().add(
+                                                msgUtil.getMessage("listing.criteria.retiredTestToolNotAllowed",
+                                                        testTool.getTestToolName(), cert.getNumber()));
+                                    }
+                                } else if (tt.isRetired()
+                                        && (listing.getIcs() == null || listing.getIcs().getInherits() == null
+                                        || listing.getIcs().getInherits().equals(Boolean.FALSE))) {
+                                    listing.getErrorMessages().add(
+                                            msgUtil.getMessage("listing.criteria.retiredTestToolNotAllowed",
+                                                    testTool.getTestToolName(), cert.getNumber()));
                                 }
-                            } else if (tt.isRetired() && (listing.getIcs() == null || listing.getIcs().getInherits() == null
-                                    || listing.getIcs().getInherits().equals(Boolean.FALSE))) {
-                                listing.getErrorMessages().add("Test Tool '" + testTool.getTestToolName()
-                                + "' can not be used for criteria '" + cert.getNumber()
-                                + "', as it is a retired tool, and this Certified Product does not carry ICS.");
+                            } else {
+                                listing.getErrorMessages().add(
+                                        msgUtil.getMessage("listing.criteria.testToolNotFoundAndRemoved",
+                                                cert.getNumber(), testTool.getTestToolName()));
+                                testToolIter.remove();
                             }
                         }
                     }

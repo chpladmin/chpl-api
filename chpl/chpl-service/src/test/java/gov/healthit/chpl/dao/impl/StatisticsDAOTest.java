@@ -44,6 +44,7 @@ import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import junit.framework.TestCase;
 
@@ -412,6 +413,9 @@ public class StatisticsDAOTest extends TestCase {
     @Rollback
     public void getTotalOpenSurveillanceActivities_filterDateRange_allDates() {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
+        Date beginningOfTime = new Date(0);
+        Date currentTime = new Date();
+
         Surveillance surv = new Surveillance();
         surv.setAuthority("ROLE_ADMIN");
         CertifiedProduct cp = null;
@@ -436,19 +440,31 @@ public class StatisticsDAOTest extends TestCase {
         aReq.setType(type);
         reqs.add(aReq);
         surv.setRequirements(reqs);
-        surv.setStartDate(new Date(0));
+        //start date is one day ago
+        surv.setStartDate(new Date(currentTime.getTime() - (1000*60*60*24)));
         surv.setEndDate(null);
         SurveillanceType survType = new SurveillanceType();
         survType.setId(1L);
         survType.setName("Reactive");
         surv.setType(survType);
+        Long insertedSurvId = null;
         try {
-            surveillanceDao.insertSurveillance(surv);
+            insertedSurvId = surveillanceDao.insertSurveillance(surv);
         } catch (UserPermissionRetrievalException e) {
+            fail(e.getMessage());
             e.printStackTrace();
         }
 
-        DateRange dateRange = new DateRange(new Date(0), new Date());
+        try {
+            SurveillanceEntity insertedSurv = surveillanceDao.getSurveillanceById(insertedSurvId);
+            assertNotNull(insertedSurv);
+        } catch(EntityRetrievalException ex) {
+            fail(ex.getMessage());
+            ex.printStackTrace();
+        }
+        //adding a minute to the searched date range to account
+        //for clock difference on ahrq's dev server and dev db server.
+        DateRange dateRange = new DateRange(beginningOfTime, new Date(currentTime.getTime() + (1000*60)));
         Long totalOpenSurveillanceActivities = surveillanceStatisticsDao.getTotalOpenSurveillanceActivities(dateRange);
         assertNotNull(totalOpenSurveillanceActivities);
         assertEquals(1L, totalOpenSurveillanceActivities.longValue());

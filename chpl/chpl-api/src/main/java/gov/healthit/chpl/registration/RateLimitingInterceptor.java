@@ -1,9 +1,5 @@
 package gov.healthit.chpl.registration;
 
-import gov.healthit.chpl.dao.ApiKeyDAO;
-import gov.healthit.chpl.dto.ApiKeyDTO;
-import gov.healthit.chpl.util.ErrorMessageUtil;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -17,13 +13,21 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.EnvironmentAware;
-import org.springframework.context.MessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import gov.healthit.chpl.dao.ApiKeyDAO;
+import gov.healthit.chpl.dto.ApiKeyDTO;
+import gov.healthit.chpl.util.ErrorMessageUtil;
+
+/**
+ * Interceptor that handles rate limiting of API-Keys.
+ * @author blindsey
+ *
+ */
 @Component
 public class RateLimitingInterceptor extends HandlerInterceptorAdapter implements EnvironmentAware {
 
@@ -33,11 +37,8 @@ public class RateLimitingInterceptor extends HandlerInterceptorAdapter implement
     private Environment env;
 
     @Autowired
-    private MessageSource messageSource;
-
-    @Autowired
     private ApiKeyDAO apiKeyDao;
-    
+
     @Autowired
     private ErrorMessageUtil errorUtil;
 
@@ -49,19 +50,21 @@ public class RateLimitingInterceptor extends HandlerInterceptorAdapter implement
 
     private List<String> whitelist = new ArrayList<String>();
 
+    /** Default constructor. */
     public RateLimitingInterceptor() {
     }
 
     @Override
-    public void setEnvironment(Environment env) {
+    public void setEnvironment(final Environment environment) {
         LOGGER.info("setEnvironment");
-        this.env = env;
-        this.timeUnit = env.getProperty("rateLimitTimeUnit");
-        this.limit = Integer.valueOf(env.getProperty("rateTokenLimit"));
+        this.env = environment;
+        this.timeUnit = this.env.getProperty("rateLimitTimeUnit");
+        this.limit = Integer.parseInt(this.env.getProperty("rateTokenLimit"));
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(final HttpServletRequest request,
+            final HttpServletResponse response, final Object handler) throws Exception {
         String key = null;
         String clientIdParam = request.getParameter("api_key");
         String clientIdHeader = request.getHeader("API-Key");
@@ -96,7 +99,7 @@ public class RateLimitingInterceptor extends HandlerInterceptorAdapter implement
         return allowRequest;
     }
 
-    private SimpleRateLimiter getRateLimiter(String clientId) {
+    private SimpleRateLimiter getRateLimiter(final String clientId) {
 
         if (limiters.containsKey(clientId)) {
             return limiters.get(clientId);
@@ -107,7 +110,7 @@ public class RateLimitingInterceptor extends HandlerInterceptorAdapter implement
         }
     }
 
-    private TimeUnit parseTimeUnit(String unit) {
+    private TimeUnit parseTimeUnit(final String unit) {
         if (unit.equals("second")) {
             return TimeUnit.SECONDS;
         } else if (unit.equals("minute")) {

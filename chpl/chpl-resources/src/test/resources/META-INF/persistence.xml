@@ -14,6 +14,7 @@
         <class>gov.healthit.chpl.auth.entity.UserEntity</class>
         <class>gov.healthit.chpl.auth.entity.UserPermissionEntity</class>
         <class>gov.healthit.chpl.auth.entity.UserPermissionUserMappingEntity</class>
+        <class>gov.healthit.chpl.auth.entity.UserResetTokenEntity</class>
         <class>gov.healthit.chpl.entity.AccessibilityStandardEntity</class>
         <class>gov.healthit.chpl.entity.ActivityEntity</class>
         <class>gov.healthit.chpl.entity.AddressEntity</class>
@@ -40,7 +41,7 @@
         <class>gov.healthit.chpl.entity.IncumbentDevelopersStatisticsEntity</class>
         <class>gov.healthit.chpl.entity.ListingCountStatisticsEntity</class>
         <class>gov.healthit.chpl.entity.MacraMeasureEntity</class>
-        <class>gov.healthit.chpl.entity.MeaningfulUseAccurateAsOfEntity</class>
+        <class>gov.healthit.chpl.entity.MeaningfulUseUserEntity</class>
         <class>gov.healthit.chpl.entity.NonconformityStatusEntity</class>
         <class>gov.healthit.chpl.entity.PracticeTypeEntity</class>
         <class>gov.healthit.chpl.entity.ProductActiveOwnerEntity</class>
@@ -54,6 +55,7 @@
         <class>gov.healthit.chpl.entity.TestDataCriteriaMapEntity</class>
         <class>gov.healthit.chpl.entity.TestDataEntity</class>
         <class>gov.healthit.chpl.entity.TestFunctionalityEntity</class>
+        <class>gov.healthit.chpl.entity.TestFunctionalityCriteriaMapEntity</class>
         <class>gov.healthit.chpl.entity.TestParticipantEntity</class>
         <class>gov.healthit.chpl.entity.TestProcedureCriteriaMapEntity</class>
         <class>gov.healthit.chpl.entity.TestProcedureEntity</class>
@@ -151,7 +153,7 @@
             <property name="hibernate.format_sql" value="false" />
             <property name="hibernate.driver_class" value="org.postgresql.Driver" />
             <property name="hibernate.connection.datasource"
-                value="java:comp/env/jdbc/openchpl" />
+                value="java:comp/env/jdbc/openchpl_test" />
             <property name="hibernate.dialect"
                 value="org.hibernate.dialect.PostgreSQLDialect" />
             <property name="hibernate.flush_before_completion"

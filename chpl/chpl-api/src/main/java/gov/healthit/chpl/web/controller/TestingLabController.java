@@ -70,7 +70,7 @@ public class TestingLabController {
     public @ResponseBody TestingLabResults getAtls(
             @RequestParam(required = false, defaultValue = "false") final boolean editable,
             @RequestParam(required = false, defaultValue = "false") final boolean showDeleted) {
-        TestingLabResults results = new TestingLabResults();
+        TestingLabResults results = null;
         if (!Util.isUserRoleAdmin() && showDeleted) {
             throw new AccessDeniedException("Only Admin can see deleted ATL's.");
         } else {
@@ -104,9 +104,9 @@ public class TestingLabController {
 
     @Deprecated
     @ApiOperation(value = "DEPRECATED.  Create a new testing lab.",
-            notes = "The logged in user must have ROLE_ADMIN to create a new testing lab.")
+    notes = "The logged in user must have ROLE_ADMIN to create a new testing lab.")
     @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public TestingLab createAtlDeprecated(@RequestBody final TestingLab atlInfo)
             throws InvalidArgumentsException, UserRetrievalException, EntityRetrievalException,
             EntityCreationException, JsonProcessingException {
@@ -117,7 +117,7 @@ public class TestingLabController {
     @ApiOperation(value = "Create a new testing lab.",
             notes = "The logged in user must have ROLE_ADMIN to create a new testing lab.")
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public TestingLab createAtl(@RequestBody final TestingLab atlInfo)
             throws InvalidArgumentsException, UserRetrievalException, EntityRetrievalException,
             EntityCreationException, JsonProcessingException {
@@ -126,7 +126,7 @@ public class TestingLabController {
     }
 
     public TestingLab create(final TestingLab atlInfo) throws InvalidArgumentsException, UserRetrievalException,
-                EntityRetrievalException, EntityCreationException, JsonProcessingException {
+    EntityRetrievalException, EntityCreationException, JsonProcessingException {
         TestingLabDTO toCreate = new TestingLabDTO();
         toCreate.setTestingLabCode(atlInfo.getAtlCode());
         toCreate.setAccredidationNumber(atlInfo.getAccredidationNumber());
@@ -154,10 +154,10 @@ public class TestingLabController {
 
     @Deprecated
     @ApiOperation(value = "DEPRECATED.  Update an existing ATL.",
-            notes = "The logged in user must either have ROLE_ADMIN or have administrative "
-                    + "authority on the testing lab whose data is being updated.")
+    notes = "The logged in user must either have ROLE_ADMIN or have administrative "
+            + "authority on the testing lab whose data is being updated.")
     @RequestMapping(value = "/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public ResponseEntity<TestingLab> updateAtlDeprecated(@RequestBody final TestingLab atlInfo)
             throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
             EntityCreationException, UpdateTestingLabException {
@@ -169,8 +169,8 @@ public class TestingLabController {
             notes = "The logged in user must either have ROLE_ADMIN or have administrative "
                     + "authority on the testing lab whose data is being updated.")
     @RequestMapping(value = "/{atlId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
-    public ResponseEntity<TestingLab> updateAtl(@RequestBody final TestingLab atlInfo) 
+    produces = "application/json; charset=utf-8")
+    public ResponseEntity<TestingLab> updateAtl(@RequestBody final TestingLab atlInfo)
             throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
             EntityCreationException, UpdateTestingLabException {
 
@@ -178,7 +178,7 @@ public class TestingLabController {
     }
 
     public ResponseEntity<TestingLab> update(TestingLab atlInfo) throws InvalidArgumentsException,
-                EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateTestingLabException {
+    EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateTestingLabException {
         TestingLabDTO toUpdate = new TestingLabDTO();
         toUpdate.setId(atlInfo.getId());
         toUpdate.setTestingLabCode(atlInfo.getAtlCode());
@@ -212,7 +212,7 @@ public class TestingLabController {
     @Deprecated
     @ApiOperation(value = "DEPRECATED.  Delete an ATL.", notes = "The logged in user must have ROLE_ADMIN.")
     @RequestMapping(value = "/{atlId}/delete", method = RequestMethod.POST,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public String deleteAtlDeprecated(@PathVariable("atlId") final Long atlId)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
 
@@ -221,7 +221,7 @@ public class TestingLabController {
 
     @ApiOperation(value = "Delete an ATL.", notes = "The logged in user must have ROLE_ADMIN.")
     @RequestMapping(value = "/{atlId}", method = RequestMethod.DELETE,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public String deleteAtl(@PathVariable("atlId") final Long atlId)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
 
@@ -237,12 +237,13 @@ public class TestingLabController {
 
     }
 
-    @ApiOperation(value = "Restore a deleted ATL.",
-            notes = "ATLs are unique in the CHPL in that they can be restored after a delete."
-                    + " The logged in user must have ROLE_ADMIN.")
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED. Restore a deleted ATL.",
+    notes = "ATLs are unique in the CHPL in that they can be restored after a delete."
+            + " The logged in user must have ROLE_ADMIN.")
     @RequestMapping(value = "/{atlId}/undelete", method = RequestMethod.POST,
-            produces = "application/json; charset=utf-8")
-    public String undeleteAtl(@PathVariable("atlId") final Long atlId)
+    produces = "application/json; charset=utf-8")
+    public String undeleteAtlDeprecated(@PathVariable("atlId") final Long atlId)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
 
         TestingLabDTO toResurrect = atlManager.getById(atlId, true);
@@ -251,16 +252,35 @@ public class TestingLabController {
 
     }
 
+    @ApiOperation(value = "Restore a deleted ATL.",
+            notes = "ATLs are unique in the CHPL in that they can be restored after a delete."
+                    + " The logged in user must have ROLE_ADMIN.")
+    @RequestMapping(value = "/{atlId}/undelete", method = RequestMethod.PUT,
+    produces = "application/json; charset=utf-8")
+    public String undeleteAtl(@PathVariable("atlId") final Long atlId)
+            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
+
+        return undelete(atlId);
+    }
+
+    private String undelete(final Long atlId)
+            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
+
+        TestingLabDTO toResurrect = atlManager.getById(atlId, true);
+        atlManager.undelete(toResurrect);
+        return "{\"resurrectedAtl\" : true}";
+    }
+
     @Deprecated
     @ApiOperation(value = "DEPRECATED.  Add a user to an ATL.",
-            notes = "The logged in user must have ROLE_ADMIN or ROLE_ATL and have administrative authority on the "
-                    + " specified ATL. It is recommended to pass 'ADMIN' in as the 'authority' field"
-                    + " to guarantee maximum compatibility although 'READ' and 'DELETE' are also valid choices. "
-                    + " Note that this method gives special permission on a specific ATL and is not the "
-                    + " equivalent of assigning the ROLE_ATL role. Please view /users/grant_role "
-                    + " request for more information on that.")
+    notes = "The logged in user must have ROLE_ADMIN or ROLE_ATL and have administrative authority on the "
+            + " specified ATL. It is recommended to pass 'ADMIN' in as the 'authority' field"
+            + " to guarantee maximum compatibility although 'READ' and 'DELETE' are also valid choices. "
+            + " Note that this method gives special permission on a specific ATL and is not the "
+            + " equivalent of assigning the ROLE_ATL role. Please view /users/grant_role "
+            + " request for more information on that.")
     @RequestMapping(value = "/add_user", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public String addUserToAtlDeprecated(@RequestBody final UpdateUserAndAtlRequest updateRequest)
             throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
 
@@ -275,7 +295,7 @@ public class TestingLabController {
                     + " equivalent of assigning the ROLE_ATL role. Please view /users/grant_role "
                     + " request for more information on that.")
     @RequestMapping(value = "/{atlId}/users", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public String addUserToAtl(@RequestBody final UpdateUserAndAtlRequest updateRequest)
             throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
 
@@ -304,11 +324,11 @@ public class TestingLabController {
 
     @Deprecated
     @ApiOperation(value = "DEPRECATED.  Remove user permissions from an ATL.",
-            notes = "The logged in user must have ROLE_ADMIN or ROLE_ATL and have administrative authority on the "
-                    + " specified ATL. The user specified in the request will have all authorities "
-                    + " removed that are associated with the specified ATL.")
+    notes = "The logged in user must have ROLE_ADMIN or ROLE_ATL and have administrative authority on the "
+            + " specified ATL. The user specified in the request will have all authorities "
+            + " removed that are associated with the specified ATL.")
     @RequestMapping(value = "{atlId}/remove_user/{userId}", method = RequestMethod.POST,
-            consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+    consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public String deleteUserFromAtlDeprecated(@PathVariable final Long atlId, @PathVariable final Long userId)
             throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
 
@@ -320,7 +340,7 @@ public class TestingLabController {
                     + " specified ATL. The user specified in the request will have all authorities "
                     + " removed that are associated with the specified ATL.")
     @RequestMapping(value = "{atlId}/users/{userId}", method = RequestMethod.DELETE,
-            consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+    consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public String deleteUserFromAtl(@PathVariable final Long atlId, @PathVariable final Long userId)
             throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
 
@@ -347,7 +367,7 @@ public class TestingLabController {
             notes = "The logged in user must have ROLE_ADMIN or have administrative or read authority on the "
                     + " specified ATL.")
     @RequestMapping(value = "/{atlId}/users", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody PermittedUserResults getUsers(@PathVariable("atlId") final Long atlId)
             throws InvalidArgumentsException, EntityRetrievalException {
         TestingLabDTO atl = atlManager.getById(atlId);

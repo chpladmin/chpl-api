@@ -86,16 +86,6 @@ public class AsynchronousCacheInitialization {
 
     @Async
     @Transactional
-    public Future<Boolean> initializeDecertifiedDevelopers()
-            throws IOException, EntityRetrievalException, InterruptedException {
-        LOGGER.info("Starting cache initialization for DeveloperManager.getDecertifiedDevelopers()");
-        certificationIdManager.getAllWithProducts();
-        LOGGER.info("Finished cache initialization for DeveloperManager.getDecertifiedDevelopers()");
-        return new AsyncResult<>(true);
-    }
-
-    @Async
-    @Transactional
     public Future<Boolean> initializeFindByAcbId() throws IOException, EntityRetrievalException, InterruptedException {
         LOGGER.info("Starting cache initialization for PendingCertifiedProductDAO.findByAcbId()");
         List<CertificationBodyDTO> cbs = certificationBodyDAO.findAll(false);

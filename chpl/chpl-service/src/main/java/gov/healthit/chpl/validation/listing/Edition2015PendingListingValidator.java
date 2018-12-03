@@ -20,6 +20,7 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.UnsupportedCharacter
 import gov.healthit.chpl.validation.pendingListing.reviewer.UrlReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.ValidDataReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.RequiredData2015Reviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.TestFunctionality2015Reviewer;
 
 /**
  * Validation interface for 2015 listings in the pending stage of upload to the CHPL.
@@ -76,6 +77,10 @@ public class Edition2015PendingListingValidator extends PendingValidator {
     @Qualifier("pendingUrlReviewer")
     private UrlReviewer urlReviewer;
 
+    @Autowired
+    @Qualifier("pendingTestFunctionality2015Reviewer")
+    private TestFunctionality2015Reviewer testFunctionalityReviewer;
+
     private List<Reviewer> reviewers;
 
     @Override
@@ -94,6 +99,7 @@ public class Edition2015PendingListingValidator extends PendingValidator {
             reviewers.add(ttReviewer);
             reviewers.add(icsReviewer);
             reviewers.add(urlReviewer);
+            reviewers.add(testFunctionalityReviewer);
         }
         return reviewers;
     }

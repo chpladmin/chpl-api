@@ -8,15 +8,26 @@ import java.util.TreeMap;
 
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 
+/**
+ * CMS Widget results object.
+ */
 public class CertificationIdResults implements Serializable {
     private static final long serialVersionUID = 4350936762994127624L;
 
-    static public class Product {
+    /**
+     * CMS Widget specific version of a Listing.
+     */
+    public static class Product implements Serializable {
+        private static final long serialVersionUID = 1487852426085184818L;
         private String name;
         private Long productId;
         private String version;
 
-        public Product(CertifiedProductDetailsDTO dto) {
+        /**
+         * Constructor from DTO.
+         * @param dto the DTO
+         */
+        public Product(final CertifiedProductDetailsDTO dto) {
             this.name = dto.getProduct().getName();
             this.productId = dto.getId();
             this.version = dto.getVersion().getVersion();
@@ -45,7 +56,6 @@ public class CertificationIdResults implements Serializable {
         public void setProductId(final Long id) {
             this.productId = id;
         }
-
     }
 
     private List<Product> products;
@@ -111,7 +121,7 @@ public class CertificationIdResults implements Serializable {
         return missingAnd;
     }
 
-    public void setMissingAnd(ArrayList<String> missingAnd) {
+    public void setMissingAnd(final ArrayList<String> missingAnd) {
         this.missingAnd = missingAnd;
     }
 
@@ -119,7 +129,7 @@ public class CertificationIdResults implements Serializable {
         return missingOr;
     }
 
-    public void setMissingOr(List<ArrayList<String>> missingOr) {
+    public void setMissingOr(final List<ArrayList<String>> missingOr) {
         this.missingOr = missingOr;
     }
 
@@ -127,7 +137,7 @@ public class CertificationIdResults implements Serializable {
         return missingCombo;
     }
 
-    public void setMissingCombo(List<ArrayList<String>> missingCombo) {
+    public void setMissingCombo(final List<ArrayList<String>> missingCombo) {
         this.missingCombo = missingCombo;
     }
 
@@ -135,7 +145,7 @@ public class CertificationIdResults implements Serializable {
         return missingXOr;
     }
 
-    public void setMissingXOr(List<TreeMap<String, ArrayList<String>>> missingXOr) {
+    public void setMissingXOr(final List<TreeMap<String, ArrayList<String>>> missingXOr) {
         this.missingXOr = missingXOr;
     }
 }

@@ -54,6 +54,7 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.FuzzyChoicesDAO;
 import gov.healthit.chpl.dao.ListingGraphDAO;
+import gov.healthit.chpl.dao.MeaningfulUseUserDAO;
 import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
 import gov.healthit.chpl.dao.TestDataDAO;
@@ -80,6 +81,7 @@ import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
+import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
@@ -113,6 +115,7 @@ import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.FuzzyChoicesDTO;
 import gov.healthit.chpl.dto.ListingToListingMapDTO;
+import gov.healthit.chpl.dto.MeaningfulUseUserDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultMacraMeasureDTO;
@@ -226,6 +229,9 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
     @Autowired
     private CertificationStatusEventDAO statusEventDao;
+
+    @Autowired
+    private MeaningfulUseUserDAO muuDao;
 
     @Autowired
     private CertificationResultManager certResultManager;
@@ -1152,65 +1158,69 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         Long listingId = updatedListing.getId();
         Long productVersionId = new Long(updatedListing.getVersion().getVersionId());
         CertificationStatus updatedStatus = updatedListing.getCurrentStatus().getStatus();
-
-        // look at the updated status and see if a developer ban is appropriate
-        CertificationStatusDTO updatedStatusDto = certStatusDao.getById(updatedStatus.getId());
-        DeveloperDTO cpDeveloper = developerDao.getByVersion(productVersionId);
-        if (cpDeveloper == null) {
-            LOGGER.error("Could not find developer for product version with id " + productVersionId);
-            throw new EntityNotFoundException(
-                    "No developer could be located for the certified product in the update. Update cannot continue.");
-        }
-        DeveloperStatusDTO newDevStatusDto = null;
-        switch (CertificationStatusType.getValue(updatedStatusDto.getStatus())) {
-        case SuspendedByOnc:
-        case TerminatedByOnc:
-            // only onc admin can do this and it always triggers developer ban
-            if (Util.isUserRoleAdmin()) {
-                // find the new developer status
-                if (updatedStatusDto.getStatus().equals(CertificationStatusType.SuspendedByOnc.toString())) {
-                    newDevStatusDto = devStatusDao.getByName(DeveloperStatusType.SuspendedByOnc.toString());
-                } else if (updatedStatusDto.getStatus()
-                        .equals(CertificationStatusType.TerminatedByOnc.toString())) {
-                    newDevStatusDto = devStatusDao.getByName(DeveloperStatusType.UnderCertificationBanByOnc.toString());
+        CertificationStatus existingStatus = existingListing.getCurrentStatus().getStatus();
+        //if listing status has changed that may trigger other changes
+        //to developer status
+        if (ObjectUtils.notEqual(updatedStatus.getName(), existingStatus.getName())) {
+            // look at the updated status and see if a developer ban is appropriate
+            CertificationStatusDTO updatedStatusDto = certStatusDao.getById(updatedStatus.getId());
+            DeveloperDTO cpDeveloper = developerDao.getByVersion(productVersionId);
+            if (cpDeveloper == null) {
+                LOGGER.error("Could not find developer for product version with id " + productVersionId);
+                throw new EntityNotFoundException(
+                        "No developer could be located for the certified product in the update. Update cannot continue.");
+            }
+            DeveloperStatusDTO newDevStatusDto = null;
+            switch (CertificationStatusType.getValue(updatedStatusDto.getStatus())) {
+            case SuspendedByOnc:
+            case TerminatedByOnc:
+                // only onc admin can do this and it always triggers developer ban
+                if (Util.isUserRoleAdmin()) {
+                    // find the new developer status
+                    if (updatedStatusDto.getStatus().equals(CertificationStatusType.SuspendedByOnc.toString())) {
+                        newDevStatusDto = devStatusDao.getByName(DeveloperStatusType.SuspendedByOnc.toString());
+                    } else if (updatedStatusDto.getStatus()
+                            .equals(CertificationStatusType.TerminatedByOnc.toString())) {
+                        newDevStatusDto = devStatusDao.getByName(DeveloperStatusType.UnderCertificationBanByOnc.toString());
+                    }
+                } else if (!Util.isUserRoleAdmin()) {
+                    LOGGER.error("User " + Util.getUsername()
+                    + " does not have ROLE_ADMIN and cannot change the status of developer for certified product with id "
+                    + listingId);
+                    throw new AccessDeniedException(
+                            "User does not have admin permission to change " + cpDeveloper.getName() + " status.");
                 }
-            } else if (!Util.isUserRoleAdmin()) {
-                LOGGER.error("User " + Util.getUsername()
-                + " does not have ROLE_ADMIN and cannot change the status of developer for certified product with id "
-                + listingId);
-                throw new AccessDeniedException(
-                        "User does not have admin permission to change " + cpDeveloper.getName() + " status.");
+                break;
+            case WithdrawnByAcb:
+            case WithdrawnByDeveloperUnderReview:
+                // initiate TriggerDeveloperBan job, telling ONC that they might need to ban a Developer
+                if ((Util.isUserRoleAdmin() || Util.isUserRoleAcbAdmin())) {
+                    triggerDeveloperBan(updatedListing);
+                } else if (!Util.isUserRoleAdmin() && !Util.isUserRoleAcbAdmin()) {
+                    LOGGER.error("User " + Util.getUsername()
+                    + " does not have ROLE_ADMIN or ROLE_ACB and cannot change the status of "
+                    + "developer for certified product with id " + listingId);
+                    throw new AccessDeniedException(
+                            "User does not have admin permission to change " + cpDeveloper.getName() + " status.");
+                }
+                break;
+            default:
+                LOGGER.info("New listing status is " + updatedStatusDto.getStatus()
+                + " which does not trigger a developer ban.");
+                break;
             }
-            break;
-        case WithdrawnByAcb:
-        case WithdrawnByDeveloperUnderReview:
-            // initiate TriggerDeveloperBan job, telling ONC that they might need to ban a Developer
-            if ((Util.isUserRoleAdmin() || Util.isUserRoleAcbAdmin())) {
-                triggerDeveloperBan(updatedListing);
-            } else if (!Util.isUserRoleAdmin() && !Util.isUserRoleAcbAdmin()) {
-                LOGGER.error("User " + Util.getUsername()
-                + " does not have ROLE_ADMIN or ROLE_ACB and cannot change the status of "
-                + "developer for certified product with id " + listingId);
-                throw new AccessDeniedException(
-                        "User does not have admin permission to change " + cpDeveloper.getName() + " status.");
-            }
-            break;
-        default:
-            LOGGER.info("New listing status is " + updatedStatusDto.getStatus()
-            + " which does not trigger a developer ban.");
-            break;
-        }
-        if (newDevStatusDto != null) {
-            DeveloperStatusEventDTO statusHistoryToAdd = new DeveloperStatusEventDTO();
-            statusHistoryToAdd.setDeveloperId(cpDeveloper.getId());
-            statusHistoryToAdd.setStatus(newDevStatusDto);
-            statusHistoryToAdd.setStatusDate(new Date());
-            statusHistoryToAdd.setReason(msgUtil.getMessage("developer.statusAutomaticallyChanged"));
-            cpDeveloper.getStatusEvents().add(statusHistoryToAdd);
-            try {
-                developerManager.update(cpDeveloper);
-            } catch(MissingReasonException ignore) {
-                //reason will never be missing since we set it above
+            if (newDevStatusDto != null) {
+                DeveloperStatusEventDTO statusHistoryToAdd = new DeveloperStatusEventDTO();
+                statusHistoryToAdd.setDeveloperId(cpDeveloper.getId());
+                statusHistoryToAdd.setStatus(newDevStatusDto);
+                statusHistoryToAdd.setStatusDate(new Date());
+                statusHistoryToAdd.setReason(msgUtil.getMessage("developer.statusAutomaticallyChanged"));
+                cpDeveloper.getStatusEvents().add(statusHistoryToAdd);
+                try {
+                    developerManager.update(cpDeveloper);
+                } catch (MissingReasonException ignore) {
+                    //reason will never be missing since we set it above
+                }
             }
         }
 
@@ -1229,6 +1239,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
             updateCertificationStatusEvents(listingId, existingListing.getCertificationEvents(),
                     updatedListing.getCertificationEvents());
+            updateMeaningfulUseUserHistory(listingId, existingListing.getMeaningfulUseUserHistory(),
+                    updatedListing.getMeaningfulUseUserHistory());
             updateCertifications(result.getCertificationBodyId(), existingListing, updatedListing,
                     existingListing.getCertificationResults(), updatedListing.getCertificationResults());
             updateCqms(result, existingListing.getCqmResults(), updatedListing.getCqmResults());
@@ -1862,6 +1874,98 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         return numChanges;
     }
 
+    private int updateMeaningfulUseUserHistory(final Long listingId,
+            final List<MeaningfulUseUser> existingMuuHistory,
+            final List<MeaningfulUseUser> updatedMuuHistory)
+                    throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+
+        int numChanges = 0;
+        List<MeaningfulUseUser> itemsToAdd = new ArrayList<MeaningfulUseUser>();
+        List<MeaningfulUseUserPair> itemsToUpdate = new ArrayList<MeaningfulUseUserPair>();
+        List<Long> idsToRemove = new ArrayList<Long>();
+
+        // figure out which status events to add
+        if (updatedMuuHistory != null && updatedMuuHistory.size() > 0) {
+            if (existingMuuHistory == null || existingMuuHistory.size() == 0) {
+                // existing listing has none, add all from the update
+                for (MeaningfulUseUser updatedItem : updatedMuuHistory) {
+                    itemsToAdd.add(updatedItem);
+                }
+            } else if (existingMuuHistory.size() > 0) {
+                // existing listing has some, compare to the update to see if
+                // any are different
+                for (MeaningfulUseUser updatedItem : updatedMuuHistory) {
+                    boolean inExistingListing = false;
+                    for (MeaningfulUseUser existingItem : existingMuuHistory) {
+                        if (updatedItem.matches(existingItem)) {
+                            inExistingListing = true;
+                            itemsToUpdate.add(new MeaningfulUseUserPair(existingItem, updatedItem));
+                        }
+                    }
+
+                    if (!inExistingListing) {
+                        itemsToAdd.add(updatedItem);
+                    }
+                }
+            }
+        }
+
+        // figure out which muu items to remove
+        if (existingMuuHistory != null && existingMuuHistory.size() > 0) {
+            // if the updated listing has none, remove them all from existing
+            if (updatedMuuHistory == null || updatedMuuHistory.size() == 0) {
+                for (MeaningfulUseUser existingItem : existingMuuHistory) {
+                    idsToRemove.add(existingItem.getId());
+                }
+            } else if (updatedMuuHistory.size() > 0) {
+                for (MeaningfulUseUser existingItem : existingMuuHistory) {
+                    boolean inUpdatedListing = false;
+                    for (MeaningfulUseUser updatedItem : updatedMuuHistory) {
+                        inUpdatedListing = !inUpdatedListing ? existingItem.matches(updatedItem) : inUpdatedListing;
+                    }
+                    if (!inUpdatedListing) {
+                        idsToRemove.add(existingItem.getId());
+                    }
+                }
+            }
+        }
+
+        numChanges = itemsToAdd.size() + idsToRemove.size();
+        for (MeaningfulUseUser toAdd : itemsToAdd) {
+            MeaningfulUseUserDTO muuDto = new MeaningfulUseUserDTO();
+            muuDto.setCertifiedProductId(listingId);
+            muuDto.setMuuCount(toAdd.getMuuCount());
+            muuDto.setMuuDate(new Date(toAdd.getMuuDate()));
+            muuDao.create(muuDto);
+        }
+
+        for (MeaningfulUseUserPair toUpdate : itemsToUpdate) {
+            boolean hasChanged = false;
+            if (!ObjectUtils.equals(toUpdate.getOrig().getMuuCount(),
+                    toUpdate.getUpdated().getMuuCount())
+                    || !ObjectUtils.equals(toUpdate.getOrig().getMuuDate(),
+                            toUpdate.getUpdated().getMuuDate())) {
+                hasChanged = true;
+            }
+
+            if (hasChanged) {
+                MeaningfulUseUser muuToUpdate = toUpdate.getUpdated();
+                MeaningfulUseUserDTO muuDto = new MeaningfulUseUserDTO();
+                muuDto.setId(muuToUpdate.getId());
+                muuDto.setCertifiedProductId(listingId);
+                muuDto.setMuuDate(new Date(muuToUpdate.getMuuDate()));
+                muuDto.setMuuCount(muuToUpdate.getMuuCount());
+                muuDao.update(muuDto);
+                numChanges++;
+            }
+        }
+
+        for (Long idToRemove : idsToRemove) {
+            muuDao.delete(idToRemove);
+        }
+        return numChanges;
+    }
+
     private int updateCertifications(final Long acbId, final CertifiedProductSearchDetails existingListing,
             final CertifiedProductSearchDetails updatedListing, final List<CertificationResult> existingCertifications,
             final List<CertificationResult> updatedCertifications)
@@ -2206,6 +2310,37 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         }
 
         public void setUpdated(final CertificationStatusEvent updated) {
+            this.updated = updated;
+        }
+
+    }
+
+    private class MeaningfulUseUserPair {
+        private MeaningfulUseUser orig;
+        private MeaningfulUseUser updated;
+
+        MeaningfulUseUserPair() { }
+
+        MeaningfulUseUserPair(final MeaningfulUseUser orig,
+                final MeaningfulUseUser updated) {
+
+            this.orig = orig;
+            this.updated = updated;
+        }
+
+        public MeaningfulUseUser getOrig() {
+            return orig;
+        }
+
+        public void setOrig(final MeaningfulUseUser orig) {
+            this.orig = orig;
+        }
+
+        public MeaningfulUseUser getUpdated() {
+            return updated;
+        }
+
+        public void setUpdated(final MeaningfulUseUser updated) {
             this.updated = updated;
         }
 

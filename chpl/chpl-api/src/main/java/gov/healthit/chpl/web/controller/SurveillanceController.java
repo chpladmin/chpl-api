@@ -82,6 +82,7 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/surveillance")
 public class SurveillanceController implements MessageSourceAware {
 
+    private static final int BUFFER_SIZE = 1024;
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceController.class);
     private final JobTypeConcept allowedJobType = JobTypeConcept.SURV_UPLOAD;
 
@@ -111,14 +112,14 @@ public class SurveillanceController implements MessageSourceAware {
     @ApiOperation(value = "Get the listing of all pending surveillance items that this user has access to.")
     @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody SurveillanceResults getAllPendingSurveillanceForAcbUser() throws AccessDeniedException {
-    	
-    	if(!Util.isUserRoleAcbAdmin()){
-    		throw new AccessDeniedException(String
+
+        if (!Util.isUserRoleAcbAdmin()) {
+            throw new AccessDeniedException(String
                     .format(messageSource.getMessage(
                             new DefaultMessageSourceResolvable("access.pendingSurveillances"),
                             LocaleContextHolder.getLocale())));
-    	}
-    	
+        }
+
         List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
         List<Surveillance> pendingSurvs = new ArrayList<Surveillance>();
 
@@ -147,50 +148,47 @@ public class SurveillanceController implements MessageSourceAware {
         SurveillanceNonconformityDocument doc = survManager.getDocumentById(documentId, true);
 
         if (doc != null && doc.getFileContents() != null && doc.getFileContents().length > 0) {
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(doc.getFileContents());
-            // get MIME type of the file
-            String mimeType = doc.getFileType();
-            if (mimeType == null) {
-                // set to binary type if MIME mapping not found
-                mimeType = "application/octet-stream";
+            try (ByteArrayInputStream inputStream = new ByteArrayInputStream(doc.getFileContents());
+                    OutputStream outStream = response.getOutputStream()) {
+
+                // get MIME type of the file
+                String mimeType = doc.getFileType();
+                if (mimeType == null) {
+                    // set to binary type if MIME mapping not found
+                    mimeType = "application/octet-stream";
+                }
+                // set content attributes for the response
+                response.setContentType(mimeType);
+                response.setContentLength(doc.getFileContents().length);
+
+                // set headers for the response
+                String headerKey = "Content-Disposition";
+                String headerValue = String.format("attachment; filename=\"%s\"", doc.getFileName());
+                response.setHeader(headerKey, headerValue);
+
+                byte[] buffer = new byte[BUFFER_SIZE];
+                int bytesRead = -1;
+
+                // write bytes read from the input stream into the output stream
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outStream.write(buffer, 0, bytesRead);
+                }
             }
-            // set content attributes for the response
-            response.setContentType(mimeType);
-            response.setContentLength(doc.getFileContents().length);
-
-            // set headers for the response
-            String headerKey = "Content-Disposition";
-            String headerValue = String.format("attachment; filename=\"%s\"", doc.getFileName());
-            response.setHeader(headerKey, headerValue);
-
-            // get output stream of the response
-            OutputStream outStream = response.getOutputStream();
-
-            byte[] buffer = new byte[1024];
-            int bytesRead = -1;
-
-            // write bytes read from the input stream into the output stream
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outStream.write(buffer, 0, bytesRead);
-            }
-
-            inputStream.close();
-            outStream.close();
         }
     }
 
     @Deprecated
     @ApiOperation(value = "DEPRECATED.  Create a new surveillance activity for a certified product.",
-            notes = "Creates a new surveillance activity, surveilled requirements, and any applicable non-conformities "
-                    + "in the system and associates them with the certified product indicated in the "
-                    + "request body. The surveillance passed into this request will first be validated "
-                    + " to check for errors. " + "ROLE_ACB "
-                    + " and administrative authority on the ACB associated with the certified product is required.")
+    notes = "Creates a new surveillance activity, surveilled requirements, and any applicable non-conformities "
+            + "in the system and associates them with the certified product indicated in the "
+            + "request body. The surveillance passed into this request will first be validated "
+            + " to check for errors. " + "ROLE_ACB "
+            + " and administrative authority on the ACB associated with the certified product is required.")
     @RequestMapping(value = "/create", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public synchronized ResponseEntity<Surveillance> createSurveillanceDeprecated(
             @RequestBody(required = true) final Surveillance survToInsert) throws ValidationException,
-            EntityRetrievalException, CertificationBodyAccessException, UserPermissionRetrievalException,
-            EntityCreationException, JsonProcessingException, SurveillanceAuthorityAccessDeniedException {
+    EntityRetrievalException, CertificationBodyAccessException, UserPermissionRetrievalException,
+    EntityCreationException, JsonProcessingException, SurveillanceAuthorityAccessDeniedException {
 
         return create(survToInsert);
     }
@@ -204,8 +202,8 @@ public class SurveillanceController implements MessageSourceAware {
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public synchronized ResponseEntity<Surveillance> createSurveillance(
             @RequestBody(required = true) final Surveillance survToInsert) throws ValidationException,
-            EntityRetrievalException, CertificationBodyAccessException, UserPermissionRetrievalException,
-            EntityCreationException, JsonProcessingException, SurveillanceAuthorityAccessDeniedException {
+    EntityRetrievalException, CertificationBodyAccessException, UserPermissionRetrievalException,
+    EntityCreationException, JsonProcessingException, SurveillanceAuthorityAccessDeniedException {
 
         return create(survToInsert);
     }
@@ -230,7 +228,7 @@ public class SurveillanceController implements MessageSourceAware {
                 .getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
         CertificationBodyDTO owningAcb = null;
         try {
-            owningAcb = acbManager.getById(new Long(beforeCp.getCertifyingBody().get("id").toString()));
+            owningAcb = acbManager.getById(Long.valueOf(beforeCp.getCertifyingBody().get("id").toString()));
         } catch (final AccessDeniedException ex) {
             throw new CertificationBodyAccessException(
                     "User does not have permission to add surveillance to a certified product under ACB "
@@ -247,8 +245,8 @@ public class SurveillanceController implements MessageSourceAware {
             insertedSurv = survManager.createSurveillance(owningAcb.getId(), survToInsert);
             responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
         } catch (final SurveillanceAuthorityAccessDeniedException ex) {
-            LOGGER.error("User lacks authority to delete surveillance");
-            throw new SurveillanceAuthorityAccessDeniedException("User lacks authority to delete surveillance");
+            LOGGER.error("User lacks authority to create surveillance");
+            throw new SurveillanceAuthorityAccessDeniedException("User lacks authority to create surveillance");
         }
 
         if (insertedSurv == null) {
@@ -267,18 +265,18 @@ public class SurveillanceController implements MessageSourceAware {
 
     @Deprecated
     @ApiOperation(value = "DEPRECATED.  Add documentation to an existing nonconformity.",
-            notes = "Upload a file of any kind (current size limit 5MB) as supporting "
-                    + " documentation to an existing nonconformity. The logged in user uploading the file "
-                    + " must have either ROLE_ADMIN or ROLE_ACB and administrative "
-                    + " authority on the associated ACB.")
+    notes = "Upload a file of any kind (current size limit 5MB) as supporting "
+            + " documentation to an existing nonconformity. The logged in user uploading the file "
+            + " must have either ROLE_ADMIN or ROLE_ACB and administrative "
+            + " authority on the associated ACB.")
     @RequestMapping(value = "/{surveillanceId}/nonconformity/{nonconformityId}/document/create",
-            method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+    method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody String uploadNonconformityDocumentDeprecated(
             @PathVariable("surveillanceId") final Long surveillanceId,
             @PathVariable("nonconformityId") final Long nonconformityId,
             @RequestParam("file") final MultipartFile file)
-            throws InvalidArgumentsException, MaxUploadSizeExceededException, EntityRetrievalException,
-            EntityCreationException, IOException {
+                    throws InvalidArgumentsException, MaxUploadSizeExceededException, EntityRetrievalException,
+                    EntityCreationException, IOException {
 
         return createNonconformityDocumentForSurveillance(surveillanceId, nonconformityId, file);
     }
@@ -289,23 +287,23 @@ public class SurveillanceController implements MessageSourceAware {
                     + " must have either ROLE_ADMIN or ROLE_ACB and administrative "
                     + " authority on the associated ACB.")
     @RequestMapping(value = "/{surveillanceId}/nonconformity/{nonconformityId}/document",
-            method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+    method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody String uploadNonconformityDocument(
             @PathVariable("surveillanceId") final Long surveillanceId,
             @PathVariable("nonconformityId") final Long nonconformityId,
             @RequestParam("file") final MultipartFile file)
-            throws InvalidArgumentsException, MaxUploadSizeExceededException, EntityRetrievalException,
-            EntityCreationException, IOException {
+                    throws InvalidArgumentsException, MaxUploadSizeExceededException, EntityRetrievalException,
+                    EntityCreationException, IOException {
 
         return createNonconformityDocumentForSurveillance(surveillanceId, nonconformityId, file);
     }
- 
+
     private String createNonconformityDocumentForSurveillance(
             final Long surveillanceId,
             final Long nonconformityId,
             final MultipartFile file)
-            throws InvalidArgumentsException, MaxUploadSizeExceededException, EntityRetrievalException,
-            EntityCreationException, IOException {
+                    throws InvalidArgumentsException, MaxUploadSizeExceededException, EntityRetrievalException,
+                    EntityCreationException, IOException {
 
         if (file.isEmpty()) {
             throw new InvalidArgumentsException("You cannot upload an empty file!");
@@ -322,7 +320,7 @@ public class SurveillanceController implements MessageSourceAware {
 
         CertificationBodyDTO owningAcb = null;
         try {
-            owningAcb = acbManager.getById(new Long(beforeCp.getCertifyingBody().get("id").toString()));
+            owningAcb = acbManager.getById(Long.valueOf(beforeCp.getCertifyingBody().get("id").toString()));
         } catch (Exception ex) {
             LOGGER.error("Error looking up ACB associated with surveillance.", ex);
             throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
@@ -337,22 +335,22 @@ public class SurveillanceController implements MessageSourceAware {
                 .getCertifiedProductDetails(surv.getCertifiedProduct().getId());
         activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT,
                 beforeCp.getId(), "Documentation " + toInsert.getFileName()
-                        + " was added to a nonconformity for certified product " + afterCp.getChplProductNumber(),
+                + " was added to a nonconformity for certified product " + afterCp.getChplProductNumber(),
                 beforeCp, afterCp);
         return "{\"success\": \"true\"}";
     }
 
     @Deprecated
     @ApiOperation(value = "DEPRECATED.  Update a surveillance activity for a certified product.",
-            notes = "Updates an existing surveillance activity, surveilled requirements, and any applicable "
-                    + "non-conformities in the system. The surveillance passed into this request will first be "
-                    + "validated to check for errors. " + "ROLE_ACB and administrative authority on the ACB associated "
-                    + "with the certified product is required.")
+    notes = "Updates an existing surveillance activity, surveilled requirements, and any applicable "
+            + "non-conformities in the system. The surveillance passed into this request will first be "
+            + "validated to check for errors. " + "ROLE_ACB and administrative authority on the ACB associated "
+            + "with the certified product is required.")
     @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public synchronized ResponseEntity<Surveillance> updateSurveillanceDeprecated(
             @RequestBody(required = true) final Surveillance survToUpdate)
-            throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
-            JsonProcessingException, SurveillanceAuthorityAccessDeniedException {
+                    throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
+                    JsonProcessingException, SurveillanceAuthorityAccessDeniedException {
 
         return update(survToUpdate);
     }
@@ -363,11 +361,11 @@ public class SurveillanceController implements MessageSourceAware {
                     + "validated to check for errors. ROLE_ACB and administrative authority on the ACB associated "
                     + "with the certified product is required.")
     @RequestMapping(value = "/{surveillanceId}", method = RequestMethod.PUT,
-                    produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public synchronized ResponseEntity<Surveillance> updateSurveillance(
             @RequestBody(required = true) final Surveillance survToUpdate)
-            throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
-            JsonProcessingException, SurveillanceAuthorityAccessDeniedException {
+                    throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
+                    JsonProcessingException, SurveillanceAuthorityAccessDeniedException {
 
         return update(survToUpdate);
     }
@@ -390,7 +388,7 @@ public class SurveillanceController implements MessageSourceAware {
                 .getCertifiedProductDetails(survToUpdate.getCertifiedProduct().getId());
         CertificationBodyDTO owningAcb = null;
         try {
-            owningAcb = acbManager.getById(new Long(beforeCp.getCertifyingBody().get("id").toString()));
+            owningAcb = acbManager.getById(Long.valueOf(beforeCp.getCertifyingBody().get("id").toString()));
         } catch (Exception ex) {
             LOGGER.error("Error looking up ACB associated with surveillance.", ex);
             throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
@@ -420,17 +418,17 @@ public class SurveillanceController implements MessageSourceAware {
 
     @Deprecated
     @ApiOperation(value = "DEPRECATED.  Delete a surveillance activity for a certified product.",
-            notes = "Deletes an existing surveillance activity, surveilled requirements, and any applicable "
-                    + "non-conformities in the system. ROLE_ACB and administrative authority on the ACB associated "
-                    + "with the certified product is required.")
+    notes = "Deletes an existing surveillance activity, surveilled requirements, and any applicable "
+            + "non-conformities in the system. ROLE_ACB and administrative authority on the ACB associated "
+            + "with the certified product is required.")
     @RequestMapping(value = "/{surveillanceId}/delete", method = RequestMethod.POST,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public synchronized @ResponseBody ResponseEntity<String> deleteSurveillanceDeprecated(
             @PathVariable(value = "surveillanceId") final Long surveillanceId,
             @RequestBody(required = false) final SimpleExplainableAction requestBody)
-            throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
-            JsonProcessingException, AccessDeniedException, SurveillanceAuthorityAccessDeniedException,
-            MissingReasonException {
+                    throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
+                    JsonProcessingException, AccessDeniedException, SurveillanceAuthorityAccessDeniedException,
+                    MissingReasonException {
 
         return delete(surveillanceId, requestBody);
     }
@@ -440,22 +438,22 @@ public class SurveillanceController implements MessageSourceAware {
                     + "non-conformities in the system. ROLE_ACB and administrative authority on the ACB associated "
                     + "with the certified product is required.")
     @RequestMapping(value = "/{surveillanceId}", method = RequestMethod.DELETE,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public synchronized @ResponseBody ResponseEntity<String> deleteSurveillance(
             @PathVariable(value = "surveillanceId") final Long surveillanceId,
             @RequestBody(required = false) final SimpleExplainableAction requestBody)
-            throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
-            JsonProcessingException, AccessDeniedException, SurveillanceAuthorityAccessDeniedException,
-            MissingReasonException {
+                    throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
+                    JsonProcessingException, AccessDeniedException, SurveillanceAuthorityAccessDeniedException,
+                    MissingReasonException {
 
         return delete(surveillanceId, requestBody);
     }
 
     private synchronized ResponseEntity<String> delete(final Long surveillanceId, 
             final SimpleExplainableAction requestBody)
-            throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
-            JsonProcessingException, AccessDeniedException, SurveillanceAuthorityAccessDeniedException,
-            MissingReasonException {
+                    throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
+                    JsonProcessingException, AccessDeniedException, SurveillanceAuthorityAccessDeniedException,
+                    MissingReasonException {
         Surveillance survToDelete = survManager.getById(surveillanceId);
 
         if (survToDelete == null) {
@@ -470,7 +468,7 @@ public class SurveillanceController implements MessageSourceAware {
         CertifiedProductSearchDetails beforeCp = cpdetailsManager
                 .getCertifiedProductDetails(survToDelete.getCertifiedProduct().getId());
         CertificationBodyDTO owningAcb =
-                acbManager.getById(new Long(beforeCp.getCertifyingBody().get("id").toString()));
+                acbManager.getById(Long.valueOf(beforeCp.getCertifyingBody().get("id").toString()));
 
         HttpHeaders responseHeaders = new HttpHeaders();
         // delete it
@@ -495,10 +493,10 @@ public class SurveillanceController implements MessageSourceAware {
 
     @Deprecated
     @ApiOperation(value = "DEPRECATED.  Remove documentation from a nonconformity.",
-            notes = "The logged in user" + " must have either ROLE_ADMIN or ROLE_ACB and administrative "
-                    + " authority on the associated ACB.")
+    notes = "The logged in user" + " must have either ROLE_ADMIN or ROLE_ACB and administrative "
+            + " authority on the associated ACB.")
     @RequestMapping(value = "/{surveillanceId}/document/{docId}/delete", method = RequestMethod.POST,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public String deleteNonconformityDocumentDeprecated(
             @PathVariable("surveillanceId") final Long surveillanceId,
             @PathVariable("docId") final Long docId)
@@ -512,7 +510,7 @@ public class SurveillanceController implements MessageSourceAware {
             notes = "The logged in user" + " must have either ROLE_ADMIN or ROLE_ACB and administrative "
                     + " authority on the associated ACB.")
     @RequestMapping(value = "/{surveillanceId}/document/{docId}", method = RequestMethod.DELETE,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public String deleteNonconformityDocumentFromSurveillance(
             @PathVariable("surveillanceId") final Long surveillanceId,
             @PathVariable("docId") final Long docId)
@@ -523,8 +521,8 @@ public class SurveillanceController implements MessageSourceAware {
     }
 
     private String deleteNonconformityDocument(final Long surveillanceId, final Long docId)
-                throws JsonProcessingException, EntityCreationException, EntityRetrievalException,
-                InvalidArgumentsException {
+            throws JsonProcessingException, EntityCreationException, EntityRetrievalException,
+            InvalidArgumentsException {
 
         Surveillance surv = survManager.getById(surveillanceId);
         if (surv == null) {
@@ -535,7 +533,7 @@ public class SurveillanceController implements MessageSourceAware {
                 .getCertifiedProductDetails(surv.getCertifiedProduct().getId());
         CertificationBodyDTO owningAcb = null;
         try {
-            owningAcb = acbManager.getById(new Long(beforeCp.getCertifyingBody().get("id").toString()));
+            owningAcb = acbManager.getById(Long.valueOf(beforeCp.getCertifyingBody().get("id").toString()));
         } catch (Exception ex) {
             LOGGER.error("Error looking up ACB associated with surveillance.", ex);
             throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
@@ -558,7 +556,7 @@ public class SurveillanceController implements MessageSourceAware {
     @Deprecated
     @ApiOperation(value = "DEPRECATED.  Reject (effectively delete) a pending surveillance item.")
     @RequestMapping(value = "/pending/{pendingSurvId}/reject", method = RequestMethod.POST,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody String rejectPendingSurveillanceDeprecated(@PathVariable("pendingSurvId") final Long id)
             throws EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException,
             JsonProcessingException, EntityRetrievalException, EntityCreationException {
@@ -566,8 +564,8 @@ public class SurveillanceController implements MessageSourceAware {
     }
 
     @ApiOperation(value = "Reject (effectively delete) a pending surveillance item.")
-    @RequestMapping(value = "/pending/{pendingSurvId}/reject", method = RequestMethod.DELETE,
-            produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/pending/{pendingSurvId}", method = RequestMethod.DELETE,
+    produces = "application/json; charset=utf-8")
     public @ResponseBody String rejectPendingSurveillance(@PathVariable("pendingSurvId") final Long id)
             throws EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException,
             JsonProcessingException, EntityRetrievalException, EntityCreationException {
@@ -584,10 +582,10 @@ public class SurveillanceController implements MessageSourceAware {
 
     @Deprecated
     @ApiOperation(value = "DEPRECATED.  Reject several pending surveillance.",
-            notes = "Marks a list of pending surveillance as deleted. ROLE_ACB "
-                    + " and administrative authority on the ACB for each pending surveillance is required.")
+    notes = "Marks a list of pending surveillance as deleted. ROLE_ACB "
+            + " and administrative authority on the ACB for each pending surveillance is required.")
     @RequestMapping(value = "/pending/reject", method = RequestMethod.POST,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody String rejectPendingSurveillanceDeprecated(@RequestBody final IdListContainer idList)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
             AccessDeniedException, InvalidArgumentsException, ObjectsMissingValidationException {
@@ -597,8 +595,8 @@ public class SurveillanceController implements MessageSourceAware {
     @ApiOperation(value = "Reject several pending surveillance.",
             notes = "Marks a list of pending surveillance as deleted. ROLE_ACB "
                     + " and administrative authority on the ACB for each pending surveillance is required.")
-    @RequestMapping(value = "/pending/reject", method = RequestMethod.DELETE,
-            produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/pending", method = RequestMethod.DELETE,
+    produces = "application/json; charset=utf-8")
     public @ResponseBody String rejectPendingSurveillance(@RequestBody final IdListContainer idList)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
             AccessDeniedException, InvalidArgumentsException, ObjectsMissingValidationException {
@@ -639,11 +637,11 @@ public class SurveillanceController implements MessageSourceAware {
                     + "ROLE_ACB "
                     + " and administrative authority on the ACB associated with the certified product is required.")
     @RequestMapping(value = "/pending/confirm", method = RequestMethod.POST,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public synchronized ResponseEntity<Surveillance> confirmPendingSurveillance(
-            @RequestBody(required = true) final Surveillance survToInsert)
-            throws ValidationException, EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
+            @RequestBody(required = true) final Surveillance survToInsert) throws ValidationException,
+    EntityRetrievalException, EntityCreationException, JsonProcessingException,
+    UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
         if (survToInsert == null || survToInsert.getId() == null) {
             throw new ValidationException("An id must be provided in the request body.");
         }
@@ -652,7 +650,7 @@ public class SurveillanceController implements MessageSourceAware {
                 .getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
         CertificationBodyDTO owningAcb = null;
         try {
-            owningAcb = acbManager.getById(new Long(beforeCp.getCertifyingBody().get("id").toString()));
+            owningAcb = acbManager.getById(Long.valueOf(beforeCp.getCertifyingBody().get("id").toString()));
         } catch (Exception ex) {
             LOGGER.error("Error looking up ACB associated with surveillance.", ex);
             throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
@@ -697,7 +695,7 @@ public class SurveillanceController implements MessageSourceAware {
                 }
             } catch (Exception ex) {
                 LOGGER.error("Deleting surveillance with id " + survToInsert.getSurveillanceIdToReplace()
-                        + " as part of the replace operation failed", ex);
+                + " as part of the replace operation failed", ex);
             }
 
             CertifiedProductSearchDetails afterCp = cpdetailsManager
@@ -722,7 +720,7 @@ public class SurveillanceController implements MessageSourceAware {
                     throws IOException, EntityRetrievalException {
 
         File downloadFile = null;
-        if (isDefinition != null && isDefinition.booleanValue() == true) {
+        if (isDefinition != null && isDefinition.booleanValue()) {
             String downloadFolderLocation = env.getProperty("downloadFolderPath");
             File downloadFolder = new File(downloadFolderLocation);
             String schemaFilename = env.getProperty("schemaSurveillanceName");
@@ -731,9 +729,9 @@ public class SurveillanceController implements MessageSourceAware {
                 downloadFile = new File(absolutePath);
                 if (!downloadFile.exists()) {
                     response.getWriter()
-                            .write(String.format(messageSource.getMessage(
-                                    new DefaultMessageSourceResolvable("resources.schemaFileNotFound"),
-                                    LocaleContextHolder.getLocale()), absolutePath));
+                    .write(String.format(messageSource.getMessage(
+                            new DefaultMessageSourceResolvable("resources.schemaFileNotFound"),
+                            LocaleContextHolder.getLocale()), absolutePath));
                     return;
                 }
             }
@@ -755,36 +753,34 @@ public class SurveillanceController implements MessageSourceAware {
 
         if (downloadFile == null) {
             response.getWriter()
-                    .append(String.format(messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("resources.schemaFileGeneralError"),
-                            LocaleContextHolder.getLocale())));
+            .append(String.format(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("resources.schemaFileGeneralError"),
+                    LocaleContextHolder.getLocale())));
             return;
         }
 
         LOGGER.info("Downloading " + downloadFile.getName());
 
-        FileInputStream inputStream = new FileInputStream(downloadFile);
+        try (FileInputStream inputStream = new FileInputStream(downloadFile);
+                OutputStream outStream = response.getOutputStream();) {
 
-        // set content attributes for the response
-        response.setContentType("text/csv");
-        response.setContentLength((int) downloadFile.length());
+            // set content attributes for the response
+            response.setContentType("text/csv");
+            response.setContentLength((int) downloadFile.length());
 
-        // set headers for the response
-        String headerKey = "Content-Disposition";
-        String headerValue = String.format("attachment; filename=\"%s\"", downloadFile.getName());
-        response.setHeader(headerKey, headerValue);
+            // set headers for the response
+            String headerKey = "Content-Disposition";
+            String headerValue = String.format("attachment; filename=\"%s\"", downloadFile.getName());
+            response.setHeader(headerKey, headerValue);
 
-        // get output stream of the response
-        OutputStream outStream = response.getOutputStream();
-        byte[] buffer = new byte[1024];
-        int bytesRead = -1;
+            byte[] buffer = new byte[BUFFER_SIZE];
+            int bytesRead = -1;
 
-        // write bytes read from the input stream into the output stream
-        while ((bytesRead = inputStream.read(buffer)) != -1) {
-            outStream.write(buffer, 0, bytesRead);
+            // write bytes read from the input stream into the output stream
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outStream.write(buffer, 0, bytesRead);
+            }
         }
-        inputStream.close();
-        outStream.close();
     }
 
     @ApiOperation(value = "Upload a file with surveillance and nonconformities for certified products.",
@@ -835,15 +831,15 @@ public class SurveillanceController implements MessageSourceAware {
                 } catch (final AccessDeniedException denied) {
                     LOGGER.error(
                             "User " + Util.getCurrentUser().getSubjectName()
-                                    + " does not have access to add surveillance"
-                                    + (owningCp != null
-                                            ? " to ACB with ID '" + owningCp.getCertificationBodyId() + "'."
-                                            : "."));
+                            + " does not have access to add surveillance"
+                            + (owningCp != null
+                            ? " to ACB with ID '" + owningCp.getCertificationBodyId() + "'."
+                                    : "."));
                 } catch (Exception ex) {
                     LOGGER.error(
                             "Error adding a new pending surveillance. Please make sure all required fields are "
-                            + "present.",
-                            ex);
+                                    + "present.",
+                                    ex);
                 }
             }
 
