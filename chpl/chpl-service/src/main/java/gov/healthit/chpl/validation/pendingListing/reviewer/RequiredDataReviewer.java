@@ -152,8 +152,8 @@ public class RequiredDataReviewer implements Reviewer {
         List<String> messages = new ArrayList<String>();
         Set<String> uniqueMacras = new HashSet<String>();
         for (PendingCertificationResultMacraMeasureDTO macraMeasure : macraMeasures) {
-            if (macraMeasure.getEnteredValue() != null &&
-                    uniqueMacras.contains(macraMeasure.getEnteredValue())) { // Duplicate
+            if (macraMeasure.getEnteredValue() != null
+                    && uniqueMacras.contains(macraMeasure.getEnteredValue())) { // Duplicate
                 messages.add(msgUtil.getMessage(messageCode, certNumber, macraMeasure.getEnteredValue()));
             } else {
                 uniqueMacras.add(macraMeasure.getEnteredValue());
@@ -166,8 +166,8 @@ public class RequiredDataReviewer implements Reviewer {
         List<PendingCertificationResultMacraMeasureDTO> dedupedMacraMeasures = new ArrayList<PendingCertificationResultMacraMeasureDTO>();
         Set<String> uniqueMacras = new HashSet<String>();
         for (PendingCertificationResultMacraMeasureDTO macraMeasure : macraMeasures) {
-            if (macraMeasure.getEnteredValue() != null &&
-                    !uniqueMacras.contains(macraMeasure.getEnteredValue())) {
+            if (macraMeasure.getEnteredValue() != null 
+                    && !uniqueMacras.contains(macraMeasure.getEnteredValue())) {
                 dedupedMacraMeasures.add(macraMeasure);
                 uniqueMacras.add(macraMeasure.getEnteredValue());
             }
