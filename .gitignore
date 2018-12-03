@@ -265,6 +265,5 @@ pip-log.txt
 /chpl/chpl-service/logs/
 /chpl/deploy-webapp.sh
 /chpl/.recommenders/
-/chpl/chpl-api/src/main/webapp/WEB-INF/web.xml
 *-api.sh
 push-*.sh
