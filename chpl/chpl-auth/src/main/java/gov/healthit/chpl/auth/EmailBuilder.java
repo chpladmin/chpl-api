@@ -24,6 +24,7 @@ import javax.mail.internet.MimeMultipart;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.core.env.Environment;
+import org.springframework.util.StringUtils;
 
 /**
  * This class is used to send an email.  Properties are set using following a builder pattern.
@@ -74,8 +75,11 @@ public class EmailBuilder {
     public EmailBuilder subject(final String val) {
         subject = val;
         //Add the environment to the subject
-        String environemnt = " [" + System.getenv("emailSubjectSuffix") + "]";
-        subject = String.format(val, environemnt);
+        String suffix = "";
+        if (!StringUtils.isEmpty(System.getenv("emailSubjectSuffix"))) {
+            suffix = " [" + System.getenv("emailSubjectSuffix") + "]";
+            subject = subject + " " + suffix;
+        } 
         return this;
     }
 
