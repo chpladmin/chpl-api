@@ -26,5 +26,6 @@ _Date TBD_
 * Update email notification about potential Developer ban to include:
   * Reason for status change
   * Reason for listing change
+* Prevent users from using the following macra measures which are under review: RT13 EH/CAH Stage 3, RT14 EH/CAH Stage 3, RT15 EH/CAH Stage 3 
 
 ---
