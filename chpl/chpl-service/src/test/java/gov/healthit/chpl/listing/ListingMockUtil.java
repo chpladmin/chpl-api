@@ -615,7 +615,7 @@ public class ListingMockUtil {
         return certResult;
     }
 
-    private PendingCertificationResultDTO create2014PendingCertResult(final Long id, final String number,
+    public PendingCertificationResultDTO create2014PendingCertResult(final Long id, final String number,
             final Boolean success) {
         PendingCertificationResultDTO certResult = new PendingCertificationResultDTO();
         certResult.setId(id);

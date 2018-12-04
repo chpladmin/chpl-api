@@ -11,7 +11,12 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
 @Component("pendingSedG32014Reviewer")
 public class SedG32014Reviewer implements Reviewer {
     private static final String G3_2014 = "170.314 (g)(3)";
-    @Autowired private ErrorMessageUtil msgUtil;
+    private ErrorMessageUtil msgUtil;
+
+    @Autowired
+    public SedG32014Reviewer(ErrorMessageUtil msgUtil) {
+        this.msgUtil = msgUtil;
+    }
 
     @Override
     public void review(PendingCertifiedProductDTO listing) {
@@ -29,11 +34,13 @@ public class SedG32014Reviewer implements Reviewer {
             }
         }
         if (foundSedCriteria && !attestsToSed) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.foundSedCriteriaWithoutAttestingSed"));
+            listing.getErrorMessages().add(
+                    msgUtil.getMessage("listing.criteria.foundSedCriteriaWithoutAttestingSed"));
         }
         if (!foundSedCriteria && attestsToSed
                 && listing.getIcs() == Boolean.FALSE) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.foundNoSedCriteriaButAttestingSed"));
+            listing.getErrorMessages().add(
+                    msgUtil.getMessage("listing.criteria.foundNoSedCriteriaButAttestingSed"));
         }
     }
 }
