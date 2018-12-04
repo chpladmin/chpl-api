@@ -121,10 +121,10 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         
         LOGGER.info("Writing statistics CSV");
         StatsCsvFileWriter csvFileWriter = new StatsCsvFileWriter();
-        csvFileWriter.writeCsvFile(props.getProperty("downloadFolderPath") + File.separator
+        csvFileWriter.writeCsvFile(System.getenv("downloadFolderPath") + File.separator
                 + props.getProperty("summaryEmailName", "summaryStatistics.csv"), csvStats);
 
-        new File(props.getProperty("downloadFolderPath") + File.separator
+        new File(System.getenv("downloadFolderPath") + File.separator
                 + props.getProperty("summaryEmailName", "summaryStatistics.csv"));
         LOGGER.info("Completed statistics CSV");
     }

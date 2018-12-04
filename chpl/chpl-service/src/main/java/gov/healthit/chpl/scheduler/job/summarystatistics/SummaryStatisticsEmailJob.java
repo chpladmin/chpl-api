@@ -112,7 +112,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
     private List<File> getSummaryStatisticsFile() {
         List<File> files = new ArrayList<File>();
         File file = new File(
-                        props.getProperty("downloadFolderPath") + File.separator
+                        System.getenv("downloadFolderPath") + File.separator
                         + props.getProperty("summaryEmailName", "summaryStatistics.csv"));
         files.add(file);
         return files;
