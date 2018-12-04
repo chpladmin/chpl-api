@@ -38,7 +38,7 @@ public class SedG32014Reviewer implements Reviewer {
                     msgUtil.getMessage("listing.criteria.foundSedCriteriaWithoutAttestingSed"));
         }
         if (!foundSedCriteria && attestsToSed
-                && listing.getIcs() == Boolean.FALSE) {
+                && !listing.getIcs()) {
             listing.getErrorMessages().add(
                     msgUtil.getMessage("listing.criteria.foundNoSedCriteriaButAttestingSed"));
         }
