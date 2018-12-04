@@ -39,7 +39,6 @@ import gov.healthit.chpl.domain.Statuses;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.UploadTemplateVersion;
-import gov.healthit.chpl.domain.notification.NotificationType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SearchMenuManager;
@@ -589,47 +588,6 @@ public class SearchMenuManagerTest {
         System.out.println("search completed in  " + timeLength + " millis or " + elapsedSecs + " seconds");
 
         assertTrue("firstResult should not match secondResult", firstResult.size() != secondResult.size());
-    }
-
-    @Transactional
-    @Test
-    public void testGetNotificationTypesForAdminUser() {
-        final int expectedCount = 1;
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-        Set<NotificationType> results = searchMenuManager.getNotificationTypes();
-        assertNotNull(results);
-        assertEquals(expectedCount, results.size());
-        for (NotificationType nt : results) {
-            assertNotNull(nt.getId());
-            assertNotNull(nt.getName());
-            assertNotNull(nt.getDescription());
-            assertNotNull(nt.getRequiresAcb());
-        }
-    }
-
-    //Moving the jobs to Quartz makes this test invalid.
-    @Transactional
-    @Test
-    @Ignore
-    public void testGetNotificationTypesForAcbUser() {
-        SecurityContextHolder.getContext().setAuthentication(testUser3);
-        Set<NotificationType> results = searchMenuManager.getNotificationTypes();
-        assertNotNull(results);
-        assertEquals(3, results.size());
-        for (NotificationType nt : results) {
-            assertNotNull(nt.getId());
-            assertNotNull(nt.getName());
-            assertNotNull(nt.getDescription());
-            assertNotNull(nt.getRequiresAcb());
-            assertTrue(nt.getRequiresAcb().booleanValue());
-        }
-    }
-
-    @Transactional
-    @Test(expected = AuthenticationCredentialsNotFoundException.class)
-    public void testGetNotificationTypesAllowedForUnauthenticatedUser() {
-        SecurityContextHolder.getContext().setAuthentication(null);
-        searchMenuManager.getNotificationTypes();
     }
 
     @Transactional
