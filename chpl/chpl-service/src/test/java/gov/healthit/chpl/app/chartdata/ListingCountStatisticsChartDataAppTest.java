@@ -6,6 +6,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -63,19 +64,19 @@ public class ListingCountStatisticsChartDataAppTest extends TestCase {
     @Autowired
     public UnitTestRules cacheInvalidationRule;
 
+
     /**
      * create an application context that the statistics calculator requires
      * @throws ServletException
      */
     @BeforeClass
     public static void setup() throws ServletException {
-        try (AnnotationConfigWebApplicationContext wac = new AnnotationConfigWebApplicationContext()) {
-            wac.register(CHPLTestConfig.class);
-            MockServletContext sc = new MockServletContext("");
-            ServletContextListener listener = new ContextLoaderListener(wac);
-            ServletContextEvent event = new ServletContextEvent(sc);
-            listener.contextInitialized(event);
-        }
+        AnnotationConfigWebApplicationContext wac = new AnnotationConfigWebApplicationContext();
+        wac.register(CHPLTestConfig.class);
+        MockServletContext sc = new MockServletContext("");
+        ServletContextListener listener = new ContextLoaderListener(wac);
+        ServletContextEvent event = new ServletContextEvent(sc);
+        listener.contextInitialized(event);
     }
 
     @Test
