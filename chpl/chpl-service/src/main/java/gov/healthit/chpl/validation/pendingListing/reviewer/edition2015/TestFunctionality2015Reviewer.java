@@ -76,8 +76,12 @@ public class TestFunctionality2015Reviewer implements Reviewer {//, ApplicationL
                                     cr.getNumber(), crtf.getNumber()));
                             crtfIter.remove();
                         } else {
-                            listing.getErrorMessages().addAll(
-                                getTestingFunctionalityErrorMessages(crtf, cr, listing));
+                            Set<String> warnings = getTestingFunctionalityWarningMessages(crtf, cr, listing);
+                            if (warnings.size() > 0) {
+                                listing.getWarningMessages().addAll(warnings);
+                                //Remove the item
+                                crtfIter.remove();
+                            }
                         }
                     }
                 }
@@ -85,19 +89,19 @@ public class TestFunctionality2015Reviewer implements Reviewer {//, ApplicationL
         }
     }
 
-    private Set<String> getTestingFunctionalityErrorMessages(final PendingCertificationResultTestFunctionalityDTO crtf,
+    private Set<String> getTestingFunctionalityWarningMessages(final PendingCertificationResultTestFunctionalityDTO crtf,
             final PendingCertificationResultDTO cr, final PendingCertifiedProductDTO listing) {
 
-        Set<String> errors = new HashSet<String>();
+        Set<String> warnings = new HashSet<String>();
 
         CertificationEditionDTO edition = getEditionDTO(getEditionFromListing(listing));
         TestFunctionalityDTO tf = getTestFunctionality(crtf.getNumber(), edition.getId());
 
         String criterionNumber = cr.getNumber();
         if (!isTestFunctionalityCritierionValid(criterionNumber, tf, edition.getYear())) {
-            errors.add(getTestFunctionalityCriterionErrorMessage(crtf, cr, listing, edition));
+            warnings.add(getTestFunctionalityCriterionMessage(crtf, cr, listing, edition));
         }
-        return errors;
+        return warnings;
     }
 
     private Boolean isTestFunctionalityCritierionValid(final String criteriaNumber,
@@ -114,19 +118,19 @@ public class TestFunctionality2015Reviewer implements Reviewer {//, ApplicationL
         }
 }
 
-    private String getTestFunctionalityCriterionErrorMessage(final PendingCertificationResultTestFunctionalityDTO crtf,
+    private String getTestFunctionalityCriterionMessage(final PendingCertificationResultTestFunctionalityDTO crtf,
             final PendingCertificationResultDTO cr, final PendingCertifiedProductDTO cp, 
             final CertificationEditionDTO edition) {
 
         TestFunctionalityDTO tf = getTestFunctionality(crtf.getNumber(), edition.getId());
-        return getTestFunctionalityCriterionErrorMessage(
+        return getMessage(
                 cr.getNumber(),
                 crtf.getNumber(),
                 getDelimitedListOfValidCriteriaNumbers(tf, edition),
                 cr.getNumber());
     }
 
-    private String getTestFunctionalityCriterionErrorMessage(final String criteriaNumber,
+    private String getMessage(final String criteriaNumber,
             final String testFunctionalityNumber, final String listOfValidCriteria, final String currentCriterion) {
 
         return msgUtil.getMessage("listing.criteria.testFunctionalityCriterionMismatch",
