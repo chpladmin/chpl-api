@@ -108,7 +108,7 @@ public class UserManagementController {
                     + "the following: 1) /invite 2) /create or /authorize 3) /confirm ")
     @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
-    public @ResponseBody User createUserDeprecated(@RequestBody final CreateUserFromInvitationRequest userInfo)
+    public @ResponseBody User createUser(@RequestBody final CreateUserFromInvitationRequest userInfo)
             throws ValidationException, EntityRetrievalException, InvalidArgumentsException, UserRetrievalException,
             UserCreationException, MessagingException, JsonProcessingException, EntityCreationException {
 
