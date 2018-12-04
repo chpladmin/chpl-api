@@ -110,7 +110,6 @@ public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListe
         String criterionNumber = cr.getNumber();
         if (!isTestFunctionalityCritierionValid(criterionNumber, tf, edition.getYear())) {
             warnings.add(getTestFunctionalityCriterionErrorMessage(crtf, cr, listing, edition));
-            //removeCertificationResultTestFunctionality(crtf, listing);
         }
         return warnings;
     }
