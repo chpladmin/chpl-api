@@ -51,13 +51,9 @@ public class PendingListingRequiredDataReviewerTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         reviewer = new RequiredDataReviewer(msgUtil, certRules);
-        
-        Mockito.doReturn("Listing has not attested to (g)(3), but at least one criteria was found attesting to SED.")
-        .when(msgUtil).getMessage(
-                ArgumentMatchers.eq("listing.criteria.foundSedCriteriaWithoutAttestingSed"));
-        
+
         //TODO - Can this be extracted as some sort of generic method, so it can be used all error messages??
-        Mockito.doAnswer(new Answer<String> () {
+        Mockito.doAnswer(new Answer<String>() {
             @Override
             public String answer(InvocationOnMock invocation) throws Throwable {
                 String invalidG1MacraMeasure = 
@@ -68,8 +64,8 @@ public class PendingListingRequiredDataReviewerTest {
         }).when(msgUtil).getMessage(
                 ArgumentMatchers.eq("listing.criteria.duplicateG1MacraMeasure"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
-        
-        Mockito.doAnswer(new Answer<String> () {
+
+        Mockito.doAnswer(new Answer<String>() {
             @Override
             public String answer(InvocationOnMock invocation) throws Throwable {
                 String invalidG2MacraMeasure = 
@@ -81,20 +77,18 @@ public class PendingListingRequiredDataReviewerTest {
                 ArgumentMatchers.eq("listing.criteria.duplicateG2MacraMeasure"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
     }
-    
+
     @Test
     public void testDuplicateG1MacraMeasure() {
         PendingCertifiedProductDTO listing = mockUtil.createPending2014Listing();
-        
         //Add Duplicate G1 Macra Measure
-        
         PendingCertificationResultDTO cert = findPendingCertification(listing, B_1);
         cert.setG1MacraMeasures(new ArrayList<PendingCertificationResultMacraMeasureDTO>());
-        
+
         PendingCertificationResultMacraMeasureDTO macra1 = new PendingCertificationResultMacraMeasureDTO();
         macra1.setEnteredValue("RT7 EP Stage 2");
         cert.getG1MacraMeasures().add(macra1);
-        
+
         PendingCertificationResultMacraMeasureDTO macra2 = new PendingCertificationResultMacraMeasureDTO();
         macra2.setEnteredValue("RT7 EP Stage 2");
         cert.getG1MacraMeasures().add(macra2);
@@ -104,33 +98,33 @@ public class PendingListingRequiredDataReviewerTest {
         assertTrue(hasDuplicateG1MacraMeasureWarningMessage(listing));
         assertEquals(1, cert.getG1MacraMeasures().size());
     }
-    
+
     @Test
     public void testNotDuplicateG1MacraMeasure() {
         PendingCertifiedProductDTO listing = mockUtil.createPending2014Listing();
-        
+
         //Add two different G1 Macra Measures
         PendingCertificationResultDTO cert = findPendingCertification(listing, B_1);
         cert.setG1MacraMeasures(new ArrayList<PendingCertificationResultMacraMeasureDTO>());
-        
+
         PendingCertificationResultMacraMeasureDTO macra2 = new PendingCertificationResultMacraMeasureDTO();
         macra2.setEnteredValue("RT7 EP Stage 2");
         cert.getG1MacraMeasures().add(macra2);
-        
+
         PendingCertificationResultMacraMeasureDTO macra1 = new PendingCertificationResultMacraMeasureDTO();
         macra1.setEnteredValue("RT7 EC Group");
         cert.getG1MacraMeasures().add(macra1);
-        
+
         reviewer.review(listing);
 
         assertFalse(hasDuplicateG1MacraMeasureWarningMessage(listing));
         assertEquals(2, cert.getG1MacraMeasures().size());
     }
-    
+
     @Test
     public void testSingleG1MacraMeasure() {
         PendingCertifiedProductDTO listing = mockUtil.createPending2014Listing();
-        
+
         //Add Single G1 Macra Measure
         PendingCertificationResultDTO cert = findPendingCertification(listing, B_1);
         cert.setG1MacraMeasures(new ArrayList<PendingCertificationResultMacraMeasureDTO>());
@@ -144,20 +138,19 @@ public class PendingListingRequiredDataReviewerTest {
         assertFalse(hasDuplicateG1MacraMeasureWarningMessage(listing));
         assertEquals(1, cert.getG1MacraMeasures().size());
     }
-    
 
     @Test
     public void testDuplicateG2MacraMeasure() {
         PendingCertifiedProductDTO listing = mockUtil.createPending2014Listing();
-        
+
         //Add Duplicate G2 Macra Measure
         PendingCertificationResultDTO cert = findPendingCertification(listing, B_1);
         cert.setG2MacraMeasures(new ArrayList<PendingCertificationResultMacraMeasureDTO>());
-        
+
         PendingCertificationResultMacraMeasureDTO macra1 = new PendingCertificationResultMacraMeasureDTO();
         macra1.setEnteredValue("RT7 EP Stage 2");
         cert.getG2MacraMeasures().add(macra1);
-        
+
         PendingCertificationResultMacraMeasureDTO macra2 = new PendingCertificationResultMacraMeasureDTO();
         macra2.setEnteredValue("RT7 EP Stage 2");
         cert.getG2MacraMeasures().add(macra2);
@@ -167,33 +160,33 @@ public class PendingListingRequiredDataReviewerTest {
         assertTrue(hasDuplicateG2MacraMeasureWarningMessage(listing));
         assertEquals(1, cert.getG2MacraMeasures().size());
     }
-    
+
     @Test
     public void testNotDuplicateG2MacraMeasure() {
         PendingCertifiedProductDTO listing = mockUtil.createPending2014Listing();
-        
+
         //Add two different G2 Macra Measures
         PendingCertificationResultDTO cert = findPendingCertification(listing, B_1);
         cert.setG2MacraMeasures(new ArrayList<PendingCertificationResultMacraMeasureDTO>());
-        
+
         PendingCertificationResultMacraMeasureDTO macra2 = new PendingCertificationResultMacraMeasureDTO();
         macra2.setEnteredValue("RT7 EP Stage 2");
         cert.getG2MacraMeasures().add(macra2);
-        
+
         PendingCertificationResultMacraMeasureDTO macra1 = new PendingCertificationResultMacraMeasureDTO();
         macra1.setEnteredValue("RT7 EC Group");
         cert.getG2MacraMeasures().add(macra1);
- 
+
         reviewer.review(listing);
 
         assertFalse(hasDuplicateG2MacraMeasureWarningMessage(listing));
         assertEquals(2, cert.getG2MacraMeasures().size());
     }
-    
+
     @Test
     public void testSingleG2MacraMeasure() {
         PendingCertifiedProductDTO listing = mockUtil.createPending2014Listing();
-        
+
         //Add Single G2 Macra Measure
         PendingCertificationResultDTO cert = findPendingCertification(listing, B_1);
         cert.setG2MacraMeasures(new ArrayList<PendingCertificationResultMacraMeasureDTO>());
@@ -216,7 +209,7 @@ public class PendingListingRequiredDataReviewerTest {
         }
         return false;
     }
-    
+
     private Boolean hasDuplicateG2MacraMeasureWarningMessage(PendingCertifiedProductDTO listing) {
         for (String message : listing.getWarningMessages()) {
             if (StringUtils.contains(message, "contains duplicate G2 Macra Measure")) {
@@ -225,11 +218,11 @@ public class PendingListingRequiredDataReviewerTest {
         }
         return false;
     }
-    
+
     private String formatMessage(String message, String a, String b) {
         return String.format(message, a, b);
     }
-    
+
     private PendingCertificationResultDTO findPendingCertification(PendingCertifiedProductDTO listing, String certNumber) {
         for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
             if (cert.getNumber().equals(certNumber)) {

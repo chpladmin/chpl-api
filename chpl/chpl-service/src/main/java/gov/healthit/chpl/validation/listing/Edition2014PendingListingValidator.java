@@ -19,6 +19,7 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.UnsupportedCharacter
 import gov.healthit.chpl.validation.pendingListing.reviewer.UrlReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.ValidDataReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2014.RequiredData2014Reviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.edition2014.SedG32014Reviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2014.TestFunctionality2014Reviewer;
 
 /**
@@ -65,6 +66,10 @@ public class Edition2014PendingListingValidator extends PendingValidator {
     private RequiredData2014Reviewer requiredDataReviewer;
 
     @Autowired
+    @Qualifier("pendingSedG32014Reviewer")
+    private SedG32014Reviewer sedG3Reviewer;
+
+    @Autowired
     @Qualifier("pendingTestToolReviewer")
     private TestToolReviewer ttReviewer;
 
@@ -91,6 +96,7 @@ public class Edition2014PendingListingValidator extends PendingValidator {
             reviewers.add(validDataReviewer);
             reviewers.add(fieldLengthReviewer);
             reviewers.add(requiredDataReviewer);
+            reviewers.add(sedG3Reviewer);
             reviewers.add(ttReviewer);
             reviewers.add(tfReviewer);
             reviewers.add(urlReviewer);

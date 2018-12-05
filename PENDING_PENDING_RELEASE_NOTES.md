@@ -29,4 +29,7 @@ _Date TBD_
   * Reason for listing change
 * Prevent users from using the following macra measures which are under review: RT13 EH/CAH Stage 3, RT14 EH/CAH Stage 3, RT15 EH/CAH Stage 3 
 
+### Bugs Fixed
+* Do not show error for 2014 listings on upload or edit if they attest to g3, have ICS = true, and do not have any criteria marked as SED.
+
 ---
