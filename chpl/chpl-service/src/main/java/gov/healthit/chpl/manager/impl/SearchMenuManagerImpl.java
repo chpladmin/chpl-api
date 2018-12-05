@@ -30,7 +30,6 @@ import gov.healthit.chpl.dao.EducationTypeDAO;
 import gov.healthit.chpl.dao.FuzzyChoicesDAO;
 import gov.healthit.chpl.dao.JobDAO;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
-import gov.healthit.chpl.dao.NotificationDAO;
 import gov.healthit.chpl.dao.PracticeTypeDAO;
 import gov.healthit.chpl.dao.ProductClassificationTypeDAO;
 import gov.healthit.chpl.dao.ProductDAO;
@@ -61,7 +60,6 @@ import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.TestTool;
 import gov.healthit.chpl.domain.UploadTemplateVersion;
 import gov.healthit.chpl.domain.concept.RequirementTypeEnum;
-import gov.healthit.chpl.domain.notification.NotificationType;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AgeRangeDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
@@ -87,7 +85,6 @@ import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.dto.UploadTemplateVersionDTO;
 import gov.healthit.chpl.dto.job.JobTypeDTO;
-import gov.healthit.chpl.dto.notification.NotificationTypeDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SearchMenuManager;
@@ -157,20 +154,6 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
     @Autowired
     private MacraMeasureDAO macraDao;
-    @Autowired
-    private NotificationDAO notificationDao;
-
-    @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
-    public Set<NotificationType> getNotificationTypes() {
-        List<NotificationTypeDTO> notificationTypes = notificationDao
-                .getAllNotificationTypes(Util.getCurrentUser().getPermissions());
-        Set<NotificationType> results = new HashSet<NotificationType>();
-        for (NotificationTypeDTO dto : notificationTypes) {
-            results.add(new NotificationType(dto));
-        }
-        return results;
-    }
 
     @Transactional
     @Override

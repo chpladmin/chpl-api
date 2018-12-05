@@ -19,6 +19,7 @@ _Date TBD_
   * /acbs
 * Removed space following the colon in the /cache_status response. {"status": "OK"} becomes {"status":"OK"}
 * Removed space following the colon in the /status response. {"status": "OK"} becomes {"status":"OK"}
+* Removed /notifications endpoints.
 
 ### New Features
 * Add retired flag to ACBs and ATLs to replace the functionality that previously used the deleted flag.
@@ -27,5 +28,8 @@ _Date TBD_
   * Reason for status change
   * Reason for listing change
 * Prevent users from using the following macra measures which are under review: RT13 EH/CAH Stage 3, RT14 EH/CAH Stage 3, RT15 EH/CAH Stage 3 
+
+### Bugs Fixed
+* Do not show error for 2014 listings on upload or edit if they attest to g3, have ICS = true, and do not have any criteria marked as SED.
 
 ---
