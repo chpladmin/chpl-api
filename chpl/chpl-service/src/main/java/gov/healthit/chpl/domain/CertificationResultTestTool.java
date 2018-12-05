@@ -83,19 +83,20 @@ public class CertificationResultTestTool implements Serializable {
         boolean result = false;
         if (this.getTestToolId() != null && anotherTool.getTestToolId() != null
                 && this.getTestToolId().longValue() == anotherTool.getTestToolId().longValue()
-                && ((StringUtils.isEmpty(this.getTestToolVersion()) && StringUtils.isEmpty(anotherTool.getTestToolVersion()))
+                && ((StringUtils.isEmpty(this.getTestToolVersion())
+                        && StringUtils.isEmpty(anotherTool.getTestToolVersion()))
                      ||
-                     (!StringUtils.isEmpty(this.getTestToolVersion()) &&
-                      !StringUtils.isEmpty(anotherTool.getTestToolVersion()) &&
-                      this.getTestToolVersion().equalsIgnoreCase(anotherTool.getTestToolVersion())))) {
+                     (!StringUtils.isEmpty(this.getTestToolVersion())
+                             && !StringUtils.isEmpty(anotherTool.getTestToolVersion())
+                             && this.getTestToolVersion().equalsIgnoreCase(anotherTool.getTestToolVersion())))) {
             result = true;
         } else if (!StringUtils.isEmpty(this.getTestToolName()) && !StringUtils.isEmpty(anotherTool.getTestToolName())
                 && this.getTestToolName().equalsIgnoreCase(anotherTool.getTestToolName())
                 && ((StringUtils.isEmpty(this.getTestToolVersion()) && StringUtils.isEmpty(anotherTool.getTestToolVersion()))
                      ||
-                     (!StringUtils.isEmpty(this.getTestToolVersion()) &&
-                      !StringUtils.isEmpty(anotherTool.getTestToolVersion()) &&
-                      this.getTestToolVersion().equalsIgnoreCase(anotherTool.getTestToolVersion())))) {
+                     (!StringUtils.isEmpty(this.getTestToolVersion())
+                             && !StringUtils.isEmpty(anotherTool.getTestToolVersion())
+                             && this.getTestToolVersion().equalsIgnoreCase(anotherTool.getTestToolVersion())))) {
             result = true;
         }
         return result;

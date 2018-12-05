@@ -925,13 +925,13 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         }
     }
 
-    private CertificationResultTestDataEntity getCertificationResultTestDataById(Long id) {
+    private CertificationResultTestDataEntity getCertificationResultTestDataById(final Long id) {
         CertificationResultTestDataEntity entity = null;
 
-        Query query = entityManager.createQuery("SELECT td " +
-                "FROM CertificationResultTestDataEntity td " +
-                "LEFT JOIN FETCH td.testData " +
-                "WHERE (NOT td.deleted = true) "
+        Query query = entityManager.createQuery("SELECT td "
+                + "FROM CertificationResultTestDataEntity td "
+                + "LEFT JOIN FETCH td.testData "
+                + "WHERE (NOT td.deleted = true) "
                 + "AND (td.id = :entityid) ",
                 CertificationResultTestDataEntity.class);
         query.setParameter("entityid", id);
@@ -943,12 +943,12 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         return entity;
     }
 
-    private List<CertificationResultTestDataEntity> getTestDataForCertification(Long certificationResultId) {
-        Query query = entityManager.createQuery("SELECT td " + 
-                "FROM CertificationResultTestDataEntity td " + 
-                "LEFT JOIN FETCH td.testData " + 
-                "WHERE (NOT td.deleted = true) " + 
-                "AND (td.certificationResultId = :certificationResultId) ",
+    private List<CertificationResultTestDataEntity> getTestDataForCertification(final Long certificationResultId) {
+        Query query = entityManager.createQuery("SELECT td "
+                + "FROM CertificationResultTestDataEntity td "
+                + "LEFT JOIN FETCH td.testData "
+                + "WHERE (NOT td.deleted = true) "
+                + "AND (td.certificationResultId = :certificationResultId) ",
                 CertificationResultTestDataEntity.class);
         query.setParameter("certificationResultId", certificationResultId);
 
@@ -960,7 +960,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
     }
 
     /******************************************************
-     * Test Procedure methods
+     * Test Procedure methods.
      *
      *******************************************************/
 
@@ -1008,13 +1008,14 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         }
     }
 
-    private CertificationResultTestProcedureEntity getCertificationResultTestProcedureById(Long id) {
+    private CertificationResultTestProcedureEntity getCertificationResultTestProcedureById(final Long id) {
         CertificationResultTestProcedureEntity entity = null;
 
-        Query query = entityManager.createQuery("SELECT tp " + 
-                "FROM CertificationResultTestProcedureEntity tp " + 
-                "LEFT OUTER JOIN FETCH tp.testProcedure " + 
-                "where (NOT tp.deleted = true) AND (tp.id = :entityid) ",
+        Query query = entityManager.createQuery("SELECT tp "
+                + "FROM CertificationResultTestProcedureEntity tp "
+                + "LEFT OUTER JOIN FETCH tp.testProcedure "
+                + "WHERE (NOT tp.deleted = true) "
+                + "AND (tp.id = :entityid) ",
                 CertificationResultTestProcedureEntity.class);
         query.setParameter("entityid", id);
         List<CertificationResultTestProcedureEntity> result = query.getResultList();
@@ -1025,7 +1026,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         return entity;
     }
 
-    private List<CertificationResultTestProcedureEntity> getTestProceduresForCertification(Long certificationResultId) {
+    private List<CertificationResultTestProcedureEntity> getTestProceduresForCertification(final Long certificationResultId) {
         Query query = entityManager.createQuery(
                 "SELECT tp " + "FROM CertificationResultTestProcedureEntity tp "
                         + "LEFT OUTER JOIN FETCH tp.testProcedure " + "WHERE (NOT tp.deleted = true) "

@@ -69,12 +69,12 @@ public class CertificationResultTestData implements Serializable {
         this.alteration = dto.getAlteration();
     }
 
-    public boolean matches(CertificationResultTestData anotherTestData) {
+    public boolean matches(final CertificationResultTestData anotherTestData) {
         boolean result = false;
-        if (this.getTestData() != null && anotherTestData.getTestData() != null &&
-                this.getTestData().getId() != null && anotherTestData.getTestData().getId() != null && 
-                this.getTestData().getId().longValue() == anotherTestData.getTestData().getId().longValue() && 
-                !StringUtils.isEmpty(this.getVersion()) && !StringUtils.isEmpty(anotherTestData.getVersion())
+        if (this.getTestData() != null && anotherTestData.getTestData() != null
+                && this.getTestData().getId() != null && anotherTestData.getTestData().getId() != null
+                && this.getTestData().getId().longValue() == anotherTestData.getTestData().getId().longValue()
+                && !StringUtils.isEmpty(this.getVersion()) && !StringUtils.isEmpty(anotherTestData.getVersion())
                 && this.getVersion().equals(anotherTestData.getVersion())
                 && ((StringUtils.isEmpty(this.getAlteration()) && StringUtils.isEmpty(anotherTestData.getAlteration()))
                         || this.getAlteration().equals(anotherTestData.getAlteration()))) {

@@ -229,15 +229,15 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
 
     }
 
-    private ProductVersionEntity getEntityById(Long id) throws EntityRetrievalException {
+    private ProductVersionEntity getEntityById(final Long id) throws EntityRetrievalException {
 
         ProductVersionEntity entity = null;
-        Query query = entityManager.createQuery("SELECT pve " + 
-                        " FROM ProductVersionEntity pve " + 
-                        " LEFT OUTER JOIN FETCH pve.product product "
-                        + "LEFT OUTER JOIN FETCH product.developer "
-                        + "WHERE (NOT pve.deleted = true) "
-                        + "AND (product_version_id = :entityid)",
+        Query query = entityManager.createQuery("SELECT pve "
+                + " FROM ProductVersionEntity pve "
+                + " LEFT OUTER JOIN FETCH pve.product product "
+                + "LEFT OUTER JOIN FETCH product.developer "
+                + "WHERE (NOT pve.deleted = true) "
+                + "AND (product_version_id = :entityid)",
                 ProductVersionEntity.class);
 
         query.setParameter("entityid", id);

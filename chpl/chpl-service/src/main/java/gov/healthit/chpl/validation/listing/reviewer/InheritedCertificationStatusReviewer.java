@@ -71,8 +71,8 @@ public class InheritedCertificationStatusReviewer implements Reviewer {
                         parentIds.add(potentialParent.getId());
                     }
                 }
-                
-                if(parentIds != null && parentIds.size() > 0) {
+
+                if (parentIds != null && parentIds.size() > 0) {
                     List<CertificationEditionDTO> parentEditions = certEditionDao.getEditions(parentIds);
                     for (CertificationEditionDTO parentEdition : parentEditions) {
                         if (!listing.getCertificationEdition().get("id").toString()
@@ -81,12 +81,12 @@ public class InheritedCertificationStatusReviewer implements Reviewer {
                                     msgUtil.getMessage("listing.icsEditionMismatch", parentEdition.getYear()));
                         }
                     }
-                    
+
                     // this listing's ICS code must be greater than the max of
                     // parent ICS codes
                     Integer largestIcs = inheritanceDao.getLargestIcs(parentIds);
-                    if (largestIcs != null && icsCodeInteger != null && 
-                            icsCodeInteger.intValue() != (largestIcs.intValue() + 1)) {
+                    if (largestIcs != null && icsCodeInteger != null
+                            && icsCodeInteger.intValue() != (largestIcs.intValue() + 1)) {
                         listing.getErrorMessages().add(
                                    msgUtil.getMessage("listing.icsNotLargestCode", icsCodeInteger, largestIcs));
                     }

@@ -26,13 +26,13 @@ public class DeveloperStatusEventXmlGeneratorTest {
     public void addDeveloperStatusTest_NoReason() throws XMLStreamException, IOException {
         DeveloperStatusEvent dse = getDeveloperStatusEvent(1L, 1534425861000L, 1L, null, 1L, 
                 DeveloperStatusType.Active.toString());
-        String expected = 
-                "<statusEvent>"+
-                    "<developerId>1</developerId>" +
-                    "<id>1</id>" +
-                    "<status><id>1</id><status>Active</status></status>" +
-                    "<statusDate>" + sdf.format(dse.getStatusDate()) + "</statusDate>" +
-                "</statusEvent>";        
+        String expected =
+                "<statusEvent>"
+                        + "<developerId>1</developerId>"
+                        + "<id>1</id>"
+                        + "<status><id>1</id><status>Active</status></status>"
+                        + "<statusDate>" + sdf.format(dse.getStatusDate()) + "</statusDate>"
+                        + "</statusEvent>";
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
         StringWriter stringOut = new StringWriter();
         XMLStreamWriter writer = factory.createXMLStreamWriter(stringOut);
@@ -48,14 +48,14 @@ public class DeveloperStatusEventXmlGeneratorTest {
     public void addDeveloperStatusTest_WithReason() throws XMLStreamException, IOException {
         DeveloperStatusEvent dse = getDeveloperStatusEvent(1L, 1534425861000L, 1L, "In trouble", 1L, 
                 DeveloperStatusType.SuspendedByOnc.toString());
-        String expected = 
-                "<statusEvent>"+
-                    "<developerId>1</developerId>" +
-                    "<id>1</id>" +
-                    "<status><id>1</id><status>Suspended by ONC</status></status>" +
-                    "<statusDate>" + sdf.format(dse.getStatusDate()) + "</statusDate>" +
-                    "<reason>In trouble</reason>" +
-                "</statusEvent>";        
+        String expected =
+                "<statusEvent>"
+                    + "<developerId>1</developerId>"
+                    + "<id>1</id>"
+                    + "<status><id>1</id><status>Suspended by ONC</status></status>"
+                    + "<statusDate>" + sdf.format(dse.getStatusDate()) + "</statusDate>"
+                    + "<reason>In trouble</reason>"
+                    + "</statusEvent>";
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
         StringWriter stringOut = new StringWriter();
         XMLStreamWriter writer = factory.createXMLStreamWriter(stringOut);
@@ -66,7 +66,7 @@ public class DeveloperStatusEventXmlGeneratorTest {
         assertEquals(expected, stringOut.toString());
         stringOut.close();
     }
-    
+
     @Test
     public void addDeveloperStatusTestList() throws XMLStreamException, IOException {
         DeveloperStatusEvent firstDse = getDeveloperStatusEvent(1L, 1534425861000L, 1L, null, 1L, 

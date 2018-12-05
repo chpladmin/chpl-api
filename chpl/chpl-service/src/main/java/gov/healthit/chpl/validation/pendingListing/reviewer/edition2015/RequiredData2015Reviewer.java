@@ -220,8 +220,8 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
             boolean hasG1Macra = false;
             for (int i = 0; i < listing.getCertificationCriterion().size() && !hasG1Macra; i++) {
                 PendingCertificationResultDTO cert = listing.getCertificationCriterion().get(i);
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G1_MACRA) && 
-                        cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 0) {
+                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G1_MACRA)
+                        && cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 0) {
                     hasG1Macra = true;
                 }
             }
@@ -238,8 +238,8 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
             boolean hasG2Macra = false;
             for (int i = 0; i < listing.getCertificationCriterion().size() && !hasG2Macra; i++) {
                 PendingCertificationResultDTO cert = listing.getCertificationCriterion().get(i);
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G2_MACRA) && 
-                        cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 0) {
+                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G2_MACRA)
+                        && cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 0) {
                     hasG2Macra = true;
                 }
             }

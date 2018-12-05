@@ -126,21 +126,21 @@ public class ListingValidatorFactoryImpl implements ListingValidatorFactory {
     }
 
     @Override
-    public Validator getValidator(CertifiedProductSearchDetails listing) {
+    public Validator getValidator(final CertifiedProductSearchDetails listing) {
         String edition = listing.getCertificationEdition().get("name").toString();
-        if (StringUtils.isEmpty(listing.getChplProductNumber()) || 
-                StringUtils.isEmpty(edition)) {
+        if (StringUtils.isEmpty(listing.getChplProductNumber())
+                || StringUtils.isEmpty(edition)) {
             String errMsg = msgUtil.getMessage("listing.validator.editionOrChplNumberNotFound", listing.getId().toString());
             listing.getErrorMessages().add(errMsg);
             LOGGER.error(errMsg);
             return null;
         }
-        
-        if(chplProductNumberUtil.isLegacy(listing.getChplProductNumber())) {
+
+        if (chplProductNumberUtil.isLegacy(listing.getChplProductNumber())) {
             //legacy must be a 2011 or 2014 listing
             if (edition.equals("2011")) {
                 return allowedValidator;
-            } else if(edition.equals("2014")) {
+            } else if (edition.equals("2014")) {
                 String practiceTypeName = listing.getPracticeType().get("name").toString();
                 String productClassificationName = listing.getClassificationType().get("name").toString();
 
@@ -150,7 +150,7 @@ public class ListingValidatorFactoryImpl implements ListingValidatorFactory {
                     LOGGER.error(errMsg);
                     return null;
                 }
-                
+
                 if (practiceTypeName.equalsIgnoreCase(PRACTICE_TYPE_AMBULATORY)) {
                     if (productClassificationName.equalsIgnoreCase(PRODUCT_CLASSIFICATION_MODULAR)) {
                         return ambulatoryModularLegacyValidator;

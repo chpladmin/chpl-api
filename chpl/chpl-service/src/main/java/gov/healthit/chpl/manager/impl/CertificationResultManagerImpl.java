@@ -159,13 +159,13 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             numChanges++;
         }
 
-        if (!updated.isSuccess() && 
-                (haveMacraMeasuresChanged(orig.getG1MacraMeasures(), updated.getG1MacraMeasures()) || 
-                        haveMacraMeasuresChanged(orig.getG2MacraMeasures(), updated.getG2MacraMeasures()))) {
+        if (!updated.isSuccess()
+                && (haveMacraMeasuresChanged(orig.getG1MacraMeasures(), updated.getG1MacraMeasures())
+                        || haveMacraMeasuresChanged(orig.getG2MacraMeasures(), updated.getG2MacraMeasures()))) {
             numChanges += updateMacraMeasures(updated, orig.getG1MacraMeasures(), updated.getG1MacraMeasures(), G1_MEASURE);
             numChanges += updateMacraMeasures(updated, orig.getG2MacraMeasures(), updated.getG2MacraMeasures(), G2_MEASURE);
         }
-        
+
         if (updated.isSuccess() == null || updated.isSuccess() == Boolean.FALSE) {
             // similar to delete - remove all related items
             numChanges += updateAdditionalSoftware(updated, orig.getAdditionalSoftware(), null);

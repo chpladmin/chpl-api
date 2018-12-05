@@ -841,8 +841,8 @@ public class CertifiedProductManagerTest extends TestCase {
         assertEquals(origMuuCount + 1, updatedListing.getMeaningfulUseUserHistory().size());
         boolean foundAddedMuu = false;
         for (MeaningfulUseUser muu : updatedListing.getMeaningfulUseUserHistory()) {
-            if (muu.getMuuCount().longValue() == newMuuCount.longValue() && 
-                    muu.getMuuDate().longValue() == now.longValue()) {
+            if (muu.getMuuCount().longValue() == newMuuCount.longValue()
+                    && muu.getMuuDate().longValue() == now.longValue()) {
                 foundAddedMuu = true;
             }
         }
