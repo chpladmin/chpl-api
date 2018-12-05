@@ -161,14 +161,14 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         //This is a constant date, which marks the beginning of time for
         //retrieving statistics;
         startDateCalendar.set(2016, 3, 1, 0, 0, 0);
-        
+
         //What DOW is today?
         Calendar now = Calendar.getInstance();
         Integer dow = now.get(Calendar.DAY_OF_WEEK);
         if (startDateCalendar.get(Calendar.DAY_OF_WEEK) == dow) {
             return startDateCalendar.getTime();
         }
-        for (int i = 0; i <= 6; i++ ) {
+        for (int i = 0; i <= 6; i++) {
             startDateCalendar.add(Calendar.DATE, (-1));
             if (startDateCalendar.get(Calendar.DAY_OF_WEEK) == dow) {
                 return startDateCalendar.getTime();

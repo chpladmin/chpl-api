@@ -107,10 +107,10 @@ public class ListingTestFunctionalityReviewerTest {
         Mockito.when(testFunctionalityDAO.getTestFunctionalityCritieriaMaps()).thenReturn(xxxx());
 
         //TODO - Can this be extracted as some sort of generic method, so it can be used all error messages??
-        Mockito.doAnswer(new Answer<String> () {
+        Mockito.doAnswer(new Answer<String>() {
             @Override
-            public String answer(InvocationOnMock invocation) throws Throwable {
-                String message = 
+            public String answer(final InvocationOnMock invocation) throws Throwable {
+                String message =
                         "In Criteria %s, Test Functionality %s is for Criteria %s and is not valid for Criteria %s.";
                 Object[] args = invocation.getArguments();
                 return String.format(message, (String)args[1], (String)args[2], (String)args[3], (String)args[4]);

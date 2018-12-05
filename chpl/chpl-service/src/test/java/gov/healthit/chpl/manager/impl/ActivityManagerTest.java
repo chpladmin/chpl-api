@@ -252,7 +252,7 @@ public class ActivityManagerTest extends TestCase {
                 timestamp
                 );
         List<ActivityEvent> events = activityManager.getActivityForObject(
-                ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, developer.getId() , 
+                ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, developer.getId(),
                 fiveDaysAgo, null);
 
         assertEquals(1, events.size());
