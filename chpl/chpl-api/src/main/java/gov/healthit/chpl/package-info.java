@@ -1,4 +1,4 @@
 /**
- * Application code
+ * Application code.
  */
 package gov.healthit.chpl;
