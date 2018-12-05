@@ -199,8 +199,6 @@ public class ActivityDaoTest extends TestCase {
     @Transactional
     @Rollback
     public void testFindByConceptInLastNDays() throws EntityCreationException, EntityRetrievalException {
-        ;
-
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         Date fiveDaysAgo = new Date(System.currentTimeMillis() - (5 * 24 * 60 * 60 * 1000));
         List<ActivityDTO> results = activityDAO.findByConcept(ActivityConcept.ACTIVITY_CONCEPT_ATL, fiveDaysAgo,

@@ -118,7 +118,7 @@ public class ListingValidatorFactoryImpl implements ListingValidatorFactory {
         } else if (listing.getCertificationEdition().equals("2015")) {
             return pending2015Validator;
         } else {
-            String errMsg = msgUtil.getMessage("listing.validator.certificationEditionNotFound", listing.getCertificationEdition());;
+            String errMsg = msgUtil.getMessage("listing.validator.certificationEditionNotFound", listing.getCertificationEdition());
             listing.getErrorMessages().add(errMsg);
             LOGGER.error(errMsg);
         }

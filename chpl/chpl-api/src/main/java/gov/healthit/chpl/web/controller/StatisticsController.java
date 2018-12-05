@@ -80,7 +80,7 @@ public class StatisticsController {
             produces = "application/json; charset=utf-8")
     public @ResponseBody CriterionProductStatisticsResult getCriterionProductStatistics() {
         CriterionProductStatisticsResult response = new CriterionProductStatisticsResult();
-        response.setCriterionProductStatisticsResult(statisticsManager.getCriterionProductStatisticsResult());;
+        response.setCriterionProductStatisticsResult(statisticsManager.getCriterionProductStatisticsResult());
         return response;
     }
 
@@ -96,7 +96,7 @@ public class StatisticsController {
             produces = "application/json; charset=utf-8")
     public @ResponseBody IncumbentDevelopersStatisticsResult getIncumbentDevelopersStatistics() {
         IncumbentDevelopersStatisticsResult response = new IncumbentDevelopersStatisticsResult();
-        response.setIncumbentDevelopersStatisticsResult(statisticsManager.getIncumbentDevelopersStatisticsResult());;
+        response.setIncumbentDevelopersStatisticsResult(statisticsManager.getIncumbentDevelopersStatisticsResult());
         return response;
     }
 
