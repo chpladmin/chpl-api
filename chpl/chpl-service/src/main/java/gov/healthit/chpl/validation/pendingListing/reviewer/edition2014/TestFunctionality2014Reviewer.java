@@ -72,6 +72,12 @@ public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListe
                         } else {
                             listing.getErrorMessages().addAll(
                                 getTestingFunctionalityErrorMessages(crtf, cr, listing));
+                            
+                            Set<String> warnings = getTestingFunctionalityWarningMessages(crtf, cr, listing);
+                            if (warnings.size() > 0) {
+                                listing.getWarningMessages().addAll(warnings);
+                                crtfIter.remove();
+                            }
                         }
                     }
                 }
@@ -91,12 +97,21 @@ public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListe
         if (!isTestFunctionalityPracticeTypeValid(practiceTypeId, tf)) {
             errors.add(getTestFunctionalityPracticeTypeErrorMessage(crtf, cr, listing));
         }
+        return errors;
+    }
+
+    private Set<String> getTestingFunctionalityWarningMessages(final PendingCertificationResultTestFunctionalityDTO crtf,
+            final PendingCertificationResultDTO cr, final PendingCertifiedProductDTO listing) {
+
+        Set<String> warnings = new HashSet<String>();
+        CertificationEditionDTO edition = getEditionDTO(getEditionFromListing(listing));
+        TestFunctionalityDTO tf = getTestFunctionality(crtf.getNumber(), edition.getId());
 
         String criterionNumber = cr.getNumber();
         if (!isTestFunctionalityCritierionValid(criterionNumber, tf, edition.getYear())) {
-            errors.add(getTestFunctionalityCriterionErrorMessage(crtf, cr, listing, edition));
+            warnings.add(getTestFunctionalityCriterionErrorMessage(crtf, cr, listing, edition));
         }
-        return errors;
+        return warnings;
     }
 
     private Boolean isTestFunctionalityCritierionValid(final String criteriaNumber,
