@@ -123,22 +123,22 @@ public class ProductControllerTest {
             EntityCreationException, InvalidArgumentsException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         UpdateProductsRequest request = new UpdateProductsRequest();
-        request.setNewDeveloperId(-1l);
+        request.setNewDeveloperId(-1L);
         request.setProductIds(new ArrayList<Long>());
-        request.getProductIds().add(-1l);
+        request.getProductIds().add(-1L);
 
-        request.setProduct(productController.getProductById(-1l));
+        request.setProduct(productController.getProductById(-1L));
         request.getProduct().setProductId(1L);
 
         request.getProduct().setContact(new Contact());
-        request.getProduct().getContact().setContactId(1l);
+        request.getProduct().getContact().setContactId(1L);
         request.getProduct().getContact().setFullName("FName");
         request.getProduct().getContact().setFriendlyName("LName");
         request.getProduct().getContact().setEmail("abc@xyz.com");
         request.getProduct().getContact().setPhoneNumber("7175551212");
         productController.updateProduct(request);
 
-        Product p = productController.getProductById(-1l);
+        Product p = productController.getProductById(-1L);
 
         assertEquals("FName", p.getContact().getFullName());
 
