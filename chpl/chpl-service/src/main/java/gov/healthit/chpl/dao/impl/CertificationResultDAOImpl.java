@@ -488,7 +488,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
                         + "    inner join " + SCHEMA_NAME + ".certification_result_additional_software cras" 
                         + "        on cr.certification_result_id = cras.certification_result_id " 
                         + "where cr.certified_product_id = :certifiedProductId "
-                        + "and (NOT cras.deleted = true)"); 
+                        + "and NOT cras.deleted"); 
         
         query.setParameter("certifiedProductId", certifiedProductId);
         BigInteger count = (BigInteger) query.getSingleResult();
