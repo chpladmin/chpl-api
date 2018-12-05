@@ -3,7 +3,6 @@ package gov.healthit.chpl.dao.impl;
 
 import java.util.List;
 
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,18 +12,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.caching.UnitTestRules;
-import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.dao.ApiKeyDAO;
-import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.dao.TestingLabDAO;
-import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.ApiKeyDTO;
 import junit.framework.TestCase;
 

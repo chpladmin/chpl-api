@@ -2,7 +2,6 @@ package gov.healthit.chpl.dao.statistics;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
-import gov.healthit.chpl.entity.ParticipantExperienceStatisticsEntity;
 import gov.healthit.chpl.entity.surveillance.NonconformityTypeStatisticsEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 

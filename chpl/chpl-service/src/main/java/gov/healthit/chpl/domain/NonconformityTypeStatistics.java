@@ -1,17 +1,8 @@
 package gov.healthit.chpl.domain;
 
-import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
-import gov.healthit.chpl.entity.surveillance.NonconformityTypeStatisticsEntity;
-
 import java.util.Date;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
 
 public class NonconformityTypeStatistics {
 

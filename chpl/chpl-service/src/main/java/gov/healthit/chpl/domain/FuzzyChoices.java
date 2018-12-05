@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.List;
 
 import gov.healthit.chpl.dto.FuzzyChoicesDTO;
-import gov.healthit.chpl.entity.FuzzyType;
 
 public class FuzzyChoices implements Serializable {
     private static final long serialVersionUID = -7647761708813529969L;
