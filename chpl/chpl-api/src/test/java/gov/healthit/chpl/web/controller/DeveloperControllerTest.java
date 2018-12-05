@@ -28,38 +28,41 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class })
-@DatabaseSetup("classpath:data/testData.xml") 
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
+@TestExecutionListeners({
+        DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
+})
+@DatabaseSetup("classpath:data/testData.xml")
 public class DeveloperControllerTest {
-	private static JWTAuthenticatedUser adminUser;
-	
-	@Autowired Environment env;
-	
-	@Autowired DeveloperController developerController;
-	
-	@Rule
+    private static JWTAuthenticatedUser adminUser;
+
+    @Autowired
+    Environment env;
+
+    @Autowired
+    DeveloperController developerController;
+
+    @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
-	
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-		adminUser = new JWTAuthenticatedUser();
-		adminUser.setFullName("Administrator");
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        adminUser = new JWTAuthenticatedUser();
+        adminUser.setFullName("Administrator");
         adminUser.setId(UnitTestUtil.ADMIN_ID);
-		adminUser.setFriendlyName("Administrator");
-		adminUser.setSubjectName("admin");
-		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
-	}
-	
-	@Transactional
-	@Test(expected=EntityRetrievalException.class)
-	public void testGetDeveloperByBadId() 
-		throws EntityRetrievalException, IOException, ValidationException {
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		developerController.getDeveloperById(-100L);
-	}
+        adminUser.setFriendlyName("Administrator");
+        adminUser.setSubjectName("admin");
+        adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+    }
+
+    @Transactional
+    @Test(expected = EntityRetrievalException.class)
+    public void testGetDeveloperByBadId() throws EntityRetrievalException, IOException, ValidationException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        developerController.getDeveloperById(-100L);
+    }
 }

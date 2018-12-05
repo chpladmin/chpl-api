@@ -18,15 +18,15 @@ public class NonconformityTypeStatisticsEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-    
+
     @Basic(optional = false)
     @Column(name = "nonconformity_count", nullable = false)
     private Long nonconformityCount;
-    
+
     @Basic(optional = false)
     @Column(name = "nonconformity_type", nullable = false)
     private String nonconformityType;
-    
+
     @Column(name = "deleted")
     private Boolean deleted;
 
@@ -48,22 +48,22 @@ public class NonconformityTypeStatisticsEntity {
     }
 
     public Long getNonconformityCount() {
-		return nonconformityCount;
-	}
+        return nonconformityCount;
+    }
 
-	public void setNonconformityCount(Long nonconformityCount) {
-		this.nonconformityCount = nonconformityCount;
-	}
+    public void setNonconformityCount(Long nonconformityCount) {
+        this.nonconformityCount = nonconformityCount;
+    }
 
-	public String getNonconformityType() {
-		return nonconformityType;
-	}
+    public String getNonconformityType() {
+        return nonconformityType;
+    }
 
-	public void setNonconformityType(String nonconformityType) {
-		this.nonconformityType = nonconformityType;
-	}
+    public void setNonconformityType(String nonconformityType) {
+        this.nonconformityType = nonconformityType;
+    }
 
-	public Date getCreationDate() {
+    public Date getCreationDate() {
         return creationDate;
     }
 

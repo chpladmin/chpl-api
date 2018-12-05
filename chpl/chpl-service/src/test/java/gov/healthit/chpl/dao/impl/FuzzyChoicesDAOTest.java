@@ -32,45 +32,49 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
+
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-	DirtiesContextTestExecutionListener.class,
-	TransactionalTestExecutionListener.class,
-	DbUnitTestExecutionListener.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
+@TestExecutionListeners({
+        DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
+})
 @DatabaseSetup("classpath:data/testData.xml")
 public class FuzzyChoicesDAOTest {
-	
-	@Autowired
-	FuzzyChoicesDAO fuzzyDao;
-	
-	
-	private static JWTAuthenticatedUser authUser;
-	
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-		authUser = new JWTAuthenticatedUser();
-		authUser.setFullName("Admin");
-		authUser.setId(-2L);
-		authUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
-	}
 
-	@Test
-	@Transactional(readOnly = true)
-	public void testFuzzyDao() throws JsonParseException, JsonMappingException, IOException, EntityRetrievalException, EntityCreationException{
-		SecurityContextHolder.getContext().setAuthentication(authUser);
-		FuzzyChoicesDTO fuzzyReturned1 = fuzzyDao.getByType(FuzzyType.UCD_PROCESS);
-		assertTrue(fuzzyReturned1.getChoices().contains("Multiple Standards"));
-		FuzzyChoicesDTO fuzzyReturned2 = fuzzyDao.getByType(FuzzyType.QMS_STANDARD);
-		assertTrue(fuzzyReturned2.getChoices().contains("ISO 13485:2003"));
-		FuzzyChoicesDTO fuzzyReturned3 = fuzzyDao.getByType(FuzzyType.ACCESSIBILITY_STANDARD);
-		assertTrue(fuzzyReturned3.getChoices().contains("WCAG 2.0 Level AA"));
-	}
+    @Autowired
+    FuzzyChoicesDAO fuzzyDao;
+
+    private static JWTAuthenticatedUser authUser;
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        authUser = new JWTAuthenticatedUser();
+        authUser.setFullName("Admin");
+        authUser.setId(-2L);
+        authUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+    }
+
+    @Test
+    @Transactional(readOnly = true)
+    public void testFuzzyDao() throws JsonParseException, JsonMappingException, IOException, EntityRetrievalException,
+            EntityCreationException {
+        SecurityContextHolder.getContext().setAuthentication(authUser);
+        FuzzyChoicesDTO fuzzyReturned1 = fuzzyDao.getByType(FuzzyType.UCD_PROCESS);
+        assertTrue(fuzzyReturned1.getChoices().contains("Multiple Standards"));
+        FuzzyChoicesDTO fuzzyReturned2 = fuzzyDao.getByType(FuzzyType.QMS_STANDARD);
+        assertTrue(fuzzyReturned2.getChoices().contains("ISO 13485:2003"));
+        FuzzyChoicesDTO fuzzyReturned3 = fuzzyDao.getByType(FuzzyType.ACCESSIBILITY_STANDARD);
+        assertTrue(fuzzyReturned3.getChoices().contains("WCAG 2.0 Level AA"));
+    }
 
     @Test
     @Transactional
     @Rollback(true)
-    public void updateFuzzyChoicesList() throws EntityRetrievalException, EntityCreationException, JsonParseException, JsonMappingException, IOException{
+    public void updateFuzzyChoicesList() throws EntityRetrievalException, EntityCreationException, JsonParseException,
+            JsonMappingException, IOException {
         // arrange
         SecurityContextHolder.getContext().setAuthentication(authUser);
         Long lastModifiedUserId = -4L;

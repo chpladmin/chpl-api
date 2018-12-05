@@ -84,7 +84,7 @@ public class PendingCertifiedProductQmsStandardEntity {
         this.name = name;
     }
 
-	public String getModification() {
+    public String getModification() {
         return modification;
     }
 
