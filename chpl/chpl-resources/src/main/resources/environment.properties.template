@@ -103,15 +103,14 @@ asyncCacheRefreshEnabled=true
 
 ####### Email Builder Settings #######
 #Do we want to 'check' emails before sending them?
-#emailBuilder.config.productionEnvironment=false
-#Let emails being sent to this list of domains go through
-#emailBuilder.config.whitelistedDomains=ainq.com,onc.gov
-#Value is appended to the end of the subject line and is used to indicate what environment sent the email
-#emailBuilder.config.emailSubjectSuffix=[Local]
-#######################################
 emailBuilder.config.productionEnvironment=false
+
+#Let emails being sent to this list of domains go through
 emailBuilder.config.whitelistedDomains=ainq.com
+
+#Value is appended to the end of the subject line and is used to indicate what environment sent the email
 emailBuilder.config.emailSubjectSuffix=[Local]
+######################################
 
 #DeleteAPIKeyWarningEmail
 job.apiKeyWarningEmailJob.config.apiKeyLastUsedDaysAgo=7
