@@ -47,7 +47,6 @@ import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.UploadTemplateVersion;
-import gov.healthit.chpl.domain.notification.NotificationType;
 import gov.healthit.chpl.domain.search.NonconformitySearchOptions;
 import gov.healthit.chpl.domain.search.SearchRequest;
 import gov.healthit.chpl.domain.search.SearchResponse;
@@ -809,16 +808,6 @@ public class SearchViewController {
     produces = "application/json; charset=utf-8")
     public @ResponseBody Set<KeyValueModel> getJobTypes() {
         return searchMenuManager.getJobTypes();
-    }
-
-    @Secured({
-        Authority.ROLE_ADMIN, Authority.ROLE_ACB
-    })
-    @ApiOperation(value = "Get all possible types of notifications that a user can sign up for.")
-    @RequestMapping(value = "/data/notification_types", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
-    public @ResponseBody Set<NotificationType> getNotificationTypes() {
-        return searchMenuManager.getNotificationTypes();
     }
 
     @Secured({
