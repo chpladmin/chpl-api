@@ -1181,7 +1181,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             case WithdrawnByDeveloperUnderReview:
                 // initiate TriggerDeveloperBan job, telling ONC that they might need to ban a Developer
                 if ((Util.isUserRoleAdmin() || Util.isUserRoleAcbAdmin())) {
-                    triggerDeveloperBan(updatedListing);
+                    triggerDeveloperBan(updatedListing, updateRequest.getReason());
                 } else if (!Util.isUserRoleAdmin() && !Util.isUserRoleAcbAdmin()) {
                     LOGGER.error("User " + Util.getUsername()
                     + " does not have ROLE_ADMIN or ROLE_ACB and cannot change the status of "
@@ -1792,8 +1792,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             } else if (toAdd.getStatus().getId() != null) {
                 CertificationStatusDTO statusDto = certStatusDao.getById(toAdd.getStatus().getId());
                 if (statusDto == null) {
-                    String msg = msgUtil.getMessage("listing.badCertificationStatusId", 
-                            toAdd.getStatus().getId()); 
+                    String msg = msgUtil.getMessage("listing.badCertificationStatusId",
+                            toAdd.getStatus().getId());
                     throw new EntityRetrievalException(msg);
                 }
                 statusEventDto.setStatus(statusDto);
@@ -1801,7 +1801,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                 CertificationStatusDTO statusDto = certStatusDao.getByStatusName(toAdd.getStatus().getName());
                 if (statusDto == null) {
                     String msg = msgUtil.getMessage("listing.badCertificationStatusName",
-                            toAdd.getStatus().getName()); 
+                            toAdd.getStatus().getName());
                     throw new EntityRetrievalException(msg);
                 }
                 statusEventDto.setStatus(statusDto);
@@ -1830,13 +1830,13 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                 statusEventDto.setEventDate(new Date(cseToUpdate.getEventDate()));
                 statusEventDto.setReason(cseToUpdate.getReason());
                 if (cseToUpdate.getStatus() == null) {
-                    String msg = msgUtil.getMessage("listing.missingCertificationStatus"); 
+                    String msg = msgUtil.getMessage("listing.missingCertificationStatus");
                     throw new EntityRetrievalException(msg);
                 } else if (cseToUpdate.getStatus().getId() != null) {
                     CertificationStatusDTO statusDto = certStatusDao.getById(cseToUpdate.getStatus().getId());
                     if (statusDto == null) {
                         String msg = msgUtil.getMessage("listing.badCertificationStatusId",
-                                cseToUpdate.getStatus().getId()); 
+                                cseToUpdate.getStatus().getId());
                         throw new EntityRetrievalException(msg);
                     }
                     statusEventDto.setStatus(statusDto);
@@ -2234,7 +2234,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         }
         return dtos.get(0);
     }
-    private void triggerDeveloperBan(final CertifiedProductSearchDetails updatedListing) {
+    private void triggerDeveloperBan(final CertifiedProductSearchDetails updatedListing, final String reason) {
         Scheduler scheduler;
         try {
             scheduler = getScheduler();
@@ -2256,6 +2256,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                     .usingJobData("effectiveDate", updatedListing.getCurrentStatus().getEventDate())
                     .usingJobData("openNcs", updatedListing.getCountOpenNonconformities())
                     .usingJobData("closedNcs", updatedListing.getCountClosedNonconformities())
+                    .usingJobData("reason", updatedListing.getCurrentStatus().getReason())
+                    .usingJobData("reasonForChange", reason)
                     .build();
             scheduler.scheduleJob(qzTrigger);
         } catch (SchedulerException e) {

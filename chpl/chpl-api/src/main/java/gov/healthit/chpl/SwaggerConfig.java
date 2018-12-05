@@ -49,7 +49,7 @@ public class SwaggerConfig implements EnvironmentAware {
                 + "select the \"Certified Health IT Products List (CHPL)\" category.",
                 "https://www.healthit.gov/form/healthit-feedback-form",
                 "");
-        return new ApiInfo("CHPL", "Certified Health IT Product Listing", "19.1.0", "",
+        return new ApiInfo("CHPL", "Certified Health IT Product Listing", "19.2.0", "",
                 contact, "License Text", "https://github.com/chpladmin/chpl-api/blob/staging/LICENSE");
     }
 
@@ -61,10 +61,11 @@ public class SwaggerConfig implements EnvironmentAware {
     private Predicate<String> paths() {
         return or(regex("/acbs.*"), regex("/activity.*"), regex("/announcements.*"), regex("/atls.*"), regex("/auth.*"),
                 regex("/certification_ids.*"), regex("/certified_products.*"), regex("/certified_product_details.*"),
-                regex("/collections.*"), regex("/data/.*"), regex("/download.*"), regex("/jobs.*"), regex("/key.*"),
-                regex("/meaningful_use"), regex("/notifications.*"), regex("/products.*"), regex("/search.*"),
-                regex("/surveillance.*"), regex("/status"), regex("/cache_status"), regex("/users.*"),
-                regex("/developers.*"), regex("/versions.*"), regex("/decertifications/.*"), regex("/schedules.*"));
+                regex("/collections.*"), regex("/data/.*"), regex("/download.*"), regex("/files.*"), regex("/jobs.*"),
+                regex("/key.*"), regex("/meaningful_use"), regex("/products.*"),
+                regex("/search.*"), regex("/surveillance.*"), regex("/status"), regex("/cache_status"),
+                regex("/users.*"), regex("/developers.*"), regex("/versions.*"), regex("/decertifications/.*"),
+                regex("/schedules.*"));
     }
 
     private class AbsolutePathProvider extends RelativePathProvider {

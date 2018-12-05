@@ -13,7 +13,6 @@ import gov.healthit.chpl.validation.listing.reviewer.ChplNumberReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.DeveloperStatusReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.FieldLengthReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
-import gov.healthit.chpl.validation.listing.reviewer.SedG3Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestToolReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestingLabReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnattestedCriteriaWithDataReviewer;
@@ -21,6 +20,7 @@ import gov.healthit.chpl.validation.listing.reviewer.UnsupportedCharacterReviewe
 import gov.healthit.chpl.validation.listing.reviewer.UrlReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ValidDataReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.RequiredData2014Reviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2014.SedG32014Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.TestFunctionality2014Reviewer;
 
 /**
@@ -59,8 +59,8 @@ public abstract class Edition2014ListingValidator extends Validator {
     private TestingLabReviewer testingLabReviewer;
 
     @Autowired
-    @Qualifier("sedG3Reviewer")
-    private SedG3Reviewer sedG3Reviewer;
+    @Qualifier("sedG32014Reviewer")
+    private SedG32014Reviewer sedG3Reviewer;
 
     @Autowired
     @Qualifier("certificationStatusReviewer")

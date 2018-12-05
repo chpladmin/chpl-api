@@ -13,7 +13,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.web.context.ContextLoader;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
@@ -63,19 +62,19 @@ public class ListingCountStatisticsChartDataAppTest extends TestCase {
     @Autowired
     public UnitTestRules cacheInvalidationRule;
 
+
     /**
      * create an application context that the statistics calculator requires
      * @throws ServletException
      */
     @BeforeClass
     public static void setup() throws ServletException {
-        try (AnnotationConfigWebApplicationContext wac = new AnnotationConfigWebApplicationContext()) {
-            wac.register(CHPLTestConfig.class);
-            MockServletContext sc = new MockServletContext("");
-            ServletContextListener listener = new ContextLoaderListener(wac);
-            ServletContextEvent event = new ServletContextEvent(sc);
-            listener.contextInitialized(event);
-        }
+        AnnotationConfigWebApplicationContext wac = new AnnotationConfigWebApplicationContext();
+        wac.register(CHPLTestConfig.class);
+        MockServletContext sc = new MockServletContext("");
+        ServletContextListener listener = new ContextLoaderListener(wac);
+        ServletContextEvent event = new ServletContextEvent(sc);
+        listener.contextInitialized(event);
     }
 
     @Test
