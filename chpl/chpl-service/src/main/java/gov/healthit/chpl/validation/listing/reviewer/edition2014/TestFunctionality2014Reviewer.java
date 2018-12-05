@@ -178,17 +178,18 @@ public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListe
 
         String criteria = "";
         List<CertificationCriterionDTO> certDTOs = new ArrayList<CertificationCriterionDTO>();
-        
+
         List<TestFunctionalityCriteriaMapDTO> maps = testFunctionalityDAO.getTestFunctionalityCritieriaMaps();
         for (TestFunctionalityCriteriaMapDTO map : maps) {
             if (map.getCriteria().getCertificationEdition().equals(edition.getYear())) {
-                if (tfDTO.getId().equals(map.getTestFunctionality().getId()))
+                if (tfDTO.getId().equals(map.getTestFunctionality().getId())) {
                     certDTOs.add(map.getCriteria());
+                }
             }
         }
-        
+
         Iterator<CertificationCriterionDTO> iter = certDTOs.iterator();
-        while(iter.hasNext()) {
+        while (iter.hasNext()) {
             criteria += iter.next().getNumber();
             if (iter.hasNext()) {
                 criteria += ", ";
