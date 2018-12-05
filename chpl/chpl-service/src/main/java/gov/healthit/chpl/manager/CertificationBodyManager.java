@@ -16,35 +16,35 @@ import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 
 public interface CertificationBodyManager {
 
-    public void addPermission(CertificationBodyDTO acb, Long userId, Permission permission)
+    void addPermission(CertificationBodyDTO acb, Long userId, Permission permission)
             throws UserRetrievalException;
 
-    public void deletePermission(CertificationBodyDTO acb, Sid recipient, Permission permission);
+    void deletePermission(CertificationBodyDTO acb, Sid recipient, Permission permission);
 
-    public void deleteAllPermissionsOnAcb(CertificationBodyDTO acb, Sid recipient);
+    void deleteAllPermissionsOnAcb(CertificationBodyDTO acb, Sid recipient);
 
-    public void deletePermissionsForUser(UserDTO userDto) throws UserRetrievalException;
+    void deletePermissionsForUser(UserDTO userDto) throws UserRetrievalException;
 
-    public CertificationBodyDTO create(CertificationBodyDTO acb)
+    CertificationBodyDTO create(CertificationBodyDTO acb)
             throws UserRetrievalException, EntityCreationException, EntityRetrievalException, JsonProcessingException;
 
-    public CertificationBodyDTO update(CertificationBodyDTO acb) throws EntityRetrievalException,
+    CertificationBodyDTO update(CertificationBodyDTO acb) throws EntityRetrievalException,
             JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException;
 
-    public CertificationBodyDTO retire(Long acbId) throws EntityRetrievalException,
+    CertificationBodyDTO retire(Long acbId) throws EntityRetrievalException,
         JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException;
 
-    public CertificationBodyDTO unretire(Long acbId) throws EntityRetrievalException,
+    CertificationBodyDTO unretire(Long acbId) throws EntityRetrievalException,
     JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException;
 
-    public List<CertificationBodyDTO> getAllForUser();
+    List<CertificationBodyDTO> getAllForUser();
 
-    public List<CertificationBodyDTO> getAll();
-    public List<CertificationBodyDTO> getAllActive();
+    List<CertificationBodyDTO> getAll();
+    List<CertificationBodyDTO> getAllActive();
 
-    public CertificationBodyDTO getById(Long id) throws EntityRetrievalException;
+    CertificationBodyDTO getById(Long id) throws EntityRetrievalException;
 
-    public List<UserDTO> getAllUsersOnAcb(CertificationBodyDTO acb);
+    List<UserDTO> getAllUsersOnAcb(CertificationBodyDTO acb);
 
-    public List<Permission> getPermissionsForUser(CertificationBodyDTO acb, Sid recipient);
+    List<Permission> getPermissionsForUser(CertificationBodyDTO acb, Sid recipient);
 }

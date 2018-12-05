@@ -60,9 +60,9 @@ public interface SearchMenuManager {
     Set<TestStandard> getTestStandards();
 
     Set<KeyValueModel> getTestTools();
-    public Set<CriteriaSpecificDescriptiveModel> getTestProcedures();
-    public Set<CriteriaSpecificDescriptiveModel> getTestData();
-    
+    Set<CriteriaSpecificDescriptiveModel> getTestProcedures();
+    Set<CriteriaSpecificDescriptiveModel> getTestData();
+
     Set<KeyValueModel> getDeveloperStatuses();
 
     Set<KeyValueModel> getSurveillanceTypes();
@@ -77,7 +77,7 @@ public interface SearchMenuManager {
 
     Set<KeyValueModel> getNonconformityTypeOptions();
 
-    public Set<UploadTemplateVersion> getUploadTemplateVersions();
+    Set<UploadTemplateVersion> getUploadTemplateVersions();
 
     Set<CriteriaSpecificDescriptiveModel> getMacraMeasures();
 

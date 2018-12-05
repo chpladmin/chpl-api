@@ -15,11 +15,11 @@ public enum CertificationStatusType {
 
     private String name;
 
-    private CertificationStatusType() {
+    CertificationStatusType() {
 
     }
 
-    private CertificationStatusType(String name) {
+    CertificationStatusType(String name) {
         this.name = name;
     }
 

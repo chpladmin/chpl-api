@@ -2,6 +2,11 @@ package gov.healthit.chpl.domain.concept;
 
 import java.io.Serializable;
 
+/**
+ * Different types of activity the system will log.
+ * @author kekey
+ *
+ */
 public enum ActivityConcept implements Serializable {
 
     ACTIVITY_CONCEPT_CERTIFIED_PRODUCT(1L, "CERTIFIED_PRODUCT"), 
@@ -23,7 +28,7 @@ public enum ActivityConcept implements Serializable {
     private final Long id;
     private final String name;
 
-    private ActivityConcept(Long id, String name) {
+    ActivityConcept(final Long id, final String name) {
         this.id = id;
         this.name = name;
     }

@@ -8,6 +8,11 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
+/**
+ * Interface for database access to CHPL listings.
+ * @author kekey
+ *
+ */
 public interface CertifiedProductDAO {
 
     CertifiedProductDTO create(CertifiedProductDTO product) throws EntityCreationException;
@@ -19,7 +24,7 @@ public interface CertifiedProductDAO {
     List<CertifiedProductDetailsDTO> findAll();
 
     List<CertifiedProductDetailsDTO> findByDeveloperId(Long developerId);
-    
+
     List<CertifiedProductDetailsDTO> findByEdition(String edition);
 
     List<CertifiedProductDetailsDTO> findWithSurveillance();
@@ -36,8 +41,8 @@ public interface CertifiedProductDAO {
 
     CertifiedProductDetailsDTO getByChplUniqueId(String chplUniqueId) throws EntityRetrievalException;
 
-    Date getConfirmDate(final Long listingId);
-    
+    Date getConfirmDate(Long listingId);
+
     List<CertifiedProductDetailsDTO> getDetailsByChplNumbers(List<String> chplProductNumbers);
 
     List<CertifiedProductDetailsDTO> getDetailsByVersionId(Long versionId);

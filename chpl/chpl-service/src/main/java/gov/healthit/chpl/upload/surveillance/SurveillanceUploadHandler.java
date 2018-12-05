@@ -8,17 +8,17 @@ import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 
 public interface SurveillanceUploadHandler {
-    public Surveillance handle() throws InvalidArgumentsException;
+    Surveillance handle() throws InvalidArgumentsException;
 
-    public List<CSVRecord> getRecord();
+    List<CSVRecord> getRecord();
 
-    public void setRecord(final List<CSVRecord> record);
+    void setRecord(List<CSVRecord> record);
 
-    public CSVRecord getHeading();
+    CSVRecord getHeading();
 
-    public void setHeading(final CSVRecord heading);
+    void setHeading(CSVRecord heading);
 
-    public int getLastDataIndex();
+    int getLastDataIndex();
 
-    public void setLastDataIndex(final int lastDataIndex);
+    void setLastDataIndex(int lastDataIndex);
 }

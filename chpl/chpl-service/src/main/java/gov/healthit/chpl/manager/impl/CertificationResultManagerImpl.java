@@ -1419,11 +1419,8 @@ public class CertificationResultManagerImpl implements CertificationResultManage
         private CertificationResultAdditionalSoftware orig;
         private CertificationResultAdditionalSoftware updated;
 
-        public CertificationResultAdditionalSoftwarePair() {
-        }
-
-        public CertificationResultAdditionalSoftwarePair(CertificationResultAdditionalSoftware orig,
-                CertificationResultAdditionalSoftware updated) {
+        CertificationResultAdditionalSoftwarePair(final CertificationResultAdditionalSoftware orig,
+                final CertificationResultAdditionalSoftware updated) {
             this.orig = orig;
             this.updated = updated;
         }
@@ -1449,10 +1446,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
         private UcdProcess orig;
         private UcdProcess updated;
 
-        public CertificationResultUcdProcessPair() {
-        }
-
-        public CertificationResultUcdProcessPair(UcdProcess orig, UcdProcess updated) {
+        CertificationResultUcdProcessPair(final UcdProcess orig, final UcdProcess updated) {
             this.orig = orig;
             this.updated = updated;
         }
@@ -1478,10 +1472,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
         private CertificationResultTestData orig;
         private CertificationResultTestData updated;
 
-        public CertificationResultTestDataPair() {
-        }
-
-        public CertificationResultTestDataPair(CertificationResultTestData orig, CertificationResultTestData updated) {
+        CertificationResultTestDataPair(final CertificationResultTestData orig, final CertificationResultTestData updated) {
             this.orig = orig;
             this.updated = updated;
         }
@@ -1507,10 +1498,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
         private TestTask orig;
         private TestTask updated;
 
-        public TestTaskPair() {
-        }
-
-        public TestTaskPair(TestTask orig, TestTask updated) {
+        TestTaskPair(final TestTask orig, final TestTask updated) {
             this.orig = orig;
             this.updated = updated;
         }
@@ -1536,10 +1524,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
         private TestParticipant orig;
         private TestParticipant updated;
 
-        public TestParticipantPair() {
-        }
-
-        public TestParticipantPair(TestParticipant orig, TestParticipant updated) {
+        TestParticipantPair(final TestParticipant orig, final TestParticipant updated) {
             this.orig = orig;
             this.updated = updated;
         }

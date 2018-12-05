@@ -688,7 +688,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         private Date activityDate;
         private QuestionableActivityTriggerDTO trigger;
 
-        public ActivityDateTriggerGroup(Date activityDate, QuestionableActivityTriggerDTO trigger) {
+        ActivityDateTriggerGroup(final Date activityDate, final QuestionableActivityTriggerDTO trigger) {
             this.activityDate = activityDate;
             this.trigger = trigger;
         }

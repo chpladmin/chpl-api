@@ -11,7 +11,7 @@ public enum UploadTemplateVersion implements Serializable {
 
     private String name;
 
-    private UploadTemplateVersion(String name) {
+    UploadTemplateVersion(String name) {
         this.name = name;
     }
 
