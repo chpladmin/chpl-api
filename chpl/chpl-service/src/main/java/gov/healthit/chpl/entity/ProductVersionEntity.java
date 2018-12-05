@@ -203,9 +203,7 @@ public class ProductVersionEntity implements Cloneable, Serializable {
 
     /**
      * Set the value related to the column: product.
-     * 
-     * @param product
-     *            the product value you wish to set
+     * @param productId the product value you wish to set
      */
     public void setProductId(final Long productId) {
         this.productId = productId;
@@ -213,7 +211,6 @@ public class ProductVersionEntity implements Cloneable, Serializable {
 
     /**
      * Return the value associated with the column: version.
-     * 
      * @return A String object (this.version)
      */
     public String getVersion() {
@@ -223,7 +220,6 @@ public class ProductVersionEntity implements Cloneable, Serializable {
 
     /**
      * Set the value related to the column: version.
-     * 
      * @param version
      *            the version value you wish to set
      */
@@ -233,7 +229,6 @@ public class ProductVersionEntity implements Cloneable, Serializable {
 
     /**
      * Provides toString implementation.
-     * 
      * @see java.lang.Object#toString()
      * @return String representation of this class.
      */

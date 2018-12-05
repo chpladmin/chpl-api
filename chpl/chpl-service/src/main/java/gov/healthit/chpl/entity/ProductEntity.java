@@ -257,9 +257,7 @@ public class ProductEntity implements Serializable {
 
     /**
      * Set the value related to the column: developer.
-     * 
-     * @param developer
-     *            the developer value you wish to set
+     * @param developerId the developer value you wish to set
      */
     public void setDeveloperId(final Long developerId) {
         this.developerId = developerId;
@@ -267,7 +265,6 @@ public class ProductEntity implements Serializable {
 
     /**
      * Return the value associated with the column: statuses.
-     * 
      * @return A ProductCertificationStatuses object
      *         (this.productCertificationStatuses)
      */
@@ -277,10 +274,8 @@ public class ProductEntity implements Serializable {
 
     /**
      * Set the value related to the column: statuses.
-     * 
-     * @param productCertificationStatuses
-     *            the set of aggregate counts for this product's certification
-     *            statuses
+     * @param productCertificationStatusesEntity the set of aggregate counts
+     * for this product's certification statuses
      */
     public void setProductCertificationStatuses(final ProductCertificationStatusesEntity productCertificationStatusesEntity) {
         this.productCertificationStatuses = productCertificationStatusesEntity;

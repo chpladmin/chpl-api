@@ -175,9 +175,7 @@ public class CertificationIdEntity implements Serializable {
 
     /**
      * Set the value related to the column: certification_id.
-     * 
-     * @param certificationId
-     *            the certificationId value you wish to set
+     * @param certId the certificationId value you wish to set
      */
     public void setCertificationId(final String certId) {
         this.certificationId = certId;
@@ -185,7 +183,6 @@ public class CertificationIdEntity implements Serializable {
 
     /**
      * Return the value associated with the column: key.
-     * 
      * @return A String object (this.key)
      */
     public String getKey() {
@@ -194,7 +191,6 @@ public class CertificationIdEntity implements Serializable {
 
     /**
      * Set the value related to the column: key.
-     * 
      * @param key
      *            the key value you wish to set
      */

@@ -76,21 +76,16 @@ public class DeveloperCertificationStatusesEntity implements Cloneable, Serializ
     }
 
     /**
-     * Constructor taking a given ID.
-     * 
-     * @param creationDate
-     *            Date object;
-     * @param deleted
-     *            Boolean object;
-     * @param id
-     *            Long object;
-     * @param lastModifiedDate
-     *            Date object;
-     * @param lastModifiedUser
-     *            Long object;
+     * Constructor that takes all fields.
+     * @param id id of the record
+     * @param active number of active
+     * @param retired number of retired
+     * @param withdrawnByDeveloper number of withrdrawn by developer
+     * @param withdrawnByAcb number of withdrawn by acb
+     * @param suspendedByAcb number of suspended by acb
      */
-    public DeveloperCertificationStatusesEntity(Long id, Integer active, Integer retired, Integer withdrawnByDeveloper,
-            Integer withdrawnByAcb, Integer suspendedByAcb) {
+    public DeveloperCertificationStatusesEntity(final Long id, final Integer active, final Integer retired,
+            final Integer withdrawnByDeveloper, final Integer withdrawnByAcb,  final Integer suspendedByAcb) {
         this.id = id;
         this.active = active;
         this.retired = retired;
@@ -101,7 +96,6 @@ public class DeveloperCertificationStatusesEntity implements Cloneable, Serializ
 
     /**
      * Return the value associated with the column: id.
-     * 
      * @return A Long object (this.id)
      */
     public Long getId() {

@@ -126,9 +126,7 @@ public class CertificationResultEntity implements Serializable {
 
     /**
      * Set the value related to the column: certificationCriterion.
-     * 
-     * @param certificationCriterion
-     *            the certificationCriterion value you wish to set
+     * @param certificationCriterionId the certificationCriterion value you wish to set
      */
     public void setCertificationCriterionId(final Long certificationCriterionId) {
         this.certificationCriterionId = certificationCriterionId;
@@ -140,7 +138,6 @@ public class CertificationResultEntity implements Serializable {
 
     /**
      * Return the value associated with the column: certifiedProduct.
-     * 
      * @return A CertifiedProduct object (this.certifiedProduct)
      */
     public Long getCertifiedProductId() {
@@ -149,9 +146,7 @@ public class CertificationResultEntity implements Serializable {
 
     /**
      * Set the value related to the column: certifiedProduct.
-     * 
-     * @param certifiedProduct
-     *            the certifiedProduct value you wish to set
+     * @param certifiedProductId the certifiedProduct value you wish to set
      */
     public void setCertifiedProductId(final Long certifiedProductId) {
         this.certifiedProductId = certifiedProductId;
@@ -159,7 +154,6 @@ public class CertificationResultEntity implements Serializable {
 
     /**
      * Return the value associated with the column: gap.
-     * 
      * @return A Boolean object (this.gap)
      */
     public Boolean isGap() {
@@ -168,7 +162,6 @@ public class CertificationResultEntity implements Serializable {
 
     /**
      * Set the value related to the column: gap.
-     * 
      * @param gap
      *            the gap value you wish to set
      */
@@ -206,9 +199,7 @@ public class CertificationResultEntity implements Serializable {
 
     /**
      * Set the value related to the column: successful.
-     * 
-     * @param successful
-     *            the successful value you wish to set
+     * @param success the successful value you wish to set
      */
     public void setSuccess(final Boolean success) {
         this.success = success;

@@ -91,9 +91,7 @@ public class CQMResultEntity implements Serializable {
 
     /**
      * Set the value related to the column: cqmCriterion.
-     * 
-     * @param cqmCriterion
-     *            the cqmCriterion value you wish to set
+     * @param cqmCriterionId the cqmCriterion value you wish to set
      */
     public void setCqmCriterionId(final Long cqmCriterionId) {
         this.cqmCriterionId = cqmCriterionId;
@@ -101,7 +99,6 @@ public class CQMResultEntity implements Serializable {
 
     /**
      * Return the value associated with the column: creationDate.
-     * 
      * @return A Date object (this.creationDate)
      */
     public Date getCreationDate() {
@@ -111,7 +108,6 @@ public class CQMResultEntity implements Serializable {
 
     /**
      * Set the value related to the column: creationDate.
-     * 
      * @param creationDate
      *            the creationDate value you wish to set
      */

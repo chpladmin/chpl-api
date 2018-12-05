@@ -165,9 +165,7 @@ public class CertificationCriterionEntity implements Serializable {
 
     /**
      * Set the value related to the column: certificationEdition.
-     * 
-     * @param certificationEdition
-     *            the certificationEdition value you wish to set
+     * @param certificationEditionId the certificationEdition value you wish to set
      */
     public void setCertificationEdition(final Long certificationEditionId) {
         this.certificationEditionId = certificationEditionId;
@@ -175,7 +173,6 @@ public class CertificationCriterionEntity implements Serializable {
 
     /**
      * Return the value associated with the column: creationDate.
-     * 
      * @return A Date object (this.creationDate)
      */
     public Date getCreationDate() {
@@ -185,7 +182,6 @@ public class CertificationCriterionEntity implements Serializable {
 
     /**
      * Set the value related to the column: creationDate.
-     * 
      * @param creationDate
      *            the creationDate value you wish to set
      */
