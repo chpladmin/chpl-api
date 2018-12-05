@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.UnitTestUtil;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
@@ -48,7 +49,7 @@ public class DeveloperControllerTest {
 	public static void setUpClass() throws Exception {
 		adminUser = new JWTAuthenticatedUser();
 		adminUser.setFullName("Administrator");
-		adminUser.setId(-2L);
+        adminUser.setId(UnitTestUtil.ADMIN_ID);
 		adminUser.setFriendlyName("Administrator");
 		adminUser.setSubjectName("admin");
 		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));

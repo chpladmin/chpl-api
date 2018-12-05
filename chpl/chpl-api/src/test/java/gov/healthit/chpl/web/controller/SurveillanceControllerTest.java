@@ -37,6 +37,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.UnitTestUtil;
 import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
@@ -102,7 +103,7 @@ public class SurveillanceControllerTest {
     public static void setUpClass() throws Exception {
         adminUser = new JWTAuthenticatedUser();
         adminUser.setFullName("Administrator");
-        adminUser.setId(-2L);
+        adminUser.setId(UnitTestUtil.ADMIN_ID);
         adminUser.setFriendlyName("Administrator");
         adminUser.setSubjectName("admin");
         adminUser.getPermissions().add(new GrantedPermission(Authority.ROLE_ADMIN));
