@@ -31,5 +31,6 @@ _Date TBD_
 
 ### Bugs Fixed
 * Do not show error for 2014 listings on upload or edit if they attest to g3, have ICS = true, and do not have any criteria marked as SED.
+* Fix issue with determining whether there is additional software associated with the certified product
 
 ---
