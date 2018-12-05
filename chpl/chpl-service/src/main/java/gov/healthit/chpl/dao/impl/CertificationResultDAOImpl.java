@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
@@ -488,7 +487,8 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
                         + "from " + SCHEMA_NAME + ".certification_result cr " 
                         + "    inner join " + SCHEMA_NAME + ".certification_result_additional_software cras" 
                         + "        on cr.certification_result_id = cras.certification_result_id " 
-                        + "where cr.certified_product_id = :certifiedProductId"); 
+                        + "where cr.certified_product_id = :certifiedProductId "
+                        + "and NOT cras.deleted"); 
         
         query.setParameter("certifiedProductId", certifiedProductId);
         BigInteger count = (BigInteger) query.getSingleResult();
