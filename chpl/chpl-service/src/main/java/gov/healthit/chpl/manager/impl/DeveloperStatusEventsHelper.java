@@ -15,6 +15,8 @@ import gov.healthit.chpl.dto.DeveloperStatusEventPair;
  */
 public class DeveloperStatusEventsHelper {
 
+    private DeveloperStatusEventsHelper() {}
+
     /**
      * Determine if an event was added.
      * @param originalEvents - List<DeveloperStatusEventDTO>

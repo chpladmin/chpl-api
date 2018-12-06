@@ -17,6 +17,8 @@ public class UploadFileUtils {
     private static final String UPLOAD_2014 = "2014_V11_hasGAP.csv";
     private static final String UPLOAD_2015_V12 = "2015_Test_ICSA.csv";
 
+    private UploadFileUtils() {}
+
     public static MultipartFile getUploadFile(final String edition, final String version){
         ClassLoader classLoader = UploadFileUtils.class.getClassLoader();
         File file = null;
