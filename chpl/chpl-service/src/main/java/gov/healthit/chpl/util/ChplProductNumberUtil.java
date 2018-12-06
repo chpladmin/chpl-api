@@ -115,7 +115,7 @@ public class ChplProductNumberUtil {
      * @param certDateCode
      * @return String
      */
-    public String getChplProductNumber( final String year, final String testingLab, final String certBody,
+    public String getChplProductNumber(final String year, final String testingLab, final String certBody,
             final String vendorCode, final String productCode, final String versionCode, final String icsCode,
             final String addlSoftwareCode, final String certDateCode) {
 

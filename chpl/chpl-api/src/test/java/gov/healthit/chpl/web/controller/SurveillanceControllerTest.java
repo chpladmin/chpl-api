@@ -1897,7 +1897,7 @@ public class SurveillanceControllerTest {
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
             InvalidArgumentsException, ValidationException, CertificationBodyAccessException, UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException, EntityNotFoundException, AccessDeniedException, ObjectsMissingValidationException {
         SecurityContextHolder.getContext().setAuthentication(oncAndAcb);
-        List<Long> ids = new ArrayList<Long>(Arrays.asList( -3L, -4L, -5L, -6L, -7L, -8L, -9L, -20L, -21L, -22L));
+        List<Long> ids = new ArrayList<Long>(Arrays.asList(-3L, -4L, -5L, -6L, -7L, -8L, -9L, -20L, -21L, -22L));
         IdListContainer idList = new IdListContainer();
         idList.setIds(ids);
         // verify ids are in list of surveillances returned
@@ -1953,7 +1953,7 @@ public class SurveillanceControllerTest {
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
             InvalidArgumentsException, ValidationException, CertificationBodyAccessException, UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException, EntityNotFoundException, AccessDeniedException, ObjectsMissingValidationException {
         SecurityContextHolder.getContext().setAuthentication(oncAndAcb);
-        List<Long> ids = new ArrayList<Long>(Arrays.asList( -3L, -4L, -5L, -6L, -7L, -8L, -9L, -20L, -21L, -22L));
+        List<Long> ids = new ArrayList<Long>(Arrays.asList(-3L, -4L, -5L, -6L, -7L, -8L, -9L, -20L, -21L, -22L));
         IdListContainer idList = new IdListContainer();
         idList.setIds(ids);
         // verify ids are in list of surveillances returned
