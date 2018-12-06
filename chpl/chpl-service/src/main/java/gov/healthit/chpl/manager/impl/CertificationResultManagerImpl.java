@@ -135,13 +135,13 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             }
             toUpdate.setSuccessful(updated.isSuccess());
 
-            
-            if (toUpdate.getSuccessful() != null && toUpdate.getSuccessful().booleanValue() == false 
-                    && (!ObjectUtils.equals(orig.isG1Success(), updated.isG1Success()) 
+
+            if (toUpdate.getSuccessful() != null && !toUpdate.getSuccessful().booleanValue()
+                    && (!ObjectUtils.equals(orig.isG1Success(), updated.isG1Success())
                             || !ObjectUtils.equals(orig.isG2Success(), updated.isG2Success()))) {
                 toUpdate.setG1Success(updated.isG1Success());
                 toUpdate.setG2Success(updated.isG2Success());
-            } else if (toUpdate.getSuccessful() != null && toUpdate.getSuccessful().booleanValue() == true) {
+            } else if (toUpdate.getSuccessful() != null && toUpdate.getSuccessful().booleanValue()) {
                 toUpdate.setApiDocumentation(updated.getApiDocumentation());
                 toUpdate.setPrivacySecurityFramework(updated.getPrivacySecurityFramework());
                 toUpdate.setG1Success(updated.isG1Success());

@@ -33,11 +33,11 @@ public class InheritedCertificationStatusReviewer implements Reviewer {
     public void review(PendingCertifiedProductDTO listing) {
         Integer icsCodeInteger = productNumUtil.getIcsCode(listing.getUniqueId());
         if (listing.getIcs() != null) {
-            if (listing.getIcs().booleanValue() == true
+            if (listing.getIcs().booleanValue()
                     && (listing.getIcsParents() == null || listing.getIcsParents().size() == 0)) {
                 listing.getErrorMessages().add(
                         msgUtil.getMessage("listing.icsTrueAndNoParentsFound"));
-            } else if (listing.getIcs().booleanValue() == false && listing.getIcsParents() != null
+            } else if (!listing.getIcs().booleanValue() && listing.getIcsParents() != null
                     && listing.getIcsParents().size() > 0) {
                 listing.getErrorMessages().add(
                         msgUtil.getMessage("listing.icsFalseAndParentsFound"));

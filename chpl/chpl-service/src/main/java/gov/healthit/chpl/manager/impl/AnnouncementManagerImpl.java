@@ -95,9 +95,9 @@ public class AnnouncementManagerImpl extends ApplicationObjectSupport implements
             throws EntityRetrievalException, AccessDeniedException {
         AnnouncementDTO result =  announcementDAO.getById(id, includeDeleted);
         boolean isLoggedIn = Util.getCurrentUser() == null ? false : true;
-        if(result.getIsPublic().booleanValue() == false && !isLoggedIn) {
+        if (!result.getIsPublic().booleanValue() && !isLoggedIn) {
             String msg = String.format(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("announcement.accessDenied"), 
+                    new DefaultMessageSourceResolvable("announcement.accessDenied"),
                     LocaleContextHolder.getLocale()), id);
             throw new AccessDeniedException(msg);
         }
