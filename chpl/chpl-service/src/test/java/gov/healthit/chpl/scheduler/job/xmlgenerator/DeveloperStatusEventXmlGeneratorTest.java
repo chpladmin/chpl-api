@@ -73,26 +73,26 @@ public class DeveloperStatusEventXmlGeneratorTest {
                 DeveloperStatusType.Active.toString());
         DeveloperStatusEvent secondDse = getDeveloperStatusEvent(1L, 1534425862000L, 2L, "They did bad stuff.", 3L, 
                 DeveloperStatusType.UnderCertificationBanByOnc.toString());
-        
+
         List<DeveloperStatusEvent> list = new ArrayList<DeveloperStatusEvent>();
         list.add(firstDse);
         list.add(secondDse);
 
-        String expected = "<statusEvents>" +
-                "<statusEvent>"+
-                    "<developerId>1</developerId>" +
-                    "<id>1</id>" +
-                    "<status><id>1</id><status>Active</status></status>" +
-                    "<statusDate>" + sdf.format(firstDse.getStatusDate()) + "</statusDate>" +
-                "</statusEvent>" +
-                "<statusEvent>" +
-                    "<developerId>1</developerId>" +
-                    "<id>2</id>" +
-                    "<status><id>3</id><status>Under certification ban by ONC</status></status>" +
-                    "<statusDate>" + sdf.format(secondDse.getStatusDate()) + "</statusDate>" +
-                    "<reason>They did bad stuff.</reason>" +
-                "</statusEvent>" +
-            "</statusEvents>";
+        String expected = "<statusEvents>"
+                + "<statusEvent>"
+                +   "<developerId>1</developerId>"
+                +   "<id>1</id>"
+                +   "<status><id>1</id><status>Active</status></status>"
+                +   "<statusDate>" + sdf.format(firstDse.getStatusDate()) + "</statusDate>"
+                + "</statusEvent>"
+                + "<statusEvent>"
+                +   "<developerId>1</developerId>"
+                +   "<id>2</id>"
+                +   "<status><id>3</id><status>Under certification ban by ONC</status></status>"
+                +   "<statusDate>" + sdf.format(secondDse.getStatusDate()) + "</statusDate>"
+                +   "<reason>They did bad stuff.</reason>"
+                + "</statusEvent>"
+                + "</statusEvents>";
 
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
         StringWriter stringOut = new StringWriter();

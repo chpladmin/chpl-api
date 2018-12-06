@@ -132,7 +132,7 @@ public class PendingListingTestFunctionalityReviewerTest {
         pendingTfReviewer.review(listing);
 
         assertFalse(doesTestFunctionalityPracticeTypeErrorMessageExist(listing.getErrorMessages()));
-        assertFalse(doesTestFunctionalityCriterionErrorMessageExist(listing.getErrorMessages()));
+        assertFalse(doesTestFunctionalityCriterionMessageExist(listing.getWarningMessages()));
     }
 
     //Case 2: An invalid test functionality based on practice type
@@ -193,7 +193,7 @@ public class PendingListingTestFunctionalityReviewerTest {
         pendingTfReviewer.onApplicationEvent(null);
         pendingTfReviewer.review(listing);
 
-        assertTrue(doesTestFunctionalityCriterionErrorMessageExist(listing.getErrorMessages()));
+        assertTrue(doesTestFunctionalityCriterionMessageExist(listing.getWarningMessages()));
     }
 
     //A test functionality name that does not exist
@@ -239,8 +239,8 @@ public class PendingListingTestFunctionalityReviewerTest {
         return false;
     }
 
-    private Boolean doesTestFunctionalityCriterionErrorMessageExist(final Set<String> errorMessages) {
-        for (String error : errorMessages) {
+    private Boolean doesTestFunctionalityCriterionMessageExist(final Set<String> messages) {
+        for (String error : messages) {
             if (error.contains("In Criteria")
                     && error.contains("Test Functionality")
                     && error.contains("is for Criteria")

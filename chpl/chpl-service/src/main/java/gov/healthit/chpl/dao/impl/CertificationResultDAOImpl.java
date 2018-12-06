@@ -483,10 +483,12 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         // CertificationResultEntity
         // and CertificationResultAdditionalSoftwareEntity defined.
         Query query = entityManager.createNativeQuery(
-                "select count(cr.certification_result_id) " + "from " + SCHEMA_NAME + ".certification_result cr "
+                        "select count(cr.certification_result_id) "
+                        + "from " + SCHEMA_NAME + ".certification_result cr "
                         + "    inner join " + SCHEMA_NAME + ".certification_result_additional_software cras"
                         + "        on cr.certification_result_id = cras.certification_result_id "
-                        + "where cr.certified_product_id = :certifiedProductId");
+                        + "where cr.certified_product_id = :certifiedProductId "
+                        + "and NOT cras.deleted");
 
         query.setParameter("certifiedProductId", certifiedProductId);
         BigInteger count = (BigInteger) query.getSingleResult();
@@ -494,12 +496,12 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
     }
 
     /******************************************************
-     * Test Standard methods
+     * Test Standard methods.
      *
      *******************************************************/
 
     @Override
-    public List<CertificationResultTestStandardDTO> getTestStandardsForCertificationResult(Long certificationResultId) {
+    public List<CertificationResultTestStandardDTO> getTestStandardsForCertificationResult(final Long certificationResultId) {
 
         List<CertificationResultTestStandardEntity> entities = getTestStandardsForCertification(certificationResultId);
         List<CertificationResultTestStandardDTO> dtos = new ArrayList<CertificationResultTestStandardDTO>();
