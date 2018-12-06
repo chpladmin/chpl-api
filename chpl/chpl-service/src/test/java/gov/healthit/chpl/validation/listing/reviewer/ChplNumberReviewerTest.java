@@ -330,14 +330,14 @@ public class ChplNumberReviewerTest {
         try {
             Mockito.when(listingDao.getByChplUniqueId(ArgumentMatchers.anyString()))
             .thenReturn(null);
-        } catch(EntityRetrievalException ex) {}
+        } catch (EntityRetrievalException ex) { }
 
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         //the mock listing does not have additional software; 
         //add some to a criteria that was met.
         boolean addedSoftwareToOneCert = false;
-        for(CertificationResult cert : listing.getCertificationResults()) {
-            if(!addedSoftwareToOneCert && cert.isSuccess()) {
+        for (CertificationResult cert : listing.getCertificationResults()) {
+            if (!addedSoftwareToOneCert && cert.isSuccess()) {
                 CertificationResultAdditionalSoftware addSoft = new CertificationResultAdditionalSoftware();
                 addSoft.setCertificationResultId(cert.getId());
                 addSoft.setId(1L);
@@ -364,21 +364,21 @@ public class ChplNumberReviewerTest {
         try {
             Mockito.when(listingDao.getByChplUniqueId(ArgumentMatchers.anyString()))
             .thenReturn(new CertifiedProductDetailsDTO());
-            
+
             Mockito.doReturn(true)
             .when(certificationResultManager).getCertifiedProductHasAdditionalSoftware(ArgumentMatchers.anyLong());
-            
-        } catch(EntityRetrievalException ex) {}
+
+        } catch (EntityRetrievalException ex) { }
         Mockito.when(
                 certResultManager.getCertifiedProductHasAdditionalSoftware(ArgumentMatchers.anyLong()))
         .thenReturn(Boolean.TRUE);
-        
+
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         //the mock listing does not have additional software; 
         //add some to a criteria that was met.
         boolean addedSoftwareToOneCert = false;
-        for(CertificationResult cert : listing.getCertificationResults()) {
-            if(!addedSoftwareToOneCert && cert.isSuccess()) {
+        for (CertificationResult cert : listing.getCertificationResults()) {
+            if (!addedSoftwareToOneCert && cert.isSuccess()) {
                 CertificationResultAdditionalSoftware addSoft = new CertificationResultAdditionalSoftware();
                 addSoft.setCertificationResultId(cert.getId());
                 addSoft.setId(1L);
@@ -405,7 +405,7 @@ public class ChplNumberReviewerTest {
         try {
             Mockito.when(listingDao.getByChplUniqueId(ArgumentMatchers.anyString()))
             .thenReturn(null);
-        } catch(EntityRetrievalException ex) {}
+        } catch(EntityRetrievalException ex) { }
 
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         listing.setCertificationDate(System.currentTimeMillis());
@@ -420,13 +420,13 @@ public class ChplNumberReviewerTest {
         assertFalse(listing.getErrorMessages().contains(ICS_CODE_TRUE_NO_ICS_ERROR));
         assertFalse(hasDuplicateIdError(listing));
     }
-    
+
     @Test
     public void testCertificationDateChanged_IsDuplicate_HasError() {
         try {
             Mockito.when(listingDao.getByChplUniqueId(ArgumentMatchers.anyString()))
             .thenReturn(new CertifiedProductDetailsDTO());
-        } catch(EntityRetrievalException ex) {}
+        } catch (EntityRetrievalException ex) { }
 
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         listing.setCertificationDate(System.currentTimeMillis());

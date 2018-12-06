@@ -19,7 +19,7 @@ public class UploadFileUtils {
 
     private UploadFileUtils() {}
 
-    public static MultipartFile getUploadFile(final String edition, final String version){
+    public static MultipartFile getUploadFile(final String edition, final String version) {
         ClassLoader classLoader = UploadFileUtils.class.getClassLoader();
         File file = null;
         Path filePath = null;

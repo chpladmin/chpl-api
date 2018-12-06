@@ -53,7 +53,7 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
     public abstract TemplateColumnIndexMap getColumnIndexMap();
     public abstract String[] getCriteriaNames();
 
-    public String getErrorMessage(String errorField){
+    public String getErrorMessage(String errorField) {
         return String.format(
                 messageSource.getMessage(new DefaultMessageSourceResolvable(errorField),
                         LocaleContextHolder.getLocale()));

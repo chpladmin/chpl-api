@@ -91,7 +91,7 @@ public class FuzzyChoicesDAOImpl extends BaseDAOImpl implements FuzzyChoicesDAO 
             + "(fuzzy_choices_id = :entityId)";
 
         Query query = entityManager.createQuery(queryStr, FuzzyChoicesEntity.class);
-        query.setParameter("entityId", (type.ordinal()+1));
+        query.setParameter("entityId", (type.ordinal() + 1));
         List<FuzzyChoicesEntity> result = query.getResultList();
 
         if (result.size() == 1) {

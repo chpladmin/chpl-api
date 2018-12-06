@@ -598,12 +598,11 @@ public class CertifiedProductControllerTest {
             certifiedProductController.updateCertifiedProduct(listingUpdateRequest);
         } catch (InvalidArgumentsException e) {
             e.printStackTrace();
-        } 
-        catch (ValidationException e) {
+        } catch (ValidationException e) {
             assertNotNull(e);
             Boolean hasError = false;
-            for (String error : e.getErrorMessages()){
-                if (error.startsWith("Certification 170.315 (g)(4) contains Privacy and Security Framework")){
+            for (String error : e.getErrorMessages()) {
+                if (error.startsWith("Certification 170.315 (g)(4) contains Privacy and Security Framework")) {
                     hasError = true;
                 }
             }
@@ -723,15 +722,13 @@ public class CertifiedProductControllerTest {
         listingUpdateRequest.setListing(updateRequest);
         try {
             certifiedProductController.updateCertifiedProduct(listingUpdateRequest);
-        }
-        catch (InvalidArgumentsException e) {
+        } catch (InvalidArgumentsException e) {
             e.printStackTrace();
-        } 
-        catch (ValidationException e) {
+        } catch (ValidationException e) {
             assertNotNull(e);
             Boolean hasError = false;
-            for (String error : e.getErrorMessages()){
-                if (error.contains("Privacy and Security Framework")){
+            for (String error : e.getErrorMessages()) {
+                if (error.contains("Privacy and Security Framework")) {
                     hasError = true;
                 }
             }
@@ -830,8 +827,8 @@ public class CertifiedProductControllerTest {
         }
 
         Boolean hasError = false;
-        for (String error : pcpDTO.getErrorMessages()){
-            if (error.startsWith("Certification 170.314 (g)(4) contains Privacy and Security Framework value 'Approach 1 Approach 2'")){
+        for (String error : pcpDTO.getErrorMessages()) {
+            if (error.startsWith("Certification 170.314 (g)(4) contains Privacy and Security Framework value 'Approach 1 Approach 2'")) {
                 hasError = true;
             }
         }
@@ -929,8 +926,8 @@ public class CertifiedProductControllerTest {
         }
 
         Boolean hasError = false;
-        for (String error : pcpDTO.getErrorMessages()){
-            if (error.contains("Privacy and Security Framework")){
+        for (String error : pcpDTO.getErrorMessages()) {
+            if (error.contains("Privacy and Security Framework")) {
                 hasError = true;
             }
         }
@@ -1028,8 +1025,8 @@ public class CertifiedProductControllerTest {
         }
 
         Boolean hasError = false;
-        for (String error : pcpDTO.getErrorMessages()){
-            if (error.contains("Privacy and Security Framework")){
+        for (String error : pcpDTO.getErrorMessages()) {
+            if (error.contains("Privacy and Security Framework")) {
                 hasError = true;
             }
         }
@@ -1052,9 +1049,9 @@ public class CertifiedProductControllerTest {
         Boolean hasError = false;
         try {
             certifiedProductController.rejectPendingCertifiedProduct(-1L);
-        } catch (ObjectMissingValidationException e){
-            for (String error : e.getErrorMessages()){
-                if (error.contains("has already been confirmed or rejected")){
+        } catch (ObjectMissingValidationException e) {
+            for (String error : e.getErrorMessages()) {
+                if (error.contains("has already been confirmed or rejected")) {
                     hasError = true;
                 }
             }

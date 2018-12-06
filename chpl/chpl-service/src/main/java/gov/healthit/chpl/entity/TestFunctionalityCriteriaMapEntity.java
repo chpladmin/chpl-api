@@ -22,7 +22,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "test_functionality_criteria_map")
-public class TestFunctionalityCriteriaMapEntity implements Serializable{
+public class TestFunctionalityCriteriaMapEntity implements Serializable {
     private static final long serialVersionUID = 6446486138564063907L;
 
     @Id
@@ -35,7 +35,7 @@ public class TestFunctionalityCriteriaMapEntity implements Serializable{
     @OneToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "criteria_id", insertable = false, updatable = false)
     private CertificationCriterionEntity criteria;
-    
+
     @Basic(optional = false)
     @OneToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "test_functionality_id", insertable = false, updatable = false)

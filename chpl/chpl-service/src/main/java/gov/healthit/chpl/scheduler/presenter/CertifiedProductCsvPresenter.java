@@ -140,14 +140,14 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         }
         result.add(data.getDeveloper().getWebsite() == null
                     ? "" : data.getDeveloper().getWebsite());
-        if(data.getProduct().getContact() != null) {
+        if (data.getProduct().getContact() != null) {
                 result.add(data.getProduct().getContact().getFullName() == null
                         ? "" : data.getProduct().getContact().getFullName());
                 result.add(data.getProduct().getContact().getEmail() == null
                         ? "" : data.getProduct().getContact().getEmail());
                 result.add(data.getProduct().getContact().getPhoneNumber() == null
                         ? "" : data.getProduct().getContact().getPhoneNumber());
-        } else if (data.getDeveloper().getContact() != null){
+        } else if (data.getDeveloper().getContact() != null) {
             result.add(data.getDeveloper().getContact().getFullName() == null
                         ? "" : data.getDeveloper().getContact().getFullName());
             result.add(data.getDeveloper().getContact().getEmail() == null

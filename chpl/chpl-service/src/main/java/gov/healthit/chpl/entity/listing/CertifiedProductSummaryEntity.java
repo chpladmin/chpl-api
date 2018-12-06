@@ -11,7 +11,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "certified_product_summary")
-public class CertifiedProductSummaryEntity implements Serializable{
+public class CertifiedProductSummaryEntity implements Serializable {
     private static final long serialVersionUID = -7006206379019745873L;
 
     @Id

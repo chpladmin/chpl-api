@@ -583,17 +583,17 @@ public class CertificationResultManagerImpl implements CertificationResultManage
         }
 
         numChanges = ucdToAdd.size() + idsToRemove.size();
-        
+
         List<String> fuzzyQmsChoices = fuzzyChoicesDao.getByType(FuzzyType.UCD_PROCESS).getChoices();
         for (UcdProcess toAdd : ucdToAdd) {
-            if(!fuzzyQmsChoices.contains(toAdd.getName())){
+            if(!fuzzyQmsChoices.contains(toAdd.getName())) {
                 fuzzyQmsChoices.add(toAdd.getName());
                 FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
                 dto.setFuzzyType(FuzzyType.UCD_PROCESS);
                 dto.setChoices(fuzzyQmsChoices);
                 fuzzyChoicesDao.update(dto);
             }
-            
+
             CertificationResultUcdProcessDTO toAddDto = new CertificationResultUcdProcessDTO();
             toAddDto.setCertificationResultId(certResult.getId());
             toAddDto.setUcdProcessId(toAdd.getId());

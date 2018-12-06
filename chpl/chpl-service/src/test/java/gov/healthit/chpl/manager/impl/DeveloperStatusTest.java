@@ -103,22 +103,22 @@ public class DeveloperStatusTest {
     }
 
     @Test
-    public void testDeveloperStatusChange_ActiveToSuspended_NoReasonRequired() 
-        throws EntityCreationException, EntityRetrievalException, 
+    public void testDeveloperStatusChange_ActiveToSuspended_NoReasonRequired()
+        throws EntityCreationException, EntityRetrievalException,
         JsonProcessingException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         DeveloperDTO activeDeveloper = createDeveloper(1L, "0001", "Test Developer");
         try {
             Mockito.when(devDao.getById(ArgumentMatchers.anyLong()))
             .thenReturn(activeDeveloper);
-        } catch(EntityRetrievalException ex) {}
+        } catch (EntityRetrievalException ex) { }
 
         DeveloperDTO activeToSuspendedDeveloper = createDeveloper(1L, "0001", "Test Developer");
         activeToSuspendedDeveloper.getStatusEvents().add(
-                createStatusEvent(2L, activeToSuspendedDeveloper.getId(), 
+                createStatusEvent(2L, activeToSuspendedDeveloper.getId(),
                         DeveloperStatusType.SuspendedByOnc, new Date(), null));
 
-        DeveloperDTO updatedDeveloper = 
+        DeveloperDTO updatedDeveloper =
                 developerManager.update(activeToSuspendedDeveloper);
         //the update was allowed
         assertNotNull(updatedDeveloper);
@@ -126,14 +126,14 @@ public class DeveloperStatusTest {
 
     @Test(expected = MissingReasonException.class)
     public void testDeveloperStatusChange_ActiveToBannedNullReason_ThrowsException()
-            throws EntityCreationException, EntityRetrievalException, 
+            throws EntityCreationException, EntityRetrievalException,
             JsonProcessingException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         DeveloperDTO activeDeveloper = createDeveloper(1L, "0001", "Test Developer");
         try {
             Mockito.when(devDao.getById(ArgumentMatchers.anyLong()))
             .thenReturn(activeDeveloper);
-        } catch(EntityRetrievalException ex) {}
+        } catch (EntityRetrievalException ex) { }
 
         DeveloperDTO activeToBannedDeveloper = createDeveloper(1L, "0001", "Test Developer");
         activeToBannedDeveloper.getStatusEvents().add(
@@ -161,12 +161,12 @@ public class DeveloperStatusTest {
         try {
             Mockito.when(devDao.getById(ArgumentMatchers.anyLong()))
             .thenReturn(activeDeveloperWithStatusHistory);
-        } catch(EntityRetrievalException ex) {}
+        } catch(EntityRetrievalException ex) { }
 
         activeDeveloperWithStatusHistory.setName("New Name");
         developerManager.update(activeDeveloperWithStatusHistory);
     }
-    
+
     @Test(expected = MissingReasonException.class)
     public void testDeveloperStatusChange_ActiveToBannedEmptyReason_ThrowsException()
             throws EntityCreationException, EntityRetrievalException, 
@@ -176,7 +176,7 @@ public class DeveloperStatusTest {
         try {
             Mockito.when(devDao.getById(ArgumentMatchers.anyLong()))
             .thenReturn(activeDeveloper);
-        } catch(EntityRetrievalException ex) {}
+        } catch(EntityRetrievalException ex) { }
 
         DeveloperDTO activeToBannedDeveloper = createDeveloper(1L, "0001", "Test Developer");
         activeToBannedDeveloper.getStatusEvents().add(
@@ -195,14 +195,14 @@ public class DeveloperStatusTest {
         try {
             Mockito.when(devDao.getById(ArgumentMatchers.anyLong()))
             .thenReturn(activeDeveloper);
-        } catch(EntityRetrievalException ex) {}
+        } catch (EntityRetrievalException ex) { }
 
         DeveloperDTO activeToSuspendedDeveloper = createDeveloper(1L, "0001", "Test Developer");
         activeToSuspendedDeveloper.getStatusEvents().add(
-                createStatusEvent(2L, activeToSuspendedDeveloper.getId(), 
+                createStatusEvent(2L, activeToSuspendedDeveloper.getId(),
                         DeveloperStatusType.UnderCertificationBanByOnc, new Date(), "A Reason"));
 
-        DeveloperDTO updatedDeveloper = 
+        DeveloperDTO updatedDeveloper =
                 developerManager.update(activeToSuspendedDeveloper);
         //the update was allowed
         assertNotNull(updatedDeveloper);

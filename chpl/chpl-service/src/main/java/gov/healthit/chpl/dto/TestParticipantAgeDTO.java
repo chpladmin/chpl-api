@@ -5,9 +5,9 @@ import java.util.Date;
 
 import gov.healthit.chpl.entity.TestParticipantAgeEntity;
 
-public class TestParticipantAgeDTO implements Serializable{
+public class TestParticipantAgeDTO implements Serializable {
     private static final long serialVersionUID = -7369729569984688343L;
-    
+
     private Long id;
     private String age;
     private Date creationDate;
@@ -16,12 +16,10 @@ public class TestParticipantAgeDTO implements Serializable{
     private Long lastModifiedUser;
 
     /**
-     * Default constructor
+     * Default constructor.
      */
-    public TestParticipantAgeDTO() {
-        
-    }
-    
+    public TestParticipantAgeDTO() {}
+
     public TestParticipantAgeDTO(TestParticipantAgeEntity entity) {
         this.id = entity.getId();
         this.age = entity.getAge();
@@ -30,7 +28,7 @@ public class TestParticipantAgeDTO implements Serializable{
         this.lastModifiedDate = entity.getLastModifiedDate();
         this.lastModifiedUser = entity.getLastModifiedUser();
     }
-    
+
     public Long getId() {
         return id;
     }

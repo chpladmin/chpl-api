@@ -131,7 +131,7 @@ public class Validator2014 extends Validator {
         if (isInpatientCqmsValid()) {
             valid = true;
         }
-        if (!valid){
+        if (!valid) {
             System.out.println(valid);
             if (this.counts.get("cqmsInpatientRequiredMet") < this.counts.get("cqmsInpatientRequired")) {
                 String needed = String.valueOf((this.counts.get("cqmsInpatientRequired") - inpatientCqmCount));

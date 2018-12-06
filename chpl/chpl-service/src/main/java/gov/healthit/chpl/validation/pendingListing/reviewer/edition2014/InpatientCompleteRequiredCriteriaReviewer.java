@@ -40,7 +40,7 @@ public class InpatientCompleteRequiredCriteriaReviewer implements Reviewer {
         }
     }
     
-    private boolean checkA1OrA18A19A20(final PendingCertifiedProductDTO listing){
+    private boolean checkA1OrA18A19A20(final PendingCertifiedProductDTO listing) {
         boolean hasA1 = false;
         boolean hasA18 = false;
         boolean hasA19 = false;
@@ -68,7 +68,7 @@ public class InpatientCompleteRequiredCriteriaReviewer implements Reviewer {
         return true;
     }
     
-    private boolean checkB1B2B8H1(final PendingCertifiedProductDTO listing){
+    private boolean checkB1B2B8H1(final PendingCertifiedProductDTO listing) {
         // (b)(1), (b)(2)**
         // (in replacement for (b)(1) and (b)(2) -
         // (b)(1) and (b)(8), OR

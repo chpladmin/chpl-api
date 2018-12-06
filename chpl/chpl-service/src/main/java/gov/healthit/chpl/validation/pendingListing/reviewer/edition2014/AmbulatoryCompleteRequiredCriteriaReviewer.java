@@ -40,7 +40,7 @@ public class AmbulatoryCompleteRequiredCriteriaReviewer implements Reviewer {
         }
     }
     
-    private boolean checkA1OrA18A19A20(final PendingCertifiedProductDTO listing){
+    private boolean checkA1OrA18A19A20(final PendingCertifiedProductDTO listing) {
         boolean hasA1 = false;
         boolean hasA18 = false;
         boolean hasA19 = false;
@@ -69,7 +69,7 @@ public class AmbulatoryCompleteRequiredCriteriaReviewer implements Reviewer {
         return true;
     }
     
-    private boolean checkB1B2B8H1(final PendingCertifiedProductDTO listing){
+    private boolean checkB1B2B8H1(final PendingCertifiedProductDTO listing) {
         // (b)(1), (b)(2)**
         // (in replacement for (b)(1) and (b)(2) -
         // (b)(1) and (b)(8), OR
@@ -81,7 +81,7 @@ public class AmbulatoryCompleteRequiredCriteriaReviewer implements Reviewer {
         boolean hasB2 = false;
         boolean hasB8 = false;
         boolean hasH1 = false;
-        for (PendingCertificationResultDTO certCriteria : listing.getCertificationCriterion()){
+        for (PendingCertificationResultDTO certCriteria : listing.getCertificationCriterion()) {
             if (certCriteria.getNumber().equals("170.314 (b)(1)") && certCriteria.getMeetsCriteria()) {
                 hasB1 = true;
             }

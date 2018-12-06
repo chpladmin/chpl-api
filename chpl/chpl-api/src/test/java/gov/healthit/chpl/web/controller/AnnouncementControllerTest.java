@@ -46,6 +46,7 @@ import gov.healthit.chpl.exception.ValidationException;
 @DatabaseSetup("classpath:data/testData.xml")
 public class AnnouncementControllerTest {
     private static JWTAuthenticatedUser adminUser;
+    private static final long ONE_DAY_MILLIS = 1000 * 60 * 60 * 24;
 
     @Autowired
     Environment env;
@@ -81,7 +82,7 @@ public class AnnouncementControllerTest {
             EntityRetrievalException, UserRetrievalException, InvalidArgumentsException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         Announcement toCreate = new Announcement();
-        toCreate.setEndDate(new Date(System.currentTimeMillis() + (1000*60*60*24)));
+        toCreate.setEndDate(new Date(System.currentTimeMillis() + ONE_DAY_MILLIS));
         toCreate.setStartDate(new Date());
         toCreate.setIsPublic(Boolean.TRUE);
         toCreate.setText("Test");
@@ -102,7 +103,7 @@ public class AnnouncementControllerTest {
             EntityRetrievalException, UserRetrievalException, InvalidArgumentsException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         Announcement toCreate = new Announcement();
-        toCreate.setEndDate(new Date(System.currentTimeMillis() + (1000*60*60*24)));
+        toCreate.setEndDate(new Date(System.currentTimeMillis() + ONE_DAY_MILLIS));
         toCreate.setStartDate(new Date());
         toCreate.setIsPublic(Boolean.FALSE);
         toCreate.setText("Test");

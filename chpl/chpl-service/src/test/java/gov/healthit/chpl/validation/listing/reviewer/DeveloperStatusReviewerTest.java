@@ -63,8 +63,8 @@ public class DeveloperStatusReviewerTest {
         try {
             Mockito.when(devDao.getById(ArgumentMatchers.anyLong()))
         .thenReturn(createDeveloperDTO(DeveloperStatusType.Active));
-        } catch(EntityRetrievalException ex) {}
-        
+        } catch (EntityRetrievalException ex) { }
+
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         devStatusReviewer.review(listing);
         assertFalse(listing.getErrorMessages().contains(NO_DEV_STATUS_ERROR));
@@ -72,14 +72,14 @@ public class DeveloperStatusReviewerTest {
         assertFalse(listing.getErrorMessages().contains(DEV_BANNED_ERROR));
         assertFalse(listing.getErrorMessages().contains(NO_DEV_FOUND_ERROR));
     }
-    
+
     @Test
     public void testSuspendedDeveloper_HasError() {
         try {
             Mockito.when(devDao.getById(ArgumentMatchers.anyLong()))
         .thenReturn(createDeveloperDTO(DeveloperStatusType.SuspendedByOnc));
-        } catch(EntityRetrievalException ex) {}
-        
+        } catch (EntityRetrievalException ex) { }
+
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         devStatusReviewer.review(listing);
         assertFalse(listing.getErrorMessages().contains(NO_DEV_STATUS_ERROR));
@@ -93,7 +93,7 @@ public class DeveloperStatusReviewerTest {
         try {
             Mockito.when(devDao.getById(ArgumentMatchers.anyLong()))
         .thenReturn(createDeveloperDTO(DeveloperStatusType.UnderCertificationBanByOnc));
-        } catch(EntityRetrievalException ex) {}
+        } catch (EntityRetrievalException ex) { }
 
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         devStatusReviewer.review(listing);
@@ -108,8 +108,8 @@ public class DeveloperStatusReviewerTest {
         try {
             Mockito.when(devDao.getById(ArgumentMatchers.anyLong()))
         .thenReturn(null);
-        } catch(EntityRetrievalException ex) {}
-        
+        } catch (EntityRetrievalException ex) { }
+
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         devStatusReviewer.review(listing);
         assertFalse(listing.getErrorMessages().contains(NO_DEV_STATUS_ERROR));

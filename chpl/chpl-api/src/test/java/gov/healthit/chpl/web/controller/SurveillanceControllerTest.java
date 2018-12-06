@@ -2037,7 +2037,7 @@ public class SurveillanceControllerTest {
         // try to delete already deleted pending surveillance
         try {
             result = surveillanceController.rejectPendingSurveillance(id);
-        } catch (ObjectMissingValidationException ex){
+        } catch (ObjectMissingValidationException ex) {
             assertTrue(ex.getObjectId() != null); // CHPL Product ID
             assertTrue(ex.getContact() != null); // contact info of last modified user
             assertTrue(ex.getStartDate() != null); // Pending Surveillance start date

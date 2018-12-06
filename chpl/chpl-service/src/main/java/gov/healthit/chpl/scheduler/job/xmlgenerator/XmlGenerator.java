@@ -12,7 +12,7 @@ public class XmlGenerator {
      */
     public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
 
-    private XmlGenerator() {}
+    protected XmlGenerator() {}
 
     public static void createSimpleElement(final Long value, final String nodeName,
             final XMLStreamWriter sw) throws XMLStreamException {

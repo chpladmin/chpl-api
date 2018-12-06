@@ -103,7 +103,7 @@ public class InheritedCertificationStatusReviewerTest {
         CertifiedProduct parent = new CertifiedProduct();
         parent.setCertificationDate(listing.getCertificationDate() - 1);
         parent.setEdition(listing.getCertificationEdition().get("name").toString());
-        parent.setId(listing.getId()-1);
+        parent.setId(listing.getId() - 1);
         String parentChplId = mockUtil.getChangedListingId(
                 listing.getChplProductNumber(), CertifiedProductDTO.ICS_CODE_INDEX, "00");
         parent.setChplProductNumber(parentChplId);
@@ -204,7 +204,7 @@ public class InheritedCertificationStatusReviewerTest {
         CertifiedProduct parent = new CertifiedProduct();
         parent.setCertificationDate(listing.getCertificationDate() - 1);
         parent.setEdition(listing.getCertificationEdition().get("name").toString());
-        parent.setId(listing.getId()-1);
+        parent.setId(listing.getId() - 1);
         String parentChplId = mockUtil.getChangedListingId(
                 listing.getChplProductNumber(), CertifiedProductDTO.ICS_CODE_INDEX, "00");
         parentChplId = mockUtil.getChangedListingId(
@@ -244,7 +244,7 @@ public class InheritedCertificationStatusReviewerTest {
         CertifiedProduct parent = new CertifiedProduct();
         parent.setCertificationDate(listing.getCertificationDate() - 1);
         parent.setEdition(listing.getCertificationEdition().get("name").toString());
-        parent.setId(listing.getId()-1);
+        parent.setId(listing.getId() - 1);
         String parentChplId = mockUtil.getChangedListingId(
                 listing.getChplProductNumber(), CertifiedProductDTO.ICS_CODE_INDEX, "02");
         parent.setChplProductNumber(parentChplId);
