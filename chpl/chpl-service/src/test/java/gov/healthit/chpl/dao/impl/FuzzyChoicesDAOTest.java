@@ -3,7 +3,6 @@ package gov.healthit.chpl.dao.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.FuzzyChoicesDAO;
@@ -11,6 +10,10 @@ import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.dto.FuzzyChoicesDTO;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
