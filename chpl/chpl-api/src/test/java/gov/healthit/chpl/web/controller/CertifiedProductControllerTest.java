@@ -142,15 +142,15 @@ public class CertifiedProductControllerTest {
      * retired test tool = true
      * Inherited Certification Status false(unchecked) and the user sets the CHPL Product Number's ICS to 0
      * Then the API returns an error because there is no mismatch between Certification Status and CHPL Product Number ICS
-     * 
+     *
      * 4. 2014 Certification Edition + true Certification Status + false ICS = returns warning (mismatch)
      * * When the user tries to update a 2014 Certified Product with the following:
      * existing ics = true
      * retired test tool = true
      * Inherited Certification Status true(checked) and the user sets the CHPL Product Number's ICS to 0
      * Then the API returns a warning because Inherited Certification Status and CHPL Product Number ICS are mismatched
-     * @throws IOException 
-     * @throws JSONException 
+     * @throws IOException
+     * @throws JSONException
      */
     @Transactional
     @Rollback(true)
@@ -353,9 +353,9 @@ public class CertifiedProductControllerTest {
      * retired test tool = true
      * Inherited Certification Status true(checked) and the user sets the CHPL Product Number's ICS to 0
      * Then the API returns a warning because Inherited Certification Status and CHPL Product Number ICS are mismatched
-     * @throws IOException 
-     * @throws ParseException 
-     * @throws JSONException 
+     * @throws IOException
+     * @throws ParseException
+     * @throws JSONException
      */
     @Transactional
     @Rollback(true)
@@ -504,9 +504,9 @@ public class CertifiedProductControllerTest {
      * WHEN they view their pending products
      * THEN they should see errors if any privacy and security framework values do not match one of "Approach 1", "Approach 2", "Approach 1;Approach 2"
      * (Note: Validation should be generous with case and whitespace)
-     * @throws IOException 
-     * @throws ValidationException 
-     * @throws JSONException 
+     * @throws IOException
+     * @throws ValidationException
+     * @throws JSONException
      */
     @Transactional
     @Rollback(true)
@@ -611,15 +611,15 @@ public class CertifiedProductControllerTest {
     }
 
     /** 
-     * GIVEN A user edits a certified product with a privacy and security framework 
+     * GIVEN A user edits a certified product with a privacy and security framework
      * value of " Approach 1 ,  Approach 2 "
      * WHEN they view their pending products
      * THEN the security framework value is formatted to remove whitespaces
-     * (Note: Validation should be generous with case and whitespace)
-     * @throws IOException 
-     * @throws ValidationException 
-     * @throws InvalidArgumentsException 
-     * @throws JSONException 
+     * (Note: Validation should be generous with case and whitespace).
+     * @throws IOException
+     * @throws ValidationException
+     * @throws InvalidArgumentsException
+     * @throws JSONException
      */
     @Transactional
     @Rollback(true)
@@ -737,14 +737,14 @@ public class CertifiedProductControllerTest {
 
     }
 
-    /** 
+    /**
      * GIVEN A user edits a certified product
      * WHEN they view their pending products
      * THEN they should see errors if any privacy and security framework values do not match one of "Approach 1", "Approach 2", "Approach 1;Approach 2"
      * (Note: Validation should be generous with case and whitespace)
-     * @throws IOException 
-     * @throws ParseException 
-     * @throws JSONException 
+     * @throws IOException
+     * @throws ParseException
+     * @throws JSONException
      */
     @Transactional
     @Rollback(true)
@@ -835,15 +835,15 @@ public class CertifiedProductControllerTest {
         assertTrue(hasError);
     }
 
-    /** 
+    /**
      * GIVEN A user edits a certified product
      * WHEN they view their pending products
      * WHEN the user edits the privacy and security framework value to be 'Approach 1, Approach 2'
      * THEN they should see no error for the privacy and security framework value
      * (Note: Validation should be generous with case and whitespace)
-     * @throws IOException 
-     * @throws ParseException 
-     * @throws JSONException 
+     * @throws IOException
+     * @throws ParseException
+     * @throws JSONException
      */
     @Transactional
     @Rollback(true)
@@ -934,15 +934,15 @@ public class CertifiedProductControllerTest {
         assertFalse(hasError);
     }
 
-    /** 
+    /**
      * GIVEN A user edits a certified product
      * WHEN they view their pending products
      * WHEN the user edits the privacy and security framework value to be ' Approach 1 ,  Approach 2 '
      * THEN they should see no error for the privacy and security framework value
-     * (Note: Validation should be generous with case and whitespace)
-     * @throws IOException 
-     * @throws ParseException 
-     * @throws JSONException 
+     * (Note: Validation should be generous with case and whitespace).
+     * @throws IOException
+     * @throws ParseException
+     * @throws JSONException
      */
     @Transactional
     @Rollback(true)
@@ -1131,12 +1131,12 @@ public class CertifiedProductControllerTest {
         assertTrue(hasError);
     }
 
-    /** 
+    /**
      * Given that a user with ROLE_ADMIN selects a Certified Product to view on the CHPL
      * When the UI calls the API at /certified_products/{certifiedProductId}/details
-     * Then the API returns the Certified Product Details
-     * @throws IOException 
-     * @throws JSONException 
+     * Then the API returns the Certified Product Details.
+     * @throws IOException
+     * @throws JSONException
      */
     @Transactional
     @Test
