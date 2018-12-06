@@ -100,7 +100,7 @@ public class ActivityManagerImpl implements ActivityManager {
             Object newData, String reason) throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
         this.addActivity(concept, objectId, activityDescription, originalData, newData);
     }
-    
+
     @Override
     @Transactional
     public void addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
@@ -224,7 +224,7 @@ public class ActivityManagerImpl implements ActivityManager {
         }
         return events;
     }
-    
+
     /**
      * Get activity only for a specific public announcement.
      * This will only return activity for the announcement if the isPublic flag
@@ -243,13 +243,13 @@ public class ActivityManagerImpl implements ActivityManager {
         }
         return events;
     }
-    
+
     @Override
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<ActivityEvent> getApiKeyActivity(Date startDate,
             Date endDate) throws JsonParseException, IOException {
-        return getActivityForConcept(ActivityConcept.ACTIVITY_CONCEPT_API_KEY, 
+        return getActivityForConcept(ActivityConcept.ACTIVITY_CONCEPT_API_KEY,
                 startDate, endDate);
     }
 
@@ -272,7 +272,7 @@ public class ActivityManagerImpl implements ActivityManager {
     @Override
     @Transactional
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
-    public List<ActivityEvent> getAcbActivity(List<CertificationBodyDTO> acbs, 
+    public List<ActivityEvent> getAcbActivity(List<CertificationBodyDTO> acbs 
             Date startDate, Date endDate) throws JsonParseException, IOException {
 
         List<ActivityDTO> acbActivity = activityDAO.findAcbActivity(acbs, startDate, endDate);
@@ -374,11 +374,11 @@ public class ActivityManagerImpl implements ActivityManager {
     @Override
     @Transactional
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB', 'ROLE_ATL', 'ROLE_CMS_STAFF')")
-    public List<ActivityEvent> getUserActivity(Set<Long> userIds, 
+    public List<ActivityEvent> getUserActivity(Set<Long> userIds,
             Date startDate, Date endDate) throws JsonParseException, IOException {
         List<Long> userIdList = new ArrayList<Long>();
         userIdList.addAll(userIds);
-        List<ActivityDTO> userActivity = 
+        List<ActivityDTO> userActivity =
                 activityDAO.findUserActivity(userIdList, startDate, endDate);
 
         List<ActivityEvent> events = new ArrayList<ActivityEvent>();

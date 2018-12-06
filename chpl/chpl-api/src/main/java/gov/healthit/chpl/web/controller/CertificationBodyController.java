@@ -141,15 +141,15 @@ public class CertificationBodyController {
             EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
         //Get the ACB as it is currently in the database to find out if
         //the retired flag was changed.
-        //Retirement and un-retirement is done as a separate manager action because 
+        //Retirement and un-retirement is done as a separate manager action because
         //security is different from normal ACB updates - only admins are allowed
         //whereas an ACB admin can update other info
         CertificationBodyDTO existingAcb = acbManager.getById(updatedAcb.getId());
-        if(existingAcb.isRetired() != updatedAcb.isRetired() && updatedAcb.isRetired()) {
+        if (existingAcb.isRetired() != updatedAcb.isRetired() && updatedAcb.isRetired()) {
             //we are retiring this ACB - no other updates can happen
             acbManager.retire(updatedAcb.getId());
         } else {
-            if(existingAcb.isRetired() != updatedAcb.isRetired() && !updatedAcb.isRetired()) {
+            if (existingAcb.isRetired() != updatedAcb.isRetired() && !updatedAcb.isRetired()) {
                 //unretire the ACB
                 acbManager.unretire(updatedAcb.getId());
             }
@@ -162,7 +162,7 @@ public class CertificationBodyController {
                 throw new InvalidArgumentsException("A website is required to update the certification body");
             }
             toUpdate.setWebsite(updatedAcb.getWebsite());
-    
+
             if (updatedAcb.getAddress() == null) {
                 throw new InvalidArgumentsException("An address is required to update the certification body");
             }

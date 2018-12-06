@@ -87,7 +87,7 @@ public class Edition2015ListingValidator extends Validator {
     @Autowired
     @Qualifier("urlReviewer")
     private UrlReviewer urlReviewer;
-    
+
     @Autowired
     @Qualifier("testFunctionality2015Reviewer")
     private TestFunctionality2015Reviewer testFunctionalityReviewer;

@@ -32,7 +32,7 @@ public class NonconformityTypeStatisticsDAOImpl extends BaseDAOImpl implements N
 
         return dtos;
     }
-    
+
     @Override
     @Transactional
     public void create(NonconformityTypeStatisticsDTO dto) {
@@ -59,7 +59,7 @@ public class NonconformityTypeStatisticsDAOImpl extends BaseDAOImpl implements N
         entityManager.persist(entity);
         entityManager.flush();
     }
-    
+
     @Override
     @Transactional
     public void deleteAllOldNonConformityStatistics() throws EntityRetrievalException {

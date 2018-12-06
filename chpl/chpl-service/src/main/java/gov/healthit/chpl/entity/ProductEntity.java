@@ -91,7 +91,7 @@ public class ProductEntity implements Serializable {
 
     /**
      * Return the value associated with the column: creationDate.
-     * 
+     *
      * @return A Date object (this.creationDate)
      */
     public Date getCreationDate() {
@@ -100,7 +100,7 @@ public class ProductEntity implements Serializable {
 
     /**
      * Set the value related to the column: creationDate.
-     * 
+     *
      * @param creationDate
      *            the creationDate value you wish to set
      */
@@ -110,7 +110,7 @@ public class ProductEntity implements Serializable {
 
     /**
      * Return the value associated with the column: deleted.
-     * 
+     *
      * @return A Boolean object (this.deleted)
      */
     public Boolean isDeleted() {
@@ -119,7 +119,7 @@ public class ProductEntity implements Serializable {
 
     /**
      * Set the value related to the column: deleted.
-     * 
+     *
      * @param deleted
      *            the deleted value you wish to set
      */
@@ -129,7 +129,7 @@ public class ProductEntity implements Serializable {
 
     /**
      * Return the value associated with the column: id.
-     * 
+     *
      * @return A Long object (this.id)
      */
     public Long getId() {
@@ -138,7 +138,7 @@ public class ProductEntity implements Serializable {
 
     /**
      * Set the value related to the column: id.
-     * 
+     *
      * @param id
      *            the id value you wish to set
      */
@@ -148,7 +148,7 @@ public class ProductEntity implements Serializable {
 
     /**
      * Return the value associated with the column: lastModifiedDate.
-     * 
+     *
      * @return A Date object (this.lastModifiedDate)
      */
     public Date getLastModifiedDate() {
@@ -157,7 +157,7 @@ public class ProductEntity implements Serializable {
 
     /**
      * Set the value related to the column: lastModifiedDate.
-     * 
+     *
      * @param lastModifiedDate
      *            the lastModifiedDate value you wish to set
      */
@@ -167,7 +167,7 @@ public class ProductEntity implements Serializable {
 
     /**
      * Return the value associated with the column: lastModifiedUser.
-     * 
+     *
      * @return A Long object (this.lastModifiedUser)
      */
     public Long getLastModifiedUser() {
@@ -177,7 +177,7 @@ public class ProductEntity implements Serializable {
 
     /**
      * Set the value related to the column: lastModifiedUser.
-     * 
+     *
      * @param lastModifiedUser
      *            the lastModifiedUser value you wish to set
      */
@@ -187,7 +187,7 @@ public class ProductEntity implements Serializable {
 
     /**
      * Return the value associated with the column: name.
-     * 
+     *
      * @return A String object (this.name)
      */
     public String getName() {
@@ -197,7 +197,7 @@ public class ProductEntity implements Serializable {
 
     /**
      * Set the value related to the column: name.
-     * 
+     *
      * @param name
      *            the name value you wish to set
      */
@@ -207,7 +207,7 @@ public class ProductEntity implements Serializable {
 
     /**
      * Return the value associated with the column: productVersion.
-     * 
+     *
      * @return A Set&lt;ProductVersion&gt; object (this.productVersion)
      */
     public Set<ProductVersionEntity> getProductVersions() {
@@ -217,7 +217,7 @@ public class ProductEntity implements Serializable {
 
     /**
      * Set the value related to the column: productVersion.
-     * 
+     *
      * @param productVersion
      *            the productVersion value you wish to set
      */
@@ -227,7 +227,7 @@ public class ProductEntity implements Serializable {
 
     /**
      * Return the value associated with the column: reportFileLocation.
-     * 
+     *
      * @return A String object (this.reportFileLocation)
      */
     public String getReportFileLocation() {
@@ -237,7 +237,7 @@ public class ProductEntity implements Serializable {
 
     /**
      * Set the value related to the column: reportFileLocation.
-     * 
+     *
      * @param reportFileLocation
      *            the reportFileLocation value you wish to set
      */
@@ -247,7 +247,7 @@ public class ProductEntity implements Serializable {
 
     /**
      * Return the value associated with the column: developer.
-     * 
+     *
      * @return A Developer object (this.developer)
      */
     public Long getDeveloperId() {

@@ -54,9 +54,8 @@ public class CertificationResultRules {
         dbf.setExpandEntityReferences(true);
         dbf.setIgnoringComments(true);
         dbf.setIgnoringElementContentWhitespace(true);
-        
+
         ClassPathResource cpr = new ClassPathResource("certificationResultRules.xml");
-        
         try (InputStream xmlInput = cpr.getInputStream()) {
             // use the factory to take an instance of the document builder
             DocumentBuilder db = dbf.newDocumentBuilder();

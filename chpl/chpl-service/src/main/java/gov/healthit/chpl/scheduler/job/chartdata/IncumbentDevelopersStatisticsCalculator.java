@@ -19,7 +19,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 /**
  * Populates the criterion_product_statistics table with summarized count
  * information.
- * 
+ *
  * @author alarned
  *
  */
@@ -43,7 +43,7 @@ public class IncumbentDevelopersStatisticsCalculator {
      * Then, loop through each "later" set, comparing to each "earlier" set. If
      * the "later" name is not found in the "earlier" set, add it to the "new"
      * component of the entity, otherwise add it to the "incumbent" component.
-     * 
+     *
      * @param certifiedProducts
      *            incoming data
      * @return statistics objects
@@ -126,7 +126,7 @@ public class IncumbentDevelopersStatisticsCalculator {
 
     /**
      * Log DTO statistics to LOGGER.
-     * 
+     *
      * @param dtos
      *            statistics objects
      */
@@ -138,7 +138,7 @@ public class IncumbentDevelopersStatisticsCalculator {
 
     /**
      * Save statistics objects to database.
-     * 
+     *
      * @param dtos
      *            statistics objects
      */

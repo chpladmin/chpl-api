@@ -98,8 +98,8 @@ public class MeaningfulUseControllerTest extends TestCase {
      * successfully updates meaningfulUseUsers for the CHPLProductNumber Then
      * the duplicate CHPL Product Number results in an error added to the
      * results errors array Then the certifiedProductId is updated for non-error
-     * results
-     * 
+     * results.
+     *
      * @throws IOException
      * @throws JSONException
      */
@@ -195,7 +195,7 @@ public class MeaningfulUseControllerTest extends TestCase {
      * When the CSV contains a 2014 CHPL Product Number with a non-legacy format
      * Then the API continues with updating the CHPL Product Numbers with their
      * respective num_meaningful_users
-     * 
+     *
      * @throws IOException
      * @throws JSONException
      */

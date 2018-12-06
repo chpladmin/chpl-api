@@ -42,7 +42,7 @@ public class CertificationStatusEventEntity implements Cloneable, Serializable {
 
     @Column(name = "reason")
     private String reason;
-    
+
     @Column(name = "deleted")
     private Boolean deleted;
 

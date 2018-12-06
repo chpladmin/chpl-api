@@ -91,7 +91,7 @@ public class QuestionableActivityThresholdTest extends TestCase {
 
         listing = cpdManager.getCertifiedProductDetails(1L);
         //set creation date to now so we don't trigger questionable activity
-        Query updateCreationDateQuery = 
+        Query updateCreationDateQuery =
                 entityManager.createNativeQuery("UPDATE openchpl.certified_product "
                         + "SET creation_date = NOW() "
                         + "WHERE certified_product_id = " + listing.getId());

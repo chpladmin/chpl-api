@@ -50,7 +50,7 @@ public class SurveillanceUploadJob extends RunnableJob {
     private SurveillanceValidator survValidator;
     @Autowired
     private SurveillanceUploadHandlerFactory uploadHandlerFactory;
-    
+
     public SurveillanceUploadJob() {
         LOGGER.debug("Created new Surveillance Upload Job");
     }
@@ -89,14 +89,14 @@ public class SurveillanceUploadJob extends RunnableJob {
                 int survCount = 0;
                 try {
                     survCount = survUploadManager.countSurveillanceRecords(job.getData());
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     addJobMessage(ex.getMessage());
                     updateStatus(100, JobStatusType.Error);
                 }
-                if(survCount > 0) {
+                if (survCount > 0) {
                     jobPercentComplete = 2.0;
                     updateStatus(jobPercentComplete, JobStatusType.In_Progress);
-                    
+
                     //now do the actual parsing
                     List<String> parserErrors = new ArrayList<String>();
                     CSVRecord heading = null;
@@ -110,7 +110,7 @@ public class SurveillanceUploadJob extends RunnableJob {
                         } else if (heading != null) {
                             if (!StringUtils.isEmpty(currRecord.get(0).trim())) {
                                 String currRecordStatus = currRecord.get(0).trim();
-    
+
                                 if (currRecordStatus.equalsIgnoreCase(SurveillanceUploadManager.NEW_SURVEILLANCE_BEGIN_INDICATOR)
                                         || currRecordStatus.equalsIgnoreCase(SurveillanceUploadManager.UPDATE_SURVEILLANCE_BEGIN_INDICATOR)) {
                                     // parse the previous recordset because we hit a new surveillance item
@@ -158,9 +158,9 @@ public class SurveillanceUploadJob extends RunnableJob {
                             }
                         }
                     }
-                    
-                    if(parserErrors != null && parserErrors.size() > 0) {
-                        for(String error: parserErrors) {
+
+                    if (parserErrors != null && parserErrors.size() > 0) {
+                        for (String error: parserErrors) {
                             addJobMessage(error);
                         }
                         updateStatus(100, JobStatusType.Error);
@@ -183,7 +183,7 @@ public class SurveillanceUploadJob extends RunnableJob {
                 owningCp = cpManager.getById(surv.getCertifiedProduct().getId());
                 survValidator.validate(surv);
                 survManager.createPendingSurveillance(owningCp.getCertificationBodyId(), surv);
-                
+
                 jobPercentComplete += 50.0 / (double) pendingSurvs.size();
                 updateStatus(jobPercentComplete, JobStatusType.In_Progress);
             } catch (final AccessDeniedException denied) {

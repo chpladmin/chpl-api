@@ -26,7 +26,7 @@ public class QuestionableActivityCertificationResultEntity implements Questionab
 
     @Column(name = "questionable_activity_trigger_id")
     private Long triggerId;
-    
+
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "questionable_activity_trigger_id", insertable = false, updatable = false)
     private QuestionableActivityTriggerEntity trigger;
@@ -37,26 +37,26 @@ public class QuestionableActivityCertificationResultEntity implements Questionab
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "certification_result_id", insertable = false, updatable = false)
     private CertificationResultDetailsEntity certResult;
-    
+
     @Column(name = "before_data")
     private String before;
-    
+
     @Column(name = "after_data")
     private String after;
-    
+
     @Column(name = "reason")
     private String reason;
-    
+
     @Column(name = "activity_date")
     private Date activityDate;
-    
+
     @Column(name = "activity_user_id")
     private Long userId;
-    
+
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "activity_user_id", insertable = false, updatable = false)
     private UserEntity user;
-    
+
     @Column(name = "deleted")
     private Boolean deleted;
 
@@ -100,7 +100,7 @@ public class QuestionableActivityCertificationResultEntity implements Questionab
     public void setBefore(String before) {
         this.before = before;
     }
-    
+
     public String getAfter() {
         return after;
     }

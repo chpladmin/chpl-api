@@ -28,7 +28,6 @@ public class InheritedCertificationStatusReviewer implements Reviewer {
     @Autowired private CertificationEditionDAO certEditionDao;
     @Autowired private ChplProductNumberUtil productNumUtil;
     @Autowired private ErrorMessageUtil msgUtil;
-    
 
     public void review(PendingCertifiedProductDTO listing) {
         Integer icsCodeInteger = productNumUtil.getIcsCode(listing.getUniqueId());

@@ -15,7 +15,7 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 public class ValidDataReviewer implements Reviewer {
 
     @Autowired private CertifiedProductManager cpManager;
-    
+
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         for (CertificationResult cert : listing.getCertificationResults()) {

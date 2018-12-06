@@ -32,13 +32,13 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
 @Component("pendingTestFunctionality2014Reviewer")
 public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListener<ContextRefreshedEvent> {
     private static final String EDITION_2014 = "2014";
-    
+
     private TestFunctionalityDAO testFunctionalityDAO;
     private TestingFunctionalityManager testFunctionalityManager;
     private ErrorMessageUtil msgUtil;
     private CertificationEditionDAO editionDAO;
-    private List<CertificationEditionDTO> editionDTOs; 
-    
+    private List<CertificationEditionDTO> editionDTOs;
+
     @Autowired
     public TestFunctionality2014Reviewer(TestFunctionalityDAO testFunctionalityDAO,
             TestingFunctionalityManager testFunctionalityManager, CertificationEditionDAO editionDAO,
@@ -72,7 +72,7 @@ public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListe
                         } else {
                             listing.getErrorMessages().addAll(
                                 getTestingFunctionalityErrorMessages(crtf, cr, listing));
-                            
+
                             Set<String> warnings = getTestingFunctionalityWarningMessages(crtf, cr, listing);
                             if (warnings.size() > 0) {
                                 listing.getWarningMessages().addAll(warnings);
@@ -92,7 +92,7 @@ public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListe
 
         CertificationEditionDTO edition = getEditionDTO(getEditionFromListing(listing));
         TestFunctionalityDTO tf = getTestFunctionality(crtf.getNumber(), edition.getId());
-        
+
         Long practiceTypeId = listing.getPracticeTypeId();
         if (!isTestFunctionalityPracticeTypeValid(practiceTypeId, tf)) {
             errors.add(getTestFunctionalityPracticeTypeErrorMessage(crtf, cr, listing));
@@ -156,7 +156,7 @@ public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListe
     }
 
     private String getTestFunctionalityCriterionErrorMessage(final PendingCertificationResultTestFunctionalityDTO crtf,
-            final PendingCertificationResultDTO cr, final PendingCertifiedProductDTO cp, 
+            final PendingCertificationResultDTO cr, final PendingCertifiedProductDTO cp,
             final CertificationEditionDTO edition) {
 
         TestFunctionalityDTO tf = getTestFunctionality(crtf.getNumber(), edition.getId());
@@ -173,7 +173,7 @@ public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListe
         return msgUtil.getMessage("listing.criteria.testFunctionalityCriterionMismatch",
                 criteriaNumber, testFunctionalityNumber, listOfValidCriteria, currentCriterion);
     }
-    
+
     private CertificationEditionDTO getEditionDTO(final String year) {
         for (CertificationEditionDTO dto : editionDTOs) {
             if (dto.getYear().equals(year)) {
@@ -182,11 +182,11 @@ public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListe
         }
         return null;
     }
-    
+
     private String getEditionFromListing(final PendingCertifiedProductDTO listing) {
         return listing.getCertificationEdition();
     }
-    
+
     private TestFunctionalityDTO getTestFunctionality(final String number, final Long editionId) {
         return testFunctionalityDAO.getByNumberAndEdition(number, editionId);
     }

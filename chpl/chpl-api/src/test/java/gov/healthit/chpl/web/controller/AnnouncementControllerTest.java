@@ -77,8 +77,8 @@ public class AnnouncementControllerTest {
 
     @Transactional
     @Test
-    public void testCreatePublicAnnouncement() 
-            throws JsonProcessingException, EntityCreationException, 
+    public void testCreatePublicAnnouncement()
+            throws JsonProcessingException, EntityCreationException,
             EntityRetrievalException, UserRetrievalException, InvalidArgumentsException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         Announcement toCreate = new Announcement();
@@ -98,8 +98,8 @@ public class AnnouncementControllerTest {
 
     @Transactional
     @Test
-    public void testCreatePrivateAnnouncement() 
-            throws JsonProcessingException, EntityCreationException, 
+    public void testCreatePrivateAnnouncement()
+            throws JsonProcessingException, EntityCreationException,
             EntityRetrievalException, UserRetrievalException, InvalidArgumentsException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         Announcement toCreate = new Announcement();

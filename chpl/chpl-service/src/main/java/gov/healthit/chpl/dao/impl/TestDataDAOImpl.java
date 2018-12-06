@@ -47,7 +47,6 @@ public class TestDataDAOImpl extends BaseDAOImpl implements TestDataDAO {
         return new TestDataDTO(entity);
     }
 
-    
     @Override
     public List<TestDataCriteriaMapDTO> findAllWithMappedCriteria() {
 

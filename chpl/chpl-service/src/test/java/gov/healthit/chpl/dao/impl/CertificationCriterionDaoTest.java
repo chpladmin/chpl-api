@@ -307,8 +307,7 @@ public class CertificationCriterionDaoTest extends TestCase {
      * Tests that getAllEntities() gets all non-deleted certification criterion
      * that are associated with a certified product Must have (TestTool.retired
      * = true AND CP.ics_code = true) OR (TestTool.retired = false) AND
-     * CertCriterion.deleted = false
-     * 
+     * CertCriterion.deleted = false.
      * @throws EntityRetrievalException
      * @throws EntityCreationException
      */

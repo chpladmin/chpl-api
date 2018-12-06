@@ -410,7 +410,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
         surv.setStartDate(pr.getStartDate());
         surv.setEndDate(pr.getEndDate());
         surv.setRandomizedSitesUsed(pr.getNumRandomizedSites());
-        
+
         SurveillanceType survType = new SurveillanceType();
         survType.setName(pr.getSurveillanceType());
         surv.setType(survType);

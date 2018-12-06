@@ -24,11 +24,11 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
 public class CertificationStatusReviewerTest {
-    private static final String FIRST_STATUS_NOT_ACTIVE_ERROR = 
+    private static final String FIRST_STATUS_NOT_ACTIVE_ERROR =
             "The earliest certification status for any listing on the CHPL must be Active.";
     @Autowired
     private ListingMockUtil mockUtil;
-    
+
     @Autowired
     private MessageSource messageSource;
 
@@ -74,7 +74,7 @@ public class CertificationStatusReviewerTest {
         status.setName("Retired");
         oldestStatus.setStatus(status);
         listing.getCertificationEvents().add(oldestStatus);
-        
+
         certStatusReviewer.review(listing);
         assertTrue(listing.getErrorMessages().contains(FIRST_STATUS_NOT_ACTIVE_ERROR));
     }

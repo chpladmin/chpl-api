@@ -29,7 +29,7 @@ public class TestProcedureCriteriaMapEntity {
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "criteria_id", insertable = false, updatable = false)
     private CertificationCriterionEntity certificationCriterion;
-    
+
     @Column(name = "test_procedure_id")
     private Long testProcedureId;
 

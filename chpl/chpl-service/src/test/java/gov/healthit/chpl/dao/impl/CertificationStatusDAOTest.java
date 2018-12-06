@@ -56,8 +56,8 @@ public class CertificationStatusDAOTest extends TestCase {
     }
 
     /**
-     * Tests that getByStatusName() completes without error for each status name
-     * 
+     * Tests that getByStatusName() completes without error for each status name.
+     *
      * @throws EntityRetrievalException
      * @throws EntityCreationException
      */

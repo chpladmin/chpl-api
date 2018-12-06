@@ -210,7 +210,7 @@
             <AppenderRef ref="STDOUT" />
         </Logger>
         <!-- Logging for hibernate stuff. Leave off generally -->
-        <!-- <Logger name="org.hibernate.SQL" level="DEBUG" additivity="false"> 
+        <!-- <Logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
             <AppenderRef ref="STDOUT" /> </Logger> -->
         <Logger name="org.springframework" level="INFO"
             additivity="false">

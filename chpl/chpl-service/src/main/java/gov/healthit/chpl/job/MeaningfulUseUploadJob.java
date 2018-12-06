@@ -220,7 +220,7 @@ public class MeaningfulUseUploadJob extends RunnableJob {
                                     cpdManager.getCertifiedProductDetails(existingListing.getId());
                             activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, existingListing.getId(),
                                     "Updated certified product " + updatedListing.getChplProductNumber() + ".", existingListing,
-                                    updatedListing, 
+                                    updatedListing,
                                     "User " + getUser().getUsername() + " updated MUU count via upload file.");
                         }
                     }

@@ -24,7 +24,7 @@ public class ListingValidatorFactoryImpl implements ListingValidatorFactory {
 
     @Autowired
     private AllowedListingValidator allowedValidator;
-    
+
     //pending listing validators (for upload)
     @Autowired
     @Qualifier("ambulatoryModular2014PendingListingValidator")
@@ -57,11 +57,11 @@ public class ListingValidatorFactoryImpl implements ListingValidatorFactory {
     @Autowired
     @Qualifier("inpatientModular2014LegacyListingValidator")
     private InpatientModular2014LegacyListingValidator inpatientModularLegacyValidator;
-    
+
     @Autowired
     @Qualifier("inpatientComplete2014LegacyListingValidator")
     private InpatientComplete2014LegacyListingValidator inpatientCompleteLegacyValidator;
-    
+
     //listing validators (for update of listings with new-style IDs)
     @Autowired
     @Qualifier("ambulatoryModular2014ListingValidator")
@@ -78,7 +78,7 @@ public class ListingValidatorFactoryImpl implements ListingValidatorFactory {
     @Autowired
     @Qualifier("inpatientComplete2014ListingValidator")
     private InpatientComplete2014ListingValidator inpatientCompleteValidator;
-    
+
     @Autowired
     private Edition2015ListingValidator edition2015Validator;
 
@@ -86,7 +86,7 @@ public class ListingValidatorFactoryImpl implements ListingValidatorFactory {
     private ErrorMessageUtil msgUtil;
     @Autowired
     private ChplProductNumberUtil chplProductNumberUtil;
-    
+
     @Override
     public PendingValidator getValidator(PendingCertifiedProductDTO listing) {
         if (listing.getCertificationEdition().equals("2014")) {
@@ -195,7 +195,7 @@ public class ListingValidatorFactoryImpl implements ListingValidatorFactory {
                     LOGGER.error(errMsg);
                     return null;
                 }
-                
+
                 if (practiceTypeName.equalsIgnoreCase(PRACTICE_TYPE_AMBULATORY)) {
                     if (productClassificationName.equalsIgnoreCase(PRODUCT_CLASSIFICATION_MODULAR)) {
                         return ambulatoryModularValidator;

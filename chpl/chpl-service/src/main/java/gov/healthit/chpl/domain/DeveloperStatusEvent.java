@@ -40,7 +40,7 @@ public class DeveloperStatusEvent implements Serializable {
     private Date statusDate;
 
     /**
-     * The reason for this status change. 
+     * The reason for this status change.
      * It is required of the status changed to 'Under Certification Ban by ONC'
      */
     @XmlElement(required = false)

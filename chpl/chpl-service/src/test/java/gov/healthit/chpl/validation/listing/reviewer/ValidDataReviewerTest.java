@@ -27,11 +27,11 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
 public class ValidDataReviewerTest {
     private static final String D_1 = "170.315 (d)(1)";
-    private static final String BAD_PRIVACY_SECURITY_ERROR = 
+    private static final String BAD_PRIVACY_SECURITY_ERROR =
             "Certification " + D_1
-            + " contains Privacy and Security Framework value 'Approach 12' which must match one of " 
+            + " contains Privacy and Security Framework value 'Approach 12' which must match one of "
             + PrivacyAndSecurityFrameworkConcept.getFormattedValues();
-    private static final String BAD_ADDL_SOFTWARE_ERROR = 
+    private static final String BAD_ADDL_SOFTWARE_ERROR =
             "No CHPL product was found matching additional software CHP-12345 for " + D_1;
 
     @Spy private CertifiedProductManager cpManager;

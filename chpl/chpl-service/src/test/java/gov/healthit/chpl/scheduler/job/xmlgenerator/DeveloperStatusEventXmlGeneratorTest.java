@@ -24,7 +24,7 @@ public class DeveloperStatusEventXmlGeneratorTest {
 
     @Test
     public void addDeveloperStatusTest_NoReason() throws XMLStreamException, IOException {
-        DeveloperStatusEvent dse = getDeveloperStatusEvent(1L, 1534425861000L, 1L, null, 1L, 
+        DeveloperStatusEvent dse = getDeveloperStatusEvent(1L, 1534425861000L, 1L, null, 1L,
                 DeveloperStatusType.Active.toString());
         String expected =
                 "<statusEvent>"
@@ -46,7 +46,7 @@ public class DeveloperStatusEventXmlGeneratorTest {
 
     @Test
     public void addDeveloperStatusTest_WithReason() throws XMLStreamException, IOException {
-        DeveloperStatusEvent dse = getDeveloperStatusEvent(1L, 1534425861000L, 1L, "In trouble", 1L, 
+        DeveloperStatusEvent dse = getDeveloperStatusEvent(1L, 1534425861000L, 1L, "In trouble", 1L,
                 DeveloperStatusType.SuspendedByOnc.toString());
         String expected =
                 "<statusEvent>"
@@ -69,9 +69,9 @@ public class DeveloperStatusEventXmlGeneratorTest {
 
     @Test
     public void addDeveloperStatusTestList() throws XMLStreamException, IOException {
-        DeveloperStatusEvent firstDse = getDeveloperStatusEvent(1L, 1534425861000L, 1L, null, 1L, 
+        DeveloperStatusEvent firstDse = getDeveloperStatusEvent(1L, 1534425861000L, 1L, null, 1L,
                 DeveloperStatusType.Active.toString());
-        DeveloperStatusEvent secondDse = getDeveloperStatusEvent(1L, 1534425862000L, 2L, "They did bad stuff.", 3L, 
+        DeveloperStatusEvent secondDse = getDeveloperStatusEvent(1L, 1534425862000L, 2L, "They did bad stuff.", 3L,
                 DeveloperStatusType.UnderCertificationBanByOnc.toString());
 
         List<DeveloperStatusEvent> list = new ArrayList<DeveloperStatusEvent>();
@@ -103,7 +103,7 @@ public class DeveloperStatusEventXmlGeneratorTest {
         assertEquals(expected, stringOut.toString());
         stringOut.close();
     }
-    
+
     private DeveloperStatusEvent getDeveloperStatusEvent(Long developerId,
             Long eventDate, Long id, String reason, Long statusId, String statusName) {
         DeveloperStatusEvent cse = new DeveloperStatusEvent();
@@ -114,7 +114,7 @@ public class DeveloperStatusEventXmlGeneratorTest {
         cse.setStatus(getDeveloperStatus(statusId, statusName));
         return cse;
     }
-    
+
     private DeveloperStatus getDeveloperStatus(Long id, String name) {
         DeveloperStatus ds = new DeveloperStatus();
         ds.setId(id);

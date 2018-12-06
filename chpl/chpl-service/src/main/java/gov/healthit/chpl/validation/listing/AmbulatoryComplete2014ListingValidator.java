@@ -17,7 +17,7 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2014.AmbulatoryCompl
 @Component("ambulatoryComplete2014ListingValidator")
 public class AmbulatoryComplete2014ListingValidator extends AmbulatoryModular2014ListingValidator {
 
-    @Autowired 
+    @Autowired
     @Qualifier("ambulatoryCompleteRequiredCriteriaReviewer")
     private AmbulatoryCompleteRequiredCriteriaReviewer criteriaReviewer;
 
@@ -25,7 +25,7 @@ public class AmbulatoryComplete2014ListingValidator extends AmbulatoryModular201
 
     @Override
     public List<Reviewer> getReviewers() {
-        if(reviewers == null) {
+        if (reviewers == null) {
             reviewers = super.getReviewers();
             reviewers.add(criteriaReviewer);
         }

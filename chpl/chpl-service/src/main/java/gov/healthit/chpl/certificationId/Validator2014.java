@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.TreeMap;
 
 public class Validator2014 extends Validator {
-    
+
     private int inpatientCqmCount = 0;
     private int nonCoreAmbulatory = 0;
     private int coreAmbulatory = 0;

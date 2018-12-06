@@ -93,5 +93,4 @@ public class CertificationCriterionXmlGeneratorTest {
         cc.setTitle(title);
         return cc;
     }
-    
 }

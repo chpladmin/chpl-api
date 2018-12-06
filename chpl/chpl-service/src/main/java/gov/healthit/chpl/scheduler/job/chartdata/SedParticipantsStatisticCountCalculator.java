@@ -22,7 +22,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 /**
  * Populates the sed_participant_statistics_count table with summarized count
  * information.
- * 
+ *
  * @author TYoung
  *
  */
@@ -39,7 +39,7 @@ public class SedParticipantsStatisticCountCalculator {
     /**
      * This method calculates the participant counts and saves them to the
      * sed_participant_statisitics_count table.
-     * 
+     *
      * @param certifiedProductSearchDetails
      *            List of CertifiedProductSearchDetails objects
      */

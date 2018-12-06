@@ -67,7 +67,7 @@ public class PendingListingTestFunctionalityReviewerTest {
 
     @Spy
     private CertificationEditionDAO certificationEditionDAO;
-    
+
     @Spy
     private TestingFunctionalityManager testFunctionalityManager;
 
@@ -84,14 +84,14 @@ public class PendingListingTestFunctionalityReviewerTest {
                 + "Criteria other and is not valid for Criteria 170.314 (a)(6).")
             .when(msgUtil).getMessage(
                 ArgumentMatchers.eq("listing.criteria.testFunctionalityCriterionMismatch"),
-                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), 
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
-        
+
         Mockito.doReturn("In Criteria 170.314 (a)(6), Test Functionality (a)(6)(11) is for "
                 + "other Settings and is not valid for Practice Type Ambulatory.")
             .when(msgUtil).getMessage(
                 ArgumentMatchers.eq("listing.criteria.testFunctionalityPracticeTypeMismatch"),
-                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), 
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
 
         Mockito.doReturn(INVALID_TEST_FUNC_ERROR)

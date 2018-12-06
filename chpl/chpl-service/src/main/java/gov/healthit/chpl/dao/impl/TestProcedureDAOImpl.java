@@ -24,7 +24,7 @@ public class TestProcedureDAOImpl extends BaseDAOImpl implements TestProcedureDA
     private static final Logger LOGGER = LogManager.getLogger(TestProcedureDAOImpl.class);
     @Autowired
     MessageSource messageSource;
-    
+
     @Override
     public List<TestProcedureDTO> getByCriteriaNumber(String criteriaNumber) {
         Set<TestProcedureEntity> entities = getTestProcedureByCertificationCriteria(criteriaNumber);

@@ -75,11 +75,11 @@ public class TestFunctionalityDAOImpl extends BaseDAOImpl implements TestFunctio
                             + "WHERE (NOT tfcm.deleted = true) ", TestFunctionalityCriteriaMapEntity.class)
                 .getResultList();
     }
-    
+
     private List<TestFunctionalityEntity> getAllEntities() {
         return entityManager
-                .createQuery("SELECT tf " 
-                            + "FROM TestFunctionalityEntity tf " 
+                .createQuery("SELECT tf "
+                            + "FROM TestFunctionalityEntity tf "
                             + "LEFT OUTER JOIN FETCH tf.certificationEdition "
                             + "LEFT OUTER JOIN FETCH tf.practiceType "
                             + "WHERE (NOT tf.deleted = true) ", TestFunctionalityEntity.class)
@@ -91,8 +91,8 @@ public class TestFunctionalityDAOImpl extends BaseDAOImpl implements TestFunctio
         TestFunctionalityEntity entity = null;
 
         Query query = entityManager
-                .createQuery("SELECT tf " 
-                        + "FROM TestFunctionalityEntity tf " 
+                .createQuery("SELECT tf "
+                        + "FROM TestFunctionalityEntity tf "
                         + "LEFT OUTER JOIN FETCH tf.certificationEdition "
                         + "LEFT OUTER JOIN FETCH tf.practiceType "
                         + "WHERE (NOT tf.deleted = true) " + "AND (tf.id = :entityid) ",
@@ -115,12 +115,12 @@ public class TestFunctionalityDAOImpl extends BaseDAOImpl implements TestFunctio
 
         TestFunctionalityEntity entity = null;
 
-        Query query = entityManager.createQuery("SELECT tf " 
-                        + "FROM TestFunctionalityEntity tf " 
+        Query query = entityManager.createQuery("SELECT tf "
+                        + "FROM TestFunctionalityEntity tf "
                         + "LEFT OUTER JOIN FETCH tf.certificationEdition "
                         + "LEFT OUTER JOIN FETCH tf.practiceType "
                         + "WHERE tf.deleted <> true "
-                        + "AND UPPER(tf.number) = :number " 
+                        + "AND UPPER(tf.number) = :number "
                         + "AND tf.certificationEdition.id = :editionId ", TestFunctionalityEntity.class);
         query.setParameter("number", number.toUpperCase());
         query.setParameter("editionId", editionId);

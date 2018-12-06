@@ -43,15 +43,15 @@ import gov.healthit.chpl.scheduler.job.QuartzJob;
 public class SummaryStatisticsCreatorJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("summaryStatisticsCreatorJobLogger");
     private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
-    
+
     @Autowired
     private AsynchronousSummaryStatisticsInitializor asynchronousStatisticsInitializor;
-    
+
     @Autowired
     private SummaryStatisticsDAO summaryStatisticsDAO;
-    
+
     private Properties props;
-    
+
     /**
      * Constructor to initialize SummaryStatisticsJobCreator object.
      * @throws Exception is thrown
@@ -62,14 +62,13 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         loadProperties();
     }
 
-    
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         LOGGER.info("********* Starting the Summary Statistics Creation job. *********");
         try {
             SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
             asynchronousStatisticsInitializor.setLogger(LOGGER);
-            
+
             Boolean generateCsv = Boolean.valueOf(jobContext.getMergedJobDataMap().getString("generateCsvFile"));
             Date startDate = getStartDate();
             if (startDate == null) {
@@ -88,7 +87,7 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
 
         } catch (Exception e) {
             LOGGER.error(e);
-        } 
+        }
         LOGGER.info("********* Completed the Summary Statistics Creation job. *********");
     }
 
@@ -118,7 +117,7 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
             endDateCal.add(Calendar.DATE, numDaysInPeriod);
         }
         LOGGER.info("Finished getting statistics");
-        
+
         LOGGER.info("Writing statistics CSV");
         StatsCsvFileWriter csvFileWriter = new StatsCsvFileWriter();
         csvFileWriter.writeCsvFile(System.getenv("downloadFolderPath") + File.separator

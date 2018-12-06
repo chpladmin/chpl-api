@@ -28,7 +28,7 @@ import gov.healthit.chpl.scheduler.job.QuartzJob;
 /**
  * This is the starting point for populating statistics tables that will be used
  * for the charts. As new tables need to be populated, they will be added here.
- * 
+ *
  * @author TYoung
  *
  */
@@ -43,7 +43,7 @@ public final class ChartDataCreatorJob extends QuartzJob {
 
     /**
      * Constructor to initialize InheritanceErrorsReportCreatorJob object.
-     * 
+     *
      * @throws Exception
      *             is thrown
      */

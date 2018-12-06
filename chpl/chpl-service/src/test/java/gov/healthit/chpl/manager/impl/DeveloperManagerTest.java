@@ -309,8 +309,8 @@ public class DeveloperManagerTest extends TestCase {
      * Given the CHPL is accepting search requests When I call the REST API's
      * /decertified/developers, the controller calls the
      * developerManager.getDecertifiedDevelopers() Then the manager returns a
-     * list of DeveloperDecertifiedDTO with expected results
-     * 
+     * list of DeveloperDecertifiedDTO with expected results.
+     *
      * @throws EntityRetrievalException
      */
     @Transactional

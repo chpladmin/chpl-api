@@ -54,10 +54,10 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestFunctionali
 public class ListingTestFunctionalityReviewerTest {
     @Autowired
     private ListingMockUtil listingMockUtil;
-    
+
     @Autowired
     private MessageSource messageSource;
-    
+
     @Spy
     private TestFunctionalityDAO testFunctionalityDAO;
 
@@ -76,9 +76,9 @@ public class ListingTestFunctionalityReviewerTest {
     @Spy
     private TestingFunctionalityManager testFunctionalityManager =
         new TestingFunctionalityManagerImpl(testFunctionalityDAO);
-    
+
     private TestFunctionality2014Reviewer tfReviewer;
-    
+
     private TestFunctionality2015Reviewer tfReviewer2015;
 
     @Before
@@ -87,7 +87,7 @@ public class ListingTestFunctionalityReviewerTest {
 
         tfReviewer = new TestFunctionality2014Reviewer(testFunctionalityDAO, testFunctionalityManager,
                 certificationEditionDAO, msgUtil);
-        
+
         tfReviewer2015 = new TestFunctionality2015Reviewer(testFunctionalityDAO, testFunctionalityManager,
                 certificationEditionDAO, msgUtil);
 
@@ -95,7 +95,7 @@ public class ListingTestFunctionalityReviewerTest {
                 + "other Settings and is not valid for Practice Type Ambulatory.")
             .when(msgUtil).getMessage(
                 ArgumentMatchers.eq("listing.criteria.testFunctionalityPracticeTypeMismatch"),
-                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), 
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
 
         Mockito.when(certificationEditionDAO.findAll()).thenReturn(getEditions());
@@ -418,7 +418,7 @@ public class ListingTestFunctionalityReviewerTest {
 
         return editions;
      }
-   
+
     private Map<String, List<TestFunctionalityDTO>> getTestFunctionalityCriteriaMap2014() {
         Map<String, List<TestFunctionalityDTO>> map = new HashMap<String, List<TestFunctionalityDTO>>();
 
@@ -482,5 +482,4 @@ public class ListingTestFunctionalityReviewerTest {
 
         return tf;
     }
-    
 }

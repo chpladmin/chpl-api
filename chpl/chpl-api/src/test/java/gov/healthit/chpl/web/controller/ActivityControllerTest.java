@@ -87,8 +87,7 @@ public class ActivityControllerTest {
     }
 
     /**
-     * Tests that listActivity returns results for a Certified Product
-     * 
+     * Tests that listActivity returns results for a Certified Product.
      * @throws IOException
      * @throws ValidationException
      */
@@ -124,8 +123,7 @@ public class ActivityControllerTest {
     /**
      * GIVEN a user is looking at activity WHEN they try to search for more than
      * configurable days (set to 60) THEN they should not be able to make the
-     * call
-     * 
+     * call.
      * @throws IOException
      * @throws ValidationException
      */
@@ -141,8 +139,7 @@ public class ActivityControllerTest {
     /**
      * GIVEN a user is looking at activity WHEN they try to search for a date
      * range within the configurable days (set to 60) THEN they should be able
-     * to make the call
-     * 
+     * to make the call.
      * @throws IOException
      * @throws ValidationException
      */
@@ -162,8 +159,7 @@ public class ActivityControllerTest {
     /**
      * GIVEN a user is looking at activity WHEN they try to search for a date
      * range equal to the max number of days (set to 60) THEN they should be
-     * able to make the call
-     * 
+     * able to make the call.
      * @throws IOException
      * @throws ValidationException
      */
@@ -183,8 +179,7 @@ public class ActivityControllerTest {
     /**
      * GIVEN a user is looking at activity WHEN they try to search for a date
      * range greater than the max number of days (set to 60) THEN they should
-     * not be able to make the call
-     * 
+     * not be able to make the call.
      * @throws IOException
      * @throws ValidationException
      */
@@ -202,8 +197,7 @@ public class ActivityControllerTest {
     /**
      * GIVEN a user is looking at activity WHEN they try to search for a date
      * range with the start date > end date THEN they should not be able to make
-     * the call
-     * 
+     * the call.
      * @throws IOException
      * @throws ValidationException
      */

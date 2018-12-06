@@ -147,8 +147,8 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
 
     @Override
     public List<ProductVersionDTO> getByProductId(Long productId) {
-        Query query = entityManager.createQuery("SELECT pve " 
-                + " FROM ProductVersionEntity pve " 
+        Query query = entityManager.createQuery("SELECT pve "
+                + " FROM ProductVersionEntity pve "
                 + " LEFT OUTER JOIN FETCH pve.product product "
                 + "LEFT OUTER JOIN FETCH product.developer "
                 + "WHERE (NOT pve.deleted = true) "
@@ -166,7 +166,7 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
 
     public List<ProductVersionDTO> getByProductIds(List<Long> productIds) {
         Query query = entityManager.createQuery("SELECT pve "
-                        + " FROM ProductVersionEntity pve " 
+                        + " FROM ProductVersionEntity pve "
                         + " LEFT OUTER JOIN FETCH pve.product product "
                         + "LEFT OUTER JOIN FETCH product.developer "
                         + "WHERE (NOT pve.deleted = true) "
@@ -218,7 +218,7 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
     }
 
     private List<ProductVersionEntity> getAllEntities() {
-        Query query = entityManager.createQuery("SELECT pve " 
+        Query query = entityManager.createQuery("SELECT pve "
                 + " FROM ProductVersionEntity pve "
                 + " LEFT OUTER JOIN FETCH pve.product product "
                 + "LEFT OUTER JOIN FETCH product.developer "

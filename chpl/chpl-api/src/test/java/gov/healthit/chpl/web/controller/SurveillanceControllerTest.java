@@ -1295,7 +1295,7 @@ public class SurveillanceControllerTest {
     }
 
     /**
-     * Given I am authenticated as ACB Admin
+     * Given I am authenticated as ACB Admin.
      * Given I have authority on the ACB
      * When I update a surveillance activity containing a nonconformity with a CAP End Date but no CAP Approval Date
      * Then the validator returns an error
@@ -1309,7 +1309,7 @@ public class SurveillanceControllerTest {
      * @throws UserPermissionRetrievalException
      * @throws CertificationBodyAccessException
      */
-    @Transactional 
+    @Transactional
     @Test
     @Rollback
     public void test_updateSurveillance_violatesCAPEndDate_ApprovalDateMissingValue_returnsError()
@@ -1421,13 +1421,13 @@ public class SurveillanceControllerTest {
         try {
             surveillanceController.updateSurveillance(surv);
         } catch (ValidationException e) {
-            assertTrue(StringUtils.containsIgnoreCase(e.getErrorMessages().toString(), 
+            assertTrue(StringUtils.containsIgnoreCase(e.getErrorMessages().toString(),
                     "Date Corrective Action Plan End Date must be greater than Date Corrective Action Plan Start Date for requirement"));
         }
     }
 
     /**
-     * Given I am authenticated as ACB Admin
+     * Given I am authenticated as ACB Admin.
      * Given I have authority on the ACB
      * When I update a surveillance activity containing a nonconformity with a CAP End Date but no Resolution
      * Then the validator returns an error

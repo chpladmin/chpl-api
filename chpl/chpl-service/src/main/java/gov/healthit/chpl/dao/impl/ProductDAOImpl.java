@@ -177,9 +177,9 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
                     entityManager.flush();
                 }
             }
-            
+
             // Look for entries in the existing ownership history
-            // and a matching entry in the new ownership history to see if 
+            // and a matching entry in the new ownership history to see if
             // anything changed (transfer date)
             for (ProductActiveOwnerEntity existingPrevOwner : entity.getOwnerHistory()) {
                 boolean isInUpdate = false;

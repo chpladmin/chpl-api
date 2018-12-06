@@ -11,12 +11,12 @@ public class TemplateColumnIndexMap2015Version1 extends TemplateColumnIndexMap {
     public int getRecordStatusIndex() {
         return 1;
     }
-    
+
     @Override
     public int getPracticeTypeIndex() {
         return -1;
     }
-    
+
     @Override
     public int getDeveloperIndex() {
         return 2;
@@ -56,7 +56,7 @@ public class TemplateColumnIndexMap2015Version1 extends TemplateColumnIndexMap {
     public int getProductClassificationIndex() {
         return -1;
     }
-    
+
     @Override
     public int getCertificationDateIndex() {
         return 9;
@@ -161,15 +161,15 @@ public class TemplateColumnIndexMap2015Version1 extends TemplateColumnIndexMap {
     public int getTestTaskEndIndex() {
         return 56;
     }
-    
+
     @Override
     public int getCriteriaStartIndex() {
         return 57;
     }
-    
+
     @Override
     public int getCriteriaEndIndex() {
         return 861;
     }
-   
+
 }

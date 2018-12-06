@@ -19,7 +19,7 @@ import gov.healthit.chpl.domain.CertificationStatusEvent;
 public class CertificationStatusEventXmlGeneratorTest {
     @Test
     public void addCertificationStatusTest() throws XMLStreamException, IOException {
-        CertificationStatusEvent cse = 
+        CertificationStatusEvent cse =
                 getCertificationStatusEvent(20180101L, 1L, "Status Reason", 1L, "Open");
         String expected = "<event><eventDate>20180101</eventDate><id>1</id><reason>Status Reason</reason><status><id>1</id><name>Open</name></status></event>";
 

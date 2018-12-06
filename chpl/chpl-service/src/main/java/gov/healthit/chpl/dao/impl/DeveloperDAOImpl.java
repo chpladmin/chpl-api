@@ -279,11 +279,11 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
     }
 
     @Override
-    public void updateDeveloperStatusEvent(DeveloperStatusEventDTO statusEventDto) 
+    public void updateDeveloperStatusEvent(DeveloperStatusEventDTO statusEventDto)
             throws EntityRetrievalException {
-        DeveloperStatusEventEntity entityToUpdate = 
+        DeveloperStatusEventEntity entityToUpdate =
                 entityManager.find(DeveloperStatusEventEntity.class, statusEventDto.getId());
-        if(entityToUpdate == null) {
+        if (entityToUpdate == null) {
             String msg = msgUtil.getMessage("developer.updateStatus.idNotFound", statusEventDto.getId());
             LOGGER.error(msg);
             throw new EntityRetrievalException(msg);
@@ -305,11 +305,11 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
     }
 
     @Override
-    public void deleteDeveloperStatusEvent(DeveloperStatusEventDTO statusEventDto) 
+    public void deleteDeveloperStatusEvent(DeveloperStatusEventDTO statusEventDto)
             throws EntityRetrievalException {
-        DeveloperStatusEventEntity statusEventEntity = 
+        DeveloperStatusEventEntity statusEventEntity =
                 entityManager.find(DeveloperStatusEventEntity.class, statusEventDto.getId());
-        if(statusEventEntity == null) {
+        if (statusEventEntity == null) {
             String msg = msgUtil.getMessage("developer.updateStatus.idNotFound", statusEventDto.getId());
             LOGGER.error(msg);
             throw new EntityRetrievalException(msg);

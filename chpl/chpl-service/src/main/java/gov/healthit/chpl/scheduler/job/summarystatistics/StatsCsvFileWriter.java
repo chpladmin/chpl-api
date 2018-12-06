@@ -15,7 +15,7 @@ import org.apache.logging.log4j.Logger;
 import gov.healthit.chpl.domain.statistics.Statistics;
 
 public class StatsCsvFileWriter {
-    private Logger logger; 
+    private Logger logger;
     // Delimiter used in CSV file
     private static final String NEW_LINE_SEPARATOR = "\n";
 
@@ -30,7 +30,6 @@ public class StatsCsvFileWriter {
     };
 
     public void writeCsvFile(String fileName, List<Statistics> statsCsvOutput) {
-        
         CSVFormat csvFileFormat = CSVFormat.DEFAULT.withRecordSeparator(NEW_LINE_SEPARATOR);
         SimpleDateFormat dateFormat = new SimpleDateFormat("E MMM dd yyyy");
 
@@ -73,7 +72,7 @@ public class StatsCsvFileWriter {
     public void setLogger(Logger logger) {
         this.logger = logger;
     }
-    
+
     public Logger getLogger() {
         if (logger == null) {
             logger = LogManager.getLogger(StatsCsvFileWriter.class);

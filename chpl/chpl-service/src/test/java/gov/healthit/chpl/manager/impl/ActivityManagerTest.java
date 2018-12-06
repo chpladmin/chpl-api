@@ -305,8 +305,7 @@ public class ActivityManagerTest extends TestCase {
      * Given the API call is made for
      * /activity/user_activities?start=milliValue?end=milliValue When an
      * activity exists for a valid user Then the authenticated user's activity
-     * is returned
-     * 
+     * is returned.
      * @throws JsonParseException
      * @throws IOException
      * @throws UserRetrievalException

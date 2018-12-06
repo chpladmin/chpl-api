@@ -13,10 +13,10 @@ public final class Util {
     private static final int BASE_16 = 16;
     private static final String dateFormat = "yyyy-MM-dd";
     private static final String timestampFormat = "yyyyMMdd_HHmmss";
-    
+
     public static SimpleDateFormat dateFormatter = new SimpleDateFormat(dateFormat);
     public static SimpleDateFormat timestampFormatter = new SimpleDateFormat(timestampFormat);
-    
+
     private Util() {
 
     }
@@ -42,11 +42,11 @@ public final class Util {
         }
         return md5;
     }
-    
+
     public static SimpleDateFormat getDateFormatter() {
         return Util.dateFormatter;
     }
-    
+
     public static SimpleDateFormat getTimestampFormatter() {
         return Util.timestampFormatter;
     }

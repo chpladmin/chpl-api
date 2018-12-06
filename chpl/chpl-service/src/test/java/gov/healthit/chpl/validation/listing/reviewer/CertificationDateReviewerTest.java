@@ -27,7 +27,7 @@ public class CertificationDateReviewerTest {
     private static final String FUTURE_CERT_DATE_ERROR = "Certification date occurs in the future.";
     @Autowired private ListingMockUtil mockUtil;
     @Autowired private MessageSource messageSource;
-    
+
     @Spy
     private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
 
@@ -60,7 +60,6 @@ public class CertificationDateReviewerTest {
         cal.add(Calendar.YEAR, 1);
         listing.setCertificationDate(cal.getTimeInMillis());
         certDateReviewer.review(listing);
-        
         assertTrue(listing.getErrorMessages().contains(FUTURE_CERT_DATE_ERROR));
     }
 }

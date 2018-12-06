@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 public class ErrorMessageUtil {
 
     private MessageSource messageSource;
-    
-    @Autowired 
+
+    @Autowired
     public ErrorMessageUtil(final MessageSource messageSource) {
         this.messageSource = messageSource;
     }

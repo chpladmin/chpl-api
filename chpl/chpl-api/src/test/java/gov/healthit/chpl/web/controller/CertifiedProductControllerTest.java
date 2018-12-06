@@ -81,7 +81,7 @@ import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
     DirtiesContextTestExecutionListener.class,
     TransactionalTestExecutionListener.class,
     DbUnitTestExecutionListener.class })
-@DatabaseSetup("classpath:data/testData.xml") 
+@DatabaseSetup("classpath:data/testData.xml")
 public class CertifiedProductControllerTest {
     @Rule
     @Autowired
@@ -113,14 +113,14 @@ public class CertifiedProductControllerTest {
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ACB"));
     }
 
-    /** 
-     * This tests 4 scenarios for CP Update(CertifiedProductSearchDetails) to determine that a warning is returned for mismatched Certification Status + CHPL Product Number ICS. 
-     * An error should be returned when Certification Status + CHPL Product Number ICS are matching Boolean values 
+    /**
+     * This tests 4 scenarios for CP Update(CertifiedProductSearchDetails) to determine that a warning is returned for mismatched Certification Status + CHPL Product Number ICS.
+     * An error should be returned when Certification Status + CHPL Product Number ICS are matching Boolean values
      * because a Certified Product cannot carry a retired Test Tool when the CP ICS = false.
-     * 
+     *
      * 1. 2015 Certification Edition + false Certification Status + true ICS = returns error (no mismatch)
-     * Given that a user with sufficient privileges edits/updates an existing Certified Product 
-     * (Note: the logged in user must have ROLE_ADMIN or ROLE_ACB and have administrative authority on the ACB that certified the product. 
+     * Given that a user with sufficient privileges edits/updates an existing Certified Product
+     * (Note: the logged in user must have ROLE_ADMIN or ROLE_ACB and have administrative authority on the ACB that certified the product.
      * If a different ACB is passed in as part of the request, an ownership change will take place and the logged in user must have ROLE_ADMIN)
      * When the UI calls the API at /certified_products/update
      * When the user tries to update a 2015 Certified Product with the following:
@@ -128,14 +128,14 @@ public class CertifiedProductControllerTest {
      * retired test tool = true
      * Inherited Certification Status false(unchecked) and the user sets the CHPL Product Number's ICS to 0
      * Then the API returns an error because there is no mismatch between Certification Status and CHPL Product Number ICS
-     * 
+     *
      * 2. 2015 Certification Edition + true Certification Status + false ICS = returns warning (mismatch)
      * When the user tries to update a 2015 Certified Product with the following:
      * existing ics = true
      * retired test tool = true
      * Inherited Certification Status true(checked) and the user sets the CHPL Product Number's ICS to 0
      * Then the API returns a warning because Inherited Certification Status and CHPL Product Number ICS are mismatched
-     * 
+     *
      * 3. 2014 Certification Edition + false Certification Status + true ICS = returns error (no mismatch)
      * * When the user tries to update a 2014 Certified Product with the following:
      * existing ics = false
@@ -155,7 +155,7 @@ public class CertifiedProductControllerTest {
     @Transactional
     @Rollback(true)
     @Test
-    public void test_updateCertifiedProductSearchDetails_icsAndRetiredTTs_warningvsError() 
+    public void test_updateCertifiedProductSearchDetails_icsAndRetiredTTs_warningvsError()
             throws EntityRetrievalException, EntityCreationException, IOException,
             MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -227,7 +227,7 @@ public class CertifiedProductControllerTest {
         List<CQMResultCertification> cqmResultCertifications = new ArrayList<CQMResultCertification>();
         cqm.setCriteria(cqmResultCertifications);
         cqm.setDescription("Acute myocardial infarction (AMI) patients with ST-segment elevation on the ECG closest to arrival time receiving "
-                + "fibrinolytic therapy during the hospital visit"); 
+                + "fibrinolytic therapy during the hospital visit");
         cqm.setDomain(null);
         cqm.setId(0L);
         cqm.setNqfNumber("0164");
@@ -317,14 +317,14 @@ public class CertifiedProductControllerTest {
 
     }
 
-    /** 
-     * This tests 4 scenarios for CP Update(PendingCertifiedProductDTO) to determine that a warning is returned for mismatched Certification Status + CHPL Product Number ICS. 
-     * An error should be returned when Certification Status + CHPL Product Number ICS are matching Boolean values 
+    /**
+     * This tests 4 scenarios for CP Update(PendingCertifiedProductDTO) to determine that a warning is returned for mismatched Certification Status + CHPL Product Number ICS.
+     * An error should be returned when Certification Status + CHPL Product Number ICS are matching Boolean values
      * because a Certified Product cannot carry a retired Test Tool when the CP ICS = false.
-     * 
+     *
      * 1. 2015 Certification Edition + false Certification Status + true ICS = returns error (no mismatch)
-     * Given that a user with sufficient privileges edits/updates an existing Certified Product 
-     * (Note: the logged in user must have ROLE_ADMIN or ROLE_ACB and have administrative authority on the ACB that certified the product. 
+     * Given that a user with sufficient privileges edits/updates an existing Certified Product
+     * (Note: the logged in user must have ROLE_ADMIN or ROLE_ACB and have administrative authority on the ACB that certified the product.
      * If a different ACB is passed in as part of the request, an ownership change will take place and the logged in user must have ROLE_ADMIN)
      * When the UI calls the API at /certified_products/update
      * When the user tries to update a 2015 Certified Product with the following:
@@ -332,21 +332,21 @@ public class CertifiedProductControllerTest {
      * retired test tool = true
      * Inherited Certification Status false(unchecked) and the user sets the CHPL Product Number's ICS to 0
      * Then the API returns an error because there is no mismatch between Certification Status and CHPL Product Number ICS
-     * 
+     *
      * 2. 2015 Certification Edition + true Certification Status + false ICS = returns warning (mismatch)
      * When the user tries to update a 2015 Certified Product with the following:
      * existing ics = true
      * retired test tool = true
      * Inherited Certification Status true(checked) and the user sets the CHPL Product Number's ICS to 0
      * Then the API returns a warning because Inherited Certification Status and CHPL Product Number ICS are mismatched
-     * 
+     *
      * 3. 2014 Certification Edition + false Certification Status + true ICS = returns error (no mismatch)
      * * When the user tries to update a 2014 Certified Product with the following:
      * existing ics = false
      * retired test tool = true
      * Inherited Certification Status false(unchecked) and the user sets the CHPL Product Number's ICS to 0
      * Then the API returns an error because there is no mismatch between Certification Status and CHPL Product Number ICS
-     * 
+     *
      * 4. 2014 Certification Edition + true Certification Status + false ICS = returns warning (mismatch)
      * * When the user tries to update a 2014 Certified Product with the following:
      * existing ics = true
@@ -499,8 +499,8 @@ public class CertifiedProductControllerTest {
                 + "as it is a retired tool, and this Certified Product does not carry ICS."));
     }
 
-    /** 
-     * GIVEN A user edits a certified product
+    /**
+     * GIVEN A user edits a certified product.
      * WHEN they view their pending products
      * THEN they should see errors if any privacy and security framework values do not match one of "Approach 1", "Approach 2", "Approach 1;Approach 2"
      * (Note: Validation should be generous with case and whitespace)
@@ -511,8 +511,8 @@ public class CertifiedProductControllerTest {
     @Transactional
     @Rollback(true)
     @Test
-    public void test_updateCertifiedProductSearchDetails_privacyAndSecurityFramework_badValueShowsError() 
-            throws EntityRetrievalException, EntityCreationException, IOException, 
+    public void test_updateCertifiedProductSearchDetails_privacyAndSecurityFramework_badValueShowsError()
+            throws EntityRetrievalException, EntityCreationException, IOException,
             ValidationException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         CertifiedProductSearchDetails updateRequest = new CertifiedProductSearchDetails();
@@ -570,7 +570,7 @@ public class CertifiedProductControllerTest {
         List<CQMResultCertification> cqmResultCertifications = new ArrayList<CQMResultCertification>();
         cqm.setCriteria(cqmResultCertifications);
         cqm.setDescription("Acute myocardial infarction (AMI) patients with ST-segment elevation on the ECG closest to arrival time receiving "
-                + "fibrinolytic therapy during the hospital visit"); 
+                + "fibrinolytic therapy during the hospital visit");
         cqm.setDomain(null);
         cqm.setId(0L);
         cqm.setNqfNumber("0164");
@@ -610,7 +610,7 @@ public class CertifiedProductControllerTest {
         }
     }
 
-    /** 
+    /**
      * GIVEN A user edits a certified product with a privacy and security framework
      * value of " Approach 1 ,  Approach 2 "
      * WHEN they view their pending products
@@ -624,8 +624,8 @@ public class CertifiedProductControllerTest {
     @Transactional
     @Rollback(true)
     @Test
-    public void test_updateCertifiedProductSearchDetails_privacyAndSecurityFramework_handlesWhitespaces() 
-            throws EntityRetrievalException, EntityCreationException, IOException, 
+    public void test_updateCertifiedProductSearchDetails_privacyAndSecurityFramework_handlesWhitespaces()
+            throws EntityRetrievalException, EntityCreationException, IOException,
             ValidationException, InvalidArgumentsException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
@@ -696,7 +696,7 @@ public class CertifiedProductControllerTest {
         List<CQMResultCertification> cqmResultCertifications = new ArrayList<CQMResultCertification>();
         cqm.setCriteria(cqmResultCertifications);
         cqm.setDescription("Acute myocardial infarction (AMI) patients with ST-segment elevation on the ECG closest to arrival time receiving "
-                + "fibrinolytic therapy during the hospital visit"); 
+                + "fibrinolytic therapy during the hospital visit");
         cqm.setDomain(null);
         cqm.setId(0L);
         cqm.setNqfNumber("0164");
@@ -807,7 +807,7 @@ public class CertifiedProductControllerTest {
         cqm.setVersion("v0");
         cqm.setCmsId("CMS60");
         cqm.setCqmCriterionId(0L);
-        cqm.setCqmNumber(null); 
+        cqm.setCqmNumber(null);
         cqm.setDomain(null);
         cqm.setId(0L);
         cqm.setNqfNumber("0164");
@@ -906,7 +906,7 @@ public class CertifiedProductControllerTest {
         cqm.setVersion("v0");
         cqm.setCmsId("CMS60");
         cqm.setCqmCriterionId(0L);
-        cqm.setCqmNumber(null); 
+        cqm.setCqmNumber(null);
         cqm.setDomain(null);
         cqm.setId(0L);
         cqm.setNqfNumber("0164");
@@ -1005,7 +1005,7 @@ public class CertifiedProductControllerTest {
         cqm.setVersion("v0");
         cqm.setCmsId("CMS60");
         cqm.setCqmCriterionId(0L);
-        cqm.setCqmNumber(null); 
+        cqm.setCqmNumber(null);
         cqm.setDomain(null);
         cqm.setId(0L);
         cqm.setNqfNumber("0164");
@@ -1034,12 +1034,12 @@ public class CertifiedProductControllerTest {
     }
 
     /**
-     * GIVEN a user is on the Pending CPs page
+     * GIVEN a user is on the Pending CPs page.
      * WHEN they reject a pending CP that was already deleted because it was rejected or confirmed
      * THEN the API returns a 400 BAD REQUEST with the lastModifiedUser's Contact info
-     * @throws EntityCreationException 
-     * @throws EntityRetrievalException 
-     * @throws JsonProcessingException 
+     * @throws EntityCreationException
+     * @throws EntityRetrievalException
+     * @throws JsonProcessingException
      */
     @Transactional
     @Rollback(true)
@@ -1061,17 +1061,17 @@ public class CertifiedProductControllerTest {
     }
 
     /**
-     * GIVEN a user is on the Pending CPs page
+     * GIVEN a user is on the Pending CPs page.
      * WHEN they bulk reject a pending CP(s) that was already deleted because it was rejected or confirmed
      * THEN the API returns a 400 BAD REQUEST with the lastModifiedUser's Contact info
-     * @throws EntityCreationException 
-     * @throws EntityRetrievalException 
-     * @throws JsonProcessingException 
+     * @throws EntityCreationException
+     * @throws EntityRetrievalException
+     * @throws JsonProcessingException
      */
     @Transactional
     @Rollback(true)
     @Test
-    public void test_bulkRejectPendingCP_isAlreadyDeleted_returnsBadRequest() 
+    public void test_bulkRejectPendingCP_isAlreadyDeleted_returnsBadRequest()
             throws JsonProcessingException, EntityRetrievalException, EntityCreationException, InvalidArgumentsException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         Boolean hasError = false;
@@ -1094,15 +1094,15 @@ public class CertifiedProductControllerTest {
         assertTrue(hasError);
     }
 
-    /** 
+    /**
      * GIVEN a user is on the Pending CPs page
      * WHEN they confirm a pending CP that was already deleted because it was rejected or confirmed
      * THEN the API returns a 400 BAD REQUEST with the lastModifiedUser's Contact info
-     * @throws EntityCreationException 
-     * @throws EntityRetrievalException 
-     * @throws JsonProcessingException 
-     * @throws ValidationException 
-     * @throws InvalidArgumentsException 
+     * @throws EntityCreationException
+     * @throws EntityRetrievalException
+     * @throws JsonProcessingException
+     * @throws ValidationException
+     * @throws InvalidArgumentsException
      */
     @Transactional
     @Rollback(true)
@@ -1263,7 +1263,7 @@ public class CertifiedProductControllerTest {
 
     @Transactional
     @Test(expected = EntityRetrievalException.class)
-    public void getMissingCertifiedProductDetailsById() 
+    public void getMissingCertifiedProductDetailsById()
             throws EntityRetrievalException, EntityCreationException, IOException {
         certifiedProductController.getCertifiedProductById(65732843893L);
     }

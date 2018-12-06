@@ -104,7 +104,7 @@ public class ChplNumberReviewerTest {
         Mockito.doReturn(ICS_CODE_TRUE_NO_ICS_ERROR)
         .when(msgUtil).getMessage(
                 ArgumentMatchers.eq("listing.icsCodeTrueValueFalse"));
-        
+
         Mockito.doReturn(false).when(certificationResultManager).getCertifiedProductHasAdditionalSoftware(ArgumentMatchers.anyLong());
         Mockito.when(
                 certResultManager.getCertifiedProductHasAdditionalSoftware(ArgumentMatchers.anyLong()))
@@ -260,7 +260,7 @@ public class ChplNumberReviewerTest {
         assertTrue(listing.getErrorMessages().contains(ICS_CODE_FALSE_HAS_ICS_ERROR));
         assertFalse(listing.getErrorMessages().contains(ICS_CODE_TRUE_NO_ICS_ERROR));
     }
-    
+
     @Test
     public void testBadAdditionalSoftwareCodeLength_HasError() {
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
@@ -333,7 +333,7 @@ public class ChplNumberReviewerTest {
         } catch (EntityRetrievalException ex) { }
 
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
-        //the mock listing does not have additional software; 
+        //the mock listing does not have additional software;
         //add some to a criteria that was met.
         boolean addedSoftwareToOneCert = false;
         for (CertificationResult cert : listing.getCertificationResults()) {
@@ -374,7 +374,7 @@ public class ChplNumberReviewerTest {
         .thenReturn(Boolean.TRUE);
 
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
-        //the mock listing does not have additional software; 
+        //the mock listing does not have additional software;
         //add some to a criteria that was met.
         boolean addedSoftwareToOneCert = false;
         for (CertificationResult cert : listing.getCertificationResults()) {

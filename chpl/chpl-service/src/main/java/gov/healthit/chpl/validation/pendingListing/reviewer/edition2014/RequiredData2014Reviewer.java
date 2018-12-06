@@ -33,7 +33,7 @@ public class RequiredData2014Reviewer extends RequiredDataReviewer {
         super.review(listing);
         if (listing.getPracticeTypeId() == null) {
             listing.getErrorMessages().add("Practice setting is required but was not found.");
-        } 
+        }
 //        else {
 //            listing.getErrorMessages().addAll(
 //                    certifiedtProductTestFunctionalityValidator.getTestFunctionalityValidationErrors(product));
@@ -51,7 +51,7 @@ public class RequiredData2014Reviewer extends RequiredDataReviewer {
         if (listing.getHasQms() != null && !listing.getHasQms() && !listing.getQmsStandards().isEmpty()) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.missingQMSBoolean"));
         }
-        
+
         boolean isCqmRequired = false;
         for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
             if (cert.getMeetsCriteria()) {

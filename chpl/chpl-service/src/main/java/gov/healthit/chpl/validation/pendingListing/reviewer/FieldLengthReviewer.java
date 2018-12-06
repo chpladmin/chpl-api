@@ -13,7 +13,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 public class FieldLengthReviewer implements Reviewer {
     @Autowired private ErrorMessageUtil msgUtil;
     @Autowired private MessageSource messageSource;
-    
+
     @Override
     public void review(PendingCertifiedProductDTO listing) {
         checkField(listing, listing.getCertificationEditionId(), "certificationEdition");
@@ -23,7 +23,7 @@ public class FieldLengthReviewer implements Reviewer {
         checkField(listing, listing.getDeveloperName(), "vendorName");
         checkField(listing, listing.getProductName(), "productName");
         checkField(listing, listing.getProductVersion(), "productVersion");
-        if(listing.getDeveloperAddress() != null) {
+        if (listing.getDeveloperAddress() != null) {
             checkField(listing, listing.getDeveloperAddress().getStreetLineOne(), "vendorStreetAddress");
             checkField(listing, listing.getDeveloperAddress().getStreetLineTwo(), "vendorStreetAddressTwo");
             checkField(listing, listing.getDeveloperAddress().getCity(), "vendorCity");
@@ -41,7 +41,7 @@ public class FieldLengthReviewer implements Reviewer {
         checkField(listing, listing.getDeveloperContactName(), "vendorContactName");
 
     }
-    
+
     private void checkField(final PendingCertifiedProductDTO listing, final Object field, final String errorField) {
         if (field instanceof Long) {
             Long fieldCasted = (Long) field;
@@ -57,7 +57,7 @@ public class FieldLengthReviewer implements Reviewer {
             }
         }
     }
-    
+
     private int getMaxLength(final String field) {
         return Integer.parseInt(String.format(
                 messageSource.getMessage(new DefaultMessageSourceResolvable(field),

@@ -12,7 +12,7 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 
 /**
  * Specific extension for 2014 CSV version of file.
- * 
+ *
  * @author alarned
  *
  */

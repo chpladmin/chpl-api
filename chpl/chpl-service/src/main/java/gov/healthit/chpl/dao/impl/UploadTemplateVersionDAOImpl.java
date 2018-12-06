@@ -27,9 +27,9 @@ public class UploadTemplateVersionDAOImpl extends BaseDAOImpl implements UploadT
                 + "WHERE (NOT entity.deleted = true) "
                 + "AND entity.id = :id", UploadTemplateVersionEntity.class);
         query.setParameter("id", id);
-        
+
         List<UploadTemplateVersionEntity> entities = query.getResultList();
-        if(entities == null || entities.size() == 0) {
+        if (entities == null || entities.size() == 0) {
             String msg = String.format(
                     messageSource.getMessage(new DefaultMessageSourceResolvable("uploadTemplateVersion.notFound"),
                             LocaleContextHolder.getLocale()));
@@ -43,7 +43,7 @@ public class UploadTemplateVersionDAOImpl extends BaseDAOImpl implements UploadT
     @Override
     public List<UploadTemplateVersionDTO> findAll() {
 
-        List<UploadTemplateVersionEntity> entities = 
+        List<UploadTemplateVersionEntity> entities =
                 entityManager.createQuery("SELECT entity "
                         + "FROM UploadTemplateVersionEntity entity "
                         + "WHERE (NOT entity.deleted = true) ", UploadTemplateVersionEntity.class)

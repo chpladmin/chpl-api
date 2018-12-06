@@ -37,7 +37,7 @@ public class InheritedCertificationStatusReviewer implements Reviewer {
         if (listing.getIcs() == null || listing.getIcs().getInherits() == null) {
             return;
         }
-        
+
         Integer icsCodeInteger = productNumUtil.getIcsCode(listing.getChplProductNumber());
         if (listing.getIcs().getInherits().equals(Boolean.TRUE) && icsCodeInteger.intValue() > 0) {
             // if ICS is nonzero, and no parents are found, give error
@@ -49,19 +49,19 @@ public class InheritedCertificationStatusReviewer implements Reviewer {
                 // certification edition must be the same as this listings
                 List<Long> parentIds = new ArrayList<Long>();
                 for (CertifiedProduct potentialParent : listing.getIcs().getParents()) {
-                    //the id might be null if the user changed it in the UI 
+                    //the id might be null if the user changed it in the UI
                     //even though it's a valid CHPL product number
-                    if(potentialParent.getId() == null) {
+                    if (potentialParent.getId() == null) {
                         try {
                             CertifiedProduct found = searchDao.getByChplProductNumber(potentialParent.getChplProductNumber());
                             if (found != null) {
                                 potentialParent.setId(found.getId());
                             }
-                        } catch(Exception ignore) { }
+                        } catch (Exception ignore) { }
                     }
-                    
+
                     //if the ID is still null after trying to look it up, that's a problem
-                    if(potentialParent.getId() == null) {
+                    if (potentialParent.getId() == null) {
                         listing.getErrorMessages().add(
                                 msgUtil.getMessage("listing.icsUniqueIdNotFound", potentialParent.getChplProductNumber()));
                     } else if (potentialParent.getId().toString().equals(listing.getId().toString())) {

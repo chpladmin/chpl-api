@@ -97,7 +97,7 @@ public class CertificationResultEntity implements Serializable {
 
     /**
      * Constructor taking a given ID.
-     * 
+     *
      * @param id
      *            to set
      */
@@ -107,7 +107,7 @@ public class CertificationResultEntity implements Serializable {
 
     /**
      * Return the type of this class. Useful for when dealing with proxies.
-     * 
+     *
      * @return Defining class.
      */
     @Transient
@@ -117,7 +117,7 @@ public class CertificationResultEntity implements Serializable {
 
     /**
      * Return the value associated with the column: certificationCriterion.
-     * 
+     *
      * @return A CertificationCriterion object (this.certificationCriterion)
      */
     public Long getCertificationCriterionId() {
@@ -171,7 +171,7 @@ public class CertificationResultEntity implements Serializable {
 
     /**
      * Return the value associated with the column: id.
-     * 
+     *
      * @return A Long object (this.id)
      */
     public Long getId() {
@@ -180,7 +180,7 @@ public class CertificationResultEntity implements Serializable {
 
     /**
      * Set the value related to the column: id.
-     * 
+     *
      * @param id
      *            the id value you wish to set
      */
@@ -190,7 +190,7 @@ public class CertificationResultEntity implements Serializable {
 
     /**
      * Return the value associated with the column: successful.
-     * 
+     *
      * @return A Boolean object (this.successful)
      */
     public Boolean isSuccess() {

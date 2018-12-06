@@ -42,7 +42,7 @@ public class CertifiedProductControllerMockitoTest {
 
     @Mock
     private ChplNumberReviewer chplNumberReviewer;
-    
+
     @Mock
     private CertifiedProductDetailsManager cpdManager;
 
@@ -68,7 +68,7 @@ public class CertifiedProductControllerMockitoTest {
         //          -> Mock Method getValidator to return instance of MyValidator
         //MyValidator Spy (local class which extends CertifiedProductValidatorImpl)
         //      -> Spy Method validateUniqueId to return true (since we're not testing this...)
-        //      -> Inject Mock of CertificationResultManager 
+        //      -> Inject Mock of CertificationResultManager
         //          -> Mock Method getCertifiedProductHasAdditionalSoftware to return true
         //Use doReturn(...).when(spy).method(...) when setting up spies
         //only return one reviewer for the chpl product number since that is where the

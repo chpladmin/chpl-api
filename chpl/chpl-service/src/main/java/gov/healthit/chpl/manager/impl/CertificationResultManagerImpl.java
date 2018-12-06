@@ -100,7 +100,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
     private MacraMeasureDAO mmDao;
     @Autowired
     private FuzzyChoicesDAO fuzzyChoicesDao;
-    
+
     @Override
     @PreAuthorize("(hasRole('ROLE_ADMIN') or " + "(hasRole('ROLE_ACB'))"
             + "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
@@ -325,7 +325,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
 
         return numChanges;
     }
-    
+
     private Boolean haveMacraMeasuresChanged(List<MacraMeasure> orig, List<MacraMeasure> updated) {
         if (orig == null && updated == null)  {
             return false;
@@ -337,7 +337,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             return !orig.equals(updated);
         }
     }
-    
+
     private int updateAdditionalSoftware(CertificationResult certResult,
             List<CertificationResultAdditionalSoftware> existingAdditionalSoftware,
             List<CertificationResultAdditionalSoftware> updatedAdditionalSoftware)
@@ -1360,7 +1360,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             Long certificationResultId) {
         return certResultDAO.getAdditionalSoftwareForCertificationResult(certificationResultId);
     }
-    
+
     @Override
     public boolean getCertifiedProductHasAdditionalSoftware(Long certifiedProductId) {
         return certResultDAO.getCertifiedProductHasAdditionalSoftware(certifiedProductId);

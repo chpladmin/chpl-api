@@ -55,7 +55,7 @@ public interface SurveillanceManager {
     Surveillance getPendingById(Long acbId, Long survId, boolean includeDeleted) throws EntityRetrievalException;
 
     Long createPendingSurveillance(Long acbId, Surveillance surv);
-    
+
     void deletePendingSurveillance(Long acbId, Long survId, boolean isConfirmed)
             throws ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException,
             EntityCreationException;

@@ -14,7 +14,7 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "test_participant_age")
 public class TestParticipantAgeEntity {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -23,7 +23,7 @@ public class TestParticipantAgeEntity {
 
     @Column(name = "age", nullable = false)
     private String age;
-    
+
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)
     private Date creationDate;

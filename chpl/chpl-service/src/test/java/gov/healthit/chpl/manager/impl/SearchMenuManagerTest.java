@@ -626,7 +626,7 @@ public class SearchMenuManagerTest {
             assertNotNull(td.getCriteria().getNumber());
             assertNotNull(td.getId());
             assertNotNull(td.getName());
-            assertTrue(td.getCriteria().getCertificationEdition().equals("2014") 
+            assertTrue(td.getCriteria().getCertificationEdition().equals("2014")
                     || td.getCriteria().getCertificationEdition().equals("2015"));
         }
     }
@@ -643,7 +643,7 @@ public class SearchMenuManagerTest {
             assertNotNull(tp.getCriteria().getNumber());
             assertNotNull(tp.getId());
             assertNotNull(tp.getName());
-            assertTrue(tp.getCriteria().getCertificationEdition().equals("2014") 
+            assertTrue(tp.getCriteria().getCertificationEdition().equals("2014")
                     || tp.getCriteria().getCertificationEdition().equals("2015"));
         }
     }

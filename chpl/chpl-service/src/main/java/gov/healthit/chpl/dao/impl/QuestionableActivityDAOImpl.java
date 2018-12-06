@@ -31,7 +31,7 @@ import gov.healthit.chpl.entity.questionableActivity.QuestionableActivityVersion
 @Repository("questionableActivityDao")
 public class QuestionableActivityDAOImpl extends BaseDAOImpl implements QuestionableActivityDAO {
     private static final Logger LOGGER = LogManager.getLogger(QuestionableActivityDAOImpl.class);
-    
+
     @Override
     @Transactional
     public QuestionableActivityDTO create(QuestionableActivityDTO dto) {
@@ -130,7 +130,7 @@ public class QuestionableActivityDAOImpl extends BaseDAOImpl implements Question
         }
         return results;
     }
-    
+
     @Override
     @Transactional
     public List<QuestionableActivityProductDTO> findProductActivityBetweenDates(final Date start, final Date end) {

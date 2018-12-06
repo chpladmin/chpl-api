@@ -18,7 +18,7 @@ import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap
 import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap2015Version3;
 
 /**
- * Adds ICS Source (family), Removes columns G1 and G2 for 170.315(g)(7), 
+ * Adds ICS Source (family), Removes columns G1 and G2 for 170.315(g)(7),
  * Adds Test Tool + Test Tool Version + Test Data Version, Test Data Alteration, Test Data Alteration Description for criteria b8,
  * Removes Test Tool + Test Tool Version + Test Data fields for criteria f5
  * @author kekey
@@ -29,18 +29,19 @@ public class CertifiedProductHandler2015Version3 extends CertifiedProductHandler
 
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductHandler2015Version3.class);
     private TemplateColumnIndexMap templateColumnIndexMap;
-    
+
     public CertifiedProductHandler2015Version3() {
         templateColumnIndexMap = new TemplateColumnIndexMap2015Version3();
     }
-    
+
     @Override
     public TemplateColumnIndexMap getColumnIndexMap() {
         return templateColumnIndexMap;
     }
-    
+
     @Override
-    protected void parseTestProceduresVersions(PendingCertificationResultEntity cert, boolean hasTestProcedureNameCol, int tpColumn) {
+    protected void parseTestProceduresVersions(
+            PendingCertificationResultEntity cert, boolean hasTestProcedureNameCol, int tpColumn) {
         for (CSVRecord row : getRecord()) {
             String tpName = "";
             if (hasTestProcedureNameCol) {

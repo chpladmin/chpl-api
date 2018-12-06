@@ -17,7 +17,7 @@ public class CertifiedProductXmlGenerator extends XmlGenerator {
             sw.writeEndElement();
         }
     }
-    
+
     public static void add(CertifiedProduct cp, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (cp != null) {
             sw.writeStartElement(rootNodeName);

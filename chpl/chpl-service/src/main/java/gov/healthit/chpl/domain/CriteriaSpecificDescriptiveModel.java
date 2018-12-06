@@ -30,7 +30,7 @@ public class CriteriaSpecificDescriptiveModel extends DescriptiveModel implement
     public void setCriteria(final CertificationCriterion criteria) {
         this.criteria = criteria;
     }
-    
+
     @Override
     public boolean equals(final Object obj) {
         if (!(obj instanceof CriteriaSpecificDescriptiveModel)) {

@@ -37,26 +37,26 @@ public class ChplProductNumberUtil {
 
     @Autowired
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
-    
+
     @Autowired
     private ChplProductNumberDAO chplProductNumberDAO;
 
     private static final int CERTIFICATION_EDITION_BEGIN_INDEX = 2;
 
     private static final int CERTIFICATION_EDITION_END_INDEX = 4;
-    
+
     private static final int LEGACY_ID_LENGTH = 10;
     private static final String LEGACY_ID_BEGIN = "CHP-";
 
     /**
      * Gets the CHPL Product Number as calculated by the DB
      * @param certifiedProductId - Long
-     * @return - String 
+     * @return - String
      */
     public String generate(Long certifiedProductId) {
         return chplProductNumberDAO.getChplProductNumber(certifiedProductId);
     }
-    
+
     /**
      * Determines what the derived CHPL Product Number will be based on the values passed.
      * @param uniqueId - Unique ID from the product
@@ -163,7 +163,7 @@ public class ChplProductNumberUtil {
 
         return parts;
     }
-    
+
     public boolean isLegacy(String chplProductNumber) {
         if(!StringUtils.isEmpty(chplProductNumber) && chplProductNumber.length() == LEGACY_ID_LENGTH
                 && chplProductNumber.startsWith(LEGACY_ID_BEGIN)) {
