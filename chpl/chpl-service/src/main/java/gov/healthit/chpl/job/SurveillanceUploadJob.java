@@ -119,14 +119,15 @@ public class SurveillanceUploadJob extends RunnableJob {
                                         try {
                                             SurveillanceUploadHandler handler = uploadHandlerFactory.getHandler(heading, rows);
                                             Surveillance pendingSurv = handler.handle();
-                                            List<String> errors = survUploadManager.checkUploadedSurveillanceOwnership(pendingSurv);
-                                            for(String error : errors) {
+                                            List<String> errors =
+                                                    survUploadManager.checkUploadedSurveillanceOwnership(pendingSurv);
+                                            for (String error : errors) {
                                                 parserErrors.add(error);
                                             }
                                             pendingSurvs.add(pendingSurv);
-                                            
+
                                             //Add some percent complete between 2 and 50
-                                            jobPercentComplete += 48.0 / (double)(survCount);
+                                            jobPercentComplete += 48.0 / (double) survCount;
                                             updateStatus(jobPercentComplete, JobStatusType.In_Progress);
                                         } catch (final InvalidArgumentsException ex) {
                                             LOGGER.error(ex.getMessage());
@@ -140,7 +141,7 @@ public class SurveillanceUploadJob extends RunnableJob {
                                 } // ignore blank rows
                             }
                         }
-    
+
                         // add the last object
                         if (i == records.size() - 1 && !rows.isEmpty()) {
                             try {

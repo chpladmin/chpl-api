@@ -113,7 +113,7 @@ public class ListingTestFunctionalityReviewerTest {
                 String message =
                         "In Criteria %s, Test Functionality %s is for Criteria %s and is not valid for Criteria %s.";
                 Object[] args = invocation.getArguments();
-                return String.format(message, (String)args[1], (String)args[2], (String)args[3], (String)args[4]);
+                return String.format(message, (String) args[1], (String) args[2], (String) args[3], (String) args[4]);
             }
         }).when(msgUtil).getMessage(
                 ArgumentMatchers.eq("listing.criteria.testFunctionalityCriterionMismatch"),

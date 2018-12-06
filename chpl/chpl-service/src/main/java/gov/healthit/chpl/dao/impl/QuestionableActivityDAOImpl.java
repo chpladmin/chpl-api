@@ -37,36 +37,37 @@ public class QuestionableActivityDAOImpl extends BaseDAOImpl implements Question
     public QuestionableActivityDTO create(QuestionableActivityDTO dto) {
         QuestionableActivityDTO created = null;
         QuestionableActivityEntity toCreate = null;
-        if(dto instanceof QuestionableActivityVersionDTO) {
+        if (dto instanceof QuestionableActivityVersionDTO) {
             toCreate = new QuestionableActivityVersionEntity();
-            QuestionableActivityVersionEntity versionActivity = (QuestionableActivityVersionEntity)toCreate;
-            versionActivity.setVersionId(((QuestionableActivityVersionDTO)dto).getVersionId());
-        } else if(dto instanceof QuestionableActivityProductDTO) {
+            QuestionableActivityVersionEntity versionActivity = (QuestionableActivityVersionEntity) toCreate;
+            versionActivity.setVersionId(((QuestionableActivityVersionDTO) dto).getVersionId());
+        } else if (dto instanceof QuestionableActivityProductDTO) {
             toCreate = new QuestionableActivityProductEntity();
-            QuestionableActivityProductEntity productActivity = (QuestionableActivityProductEntity)toCreate;
-            productActivity.setProductId(((QuestionableActivityProductDTO)dto).getProductId());
-        } else if(dto instanceof QuestionableActivityDeveloperDTO) {
+            QuestionableActivityProductEntity productActivity = (QuestionableActivityProductEntity) toCreate;
+            productActivity.setProductId(((QuestionableActivityProductDTO) dto).getProductId());
+        } else if (dto instanceof QuestionableActivityDeveloperDTO) {
             toCreate = new QuestionableActivityDeveloperEntity();
-            QuestionableActivityDeveloperEntity developerActivity = (QuestionableActivityDeveloperEntity)toCreate;
-            developerActivity.setDeveloperId(((QuestionableActivityDeveloperDTO)dto).getDeveloperId());
-            developerActivity.setReason(((QuestionableActivityDeveloperDTO)dto).getReason());
-        } else if(dto instanceof QuestionableActivityListingDTO) {
+            QuestionableActivityDeveloperEntity developerActivity = (QuestionableActivityDeveloperEntity) toCreate;
+            developerActivity.setDeveloperId(((QuestionableActivityDeveloperDTO) dto).getDeveloperId());
+            developerActivity.setReason(((QuestionableActivityDeveloperDTO) dto).getReason());
+        } else if (dto instanceof QuestionableActivityListingDTO) {
             toCreate = new QuestionableActivityListingEntity();
-            QuestionableActivityListingEntity listingActivity = (QuestionableActivityListingEntity)toCreate;
-            listingActivity.setListingId(((QuestionableActivityListingDTO)dto).getListingId());
+            QuestionableActivityListingEntity listingActivity = (QuestionableActivityListingEntity) toCreate;
+            listingActivity.setListingId(((QuestionableActivityListingDTO) dto).getListingId());
             listingActivity.setCertificationStatusChangeReason(
-                    ((QuestionableActivityListingDTO)dto).getCertificationStatusChangeReason());
+                    ((QuestionableActivityListingDTO) dto).getCertificationStatusChangeReason());
             listingActivity.setReason(((QuestionableActivityListingDTO) dto).getReason());
-        } else if(dto instanceof QuestionableActivityCertificationResultDTO) {
+        } else if (dto instanceof QuestionableActivityCertificationResultDTO) {
             toCreate = new QuestionableActivityCertificationResultEntity();
-            QuestionableActivityCertificationResultEntity certResultActivity = (QuestionableActivityCertificationResultEntity)toCreate;
-            certResultActivity.setCertResultId(((QuestionableActivityCertificationResultDTO)dto).getCertResultId());
+            QuestionableActivityCertificationResultEntity certResultActivity =
+                    (QuestionableActivityCertificationResultEntity) toCreate;
+            certResultActivity.setCertResultId(((QuestionableActivityCertificationResultDTO) dto).getCertResultId());
             certResultActivity.setReason(((QuestionableActivityCertificationResultDTO) dto).getReason());
         } else {
             LOGGER.error("Unknown class of questionable activity passed in: " + dto.getClass().getName());
             return null;
         }
-        
+
         toCreate.setActivityDate(dto.getActivityDate());
         toCreate.setBefore(dto.getBefore());
         toCreate.setAfter(dto.getAfter());
@@ -77,17 +78,17 @@ public class QuestionableActivityDAOImpl extends BaseDAOImpl implements Question
         entityManager.persist(toCreate);
         entityManager.flush();
         entityManager.clear();
-        
-        if(toCreate instanceof QuestionableActivityVersionEntity) {
-            created = new QuestionableActivityVersionDTO((QuestionableActivityVersionEntity)toCreate);
-        } else if(toCreate instanceof QuestionableActivityProductEntity) {
-            created = new QuestionableActivityProductDTO((QuestionableActivityProductEntity)toCreate);
-        } else if(toCreate instanceof QuestionableActivityDeveloperEntity) {
-            created = new QuestionableActivityDeveloperDTO((QuestionableActivityDeveloperEntity)toCreate);
-        } else if(toCreate instanceof QuestionableActivityListingEntity) {
-            created = new QuestionableActivityListingDTO((QuestionableActivityListingEntity)toCreate);
-        } else if(toCreate instanceof QuestionableActivityCertificationResultEntity) {
-            created = new QuestionableActivityCertificationResultDTO((QuestionableActivityCertificationResultEntity)toCreate);
+
+        if (toCreate instanceof QuestionableActivityVersionEntity) {
+            created = new QuestionableActivityVersionDTO((QuestionableActivityVersionEntity) toCreate);
+        } else if (toCreate instanceof QuestionableActivityProductEntity) {
+            created = new QuestionableActivityProductDTO((QuestionableActivityProductEntity) toCreate);
+        } else if (toCreate instanceof QuestionableActivityDeveloperEntity) {
+            created = new QuestionableActivityDeveloperDTO((QuestionableActivityDeveloperEntity) toCreate);
+        } else if (toCreate instanceof QuestionableActivityListingEntity) {
+            created = new QuestionableActivityListingDTO((QuestionableActivityListingEntity) toCreate);
+        } else if (toCreate instanceof QuestionableActivityCertificationResultEntity) {
+            created = new QuestionableActivityCertificationResultDTO((QuestionableActivityCertificationResultEntity) toCreate);
         }
         return created;
     }
