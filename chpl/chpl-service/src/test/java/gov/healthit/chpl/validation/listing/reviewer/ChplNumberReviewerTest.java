@@ -30,35 +30,31 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
 public class ChplNumberReviewerTest {
-    private static final String PRODUCT_CODE_ERROR = 
-            "The product code is required and must be " +
-                    CertifiedProductDTO.PRODUCT_CODE_LENGTH + 
-                    " characters in length containing only the characters A-Z, a-z, 0-9, and _.";
-    private static final String VERSION_CODE_ERROR = 
-            "The version code is required and must be " +
-                    CertifiedProductDTO.VERSION_CODE_LENGTH + 
-                    " characters in length containing only the characters A-Z, a-z, 0-9, and _.";
-    private static final String ICS_CODE_ERROR =
-            "The ICS code is required and must be " +
-                    CertifiedProductDTO.ICS_CODE_LENGTH + 
-                    " characters in length with a value between 00-99. " +
-                    "If you have exceeded the maximum inheritance level of 99, please contact the CHPL team for further assistance.";
-    private static final String ADDSOFT_CODE_ERROR = 
-            "The additional software code is required and must be " +
-                    CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_LENGTH + 
-                    " character in length containing only the characters 0 or 1.";
-    private static final String CERTDATE_CODE_ERROR =
-            "The certified date code is required and must be " +
-                    CertifiedProductDTO.CERTIFIED_DATE_CODE_LENGTH + 
-                    " characters in length containing only the characters 0-9.";
-    private static final String ICS_CODE_0_HAS_PARENTS_ERROR = "ICS Code is 00, which means this Listing must not inherit from any other Listings";
-    private static final String ICS_CODE_FALSE_HAS_ICS_ERROR = 
+    private static final String PRODUCT_CODE_ERROR = "The product code is required and must be "
+            + CertifiedProductDTO.PRODUCT_CODE_LENGTH
+            + " characters in length containing only the characters A-Z, a-z, 0-9, and _.";
+    private static final String VERSION_CODE_ERROR = "The version code is required and must be "
+            + CertifiedProductDTO.VERSION_CODE_LENGTH
+            + " characters in length containing only the characters A-Z, a-z, 0-9, and _.";
+    private static final String ICS_CODE_ERROR = "The ICS code is required and must be "
+            + CertifiedProductDTO.ICS_CODE_LENGTH
+            + " characters in length with a value between 00-99. "
+            + "If you have exceeded the maximum inheritance level of 99, please contact the CHPL team for further assistance.";
+    private static final String ADDSOFT_CODE_ERROR = "The additional software code is required and must be "
+            + CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_LENGTH
+            + " character in length containing only the characters 0 or 1.";
+    private static final String CERTDATE_CODE_ERROR = "The certified date code is required and must be "
+            + CertifiedProductDTO.CERTIFIED_DATE_CODE_LENGTH
+            + " characters in length containing only the characters 0-9.";
+    private static final String ICS_CODE_0_HAS_PARENTS_ERROR =
+            "ICS Code is 00, which means this Listing must not inherit from any other Listings";
+    private static final String ICS_CODE_FALSE_HAS_ICS_ERROR =
             "The unique id indicates the product does not have ICS but the value for Inherited Certification Status is true.";
-    private static final String ICS_CODE_TRUE_NO_ICS_ERROR = 
+    private static final String ICS_CODE_TRUE_NO_ICS_ERROR =
             "The unique id indicates the product does have ICS but the value for Inherited Certification Status is false.";
     private static final String DUPLICATE_CHPLID_ERROR_END = "one already exists with this ID.";
-            
-    @Autowired 
+
+    @Autowired
     private ListingMockUtil mockUtil;
 
     @Autowired
