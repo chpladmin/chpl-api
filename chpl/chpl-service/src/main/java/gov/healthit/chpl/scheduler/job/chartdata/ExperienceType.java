@@ -3,7 +3,7 @@ package gov.healthit.chpl.scheduler.job.chartdata;
 /**
  * Class containing constants used for professional experience type.
  */
-public class ExperienceType {
+public final class ExperienceType {
 
     private ExperienceType() {}
 

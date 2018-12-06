@@ -17,7 +17,7 @@ import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
  * Helper class for unit tests.
  * Has methods designed to generate mock objects to avoid having to put them in the test database.
  */
-public class CertifiedProductValidationTestHelper {
+public final class CertifiedProductValidationTestHelper {
 
     /** Database ID for 2015 Edition. */
     public static final Long EDITION_2015_ID = 3L;

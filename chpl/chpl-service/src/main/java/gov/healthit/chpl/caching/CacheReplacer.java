@@ -11,7 +11,7 @@ import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 
 @Component
-public class CacheReplacer {
+public final class CacheReplacer {
     private static final Logger LOGGER = LogManager.getLogger(CacheReplacer.class);
 
     private CacheReplacer() {}

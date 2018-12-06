@@ -1,6 +1,6 @@
 package gov.healthit.chpl.caching;
 
-public class CacheNames {
+public final class CacheNames {
     private CacheNames() {}
 
     public static final String ALL_CERT_IDS_WITH_PRODUCTS = "allCertIdsWithProducts";

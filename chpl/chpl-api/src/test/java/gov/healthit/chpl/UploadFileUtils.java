@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
-public class UploadFileUtils {
+public final class UploadFileUtils {
     private static final Logger LOGGER = LogManager.getLogger(UploadFileUtils.class);
 
     private static final String UPLOAD_2014 = "2014_V11_hasGAP.csv";

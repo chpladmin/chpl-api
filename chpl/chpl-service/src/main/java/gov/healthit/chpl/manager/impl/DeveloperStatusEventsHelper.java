@@ -13,7 +13,7 @@ import gov.healthit.chpl.dto.DeveloperStatusEventPair;
  * @author TYoung
  *
  */
-public class DeveloperStatusEventsHelper {
+public final class DeveloperStatusEventsHelper {
 
     private DeveloperStatusEventsHelper() {}
 
