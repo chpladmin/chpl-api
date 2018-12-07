@@ -53,7 +53,7 @@ public class CertificationStatusEntity {
 
     /**
      * Constructor taking a given ID.
-     * 
+     *
      * @param id
      *            to set
      */
@@ -63,7 +63,7 @@ public class CertificationStatusEntity {
 
     /**
      * Return the type of this class. Useful for when dealing with proxies.
-     * 
+     *
      * @return Defining class.
      */
     @Transient

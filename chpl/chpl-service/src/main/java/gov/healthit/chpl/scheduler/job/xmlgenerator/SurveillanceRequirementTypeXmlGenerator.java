@@ -5,14 +5,14 @@ import javax.xml.stream.XMLStreamWriter;
 
 import gov.healthit.chpl.domain.SurveillanceRequirementType;
 
-public class SurveillanceRequirementTypeXmlGenerator extends XmlGenerator{
+public class SurveillanceRequirementTypeXmlGenerator extends XmlGenerator {
+
     public static void addSurveillanceRequirementType(SurveillanceRequirementType srt, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (srt != null) {
             sw.writeStartElement(rootNodeName);
             createSimpleElement(srt.getId(), "id", sw);
             createSimpleElement(srt.getName(), "name", sw);
             sw.writeEndElement();
-            
         }
     }
 }

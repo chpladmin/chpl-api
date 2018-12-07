@@ -22,6 +22,11 @@ import springfox.documentation.spring.web.paths.RelativePathProvider;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+/**
+ * Configuration class for swagger documentation.
+ * @author kekey
+ *
+ */
 @Configuration
 @PropertySource("classpath:environment.properties")
 @EnableSwagger2

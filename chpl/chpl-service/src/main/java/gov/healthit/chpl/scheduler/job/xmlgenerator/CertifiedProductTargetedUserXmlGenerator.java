@@ -17,7 +17,6 @@ public class CertifiedProductTargetedUserXmlGenerator extends XmlGenerator {
             sw.writeEndElement();
         }
     }
-    
 
     public static void add(CertifiedProductTargetedUser user, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (user != null) {

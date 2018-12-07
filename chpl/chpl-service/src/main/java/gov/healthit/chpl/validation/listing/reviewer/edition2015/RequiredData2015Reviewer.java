@@ -93,7 +93,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     private TestDataDAO testDataDao;
 
     @Autowired
-    public RequiredData2015Reviewer(CertificationResultRules certRules, ErrorMessageUtil msgUtil, MacraMeasureDAO macraDao, 
+    public RequiredData2015Reviewer(CertificationResultRules certRules, ErrorMessageUtil msgUtil, MacraMeasureDAO macraDao,
             TestFunctionalityDAO testFuncDao, TestProcedureDAO testProcDao, TestDataDAO testDataDao) {
         super(certRules, msgUtil);
         this.macraDao = macraDao;

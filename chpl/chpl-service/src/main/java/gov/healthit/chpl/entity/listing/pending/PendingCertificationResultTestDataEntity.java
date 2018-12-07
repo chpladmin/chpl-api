@@ -38,10 +38,10 @@ public class PendingCertificationResultTestDataEntity {
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "test_data_id", insertable = false, updatable = false)
     private TestDataEntity testData;
-    
+
     @Column(name = "test_data_name")
     private String testDataName;
-    
+
     @Column(name = "version")
     private String version;
 

@@ -11,13 +11,13 @@ import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.InpatientCompleteRequiredCriteriaReviewer;
 
 /**
- * Reviews legacy (CHP-) listings for 2014 Inpatient, Complete EHR listings
+ * Reviews legacy (CHP-) listings for 2014 Inpatient, Complete EHR listings.
  * @author kekey
  *
  */
 @Component("inpatientComplete2014LegacyListingValidator")
 public class InpatientComplete2014LegacyListingValidator extends InpatientModular2014LegacyListingValidator {
-    @Autowired 
+    @Autowired
     @Qualifier("inpatientCompleteRequiredCriteriaReviewer")
     private InpatientCompleteRequiredCriteriaReviewer reqCriteriaReviewer;
 
@@ -25,7 +25,7 @@ public class InpatientComplete2014LegacyListingValidator extends InpatientModula
 
     @Override
     public List<Reviewer> getReviewers() {
-        if(reviewers == null) {
+        if (reviewers == null) {
             reviewers = super.getReviewers();
             reviewers.add(reqCriteriaReviewer);
         }

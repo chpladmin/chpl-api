@@ -56,7 +56,7 @@ public class StatisticsControllerTest extends TestCase {
 
         assertNotNull(resp);
         assertNotNull(resp.getCriterionProductStatisticsResult());
-        
+
         //Sort so test works consistently
         Collections.sort(resp.getCriterionProductStatisticsResult(), new Comparator<CriterionProductStatistics>() {
             @Override

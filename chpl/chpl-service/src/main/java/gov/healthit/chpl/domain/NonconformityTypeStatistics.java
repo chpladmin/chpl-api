@@ -1,17 +1,8 @@
 package gov.healthit.chpl.domain;
 
-import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
-import gov.healthit.chpl.entity.surveillance.NonconformityTypeStatisticsEntity;
-
 import java.util.Date;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
 
 public class NonconformityTypeStatistics {
 
@@ -22,14 +13,14 @@ public class NonconformityTypeStatistics {
     private Long lastModifiedUser;
     private Date creationDate;
     private Date lastModifiedDate;
-    
-    public NonconformityTypeStatistics(NonconformityTypeStatisticsDTO dto){
-    	this.nonconformityCount = dto.getNonconformityCount();
-    	this.nonconformityType = dto.getNonconformityType();
-    	this.setCreationDate(dto.getCreationDate());
-    	this.setDeleted(dto.getDeleted());
-    	this.setLastModifiedUser(dto.getLastModifiedUser());
-    	this.setLastModifiedDate(dto.getLastModifiedDate());
+
+    public NonconformityTypeStatistics(NonconformityTypeStatisticsDTO dto) {
+        this.nonconformityCount = dto.getNonconformityCount();
+        this.nonconformityType = dto.getNonconformityType();
+        this.setCreationDate(dto.getCreationDate());
+        this.setDeleted(dto.getDeleted());
+        this.setLastModifiedUser(dto.getLastModifiedUser());
+        this.setLastModifiedDate(dto.getLastModifiedDate());
     }
 
     public Long getId() {
@@ -41,22 +32,22 @@ public class NonconformityTypeStatistics {
     }
 
     public Long getNonconformityCount() {
-		return nonconformityCount;
-	}
+        return nonconformityCount;
+    }
 
-	public void setNonconformityCount(Long nonconformityCount) {
-		this.nonconformityCount = nonconformityCount;
-	}
+    public void setNonconformityCount(Long nonconformityCount) {
+        this.nonconformityCount = nonconformityCount;
+    }
 
-	public String getNonconformityType() {
-		return nonconformityType;
-	}
+    public String getNonconformityType() {
+        return nonconformityType;
+    }
 
-	public void setNonconformityType(String nonconformityType) {
-		this.nonconformityType = nonconformityType;
-	}
+    public void setNonconformityType(String nonconformityType) {
+        this.nonconformityType = nonconformityType;
+    }
 
-	public Date getCreationDate() {
+    public Date getCreationDate() {
         return creationDate;
     }
 

@@ -16,31 +16,31 @@ import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
 
 public interface TestingLabManager {
 
-    public void addPermission(TestingLabDTO atl, Long userId, Permission permission) throws UserRetrievalException;
+    void addPermission(TestingLabDTO atl, Long userId, Permission permission) throws UserRetrievalException;
 
-    public void deletePermission(TestingLabDTO atl, Sid recipient, Permission permission);
+    void deletePermission(TestingLabDTO atl, Sid recipient, Permission permission);
 
-    public void deleteAllPermissionsOnAtl(TestingLabDTO atl, Sid recipient);
+    void deleteAllPermissionsOnAtl(TestingLabDTO atl, Sid recipient);
 
-    public void deletePermissionsForUser(UserDTO userDto) throws UserRetrievalException;
+    void deletePermissionsForUser(UserDTO userDto) throws UserRetrievalException;
 
-    public TestingLabDTO create(TestingLabDTO atl)
+    TestingLabDTO create(TestingLabDTO atl)
             throws UserRetrievalException, EntityCreationException, EntityRetrievalException, JsonProcessingException;
 
-    public TestingLabDTO update(TestingLabDTO atl) throws EntityRetrievalException, JsonProcessingException,
+    TestingLabDTO update(TestingLabDTO atl) throws EntityRetrievalException, JsonProcessingException,
             EntityCreationException, UpdateTestingLabException;
 
-    public TestingLabDTO retire(final Long atlId) throws EntityRetrievalException,
+    TestingLabDTO retire(Long atlId) throws EntityRetrievalException,
         JsonProcessingException, EntityCreationException, UpdateTestingLabException;
 
-    public TestingLabDTO unretire(final Long atlId) throws EntityRetrievalException,
+    TestingLabDTO unretire(Long atlId) throws EntityRetrievalException,
         JsonProcessingException, EntityCreationException, UpdateTestingLabException;
 
-    public List<TestingLabDTO> getAllForUser();
+    List<TestingLabDTO> getAllForUser();
 
-    public List<TestingLabDTO> getAll();
+    List<TestingLabDTO> getAll();
 
-    public TestingLabDTO getById(Long id) throws EntityRetrievalException;
+    TestingLabDTO getById(Long id) throws EntityRetrievalException;
 
     List<UserDTO> getAllUsersOnAtl(TestingLabDTO atl);
 

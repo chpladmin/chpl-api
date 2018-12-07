@@ -17,7 +17,7 @@ public class SurveillanceNonConformityDocumentXmlGenerator extends XmlGenerator 
             sw.writeEndElement();
         }
     }
-    
+
     public static void add(SurveillanceNonconformityDocument doc, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (doc != null) {
             sw.writeStartElement(rootNodeName);

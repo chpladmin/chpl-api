@@ -14,7 +14,7 @@ public abstract class QuestionableActivityDTO {
     private Date activityDate;
     private Long userId;
     private UserDTO user;
-    
+
     public abstract Class<?> getActivityObjectClass();
 
     public QuestionableActivityDTO() {}
@@ -32,7 +32,7 @@ public abstract class QuestionableActivityDTO {
             this.user = new UserDTO(entity.getUser());
         }
     }
-    
+
     public Long getId() {
         return id;
     }
@@ -96,5 +96,5 @@ public abstract class QuestionableActivityDTO {
     public void setUser(UserDTO user) {
         this.user = user;
     }
-    
+
 }

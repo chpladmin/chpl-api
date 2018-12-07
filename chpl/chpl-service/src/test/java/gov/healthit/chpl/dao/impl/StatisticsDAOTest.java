@@ -441,7 +441,7 @@ public class StatisticsDAOTest extends TestCase {
         reqs.add(aReq);
         surv.setRequirements(reqs);
         //start date is one day ago
-        surv.setStartDate(new Date(currentTime.getTime() - (1000*60*60*24)));
+        surv.setStartDate(new Date(currentTime.getTime() - (1000 * 60 * 60 * 24)));
         surv.setEndDate(null);
         SurveillanceType survType = new SurveillanceType();
         survType.setId(1L);
@@ -458,13 +458,13 @@ public class StatisticsDAOTest extends TestCase {
         try {
             SurveillanceEntity insertedSurv = surveillanceDao.getSurveillanceById(insertedSurvId);
             assertNotNull(insertedSurv);
-        } catch(EntityRetrievalException ex) {
+        } catch (EntityRetrievalException ex) {
             fail(ex.getMessage());
             ex.printStackTrace();
         }
         //adding a minute to the searched date range to account
         //for clock difference on ahrq's dev server and dev db server.
-        DateRange dateRange = new DateRange(beginningOfTime, new Date(currentTime.getTime() + (1000*60)));
+        DateRange dateRange = new DateRange(beginningOfTime, new Date(currentTime.getTime() + (1000 * 60)));
         Long totalOpenSurveillanceActivities = surveillanceStatisticsDao.getTotalOpenSurveillanceActivities(dateRange);
         assertNotNull(totalOpenSurveillanceActivities);
         assertEquals(1L, totalOpenSurveillanceActivities.longValue());
@@ -473,7 +473,7 @@ public class StatisticsDAOTest extends TestCase {
     /**
      * Given that getTotalClosedSurveillanceActivities(DateRange) is called When
      * the start date is set to the beginning of time and endDate is set to
-     * now() Then all closed surveillance activities are returned
+     * now() Then all closed surveillance activities are returned.
      */
     @Test
     @Transactional(readOnly = true)

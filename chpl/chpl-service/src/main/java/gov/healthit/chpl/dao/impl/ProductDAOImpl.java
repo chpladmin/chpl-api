@@ -177,9 +177,9 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
                     entityManager.flush();
                 }
             }
-            
+
             // Look for entries in the existing ownership history
-            // and a matching entry in the new ownership history to see if 
+            // and a matching entry in the new ownership history to see if
             // anything changed (transfer date)
             for (ProductActiveOwnerEntity existingPrevOwner : entity.getOwnerHistory()) {
                 boolean isInUpdate = false;
@@ -188,9 +188,9 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
                     if (existingPrevOwner.getDeveloper() != null && updatedProductPreviousOwner.getDeveloper() != null
                             && existingPrevOwner.getDeveloper().getId().longValue() == updatedProductPreviousOwner
                                     .getDeveloper().getId().longValue()) {
-                        
-                        if(existingPrevOwner.getTransferDate().getTime() != 
-                                updatedProductPreviousOwner.getTransferDate().longValue()) {
+
+                        if (existingPrevOwner.getTransferDate().getTime()
+                                != updatedProductPreviousOwner.getTransferDate().longValue()) {
                             existingPrevOwner.setTransferDate(new Date(updatedProductPreviousOwner.getTransferDate()));
                             entityManager.merge(existingPrevOwner);
                             entityManager.flush();
@@ -206,7 +206,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 
     @Override
     @Transactional
-    public void delete(Long id) throws EntityRetrievalException {
+    public void delete(final Long id) throws EntityRetrievalException {
         ProductEntity toDelete = getEntityById(id);
         if (toDelete == null) {
             throw new EntityRetrievalException("Could not find product with id " + id + " for deletion.");

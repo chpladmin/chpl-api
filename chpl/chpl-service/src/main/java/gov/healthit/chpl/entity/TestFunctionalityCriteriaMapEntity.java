@@ -16,13 +16,13 @@ import javax.persistence.Table;
 
 /**
  * @author TYoung
- * Handles the mapping many-to-many relationship between test_functionality and 
+ * Handles the mapping many-to-many relationship between test_functionality and
  * certification_criterion table.
  *
  */
 @Entity
 @Table(name = "test_functionality_criteria_map")
-public class TestFunctionalityCriteriaMapEntity implements Serializable{
+public class TestFunctionalityCriteriaMapEntity implements Serializable {
     private static final long serialVersionUID = 6446486138564063907L;
 
     @Id
@@ -35,20 +35,20 @@ public class TestFunctionalityCriteriaMapEntity implements Serializable{
     @OneToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "criteria_id", insertable = false, updatable = false)
     private CertificationCriterionEntity criteria;
-    
+
     @Basic(optional = false)
     @OneToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "test_functionality_id", insertable = false, updatable = false)
     private TestFunctionalityEntity testFunctionality;
-    
+
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
     private Date creationDate;
-    
+
     @Basic(optional = false)
     @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
     private Date lastModifiedDate;
-    
+
     @Basic(optional = false)
     @Column(name = "deleted", nullable = false)
     private Boolean deleted;
@@ -56,7 +56,7 @@ public class TestFunctionalityCriteriaMapEntity implements Serializable{
     @Basic(optional = false)
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
-    
+
     public Long getId() {
         return id;
     }
@@ -112,5 +112,4 @@ public class TestFunctionalityCriteriaMapEntity implements Serializable{
     public void setLastModifiedUser(Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
-    
 }

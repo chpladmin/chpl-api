@@ -195,7 +195,7 @@ public class TestParticipant implements Serializable {
                 && this.getId().longValue() == anotherParticipant.getId().longValue()) {
             result = true;
         } else if (StringUtils.equals(this.getUniqueId(), anotherParticipant.getUniqueId())
-        		&& StringUtils.equals(this.getAgeRange(), anotherParticipant.getAgeRange())
+                && StringUtils.equals(this.getAgeRange(), anotherParticipant.getAgeRange())
                 && ObjectUtils.equals(this.getAgeRangeId(), anotherParticipant.getAgeRangeId())
                 && StringUtils.equals(this.getAssistiveTechnologyNeeds(),
                         anotherParticipant.getAssistiveTechnologyNeeds())

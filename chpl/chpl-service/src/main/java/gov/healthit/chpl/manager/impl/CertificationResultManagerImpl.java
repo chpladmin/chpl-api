@@ -100,7 +100,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
     private MacraMeasureDAO mmDao;
     @Autowired
     private FuzzyChoicesDAO fuzzyChoicesDao;
-    
+
     @Override
     @PreAuthorize("(hasRole('ROLE_ADMIN') or " + "(hasRole('ROLE_ACB'))"
             + "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
@@ -135,13 +135,13 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             }
             toUpdate.setSuccessful(updated.isSuccess());
 
-            
-            if (toUpdate.getSuccessful() != null && toUpdate.getSuccessful().booleanValue() == false 
-                    && (!ObjectUtils.equals(orig.isG1Success(), updated.isG1Success()) 
+
+            if (toUpdate.getSuccessful() != null && !toUpdate.getSuccessful().booleanValue()
+                    && (!ObjectUtils.equals(orig.isG1Success(), updated.isG1Success())
                             || !ObjectUtils.equals(orig.isG2Success(), updated.isG2Success()))) {
                 toUpdate.setG1Success(updated.isG1Success());
                 toUpdate.setG2Success(updated.isG2Success());
-            } else if (toUpdate.getSuccessful() != null && toUpdate.getSuccessful().booleanValue() == true) {
+            } else if (toUpdate.getSuccessful() != null && toUpdate.getSuccessful().booleanValue()) {
                 toUpdate.setApiDocumentation(updated.getApiDocumentation());
                 toUpdate.setPrivacySecurityFramework(updated.getPrivacySecurityFramework());
                 toUpdate.setG1Success(updated.isG1Success());
@@ -159,13 +159,13 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             numChanges++;
         }
 
-        if (!updated.isSuccess() && 
-                (haveMacraMeasuresChanged(orig.getG1MacraMeasures(), updated.getG1MacraMeasures()) || 
-                        haveMacraMeasuresChanged(orig.getG2MacraMeasures(), updated.getG2MacraMeasures()))) {
+        if (!updated.isSuccess()
+                && (haveMacraMeasuresChanged(orig.getG1MacraMeasures(), updated.getG1MacraMeasures())
+                        || haveMacraMeasuresChanged(orig.getG2MacraMeasures(), updated.getG2MacraMeasures()))) {
             numChanges += updateMacraMeasures(updated, orig.getG1MacraMeasures(), updated.getG1MacraMeasures(), G1_MEASURE);
             numChanges += updateMacraMeasures(updated, orig.getG2MacraMeasures(), updated.getG2MacraMeasures(), G2_MEASURE);
         }
-        
+
         if (updated.isSuccess() == null || updated.isSuccess() == Boolean.FALSE) {
             // similar to delete - remove all related items
             numChanges += updateAdditionalSoftware(updated, orig.getAdditionalSoftware(), null);
@@ -325,7 +325,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
 
         return numChanges;
     }
-    
+
     private Boolean haveMacraMeasuresChanged(List<MacraMeasure> orig, List<MacraMeasure> updated) {
         if (orig == null && updated == null)  {
             return false;
@@ -337,7 +337,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             return !orig.equals(updated);
         }
     }
-    
+
     private int updateAdditionalSoftware(CertificationResult certResult,
             List<CertificationResultAdditionalSoftware> existingAdditionalSoftware,
             List<CertificationResultAdditionalSoftware> updatedAdditionalSoftware)
@@ -583,17 +583,17 @@ public class CertificationResultManagerImpl implements CertificationResultManage
         }
 
         numChanges = ucdToAdd.size() + idsToRemove.size();
-        
+
         List<String> fuzzyQmsChoices = fuzzyChoicesDao.getByType(FuzzyType.UCD_PROCESS).getChoices();
         for (UcdProcess toAdd : ucdToAdd) {
-            if(!fuzzyQmsChoices.contains(toAdd.getName())){
+            if(!fuzzyQmsChoices.contains(toAdd.getName())) {
                 fuzzyQmsChoices.add(toAdd.getName());
                 FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
                 dto.setFuzzyType(FuzzyType.UCD_PROCESS);
                 dto.setChoices(fuzzyQmsChoices);
                 fuzzyChoicesDao.update(dto);
             }
-            
+
             CertificationResultUcdProcessDTO toAddDto = new CertificationResultUcdProcessDTO();
             toAddDto.setCertificationResultId(certResult.getId());
             toAddDto.setUcdProcessId(toAdd.getId());
@@ -1360,7 +1360,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             Long certificationResultId) {
         return certResultDAO.getAdditionalSoftwareForCertificationResult(certificationResultId);
     }
-    
+
     @Override
     public boolean getCertifiedProductHasAdditionalSoftware(Long certifiedProductId) {
         return certResultDAO.getCertifiedProductHasAdditionalSoftware(certifiedProductId);
@@ -1419,11 +1419,8 @@ public class CertificationResultManagerImpl implements CertificationResultManage
         private CertificationResultAdditionalSoftware orig;
         private CertificationResultAdditionalSoftware updated;
 
-        public CertificationResultAdditionalSoftwarePair() {
-        }
-
-        public CertificationResultAdditionalSoftwarePair(CertificationResultAdditionalSoftware orig,
-                CertificationResultAdditionalSoftware updated) {
+        CertificationResultAdditionalSoftwarePair(final CertificationResultAdditionalSoftware orig,
+                final CertificationResultAdditionalSoftware updated) {
             this.orig = orig;
             this.updated = updated;
         }
@@ -1449,10 +1446,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
         private UcdProcess orig;
         private UcdProcess updated;
 
-        public CertificationResultUcdProcessPair() {
-        }
-
-        public CertificationResultUcdProcessPair(UcdProcess orig, UcdProcess updated) {
+        CertificationResultUcdProcessPair(final UcdProcess orig, final UcdProcess updated) {
             this.orig = orig;
             this.updated = updated;
         }
@@ -1478,10 +1472,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
         private CertificationResultTestData orig;
         private CertificationResultTestData updated;
 
-        public CertificationResultTestDataPair() {
-        }
-
-        public CertificationResultTestDataPair(CertificationResultTestData orig, CertificationResultTestData updated) {
+        CertificationResultTestDataPair(final CertificationResultTestData orig, final CertificationResultTestData updated) {
             this.orig = orig;
             this.updated = updated;
         }
@@ -1507,10 +1498,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
         private TestTask orig;
         private TestTask updated;
 
-        public TestTaskPair() {
-        }
-
-        public TestTaskPair(TestTask orig, TestTask updated) {
+        TestTaskPair(final TestTask orig, final TestTask updated) {
             this.orig = orig;
             this.updated = updated;
         }
@@ -1536,10 +1524,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
         private TestParticipant orig;
         private TestParticipant updated;
 
-        public TestParticipantPair() {
-        }
-
-        public TestParticipantPair(TestParticipant orig, TestParticipant updated) {
+        TestParticipantPair(final TestParticipant orig, final TestParticipant updated) {
             this.orig = orig;
             this.updated = updated;
         }

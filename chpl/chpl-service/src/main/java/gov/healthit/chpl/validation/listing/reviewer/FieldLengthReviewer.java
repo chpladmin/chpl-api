@@ -43,7 +43,7 @@ public class FieldLengthReviewer implements Reviewer {
             }
         }
     }
-    
+
     private int getMaxLength(final String field) {
         return Integer.parseInt(String.format(
                 messageSource.getMessage(new DefaultMessageSourceResolvable(field),

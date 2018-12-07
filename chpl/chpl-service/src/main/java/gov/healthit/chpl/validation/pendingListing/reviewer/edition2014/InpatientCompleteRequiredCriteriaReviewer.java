@@ -19,12 +19,12 @@ public class InpatientCompleteRequiredCriteriaReviewer implements Reviewer {
             "170.314 (d)(4)", "170.314 (d)(5)", "170.314 (d)(6)", "170.314 (d)(7)", "170.314 (d)(8)", "170.314 (e)(1)",
             "170.314 (f)(1)", "170.314 (f)(2)", "170.314 (f)(3)", "170.314 (g)(2)", "170.314 (g)(3)", "170.314 (g)(4)"
     };
-    
+
     @Override
     public void review(PendingCertifiedProductDTO listing) {
         checkA1OrA18A19A20(listing);
         checkB1B2B8H1(listing);
-        
+
         List<PendingCertificationResultDTO> certificationCriterion = listing.getCertificationCriterion();
         for (int i = 0; i < REQUIRED_CRITERIA.length; i++) {
             boolean hasCert = false;
@@ -39,8 +39,8 @@ public class InpatientCompleteRequiredCriteriaReviewer implements Reviewer {
             }
         }
     }
-    
-    private boolean checkA1OrA18A19A20(final PendingCertifiedProductDTO listing){
+
+    private boolean checkA1OrA18A19A20(final PendingCertifiedProductDTO listing) {
         boolean hasA1 = false;
         boolean hasA18 = false;
         boolean hasA19 = false;
@@ -67,8 +67,8 @@ public class InpatientCompleteRequiredCriteriaReviewer implements Reviewer {
         }
         return true;
     }
-    
-    private boolean checkB1B2B8H1(final PendingCertifiedProductDTO listing){
+
+    private boolean checkB1B2B8H1(final PendingCertifiedProductDTO listing) {
         // (b)(1), (b)(2)**
         // (in replacement for (b)(1) and (b)(2) -
         // (b)(1) and (b)(8), OR

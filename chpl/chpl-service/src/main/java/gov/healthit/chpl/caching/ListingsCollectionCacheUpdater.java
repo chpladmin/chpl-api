@@ -1,7 +1,5 @@
 package gov.healthit.chpl.caching;
 
-import java.util.Date;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +7,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
 
 @Component
 public class ListingsCollectionCacheUpdater {

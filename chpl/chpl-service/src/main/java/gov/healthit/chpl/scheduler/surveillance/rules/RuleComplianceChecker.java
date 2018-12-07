@@ -8,7 +8,7 @@ import gov.healthit.chpl.domain.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.SurveillanceOversightRule;
 
 public interface RuleComplianceChecker {
-    public SurveillanceOversightRule getRuleChecked();
+    SurveillanceOversightRule getRuleChecked();
 
-    public Date check(CertifiedProductSearchDetails cp, Surveillance surv, SurveillanceNonconformity nc);
+    Date check(CertifiedProductSearchDetails cp, Surveillance surv, SurveillanceNonconformity nc);
 }

@@ -61,235 +61,232 @@ import gov.healthit.chpl.caching.CacheInitializor;
 import gov.healthit.chpl.job.MeaningfulUseUploadJob;
 
 @Configuration
-@EnableGlobalMethodSecurity(prePostEnabled=true)
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @PropertySource("classpath:/environment.test.properties")
 @EnableCaching
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableTransactionManagement
-@ComponentScan(basePackages = {"gov.healthit.chpl.**"}, excludeFilters = {
-		@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class),
-		@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = CacheInitializor.class)
-		})
+@ComponentScan(basePackages = {
+        "gov.healthit.chpl.**"
+}, excludeFilters = {
+        @ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class),
+        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = CacheInitializor.class)
+})
 public class CHPLTestConfig implements EnvironmentAware {
-	
-	private Environment env;
-	
-	@Override
-	public void setEnvironment(final Environment e) {
-		this.env = e;
-	}
-	
-	@Bean
-	public DataSource dataSource() {
+
+    private Environment env;
+
+    @Override
+    public void setEnvironment(final Environment e) {
+        this.env = e;
+    }
+
+    @Bean
+    public DataSource dataSource() {
         PGSimpleDataSource ds = new PGSimpleDataSource();
-    	ds.setServerName(env.getRequiredProperty("testDbServer"));
+        ds.setServerName(env.getRequiredProperty("testDbServer"));
         ds.setUser(env.getRequiredProperty("testDbUser"));
         ds.setPassword(env.getRequiredProperty("testDbPassword"));
-		return ds;
-	}
-	
-	@Bean
-	@Autowired
-	public AuthenticationManager authenticationManager(AuthenticationManagerBuilder auth) throws Exception{
-		return auth.getOrBuild();
-	}
-	
-	
-	@Bean
-	public DatabaseConfigBean databaseConfig() {
-		DatabaseConfigBean bean = new DatabaseConfigBean();
-		//we need this because dbunit deletes everything from the db to start with
-		//and the table "user" is declared as "user" and not user (since user is a reserved word
-		//and perhaps not the best choice of table name). The syntax "delete from user" is invalid
-		//but "delete from "user"" is valid. we need the table names escaped.
-		bean.setEscapePattern("\"?\"");
-		
-		//dbunit has limited support for postgres enum types so we have to tell
-		//it about any enum type names here
-		PostgresqlDataTypeFactory factory = new PostgresqlDataTypeFactory(){
-			  public boolean isEnumType(String sqlTypeName) {
-			    if(sqlTypeName.equalsIgnoreCase("attestation")){
-			      return true;
-			    }
-			    return false;
-			  }
-			};
-		bean.setDatatypeFactory(factory);
-		return bean;
-	}
-	
-	@Bean
-	public DatabaseDataSourceConnectionFactoryBean dbUnitDatabaseConnection() {
-		DatabaseDataSourceConnectionFactoryBean bean = new DatabaseDataSourceConnectionFactoryBean();
-		bean.setDataSource(dataSource());
-		bean.setDatabaseConfig(databaseConfig());
-		return bean;
-	}
-	
-	@Bean
-	public org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean entityManagerFactory(){
-		org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean bean = new org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean();
-		bean.setDataSource(dataSource());
-		bean.setPersistenceUnitName(env.getProperty("persistenceUnitName"));
-		return bean;
-	}
-	
-	@Bean
-	public org.springframework.orm.jpa.JpaTransactionManager transactionManager(){
-		org.springframework.orm.jpa.JpaTransactionManager bean = new org.springframework.orm.jpa.JpaTransactionManager();
-		bean.setEntityManagerFactory(entityManagerFactory().getObject());
-		return bean;
-	}
-	
-	@Bean
-	public org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor persistenceAnnotationBeanPostProcessor(){
-		return new org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor();
-	}
-	
-	@Bean
-	public BCryptPasswordEncoder bCryptPasswordEncoder(){
-		return new BCryptPasswordEncoder();
-	}
-	
-	@Bean
-	public UserDetailsChecker userDetailsChecker(){
-		return new AccountStatusUserDetailsChecker();
-	}
-	
-	@Bean
-	public MappingJackson2HttpMessageConverter jsonConverter(){
-		MappingJackson2HttpMessageConverter bean = new MappingJackson2HttpMessageConverter();
-		bean.setPrefixJson(false);
-		List<MediaType> mediaTypes = new ArrayList<MediaType>();
-		mediaTypes.add(MediaType.APPLICATION_JSON);
-		bean.setSupportedMediaTypes(mediaTypes);
-		bean.getObjectMapper().setSerializationInclusion(Include.NON_NULL);
-		bean.getObjectMapper().configure(MapperFeature.DEFAULT_VIEW_INCLUSION, false);
+        return ds;
+    }
 
-		return bean;
-	}
-	
-	@Bean
-	public TaskExecutor taskExecutor() {
-		ThreadPoolTaskExecutor te = new ThreadPoolTaskExecutor();
-		te.setCorePoolSize(10);
-		te.setMaxPoolSize(100);
-		return te;
-	}
-	
-	@Bean
-	public CacheManager cacheManager() {
-		return new EhCacheCacheManager(ehCacheCacheManager().getObject());
-	}
+    @Bean
+    @Autowired
+    public AuthenticationManager authenticationManager(AuthenticationManagerBuilder auth) throws Exception {
+        return auth.getOrBuild();
+    }
 
-	@Bean
-	public EhCacheManagerFactoryBean ehCacheCacheManager() {
-		EhCacheManagerFactoryBean cmfb = new EhCacheManagerFactoryBean();
-		cmfb.setConfigLocation(new ClassPathResource("ehCache-test.xml"));
-		cmfb.setShared(true);
-		return cmfb;
-	}
-	
-	@Bean
-	public EhCacheFactoryBean ehCacheFactoryBean(){
-		EhCacheFactoryBean bean = new EhCacheFactoryBean();
-		bean.setCacheManager(ehCacheCacheManager().getObject());
-		return bean;
-	}
-	
-	@Bean
-	public EhCacheBasedAclCache aclCache(){
-		EhCacheBasedAclCache bean = new EhCacheBasedAclCache(
-				ehCacheFactoryBean().getObject(),
-				defaultPermissionGrantingStrategy(), 
-				aclAuthorizationStrategyImpl());
-		return bean;
-	}
-	
-	@Bean
-	public ConsoleAuditLogger consoleAuditLogger(){
-		ConsoleAuditLogger bean = new ConsoleAuditLogger();
-		return bean;
-	}
-	
-	@Bean
-	public DefaultPermissionGrantingStrategy defaultPermissionGrantingStrategy(){
-		DefaultPermissionGrantingStrategy bean = new DefaultPermissionGrantingStrategy(consoleAuditLogger());
-		return bean;
-	}
-	
-	@Bean
-	public SimpleGrantedAuthority aclAdminGrantedAuthority(){
-		SimpleGrantedAuthority bean = new SimpleGrantedAuthority("ROLE_ACL_ADMIN");
-		return bean;
-	}
-	
-	@Bean 
-	public AclAuthorizationStrategyImpl aclAuthorizationStrategyImpl(){
-		AclAuthorizationStrategyImpl bean = new AclAuthorizationStrategyImpl(aclAdminGrantedAuthority());
-		return bean;
-	}
-	
-	@Bean
-	public SimpleGrantedAuthority roleAdminGrantedAuthority(){
-		SimpleGrantedAuthority bean = new SimpleGrantedAuthority("ROLE_ADMINISTRATOR");
-		return bean;
-	}
-	
-	@Bean 
-	public AclAuthorizationStrategyImpl aclAuthorizationStrategyImplAdmin(){
-		AclAuthorizationStrategyImpl bean = new AclAuthorizationStrategyImpl(roleAdminGrantedAuthority());
-		return bean;
-	}
-	
-	@Bean
-	public BasicLookupStrategy lookupStrategy() throws Exception {
-		
-		DataSource datasource = (DataSource) dataSource();//.getObject();
-		
-		BasicLookupStrategy bean = new BasicLookupStrategy(
-				datasource,
-				aclCache(),
-				aclAuthorizationStrategyImplAdmin(),
-				consoleAuditLogger());
-		return bean;
-	}
-	
-	@Bean
-	public JdbcMutableAclService mutableAclService() throws Exception{
-		
-		DataSource datasource = (DataSource) dataSource();
-		
-		JdbcMutableAclService bean = new JdbcMutableAclService(datasource, 
-				lookupStrategy(), 
-				aclCache());
-		
-		return bean;
-	}
-	
-	@Bean
-	public AclPermissionEvaluator permissionEvaluator() throws Exception{
-		AclPermissionEvaluator bean = new AclPermissionEvaluator(mutableAclService());
-		return bean;
-	}
-	
-	@Bean
-	public AclPermissionCacheOptimizer aclPermissionCacheOptimizer() throws Exception{
-		AclPermissionCacheOptimizer bean = new AclPermissionCacheOptimizer(mutableAclService());
-		return bean;
-	}
-	
-	@Bean
-	public DefaultMethodSecurityExpressionHandler expressionHandler() throws Exception {
-		
-		DefaultMethodSecurityExpressionHandler bean = new DefaultMethodSecurityExpressionHandler();
-		bean.setPermissionEvaluator(permissionEvaluator());
-		bean.setPermissionCacheOptimizer(aclPermissionCacheOptimizer());
-		return bean;
-	}
-	
-	@Bean
-    public ReloadableResourceBundleMessageSource messageSource(){
+    @Bean
+    public DatabaseConfigBean databaseConfig() {
+        DatabaseConfigBean bean = new DatabaseConfigBean();
+        // we need this because dbunit deletes everything from the db to start
+        // with
+        // and the table "user" is declared as "user" and not user (since user
+        // is a reserved word
+        // and perhaps not the best choice of table name). The syntax "delete
+        // from user" is invalid
+        // but "delete from "user"" is valid. we need the table names escaped.
+        bean.setEscapePattern("\"?\"");
+
+        // dbunit has limited support for postgres enum types so we have to tell
+        // it about any enum type names here
+        PostgresqlDataTypeFactory factory = new PostgresqlDataTypeFactory() {
+            public boolean isEnumType(String sqlTypeName) {
+                if (sqlTypeName.equalsIgnoreCase("attestation")) {
+                    return true;
+                }
+                return false;
+            }
+        };
+        bean.setDatatypeFactory(factory);
+        return bean;
+    }
+
+    @Bean
+    public DatabaseDataSourceConnectionFactoryBean dbUnitDatabaseConnection() {
+        DatabaseDataSourceConnectionFactoryBean bean = new DatabaseDataSourceConnectionFactoryBean();
+        bean.setDataSource(dataSource());
+        bean.setDatabaseConfig(databaseConfig());
+        return bean;
+    }
+
+    @Bean
+    public org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+        org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean bean = new org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean();
+        bean.setDataSource(dataSource());
+        bean.setPersistenceUnitName(env.getProperty("persistenceUnitName"));
+        return bean;
+    }
+
+    @Bean
+    public org.springframework.orm.jpa.JpaTransactionManager transactionManager() {
+        org.springframework.orm.jpa.JpaTransactionManager bean = new org.springframework.orm.jpa.JpaTransactionManager();
+        bean.setEntityManagerFactory(entityManagerFactory().getObject());
+        return bean;
+    }
+
+    @Bean
+    public org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor persistenceAnnotationBeanPostProcessor() {
+        return new org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor();
+    }
+
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public UserDetailsChecker userDetailsChecker() {
+        return new AccountStatusUserDetailsChecker();
+    }
+
+    @Bean
+    public MappingJackson2HttpMessageConverter jsonConverter() {
+        MappingJackson2HttpMessageConverter bean = new MappingJackson2HttpMessageConverter();
+        bean.setPrefixJson(false);
+        List<MediaType> mediaTypes = new ArrayList<MediaType>();
+        mediaTypes.add(MediaType.APPLICATION_JSON);
+        bean.setSupportedMediaTypes(mediaTypes);
+        bean.getObjectMapper().setSerializationInclusion(Include.NON_NULL);
+        bean.getObjectMapper().configure(MapperFeature.DEFAULT_VIEW_INCLUSION, false);
+
+        return bean;
+    }
+
+    @Bean
+    public TaskExecutor taskExecutor() {
+        ThreadPoolTaskExecutor te = new ThreadPoolTaskExecutor();
+        te.setCorePoolSize(10);
+        te.setMaxPoolSize(100);
+        return te;
+    }
+
+    @Bean
+    public CacheManager cacheManager() {
+        return new EhCacheCacheManager(ehCacheCacheManager().getObject());
+    }
+
+    @Bean
+    public EhCacheManagerFactoryBean ehCacheCacheManager() {
+        EhCacheManagerFactoryBean cmfb = new EhCacheManagerFactoryBean();
+        cmfb.setConfigLocation(new ClassPathResource("ehCache-test.xml"));
+        cmfb.setShared(true);
+        return cmfb;
+    }
+
+    @Bean
+    public EhCacheFactoryBean ehCacheFactoryBean() {
+        EhCacheFactoryBean bean = new EhCacheFactoryBean();
+        bean.setCacheManager(ehCacheCacheManager().getObject());
+        return bean;
+    }
+
+    @Bean
+    public EhCacheBasedAclCache aclCache() {
+        EhCacheBasedAclCache bean = new EhCacheBasedAclCache(ehCacheFactoryBean().getObject(),
+                defaultPermissionGrantingStrategy(), aclAuthorizationStrategyImpl());
+        return bean;
+    }
+
+    @Bean
+    public ConsoleAuditLogger consoleAuditLogger() {
+        ConsoleAuditLogger bean = new ConsoleAuditLogger();
+        return bean;
+    }
+
+    @Bean
+    public DefaultPermissionGrantingStrategy defaultPermissionGrantingStrategy() {
+        DefaultPermissionGrantingStrategy bean = new DefaultPermissionGrantingStrategy(consoleAuditLogger());
+        return bean;
+    }
+
+    @Bean
+    public SimpleGrantedAuthority aclAdminGrantedAuthority() {
+        SimpleGrantedAuthority bean = new SimpleGrantedAuthority("ROLE_ACL_ADMIN");
+        return bean;
+    }
+
+    @Bean
+    public AclAuthorizationStrategyImpl aclAuthorizationStrategyImpl() {
+        AclAuthorizationStrategyImpl bean = new AclAuthorizationStrategyImpl(aclAdminGrantedAuthority());
+        return bean;
+    }
+
+    @Bean
+    public SimpleGrantedAuthority roleAdminGrantedAuthority() {
+        SimpleGrantedAuthority bean = new SimpleGrantedAuthority("ROLE_ADMINISTRATOR");
+        return bean;
+    }
+
+    @Bean
+    public AclAuthorizationStrategyImpl aclAuthorizationStrategyImplAdmin() {
+        AclAuthorizationStrategyImpl bean = new AclAuthorizationStrategyImpl(roleAdminGrantedAuthority());
+        return bean;
+    }
+
+    @Bean
+    public BasicLookupStrategy lookupStrategy() throws Exception {
+
+        DataSource datasource = (DataSource) dataSource();// .getObject();
+
+        BasicLookupStrategy bean = new BasicLookupStrategy(datasource, aclCache(), aclAuthorizationStrategyImplAdmin(),
+                consoleAuditLogger());
+        return bean;
+    }
+
+    @Bean
+    public JdbcMutableAclService mutableAclService() throws Exception {
+
+        DataSource datasource = (DataSource) dataSource();
+
+        JdbcMutableAclService bean = new JdbcMutableAclService(datasource, lookupStrategy(), aclCache());
+
+        return bean;
+    }
+
+    @Bean
+    public AclPermissionEvaluator permissionEvaluator() throws Exception {
+        AclPermissionEvaluator bean = new AclPermissionEvaluator(mutableAclService());
+        return bean;
+    }
+
+    @Bean
+    public AclPermissionCacheOptimizer aclPermissionCacheOptimizer() throws Exception {
+        AclPermissionCacheOptimizer bean = new AclPermissionCacheOptimizer(mutableAclService());
+        return bean;
+    }
+
+    @Bean
+    public DefaultMethodSecurityExpressionHandler expressionHandler() throws Exception {
+
+        DefaultMethodSecurityExpressionHandler bean = new DefaultMethodSecurityExpressionHandler();
+        bean.setPermissionEvaluator(permissionEvaluator());
+        bean.setPermissionCacheOptimizer(aclPermissionCacheOptimizer());
+        return bean;
+    }
+
+    @Bean
+    public ReloadableResourceBundleMessageSource messageSource() {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
         messageSource.setBasename("classpath:/errors");
         messageSource.setDefaultEncoding("UTF-8");
@@ -297,7 +294,7 @@ public class CHPLTestConfig implements EnvironmentAware {
     }
 
     @Bean
-    public CookieLocaleResolver localeResolver(){
+    public CookieLocaleResolver localeResolver() {
         CookieLocaleResolver localeResolver = new CookieLocaleResolver();
         localeResolver.setDefaultLocale(Locale.ENGLISH);
         localeResolver.setCookieName("my-locale-cookie");
@@ -306,25 +303,25 @@ public class CHPLTestConfig implements EnvironmentAware {
     }
 
     @Bean
-    public LocaleChangeInterceptor localeInterceptor(){
+    public LocaleChangeInterceptor localeInterceptor() {
         LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
         interceptor.setParamName("lang");
         return interceptor;
     }
 
     @Bean
-    public InternalResourceViewResolver viewResolver(){
+    public InternalResourceViewResolver viewResolver() {
         InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
         viewResolver.setViewClass(JstlView.class);
         viewResolver.setPrefix("/webapp/WEB-INF/jsp/");
         viewResolver.setSuffix(".jsp");
         return viewResolver;
     }
-    
+
     @Bean
-    @Scope(value=ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-	public MeaningfulUseUploadJob meaningfulUseUploadJob() {
-		return new MeaningfulUseUploadJob();
-	}
-	
+    @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+    public MeaningfulUseUploadJob meaningfulUseUploadJob() {
+        return new MeaningfulUseUploadJob();
+    }
+
 }

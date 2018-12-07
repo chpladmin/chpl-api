@@ -30,7 +30,7 @@ public class CertificationResultDetailsEntity {
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "certified_product_id", insertable = false, updatable = false)
     private CertifiedProductDetailsEntity listing;
-    
+
     @Column(name = "success")
     private Boolean success;
 

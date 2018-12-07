@@ -38,7 +38,7 @@ public class ApiKey implements Serializable {
     public Date getLastUsedDate() {
         return lastUsedDate;
     }
-    
+
     public void setLastUsedDate(final Date lastUsedDate) {
         this.lastUsedDate = lastUsedDate;
     }

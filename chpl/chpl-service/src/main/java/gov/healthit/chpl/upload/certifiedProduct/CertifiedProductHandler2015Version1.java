@@ -654,7 +654,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                 && cert.getAdditionalSoftware().size() == 0) {
             product.getErrorMessages().add("Certification " + cert.getMappedCriterion().getNumber() + " for product "
                     + product.getUniqueId() + " indicates additional software should be present but none was found.");
-        } else if ((cert.getHasAdditionalSoftware() == null || cert.getHasAdditionalSoftware().booleanValue() == false)
+        } else if ((cert.getHasAdditionalSoftware() == null || !cert.getHasAdditionalSoftware().booleanValue())
                 && cert.getAdditionalSoftware().size() > 0) {
             product.getErrorMessages()
             .add("Certification " + cert.getMappedCriterion().getNumber() + " for product "

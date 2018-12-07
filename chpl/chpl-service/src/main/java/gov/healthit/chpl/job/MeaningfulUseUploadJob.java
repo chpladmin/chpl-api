@@ -190,8 +190,8 @@ public class MeaningfulUseUploadJob extends RunnableJob {
                         addJobMessage("Line " + muu.getCsvLineNumber()
                                 + ": Field \"chpl_product_number\" is missing.");
                     } else if (muu.getNumberOfUsers() == null) {
-                        addJobMessage("Line " + muu.getCsvLineNumber() +
-                                ": Field \"num_meaningful_users\" is missing.");
+                        addJobMessage("Line " + muu.getCsvLineNumber()
+                            + ": Field \"num_meaningful_users\" is missing.");
                     } else {
                         //make sure the listing is valid and get the details
                         //object so that it can be updated
@@ -220,7 +220,7 @@ public class MeaningfulUseUploadJob extends RunnableJob {
                                     cpdManager.getCertifiedProductDetails(existingListing.getId());
                             activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, existingListing.getId(),
                                     "Updated certified product " + updatedListing.getChplProductNumber() + ".", existingListing,
-                                    updatedListing, 
+                                    updatedListing,
                                     "User " + getUser().getUsername() + " updated MUU count via upload file.");
                         }
                     }

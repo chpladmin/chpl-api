@@ -26,21 +26,17 @@ import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
-import gov.healthit.chpl.dto.TargetedUserDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.entity.AddressEntity;
 import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
-import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTargetedUserEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTestingLabMapEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap;
 
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 @Component("certifiedProductHandler")
 public abstract class CertifiedProductHandler extends CertifiedProductUploadHandlerImpl {
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductHandler.class);
@@ -57,7 +53,7 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
     public abstract TemplateColumnIndexMap getColumnIndexMap();
     public abstract String[] getCriteriaNames();
 
-    public String getErrorMessage(String errorField){
+    public String getErrorMessage(String errorField) {
         return String.format(
                 messageSource.getMessage(new DefaultMessageSourceResolvable(errorField),
                         LocaleContextHolder.getLocale()));

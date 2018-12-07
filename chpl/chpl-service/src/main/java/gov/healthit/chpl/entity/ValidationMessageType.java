@@ -7,11 +7,11 @@ public enum ValidationMessageType {
 
     private String name;
 
-    private ValidationMessageType() {
+    ValidationMessageType() {
 
     }
 
-    private ValidationMessageType(String name) {
+    ValidationMessageType(String name) {
         this.name = name;
     }
 

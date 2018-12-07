@@ -184,6 +184,21 @@ public class CertifiedProductController {
         return certifiedProduct;
     }
 
+    /**
+     * Get certified product details for a listing based on unique CHPL ID.
+     * @param year two-digit year (14 or 15)
+     * @param testingLab two-digit ATL code
+     * @param certBody two-digit ACB code
+     * @param vendorCode assigned developer code
+     * @param productCode user-defined product code
+     * @param versionCode user-defined version code
+     * @param icsCode two-digit ICS code
+     * @param addlSoftwareCode single-digit additional software code (0 or 1)
+     * @param certDateCode certified date code (YYMMDD format)
+     * @return details for the listing with the unique CHPL ID specified
+     * @throws EntityRetrievalException if a listing with the unique CHPL ID cannot be found.
+     */
+    @SuppressWarnings({"checkstyle:parameternumber"})
     @ApiOperation(value = "Get all details for a specified certified product.",
             notes = "Returns all information in the CHPL related to the specified certified product.  "
                     + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
@@ -257,6 +272,22 @@ public class CertifiedProductController {
         return certifiedProduct;
     }
 
+    /**
+     * Get "basic" information for a listing which includes all details
+     * except for certification results and cqm results.
+     * @param year two-digit year (14 or 15)
+     * @param testingLab two-digit ATL code
+     * @param certBody two-digit ACB code
+     * @param vendorCode assigned developer code
+     * @param productCode user-defined product code
+     * @param versionCode user-defined version code
+     * @param icsCode two-digit ICS code
+     * @param addlSoftwareCode single-digit additional software code (0 or 1)
+     * @param certDateCode certified date code (YYMMDD format)
+     * @return the basic information about the listing identified by the unique CHPL ID specified
+     * @throws EntityRetrievalException if the listing cannot be found
+     */
+    @SuppressWarnings({"checkstyle:parameternumber"})
     @ApiOperation(value = "Get all basic information for a specified certified product.  Does not include "
             + "the CQM results and certification results.",
             notes = "Returns basic information in the CHPL related to the specified certified product.  "
@@ -781,7 +812,7 @@ public class CertifiedProductController {
     }
 
     //TODO - We might want to take a look at reworking this.  Maybe should be a PUT and the parameters
-    //  should be re-evaluated 
+    //should be re-evaluated
     @ApiOperation(value = "Confirm a pending certified product.",
             notes = "Creates a new certified product in the system based on all of the information "
                     + " passed in on the request. This information may differ from what was previously "

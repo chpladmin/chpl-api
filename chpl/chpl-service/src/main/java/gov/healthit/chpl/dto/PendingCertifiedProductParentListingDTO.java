@@ -20,7 +20,7 @@ public class PendingCertifiedProductParentListingDTO implements Serializable {
         if (entity.getMappedProduct() != null) {
             this.setPendingCertifiedProductId(entity.getMappedProduct().getId());
         }
-        
+
         this.parentListingId = entity.getParentListingId();
         this.parentListingUniqueId = entity.getParentListingUniqueId();
     }

@@ -1,9 +1,7 @@
 package gov.healthit.chpl.entity;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
 
 import org.hibernate.HibernateException;
 

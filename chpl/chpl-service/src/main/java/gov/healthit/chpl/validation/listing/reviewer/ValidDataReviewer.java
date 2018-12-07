@@ -15,7 +15,7 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 public class ValidDataReviewer implements Reviewer {
 
     @Autowired private CertifiedProductManager cpManager;
-    
+
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         for (CertificationResult cert : listing.getCertificationResults()) {
@@ -30,7 +30,7 @@ public class ValidDataReviewer implements Reviewer {
                     + "' which must match one of " + PrivacyAndSecurityFrameworkConcept.getFormattedValues());
                 }
             }
-            
+
             if (cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
                 for (CertificationResultAdditionalSoftware asDto : cert.getAdditionalSoftware()) {
                     if (asDto.getCertifiedProductId() == null
@@ -41,7 +41,7 @@ public class ValidDataReviewer implements Reviewer {
                                 listing.getErrorMessages().add("No CHPL product was found matching additional software "
                                         + asDto.getCertifiedProductNumber() + " for " + cert.getNumber());
                             }
-                        } catch (EntityRetrievalException e) {}
+                        } catch (EntityRetrievalException e) { }
                     }
                 }
             }

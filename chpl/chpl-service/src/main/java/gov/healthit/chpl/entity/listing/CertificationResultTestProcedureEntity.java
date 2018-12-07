@@ -52,7 +52,7 @@ public class CertificationResultTestProcedureEntity {
 
     @Column(name = "last_modified_user", nullable = false)
     protected Long lastModifiedUser;
-    
+
     public Long getId() {
         return id;
     }

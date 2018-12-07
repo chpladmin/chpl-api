@@ -152,7 +152,7 @@ public class RequiredDataReviewer implements Reviewer {
         List<PendingCertificationResultMacraMeasureDTO> dedupedMacraMeasures = new ArrayList<PendingCertificationResultMacraMeasureDTO>();
         Set<String> uniqueMacras = new HashSet<String>();
         for (PendingCertificationResultMacraMeasureDTO macraMeasure : macraMeasures) {
-            if (macraMeasure.getEnteredValue() != null 
+            if (macraMeasure.getEnteredValue() != null
                     && !uniqueMacras.contains(macraMeasure.getEnteredValue())) {
                 dedupedMacraMeasures.add(macraMeasure);
                 uniqueMacras.add(macraMeasure.getEnteredValue());

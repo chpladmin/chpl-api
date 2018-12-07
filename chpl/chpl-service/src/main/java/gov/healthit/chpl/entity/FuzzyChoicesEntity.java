@@ -12,8 +12,6 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
 
-import gov.healthit.chpl.entity.FuzzyType;
-
 @Entity
 @Table(name = "fuzzy_choices")
 public class FuzzyChoicesEntity {

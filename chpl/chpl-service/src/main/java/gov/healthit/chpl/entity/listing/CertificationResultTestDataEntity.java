@@ -35,7 +35,7 @@ public class CertificationResultTestDataEntity {
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "test_data_id", insertable = false, updatable = false)
     private TestDataEntity testData;
-    
+
     @Column(name = "version")
     private String testDataVersion;
 

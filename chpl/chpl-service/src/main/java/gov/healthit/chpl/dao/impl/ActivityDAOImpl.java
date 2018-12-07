@@ -80,7 +80,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
     }
 
     @Override
-    public List<ActivityDTO> findByObjectId(final Long objectId, final ActivityConcept concept, 
+    public List<ActivityDTO> findByObjectId(final Long objectId, final ActivityConcept concept,
             final Date startDate, final Date endDate) {
 
         List<ActivityEntity> entities = this.getEntitiesByObjectId(objectId, concept, startDate, endDate);
@@ -286,7 +286,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
         return entity;
     }
 
-    private List<ActivityEntity> getEntitiesByObjectIds(final List<Long> objectIds, 
+    private List<ActivityEntity> getEntitiesByObjectIds(final List<Long> objectIds,
             final ActivityConcept concept, final Date startDate, final Date endDate) {
         String queryStr = "SELECT ae "
             + "FROM ActivityEntity ae "

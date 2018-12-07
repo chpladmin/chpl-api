@@ -35,7 +35,7 @@ public class TestFunctionalityEntity {
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "certification_edition_id", insertable = false, updatable = false)
     private CertificationEditionEntity certificationEdition;
-    
+
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "practice_type_id", insertable = false, updatable = false)
     private  PracticeTypeEntity practiceType;

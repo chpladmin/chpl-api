@@ -5,7 +5,6 @@ import org.apache.logging.log4j.Logger;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.caching.ListingsCollectionCacheUpdater;
@@ -19,6 +18,11 @@ import gov.healthit.chpl.domain.UpdateProductsRequest;
 import gov.healthit.chpl.domain.UpdateVersionsRequest;
 import gov.healthit.chpl.util.PropertyUtil;
 
+/**
+ * Listener that determines when to update the main searchable cache of all listings.
+ * @author kekey
+ *
+ */
 @Component
 @Aspect
 public class ListingCollectionCacheRefreshListener {
@@ -30,7 +34,7 @@ public class ListingCollectionCacheRefreshListener {
 
     /**
      * After a developer is updated refresh the listings collection cache.
-     * @param developerInfo
+     * @param developerInfo developer request object
      */
     @AfterReturning(
             "execution(* gov.healthit.chpl.web.controller.DeveloperController.updateDeveloper(..)) && "
@@ -46,7 +50,7 @@ public class ListingCollectionCacheRefreshListener {
 
     /**
      * After a product is updated refresh the listings collection cache.
-     * @param productInfo
+     * @param productInfo product update request object
      */
     @AfterReturning(
             "execution(* gov.healthit.chpl.web.controller.ProductController.updateProduct(..)) && "
@@ -62,7 +66,7 @@ public class ListingCollectionCacheRefreshListener {
 
     /**
      * After a version is updated refresh the listings collection cache.
-     * @param versionInfo
+     * @param versionInfo version update request object
      */
     @AfterReturning(
             "execution(* gov.healthit.chpl.web.controller.ProductVersionController.updateVersion(..)) && "
@@ -78,7 +82,7 @@ public class ListingCollectionCacheRefreshListener {
 
     /**
      * After an acb is updated refresh the listings collection cache.
-     * @param acbInfo
+     * @param acbInfo certification body update request object
      */
     @AfterReturning(
             "execution(* gov.healthit.chpl.web.controller.CertificationBodyController.updateAcb(..)) && "
@@ -94,7 +98,7 @@ public class ListingCollectionCacheRefreshListener {
 
     /**
      * After a surveillance is created refresh the listings collection cache.
-     * @param survToInsert
+     * @param survToInsert surveillance that was inserted
      */
     @AfterReturning(
             "execution(* gov.healthit.chpl.web.controller.SurveillanceController.createSurveillance(..)) && "
@@ -110,7 +114,7 @@ public class ListingCollectionCacheRefreshListener {
 
     /**
      * After a surveillance is updated refresh the listings collection cache.
-     * @param survToUpdate
+     * @param survToUpdate surveillance that was updated
      */
     @AfterReturning(
             "execution(* gov.healthit.chpl.web.controller.SurveillanceController.updateSurveillance(..)) && "
@@ -126,7 +130,8 @@ public class ListingCollectionCacheRefreshListener {
 
     /**
      * After a surveillance is deleted refresh the listings collection cache.
-     * @param survToInsert
+     * @param surveillanceId surveillance id to deleted
+     * @param requestBody user-supplied reason
      */
     @AfterReturning(
             "execution(* gov.healthit.chpl.web.controller.SurveillanceController.deleteSurveillance(..)) && "
@@ -143,7 +148,7 @@ public class ListingCollectionCacheRefreshListener {
 
     /**
      * After a new listings is confirmed refresh the listings collection cache.
-     * @param pendingCp
+     * @param pendingCp pending listing object
      */
     @AfterReturning(
             "execution(* gov.healthit.chpl.web.controller.CertifiedProductController.confirmPendingCertifiedProduct(..)) && "
@@ -159,7 +164,7 @@ public class ListingCollectionCacheRefreshListener {
 
     /**
      * After a listing is updated refresh the listings collection cache.
-     * @param updateRequest
+     * @param updateRequest listing update object
      */
     @AfterReturning(
             "execution(* gov.healthit.chpl.web.controller.CertifiedProductController.updateCertifiedProduct(..)) && "

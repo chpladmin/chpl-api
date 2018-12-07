@@ -70,7 +70,7 @@ public class PendingCertifiedProductAccessibilityStandardEntity {
         this.name = name;
     }
 
-	public Date getLastModifiedDate() {
+    public Date getLastModifiedDate() {
         return lastModifiedDate;
     }
 

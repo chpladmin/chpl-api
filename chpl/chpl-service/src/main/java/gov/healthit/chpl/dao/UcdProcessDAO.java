@@ -6,13 +6,18 @@ import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
+/**
+ * Interface for database access to UCD Processes.
+ * @author kekey
+ *
+ */
 public interface UcdProcessDAO {
 
     UcdProcessDTO update(UcdProcessDTO dto) throws EntityRetrievalException;
 
     void delete(Long id) throws EntityRetrievalException;
 
-    public UcdProcessDTO findOrCreate(Long id, String name) throws EntityCreationException;
+    UcdProcessDTO findOrCreate(Long id, String name) throws EntityCreationException;
     List<UcdProcessDTO> findAll();
 
     UcdProcessDTO getById(Long id);
