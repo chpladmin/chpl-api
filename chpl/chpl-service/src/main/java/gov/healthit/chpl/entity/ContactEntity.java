@@ -18,7 +18,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "contact")
-public class ContactEntity implements Cloneable, Serializable {
+public class ContactEntity implements Serializable {
     private static final long serialVersionUID = 1586086005459839264L;
     private static final int NAME_COMPONENT_LENGTH = 250;
     private static final int FULL_NAME_LENGTH = 500;

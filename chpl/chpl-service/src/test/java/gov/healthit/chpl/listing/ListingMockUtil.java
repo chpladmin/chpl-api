@@ -49,8 +49,8 @@ import gov.healthit.chpl.util.CertificationResultRules;
 
 @Component
 public class ListingMockUtil {
-    public static String CHPL_ID_2014 = "14.07.07.2642.IC04.36.00.1.160402";
-    public static String CHPL_ID_2015 = "15.02.02.3007.A056.01.00.0.180214";
+    public static final String CHPL_ID_2014 = "14.07.07.2642.IC04.36.00.1.160402";
+    public static final String CHPL_ID_2015 = "15.02.02.3007.A056.01.00.0.180214";
     private static final Long EDITION_2015_ID = 3L;
     private static final Long EDITION_2014_ID = 2L;
     @Autowired private CertificationResultRules certRules;

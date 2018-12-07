@@ -77,7 +77,7 @@ public class CertificationResultRules {
                             Element propertyElement = (Element) propertyNode;
                             String propName = propertyElement.getNodeName();
                             String propValue = propertyElement.getTextContent();
-                            boolean canHaveProperty = new Boolean(propValue).booleanValue();
+                            boolean canHaveProperty = Boolean.valueOf(propValue);
                             CertificationResultOption option = new CertificationResultOption();
                             option.setOptionName(propName);
                             if (propName.equals("gap")) {

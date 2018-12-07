@@ -18,7 +18,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "meaningful_use_user")
-public class MeaningfulUseUserEntity implements Cloneable, Serializable {
+public class MeaningfulUseUserEntity implements Serializable {
     private static final long serialVersionUID = -1463562876433665214L;
 
     @Id

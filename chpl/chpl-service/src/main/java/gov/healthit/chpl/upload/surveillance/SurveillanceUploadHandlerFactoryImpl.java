@@ -11,7 +11,7 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 
 @Service
 public final class SurveillanceUploadHandlerFactoryImpl implements SurveillanceUploadHandlerFactory {
-    public static int NUM_FIELDS_2015 = 23;
+    public static final int NUM_FIELDS_2015 = 23;
 
     @Autowired
     private SurveillanceUploadHandler handler2015;

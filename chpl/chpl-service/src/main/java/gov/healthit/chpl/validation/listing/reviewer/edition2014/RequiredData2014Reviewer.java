@@ -53,7 +53,7 @@ public class RequiredData2014Reviewer extends RequiredDataReviewer {
                     isCqmRequired = true;
                 }
             }
-            if (cert.isSuccess() != null && cert.isSuccess() == Boolean.TRUE) {
+            if (cert.isSuccess() != null && cert.isSuccess()) {
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.SED)) {
                     if (cert.isSed() == null) {
                         listing.getErrorMessages().add(

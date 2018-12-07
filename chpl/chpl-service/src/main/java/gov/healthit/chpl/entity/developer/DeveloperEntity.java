@@ -26,7 +26,7 @@ import gov.healthit.chpl.entity.ContactEntity;
 
 @Entity
 @Table(name = "vendor")
-public class DeveloperEntity implements Cloneable, Serializable {
+public class DeveloperEntity implements Serializable {
 
     private static final long serialVersionUID = -1396979009499564864L;
 

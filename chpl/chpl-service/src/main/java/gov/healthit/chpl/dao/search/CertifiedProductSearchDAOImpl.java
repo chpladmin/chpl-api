@@ -201,7 +201,7 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
             } else if (orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_CERTIFICATION_EDITION)) {
                 sql += " year ";
             }
-            if (searchRequest.getSortDescending() != null && searchRequest.getSortDescending() == Boolean.TRUE) {
+            if (searchRequest.getSortDescending() != null && searchRequest.getSortDescending()) {
                 sql += " DESC ";
             } else {
                 sql += " ASC ";
@@ -419,10 +419,10 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
         //surveillance search options
         if (searchRequest.getSurveillance() != null) {
             if (searchRequest.getSurveillance().getHasHadSurveillance() != null
-                    && searchRequest.getSurveillance().getHasHadSurveillance() == Boolean.TRUE) {
+                    && searchRequest.getSurveillance().getHasHadSurveillance()) {
                 sql += " AND count_surveillance_activities > 0 ";
             } else if (searchRequest.getSurveillance().getHasHadSurveillance() != null
-                    && searchRequest.getSurveillance().getHasHadSurveillance() == Boolean.FALSE) {
+                    && !searchRequest.getSurveillance().getHasHadSurveillance()) {
                 sql += " AND count_surveillance_activities IS NULL ";
             }
 
@@ -469,7 +469,7 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
             } else if (orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_CERTIFICATION_EDITION)) {
                 sql += " year ";
             }
-            if (searchRequest.getSortDescending() != null && searchRequest.getSortDescending() == Boolean.TRUE) {
+            if (searchRequest.getSortDescending() != null && searchRequest.getSortDescending()) {
                 sql += " DESC ";
             } else {
                 sql += " ASC ";

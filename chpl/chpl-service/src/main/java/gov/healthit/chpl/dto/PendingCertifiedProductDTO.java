@@ -126,7 +126,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         this();
         this.id = details.getId();
         if (details.getPracticeType().get("id") != null) {
-            this.practiceTypeId = new Long(details.getPracticeType().get("id").toString());
+            this.practiceTypeId = Long.valueOf(details.getPracticeType().get("id").toString());
         }
         if (details.getPracticeType().get("name") != null) {
             this.practiceType = details.getPracticeType().get("name").toString();
@@ -151,7 +151,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         }
 
         if (details.getProduct() != null && details.getProduct().getProductId() != null) {
-            this.productId = new Long(details.getProduct().getProductId().toString());
+            this.productId = Long.valueOf(details.getProduct().getProductId().toString());
         }
         if (details.getProduct() != null && !StringUtils.isEmpty(details.getProduct().getName())) {
             this.productName = details.getProduct().getName();

@@ -176,7 +176,7 @@ public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListe
     private String getDelimitedListOfValidCriteriaNumbers(final TestFunctionalityDTO tfDTO,
             final CertificationEditionDTO edition) {
 
-        String criteria = "";
+        StringBuilder criteria = new StringBuilder();
         List<CertificationCriterionDTO> certDTOs = new ArrayList<CertificationCriterionDTO>();
 
         List<TestFunctionalityCriteriaMapDTO> maps = testFunctionalityDAO.getTestFunctionalityCritieriaMaps();
@@ -190,11 +190,11 @@ public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListe
 
         Iterator<CertificationCriterionDTO> iter = certDTOs.iterator();
         while (iter.hasNext()) {
-            criteria += iter.next().getNumber();
+            criteria.append(iter.next().getNumber());
             if (iter.hasNext()) {
-                criteria += ", ";
+                criteria.append(", ");
             }
         }
-        return criteria;
+        return criteria.toString();
     }
 }

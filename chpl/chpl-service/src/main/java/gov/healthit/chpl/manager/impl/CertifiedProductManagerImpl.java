@@ -1144,7 +1144,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
         CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
         Long listingId = updatedListing.getId();
-        Long productVersionId = new Long(updatedListing.getVersion().getVersionId());
+        Long productVersionId = Long.valueOf(updatedListing.getVersion().getVersionId());
         CertificationStatus updatedStatus = updatedListing.getCurrentStatus().getStatus();
         CertificationStatus existingStatus = existingListing.getCurrentStatus().getStatus();
         //if listing status has changed that may trigger other changes

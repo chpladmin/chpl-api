@@ -21,7 +21,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "vendor_status_history")
-public class DeveloperStatusEventEntity implements Cloneable, Serializable {
+public class DeveloperStatusEventEntity implements Serializable {
     private static final long serialVersionUID = 1730728043307135377L;
 
     @Id

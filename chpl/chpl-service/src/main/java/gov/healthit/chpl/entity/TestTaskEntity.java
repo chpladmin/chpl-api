@@ -22,7 +22,7 @@ import gov.healthit.chpl.entity.listing.TestTaskParticipantMapEntity;
 
 @Entity
 @Table(name = "test_task")
-public class TestTaskEntity implements Cloneable, Serializable {
+public class TestTaskEntity implements Serializable {
     private static final long serialVersionUID = -6364783003138741063L;
 
     @Id

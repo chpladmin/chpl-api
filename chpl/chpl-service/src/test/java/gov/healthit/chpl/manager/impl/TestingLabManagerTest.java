@@ -94,7 +94,7 @@ public class TestingLabManagerTest extends TestCase {
         List<UserDTO> users = atlManager.getAllUsersOnAtl(atl);
         boolean userIsOnAtl = false;
         for (UserDTO foundUser : users) {
-            if (foundUser.getId() == userId) {
+            if (foundUser.getId().equals(userId)) {
                 userIsOnAtl = true;
             }
         }

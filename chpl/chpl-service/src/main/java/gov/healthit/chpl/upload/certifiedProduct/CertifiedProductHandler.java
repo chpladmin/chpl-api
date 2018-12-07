@@ -178,7 +178,7 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         }
         CertificationEditionDTO foundEdition = editionDao.getByYear(certificaitonYear);
         if (foundEdition != null) {
-            pendingCertifiedProduct.setCertificationEditionId(new Long(foundEdition.getId()));
+            pendingCertifiedProduct.setCertificationEditionId(Long.valueOf(foundEdition.getId()));
         }
     }
 
@@ -249,7 +249,7 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         String hasQmsStr = record.get(getColumnIndexMap().getQmsStartIndex());
         Boolean hasQms = asBoolean(hasQmsStr);
         if (hasQms != null) {
-            pendingCertifiedProduct.setHasQms(hasQms.booleanValue());
+            pendingCertifiedProduct.setHasQms(hasQms);
         }
     }
 

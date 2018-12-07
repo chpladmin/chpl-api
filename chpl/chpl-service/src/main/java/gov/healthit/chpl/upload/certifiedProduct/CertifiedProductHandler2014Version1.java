@@ -186,7 +186,7 @@ public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler
         List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion(pendingCertifiedProduct, cqmName,
                 cqmVersions);
         for (PendingCqmCriterionEntity entity : criterion) {
-            if (entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
+            if (entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria()) {
                 pendingCertifiedProduct.getCqmCriterion().add(entity);
             }
         }

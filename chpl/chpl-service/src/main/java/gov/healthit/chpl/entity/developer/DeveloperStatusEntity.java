@@ -16,7 +16,7 @@ import org.hibernate.annotations.Type;
 
 @Entity
 @Table(name = "vendor_status")
-public class DeveloperStatusEntity implements Cloneable, Serializable {
+public class DeveloperStatusEntity implements Serializable {
     private static final long serialVersionUID = 1730728043307135377L;
 
     @Id

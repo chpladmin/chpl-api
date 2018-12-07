@@ -57,7 +57,7 @@ public class XmlParsingTest {
     @Test
     public void testIntegerParsing() {
         String toParse = "00";
-        Integer parsed = new Integer(toParse);
+        Integer parsed = Integer.valueOf(toParse);
         assertTrue(parsed.intValue() == 0);
     }
 

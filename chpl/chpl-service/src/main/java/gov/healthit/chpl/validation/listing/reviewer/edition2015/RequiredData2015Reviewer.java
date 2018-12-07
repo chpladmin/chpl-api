@@ -481,10 +481,10 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         }
 
         for (CertificationResult cert : listing.getCertificationResults()) {
-            if (cert.isSuccess() != null && cert.isSuccess() == Boolean.TRUE) {
+            if (cert.isSuccess() != null && cert.isSuccess()) {
                 boolean gapEligibleAndTrue = false;
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP)
-                        && cert.isGap() == Boolean.TRUE) {
+                        && cert.isGap()) {
                     gapEligibleAndTrue = true;
                 }
 
@@ -511,7 +511,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                     for (CertificationResultTestFunctionality funcMap : cert.getTestFunctionality()) {
                         if (funcMap.getTestFunctionalityId() == null) {
                             TestFunctionalityDTO foundTestFunc = testFuncDao.getByNumberAndEdition(funcMap.getName(),
-                                    new Long(listing.getCertificationEdition().get("id").toString()));
+                                    Long.valueOf(listing.getCertificationEdition().get("id").toString()));
                             if (foundTestFunc == null || foundTestFunc.getId() == null) {
                                 listing.getErrorMessages().add("Certification " + cert.getNumber()
                                         + " contains invalid test functionality: '" + funcMap.getName() + "'.");

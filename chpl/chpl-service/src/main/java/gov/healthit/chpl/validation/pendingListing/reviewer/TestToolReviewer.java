@@ -41,7 +41,7 @@ public class TestToolReviewer implements Reviewer {
         Integer icsCodeInteger = productNumUtil.getIcsCode(listing.getUniqueId());
 
         for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
-            if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria() == Boolean.TRUE) {
+            if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria()) {
                 if (cert.getTestTools() != null && cert.getTestTools().size() > 0) {
                     Iterator<PendingCertificationResultTestToolDTO> testToolIter = cert.getTestTools().iterator();
                     while (testToolIter.hasNext()) {

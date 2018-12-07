@@ -21,7 +21,7 @@ import gov.healthit.chpl.entity.CertificationBodyEntity;
 
 @Entity
 @Table(name = "acb_vendor_map")
-public class DeveloperACBMapEntity implements Cloneable, Serializable {
+public class DeveloperACBMapEntity implements Serializable {
 
     private static final long serialVersionUID = 555395798107190947L;
 

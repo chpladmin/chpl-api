@@ -67,7 +67,7 @@ public class RequiredData2014Reviewer extends RequiredDataReviewer {
                 }
                 boolean gapEligibleAndTrue = false;
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP)
-                        && cert.getGap() == Boolean.TRUE) {
+                        && cert.getGap()) {
                     gapEligibleAndTrue = true;
                 }
 

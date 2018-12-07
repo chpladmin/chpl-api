@@ -88,7 +88,7 @@ public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO 
         if (result == null) {
             return null;
         }
-        return new Integer(result.intValue());
+        return Integer.valueOf(result.intValue());
     }
 
     /**

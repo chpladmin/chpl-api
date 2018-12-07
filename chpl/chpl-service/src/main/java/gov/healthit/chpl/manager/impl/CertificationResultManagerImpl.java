@@ -166,7 +166,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             numChanges += updateMacraMeasures(updated, orig.getG2MacraMeasures(), updated.getG2MacraMeasures(), G2_MEASURE);
         }
 
-        if (updated.isSuccess() == null || updated.isSuccess() == Boolean.FALSE) {
+        if (updated.isSuccess() == null || !updated.isSuccess()) {
             // similar to delete - remove all related items
             numChanges += updateAdditionalSoftware(updated, orig.getAdditionalSoftware(), null);
             numChanges += updateTestStandards(updatedListing, updated, orig.getTestStandards(), null);
@@ -637,12 +637,12 @@ public class CertificationResultManagerImpl implements CertificationResultManage
                 if (updatedItem.getTestStandardId() == null
                         && !StringUtils.isEmpty(updatedItem.getTestStandardName())) {
                     TestStandardDTO foundStd = testStandardDAO.getByNumberAndEdition(updatedItem.getTestStandardName(),
-                            new Long(editionIdString));
+                            Long.valueOf(editionIdString));
                     if (foundStd == null) {
                         TestStandardDTO stdToCreate = new TestStandardDTO();
                         stdToCreate.setName(updatedItem.getTestStandardName());
                         stdToCreate.setDescription(updatedItem.getTestStandardDescription());
-                        stdToCreate.setCertificationEditionId(new Long(editionIdString));
+                        stdToCreate.setCertificationEditionId(Long.valueOf(editionIdString));
                         TestStandardDTO created = testStandardDAO.create(stdToCreate);
                         updatedItem.setTestStandardId(created.getId());
                     } else {
@@ -969,7 +969,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             for (CertificationResultTestFunctionality updatedItem : updatedTestFunctionality) {
                 if (updatedItem.getTestFunctionalityId() == null && !StringUtils.isEmpty(updatedItem.getName())) {
                     TestFunctionalityDTO foundFunc = testFunctionalityDAO.getByNumberAndEdition(updatedItem.getName(),
-                            new Long(editionIdString));
+                            Long.valueOf(editionIdString));
                     if (foundFunc == null) {
                         LOGGER.error("Could not find test functionality " + updatedItem.getName()
                                 + " for certifiation edition id " + editionIdString

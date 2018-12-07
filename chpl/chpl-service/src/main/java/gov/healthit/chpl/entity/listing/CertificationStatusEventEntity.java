@@ -17,7 +17,7 @@ import gov.healthit.chpl.entity.CertificationStatusEntity;
 
 @Entity
 @Table(name = "certification_status_event")
-public class CertificationStatusEventEntity implements Cloneable, Serializable {
+public class CertificationStatusEventEntity implements Serializable {
 
     /** Serial Version UID. */
     private static final long serialVersionUID = 4174889617079658144L;

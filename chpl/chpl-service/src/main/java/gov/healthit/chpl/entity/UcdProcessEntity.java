@@ -1,5 +1,6 @@
 package gov.healthit.chpl.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -12,7 +13,8 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "ucd_process")
-public class UcdProcessEntity {
+public class UcdProcessEntity implements Serializable {
+    private static final long serialVersionUID = -8588994880748379730L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

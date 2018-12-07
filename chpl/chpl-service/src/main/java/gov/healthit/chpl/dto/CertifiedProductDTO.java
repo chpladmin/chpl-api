@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.springframework.util.StringUtils;
+
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -168,14 +169,14 @@ public class CertifiedProductDTO implements Serializable {
      */
     public CertifiedProductDTO(final CertifiedProductSearchDetails from) throws InvalidArgumentsException {
         this.setId(from.getId());
-        this.setCertificationBodyId(new Long(from.getCertifyingBody().get("id").toString()));
+        this.setCertificationBodyId(Long.valueOf(from.getCertifyingBody().get("id").toString()));
         if (from.getPracticeType() != null && from.getPracticeType().get("id") != null) {
-            this.setPracticeTypeId(new Long(from.getPracticeType().get("id").toString()));
+            this.setPracticeTypeId(Long.valueOf(from.getPracticeType().get("id").toString()));
         }
         if (from.getClassificationType() != null && from.getClassificationType().get("id") != null) {
-            this.setProductClassificationTypeId(new Long(from.getClassificationType().get("id").toString()));
+            this.setProductClassificationTypeId(Long.valueOf(from.getClassificationType().get("id").toString()));
         }
-        this.setProductVersionId(new Long(from.getVersion().getVersionId()));
+        this.setProductVersionId(Long.valueOf(from.getVersion().getVersionId()));
 
         CertificationStatus fromStatus = from.getCurrentStatus().getStatus();
         if (fromStatus != null) {
@@ -183,7 +184,7 @@ public class CertifiedProductDTO implements Serializable {
             this.certificationStatus.setId(fromStatus.getId());
             this.certificationStatus.setStatus(fromStatus.getName());
         }
-        this.setCertificationEditionId(new Long(from.getCertificationEdition().get("id").toString()));
+        this.setCertificationEditionId(Long.valueOf(from.getCertificationEdition().get("id").toString()));
         this.setReportFileLocation(from.getReportFileLocation());
         this.setSedReportFileLocation(from.getSedReportFileLocation());
         this.setSedIntendedUserDescription(from.getSedIntendedUserDescription());

@@ -93,7 +93,7 @@ public class CertificationBodyManagerTest extends TestCase {
         List<UserDTO> users = acbManager.getAllUsersOnAcb(acb);
         boolean userIsOnAcb = false;
         for (UserDTO foundUser : users) {
-            if (foundUser.getId() == userId) {
+            if (foundUser.getId().equals(userId)) {
                 userIsOnAcb = true;
             }
         }
@@ -116,7 +116,7 @@ public class CertificationBodyManagerTest extends TestCase {
         List<UserDTO> users = acbManager.getAllUsersOnAcb(acb);
         boolean userIsOnAcb = false;
         for (UserDTO foundUser : users) {
-            if (foundUser.getId() == user.getId()) {
+            if (foundUser.getId().equals(user.getId())) {
                 userIsOnAcb = true;
             }
         }
