@@ -1,5 +1,6 @@
 package gov.healthit.chpl.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -13,7 +14,7 @@ import javax.persistence.Transient;
 
 @Entity
 @Table(name = "certification_status")
-public class CertificationStatusEntity {
+public class CertificationStatusEntity implements Serializable{
 
     /** Serial Version UID. */
     private static final long serialVersionUID = -2928065796550377879L;

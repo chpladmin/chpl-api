@@ -130,6 +130,19 @@ public class DeveloperStatusEventDTO implements Serializable {
         return Objects.equals(getId(), dto.getId());
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((deleted == null) ? 0 : deleted.hashCode());
+        result = prime * result + ((developerId == null) ? 0 : developerId.hashCode());
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((reason == null) ? 0 : reason.hashCode());
+        result = prime * result + ((status == null) ? 0 : status.hashCode());
+        result = prime * result + ((statusDate == null) ? 0 : statusDate.hashCode());
+        return result;
+    }
+
     public Boolean getDeleted() {
         return deleted;
     }

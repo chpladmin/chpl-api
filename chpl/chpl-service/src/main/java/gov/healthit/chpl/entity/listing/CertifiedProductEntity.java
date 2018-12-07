@@ -1,5 +1,6 @@
 package gov.healthit.chpl.entity.listing;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -25,10 +26,9 @@ import javax.persistence.Transient;
 
 @Entity
 @Table(name = "certified_product")
-public class CertifiedProductEntity {
+public class CertifiedProductEntity implements Serializable {
+    private static final long serialVersionUID = -2437147151682759808L;
 
-    /** Serial Version UID. */
-    private static final long serialVersionUID = -2928065796550377879L;
     private static final int OTHER_ACB_LENGTH = 64;
     private static final int CHPL_ID_LENGTH = 250;
     private static final int REPORT_FILE_LOCATION_LENGTH = 255;

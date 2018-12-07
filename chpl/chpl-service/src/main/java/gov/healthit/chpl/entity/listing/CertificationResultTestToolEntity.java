@@ -1,5 +1,6 @@
 package gov.healthit.chpl.entity.listing;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -18,7 +19,8 @@ import gov.healthit.chpl.entity.TestToolEntity;
 
 @Entity
 @Table(name = "certification_result_test_tool")
-public class CertificationResultTestToolEntity {
+public class CertificationResultTestToolEntity implements Serializable {
+    private static final long serialVersionUID = -4001381872451124331L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

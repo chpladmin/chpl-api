@@ -386,8 +386,9 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
         prodQuery.setParameter("productIds", productIds);
         List<CertifiedProductDetailsEntity> results = prodQuery.getResultList();
 
-        List<CertifiedProductDetailsDTO> dtos = new ArrayList<CertifiedProductDetailsDTO>(results.size());
+        List<CertifiedProductDetailsDTO> dtos = null;
         if (null != results) {
+            dtos = new ArrayList<CertifiedProductDetailsDTO>(results.size());
             for (CertifiedProductDetailsEntity entity : results) {
                 CertifiedProductDetailsDTO dto = new CertifiedProductDetailsDTO(entity);
                 dtos.add(dto);
@@ -411,8 +412,9 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
         prodQuery.setParameter("chplProductNumbers", chplProductNumbers);
         List<CertifiedProductDetailsEntity> results = prodQuery.getResultList();
 
-        List<CertifiedProductDetailsDTO> dtos = new ArrayList<CertifiedProductDetailsDTO>(results.size());
+        List<CertifiedProductDetailsDTO> dtos = null;
         if (null != results) {
+            dtos = new ArrayList<CertifiedProductDetailsDTO>(results.size());
             for (CertifiedProductDetailsEntity entity : results) {
                 CertifiedProductDetailsDTO dto = new CertifiedProductDetailsDTO(entity);
                 dtos.add(dto);

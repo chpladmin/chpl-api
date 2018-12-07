@@ -1,5 +1,6 @@
 package gov.healthit.chpl.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -20,7 +21,8 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "certification_body")
-public class CertificationBodyEntity {
+public class CertificationBodyEntity implements Serializable {
+    private static final long serialVersionUID = -4603773689327950041L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

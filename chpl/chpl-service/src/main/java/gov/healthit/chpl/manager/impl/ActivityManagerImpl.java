@@ -272,7 +272,7 @@ public class ActivityManagerImpl implements ActivityManager {
     @Override
     @Transactional
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
-    public List<ActivityEvent> getAcbActivity(List<CertificationBodyDTO> acbs 
+    public List<ActivityEvent> getAcbActivity(List<CertificationBodyDTO> acbs,
             Date startDate, Date endDate) throws JsonParseException, IOException {
 
         List<ActivityDTO> acbActivity = activityDAO.findAcbActivity(acbs, startDate, endDate);
@@ -485,4 +485,5 @@ public class ActivityManagerImpl implements ActivityManager {
         return event;
     }
 
+   
 }

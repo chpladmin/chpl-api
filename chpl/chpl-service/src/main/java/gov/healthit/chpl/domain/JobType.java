@@ -1,8 +1,12 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
+
 import gov.healthit.chpl.dto.job.JobTypeDTO;
 
-public class JobType {
+public class JobType implements Serializable{
+    private static final long serialVersionUID = 8306081196933120077L;
+
     private Long id;
     private String name;
     private String description;

@@ -38,8 +38,10 @@ public class FuzzyChoicesManagerImpl extends ApplicationObjectSupport implements
             e.printStackTrace();
         }
         String result = null;
-        for (ExtractedResult er : results) {
-            result = er.getString();
+        if (results != null) {
+            for (ExtractedResult er : results) {
+                result = er.getString();
+            }
         }
         return result;
     }

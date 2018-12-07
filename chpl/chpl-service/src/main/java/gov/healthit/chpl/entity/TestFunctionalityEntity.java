@@ -1,5 +1,6 @@
 package gov.healthit.chpl.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -15,7 +16,8 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "test_functionality")
-public class TestFunctionalityEntity {
+public class TestFunctionalityEntity implements Serializable {
+    private static final long serialVersionUID = 2662883108826795645L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

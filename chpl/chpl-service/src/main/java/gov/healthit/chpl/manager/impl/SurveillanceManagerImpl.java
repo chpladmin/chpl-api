@@ -372,7 +372,9 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
             }
             throw alreadyDeletedEx;
         }
-        return pendingSurv != null;
+        //If pendingSurv were null, we would have gotten an NPE by this point
+        //return pendingSurv != null;
+        return true;
     }
 
     @Override

@@ -182,7 +182,7 @@ public class TestingLabDaoTest extends TestCase {
             result = atlDao.update(toUpdate);
         } catch (Exception ex) {
             fail("could not update atl!");
-            System.out.println(ex.getStackTrace());
+            ex.printStackTrace();
         }
         assertNotNull(result);
 
@@ -191,7 +191,7 @@ public class TestingLabDaoTest extends TestCase {
             assertEquals("UPDATED NAME", updatedAtl.getName());
         } catch (Exception ex) {
             fail("could not find atl!");
-            System.out.println(ex.getStackTrace());
+            ex.printStackTrace();
         }
         SecurityContextHolder.getContext().setAuthentication(null);
     }
@@ -210,7 +210,7 @@ public class TestingLabDaoTest extends TestCase {
             result = atlDao.update(toUpdate);
         } catch (Exception ex) {
             fail("could not update atl!");
-            System.out.println(ex.getStackTrace());
+            ex.printStackTrace();
         }
         assertNotNull(result);
 
@@ -219,7 +219,7 @@ public class TestingLabDaoTest extends TestCase {
             assertTrue(updatedAtl.isRetired());
         } catch (Exception ex) {
             fail("could not find atl!");
-            System.out.println(ex.getStackTrace());
+            ex.printStackTrace();
         }
         SecurityContextHolder.getContext().setAuthentication(null);
     }

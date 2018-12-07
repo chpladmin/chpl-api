@@ -1,5 +1,6 @@
 package gov.healthit.chpl.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -14,7 +15,8 @@ import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "address")
-public class AddressEntity {
+public class AddressEntity implements Serializable {
+    private static final long serialVersionUID = 762431901700320834L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

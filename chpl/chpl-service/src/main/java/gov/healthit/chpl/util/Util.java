@@ -14,8 +14,8 @@ public final class Util {
     private static final String dateFormat = "yyyy-MM-dd";
     private static final String timestampFormat = "yyyyMMdd_HHmmss";
 
-    public static SimpleDateFormat dateFormatter = new SimpleDateFormat(dateFormat);
-    public static SimpleDateFormat timestampFormatter = new SimpleDateFormat(timestampFormat);
+    //private SimpleDateFormat dateFormatter = new SimpleDateFormat(dateFormat);
+    //private SimpleDateFormat timestampFormatter = new SimpleDateFormat(timestampFormat);
 
     private Util() {
 
@@ -44,11 +44,11 @@ public final class Util {
     }
 
     public static SimpleDateFormat getDateFormatter() {
-        return Util.dateFormatter;
+        return new SimpleDateFormat(dateFormat);
     }
 
     public static SimpleDateFormat getTimestampFormatter() {
-        return Util.timestampFormatter;
+        return new SimpleDateFormat(timestampFormat);
     }
 
     public static String coerceToCriterionNumberFormat(final String input) {

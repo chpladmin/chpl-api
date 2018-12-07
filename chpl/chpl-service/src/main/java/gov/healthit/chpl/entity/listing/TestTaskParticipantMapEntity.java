@@ -1,5 +1,6 @@
 package gov.healthit.chpl.entity.listing;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -20,7 +21,8 @@ import gov.healthit.chpl.entity.TestTaskEntity;
 
 @Entity
 @Table(name = "test_task_participant_map")
-public class TestTaskParticipantMapEntity {
+public class TestTaskParticipantMapEntity implements Serializable {
+    private static final long serialVersionUID = -1114257207589782550L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

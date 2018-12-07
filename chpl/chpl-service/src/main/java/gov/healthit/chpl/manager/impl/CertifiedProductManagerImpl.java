@@ -1212,25 +1212,27 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
         CertifiedProductDTO dtoToUpdate = new CertifiedProductDTO(updatedListing);
         CertifiedProductDTO result = cpDao.update(dtoToUpdate);
-        if (updatedListing != null) {
-            updateTestingLabs(listingId, existingListing.getTestingLabs(), updatedListing.getTestingLabs());
-            updateIcsChildren(listingId, existingListing.getIcs(), updatedListing.getIcs());
-            updateIcsParents(listingId, existingListing.getIcs(), updatedListing.getIcs());
-            updateQmsStandards(listingId, existingListing.getQmsStandards(), updatedListing.getQmsStandards());
-            updateTargetedUsers(listingId, existingListing.getTargetedUsers(), updatedListing.getTargetedUsers());
-            updateAccessibilityStandards(listingId, existingListing.getAccessibilityStandards(),
-                    updatedListing.getAccessibilityStandards());
-            updateCertificationDate(listingId, new Date(existingListing.getCertificationDate()),
-                    new Date(updatedListing.getCertificationDate()));
+        
+        //Findbugs says this cannot be null since it used above - an NPE would have been thrown
+        //if (updatedListing != null) {
+        updateTestingLabs(listingId, existingListing.getTestingLabs(), updatedListing.getTestingLabs());
+        updateIcsChildren(listingId, existingListing.getIcs(), updatedListing.getIcs());
+        updateIcsParents(listingId, existingListing.getIcs(), updatedListing.getIcs());
+        updateQmsStandards(listingId, existingListing.getQmsStandards(), updatedListing.getQmsStandards());
+        updateTargetedUsers(listingId, existingListing.getTargetedUsers(), updatedListing.getTargetedUsers());
+        updateAccessibilityStandards(listingId, existingListing.getAccessibilityStandards(),
+                updatedListing.getAccessibilityStandards());
+        updateCertificationDate(listingId, new Date(existingListing.getCertificationDate()),
+                new Date(updatedListing.getCertificationDate()));
 
-            updateCertificationStatusEvents(listingId, existingListing.getCertificationEvents(),
-                    updatedListing.getCertificationEvents());
-            updateMeaningfulUseUserHistory(listingId, existingListing.getMeaningfulUseUserHistory(),
-                    updatedListing.getMeaningfulUseUserHistory());
-            updateCertifications(result.getCertificationBodyId(), existingListing, updatedListing,
-                    existingListing.getCertificationResults(), updatedListing.getCertificationResults());
-            updateCqms(result, existingListing.getCqmResults(), updatedListing.getCqmResults());
-        }
+        updateCertificationStatusEvents(listingId, existingListing.getCertificationEvents(),
+                updatedListing.getCertificationEvents());
+        updateMeaningfulUseUserHistory(listingId, existingListing.getMeaningfulUseUserHistory(),
+                updatedListing.getMeaningfulUseUserHistory());
+        updateCertifications(result.getCertificationBodyId(), existingListing, updatedListing,
+                existingListing.getCertificationResults(), updatedListing.getCertificationResults());
+        updateCqms(result, existingListing.getCqmResults(), updatedListing.getCqmResults());
+        //}
         return result;
     }
 

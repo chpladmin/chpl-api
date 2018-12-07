@@ -118,7 +118,7 @@ public class ProductDaoTest extends TestCase {
             result = productDao.update(product);
         } catch (Exception ex) {
             fail("could not update product!");
-            System.out.println(ex.getStackTrace());
+            ex.printStackTrace();
         }
         assertNotNull(result);
 
@@ -127,7 +127,7 @@ public class ProductDaoTest extends TestCase {
             assertTrue(updatedProduct.getDeveloperId() == -2L);
         } catch (Exception ex) {
             fail("could not find product!");
-            System.out.println(ex.getStackTrace());
+            ex.printStackTrace();
         }
         SecurityContextHolder.getContext().setAuthentication(null);
     }
@@ -157,7 +157,7 @@ public class ProductDaoTest extends TestCase {
             result = productDao.create(product);
         } catch (Exception ex) {
             fail("could not create product!");
-            System.err.println(ex.getStackTrace());
+            ex.printStackTrace();
         }
 
         assertNotNull(result);
