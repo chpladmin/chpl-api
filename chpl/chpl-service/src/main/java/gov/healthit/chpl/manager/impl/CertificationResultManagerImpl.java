@@ -327,14 +327,14 @@ public class CertificationResultManagerImpl implements CertificationResultManage
     }
 
     private Boolean haveMacraMeasuresChanged(List<MacraMeasure> orig, List<MacraMeasure> updated) {
-        if (orig == null && updated == null)  {
-            return false;
+        if (orig != null && updated != null) {
+            return !orig.equals(updated);
         } else if (orig != null && updated == null) {
             return true;
         } else if (orig == null && updated != null) {
             return true;
-        } else {
-            return !orig.equals(updated);
+        } else { //Both are null
+            return false;
         }
     }
 

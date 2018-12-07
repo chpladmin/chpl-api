@@ -312,15 +312,15 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         return result;
     }
 
-    protected Boolean asBooleanEmpty(String value) {
-        value = value.trim();
-
-        if (StringUtils.isEmpty(value)) {
-            return null;
-        }
-
-        return parseBoolean(value);
-    }
+//    protected Boolean asBooleanEmpty(String value) {
+//        value = value.trim();
+//
+//        if (StringUtils.isEmpty(value)) {
+//            return null;
+//        }
+//
+//        return parseBoolean(value);
+//    }
 
     protected Boolean asBoolean(String value) {
         value = value.trim();

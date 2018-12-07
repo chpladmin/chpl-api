@@ -282,15 +282,15 @@ public class DeveloperController {
 
         @Override
         public int compare(final DeveloperStatusEvent o1, final DeveloperStatusEvent o2) {
-            if (o1 == null && o2 != null) {
+            if (o1 != null && o2 != null) {
+                // neither are null, compare the dates
+                return o1.getStatusDate().compareTo(o2.getStatusDate());
+            } else if (o1 == null && o2 != null) {
                 return -1;
             } else if (o1 != null && o2 == null) {
                 return 1;
-            } else if (o1 == null && o2 == null) {
+            } else {  // o1 and o2 are both null
                 return 0;
-            } else {
-                // neither are null, compare the dates
-                return o1.getStatusDate().compareTo(o2.getStatusDate());
             }
         }
     }

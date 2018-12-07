@@ -922,10 +922,12 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                             }
                             // add mapping from cert result to test task
                             CertificationResultTestTaskDTO taskDto = new CertificationResultTestTaskDTO();
-                            taskDto.setTestTaskId(existingTt.getId());
-                            taskDto.setCertificationResultId(createdCert.getId());
-                            taskDto.setTestTask(existingTt);
-
+                            if (existingTt != null) {
+                                taskDto.setTestTaskId(existingTt.getId());
+                                taskDto.setCertificationResultId(createdCert.getId());
+                                taskDto.setTestTask(existingTt);
+                            }
+                            
                             if (certTask.getTaskParticipants() != null) {
                                 for (PendingCertificationResultTestTaskParticipantDTO certTaskPart : certTask
                                         .getTaskParticipants()) {

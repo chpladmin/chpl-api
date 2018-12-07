@@ -133,9 +133,11 @@ public final class CertifiedProductUploadHandlerFactoryImpl implements Certified
             handler = handler2015Version3;
         }
 
-        handler.setRecord(cpRecords);
-        handler.setHeading(heading);
-        handler.setUploadTemplateVersion(templateVersion);
+        if (handler != null)  {
+            handler.setRecord(cpRecords);
+            handler.setHeading(heading);
+            handler.setUploadTemplateVersion(templateVersion);
+        }
         return handler;
     }
 }
