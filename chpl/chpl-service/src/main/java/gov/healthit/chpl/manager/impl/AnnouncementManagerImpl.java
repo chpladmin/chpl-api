@@ -32,7 +32,7 @@ public class AnnouncementManagerImpl extends ApplicationObjectSupport implements
 
     @Autowired
     private ActivityManager activityManager;
-    
+
     @Autowired private MessageSource messageSource;
 
     @Transactional
@@ -91,13 +91,13 @@ public class AnnouncementManagerImpl extends ApplicationObjectSupport implements
     }
 
     @Transactional(readOnly = true)
-    public AnnouncementDTO getById(Long id, boolean includeDeleted) 
+    public AnnouncementDTO getById(Long id, boolean includeDeleted)
             throws EntityRetrievalException, AccessDeniedException {
         AnnouncementDTO result =  announcementDAO.getById(id, includeDeleted);
         boolean isLoggedIn = Util.getCurrentUser() == null ? false : true;
-        if(result.getIsPublic().booleanValue() == false && !isLoggedIn) {
+        if (!result.getIsPublic().booleanValue() && !isLoggedIn) {
             String msg = String.format(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("announcement.accessDenied"), 
+                    new DefaultMessageSourceResolvable("announcement.accessDenied"),
                     LocaleContextHolder.getLocale()), id);
             throw new AccessDeniedException(msg);
         }

@@ -18,7 +18,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 @Component("chplNumberReviewer")
 public class ChplNumberReviewer implements Reviewer {
     private CertifiedProductDAO cpDao;
-    private CertificationResultManager certificationResultManager; 
+    private CertificationResultManager certificationResultManager;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
@@ -106,7 +106,7 @@ public class ChplNumberReviewer implements Reviewer {
         }
 
         if (productIdChanged) {
-            // make sure the unique id is really unique - 
+            // make sure the unique id is really unique -
             // only check this if we know it changed
             // because if it hasn't changed there will be 1 product with its id (itself)
             if (!validateUniqueId(listing.getChplProductNumber())) {
@@ -115,7 +115,7 @@ public class ChplNumberReviewer implements Reviewer {
             }
         }
     }
-    
+
     public boolean validateUniqueId(final String chplProductNumber) {
         try {
             CertifiedProductDetailsDTO dup = cpDao.getByChplUniqueId(chplProductNumber);
@@ -126,7 +126,7 @@ public class ChplNumberReviewer implements Reviewer {
         }
         return true;
     }
-    
+
     public void updateChplProductNumber(final CertifiedProductSearchDetails product, final int productNumberIndex,
             final String newValue) {
         String[] uniqueIdParts = product.getChplProductNumber().split("\\.");

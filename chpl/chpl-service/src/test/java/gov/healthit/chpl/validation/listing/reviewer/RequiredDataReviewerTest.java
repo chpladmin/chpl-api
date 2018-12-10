@@ -54,7 +54,7 @@ public class RequiredDataReviewerTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        
+
         requiredDataReivewer = new RequiredDataReviewer(certResultRules, msgUtil);
 
         Mockito.doReturn(CRITERIA_MISSING_GAP_ERROR_START)

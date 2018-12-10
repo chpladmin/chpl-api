@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.TreeMap;
 
 public class Validator2014 extends Validator {
-    
+
     private int inpatientCqmCount = 0;
     private int nonCoreAmbulatory = 0;
     private int coreAmbulatory = 0;
@@ -131,7 +131,7 @@ public class Validator2014 extends Validator {
         if (isInpatientCqmsValid()) {
             valid = true;
         }
-        if (!valid){
+        if (!valid) {
             System.out.println(valid);
             if (this.counts.get("cqmsInpatientRequiredMet") < this.counts.get("cqmsInpatientRequired")) {
                 String needed = String.valueOf((this.counts.get("cqmsInpatientRequired") - inpatientCqmCount));

@@ -25,23 +25,25 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-	DirtiesContextTestExecutionListener.class,
-	TransactionalTestExecutionListener.class,
-	DbUnitTestExecutionListener.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
+@TestExecutionListeners({
+        DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
+})
 @DatabaseSetup("classpath:data/testData.xml")
 public class FuzzyChoiceManagerTest extends TestCase {
 
-	@Autowired
-	private FuzzyChoicesManager fuzzyChoicesManager;
+    @Autowired
+    private FuzzyChoicesManager fuzzyChoicesManager;
 
-	@Test
-	@Transactional
-	public void testFuzzyChoice() throws EntityCreationException, EntityRetrievalException, IOException{
-		List<String> choices = fuzzyChoicesManager.getFuzzyChoicesByType(FuzzyType.UCD_PROCESS);
-		assertNotNull(choices);
-		assertTrue(choices.contains("Multiple Standards"));
-	}
+    @Test
+    @Transactional
+    public void testFuzzyChoice() throws EntityCreationException, EntityRetrievalException, IOException {
+        List<String> choices = fuzzyChoicesManager.getFuzzyChoicesByType(FuzzyType.UCD_PROCESS);
+        assertNotNull(choices);
+        assertTrue(choices.contains("Multiple Standards"));
+    }
 
 }

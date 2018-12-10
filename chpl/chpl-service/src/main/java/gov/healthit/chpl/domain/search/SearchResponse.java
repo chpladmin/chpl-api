@@ -3,11 +3,8 @@ package gov.healthit.chpl.domain.search;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
-
-import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResult;
 
 @XmlRootElement(name = "searchResults")
 public class SearchResponse implements Serializable {

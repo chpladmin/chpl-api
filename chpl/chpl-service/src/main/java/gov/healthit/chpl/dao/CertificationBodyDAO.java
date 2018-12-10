@@ -6,14 +6,19 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
+/**
+ * Interface for database access of ACBs.
+ * @author kekey
+ *
+ */
 public interface CertificationBodyDAO {
 
-    public CertificationBodyDTO create(CertificationBodyDTO acb)
+    CertificationBodyDTO create(CertificationBodyDTO acb)
             throws EntityRetrievalException, EntityCreationException;
-    public List<CertificationBodyDTO> findAll();
-    public List<CertificationBodyDTO> findAllActive();
-    public CertificationBodyDTO getById(Long id) throws EntityRetrievalException;
-    public CertificationBodyDTO getByName(String name);
-    public String getMaxCode();
-    public CertificationBodyDTO update(CertificationBodyDTO contact) throws EntityRetrievalException;
+    List<CertificationBodyDTO> findAll();
+    List<CertificationBodyDTO> findAllActive();
+    CertificationBodyDTO getById(Long id) throws EntityRetrievalException;
+    CertificationBodyDTO getByName(String name);
+    String getMaxCode();
+    CertificationBodyDTO update(CertificationBodyDTO contact) throws EntityRetrievalException;
 }

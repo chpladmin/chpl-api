@@ -13,7 +13,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 import gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity;
 
 @Entity
@@ -43,7 +42,7 @@ public class PendingCertifiedProductParentListingEntity {
 
     @Column(name = "parent_certified_product_id")
     private Long parentListingId;
-    
+
     @Column(name = "parent_certified_product_unique_id")
     private String parentListingUniqueId;
 

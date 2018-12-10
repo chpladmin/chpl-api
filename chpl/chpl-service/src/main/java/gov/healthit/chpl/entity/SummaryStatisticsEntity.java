@@ -66,7 +66,7 @@ public class SummaryStatisticsEntity implements Serializable {
         return summaryStatistics;
     }
 
-    public void setSummaryStatistics( final String summaryStatistics) {
+    public void setSummaryStatistics(final String summaryStatistics) {
         this.summaryStatistics = summaryStatistics;
     }
 

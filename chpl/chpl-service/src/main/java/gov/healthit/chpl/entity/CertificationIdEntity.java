@@ -67,7 +67,7 @@ public class CertificationIdEntity implements Serializable {
 
     /**
      * Constructor taking a given ID.
-     * 
+     *
      * @param id
      *            to set
      */
@@ -77,7 +77,7 @@ public class CertificationIdEntity implements Serializable {
 
     /**
      * Return the type of this class. Useful for when dealing with proxies.
-     * 
+     *
      * @return Defining class.
      */
     @Transient
@@ -87,7 +87,7 @@ public class CertificationIdEntity implements Serializable {
 
     /**
      * Return the value associated with the column: creationDate.
-     * 
+     *
      * @return A Date object (this.creationDate)
      */
     public Date getCreationDate() {
@@ -97,7 +97,7 @@ public class CertificationIdEntity implements Serializable {
 
     /**
      * Set the value related to the column: creationDate.
-     * 
+     *
      * @param creationDate
      *            the creationDate value you wish to set
      */
@@ -107,7 +107,7 @@ public class CertificationIdEntity implements Serializable {
 
     /**
      * Return the value associated with the column: id.
-     * 
+     *
      * @return A Long object (this.id)
      */
     public Long getId() {
@@ -117,7 +117,7 @@ public class CertificationIdEntity implements Serializable {
 
     /**
      * Set the value related to the column: id.
-     * 
+     *
      * @param id
      *            the id value you wish to set
      */
@@ -127,7 +127,7 @@ public class CertificationIdEntity implements Serializable {
 
     /**
      * Return the value associated with the column: lastModifiedDate.
-     * 
+     *
      * @return A Date object (this.lastModifiedDate)
      */
     public Date getLastModifiedDate() {
@@ -136,7 +136,7 @@ public class CertificationIdEntity implements Serializable {
 
     /**
      * Set the value related to the column: lastModifiedDate.
-     * 
+     *
      * @param lastModifiedDate
      *            the lastModifiedDate value you wish to set
      */
@@ -146,7 +146,7 @@ public class CertificationIdEntity implements Serializable {
 
     /**
      * Return the value associated with the column: lastModifiedUser.
-     * 
+     *
      * @return A Long object (this.lastModifiedUser)
      */
     public Long getLastModifiedUser() {
@@ -156,7 +156,7 @@ public class CertificationIdEntity implements Serializable {
 
     /**
      * Set the value related to the column: lastModifiedUser.
-     * 
+     *
      * @param lastModifiedUser
      *            the lastModifiedUser value you wish to set
      */
@@ -166,7 +166,7 @@ public class CertificationIdEntity implements Serializable {
 
     /**
      * Return the value associated with the column: certification_id.
-     * 
+     *
      * @return A String object (this.certificationId)
      */
     public String getCertificationId() {
@@ -175,9 +175,7 @@ public class CertificationIdEntity implements Serializable {
 
     /**
      * Set the value related to the column: certification_id.
-     * 
-     * @param certificationId
-     *            the certificationId value you wish to set
+     * @param certId the certificationId value you wish to set
      */
     public void setCertificationId(final String certId) {
         this.certificationId = certId;
@@ -185,7 +183,6 @@ public class CertificationIdEntity implements Serializable {
 
     /**
      * Return the value associated with the column: key.
-     * 
      * @return A String object (this.key)
      */
     public String getKey() {
@@ -194,7 +191,6 @@ public class CertificationIdEntity implements Serializable {
 
     /**
      * Set the value related to the column: key.
-     * 
      * @param key
      *            the key value you wish to set
      */
@@ -204,7 +200,7 @@ public class CertificationIdEntity implements Serializable {
 
     /**
      * Return the value associated with the column: practice_type_id.
-     * 
+     *
      * @return A Long object (this.practiceTypeId)
      */
     public Long getPracticeTypeId() {
@@ -213,7 +209,7 @@ public class CertificationIdEntity implements Serializable {
 
     /**
      * Set the value related to the column: practice_type_id.
-     * 
+     *
      * @param practiceTypeId
      *            the practiceTypeId value you wish to set
      */
@@ -223,7 +219,7 @@ public class CertificationIdEntity implements Serializable {
 
     /**
      * Return the value associated with the column: year.
-     * 
+     *
      * @return A String object (this.year)
      */
     public String getYear() {
@@ -232,7 +228,7 @@ public class CertificationIdEntity implements Serializable {
 
     /**
      * Set the value related to the column: year.
-     * 
+     *
      * @param year
      *            the year value you wish to set
      */
@@ -242,7 +238,7 @@ public class CertificationIdEntity implements Serializable {
 
     /**
      * Provides toString implementation.
-     * 
+     *
      * @see java.lang.Object#toString()
      * @return String representation of this class.
      */

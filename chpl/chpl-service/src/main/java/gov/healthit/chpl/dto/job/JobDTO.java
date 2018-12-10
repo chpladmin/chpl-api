@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 
 import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.entity.job.JobEntity;
 import gov.healthit.chpl.entity.job.JobMessageEntity;
 

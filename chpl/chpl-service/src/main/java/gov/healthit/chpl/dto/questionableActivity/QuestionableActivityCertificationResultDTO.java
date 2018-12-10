@@ -13,20 +13,20 @@ public class QuestionableActivityCertificationResultDTO extends QuestionableActi
     public QuestionableActivityCertificationResultDTO() {
         super();
     }
-    
+
     public QuestionableActivityCertificationResultDTO(QuestionableActivityCertificationResultEntity entity) {
         super(entity);
         this.certResultId = entity.getCertResultId();
         this.reason = entity.getReason();
-        if(entity.getCertResult() != null) {
+        if (entity.getCertResult() != null) {
             this.certResult = new CertificationResultDetailsDTO(entity.getCertResult());
-            
-            if(entity.getCertResult().getListing() != null) {
+
+            if (entity.getCertResult().getListing() != null) {
                 this.listing = new CertifiedProductDetailsDTO(entity.getCertResult().getListing());
             }
         }
     }
-    
+
     public Class<?> getActivityObjectClass() {
         return CertificationResultDetailsDTO.class;
     }
@@ -61,5 +61,5 @@ public class QuestionableActivityCertificationResultDTO extends QuestionableActi
 
     public void setReason(String reason) {
         this.reason = reason;
-    }  
+    }
 }

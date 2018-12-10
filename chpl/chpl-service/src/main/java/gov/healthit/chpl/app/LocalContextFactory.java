@@ -2,7 +2,7 @@ package gov.healthit.chpl.app;
 
 import javax.naming.spi.NamingManager;
 
-public class LocalContextFactory {
+public final class LocalContextFactory {
     /**
      * do not instantiate this class directly. Use the factory method.
      */

@@ -56,10 +56,10 @@ public class PendingListingRequiredDataReviewerTest {
         Mockito.doAnswer(new Answer<String>() {
             @Override
             public String answer(InvocationOnMock invocation) throws Throwable {
-                String invalidG1MacraMeasure = 
+                String invalidG1MacraMeasure =
                         "Certification %s contains duplicate G1 Macra Measure: '%s'.  The duplicates have been removed.";
                 Object[] args = invocation.getArguments();
-                return formatMessage(invalidG1MacraMeasure, (String)args[1], (String)args[2]);
+                return formatMessage(invalidG1MacraMeasure, (String) args[1], (String) args[2]);
             }
         }).when(msgUtil).getMessage(
                 ArgumentMatchers.eq("listing.criteria.duplicateG1MacraMeasure"),
@@ -68,10 +68,10 @@ public class PendingListingRequiredDataReviewerTest {
         Mockito.doAnswer(new Answer<String>() {
             @Override
             public String answer(InvocationOnMock invocation) throws Throwable {
-                String invalidG2MacraMeasure = 
+                String invalidG2MacraMeasure =
                         "Certification %s contains duplicate G2 Macra Measure: '%s'.  The duplicates have been removed.";
                 Object[] args = invocation.getArguments();
-                return formatMessage(invalidG2MacraMeasure, (String)args[1], (String)args[2]);
+                return formatMessage(invalidG2MacraMeasure, (String) args[1], (String) args[2]);
             }
         }).when(msgUtil).getMessage(
                 ArgumentMatchers.eq("listing.criteria.duplicateG2MacraMeasure"),

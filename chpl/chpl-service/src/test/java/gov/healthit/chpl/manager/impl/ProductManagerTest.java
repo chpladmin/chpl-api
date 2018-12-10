@@ -458,7 +458,7 @@ public class ProductManagerTest extends TestCase {
     @Transactional
     @Rollback
     public void testProductSplitFailsWithSuspendedDeveloper()
-            throws EntityRetrievalException, EntityCreationException, 
+            throws EntityRetrievalException, EntityCreationException,
             JsonProcessingException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         DeveloperDTO developer = developerManager.getById(-1L);

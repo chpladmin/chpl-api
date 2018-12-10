@@ -10,9 +10,9 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("pendingUnattestedCriteriaWithDataReviewer")
 public class UnattestedCriteriaWithDataReviewer implements Reviewer {
-    
+
     @Autowired ErrorMessageUtil msgUtil;
-    
+
     public void review(PendingCertifiedProductDTO listing) {
         for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
             if ((cert.getMeetsCriteria() == null || !cert.getMeetsCriteria().booleanValue())) {

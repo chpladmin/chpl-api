@@ -10,7 +10,7 @@ import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 
 /**
  * Filters Listings to those needed for Criterion Product chart.
- * 
+ *
  * @author alarned
  *
  */
@@ -21,7 +21,7 @@ public class CriterionProductDataFilter {
 
     /**
      * Filter listings down to those needed for charts.
-     * 
+     *
      * @param certifiedProducts
      *            initial set of listings
      * @return filtered list (2014 & 2015 edition only)

@@ -95,7 +95,6 @@ public class CertificationCriterionEntity implements Serializable {
 
     /**
      * Constructor taking a given ID.
-     * 
      * @param id
      *            to set
      */
@@ -105,7 +104,6 @@ public class CertificationCriterionEntity implements Serializable {
 
     /**
      * Return the type of this class. Useful for when dealing with proxies.
-     * 
      * @return Defining class.
      */
     @Transient
@@ -115,7 +113,6 @@ public class CertificationCriterionEntity implements Serializable {
 
     /**
      * Return the value associated with the column: automatedMeasureCapable.
-     * 
      * @return A Boolean object (this.automatedMeasureCapable)
      */
     public Boolean isAutomatedMeasureCapable() {
@@ -125,7 +122,6 @@ public class CertificationCriterionEntity implements Serializable {
 
     /**
      * Set the value related to the column: automatedMeasureCapable.
-     * 
      * @param automatedMeasureCapable
      *            the automatedMeasureCapable value you wish to set
      */
@@ -135,7 +131,6 @@ public class CertificationCriterionEntity implements Serializable {
 
     /**
      * Return the value associated with the column: automatedNumeratorCapable.
-     * 
      * @return A Boolean object (this.automatedNumeratorCapable)
      */
     public Boolean isAutomatedNumeratorCapable() {
@@ -145,7 +140,6 @@ public class CertificationCriterionEntity implements Serializable {
 
     /**
      * Set the value related to the column: automatedNumeratorCapable.
-     * 
      * @param automatedNumeratorCapable
      *            the automatedNumeratorCapable value you wish to set
      */
@@ -155,7 +149,6 @@ public class CertificationCriterionEntity implements Serializable {
 
     /**
      * Return the value associated with the column: certificationEdition.
-     * 
      * @return A CertificationEdition object (this.certificationEdition)
      */
     public Long getCertificationEditionId() {
@@ -165,9 +158,7 @@ public class CertificationCriterionEntity implements Serializable {
 
     /**
      * Set the value related to the column: certificationEdition.
-     * 
-     * @param certificationEdition
-     *            the certificationEdition value you wish to set
+     * @param certificationEditionId the certificationEdition value you wish to set
      */
     public void setCertificationEdition(final Long certificationEditionId) {
         this.certificationEditionId = certificationEditionId;
@@ -175,7 +166,6 @@ public class CertificationCriterionEntity implements Serializable {
 
     /**
      * Return the value associated with the column: creationDate.
-     * 
      * @return A Date object (this.creationDate)
      */
     public Date getCreationDate() {
@@ -185,7 +175,6 @@ public class CertificationCriterionEntity implements Serializable {
 
     /**
      * Set the value related to the column: creationDate.
-     * 
      * @param creationDate
      *            the creationDate value you wish to set
      */
@@ -195,7 +184,6 @@ public class CertificationCriterionEntity implements Serializable {
 
     /**
      * Return the value associated with the column: deleted.
-     * 
      * @return A Boolean object (this.deleted)
      */
 
@@ -206,7 +194,6 @@ public class CertificationCriterionEntity implements Serializable {
 
     /**
      * Set the value related to the column: deleted.
-     * 
      * @param deleted
      *            the deleted value you wish to set
      */
@@ -216,7 +203,6 @@ public class CertificationCriterionEntity implements Serializable {
 
     /**
      * Return the value associated with the column: description.
-     * 
      * @return A String object (this.description)
      */
     public String getDescription() {
@@ -226,7 +212,6 @@ public class CertificationCriterionEntity implements Serializable {
 
     /**
      * Set the value related to the column: description.
-     * 
      * @param description
      *            the description value you wish to set
      */
@@ -236,7 +221,6 @@ public class CertificationCriterionEntity implements Serializable {
 
     /**
      * Return the value associated with the column: id.
-     * 
      * @return A Long object (this.id)
      */
     public Long getId() {
@@ -246,7 +230,6 @@ public class CertificationCriterionEntity implements Serializable {
 
     /**
      * Set the value related to the column: id.
-     * 
      * @param id
      *            the id value you wish to set
      */
@@ -256,7 +239,6 @@ public class CertificationCriterionEntity implements Serializable {
 
     /**
      * Return the value associated with the column: lastModifiedDate.
-     * 
      * @return A Date object (this.lastModifiedDate)
      */
 
@@ -267,7 +249,6 @@ public class CertificationCriterionEntity implements Serializable {
 
     /**
      * Set the value related to the column: lastModifiedDate.
-     * 
      * @param lastModifiedDate
      *            the lastModifiedDate value you wish to set
      */
@@ -277,7 +258,6 @@ public class CertificationCriterionEntity implements Serializable {
 
     /**
      * Return the value associated with the column: lastModifiedUser.
-     * 
      * @return A Long object (this.lastModifiedUser)
      */
     public Long getLastModifiedUser() {
@@ -287,7 +267,6 @@ public class CertificationCriterionEntity implements Serializable {
 
     /**
      * Set the value related to the column: lastModifiedUser.
-     * 
      * @param lastModifiedUser
      *            the lastModifiedUser value you wish to set
      */
@@ -297,7 +276,6 @@ public class CertificationCriterionEntity implements Serializable {
 
     /**
      * Return the value associated with the column: number.
-     * 
      * @return A String object (this.number)
      */
     public String getNumber() {
@@ -307,7 +285,6 @@ public class CertificationCriterionEntity implements Serializable {
 
     /**
      * Set the value related to the column: number.
-     * 
      * @param number
      *            the number value you wish to set
      */
@@ -317,7 +294,6 @@ public class CertificationCriterionEntity implements Serializable {
 
     /**
      * Return the value associated with the column: requiresSed.
-     * 
      * @return A Boolean object (this.requiresSed)
      */
     public Boolean isRequiresSed() {
@@ -327,7 +303,6 @@ public class CertificationCriterionEntity implements Serializable {
 
     /**
      * Set the value related to the column: requiresSed.
-     * 
      * @param requiresSed
      *            the requiresSed value you wish to set
      */
@@ -337,7 +312,6 @@ public class CertificationCriterionEntity implements Serializable {
 
     /**
      * Return the value associated with the column: title.
-     * 
      * @return A String object (this.title)
      */
     public String getTitle() {
@@ -346,7 +320,6 @@ public class CertificationCriterionEntity implements Serializable {
 
     /**
      * Set the value related to the column: title.
-     * 
      * @param title
      *            the title value you wish to set
      */
@@ -356,7 +329,6 @@ public class CertificationCriterionEntity implements Serializable {
 
     /**
      * Provides toString implementation.
-     * 
      * @see java.lang.Object#toString()
      * @return String representation of this class.
      */

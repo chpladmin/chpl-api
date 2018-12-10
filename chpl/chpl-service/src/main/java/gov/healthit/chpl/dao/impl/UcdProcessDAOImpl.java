@@ -100,7 +100,7 @@ public class UcdProcessDAOImpl extends BaseDAOImpl implements UcdProcessDAO {
         }
         return result;
     }
-    
+
     @Override
     public List<UcdProcessDTO> findAll() {
 

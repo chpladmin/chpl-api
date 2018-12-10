@@ -11,7 +11,7 @@ import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 
 @Component("pendingValidDataReviewer")
 public class ValidDataReviewer implements Reviewer {
-    
+
     @Override
     public void review(PendingCertifiedProductDTO listing) {
         for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {

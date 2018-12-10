@@ -59,7 +59,7 @@ public class CertificationIdProductMapEntity implements Serializable {
 
     /**
      * Constructor taking a given ID.
-     * 
+     *
      * @param id
      *            to set
      */
@@ -69,7 +69,7 @@ public class CertificationIdProductMapEntity implements Serializable {
 
     /**
      * Return the type of this class. Useful for when dealing with proxies.
-     * 
+     *
      * @return Defining class.
      */
     @Transient
@@ -79,7 +79,7 @@ public class CertificationIdProductMapEntity implements Serializable {
 
     /**
      * Return the value associated with the column: creationDate.
-     * 
+     *
      * @return A Date object (this.creationDate)
      */
     public Date getCreationDate() {
@@ -89,7 +89,7 @@ public class CertificationIdProductMapEntity implements Serializable {
 
     /**
      * Set the value related to the column: creationDate.
-     * 
+     *
      * @param creationDate
      *            the creationDate value you wish to set
      */
@@ -99,7 +99,7 @@ public class CertificationIdProductMapEntity implements Serializable {
 
     /**
      * Return the value associated with the column: id.
-     * 
+     *
      * @return A Long object (this.id)
      */
     public Long getId() {
@@ -109,7 +109,7 @@ public class CertificationIdProductMapEntity implements Serializable {
 
     /**
      * Set the value related to the column: id.
-     * 
+     *
      * @param id
      *            the id value you wish to set
      */
@@ -119,7 +119,7 @@ public class CertificationIdProductMapEntity implements Serializable {
 
     /**
      * Return the value associated with the column: lastModifiedDate.
-     * 
+     *
      * @return A Date object (this.lastModifiedDate)
      */
     public Date getLastModifiedDate() {
@@ -128,7 +128,7 @@ public class CertificationIdProductMapEntity implements Serializable {
 
     /**
      * Set the value related to the column: lastModifiedDate.
-     * 
+     *
      * @param lastModifiedDate
      *            the lastModifiedDate value you wish to set
      */
@@ -138,7 +138,7 @@ public class CertificationIdProductMapEntity implements Serializable {
 
     /**
      * Return the value associated with the column: lastModifiedUser.
-     * 
+     *
      * @return A Long object (this.lastModifiedUser)
      */
     public Long getLastModifiedUser() {
@@ -148,7 +148,7 @@ public class CertificationIdProductMapEntity implements Serializable {
 
     /**
      * Set the value related to the column: lastModifiedUser.
-     * 
+     *
      * @param lastModifiedUser
      *            the lastModifiedUser value you wish to set
      */
@@ -158,7 +158,7 @@ public class CertificationIdProductMapEntity implements Serializable {
 
     /**
      * Return the value associated with the column: certified_product_id.
-     * 
+     *
      * @return A Long object (this.certifiedProductId)
      */
     public Long getCertifiedProductId() {
@@ -167,7 +167,7 @@ public class CertificationIdProductMapEntity implements Serializable {
 
     /**
      * Set the value related to the column: product_id.
-     * 
+     *
      * @param certifiedProductId
      *            the certifiedProductId value you wish to set
      */
@@ -177,7 +177,7 @@ public class CertificationIdProductMapEntity implements Serializable {
 
     /**
      * Return the value associated with the column: ehr_certification_id_id.
-     * 
+     *
      * @return A Long object (this.certificationId)
      */
     public Long getCertificationIdId() {
@@ -186,7 +186,7 @@ public class CertificationIdProductMapEntity implements Serializable {
 
     /**
      * Set the value related to the column: ehr_certification_id_id.
-     * 
+     *
      * @param certificationIdId
      *            the certificationIdId value you wish to set
      */
@@ -196,7 +196,7 @@ public class CertificationIdProductMapEntity implements Serializable {
 
     /**
      * Provides toString implementation.
-     * 
+     *
      * @see java.lang.Object#toString()
      * @return String representation of this class.
      */

@@ -15,7 +15,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.AgeRangeDAO;
@@ -119,7 +118,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
     private TestToolDAO testToolsDao;
     @Autowired private TestProcedureDAO testProcedureDao;
     @Autowired private TestDataDAO testDataDao;
-    
+
     @Autowired
     private AccessibilityStandardDAO asDao;
     @Autowired
@@ -132,7 +131,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
     private DeveloperStatusDAO devStatusDao;
     @Autowired
     private SurveillanceDAO survDao;
-    @Autowired 
+    @Autowired
     private UploadTemplateVersionDAO uploadTemplateDao;
     @Autowired
     private ProductClassificationTypeDAO productClassificationTypeDAO;
@@ -525,7 +524,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
         return templates;
     }
-    
+
     @Transactional
     @Override
     @Cacheable(CacheNames.MACRA_MEASURES)
@@ -554,7 +553,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
         }
         return testProcedures;
     }
-    
+
     @Transactional
     @Override
     @Cacheable(CacheNames.TEST_DATA)
@@ -569,7 +568,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
         }
         return testData;
     }
-    
+
     @Transactional
     @Override
     @Cacheable(CacheNames.CERTIFICATION_CRITERION_NUMBERS)

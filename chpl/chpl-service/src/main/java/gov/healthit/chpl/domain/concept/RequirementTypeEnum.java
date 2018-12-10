@@ -7,7 +7,7 @@ public enum RequirementTypeEnum implements Serializable {
 
     private String name;
 
-    private RequirementTypeEnum(String name) {
+    RequirementTypeEnum(String name) {
         this.name = name;
     }
 

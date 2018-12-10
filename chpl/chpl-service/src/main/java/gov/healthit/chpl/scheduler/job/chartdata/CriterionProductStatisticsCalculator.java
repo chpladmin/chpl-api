@@ -23,7 +23,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 /**
  * Populates the criterion_product_statistics table with summarized count
  * information.
- * 
+ *
  * @author alarned
  *
  */
@@ -46,7 +46,7 @@ public class CriterionProductStatisticsCalculator {
      * uniqueProductSet contains strings of the form
      * "<CriterionNumber>-<DeveloperName>-<ProductName>" iff that combination of
      * criterion and product have already been counted in the criterion map
-     * 
+     *
      * @param listings
      *            listings to parse
      * @return map of criteria to counts
@@ -73,7 +73,7 @@ public class CriterionProductStatisticsCalculator {
 
     /**
      * Log count data to LOGGER.
-     * 
+     *
      * @param productCounts
      *            count data
      */
@@ -85,7 +85,7 @@ public class CriterionProductStatisticsCalculator {
 
     /**
      * Save count data to system.
-     * 
+     *
      * @param productCounts
      *            count data
      */
@@ -98,7 +98,7 @@ public class CriterionProductStatisticsCalculator {
             LOGGER.error("Error occured while deleting existing CriterionProductStatistics.", e);
             return;
         }
-        
+
         for (CriterionProductStatisticsEntity entity : entities) {
             saveCriterionProductStatistic(entity);
         }

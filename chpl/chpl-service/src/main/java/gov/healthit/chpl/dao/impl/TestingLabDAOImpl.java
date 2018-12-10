@@ -177,8 +177,8 @@ public class TestingLabDAOImpl extends BaseDAOImpl implements TestingLabDAO {
     public String getMaxCode() {
         String maxCode = null;
         Query query = entityManager.createQuery(
-                "SELECT atl.testingLabCode " 
-                        + "from TestingLabEntity atl " 
+                "SELECT atl.testingLabCode "
+                        + "from TestingLabEntity atl "
                         + "ORDER BY atl.testingLabCode DESC",
                 String.class);
         List<String> result = query.getResultList();

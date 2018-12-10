@@ -142,7 +142,7 @@ public class ListingMockUtil {
         a7.getTestData().add(createPendingTestData(4L, null, "2.4.1"));
         a7.setSed(Boolean.TRUE);
         a7.getUcdProcesses().add(createPendingUcdProcess(1L, "NISTIR 7741", "changed things"));
-        listing.getCertificationCriterion().add(a7); 
+        listing.getCertificationCriterion().add(a7);
 
         PendingCertificationResultDTO a8 = create2014PendingCertResult(8L, "170.314 (a)(8)", true);
         a8.getTestStandards().add(createPendingTestStandard(1L, "170.204(b)(1)"));
@@ -156,12 +156,12 @@ public class ListingMockUtil {
         a9.setG2Success(Boolean.TRUE);
         a9.getTestProcedures().add(createPendingTestProcedure(1L, null, "1.9"));
         a9.getTestData().add(createPendingTestData(4L, null, "2.4.1"));
-        listing.getCertificationCriterion().add(a9); 
+        listing.getCertificationCriterion().add(a9);
 
         PendingCertificationResultDTO a10 = create2014PendingCertResult(10L, "170.314 (a)(10)", true);
         a10.getTestProcedures().add(createPendingTestProcedure(1L, null, "1.9"));
         a10.getTestData().add(createPendingTestData(4L, null, "2.4.1"));
-        listing.getCertificationCriterion().add(a10); 
+        listing.getCertificationCriterion().add(a10);
 
         PendingCertificationResultDTO a11 = create2014PendingCertResult(11L, "170.314 (a)(11)", true);
         a11.setG1Success(Boolean.FALSE);

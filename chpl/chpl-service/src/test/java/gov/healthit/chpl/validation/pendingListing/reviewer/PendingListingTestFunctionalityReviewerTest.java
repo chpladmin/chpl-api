@@ -67,7 +67,7 @@ public class PendingListingTestFunctionalityReviewerTest {
 
     @Spy
     private CertificationEditionDAO certificationEditionDAO;
-    
+
     @Spy
     private TestingFunctionalityManager testFunctionalityManager;
 
@@ -84,14 +84,14 @@ public class PendingListingTestFunctionalityReviewerTest {
                 + "Criteria other and is not valid for Criteria 170.314 (a)(6).")
             .when(msgUtil).getMessage(
                 ArgumentMatchers.eq("listing.criteria.testFunctionalityCriterionMismatch"),
-                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), 
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
-        
+
         Mockito.doReturn("In Criteria 170.314 (a)(6), Test Functionality (a)(6)(11) is for "
                 + "other Settings and is not valid for Practice Type Ambulatory.")
             .when(msgUtil).getMessage(
                 ArgumentMatchers.eq("listing.criteria.testFunctionalityPracticeTypeMismatch"),
-                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), 
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
 
         Mockito.doReturn(INVALID_TEST_FUNC_ERROR)
@@ -282,7 +282,7 @@ public class PendingListingTestFunctionalityReviewerTest {
             pendingListing.setPracticeType("Ambulatory");
             pendingListing.setProductClassificationName("Modular EHR");
         }
-        pendingListing.setPracticeTypeId(1l);;
+        pendingListing.setPracticeTypeId(1L);
         return pendingListing;
     }
 
@@ -412,17 +412,17 @@ public class PendingListingTestFunctionalityReviewerTest {
     private List<CertificationEditionDTO> getEditions() {
         List<CertificationEditionDTO> editions = new ArrayList<CertificationEditionDTO>();
         CertificationEditionDTO edition2011 = new CertificationEditionDTO();
-        edition2011.setId(1l);
+        edition2011.setId(1L);
         edition2011.setYear("2011");
         editions.add(edition2011);
 
         CertificationEditionDTO edition2014 = new CertificationEditionDTO();
-        edition2014.setId(2l);
+        edition2014.setId(2L);
         edition2014.setYear("2014");
         editions.add(edition2014);
 
         CertificationEditionDTO edition2015 = new CertificationEditionDTO();
-        edition2015.setId(3l);
+        edition2015.setId(3L);
         edition2015.setYear("2015");
         editions.add(edition2015);
 

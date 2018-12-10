@@ -144,15 +144,15 @@ public class TestingLabController {
     EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateTestingLabException {
         //get the ATL as it is currently in the database to find out if
         //the retired flag was changed.
-        //Retirement and un-retirement is done as a separate manager action because 
+        //Retirement and un-retirement is done as a separate manager action because
         //security is different from normal ATL updates - only admins are allowed
         //whereas an ATL admin can update other info
         TestingLabDTO existingAtl = atlManager.getById(updatedAtl.getId());
-        if(existingAtl.isRetired() != updatedAtl.isRetired() && updatedAtl.isRetired()) {
+        if (existingAtl.isRetired() != updatedAtl.isRetired() && updatedAtl.isRetired()) {
             //we are retiring this ATL and no other changes can be made
             atlManager.retire(updatedAtl.getId());
         } else {
-            if(existingAtl.isRetired() != updatedAtl.isRetired() && !updatedAtl.isRetired()) {
+            if (existingAtl.isRetired() != updatedAtl.isRetired() && !updatedAtl.isRetired()) {
                 //unretire the ATL
                 atlManager.unretire(updatedAtl.getId());
             }
@@ -166,7 +166,7 @@ public class TestingLabController {
             }
             toUpdate.setName(updatedAtl.getName());
             toUpdate.setWebsite(updatedAtl.getWebsite());
-    
+
             if (updatedAtl.getAddress() == null) {
                 throw new InvalidArgumentsException("An address is required to update the testing lab");
             }

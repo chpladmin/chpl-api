@@ -24,9 +24,9 @@ import gov.healthit.chpl.util.ValidationUtils;
 
 @Component("unsupportedCharacterReviewer")
 public class UnsupportedCharacterReviewer implements Reviewer {
-    
+
     @Autowired ErrorMessageUtil msgUtil;
-    
+
     public void review(CertifiedProductSearchDetails listing) {
         //check all string fields at the listing level
         addListingWarningIfNotValid(listing, listing.getAcbCertificationId(),

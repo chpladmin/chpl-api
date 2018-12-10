@@ -59,7 +59,7 @@ public class TestToolReviewer implements Reviewer {
                             TestToolDTO tt = testToolDao.getByName(testTool.getTestToolName());
                             if (tt != null) {
                                 if (tt.isRetired() && icsCodeInteger != null && icsCodeInteger.intValue() == 0) {
-                                    if (productNumUtil.hasIcsConflict(listing.getChplProductNumber(), 
+                                    if (productNumUtil.hasIcsConflict(listing.getChplProductNumber(),
                                             (listing.getIcs() == null ? Boolean.FALSE : listing.getIcs().getInherits()))) {
                                         listing.getWarningMessages().add(
                                                 msgUtil.getMessage("listing.criteria.retiredTestToolNotAllowed",

@@ -98,7 +98,7 @@ public class CertificationIdDTO implements Serializable {
 
     /**
      * Provides toString implementation.
-     * 
+     *
      * @see java.lang.Object#toString()
      * @return String representation of this class.
      */

@@ -37,6 +37,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.UnitTestUtil;
 import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
@@ -102,7 +103,7 @@ public class SurveillanceControllerTest {
     public static void setUpClass() throws Exception {
         adminUser = new JWTAuthenticatedUser();
         adminUser.setFullName("Administrator");
-        adminUser.setId(-2L);
+        adminUser.setId(UnitTestUtil.ADMIN_ID);
         adminUser.setFriendlyName("Administrator");
         adminUser.setSubjectName("admin");
         adminUser.getPermissions().add(new GrantedPermission(Authority.ROLE_ADMIN));
@@ -1294,7 +1295,7 @@ public class SurveillanceControllerTest {
     }
 
     /**
-     * Given I am authenticated as ACB Admin
+     * Given I am authenticated as ACB Admin.
      * Given I have authority on the ACB
      * When I update a surveillance activity containing a nonconformity with a CAP End Date but no CAP Approval Date
      * Then the validator returns an error
@@ -1308,7 +1309,7 @@ public class SurveillanceControllerTest {
      * @throws UserPermissionRetrievalException
      * @throws CertificationBodyAccessException
      */
-    @Transactional 
+    @Transactional
     @Test
     @Rollback
     public void test_updateSurveillance_violatesCAPEndDate_ApprovalDateMissingValue_returnsError()
@@ -1420,13 +1421,13 @@ public class SurveillanceControllerTest {
         try {
             surveillanceController.updateSurveillance(surv);
         } catch (ValidationException e) {
-            assertTrue(StringUtils.containsIgnoreCase(e.getErrorMessages().toString(), 
+            assertTrue(StringUtils.containsIgnoreCase(e.getErrorMessages().toString(),
                     "Date Corrective Action Plan End Date must be greater than Date Corrective Action Plan Start Date for requirement"));
         }
     }
 
     /**
-     * Given I am authenticated as ACB Admin
+     * Given I am authenticated as ACB Admin.
      * Given I have authority on the ACB
      * When I update a surveillance activity containing a nonconformity with a CAP End Date but no Resolution
      * Then the validator returns an error
@@ -1896,7 +1897,7 @@ public class SurveillanceControllerTest {
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
             InvalidArgumentsException, ValidationException, CertificationBodyAccessException, UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException, EntityNotFoundException, AccessDeniedException, ObjectsMissingValidationException {
         SecurityContextHolder.getContext().setAuthentication(oncAndAcb);
-        List<Long> ids = new ArrayList<Long>(Arrays.asList( -3L, -4L, -5L, -6L, -7L, -8L, -9L, -20L, -21L, -22L));
+        List<Long> ids = new ArrayList<Long>(Arrays.asList(-3L, -4L, -5L, -6L, -7L, -8L, -9L, -20L, -21L, -22L));
         IdListContainer idList = new IdListContainer();
         idList.setIds(ids);
         // verify ids are in list of surveillances returned
@@ -1952,7 +1953,7 @@ public class SurveillanceControllerTest {
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
             InvalidArgumentsException, ValidationException, CertificationBodyAccessException, UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException, EntityNotFoundException, AccessDeniedException, ObjectsMissingValidationException {
         SecurityContextHolder.getContext().setAuthentication(oncAndAcb);
-        List<Long> ids = new ArrayList<Long>(Arrays.asList( -3L, -4L, -5L, -6L, -7L, -8L, -9L, -20L, -21L, -22L));
+        List<Long> ids = new ArrayList<Long>(Arrays.asList(-3L, -4L, -5L, -6L, -7L, -8L, -9L, -20L, -21L, -22L));
         IdListContainer idList = new IdListContainer();
         idList.setIds(ids);
         // verify ids are in list of surveillances returned
@@ -2036,7 +2037,7 @@ public class SurveillanceControllerTest {
         // try to delete already deleted pending surveillance
         try {
             result = surveillanceController.rejectPendingSurveillance(id);
-        } catch (ObjectMissingValidationException ex){
+        } catch (ObjectMissingValidationException ex) {
             assertTrue(ex.getObjectId() != null); // CHPL Product ID
             assertTrue(ex.getContact() != null); // contact info of last modified user
             assertTrue(ex.getStartDate() != null); // Pending Surveillance start date

@@ -7,12 +7,10 @@ import static org.junit.Assert.assertTrue;
 import java.util.Set;
 
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -628,7 +626,7 @@ public class SearchMenuManagerTest {
             assertNotNull(td.getCriteria().getNumber());
             assertNotNull(td.getId());
             assertNotNull(td.getName());
-            assertTrue(td.getCriteria().getCertificationEdition().equals("2014") 
+            assertTrue(td.getCriteria().getCertificationEdition().equals("2014")
                     || td.getCriteria().getCertificationEdition().equals("2015"));
         }
     }
@@ -645,7 +643,7 @@ public class SearchMenuManagerTest {
             assertNotNull(tp.getCriteria().getNumber());
             assertNotNull(tp.getId());
             assertNotNull(tp.getName());
-            assertTrue(tp.getCriteria().getCertificationEdition().equals("2014") 
+            assertTrue(tp.getCriteria().getCertificationEdition().equals("2014")
                     || tp.getCriteria().getCertificationEdition().equals("2015"));
         }
     }

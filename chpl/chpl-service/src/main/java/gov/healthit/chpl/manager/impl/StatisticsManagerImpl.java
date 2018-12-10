@@ -41,7 +41,7 @@ import gov.healthit.chpl.manager.StatisticsManager;
 
 /**
  * Implementation of the StatisticsManager interface.
- * 
+ *
  * @author TYoung
  *
  */

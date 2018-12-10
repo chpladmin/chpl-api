@@ -503,7 +503,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         return acbStats;
     }
 
-    //Parameter intentionally not 'final'.  This way we don;t have to copy the values passed in to a 
+    //Parameter intentionally not 'final'.  This way we don;t have to copy the values passed in to a
     //new list.
     private void addMissingAcbStatistics(List<CertifiedBodyStatistics> acbStats, final Integer edition) {
         //Add statistics for missing active ACBs

@@ -7,11 +7,11 @@ public enum AttestationType {
 
     private String name;
 
-    private AttestationType() {
+    AttestationType() {
 
     }
 
-    private AttestationType(String name) {
+    AttestationType(String name) {
         this.name = name;
     }
 

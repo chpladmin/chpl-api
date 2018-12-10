@@ -24,6 +24,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.UnitTestUtil;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
@@ -45,6 +46,7 @@ import gov.healthit.chpl.exception.ValidationException;
 @DatabaseSetup("classpath:data/testData.xml")
 public class AnnouncementControllerTest {
     private static JWTAuthenticatedUser adminUser;
+    private static final long ONE_DAY_MILLIS = 1000 * 60 * 60 * 24;
 
     @Autowired
     Environment env;
@@ -60,7 +62,7 @@ public class AnnouncementControllerTest {
     public static void setUpClass() throws Exception {
         adminUser = new JWTAuthenticatedUser();
         adminUser.setFullName("Administrator");
-        adminUser.setId(-2L);
+        adminUser.setId(UnitTestUtil.ADMIN_ID);
         adminUser.setFriendlyName("Administrator");
         adminUser.setSubjectName("admin");
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
@@ -75,12 +77,12 @@ public class AnnouncementControllerTest {
 
     @Transactional
     @Test
-    public void testCreatePublicAnnouncement() 
-            throws JsonProcessingException, EntityCreationException, 
+    public void testCreatePublicAnnouncement()
+            throws JsonProcessingException, EntityCreationException,
             EntityRetrievalException, UserRetrievalException, InvalidArgumentsException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         Announcement toCreate = new Announcement();
-        toCreate.setEndDate(new Date(System.currentTimeMillis() + (1000*60*60*24)));
+        toCreate.setEndDate(new Date(System.currentTimeMillis() + ONE_DAY_MILLIS));
         toCreate.setStartDate(new Date());
         toCreate.setIsPublic(Boolean.TRUE);
         toCreate.setText("Test");
@@ -96,12 +98,12 @@ public class AnnouncementControllerTest {
 
     @Transactional
     @Test
-    public void testCreatePrivateAnnouncement() 
-            throws JsonProcessingException, EntityCreationException, 
+    public void testCreatePrivateAnnouncement()
+            throws JsonProcessingException, EntityCreationException,
             EntityRetrievalException, UserRetrievalException, InvalidArgumentsException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         Announcement toCreate = new Announcement();
-        toCreate.setEndDate(new Date(System.currentTimeMillis() + (1000*60*60*24)));
+        toCreate.setEndDate(new Date(System.currentTimeMillis() + ONE_DAY_MILLIS));
         toCreate.setStartDate(new Date());
         toCreate.setIsPublic(Boolean.FALSE);
         toCreate.setText("Test");

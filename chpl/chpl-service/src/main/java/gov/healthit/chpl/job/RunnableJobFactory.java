@@ -20,7 +20,7 @@ import gov.healthit.chpl.dto.job.JobTypeDTO;
 public class RunnableJobFactory {
 
     @Autowired private UserPermissionDAO userPermissionDao;
-    
+
     public RunnableJob getRunnableJob(JobDTO job) throws NoJobTypeException {
         RunnableJob result = null;
         JobTypeDTO jobType = job.getJobType();
@@ -52,12 +52,12 @@ public class RunnableJobFactory {
             jobUser.setId(job.getUser().getId());
             jobUser.setFriendlyName(job.getUser().getFriendlyName());
             jobUser.setSubjectName(job.getUser().getSubjectName());
-            
+
             //add granted authorities which are like ROLE_ACB, ROLE_ADMIN, etc.
             //so that the jobs can make calls to methods with security on them
-            Set<UserPermissionDTO> userPermissions = 
+            Set<UserPermissionDTO> userPermissions =
                     userPermissionDao.findPermissionsForUser(job.getUser().getId());
-            for(UserPermissionDTO permission : userPermissions) {
+            for (UserPermissionDTO permission : userPermissions) {
                 GrantedPermission grantedPermission = new GrantedPermission(permission.getAuthority());
                 jobUser.addPermission(grantedPermission);
             }
@@ -74,7 +74,7 @@ public class RunnableJobFactory {
         // and create a new instance of MeaningfulUseUploadJob
         return null;
     }
-    
+
     @Lookup
     public SurveillanceUploadJob getSurveillanceUploadJob() {
         // spring will override this method

@@ -66,7 +66,7 @@ public class CQMResultEntity implements Serializable {
 
     /**
      * Constructor taking a given ID.
-     * 
+     *
      * @param id
      *            to set
      */
@@ -76,7 +76,7 @@ public class CQMResultEntity implements Serializable {
 
     /**
      * Return the type of this class. Useful for when dealing with proxies.
-     * 
+     *
      * @return Defining class.
      */
     @Transient
@@ -91,9 +91,7 @@ public class CQMResultEntity implements Serializable {
 
     /**
      * Set the value related to the column: cqmCriterion.
-     * 
-     * @param cqmCriterion
-     *            the cqmCriterion value you wish to set
+     * @param cqmCriterionId the cqmCriterion value you wish to set
      */
     public void setCqmCriterionId(final Long cqmCriterionId) {
         this.cqmCriterionId = cqmCriterionId;
@@ -101,7 +99,6 @@ public class CQMResultEntity implements Serializable {
 
     /**
      * Return the value associated with the column: creationDate.
-     * 
      * @return A Date object (this.creationDate)
      */
     public Date getCreationDate() {
@@ -111,7 +108,6 @@ public class CQMResultEntity implements Serializable {
 
     /**
      * Set the value related to the column: creationDate.
-     * 
      * @param creationDate
      *            the creationDate value you wish to set
      */
@@ -121,7 +117,7 @@ public class CQMResultEntity implements Serializable {
 
     /**
      * Return the value associated with the column: deleted.
-     * 
+     *
      * @return A Boolean object (this.deleted)
      */
     public Boolean isDeleted() {
@@ -131,7 +127,7 @@ public class CQMResultEntity implements Serializable {
 
     /**
      * Set the value related to the column: deleted.
-     * 
+     *
      * @param deleted
      *            the deleted value you wish to set
      */
@@ -141,7 +137,7 @@ public class CQMResultEntity implements Serializable {
 
     /**
      * Return the value associated with the column: id.
-     * 
+     *
      * @return A Long object (this.id)
      */
     public Long getId() {
@@ -151,7 +147,7 @@ public class CQMResultEntity implements Serializable {
 
     /**
      * Set the value related to the column: id.
-     * 
+     *
      * @param id
      *            the id value you wish to set
      */
@@ -161,7 +157,7 @@ public class CQMResultEntity implements Serializable {
 
     /**
      * Return the value associated with the column: lastModifiedDate.
-     * 
+     *
      * @return A Date object (this.lastModifiedDate)
      */
     public Date getLastModifiedDate() {
@@ -171,7 +167,7 @@ public class CQMResultEntity implements Serializable {
 
     /**
      * Set the value related to the column: lastModifiedDate.
-     * 
+     *
      * @param lastModifiedDate
      *            the lastModifiedDate value you wish to set
      */
@@ -181,7 +177,7 @@ public class CQMResultEntity implements Serializable {
 
     /**
      * Return the value associated with the column: lastModifiedUser.
-     * 
+     *
      * @return A Long object (this.lastModifiedUser)
      */
     public Long getLastModifiedUser() {
@@ -191,7 +187,7 @@ public class CQMResultEntity implements Serializable {
 
     /**
      * Set the value related to the column: lastModifiedUser.
-     * 
+     *
      * @param lastModifiedUser
      *            the lastModifiedUser value you wish to set
      */
@@ -201,7 +197,7 @@ public class CQMResultEntity implements Serializable {
 
     /**
      * Return the value associated with the column: success.
-     * 
+     *
      * @return A Boolean object (this.success)
      */
     public Boolean isSuccess() {
@@ -211,7 +207,7 @@ public class CQMResultEntity implements Serializable {
 
     /**
      * Set the value related to the column: success.
-     * 
+     *
      * @param success
      *            the success value you wish to set
      */

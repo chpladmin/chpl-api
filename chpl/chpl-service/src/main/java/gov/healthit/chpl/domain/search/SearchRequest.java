@@ -16,22 +16,22 @@ public class SearchRequest implements Serializable {
     public static final String ORDER_BY_VERSION = "version";
     public static final String ORDER_BY_CERTIFICATION_EDITION = "certificationEdition";
     public static final String ORDER_BY_CERTIFICATION_BODY = "certificationBody";
-    
+
     String searchTerm = null;
 
     // search for any of these
     Set<String> certificationStatuses = new HashSet<String>();
     // search for any of these
     Set<String> certificationEditions = new HashSet<String>();
-    
+
     Set<String> certificationCriteria = new HashSet<String>();
     //AND or OR the certification criteria together
-    SearchSetOperator certificationCriteriaOperator = SearchSetOperator.OR; 
-    
+    SearchSetOperator certificationCriteriaOperator = SearchSetOperator.OR;
+
     Set<String> cqms = new HashSet<String>();
     //AND or OR the cqms together
-    SearchSetOperator cqmsOperator = SearchSetOperator.OR; 
-    
+    SearchSetOperator cqmsOperator = SearchSetOperator.OR;
+
     // search for any of these
     Set<String> certificationBodies = new HashSet<String>();
 
@@ -42,86 +42,86 @@ public class SearchRequest implements Serializable {
     String certificationDateStart = null;
     String certificationDateEnd = null;
     SurveillanceSearchFilter surveillance = new SurveillanceSearchFilter();
-    
+
     String orderBy = ORDER_BY_PRODUCT;
     Boolean sortDescending = false;
     Integer pageNumber = 0;
     Integer pageSize = 20;
 
     public void cleanAllParameters() {
-        if(!StringUtils.isEmpty(searchTerm)) {
+        if (!StringUtils.isEmpty(searchTerm)) {
             setSearchTerm(searchTerm.trim());
         }
-        
-        if(!StringUtils.isEmpty(developer)) {
+
+        if (!StringUtils.isEmpty(developer)) {
             setDeveloper(developer.trim());
         }
-        
-        if(!StringUtils.isEmpty(product)) {
+
+        if (!StringUtils.isEmpty(product)) {
             setProduct(product.trim());
         }
-        
-        if(!StringUtils.isEmpty(version)) {
+
+        if (!StringUtils.isEmpty(version)) {
             setVersion(version.trim());
         }
-        
-        if(!StringUtils.isEmpty(practiceType)) {
+
+        if (!StringUtils.isEmpty(practiceType)) {
             setPracticeType(practiceType.trim());
         }
-        
-        if(!StringUtils.isEmpty(certificationDateStart)) {
+
+        if (!StringUtils.isEmpty(certificationDateStart)) {
             setCertificationDateStart(certificationDateStart.trim());
         }
-        
-        if(!StringUtils.isEmpty(certificationDateEnd)) {
+
+        if (!StringUtils.isEmpty(certificationDateEnd)) {
             setCertificationDateEnd(certificationDateEnd.trim());
         }
-        
-        if(!StringUtils.isEmpty(orderBy)) {
+
+        if (!StringUtils.isEmpty(orderBy)) {
             setOrderBy(orderBy.trim());
         }
-        
-        if(certificationStatuses != null && certificationStatuses.size() > 0) {
+
+        if (certificationStatuses != null && certificationStatuses.size() > 0) {
             Set<String> trimmedCertificationStatuses = new HashSet<String>(certificationStatuses.size());
-            for(String certificationStatus : certificationStatuses) {
+            for (String certificationStatus : certificationStatuses) {
                 trimmedCertificationStatuses.add(certificationStatus.trim());
             }
             setCertificationStatuses(trimmedCertificationStatuses);
         }
-        
-        if(certificationEditions != null && certificationEditions.size() > 0) {
+
+        if (certificationEditions != null && certificationEditions.size() > 0) {
             Set<String> trimmedCertificationEditions = new HashSet<String>(certificationEditions.size());
-            for(String certificationEdition : certificationEditions) {
+            for (String certificationEdition : certificationEditions) {
                 trimmedCertificationEditions.add(certificationEdition.trim());
             }
             setCertificationEditions(trimmedCertificationEditions);
         }
-        
-        if(certificationBodies != null && certificationBodies.size() > 0) {
+
+        if (certificationBodies != null && certificationBodies.size() > 0) {
             Set<String> trimmedCertificationBodies = new HashSet<String>(certificationBodies.size());
-            for(String certificationBody : certificationBodies) {
+            for (String certificationBody : certificationBodies) {
                 trimmedCertificationBodies.add(certificationBody.trim());
             }
             setCertificationBodies(trimmedCertificationBodies);
         }
-        
-        if(certificationCriteria != null && certificationCriteria.size() > 0) {
+
+        if (certificationCriteria != null && certificationCriteria.size() > 0) {
             Set<String> trimmedCertificationCriteria = new HashSet<String>(certificationCriteria.size());
-            for(String certificationCriterion : certificationCriteria) {
+            for (String certificationCriterion : certificationCriteria) {
                 trimmedCertificationCriteria.add(certificationCriterion.trim());
             }
             setCertificationCriteria(trimmedCertificationCriteria);
         }
-        
-        if(cqms != null && cqms.size() > 0) {
+
+        if (cqms != null && cqms.size() > 0) {
             Set<String> trimmedCqms = new HashSet<String>(cqms.size());
-            for(String cqm : cqms) {
+            for (String cqm : cqms) {
                 trimmedCqms.add(cqm.trim());
             }
             setCqms(trimmedCqms);
         }
     }
-    
+
     public String getSearchTerm() {
         return searchTerm;
     }
@@ -249,7 +249,7 @@ public class SearchRequest implements Serializable {
     public void setCertificationDateEnd(final String certificationDateEnd) {
         this.certificationDateEnd = certificationDateEnd;
     }
-    
+
     public SurveillanceSearchFilter getSurveillance() {
         return surveillance;
     }
