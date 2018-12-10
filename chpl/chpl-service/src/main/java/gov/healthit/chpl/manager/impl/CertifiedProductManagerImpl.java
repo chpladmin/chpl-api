@@ -2276,7 +2276,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         return scheduler;
     }
 
-    private class CertificationStatusEventPair {
+    private static class CertificationStatusEventPair {
         private CertificationStatusEvent orig;
         private CertificationStatusEvent updated;
 
@@ -2307,7 +2307,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
     }
 
-    private class MeaningfulUseUserPair {
+    private static class MeaningfulUseUserPair {
         private MeaningfulUseUser orig;
         private MeaningfulUseUser updated;
 
@@ -2338,7 +2338,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
     }
 
-    private class QmsStandardPair {
+    private static class QmsStandardPair {
         private CertifiedProductQmsStandard orig;
         private CertifiedProductQmsStandard updated;
 
@@ -2367,7 +2367,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
     }
 
-    private class CQMResultDetailsPair {
+    private static class CQMResultDetailsPair {
         private CQMResultDetailsDTO orig;
         private CQMResultDetailsDTO updated;
 

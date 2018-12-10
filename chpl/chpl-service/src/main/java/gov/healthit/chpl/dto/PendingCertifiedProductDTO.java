@@ -195,7 +195,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         this.sedIntendedUserDescription = details.getSedIntendedUserDescription();
         this.sedTestingEnd = details.getSedTestingEndDate();
         this.hasQms = details.getHasQms();
-        this.ics = (details.getIcs() == null || details.getIcs().getInherits() == null) ? false
+        this.ics = (details.getIcs() == null || details.getIcs().getInherits() == null) ? Boolean.FALSE
                 : details.getIcs().getInherits();
         this.accessibilityCertified = details.getAccessibilityCertified();
         this.transparencyAttestation = details.getTransparencyAttestation();

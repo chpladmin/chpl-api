@@ -1415,7 +1415,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
         return certResultDAO.getTestTasksForCertificationResult(certificationResultId);
     }
 
-    private class CertificationResultAdditionalSoftwarePair {
+    private static class CertificationResultAdditionalSoftwarePair {
         private CertificationResultAdditionalSoftware orig;
         private CertificationResultAdditionalSoftware updated;
 
@@ -1442,7 +1442,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
         }
     }
 
-    private class CertificationResultUcdProcessPair {
+    private static class CertificationResultUcdProcessPair {
         private UcdProcess orig;
         private UcdProcess updated;
 
@@ -1520,7 +1520,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
         }
     }
 
-    private class TestParticipantPair {
+    private static class TestParticipantPair {
         private TestParticipant orig;
         private TestParticipant updated;
 

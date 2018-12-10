@@ -1,5 +1,6 @@
 package gov.healthit.chpl.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -15,7 +16,8 @@ import gov.healthit.chpl.util.Util;
 
 @Entity
 @Table(name = "test_participant_age")
-public class AgeRangeEntity {
+public class AgeRangeEntity implements Serializable {
+    private static final long serialVersionUID = 505964592485391589L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -67,7 +69,7 @@ public class AgeRangeEntity {
     public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
-    
+
     public Long getLastModifiedUser() {
         return lastModifiedUser;
     }

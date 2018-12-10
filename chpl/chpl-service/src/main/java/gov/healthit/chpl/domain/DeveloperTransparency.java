@@ -64,7 +64,9 @@ public class DeveloperTransparency implements Serializable {
         this.acbAttestations = acbAttestations;
     }
 
-    public static class ListingCount{
+    public static class ListingCount implements Serializable {
+        private static final long serialVersionUID = -78889892927001067L;
+
         private Long active;
         private Long retired;
         private Long pending;

@@ -142,7 +142,7 @@ public class ChplProductNumberUtil {
     public String getChplProductNumber(final String chplPrefix, final String identifier) {
         StringBuffer chplProductNumber = new StringBuffer();
         chplProductNumber.append(chplPrefix)
-            .append("-").append(identifier);
+        .append("-").append(identifier);
 
         return chplProductNumber.toString();
     }
@@ -210,14 +210,14 @@ public class ChplProductNumberUtil {
     private String concatParts(final ChplProductNumberParts chplProductNumberParts) {
         StringBuilder chplProductNumber = new StringBuilder();
         chplProductNumber.append(formatEdition(chplProductNumberParts.editionCode)).append(".")
-            .append(chplProductNumberParts.atlCode).append(".")
-            .append(chplProductNumberParts.acbCode).append(".")
-            .append(chplProductNumberParts.developerCode).append(".")
-            .append(chplProductNumberParts.productCode).append(".")
-            .append(chplProductNumberParts.versionCode).append(".")
-            .append(chplProductNumberParts.icsCode).append(".")
-            .append(chplProductNumberParts.additionalSoftwareCode).append(".")
-            .append(chplProductNumberParts.certifiedDateCode);
+        .append(chplProductNumberParts.atlCode).append(".")
+        .append(chplProductNumberParts.acbCode).append(".")
+        .append(chplProductNumberParts.developerCode).append(".")
+        .append(chplProductNumberParts.productCode).append(".")
+        .append(chplProductNumberParts.versionCode).append(".")
+        .append(chplProductNumberParts.icsCode).append(".")
+        .append(chplProductNumberParts.additionalSoftwareCode).append(".")
+        .append(chplProductNumberParts.certifiedDateCode);
         return chplProductNumber.toString();
     }
 
@@ -270,7 +270,7 @@ public class ChplProductNumberUtil {
         }
     }
 
-    public class ChplProductNumberParts {
+    public static class ChplProductNumberParts {
         private String editionCode = null;
         private String atlCode = null;
         private String acbCode = null;

@@ -122,10 +122,10 @@ public class QuestionableActivityEmailJob extends QuartzJob {
 
             EmailBuilder emailBuilder = new EmailBuilder(env);
             emailBuilder.recipients(recipients)
-                        .subject(subject)
-                        .htmlMessage(htmlMessage)
-                        .fileAttachments(files)
-                        .sendEmail();
+            .subject(subject)
+            .htmlMessage(htmlMessage)
+            .fileAttachments(files)
+            .sendEmail();
 
         } catch (MessagingException e) {
             LOGGER.error(e);
@@ -684,7 +684,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         this.questionableActivityDao = questionableActivityDao;
     }
 
-    private class ActivityDateTriggerGroup {
+    private static class ActivityDateTriggerGroup {
         private Date activityDate;
         private QuestionableActivityTriggerDTO trigger;
 

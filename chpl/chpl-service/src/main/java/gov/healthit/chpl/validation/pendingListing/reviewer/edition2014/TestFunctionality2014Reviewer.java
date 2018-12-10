@@ -67,11 +67,11 @@ public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListe
                         if (tf == null) {
                             listing.getErrorMessages().add(
                                     msgUtil.getMessage("listing.criteria.testFunctionalityNotFoundAndRemoved",
-                                    cr.getNumber(), crtf.getNumber()));
+                                            cr.getNumber(), crtf.getNumber()));
                             crtfIter.remove();
                         } else {
                             listing.getErrorMessages().addAll(
-                                getTestingFunctionalityErrorMessages(crtf, cr, listing));
+                                    getTestingFunctionalityErrorMessages(crtf, cr, listing));
 
                             Set<String> warnings = getTestingFunctionalityWarningMessages(crtf, cr, listing);
                             if (warnings.size() > 0) {
@@ -122,7 +122,7 @@ public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListe
 
         //Is the TestFunctionalityDTO in the valid list (relies on the TestFunctionalityDTO.equals()
         return validTestFunctionalityForCriteria.contains(tf);
-}
+    }
 
     private Boolean isTestFunctionalityPracticeTypeValid(final Long practiceTypeId,
             final TestFunctionalityDTO tf) {
@@ -194,7 +194,7 @@ public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListe
     private String getDelimitedListOfValidCriteriaNumbers(final TestFunctionalityDTO tfDTO,
             final CertificationEditionDTO edition) {
 
-        String criteria = "";
+        StringBuilder criteria = new StringBuilder();
         List<CertificationCriterionDTO> certDTOs = new ArrayList<CertificationCriterionDTO>();
 
         List<TestFunctionalityCriteriaMapDTO> maps = testFunctionalityDAO.getTestFunctionalityCritieriaMaps();
@@ -208,12 +208,12 @@ public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListe
 
         Iterator<CertificationCriterionDTO> iter = certDTOs.iterator();
         while (iter.hasNext()) {
-            criteria += iter.next().getNumber();
+            criteria.append(iter.next().getNumber());
             if (iter.hasNext()) {
-                criteria += ", ";
+                criteria.append(", ");
             }
         }
-        return criteria;
+        return criteria.toString();
     }
 
     private TestFunctionalityDTO getTestFunctionality(final String number) {

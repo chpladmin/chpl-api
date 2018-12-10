@@ -89,7 +89,7 @@ public class TestFunctionality2015Reviewer implements Reviewer {
             final TestFunctionalityDTO tf, final String year) {
 
         List<TestFunctionalityDTO> validTestFunctionalityForCriteria =
-            testFunctionalityManager.getTestFunctionalityCriteriaMap2015().get(criteriaNumber);
+                testFunctionalityManager.getTestFunctionalityCriteriaMap2015().get(criteriaNumber);
 
         if (validTestFunctionalityForCriteria == null) {
             return false;
@@ -97,7 +97,7 @@ public class TestFunctionality2015Reviewer implements Reviewer {
             //Is the TestFunctionalityDTO in the valid list (relies on the TestFunctionalityDTO.equals()
             return validTestFunctionalityForCriteria.contains(tf);
         }
-}
+    }
 
     private String getTestFunctionalityCriterionErrorMessage(final CertificationResultTestFunctionality crtf,
             final CertificationResult cr, final CertifiedProductSearchDetails cp,
@@ -142,7 +142,7 @@ public class TestFunctionality2015Reviewer implements Reviewer {
     private String getDelimitedListOfValidCriteriaNumbers(final TestFunctionalityDTO tfDTO,
             final CertificationEditionDTO edition) {
 
-        String criteria = "";
+        StringBuilder criteria = new StringBuilder();
         List<CertificationCriterionDTO> certDTOs = new ArrayList<CertificationCriterionDTO>();
 
         List<TestFunctionalityCriteriaMapDTO> maps = testFunctionalityDAO.getTestFunctionalityCritieriaMaps();
@@ -156,11 +156,11 @@ public class TestFunctionality2015Reviewer implements Reviewer {
 
         Iterator<CertificationCriterionDTO> iter = certDTOs.iterator();
         while (iter.hasNext()) {
-            criteria += iter.next().getNumber();
+            criteria.append(iter.next().getNumber());
             if (iter.hasNext()) {
-                criteria += ", ";
+                criteria.append(", ");
             }
         }
-        return criteria;
+        return criteria.toString();
     }
 }
