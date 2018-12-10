@@ -17,6 +17,7 @@ import javax.persistence.Table;
 
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.entity.listing.CertificationResultTestToolEntity;
+import gov.healthit.chpl.util.Util;
 
 @Entity
 @Table(name = "test_tool")
@@ -84,11 +85,11 @@ public class TestToolEntity implements Serializable {
     protected Long lastModifiedUser;
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Boolean getDeleted() {
@@ -100,11 +101,11 @@ public class TestToolEntity implements Serializable {
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public Long getLastModifiedUser() {

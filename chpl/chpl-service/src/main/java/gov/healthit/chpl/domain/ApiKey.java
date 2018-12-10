@@ -36,18 +36,18 @@ public class ApiKey implements Serializable {
     }
 
     public Date getLastUsedDate() {
-        return lastUsedDate;
+        return new Date(lastUsedDate.getTime());
     }
 
     public void setLastUsedDate(final Date lastUsedDate) {
-        this.lastUsedDate = lastUsedDate;
+        this.lastUsedDate = new Date(lastUsedDate.getTime());
     }
 
     public Date getDeleteWarningSentDate() {
-        return deleteWarningSentDate;
+        return new Date(deleteWarningSentDate.getTime());
     }
 
     public void setDeleteWarningSentDate(Date deleteWarningSentDate) {
-        this.deleteWarningSentDate = deleteWarningSentDate;
+        this.deleteWarningSentDate = new Date(deleteWarningSentDate.getTime());
     }
 }

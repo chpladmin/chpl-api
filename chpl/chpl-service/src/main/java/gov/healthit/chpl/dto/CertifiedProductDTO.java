@@ -11,6 +11,7 @@ import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.util.Util;
 
 /**
  * Basic Certified Product DTO.
@@ -280,11 +281,11 @@ public class CertifiedProductDTO implements Serializable {
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Boolean getDeleted() {
@@ -296,11 +297,11 @@ public class CertifiedProductDTO implements Serializable {
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public Long getLastModifiedUser() {
@@ -464,11 +465,11 @@ public class CertifiedProductDTO implements Serializable {
     }
 
     public Date getSedTestingEnd() {
-        return sedTestingEnd;
+        return Util.getNewDate(sedTestingEnd);
     }
 
     public void setSedTestingEnd(final Date sedTestingEnd) {
-        this.sedTestingEnd = sedTestingEnd;
+        this.sedTestingEnd = Util.getNewDate(sedTestingEnd);
     }
 
     public CertificationStatusDTO getCertificationStatus() {

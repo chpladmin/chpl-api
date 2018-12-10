@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.util.Util;
+
 @Entity
 @Table(name = "pending_surveillance_nonconformity")
 public class PendingSurveillanceNonconformityEntity {
@@ -105,43 +107,43 @@ public class PendingSurveillanceNonconformityEntity {
     }
 
     public Date getDateOfDetermination() {
-        return dateOfDetermination;
+        return Util.getNewDate(dateOfDetermination);
     }
 
     public void setDateOfDetermination(final Date dateOfDetermination) {
-        this.dateOfDetermination = dateOfDetermination;
+        this.dateOfDetermination = Util.getNewDate(dateOfDetermination);
     }
 
     public Date getCapApproval() {
-        return capApproval;
+        return Util.getNewDate(capApproval);
     }
 
     public void setCapApproval(final Date capApproval) {
-        this.capApproval = capApproval;
+        this.capApproval = Util.getNewDate(capApproval);
     }
 
     public Date getCapStart() {
-        return capStart;
+        return Util.getNewDate(capStart);
     }
 
     public void setCapStart(final Date capStart) {
-        this.capStart = capStart;
+        this.capStart = Util.getNewDate(capStart);
     }
 
     public Date getCapMustCompleteDate() {
-        return capMustCompleteDate;
+        return Util.getNewDate(capMustCompleteDate);
     }
 
     public void setCapMustCompleteDate(final Date capMustCompleteDate) {
-        this.capMustCompleteDate = capMustCompleteDate;
+        this.capMustCompleteDate = Util.getNewDate(capMustCompleteDate);
     }
 
     public Date getCapEndDate() {
-        return capEndDate;
+        return Util.getNewDate(capEndDate);
     }
 
     public void setCapEndDate(final Date capEndDate) {
-        this.capEndDate = capEndDate;
+        this.capEndDate = Util.getNewDate(capEndDate);
     }
 
     public String getSummary() {
@@ -193,11 +195,11 @@ public class PendingSurveillanceNonconformityEntity {
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Boolean getDeleted() {
@@ -209,11 +211,11 @@ public class PendingSurveillanceNonconformityEntity {
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public Long getLastModifiedUser() {

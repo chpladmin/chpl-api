@@ -6,6 +6,7 @@ import java.util.Date;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.entity.CertificationIdAndCertifiedProductEntity;
+import gov.healthit.chpl.util.Util;
 
 public class CertificationIdAndCertifiedProductDTO implements Serializable {
     private static final long serialVersionUID = 4517668914795030238L;
@@ -53,11 +54,11 @@ public class CertificationIdAndCertifiedProductDTO implements Serializable {
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public String getChplProductNumber() {

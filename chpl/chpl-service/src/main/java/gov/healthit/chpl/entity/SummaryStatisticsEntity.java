@@ -15,6 +15,7 @@ import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
 
 import gov.healthit.chpl.entity.datatypes.StringJsonUserType;
+import gov.healthit.chpl.util.Util;
 
 @Entity
 @Table(name = "summary_statistics")
@@ -55,11 +56,11 @@ public class SummaryStatisticsEntity implements Serializable {
     }
 
     public Date getEndDate() {
-        return endDate;
+        return Util.getNewDate(endDate);
     }
 
     public void setEndDate(final Date endDate) {
-        this.endDate = endDate;
+        this.endDate = Util.getNewDate(endDate);
     }
 
     public String getSummaryStatistics() {
@@ -71,19 +72,19 @@ public class SummaryStatisticsEntity implements Serializable {
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public Long getLastModifiedUser() {

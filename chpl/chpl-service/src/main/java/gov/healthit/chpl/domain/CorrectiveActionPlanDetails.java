@@ -94,19 +94,19 @@ public class CorrectiveActionPlanDetails implements Serializable {
     }
 
     public Date getApprovalDate() {
-        return approvalDate;
+        return new Date(approvalDate.getTime());
     }
 
     public void setApprovalDate(final Date approvalDate) {
-        this.approvalDate = approvalDate;
+        this.approvalDate = new Date(approvalDate.getTime());
     }
 
     public Date getActualCompletionDate() {
-        return actualCompletionDate;
+        return new Date(actualCompletionDate.getTime());
     }
 
     public void setActualCompletionDate(final Date actualCompletionDate) {
-        this.actualCompletionDate = actualCompletionDate;
+        this.actualCompletionDate = new Date(actualCompletionDate.getTime());
     }
 
     public List<CorrectiveActionPlanCertificationResult> getCertifications() {
@@ -144,19 +144,19 @@ public class CorrectiveActionPlanDetails implements Serializable {
     }
 
     public Date getSurveillanceStartDate() {
-        return surveillanceStartDate;
+        return new Date(surveillanceStartDate.getTime());
     }
 
     public void setSurveillanceStartDate(final Date surveillanceStartDate) {
-        this.surveillanceStartDate = surveillanceStartDate;
+        this.surveillanceStartDate = new Date(surveillanceStartDate.getTime());
     }
 
     public Date getSurveillanceEndDate() {
-        return surveillanceEndDate;
+        return new Date(surveillanceEndDate.getTime());
     }
 
     public void setSurveillanceEndDate(final Date surveillanceEndDate) {
-        this.surveillanceEndDate = surveillanceEndDate;
+        this.surveillanceEndDate = new Date(surveillanceEndDate.getTime());
     }
 
     public Boolean getRandomizedSurveillance() {
@@ -168,27 +168,27 @@ public class CorrectiveActionPlanDetails implements Serializable {
     }
 
     public Date getEffectiveDate() {
-        return effectiveDate;
+        return new Date(effectiveDate.getTime());
     }
 
     public void setEffectiveDate(final Date effectiveDate) {
-        this.effectiveDate = effectiveDate;
+        this.effectiveDate = new Date(effectiveDate.getTime());
     }
 
     public Date getEstimatedCompletionDate() {
-        return estimatedCompletionDate;
+        return new Date(estimatedCompletionDate.getTime());
     }
 
     public void setEstimatedCompletionDate(final Date estimatedCompletionDate) {
-        this.estimatedCompletionDate = estimatedCompletionDate;
+        this.estimatedCompletionDate = new Date(estimatedCompletionDate.getTime());
     }
 
     public Date getNoncomplianceDate() {
-        return noncomplianceDate;
+        return new Date(noncomplianceDate.getTime());
     }
 
     public void setNoncomplianceDate(final Date noncomplianceDate) {
-        this.noncomplianceDate = noncomplianceDate;
+        this.noncomplianceDate = new Date(noncomplianceDate.getTime());
     }
 
     public String getAcbSummary() {

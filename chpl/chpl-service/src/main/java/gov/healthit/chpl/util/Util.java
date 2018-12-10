@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -90,5 +91,9 @@ public final class Util {
         }
 
         return input;
+    }
+    
+    public static Date getNewDate(Date orig) {
+        return new Date(orig.getTime());
     }
 }

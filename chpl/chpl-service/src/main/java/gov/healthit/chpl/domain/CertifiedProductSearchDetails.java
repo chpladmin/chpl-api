@@ -575,11 +575,11 @@ public class CertifiedProductSearchDetails implements Serializable {
     }
 
     public Date getSedTestingEndDate() {
-        return sedTestingEndDate;
+        return new Date(sedTestingEndDate.getTime());
     }
 
     public void setSedTestingEndDate(final Date sedTestingEndDate) {
-        this.sedTestingEndDate = sedTestingEndDate;
+        this.sedTestingEndDate = new Date(sedTestingEndDate.getTime());
     }
 
     public Product getProduct() {

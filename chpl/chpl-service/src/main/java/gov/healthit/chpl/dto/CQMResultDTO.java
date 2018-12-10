@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import gov.healthit.chpl.entity.listing.CQMResultEntity;
+import gov.healthit.chpl.util.Util;
 
 public class CQMResultDTO implements Serializable {
     private static final long serialVersionUID = 314245521842632450L;
@@ -45,11 +46,11 @@ public class CQMResultDTO implements Serializable {
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Boolean getDeleted() {
@@ -69,11 +70,11 @@ public class CQMResultDTO implements Serializable {
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public Long getLastModifiedUser() {

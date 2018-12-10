@@ -23,6 +23,7 @@ import org.hibernate.annotations.FetchMode;
 import gov.healthit.chpl.auth.entity.UserEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.util.Util;
 
 @Entity
 @Table(name = "activity")
@@ -143,11 +144,11 @@ public class ActivityEntity {
     }
 
     public Date getActivityDate() {
-        return activityDate;
+        return Util.getNewDate(activityDate);
     }
 
     public void setActivityDate(final Date activityDate) {
-        this.activityDate = activityDate;
+        this.activityDate = Util.getNewDate(activityDate);
     }
 
     public Long getActivityObjectId() {
@@ -193,21 +194,21 @@ public class ActivityEntity {
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
-
+    
     public Long getLastModifiedUser() {
         return lastModifiedUser;
     }

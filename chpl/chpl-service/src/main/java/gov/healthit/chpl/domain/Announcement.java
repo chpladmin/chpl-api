@@ -59,27 +59,27 @@ public class Announcement implements Serializable {
     }
 
     public Date getStartDate() {
-        return startDate;
+        return new Date(startDate.getTime());
     }
 
     public void setStartDate(final Date startDate) {
-        this.startDate = startDate;
+        this.startDate = new Date(startDate.getTime());
     }
 
     public Date getEndDate() {
-        return endDate;
+        return new Date(endDate.getTime());
     }
 
     public void setEndDate(final Date endDate) {
-        this.endDate = endDate;
+        this.endDate = new Date(endDate.getTime());
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return new Date(creationDate.getTime());
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = new Date(creationDate.getTime());
     }
 
     public Boolean getDeleted() {
@@ -91,11 +91,11 @@ public class Announcement implements Serializable {
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return new Date(lastModifiedDate.getTime());
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = new Date(lastModifiedDate.getTime());
     }
 
     public Long getLastModifiedUser() {

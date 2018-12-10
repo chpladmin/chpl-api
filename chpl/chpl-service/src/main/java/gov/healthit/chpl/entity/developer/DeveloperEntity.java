@@ -23,6 +23,7 @@ import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.entity.AddressEntity;
 import gov.healthit.chpl.entity.ContactEntity;
+import gov.healthit.chpl.util.Util;
 
 @Entity
 @Table(name = "vendor")
@@ -158,24 +159,12 @@ public class DeveloperEntity implements Serializable {
         this.address = address;
     }
 
-    /**
-     * Return the value associated with the column: creationDate.
-     *
-     * @return A Date object (this.creationDate)
-     */
     public Date getCreationDate() {
-        return this.creationDate;
-
+        return Util.getNewDate(creationDate);
     }
 
-    /**
-     * Set the value related to the column: creationDate.
-     *
-     * @param creationDate
-     *            the creationDate value you wish to set
-     */
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     /**
@@ -218,24 +207,12 @@ public class DeveloperEntity implements Serializable {
         this.id = id;
     }
 
-    /**
-     * Return the value associated with the column: lastModifiedDate.
-     *
-     * @return A Date object (this.lastModifiedDate)
-     */
     public Date getLastModifiedDate() {
-        return this.lastModifiedDate;
-
+        return Util.getNewDate(lastModifiedDate);
     }
 
-    /**
-     * Set the value related to the column: lastModifiedDate.
-     *
-     * @param lastModifiedDate
-     *            the lastModifiedDate value you wish to set
-     */
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     /**

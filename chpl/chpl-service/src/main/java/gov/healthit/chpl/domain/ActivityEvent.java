@@ -39,11 +39,11 @@ public class ActivityEvent implements Serializable {
     }
 
     public Date getActivityDate() {
-        return activityDate;
+        return new Date(activityDate.getTime());
     }
 
     public void setActivityDate(final Date activityDate) {
-        this.activityDate = activityDate;
+        this.activityDate = new Date(activityDate.getTime());
     }
 
     public Long getActivityObjectId() {

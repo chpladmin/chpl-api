@@ -4,6 +4,7 @@ import java.util.Date;
 
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.entity.questionableActivity.QuestionableActivityEntity;
+import gov.healthit.chpl.util.Util;
 
 public abstract class QuestionableActivityDTO {
     private Long id;
@@ -58,11 +59,11 @@ public abstract class QuestionableActivityDTO {
     }
 
     public Date getActivityDate() {
-        return activityDate;
+        return Util.getNewDate(activityDate);
     }
 
     public void setActivityDate(Date activityDate) {
-        this.activityDate = activityDate;
+        this.activityDate = Util.getNewDate(activityDate);
     }
 
     public String getBefore() {

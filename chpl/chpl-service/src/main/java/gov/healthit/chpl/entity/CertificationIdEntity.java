@@ -12,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import gov.healthit.chpl.util.Util;
+
 /**
  * Object mapping for hibernate-handled table: product. Table to store products
  * that are submitted for developers
@@ -85,24 +87,12 @@ public class CertificationIdEntity implements Serializable {
         return CertificationIdEntity.class;
     }
 
-    /**
-     * Return the value associated with the column: creationDate.
-     *
-     * @return A Date object (this.creationDate)
-     */
     public Date getCreationDate() {
-        return this.creationDate;
-
+        return Util.getNewDate(creationDate);
     }
 
-    /**
-     * Set the value related to the column: creationDate.
-     *
-     * @param creationDate
-     *            the creationDate value you wish to set
-     */
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     /**
@@ -125,23 +115,12 @@ public class CertificationIdEntity implements Serializable {
         this.id = id;
     }
 
-    /**
-     * Return the value associated with the column: lastModifiedDate.
-     *
-     * @return A Date object (this.lastModifiedDate)
-     */
     public Date getLastModifiedDate() {
-        return this.lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
-    /**
-     * Set the value related to the column: lastModifiedDate.
-     *
-     * @param lastModifiedDate
-     *            the lastModifiedDate value you wish to set
-     */
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     /**

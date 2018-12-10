@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import gov.healthit.chpl.entity.TestParticipantAgeEntity;
+import gov.healthit.chpl.util.Util;
 
 public class TestParticipantAgeDTO implements Serializable {
     private static final long serialVersionUID = -7369729569984688343L;
@@ -46,11 +47,11 @@ public class TestParticipantAgeDTO implements Serializable {
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Boolean getDeleted() {
@@ -62,13 +63,13 @@ public class TestParticipantAgeDTO implements Serializable {
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
-
+    
     public Long getLastModifiedUser() {
         return lastModifiedUser;
     }

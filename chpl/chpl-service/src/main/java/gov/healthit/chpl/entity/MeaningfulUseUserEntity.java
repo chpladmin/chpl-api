@@ -11,6 +11,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.util.Util;
+
 /**
  * Database mapping for meaningful use user table.
  * @author kekey
@@ -76,11 +78,11 @@ public class MeaningfulUseUserEntity implements Serializable {
     }
 
     public Date getMuuDate() {
-        return muuDate;
+        return Util.getNewDate(muuDate);
     }
 
     public void setMuuDate(final Date muuDate) {
-        this.muuDate = muuDate;
+        this.muuDate = Util.getNewDate(muuDate);
     }
 
     public Boolean getDeleted() {
@@ -100,18 +102,18 @@ public class MeaningfulUseUserEntity implements Serializable {
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 }

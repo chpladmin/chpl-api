@@ -14,6 +14,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.util.Util;
+
 /**
  * @author TYoung
  * Handles the mapping many-to-many relationship between test_functionality and
@@ -82,19 +84,19 @@ public class TestFunctionalityCriteriaMapEntity implements Serializable {
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public Boolean getDeleted() {

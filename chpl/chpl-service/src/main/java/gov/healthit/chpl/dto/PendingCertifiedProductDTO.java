@@ -157,19 +157,19 @@ public class PendingCertifiedProductDTO implements Serializable {
             this.productName = details.getProduct().getName();
         }
         if (details.getVersion() != null && details.getVersion().getVersionId() != null) {
-            this.productVersionId = new Long(details.getVersion().getVersionId().toString());
+            this.productVersionId = Long.valueOf(details.getVersion().getVersionId().toString());
         }
         if (details.getVersion() != null && !StringUtils.isEmpty(details.getVersion().getVersion())) {
             this.productVersion = details.getVersion().getVersion();
         }
         if (details.getCertificationEdition().get("id") != null) {
-            this.certificationEditionId = new Long(details.getCertificationEdition().get("id").toString());
+            this.certificationEditionId = Long.valueOf(details.getCertificationEdition().get("id").toString());
         }
         if (details.getCertificationEdition().get("name") != null) {
             this.certificationEdition = details.getCertificationEdition().get("name").toString();
         }
         if (details.getCertifyingBody().get("id") != null) {
-            this.certificationBodyId = new Long(details.getCertifyingBody().get("id").toString());
+            this.certificationBodyId = Long.valueOf(details.getCertifyingBody().get("id").toString());
         }
         if (details.getCertifyingBody().get("name") != null) {
             this.certificationBodyName = details.getCertifyingBody().get("name").toString();
@@ -177,7 +177,7 @@ public class PendingCertifiedProductDTO implements Serializable {
 
         if (details.getClassificationType().get("id") != null) {
             String classificationTypeId = details.getClassificationType().get("id").toString();
-            this.productClassificationId = new Long(classificationTypeId);
+            this.productClassificationId = Long.valueOf(classificationTypeId);
         }
         if (details.getClassificationType().get("name") != null) {
             this.productClassificationName = details.getClassificationType().get("name").toString();
@@ -763,11 +763,11 @@ public class PendingCertifiedProductDTO implements Serializable {
     }
 
     public Date getCertificationDate() {
-        return certificationDate;
+        return new Date(certificationDate.getTime());
     }
 
     public void setCertificationDate(final Date certificationDate) {
-        this.certificationDate = certificationDate;
+        this.certificationDate = new Date(certificationDate.getTime());
     }
 
     public String getDeveloperStreetAddress() {
@@ -843,11 +843,11 @@ public class PendingCertifiedProductDTO implements Serializable {
     }
 
     public Date getUploadDate() {
-        return uploadDate;
+        return new Date(uploadDate.getTime());
     }
 
     public void setUploadDate(final Date uploadDate) {
-        this.uploadDate = uploadDate;
+        this.uploadDate = new Date(uploadDate.getTime());
     }
 
     public Set<String> getErrorMessages() {
@@ -972,11 +972,11 @@ public class PendingCertifiedProductDTO implements Serializable {
     }
 
     public Date getSedTestingEnd() {
-        return sedTestingEnd;
+        return new Date(sedTestingEnd.getTime());
     }
 
     public void setSedTestingEnd(final Date sedTestingEnd) {
-        this.sedTestingEnd = sedTestingEnd;
+        this.sedTestingEnd = new Date(sedTestingEnd.getTime());
     }
 
     public Boolean getDeleted() {

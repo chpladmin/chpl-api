@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Objects;
 
 import gov.healthit.chpl.entity.developer.DeveloperStatusEventEntity;
+import gov.healthit.chpl.util.Util;
 
 /**
  * Developer Status Event DTO.
@@ -68,11 +69,11 @@ public class DeveloperStatusEventDTO implements Serializable {
     }
 
     public Date getStatusDate() {
-        return statusDate;
+        return Util.getNewDate(statusDate);
     }
 
     public void setStatusDate(final Date statusDate) {
-        this.statusDate = statusDate;
+        this.statusDate = Util.getNewDate(statusDate);
     }
 
     public DeveloperStatusDTO getStatus() {
