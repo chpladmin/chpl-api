@@ -927,7 +927,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                                 taskDto.setCertificationResultId(createdCert.getId());
                                 taskDto.setTestTask(existingTt);
                             }
-                            
+
                             if (certTask.getTaskParticipants() != null) {
                                 for (PendingCertificationResultTestTaskParticipantDTO certTaskPart : certTask
                                         .getTaskParticipants()) {
@@ -1144,7 +1144,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
         CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
         Long listingId = updatedListing.getId();
-        Long productVersionId = Long.valueOf(updatedListing.getVersion().getVersionId());
+        Long productVersionId = updatedListing.getVersion().getVersionId();
         CertificationStatus updatedStatus = updatedListing.getCurrentStatus().getStatus();
         CertificationStatus existingStatus = existingListing.getCurrentStatus().getStatus();
         //if listing status has changed that may trigger other changes
@@ -1214,7 +1214,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
         CertifiedProductDTO dtoToUpdate = new CertifiedProductDTO(updatedListing);
         CertifiedProductDTO result = cpDao.update(dtoToUpdate);
-        
+
         //Findbugs says this cannot be null since it used above - an NPE would have been thrown
         //if (updatedListing != null) {
         updateTestingLabs(listingId, existingListing.getTestingLabs(), updatedListing.getTestingLabs());

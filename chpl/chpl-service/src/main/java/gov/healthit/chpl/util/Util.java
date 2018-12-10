@@ -92,8 +92,12 @@ public final class Util {
 
         return input;
     }
-    
+
     public static Date getNewDate(Date orig) {
-        return new Date(orig.getTime());
+        if (orig != null) {
+            return new Date(orig.getTime());
+        } else {
+            return null;
+        }
     }
 }

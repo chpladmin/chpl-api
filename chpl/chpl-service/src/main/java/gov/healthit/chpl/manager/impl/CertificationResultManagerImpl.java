@@ -109,7 +109,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
     })
     public int update(Long acbId, CertifiedProductSearchDetails existingListing,
             CertifiedProductSearchDetails updatedListing, CertificationResult orig, CertificationResult updated)
-            throws EntityCreationException, EntityRetrievalException, IOException {
+                    throws EntityCreationException, EntityRetrievalException, IOException {
         int numChanges = 0;
         // does the cert result need updated?
         boolean hasChanged = false;
@@ -341,7 +341,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
     private int updateAdditionalSoftware(CertificationResult certResult,
             List<CertificationResultAdditionalSoftware> existingAdditionalSoftware,
             List<CertificationResultAdditionalSoftware> updatedAdditionalSoftware)
-            throws EntityCreationException, EntityRetrievalException {
+                    throws EntityCreationException, EntityRetrievalException {
         int numChanges = 0;
         List<CertificationResultAdditionalSoftware> additionalSoftwareToAdd = new ArrayList<CertificationResultAdditionalSoftware>();
         List<CertificationResultAdditionalSoftwarePair> additionalSoftwareToUpdate = new ArrayList<CertificationResultAdditionalSoftwarePair>();
@@ -372,7 +372,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
                         if (updatedItem.matches(existingItem)) {
                             inExistingListing = true;
                             additionalSoftwareToUpdate
-                                    .add(new CertificationResultAdditionalSoftwarePair(existingItem, updatedItem));
+                            .add(new CertificationResultAdditionalSoftwarePair(existingItem, updatedItem));
                         }
                     }
 
@@ -524,7 +524,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
 
     private int updateUcdProcesses(CertificationResult certResult, List<UcdProcess> existingUcdProcesses,
             List<UcdProcess> updatedUcdProcesses) throws EntityCreationException, EntityRetrievalException,
-            IOException {
+    IOException {
         int numChanges = 0;
         List<UcdProcess> ucdToAdd = new ArrayList<UcdProcess>();
         List<CertificationResultUcdProcessPair> ucdToUpdate = new ArrayList<CertificationResultUcdProcessPair>();
@@ -723,8 +723,8 @@ public class CertificationResultManagerImpl implements CertificationResultManage
                     TestToolDTO foundTool = testToolDAO.getByName(updatedItem.getTestToolName());
                     if (foundTool == null) {
                         LOGGER.error("Could not find test tool " + updatedItem.getTestToolName()
-                                + "; will not be adding this as a test tool to certification result id "
-                                + certResult.getId() + ", criteria " + certResult.getNumber());
+                        + "; will not be adding this as a test tool to certification result id "
+                        + certResult.getId() + ", criteria " + certResult.getNumber());
                     } else {
                         updatedItem.setTestToolId(foundTool.getId());
                         updatedItem.setTestToolVersion(updatedItem.getTestToolVersion());
@@ -798,7 +798,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
 
     private int updateTestData(CertificationResult certResult, List<CertificationResultTestData> existingTestData,
             List<CertificationResultTestData> updatedTestData)
-            throws EntityCreationException, EntityRetrievalException {
+                    throws EntityCreationException, EntityRetrievalException {
         int numChanges = 0;
         List<CertificationResultTestData> testDataToAdd = new ArrayList<CertificationResultTestData>();
         List<CertificationResultTestDataPair> testDataToUpdate = new ArrayList<CertificationResultTestDataPair>();
@@ -972,9 +972,9 @@ public class CertificationResultManagerImpl implements CertificationResultManage
                             Long.valueOf(editionIdString));
                     if (foundFunc == null) {
                         LOGGER.error("Could not find test functionality " + updatedItem.getName()
-                                + " for certifiation edition id " + editionIdString
-                                + "; will not be adding this as a test functionality to listing id " + listing.getId()
-                                + ", criteria " + certResult.getNumber());
+                        + " for certifiation edition id " + editionIdString
+                        + "; will not be adding this as a test functionality to listing id " + listing.getId()
+                        + ", criteria " + certResult.getNumber());
                     } else {
                         updatedItem.setTestFunctionalityId(foundFunc.getId());
                     }
@@ -1468,7 +1468,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
         }
     }
 
-    private class CertificationResultTestDataPair {
+    private static class CertificationResultTestDataPair {
         private CertificationResultTestData orig;
         private CertificationResultTestData updated;
 
@@ -1494,7 +1494,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
         }
     }
 
-    private class TestTaskPair {
+    private static class TestTaskPair {
         private TestTask orig;
         private TestTask updated;
 

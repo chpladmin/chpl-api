@@ -8,6 +8,7 @@ import java.util.List;
 import gov.healthit.chpl.dto.CorrectiveActionPlanCertificationResultDTO;
 import gov.healthit.chpl.dto.CorrectiveActionPlanDTO;
 import gov.healthit.chpl.dto.CorrectiveActionPlanDocumentationDTO;
+import gov.healthit.chpl.util.Util;
 import io.swagger.annotations.ApiModel;
 
 @ApiModel(description = "The details about a corrective action plan. If resolved, all fields are required.")
@@ -94,19 +95,19 @@ public class CorrectiveActionPlanDetails implements Serializable {
     }
 
     public Date getApprovalDate() {
-        return new Date(approvalDate.getTime());
+        return Util.getNewDate(approvalDate);
     }
 
     public void setApprovalDate(final Date approvalDate) {
-        this.approvalDate = new Date(approvalDate.getTime());
+        this.approvalDate = Util.getNewDate(approvalDate);
     }
 
     public Date getActualCompletionDate() {
-        return new Date(actualCompletionDate.getTime());
+        return Util.getNewDate(actualCompletionDate);
     }
 
     public void setActualCompletionDate(final Date actualCompletionDate) {
-        this.actualCompletionDate = new Date(actualCompletionDate.getTime());
+        this.actualCompletionDate = Util.getNewDate(actualCompletionDate);
     }
 
     public List<CorrectiveActionPlanCertificationResult> getCertifications() {
@@ -144,19 +145,19 @@ public class CorrectiveActionPlanDetails implements Serializable {
     }
 
     public Date getSurveillanceStartDate() {
-        return new Date(surveillanceStartDate.getTime());
+        return Util.getNewDate(surveillanceStartDate);
     }
 
     public void setSurveillanceStartDate(final Date surveillanceStartDate) {
-        this.surveillanceStartDate = new Date(surveillanceStartDate.getTime());
+        this.surveillanceStartDate = Util.getNewDate(surveillanceStartDate);
     }
 
     public Date getSurveillanceEndDate() {
-        return new Date(surveillanceEndDate.getTime());
+        return Util.getNewDate(surveillanceEndDate);
     }
 
     public void setSurveillanceEndDate(final Date surveillanceEndDate) {
-        this.surveillanceEndDate = new Date(surveillanceEndDate.getTime());
+        this.surveillanceEndDate = Util.getNewDate(surveillanceEndDate);
     }
 
     public Boolean getRandomizedSurveillance() {
@@ -168,27 +169,27 @@ public class CorrectiveActionPlanDetails implements Serializable {
     }
 
     public Date getEffectiveDate() {
-        return new Date(effectiveDate.getTime());
+        return Util.getNewDate(effectiveDate);
     }
 
     public void setEffectiveDate(final Date effectiveDate) {
-        this.effectiveDate = new Date(effectiveDate.getTime());
+        this.effectiveDate = Util.getNewDate(effectiveDate);
     }
 
     public Date getEstimatedCompletionDate() {
-        return new Date(estimatedCompletionDate.getTime());
+        return Util.getNewDate(estimatedCompletionDate);
     }
 
     public void setEstimatedCompletionDate(final Date estimatedCompletionDate) {
-        this.estimatedCompletionDate = new Date(estimatedCompletionDate.getTime());
+        this.estimatedCompletionDate = Util.getNewDate(estimatedCompletionDate);
     }
 
     public Date getNoncomplianceDate() {
-        return new Date(noncomplianceDate.getTime());
+        return Util.getNewDate(noncomplianceDate);
     }
 
     public void setNoncomplianceDate(final Date noncomplianceDate) {
-        this.noncomplianceDate = new Date(noncomplianceDate.getTime());
+        this.noncomplianceDate = Util.getNewDate(noncomplianceDate);
     }
 
     public String getAcbSummary() {

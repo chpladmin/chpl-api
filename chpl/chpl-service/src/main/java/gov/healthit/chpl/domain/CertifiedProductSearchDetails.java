@@ -16,6 +16,8 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import gov.healthit.chpl.util.Util;
+
 /**
  * Certified Product Search Details entity.
  */
@@ -575,11 +577,11 @@ public class CertifiedProductSearchDetails implements Serializable {
     }
 
     public Date getSedTestingEndDate() {
-        return new Date(sedTestingEndDate.getTime());
+        return Util.getNewDate(sedTestingEndDate);
     }
 
     public void setSedTestingEndDate(final Date sedTestingEndDate) {
-        this.sedTestingEndDate = new Date(sedTestingEndDate.getTime());
+        this.sedTestingEndDate = Util.getNewDate(sedTestingEndDate);
     }
 
     public Product getProduct() {

@@ -49,6 +49,7 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
     @Autowired
     MessageSource messageSource;
 
+    @Override
     public abstract PendingCertifiedProductEntity handle() throws InvalidArgumentsException;
     public abstract TemplateColumnIndexMap getColumnIndexMap();
     public abstract String[] getCriteriaNames();
@@ -59,6 +60,7 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
                         LocaleContextHolder.getLocale()));
     }
 
+    @Override
     public Long getDefaultStatusId() {
         CertificationStatusDTO statusDto = statusDao.getByStatusName("Pending");
         if (statusDto != null) {
@@ -178,7 +180,7 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         }
         CertificationEditionDTO foundEdition = editionDao.getByYear(certificaitonYear);
         if (foundEdition != null) {
-            pendingCertifiedProduct.setCertificationEditionId(Long.valueOf(foundEdition.getId()));
+            pendingCertifiedProduct.setCertificationEditionId(foundEdition.getId());
         }
     }
 
@@ -278,6 +280,7 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         }
     }
 
+    @Override
     public List<CQMCriterion> getApplicableCqmCriterion(final List<CQMCriterion> allCqms) {
         List<CQMCriterion> criteria = new ArrayList<CQMCriterion>();
         for (CQMCriterion criterion : allCqms) {
@@ -300,7 +303,7 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
      */
     protected PendingCertificationResultEntity getCertificationResult(final String criterionName,
             final String columnValue)
-            throws InvalidArgumentsException {
+                    throws InvalidArgumentsException {
         CertificationCriterionEntity certEntity = certDao.getEntityByName(criterionName);
         if (certEntity == null) {
             throw new InvalidArgumentsException("Could not find a certification criterion matching " + criterionName);
@@ -312,15 +315,15 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         return result;
     }
 
-//    protected Boolean asBooleanEmpty(String value) {
-//        value = value.trim();
-//
-//        if (StringUtils.isEmpty(value)) {
-//            return null;
-//        }
-//
-//        return parseBoolean(value);
-//    }
+    //    protected Boolean asBooleanEmpty(String value) {
+    //        value = value.trim();
+    //
+    //        if (StringUtils.isEmpty(value)) {
+    //            return null;
+    //        }
+    //
+    //        return parseBoolean(value);
+    //    }
 
     protected Boolean asBoolean(String value) {
         value = value.trim();
