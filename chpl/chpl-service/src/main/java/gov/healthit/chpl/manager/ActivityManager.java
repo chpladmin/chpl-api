@@ -43,7 +43,7 @@ public interface ActivityManager {
     List<ActivityEvent> getPublicAnnouncementActivity(Date startDate,
             Date endDate) throws JsonParseException, IOException;
 
-    List<ActivityEvent> getPublicAnnouncementActivity(Long id,Date startDate,
+    List<ActivityEvent> getPublicAnnouncementActivity(Long id, Date startDate,
             Date endDate) throws JsonParseException, IOException;
 
     List<ActivityEvent> getAllAcbActivity(Date startDate,
