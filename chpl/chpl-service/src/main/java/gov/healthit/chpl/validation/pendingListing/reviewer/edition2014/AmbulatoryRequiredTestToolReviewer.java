@@ -32,7 +32,7 @@ public class AmbulatoryRequiredTestToolReviewer implements Reviewer {
             if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria()) {
                 boolean gapEligibleAndTrue = false;
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP)
-                        && cert.getGap()) {
+                        && cert.getGap() != null &&  cert.getGap()) {
                     gapEligibleAndTrue = true;
                 }
 

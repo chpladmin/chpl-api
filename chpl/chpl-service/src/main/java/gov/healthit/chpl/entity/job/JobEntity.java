@@ -115,7 +115,7 @@ public class JobEntity {
         return Util.getNewDate(endTime);
     }
 
-    public void setEndTime(final Date endtime) {
+    public void setEndTime(final Date endTime) {
         this.endTime = Util.getNewDate(endTime);
     }
 

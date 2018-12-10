@@ -34,10 +34,10 @@ public class RequiredData2014Reviewer extends RequiredDataReviewer {
         if (listing.getPracticeTypeId() == null) {
             listing.getErrorMessages().add("Practice setting is required but was not found.");
         }
-//        else {
-//            listing.getErrorMessages().addAll(
-//                    certifiedtProductTestFunctionalityValidator.getTestFunctionalityValidationErrors(product));
-//        }
+        //        else {
+        //            listing.getErrorMessages().addAll(
+        //                    certifiedtProductTestFunctionalityValidator.getTestFunctionalityValidationErrors(product));
+        //        }
         if (listing.getProductClassificationId() == null) {
             listing.getErrorMessages().add("Product classification is required but was not found.");
         }
@@ -67,7 +67,7 @@ public class RequiredData2014Reviewer extends RequiredDataReviewer {
                 }
                 boolean gapEligibleAndTrue = false;
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP)
-                        && cert.getGap()) {
+                        && cert.getGap() != null && cert.getGap()) {
                     gapEligibleAndTrue = true;
                 }
 
