@@ -15,9 +15,6 @@ public final class Util {
     private static final String dateFormat = "yyyy-MM-dd";
     private static final String timestampFormat = "yyyyMMdd_HHmmss";
 
-    //private SimpleDateFormat dateFormatter = new SimpleDateFormat(dateFormat);
-    //private SimpleDateFormat timestampFormatter = new SimpleDateFormat(timestampFormat);
-
     private Util() {
 
     }

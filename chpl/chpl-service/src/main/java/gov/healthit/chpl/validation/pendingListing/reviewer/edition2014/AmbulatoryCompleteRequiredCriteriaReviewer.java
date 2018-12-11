@@ -95,19 +95,15 @@ public class AmbulatoryCompleteRequiredCriteriaReviewer implements Reviewer {
                 hasH1 = true;
             }
         }
-        //if (!hasB1 && !hasB2) {
-            //if (!hasB1 && !hasB8) {
-                //if (!hasB8 && !hasH1) {
-        if (!hasB1 && !hasB2 && !hasB8 && !hasH1) {
-            listing.getErrorMessages().add(
-                    "An allowed combination of (b)(1), (b)(2), (b)(8), and (h)(1) was not found.");
-            return false;
-        } else {
-            return true;
+        if (!hasB1 && !hasB2) {
+            if (!hasB1 && !hasB8) {
+                if (!hasB8 && !hasH1) {
+                    listing.getErrorMessages().add(
+                            "An allowed combination of (b)(1), (b)(2), (b)(8), and (h)(1) was not found.");
+                    return false;
+                }
+            }
         }
-                //}
-            //}
-        //}
-        //return true;
+        return true;
     }
 }

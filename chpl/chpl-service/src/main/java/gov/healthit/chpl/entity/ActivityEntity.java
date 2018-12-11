@@ -33,7 +33,7 @@ import gov.healthit.chpl.util.Util;
             query = "SELECT * "
                     + "FROM " + BaseDAOImpl.SCHEMA_NAME + ".activity a "
                     + "LEFT OUTER JOIN " + BaseDAOImpl.SCHEMA_NAME + ".user u "
-                            + "ON a.last_modified_user = u.user_id "
+                    + "ON a.last_modified_user = u.user_id "
                     + "WHERE a.activity_object_concept_id = :conceptId "
                     + "AND a.original_data IS NOT NULL AND cast(a.original_data as json)->>'isPublic'= 'true' "
                     + "AND a.new_data IS NOT NULL AND cast(a.new_data as json)->>'isPublic' = 'true' "
@@ -46,7 +46,7 @@ import gov.healthit.chpl.util.Util;
             query = "SELECT * "
                     + "FROM " + BaseDAOImpl.SCHEMA_NAME + ".activity a "
                     + "LEFT OUTER JOIN " + BaseDAOImpl.SCHEMA_NAME + ".user u "
-                            + "ON a.last_modified_user = u.user_id "
+                    + "ON a.last_modified_user = u.user_id "
                     + "WHERE a.activity_object_id = :announcementId "
                     + "AND a.activity_object_concept_id = :conceptId "
                     + "AND a.original_data IS NOT NULL AND cast(a.original_data as json)->>'isPublic'= 'true' "
@@ -60,15 +60,15 @@ import gov.healthit.chpl.util.Util;
             query = "SELECT * "
                     + "FROM " + BaseDAOImpl.SCHEMA_NAME + ".activity a "
                     + "LEFT OUTER JOIN " + BaseDAOImpl.SCHEMA_NAME + ".user u "
-                        + "ON a.last_modified_user = u.user_id "
+                    + "ON a.last_modified_user = u.user_id "
                     + "WHERE a.activity_object_concept_id = :conceptId "
                     + "AND ( "
-                        + "cast(a.original_data as json)->>'certificationBodyId' IN (:acbIds) "
-                        + "OR cast(a.new_data as json)->>'certificationBodyId' IN (:acbIds) "
+                    + "cast(a.original_data as json)->>'certificationBodyId' IN (:acbIds) "
+                    + "OR cast(a.new_data as json)->>'certificationBodyId' IN (:acbIds) "
                     + ")"
                     + "AND (a.activity_date >= :startDate) "
                     + "AND (a.activity_date <= :endDate)",
-                     resultClass = ActivityEntity.class
+                    resultClass = ActivityEntity.class
             )
 })
 public class ActivityEntity {
@@ -208,7 +208,7 @@ public class ActivityEntity {
     public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
-    
+
     public Long getLastModifiedUser() {
         return lastModifiedUser;
     }
