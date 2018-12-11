@@ -14,6 +14,7 @@ import javax.persistence.Table;
 
 import gov.healthit.chpl.auth.entity.UserEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
+import gov.healthit.chpl.util.Util;
 
 @Entity
 @Table(name = "questionable_activity_listing")
@@ -113,11 +114,11 @@ public class QuestionableActivityListingEntity implements QuestionableActivityEn
     }
 
     public Date getActivityDate() {
-        return activityDate;
+        return Util.getNewDate(activityDate);
     }
 
     public void setActivityDate(Date activityDate) {
-        this.activityDate = activityDate;
+        this.activityDate = Util.getNewDate(activityDate);
     }
 
     public Long getUserId() {
@@ -153,19 +154,19 @@ public class QuestionableActivityListingEntity implements QuestionableActivityEn
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public Long getListingId() {

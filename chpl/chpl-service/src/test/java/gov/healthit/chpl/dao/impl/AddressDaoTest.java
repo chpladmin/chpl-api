@@ -3,7 +3,6 @@ package gov.healthit.chpl.dao.impl;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,8 +33,8 @@ import junit.framework.TestCase;
         gov.healthit.chpl.CHPLTestConfig.class
 })
 @TestExecutionListeners({
-        DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
-        TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
+    DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
 })
 @DatabaseSetup("classpath:data/testData.xml")
 public class AddressDaoTest extends TestCase {
@@ -46,10 +45,6 @@ public class AddressDaoTest extends TestCase {
     @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
-
-    @Before
-    public void setUp() throws Exception {
-    }
 
     @Test
     @Transactional

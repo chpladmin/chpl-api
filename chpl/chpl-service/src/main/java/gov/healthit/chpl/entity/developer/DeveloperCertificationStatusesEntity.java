@@ -20,7 +20,7 @@ import javax.persistence.Transient;
  */
 @Entity
 @Table(name = "developer_certification_statuses")
-public class DeveloperCertificationStatusesEntity implements Cloneable, Serializable {
+public class DeveloperCertificationStatusesEntity implements Serializable {
     /** Serial Version UID. */
     private static final long serialVersionUID = -1396979002399764864L;
 

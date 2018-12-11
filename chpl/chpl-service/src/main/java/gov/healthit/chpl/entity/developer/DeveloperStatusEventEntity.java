@@ -14,6 +14,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.util.Util;
+
 /**
  * Developer status entity.
  * @author alarned
@@ -21,7 +23,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "vendor_status_history")
-public class DeveloperStatusEventEntity implements Cloneable, Serializable {
+public class DeveloperStatusEventEntity implements Serializable {
     private static final long serialVersionUID = 1730728043307135377L;
 
     @Id
@@ -102,19 +104,19 @@ public class DeveloperStatusEventEntity implements Cloneable, Serializable {
     }
 
     public Date getStatusDate() {
-        return statusDate;
+        return Util.getNewDate(statusDate);
     }
 
     public void setStatusDate(final Date statusDate) {
-        this.statusDate = statusDate;
+        this.statusDate = Util.getNewDate(statusDate);
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Boolean getDeleted() {
@@ -126,11 +128,11 @@ public class DeveloperStatusEventEntity implements Cloneable, Serializable {
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public Long getLastModifiedUser() {

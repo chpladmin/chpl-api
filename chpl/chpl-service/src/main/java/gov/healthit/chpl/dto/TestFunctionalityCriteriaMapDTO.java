@@ -3,6 +3,7 @@ package gov.healthit.chpl.dto;
 import java.util.Date;
 
 import gov.healthit.chpl.entity.TestFunctionalityCriteriaMapEntity;
+import gov.healthit.chpl.util.Util;
 
 /**
  * Business-layer DTO object for many-to-many relationship betwenn test functionality and certification criterion
@@ -38,11 +39,11 @@ public class TestFunctionalityCriteriaMapDTO {
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Boolean getDeleted() {
@@ -62,13 +63,13 @@ public class TestFunctionalityCriteriaMapDTO {
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
-
+    
     public Long getLastModifiedUser() {
         return lastModifiedUser;
     }

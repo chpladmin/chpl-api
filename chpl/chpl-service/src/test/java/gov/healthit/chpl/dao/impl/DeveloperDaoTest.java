@@ -140,7 +140,7 @@ public class DeveloperDaoTest extends TestCase {
             result = developerDao.create(developer);
         } catch (Exception ex) {
             fail("could not create developer!");
-            System.err.println(ex.getStackTrace());
+            ex.printStackTrace();
         }
 
         assertNotNull(result);
@@ -185,7 +185,7 @@ public class DeveloperDaoTest extends TestCase {
             result = developerDao.create(developer);
         } catch (Exception ex) {
             fail("could not create developer!");
-            System.err.println(ex.getStackTrace());
+            ex.printStackTrace();
         }
 
         assertNotNull(result);
@@ -221,7 +221,7 @@ public class DeveloperDaoTest extends TestCase {
             result = developerDao.create(developer);
         } catch (Exception ex) {
             fail("could not create developer!");
-            System.out.println(ex.getStackTrace());
+            ex.printStackTrace();
         }
 
         assertNotNull(result);

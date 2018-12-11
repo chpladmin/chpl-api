@@ -15,6 +15,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import gov.healthit.chpl.util.Util;
+
 /**
  * Object mapping for hibernate-handled table: certification_criterion.
  *
@@ -164,22 +166,12 @@ public class CertificationCriterionEntity implements Serializable {
         this.certificationEditionId = certificationEditionId;
     }
 
-    /**
-     * Return the value associated with the column: creationDate.
-     * @return A Date object (this.creationDate)
-     */
     public Date getCreationDate() {
-        return this.creationDate;
-
+        return Util.getNewDate(creationDate);
     }
 
-    /**
-     * Set the value related to the column: creationDate.
-     * @param creationDate
-     *            the creationDate value you wish to set
-     */
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     /**
@@ -243,7 +235,7 @@ public class CertificationCriterionEntity implements Serializable {
      */
 
     public Date getLastModifiedDate() {
-        return this.lastModifiedDate;
+        return Util.getNewDate(this.lastModifiedDate);
 
     }
 
@@ -253,7 +245,7 @@ public class CertificationCriterionEntity implements Serializable {
      *            the lastModifiedDate value you wish to set
      */
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = (lastModifiedDate);
     }
 
     /**

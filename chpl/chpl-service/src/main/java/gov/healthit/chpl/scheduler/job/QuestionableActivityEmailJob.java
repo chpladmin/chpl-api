@@ -122,10 +122,10 @@ public class QuestionableActivityEmailJob extends QuartzJob {
 
             EmailBuilder emailBuilder = new EmailBuilder(env);
             emailBuilder.recipients(recipients)
-                        .subject(subject)
-                        .htmlMessage(htmlMessage)
-                        .fileAttachments(files)
-                        .sendEmail();
+            .subject(subject)
+            .htmlMessage(htmlMessage)
+            .fileAttachments(files)
+            .sendEmail();
 
         } catch (MessagingException e) {
             LOGGER.error(e);
@@ -212,7 +212,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         Set<ActivityDateTriggerGroup> activityGroups = activityByGroup.keySet();
         for (ActivityDateTriggerGroup activityGroup : activityGroups) {
             List<String> currRow = createEmptyRow();
-            currRow.set(ACTIVITY_DATE_COL, Util.timestampFormatter.format(activityGroup.getActivityDate()));
+            currRow.set(ACTIVITY_DATE_COL, Util.getTimestampFormatter().format(activityGroup.getActivityDate()));
             currRow.set(ACTIVITY_TYPE_COL, activityGroup.getTrigger().getName());
 
             List<QuestionableActivityCertificationResultDTO> activitiesForGroup =
@@ -255,7 +255,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         Set<ActivityDateTriggerGroup> activityGroups = activityByGroup.keySet();
         for (ActivityDateTriggerGroup activityGroup : activityGroups) {
             List<String> currRow = createEmptyRow();
-            currRow.set(ACTIVITY_DATE_COL, Util.timestampFormatter.format(activityGroup.getActivityDate()));
+            currRow.set(ACTIVITY_DATE_COL, Util.getTimestampFormatter().format(activityGroup.getActivityDate()));
             currRow.set(ACTIVITY_TYPE_COL, activityGroup.getTrigger().getName());
 
             List<QuestionableActivityListingDTO> activitiesForGroup =
@@ -298,7 +298,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         Set<ActivityDateTriggerGroup> activityGroups = activityByGroup.keySet();
         for (ActivityDateTriggerGroup activityGroup : activityGroups) {
             List<String> currRow = createEmptyRow();
-            currRow.set(ACTIVITY_DATE_COL, Util.timestampFormatter.format(activityGroup.getActivityDate()));
+            currRow.set(ACTIVITY_DATE_COL, Util.getTimestampFormatter().format(activityGroup.getActivityDate()));
             currRow.set(ACTIVITY_TYPE_COL, activityGroup.getTrigger().getName());
 
             List<QuestionableActivityDeveloperDTO> activitiesForGroup =
@@ -341,7 +341,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         Set<ActivityDateTriggerGroup> activityGroups = activityByGroup.keySet();
         for (ActivityDateTriggerGroup activityGroup : activityGroups) {
             List<String> currRow = createEmptyRow();
-            currRow.set(ACTIVITY_DATE_COL, Util.timestampFormatter.format(activityGroup.getActivityDate()));
+            currRow.set(ACTIVITY_DATE_COL, Util.getTimestampFormatter().format(activityGroup.getActivityDate()));
             currRow.set(ACTIVITY_TYPE_COL, activityGroup.getTrigger().getName());
 
             List<QuestionableActivityProductDTO> activitiesForGroup =
@@ -384,7 +384,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         Set<ActivityDateTriggerGroup> activityGroups = activityByGroup.keySet();
         for (ActivityDateTriggerGroup activityGroup : activityGroups) {
             List<String> currRow = createEmptyRow();
-            currRow.set(ACTIVITY_DATE_COL, Util.timestampFormatter.format(activityGroup.getActivityDate()));
+            currRow.set(ACTIVITY_DATE_COL, Util.getTimestampFormatter().format(activityGroup.getActivityDate()));
             currRow.set(ACTIVITY_TYPE_COL, activityGroup.getTrigger().getName());
 
             List<QuestionableActivityVersionDTO> activitiesForGroup =
@@ -684,7 +684,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         this.questionableActivityDao = questionableActivityDao;
     }
 
-    private class ActivityDateTriggerGroup {
+    private static class ActivityDateTriggerGroup {
         private Date activityDate;
         private QuestionableActivityTriggerDTO trigger;
 

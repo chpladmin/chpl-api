@@ -261,8 +261,10 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
             }
 
             throw alreadyDeletedEx;
+        } else {
+            //If pendingCP were null, we would have gotten an NPE by this point
+            return true;
         }
-        return pendingCp != null;
     }
 
     private void updateCertResults(final PendingCertifiedProductDTO dto) {

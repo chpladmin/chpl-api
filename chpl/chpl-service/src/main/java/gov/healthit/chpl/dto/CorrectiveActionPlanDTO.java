@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import gov.healthit.chpl.entity.CorrectiveActionPlanEntity;
+import gov.healthit.chpl.util.Util;
 
 public class CorrectiveActionPlanDTO implements Serializable {
     private static final long serialVersionUID = 489989180361599764L;
@@ -57,27 +58,27 @@ public class CorrectiveActionPlanDTO implements Serializable {
     }
 
     public Date getApprovalDate() {
-        return approvalDate;
+        return Util.getNewDate(approvalDate);
     }
 
     public void setApprovalDate(final Date approvalDate) {
-        this.approvalDate = approvalDate;
+        this.approvalDate = Util.getNewDate(approvalDate);
     }
 
     public Date getSurveillanceStartDate() {
-        return surveillanceStartDate;
+        return Util.getNewDate(surveillanceStartDate);
     }
 
     public void setSurveillanceStartDate(final Date surveillanceStartDate) {
-        this.surveillanceStartDate = surveillanceStartDate;
+        this.surveillanceStartDate = Util.getNewDate(surveillanceStartDate);
     }
 
     public Date getSurveillanceEndDate() {
-        return surveillanceEndDate;
+        return Util.getNewDate(surveillanceEndDate);
     }
 
     public void setSurveillanceEndDate(final Date surveillanceEndDate) {
-        this.surveillanceEndDate = surveillanceEndDate;
+        this.surveillanceEndDate = Util.getNewDate(surveillanceEndDate);
     }
 
     public Boolean getSurveillanceResult() {
@@ -89,35 +90,35 @@ public class CorrectiveActionPlanDTO implements Serializable {
     }
 
     public Date getNonComplianceDeterminationDate() {
-        return nonComplianceDeterminationDate;
+        return Util.getNewDate(nonComplianceDeterminationDate);
     }
 
     public void setNonComplianceDeterminationDate(final Date nonComplianceDeterminationDate) {
-        this.nonComplianceDeterminationDate = nonComplianceDeterminationDate;
+        this.nonComplianceDeterminationDate = Util.getNewDate(nonComplianceDeterminationDate);
     }
 
     public Date getStartDate() {
-        return startDate;
+        return Util.getNewDate(startDate);
     }
 
     public void setStartDate(final Date startDate) {
-        this.startDate = startDate;
+        this.startDate = Util.getNewDate(startDate);
     }
 
     public Date getRequiredCompletionDate() {
-        return requiredCompletionDate;
+        return Util.getNewDate(requiredCompletionDate);
     }
 
     public void setRequiredCompletionDate(final Date requiredCompletionDate) {
-        this.requiredCompletionDate = requiredCompletionDate;
+        this.requiredCompletionDate = Util.getNewDate(requiredCompletionDate);
     }
 
     public Date getActualCompletionDate() {
-        return actualCompletionDate;
+        return Util.getNewDate(actualCompletionDate);
     }
 
     public void setActualCompletionDate(final Date actualCompletionDate) {
-        this.actualCompletionDate = actualCompletionDate;
+        this.actualCompletionDate = Util.getNewDate(actualCompletionDate);
     }
 
     public String getSummary() {

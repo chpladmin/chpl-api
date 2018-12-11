@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import gov.healthit.chpl.dto.CertificationIdDTO;
+import gov.healthit.chpl.util.Util;
 
 public class SimpleCertificationId implements Serializable {
     private static final long serialVersionUID = 2521257609141032011L;
@@ -27,11 +28,11 @@ public class SimpleCertificationId implements Serializable {
     }
 
     public Date getCreated() {
-        return created;
+        return Util.getNewDate(created);
     }
 
     public void setCreated(final Date created) {
-        this.created = created;
+        this.created = Util.getNewDate(created);
     }
 
     @Override

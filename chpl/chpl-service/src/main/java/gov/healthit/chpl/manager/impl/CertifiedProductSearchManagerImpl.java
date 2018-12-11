@@ -44,7 +44,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
         Collection<CertifiedProductBasicSearchResult> searchResults = searchDao.search(searchRequest);
         int totalCountSearchResults = searchDao.getTotalResultCount(searchRequest);
 
-        SearchResponse response = new SearchResponse(new Integer(totalCountSearchResults),
+        SearchResponse response = new SearchResponse(Integer.valueOf(totalCountSearchResults),
                 searchResults, searchRequest.getPageSize(), searchRequest.getPageNumber());
         return response;
     }

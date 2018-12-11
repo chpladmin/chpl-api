@@ -3,6 +3,7 @@ package gov.healthit.chpl.dto;
 import java.util.Date;
 
 import gov.healthit.chpl.entity.CHPLFileEntity;
+import gov.healthit.chpl.util.Util;
 
 public class CHPLFileDTO {
     private Long id;
@@ -40,19 +41,19 @@ public class CHPLFileDTO {
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public Long getLastModifiedUser() {
@@ -88,11 +89,11 @@ public class CHPLFileDTO {
     }
 
     public Date getAssociatedDate() {
-        return associatedDate;
+        return Util.getNewDate(associatedDate);
     }
 
     public void setAssociatedDate(final Date associatedDate) {
-        this.associatedDate = associatedDate;
+        this.associatedDate = Util.getNewDate(associatedDate);
     }
 
     public String getFileName() {

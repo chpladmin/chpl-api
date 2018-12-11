@@ -74,8 +74,7 @@ public class ListingTestFunctionalityReviewerTest {
     private CertificationEditionDAO certificationEditionDAO;
 
     @Spy
-    private TestingFunctionalityManager testFunctionalityManager =
-        new TestingFunctionalityManagerImpl(testFunctionalityDAO);
+    private TestingFunctionalityManager testFunctionalityManager;
 
     private TestFunctionality2014Reviewer tfReviewer;
 
@@ -83,6 +82,7 @@ public class ListingTestFunctionalityReviewerTest {
 
     @Before
     public void setup() {
+        testFunctionalityManager = new TestingFunctionalityManagerImpl(testFunctionalityDAO);
         MockitoAnnotations.initMocks(this);
 
         tfReviewer = new TestFunctionality2014Reviewer(testFunctionalityDAO, testFunctionalityManager,

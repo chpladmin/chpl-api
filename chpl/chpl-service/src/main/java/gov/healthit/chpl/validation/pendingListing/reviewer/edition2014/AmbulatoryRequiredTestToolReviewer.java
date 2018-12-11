@@ -29,10 +29,10 @@ public class AmbulatoryRequiredTestToolReviewer implements Reviewer {
     public void review(final PendingCertifiedProductDTO listing) {
         //check for test tools
         for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
-            if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria() == Boolean.TRUE) {
+            if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria()) {
                 boolean gapEligibleAndTrue = false;
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP)
-                        && cert.getGap() == Boolean.TRUE) {
+                        && cert.getGap() != null &&  cert.getGap()) {
                     gapEligibleAndTrue = true;
                 }
 

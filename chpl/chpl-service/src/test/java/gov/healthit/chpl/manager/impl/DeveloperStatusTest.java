@@ -48,7 +48,7 @@ public class DeveloperStatusTest {
     private static final String MISSING_REASON_ERROR =
             "A reason must be given for marking this developer as banned on %s.";
 
-    private static JWTAuthenticatedUser adminUser;
+    private JWTAuthenticatedUser adminUser;
 
     @Autowired
     private MessageSource messageSource;

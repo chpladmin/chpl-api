@@ -41,7 +41,7 @@ import gov.healthit.chpl.entity.search.CertifiedProductListingSearchResultEntity
 @Repository("certifiedProductSearchDAO")
 public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements CertifiedProductSearchDAO {
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductSearchDAOImpl.class);
-    private static final DateFormat CERTIFICATION_DATE_FORMATTER =
+    private final DateFormat certificationDateFormatter =
             new SimpleDateFormat(SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
     @Override
     public Long getListingIdByUniqueChplNumber(final String chplProductNumber) {
@@ -89,10 +89,12 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
         query.setParameter("certifiedProductId", certifiedProductId);
         List<CertifiedProductBasicSearchResultEntity> searchResult = query.getResultList();
         CertifiedProductBasicSearchResultEntity result = null;
-        if (searchResult.size() > 0) {
+        if (searchResult.size() > 0 && searchResult.get(0) != null) {
             result = searchResult.get(0);
+            return convertIcs(result);
+        } else {
+            return null;
         }
-        return convertIcs(result);
     }
 
     @Override
@@ -199,7 +201,7 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
             } else if (orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_CERTIFICATION_EDITION)) {
                 sql += " year ";
             }
-            if (searchRequest.getSortDescending() != null && searchRequest.getSortDescending() == Boolean.TRUE) {
+            if (searchRequest.getSortDescending() != null && searchRequest.getSortDescending()) {
                 sql += " DESC ";
             } else {
                 sql += " ASC ";
@@ -417,10 +419,10 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
         //surveillance search options
         if (searchRequest.getSurveillance() != null) {
             if (searchRequest.getSurveillance().getHasHadSurveillance() != null
-                    && searchRequest.getSurveillance().getHasHadSurveillance() == Boolean.TRUE) {
+                    && searchRequest.getSurveillance().getHasHadSurveillance()) {
                 sql += " AND count_surveillance_activities > 0 ";
             } else if (searchRequest.getSurveillance().getHasHadSurveillance() != null
-                    && searchRequest.getSurveillance().getHasHadSurveillance() == Boolean.FALSE) {
+                    && !searchRequest.getSurveillance().getHasHadSurveillance()) {
                 sql += " AND count_surveillance_activities IS NULL ";
             }
 
@@ -467,7 +469,7 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
             } else if (orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_CERTIFICATION_EDITION)) {
                 sql += " year ";
             }
-            if (searchRequest.getSortDescending() != null && searchRequest.getSortDescending() == Boolean.TRUE) {
+            if (searchRequest.getSortDescending() != null && searchRequest.getSortDescending()) {
                 sql += " DESC ";
             } else {
                 sql += " ASC ";
@@ -506,7 +508,7 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
         }
         if (!StringUtils.isEmpty(searchRequest.getCertificationDateStart())) {
             try {
-                Date date = CERTIFICATION_DATE_FORMATTER.parse(searchRequest.getCertificationDateStart());
+                Date date = certificationDateFormatter.parse(searchRequest.getCertificationDateStart());
                 query.setParameter("certificationDateStart", date);
             } catch (Exception ex) {
                 LOGGER.error("Could not parse " + searchRequest.getCertificationDateStart()
@@ -516,7 +518,7 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
         }
         if (!StringUtils.isEmpty(searchRequest.getCertificationDateEnd())) {
             try {
-                Date date = CERTIFICATION_DATE_FORMATTER.parse(searchRequest.getCertificationDateEnd());
+                Date date = certificationDateFormatter.parse(searchRequest.getCertificationDateEnd());
                 query.setParameter("certificationDateEnd", date);
             } catch (Exception ex) {
                 LOGGER.error("Could not parse " + searchRequest.getCertificationDateEnd()

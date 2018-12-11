@@ -922,9 +922,11 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                             }
                             // add mapping from cert result to test task
                             CertificationResultTestTaskDTO taskDto = new CertificationResultTestTaskDTO();
-                            taskDto.setTestTaskId(existingTt.getId());
-                            taskDto.setCertificationResultId(createdCert.getId());
-                            taskDto.setTestTask(existingTt);
+                            if (existingTt != null) {
+                                taskDto.setTestTaskId(existingTt.getId());
+                                taskDto.setCertificationResultId(createdCert.getId());
+                                taskDto.setTestTask(existingTt);
+                            }
 
                             if (certTask.getTaskParticipants() != null) {
                                 for (PendingCertificationResultTestTaskParticipantDTO certTaskPart : certTask
@@ -1142,7 +1144,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
         CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
         Long listingId = updatedListing.getId();
-        Long productVersionId = new Long(updatedListing.getVersion().getVersionId());
+        Long productVersionId = updatedListing.getVersion().getVersionId();
         CertificationStatus updatedStatus = updatedListing.getCurrentStatus().getStatus();
         CertificationStatus existingStatus = existingListing.getCurrentStatus().getStatus();
         //if listing status has changed that may trigger other changes
@@ -1212,25 +1214,27 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
         CertifiedProductDTO dtoToUpdate = new CertifiedProductDTO(updatedListing);
         CertifiedProductDTO result = cpDao.update(dtoToUpdate);
-        if (updatedListing != null) {
-            updateTestingLabs(listingId, existingListing.getTestingLabs(), updatedListing.getTestingLabs());
-            updateIcsChildren(listingId, existingListing.getIcs(), updatedListing.getIcs());
-            updateIcsParents(listingId, existingListing.getIcs(), updatedListing.getIcs());
-            updateQmsStandards(listingId, existingListing.getQmsStandards(), updatedListing.getQmsStandards());
-            updateTargetedUsers(listingId, existingListing.getTargetedUsers(), updatedListing.getTargetedUsers());
-            updateAccessibilityStandards(listingId, existingListing.getAccessibilityStandards(),
-                    updatedListing.getAccessibilityStandards());
-            updateCertificationDate(listingId, new Date(existingListing.getCertificationDate()),
-                    new Date(updatedListing.getCertificationDate()));
 
-            updateCertificationStatusEvents(listingId, existingListing.getCertificationEvents(),
-                    updatedListing.getCertificationEvents());
-            updateMeaningfulUseUserHistory(listingId, existingListing.getMeaningfulUseUserHistory(),
-                    updatedListing.getMeaningfulUseUserHistory());
-            updateCertifications(result.getCertificationBodyId(), existingListing, updatedListing,
-                    existingListing.getCertificationResults(), updatedListing.getCertificationResults());
-            updateCqms(result, existingListing.getCqmResults(), updatedListing.getCqmResults());
-        }
+        //Findbugs says this cannot be null since it used above - an NPE would have been thrown
+        //if (updatedListing != null) {
+        updateTestingLabs(listingId, existingListing.getTestingLabs(), updatedListing.getTestingLabs());
+        updateIcsChildren(listingId, existingListing.getIcs(), updatedListing.getIcs());
+        updateIcsParents(listingId, existingListing.getIcs(), updatedListing.getIcs());
+        updateQmsStandards(listingId, existingListing.getQmsStandards(), updatedListing.getQmsStandards());
+        updateTargetedUsers(listingId, existingListing.getTargetedUsers(), updatedListing.getTargetedUsers());
+        updateAccessibilityStandards(listingId, existingListing.getAccessibilityStandards(),
+                updatedListing.getAccessibilityStandards());
+        updateCertificationDate(listingId, new Date(existingListing.getCertificationDate()),
+                new Date(updatedListing.getCertificationDate()));
+
+        updateCertificationStatusEvents(listingId, existingListing.getCertificationEvents(),
+                updatedListing.getCertificationEvents());
+        updateMeaningfulUseUserHistory(listingId, existingListing.getMeaningfulUseUserHistory(),
+                updatedListing.getMeaningfulUseUserHistory());
+        updateCertifications(result.getCertificationBodyId(), existingListing, updatedListing,
+                existingListing.getCertificationResults(), updatedListing.getCertificationResults());
+        updateCqms(result, existingListing.getCqmResults(), updatedListing.getCqmResults());
+        //}
         return result;
     }
 
@@ -2272,7 +2276,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         return scheduler;
     }
 
-    private class CertificationStatusEventPair {
+    private static class CertificationStatusEventPair {
         private CertificationStatusEvent orig;
         private CertificationStatusEvent updated;
 
@@ -2303,7 +2307,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
     }
 
-    private class MeaningfulUseUserPair {
+    private static class MeaningfulUseUserPair {
         private MeaningfulUseUser orig;
         private MeaningfulUseUser updated;
 
@@ -2334,7 +2338,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
     }
 
-    private class QmsStandardPair {
+    private static class QmsStandardPair {
         private CertifiedProductQmsStandard orig;
         private CertifiedProductQmsStandard updated;
 
@@ -2363,7 +2367,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
     }
 
-    private class CQMResultDetailsPair {
+    private static class CQMResultDetailsPair {
         private CQMResultDetailsDTO orig;
         private CQMResultDetailsDTO updated;
 

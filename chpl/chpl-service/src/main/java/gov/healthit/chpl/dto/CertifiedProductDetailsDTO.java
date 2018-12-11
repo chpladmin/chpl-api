@@ -6,6 +6,7 @@ import java.util.Date;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
+import gov.healthit.chpl.util.Util;
 
 /**
  * Certified Product Details DTO.
@@ -291,19 +292,19 @@ public class CertifiedProductDetailsDTO implements Serializable {
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Date getCertificationDate() {
-        return certificationDate;
+        return Util.getNewDate(certificationDate);
     }
 
     public void setCertificationDate(final Date certificationDate) {
-        this.certificationDate = certificationDate;
+        this.certificationDate = Util.getNewDate(certificationDate);
     }
 
     public String getProductClassificationName() {
@@ -331,11 +332,11 @@ public class CertifiedProductDetailsDTO implements Serializable {
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public String getCertificationStatusName() {
@@ -498,11 +499,11 @@ public class CertifiedProductDetailsDTO implements Serializable {
     }
 
     public Date getSedTestingEnd() {
-        return sedTestingEnd;
+        return Util.getNewDate(sedTestingEnd);
     }
 
     public void setSedTestingEnd(final Date sedTestingEnd) {
-        this.sedTestingEnd = sedTestingEnd;
+        this.sedTestingEnd = Util.getNewDate(sedTestingEnd);
     }
 
     public DeveloperDTO getDeveloper() {
@@ -574,19 +575,19 @@ public class CertifiedProductDetailsDTO implements Serializable {
     }
 
     public Date getCertificationStatusDate() {
-        return certificationStatusDate;
+        return Util.getNewDate(certificationStatusDate);
     }
 
     public void setCertificationStatusDate(final Date certificationStatusDate) {
-        this.certificationStatusDate = certificationStatusDate;
+        this.certificationStatusDate = Util.getNewDate(certificationStatusDate);
     }
 
     public Date getDecertificationDate() {
-        return decertificationDate;
+        return Util.getNewDate(decertificationDate);
     }
 
     public void setDecertificationDate(final Date decertificationDate) {
-        this.decertificationDate = decertificationDate;
+        this.decertificationDate = Util.getNewDate(decertificationDate);
     }
 
     public DeveloperStatusEventDTO getDeveloperCurrentStatus() {

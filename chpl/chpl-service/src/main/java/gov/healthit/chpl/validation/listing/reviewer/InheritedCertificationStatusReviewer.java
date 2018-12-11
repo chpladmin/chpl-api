@@ -41,7 +41,7 @@ public class InheritedCertificationStatusReviewer implements Reviewer {
         Integer icsCodeInteger = productNumUtil.getIcsCode(listing.getChplProductNumber());
         if (listing.getIcs().getInherits().equals(Boolean.TRUE) && icsCodeInteger.intValue() > 0) {
             // if ICS is nonzero, and no parents are found, give error
-            if (listing.getIcs() == null || listing.getIcs().getParents() == null
+            if (listing.getIcs().getParents() == null
                     || listing.getIcs().getParents().size() == 0) {
                 listing.getErrorMessages().add(msgUtil.getMessage("listing.icsTrueAndNoParentsFound"));
             } else {
@@ -85,8 +85,11 @@ public class InheritedCertificationStatusReviewer implements Reviewer {
                     // this listing's ICS code must be greater than the max of
                     // parent ICS codes
                     Integer largestIcs = inheritanceDao.getLargestIcs(parentIds);
-                    if (largestIcs != null && icsCodeInteger != null
-                            && icsCodeInteger.intValue() != (largestIcs.intValue() + 1)) {
+                    
+                    //Findbugs says this cannot be null since it used above - an NPE would have been thrown
+                    //if (largestIcs != null && icsCodeInteger != null
+                    //        && icsCodeInteger.intValue() != (largestIcs.intValue() + 1)) {
+                    if (largestIcs != null && icsCodeInteger.intValue() != (largestIcs.intValue() + 1)) {
                         listing.getErrorMessages().add(
                                    msgUtil.getMessage("listing.icsNotLargestCode", icsCodeInteger, largestIcs));
                     }

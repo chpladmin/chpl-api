@@ -273,7 +273,7 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 
         CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
         assertEquals("Ambulatory", detail.getPracticeType().get("name"));
-        assertEquals(1, new Long(detail.getPracticeType().get("id").toString()).longValue());
+        assertEquals(1l, Long.parseLong((detail.getPracticeType().get("id").toString())));
 
     }
 

@@ -131,8 +131,8 @@ public class Contact implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("[Contact domain object: [Id: {}] [Full Name: {}] [Friendly Name: {}] [Email: {}],"
-                + "[Phone Number: {}], [Title: {}]]", this.getContactId(), this.getFullName(), this.getFriendlyName(),
+        return String.format("[Contact domain object: [Id: %d] [Full Name: %s] [Friendly Name: %s] [Email: %s],"
+                + "[Phone Number: %s], [Title: %s]]", this.getContactId(), this.getFullName(), this.getFriendlyName(),
                 this.getEmail(), this.getPhoneNumber(), this.getTitle());
 
     }

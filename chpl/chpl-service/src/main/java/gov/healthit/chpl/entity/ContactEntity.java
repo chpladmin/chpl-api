@@ -11,6 +11,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.util.Util;
+
 /**
  * Object mapping for hibernate-handled table: contact.
  *
@@ -18,7 +20,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "contact")
-public class ContactEntity implements Cloneable, Serializable {
+public class ContactEntity implements Serializable {
     private static final long serialVersionUID = 1586086005459839264L;
     private static final int NAME_COMPONENT_LENGTH = 250;
     private static final int FULL_NAME_LENGTH = 500;
@@ -84,11 +86,11 @@ public class ContactEntity implements Cloneable, Serializable {
     }
 
     public Date getCreationDate() {
-        return this.creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Boolean getDeleted() {
@@ -120,11 +122,11 @@ public class ContactEntity implements Cloneable, Serializable {
     }
 
     public Date getLastModifiedDate() {
-        return this.lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public Long getLastModifiedUser() {
@@ -152,12 +154,12 @@ public class ContactEntity implements Cloneable, Serializable {
     }
 
     public Date getSignatureDate() {
-        return this.signatureDate;
+        return Util.getNewDate(this.signatureDate);
     }
 
 
     public void setSignatureDate(final Date signatureDate) {
-        this.signatureDate = signatureDate;
+        this.signatureDate = Util.getNewDate(signatureDate);
     }
 
     public String getTitle() {
@@ -170,8 +172,8 @@ public class ContactEntity implements Cloneable, Serializable {
 
     @Override
     public String toString() {
-        return String.format("[Contact Entity: [Id: {}] [Full Name: {}] [Friendly Name: {}] [Email: {}],"
-                + "[Phone Number: {}], [Title: {}]]", this.getId(), this.getFullName(), this.getFriendlyName(),
+        return String.format("[Contact Entity: [Id: %d] [Full Name: %s] [Friendly Name: %s] [Email: %s],"
+                + "[Phone Number: %s], [Title: %s]]", this.getId(), this.getFullName(), this.getFriendlyName(),
                 this.getEmail(), this.getPhoneNumber(), this.getTitle());
 
     }

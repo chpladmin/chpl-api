@@ -156,7 +156,7 @@ public class CertificationBodyDaoTest extends TestCase {
             result = acbDao.update(toUpdate);
         } catch (Exception ex) {
             fail("could not update acb!");
-            System.out.println(ex.getStackTrace());
+            ex.printStackTrace();
         }
         assertNotNull(result);
 
@@ -165,7 +165,7 @@ public class CertificationBodyDaoTest extends TestCase {
             assertEquals("UPDATED NAME", updatedAcb.getName());
         } catch (Exception ex) {
             fail("could not find acb!");
-            System.out.println(ex.getStackTrace());
+            ex.printStackTrace();
         }
         SecurityContextHolder.getContext().setAuthentication(null);
     }
@@ -184,7 +184,7 @@ public class CertificationBodyDaoTest extends TestCase {
             result = acbDao.update(toUpdate);
         } catch (Exception ex) {
             fail("could not update acb!");
-            System.out.println(ex.getStackTrace());
+            ex.printStackTrace();
         }
         assertNotNull(result);
 
@@ -193,7 +193,7 @@ public class CertificationBodyDaoTest extends TestCase {
             assertTrue(updatedAcb.isRetired());
         } catch (Exception ex) {
             fail("could not find acb!");
-            System.out.println(ex.getStackTrace());
+            ex.printStackTrace();
         }
         SecurityContextHolder.getContext().setAuthentication(null);
     }

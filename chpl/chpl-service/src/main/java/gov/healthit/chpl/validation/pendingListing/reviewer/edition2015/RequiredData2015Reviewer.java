@@ -234,7 +234,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
 
         //g2 macra check
         if (ValidationUtils.hasCert(G2_CRITERIA_NUMBER, allMetCerts)) {
-          //must have at least one criteria with g2 macras listed
+            //must have at least one criteria with g2 macras listed
             boolean hasG2Macra = false;
             for (int i = 0; i < listing.getCertificationCriterion().size() && !hasG2Macra; i++) {
                 PendingCertificationResultDTO cert = listing.getCertificationCriterion().get(i);
@@ -261,7 +261,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                     if (certCriteria.getNumber().equals(UCD_RELATED_CERTS[i])) {
                         if (certCriteria.getUcdProcesses() == null || certCriteria.getUcdProcesses().size() == 0) {
                             listing.getErrorMessages().add("Certification " + certCriteria.getNumber()
-                                    + " requires at least one UCD process.");
+                            + " requires at least one UCD process.");
                         }
                         if (certCriteria.getTestTasks() == null || certCriteria.getTestTasks().size() == 0) {
                             listing.getErrorMessages().add(
@@ -353,16 +353,16 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                         listing.getErrorMessages().add(
                                                 msgUtil.getMessage("listing.criteria.badParticipantEducationLevel",
                                                         (part.getTestParticipant().getUserEnteredEducationType() == null
-                                                                ? "'unknown'"
+                                                        ? "'unknown'"
                                                                 : part.getTestParticipant()
-                                                                        .getUserEnteredEducationType()),
+                                                                .getUserEnteredEducationType()),
                                                         part.getTestParticipant().getUniqueId()));
                                     }
                                     if (part.getTestParticipant().getAgeRangeId() == null) {
                                         listing.getErrorMessages().add(
                                                 msgUtil.getMessage("listing.criteria.badParticipantAgeRange",
                                                         (part.getTestParticipant().getUserEnteredAgeRange() == null
-                                                                ? "'unknown'"
+                                                        ? "'unknown'"
                                                                 : part.getTestParticipant().getUserEnteredAgeRange()),
                                                         part.getTestParticipant().getUniqueId()));
                                     }
@@ -475,7 +475,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
             boolean hasB1 = ValidationUtils.hasCert("170.315 (b)(1)", allMetCerts);
             if (!hasB1) {
                 listing.getErrorMessages()
-                        .add("170.315 (h)(1) was found so 170.315 (b)(1) is required but was not found.");
+                .add("170.315 (h)(1) was found so 170.315 (b)(1) is required but was not found.");
             }
         }
 
@@ -492,13 +492,13 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         if (listing.getAccessibilityStandards() == null || listing.getAccessibilityStandards().size() == 0) {
             listing.getErrorMessages().add("Accessibility standards are required.");
         } // accessibility standards do not have to match the set list of
-          // standards.
+        // standards.
 
         for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
-            if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria() == Boolean.TRUE) {
+            if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria()) {
                 boolean gapEligibleAndTrue = false;
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP)
-                        && cert.getGap() == Boolean.TRUE) {
+                        && cert.getGap() != null && cert.getGap()) {
                     gapEligibleAndTrue = true;
                 }
 
@@ -510,7 +510,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.API_DOCUMENTATION)
                         && StringUtils.isEmpty(cert.getApiDocumentation())) {
                     listing.getErrorMessages()
-                            .add("API Documentation is required for certification " + cert.getNumber() + ".");
+                    .add("API Documentation is required for certification " + cert.getNumber() + ".");
                 }
                 // jennifer asked to not make functionality tested be a required
                 // field
@@ -541,8 +541,8 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                     crtf.getNumber(), listing.getCertificationEditionId());
                             if (foundTestFunc == null || foundTestFunc.getId() == null) {
                                 listing.getErrorMessages()
-                                        .add(msgUtil.getMessage("listing.criteria.testFunctionalityNotFoundAndRemoved",
-                                                cert.getNumber(), crtf.getNumber()));
+                                .add(msgUtil.getMessage("listing.criteria.testFunctionalityNotFoundAndRemoved",
+                                        cert.getNumber(), crtf.getNumber()));
                                 crtfIter.remove();
                             }
                         }
@@ -614,7 +614,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                     pendingMeasureMap.getEnteredValue());
                             if (foundMeasure == null || foundMeasure.getId() == null) {
                                 listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.invalidG1MacraMeasure",
-                                                cert.getNumber(), pendingMeasureMap.getEnteredValue()));
+                                        cert.getNumber(), pendingMeasureMap.getEnteredValue()));
                             } else {
                                 pendingMeasureMap.setMacraMeasure(foundMeasure);
                             }

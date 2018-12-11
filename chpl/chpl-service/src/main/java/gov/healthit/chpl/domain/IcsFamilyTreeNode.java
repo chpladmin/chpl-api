@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import gov.healthit.chpl.util.Util;
+
 public class IcsFamilyTreeNode implements Serializable {
 
     private static final long serialVersionUID = 4170181178663367311L;
@@ -97,11 +99,11 @@ public class IcsFamilyTreeNode implements Serializable {
     }
 
     public Date getCertificationDate() {
-        return certificationDate;
+        return Util.getNewDate(certificationDate);
     }
 
     public void setCertificationDate(final Date certificationDate) {
-        this.certificationDate = certificationDate;
+        this.certificationDate = Util.getNewDate(certificationDate);
     }
 
 }

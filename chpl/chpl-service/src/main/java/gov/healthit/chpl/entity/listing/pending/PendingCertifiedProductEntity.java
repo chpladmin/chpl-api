@@ -23,6 +23,7 @@ import org.hibernate.annotations.Type;
 
 import gov.healthit.chpl.entity.AddressEntity;
 import gov.healthit.chpl.entity.AttestationType;
+import gov.healthit.chpl.util.Util;
 
 /**
  * Object mapping for hibernate-handled table: certified_product. A product that
@@ -395,11 +396,11 @@ public class PendingCertifiedProductEntity {
     }
 
     public Date getCertificationDate() {
-        return certificationDate;
+        return Util.getNewDate(certificationDate);
     }
 
     public void setCertificationDate(final Date certificationDate) {
-        this.certificationDate = certificationDate;
+        this.certificationDate = Util.getNewDate(certificationDate);
     }
 
     public String getDeveloperStreetAddress() {
@@ -483,11 +484,11 @@ public class PendingCertifiedProductEntity {
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public Long getLastModifiedUser() {
@@ -499,11 +500,11 @@ public class PendingCertifiedProductEntity {
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Boolean getDeleted() {
@@ -644,11 +645,11 @@ public class PendingCertifiedProductEntity {
     }
 
     public Date getSedTestingEnd() {
-        return sedTestingEnd;
+        return Util.getNewDate(sedTestingEnd);
     }
 
     public void setSedTestingEnd(final Date sedTestingEnd) {
-        this.sedTestingEnd = sedTestingEnd;
+        this.sedTestingEnd = Util.getNewDate(sedTestingEnd);
     }
 
     public Set<PendingCertifiedProductParentListingEntity> getParentListings() {

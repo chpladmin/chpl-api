@@ -90,7 +90,7 @@ public class MeaningfulUseUploadJob extends RunnableJob {
         Set<MeaningfulUseUserRecord> muusToUpdate = new LinkedHashSet<MeaningfulUseUserRecord>();
         Set<String> uniqueMuusFromFile = new LinkedHashSet<String>();
         String muuDateMillis = muuDateCsvSplit[0];
-        Date muuDate = new Date(new Long(muuDateMillis));
+        Date muuDate = new Date(Long.parseLong(muuDateMillis));
         String muuCsv = muuDateCsvSplit[1];
 
         try (BufferedReader reader = new BufferedReader(new StringReader(muuCsv));
