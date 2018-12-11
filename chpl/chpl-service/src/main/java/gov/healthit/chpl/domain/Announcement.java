@@ -92,11 +92,11 @@ public class Announcement implements Serializable {
     }
 
     public Date getLastModifiedDate() {
-        return new Date(lastModifiedDate.getTime());
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = new Date(lastModifiedDate.getTime());
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public Long getLastModifiedUser() {

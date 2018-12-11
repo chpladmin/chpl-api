@@ -36,6 +36,7 @@ import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductQmsStanda
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTargetedUserEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTestingLabMapEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCqmCriterionEntity;
+import gov.healthit.chpl.util.Util;
 
 /**
  * Pending Certified Product DTO.
@@ -763,11 +764,11 @@ public class PendingCertifiedProductDTO implements Serializable {
     }
 
     public Date getCertificationDate() {
-        return new Date(certificationDate.getTime());
+        return Util.getNewDate(certificationDate);
     }
 
     public void setCertificationDate(final Date certificationDate) {
-        this.certificationDate = new Date(certificationDate.getTime());
+        this.certificationDate = Util.getNewDate(certificationDate);
     }
 
     public String getDeveloperStreetAddress() {
@@ -843,11 +844,11 @@ public class PendingCertifiedProductDTO implements Serializable {
     }
 
     public Date getUploadDate() {
-        return new Date(uploadDate.getTime());
+        return Util.getNewDate(uploadDate);
     }
 
     public void setUploadDate(final Date uploadDate) {
-        this.uploadDate = new Date(uploadDate.getTime());
+        this.uploadDate = Util.getNewDate(uploadDate);
     }
 
     public Set<String> getErrorMessages() {
@@ -972,11 +973,11 @@ public class PendingCertifiedProductDTO implements Serializable {
     }
 
     public Date getSedTestingEnd() {
-        return new Date(sedTestingEnd.getTime());
+        return Util.getNewDate(sedTestingEnd);
     }
 
     public void setSedTestingEnd(final Date sedTestingEnd) {
-        this.sedTestingEnd = new Date(sedTestingEnd.getTime());
+        this.sedTestingEnd = Util.getNewDate(sedTestingEnd);
     }
 
     public Boolean getDeleted() {
