@@ -121,7 +121,7 @@ public class AnnouncementEntity {
     public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
-    
+
     public Long getLastModifiedUser() {
         return lastModifiedUser;
     }
