@@ -50,7 +50,7 @@ public class InpatientG1G2RequiredData2014Reviewer implements Reviewer {
             }
 
             if (!hasAtLeastOneCertPartner) {
-                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.missingG1Related"));
+                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingG1Related"));
             }
         }
 
@@ -72,7 +72,7 @@ public class InpatientG1G2RequiredData2014Reviewer implements Reviewer {
             }
 
             if (!hasG2Complement) {
-                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.missingG2Related"));
+                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingG2Related"));
             }
         }
 
