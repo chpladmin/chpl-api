@@ -40,6 +40,8 @@ public class MeaningfulUseController {
     private JobManager jobManager;
     @Autowired
     private UserManager userManager;
+    @Autowired
+    private FileUtils fileUtils;
 
     @ApiOperation(value = "Upload a file to update the number of meaningful use users for each CHPL Product Number",
             notes = "Accepts a CSV file with chpl_product_number and num_meaningful_use_users to update the number of meaningful use users for each CHPL Product Number."
@@ -86,7 +88,7 @@ public class MeaningfulUseController {
             }
         }
 
-        String data = FileUtils.readFileAsString(file);
+        String data = fileUtils.readFileAsString(file);
         JobDTO toCreate = new JobDTO();
         toCreate.setData(date.toString() + ";" + data);
         toCreate.setUser(currentUser);

@@ -77,7 +77,7 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
             throws IOException {
         String csvFilename = downloadFolder.getAbsolutePath()
                 + File.separator
-                + "surveillance-all-"
+                + getProperties().getProperty("surveillanceAllReportName") + "-"
                 + getFilenameTimestampFormat().format(new Date())
                 + ".csv";
         File csvFile = getFile(csvFilename);
@@ -90,7 +90,7 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
             final List<CertifiedProductSearchDetails> results) throws IOException {
         String csvFilename = downloadFolder.getAbsolutePath()
                 + File.separator
-                + "surveillance-with-nonconformities-"
+                + getProperties().getProperty("surveillanceNonconformitiesReportName") + "-"
                 + getFilenameTimestampFormat().format(new Date())
                 + ".csv";
         File csvFile = getFile(csvFilename);
@@ -103,7 +103,7 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
             final List<CertifiedProductSearchDetails> results) throws IOException {
         String csvFilename = downloadFolder.getAbsolutePath()
                 + File.separator
-                + "surveillance-basic-report-"
+                + getProperties().getProperty("surveillanceBasicReportName") + "-"
                 + getFilenameTimestampFormat().format(new Date())
                 + ".csv";
         File csvFile = getFile(csvFilename);

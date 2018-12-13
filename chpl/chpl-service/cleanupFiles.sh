@@ -2,7 +2,7 @@
 #(set -o igncr) 2>/dev/null && set -o igncr; # this comment is required to trick cygwin into dealing with windows vs. linux EOL characters
 
 # to clean up generated files regularly, add a line to a crontab on the machine hosting the application that looks something like:
-# 15 5 * * * cd /some/directory/chpl-api/chpl/chpl-service && ./cleanupXml.sh
+# 15 5 * * * cd /some/directory/chpl-api/chpl/chpl-service && ./cleanupFiles.sh
 # This will run it at 0515 UTC, which (depending on DST) is 0015 EST
 
 # parse command line inputs
@@ -29,7 +29,7 @@ while getopts 'dt:n:f:h?' flag; do
     esac
 done
 
-# verify edition is valid
+# verify fileType is valid
 if [ "$fileType" = "" ]; then
     printf "\nError: file type is required\n\n"
     exit 1

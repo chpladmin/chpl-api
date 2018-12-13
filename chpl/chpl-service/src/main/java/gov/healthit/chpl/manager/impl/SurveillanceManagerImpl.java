@@ -57,13 +57,12 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
+import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 
 @Service
 public class SurveillanceManagerImpl implements SurveillanceManager {
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceManagerImpl.class);
-    @Autowired
-    private Environment env;
 
     @Autowired
     private SurveillanceDAO survDao;
@@ -78,6 +77,10 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 
     @Autowired
     private ActivityManager activityManager;
+    @Autowired
+    private FileUtils fileUtils;
+    @Autowired
+    private Environment env;
 
     @Override
     @Transactional(readOnly = true)
@@ -385,24 +388,19 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 
     @Override
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
-    public File getProtectedDownloadFile(final String filenameToDownload) throws IOException {
-        return getFileFromDownloadFolder(filenameToDownload);
+    public File getBasicReportDownloadFile() throws IOException {
+        return fileUtils.getNewestFileMatchingName("^" + env.getProperty("surveillanceBasicReportName") + "-.+\\.csv$");
     }
 
     @Override
-    public File getDownloadFile(final String filenameToDownload) throws IOException {
-        return getFileFromDownloadFolder(filenameToDownload);
+    public File getAllSurveillanceDownloadFile() throws IOException {
+        return fileUtils.getNewestFileMatchingName("^" + env.getProperty("surveillanceAllReportName") + "-.+\\.csv$");
     }
 
-    private File getFileFromDownloadFolder(final String filenameToDownload) throws IOException {
-        String downloadFileLocation = env.getProperty("downloadFolderPath");
-
-        File downloadFile = new File(downloadFileLocation + File.separator + filenameToDownload);
-        if (!downloadFile.exists() || !downloadFile.canRead()) {
-            throw new IOException("Cannot read download file at " + downloadFileLocation
-                    + ". File does not exist or cannot be read.");
-        }
-        return downloadFile;
+    @Override
+    public File getSurveillanceWithNonconformitiesDownloadFile() throws IOException {
+        return fileUtils.getNewestFileMatchingName("^" + env.getProperty("suveillanceNonconformitiesReportName")
+            + "-.+\\.csv$");
     }
 
     private Surveillance convertToDomain(final PendingSurveillanceEntity pr) {
