@@ -490,7 +490,7 @@ public class CertifiedProductController {
     @RequestMapping(value = "/sed_details", method = RequestMethod.GET)
     public void streamSEDDetailsDocumentContents(final HttpServletResponse response)
             throws EntityRetrievalException, IOException {
-        File downloadFile = fileUtils.getNewestFileMatchingName("^" + env.getProperty("SEDDownloadName") + "-*\\.csv$");
+        File downloadFile = fileUtils.getNewestFileMatchingName("^" + env.getProperty("SEDDownloadName") + "-.+\\.csv$");
         fileUtils.streamFileAsResponse(downloadFile, "text/csv", response);
     }
 
