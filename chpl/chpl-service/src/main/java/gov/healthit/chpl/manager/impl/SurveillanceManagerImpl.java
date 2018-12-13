@@ -399,7 +399,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 
     @Override
     public File getSurveillanceWithNonconformitiesDownloadFile() throws IOException {
-        return fileUtils.getNewestFileMatchingName("^" + env.getProperty("suveillanceNonconformitiesReportName")
+        return fileUtils.getNewestFileMatchingName("^" + env.getProperty("surveillanceNonconformitiesReportName")
             + "-.+\\.csv$");
     }
 
