@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.validation.pendingListing.reviewer.CertificationDateReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.ChplNumberReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.DeveloperStatusReviewer;
-import gov.healthit.chpl.validation.pendingListing.reviewer.DuplicateDataReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.FieldLengthReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.ForbiddenMacraMeasureReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.FuzzyMatchReviewer;
@@ -21,6 +20,7 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.UnattestedCriteriaWi
 import gov.healthit.chpl.validation.pendingListing.reviewer.UnsupportedCharacterReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.UrlReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.ValidDataReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.DuplicateData2015Reviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.RequiredData2015Reviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.SedG32015Reviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.TestFunctionality2015Reviewer;
@@ -93,8 +93,8 @@ public class Edition2015PendingListingValidator extends PendingValidator {
     private ForbiddenMacraMeasureReviewer forbiddenMacraMeasureReviewer;
 
     @Autowired
-    @Qualifier("pendingDuplicateDataReviewer")
-    private DuplicateDataReviewer duplicateDataReviewer;
+    @Qualifier("pendingDuplicateData2015Reviewer")
+    private DuplicateData2015Reviewer duplicateDataReviewer;
 
     private List<Reviewer> reviewers;
 

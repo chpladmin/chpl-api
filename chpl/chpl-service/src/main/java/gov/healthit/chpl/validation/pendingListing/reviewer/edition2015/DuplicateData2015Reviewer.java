@@ -1,4 +1,4 @@
-package gov.healthit.chpl.validation.pendingListing.reviewer;
+package gov.healthit.chpl.validation.pendingListing.reviewer.edition2015;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,15 +16,16 @@ import gov.healthit.chpl.dto.PendingCertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
 
-@Component("pendingDuplicateDataReviewer")
-public class DuplicateDataReviewer implements Reviewer {
-    private static final Logger LOGGER = LogManager.getLogger(DuplicateDataReviewer.class);
+@Component("pendingDuplicateData2015Reviewer")
+public class DuplicateData2015Reviewer implements Reviewer {
+    private static final Logger LOGGER = LogManager.getLogger(DuplicateData2015Reviewer.class);
 
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public DuplicateDataReviewer(ErrorMessageUtil errorMessageUtil) {
+    public DuplicateData2015Reviewer(ErrorMessageUtil errorMessageUtil) {
         this.errorMessageUtil = errorMessageUtil;
     }
 
@@ -77,11 +78,11 @@ public class DuplicateDataReviewer implements Reviewer {
                     // Item already exists
                     String warning = "";
                     if (dto.getChplId() != null && dto.getGrouping() != null) {
-                        warning = errorMessageUtil.getMessage("listing.criteria.duplicateAdditionalSoftwareCP",
+                        warning = errorMessageUtil.getMessage("listing.criteria.duplicateAdditionalSoftwareCP.2015",
                                 certificationResult.getNumber(), dto.getChplId(), dto.getGrouping());
                     } else if (dto.getName() != null && dto.getVersion() != null
                             && dto.getGrouping() != null) {
-                        warning = errorMessageUtil.getMessage("listing.criteria.duplicateAdditionalSoftwareNonCP",
+                        warning = errorMessageUtil.getMessage("listing.criteria.duplicateAdditionalSoftwareNonCP.2015",
                                 certificationResult.getNumber(), dto.getName(), dto.getVersion(), dto.getGrouping());
                     }
                     dupResults.getMessages().add(warning);
@@ -133,7 +134,7 @@ public class DuplicateDataReviewer implements Reviewer {
             for (PendingCertificationResultTestToolDTO dto : certificationResult.getTestTools()) {
                 if (isTestToolDuplicate(dupResults, dto)) {
                     // Item already exists
-                    String warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestTool",
+                    String warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestTool.2015",
                             certificationResult.getNumber(), dto.getName(), dto.getVersion());
                     dupResults.getMessages().add(warning);
                 } else {
@@ -173,7 +174,7 @@ public class DuplicateDataReviewer implements Reviewer {
             for (PendingCertificationResultTestProcedureDTO dto : certificationResult.getTestProcedures()) {
                 if (isTestProcedureDuplicate(dupResults, dto)) {
                     // Item already exists
-                    String warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestProcedure",
+                    String warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestProcedure.2015",
                             certificationResult.getNumber(), dto.getEnteredName(), dto.getVersion());
                     dupResults.getMessages().add(warning);
                 } else {
@@ -214,7 +215,7 @@ public class DuplicateDataReviewer implements Reviewer {
             for (PendingCertificationResultTestDataDTO dto : certificationResult.getTestData()) {
                 if (isTestDataDuplicate(dupResults, dto)) {
                     // Item already exists
-                    String warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestData",
+                    String warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestData.2015",
                             certificationResult.getNumber(), dto.getEnteredName(), dto.getVersion(),
                             dto.getAlteration());
                     dupResults.getMessages().add(warning);
