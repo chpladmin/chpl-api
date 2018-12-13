@@ -29,7 +29,7 @@ public class DuplicateDataReviewer implements Reviewer {
     }
 
     @Override
-    public void review(PendingCertifiedProductDTO listing) {
+    public void review(final PendingCertifiedProductDTO listing) {
         for (PendingCertificationResultDTO pcr : listing.getCertificationCriterion()) {
             //Additional Software
             DuplicateValidationResult<PendingCertificationResultAdditionalSoftwareDTO> addtlSoftwareDuplicateResults =
@@ -66,7 +66,7 @@ public class DuplicateDataReviewer implements Reviewer {
     }
 
     private DuplicateValidationResult<PendingCertificationResultAdditionalSoftwareDTO> removeDuplicateAdditionalSoftware(
-            PendingCertificationResultDTO certificationResult) {
+            final PendingCertificationResultDTO certificationResult) {
 
         DuplicateValidationResult<PendingCertificationResultAdditionalSoftwareDTO> dupResults =
                 new DuplicateValidationResult<PendingCertificationResultAdditionalSoftwareDTO>();
@@ -75,8 +75,15 @@ public class DuplicateDataReviewer implements Reviewer {
             for (PendingCertificationResultAdditionalSoftwareDTO dto : certificationResult.getAdditionalSoftware()) {
                 if (isAdditionalSoftwareDuplicate(dupResults, dto)) {
                     // Item already exists
-                    String warning = errorMessageUtil.getMessage("listing.criteria.duplicateAdditionalSoftware",
-                            certificationResult.getNumber(), dto.getName(), dto.getVersion());
+                    String warning = "";
+                    if (dto.getChplId() != null && dto.getGrouping() != null) {
+                        warning = errorMessageUtil.getMessage("listing.criteria.duplicateAdditionalSoftwareCP",
+                                certificationResult.getNumber(), dto.getChplId(), dto.getGrouping());
+                    } else if (dto.getName() != null && dto.getVersion() != null
+                            && dto.getGrouping() != null) {
+                        warning = errorMessageUtil.getMessage("listing.criteria.duplicateAdditionalSoftwareNonCP",
+                                certificationResult.getNumber(), dto.getName(), dto.getVersion(), dto.getGrouping());
+                    }
                     dupResults.getMessages().add(warning);
                 } else {
                     //Add the item to the final list
@@ -89,20 +96,35 @@ public class DuplicateDataReviewer implements Reviewer {
     }
 
     private Boolean isAdditionalSoftwareDuplicate(
-            DuplicateValidationResult<PendingCertificationResultAdditionalSoftwareDTO> dupResults,
-            PendingCertificationResultAdditionalSoftwareDTO additionalSoftwareDTO) {
+            final DuplicateValidationResult<PendingCertificationResultAdditionalSoftwareDTO> dupResults,
+            final PendingCertificationResultAdditionalSoftwareDTO additionalSoftwareDTO) {
+
         return dupResults.existsInObjects(additionalSoftwareDTO,
                 new Predicate<PendingCertificationResultAdditionalSoftwareDTO>() {
             @Override
             public boolean test(PendingCertificationResultAdditionalSoftwareDTO dto2) {
-                return additionalSoftwareDTO.getName().equals(dto2.getName())
-                        && additionalSoftwareDTO.getVersion().equals(dto2.getVersion());
+                if (additionalSoftwareDTO.getChplId() != null && dto2.getChplId() != null
+                        && additionalSoftwareDTO.getGrouping() != null && dto2.getGrouping() != null) {
+
+                    return additionalSoftwareDTO.getChplId().equals(dto2.getChplId())
+                            && additionalSoftwareDTO.getGrouping().equals(dto2.getGrouping());
+
+                } else if (additionalSoftwareDTO.getName() != null && dto2.getName() != null
+                        && additionalSoftwareDTO.getVersion() != null && dto2.getVersion()!= null
+                        && additionalSoftwareDTO.getGrouping() != null && dto2.getGrouping()!= null) {
+
+                    return additionalSoftwareDTO.getName().equals(dto2.getName())
+                            && additionalSoftwareDTO.getVersion().equals(dto2.getVersion())
+                            && additionalSoftwareDTO.getGrouping().equals(dto2.getGrouping());
+                } else {
+                    return false;
+                }
             }
         });
     }
 
     private DuplicateValidationResult<PendingCertificationResultTestToolDTO> removeDuplicateTestTool(
-            PendingCertificationResultDTO certificationResult) {
+            final PendingCertificationResultDTO certificationResult) {
 
         DuplicateValidationResult<PendingCertificationResultTestToolDTO> dupResults =
                 new DuplicateValidationResult<PendingCertificationResultTestToolDTO>();
@@ -124,18 +146,25 @@ public class DuplicateDataReviewer implements Reviewer {
         return dupResults;
     }
 
-    private Boolean isTestToolDuplicate(DuplicateValidationResult<PendingCertificationResultTestToolDTO> dupResults,
-            PendingCertificationResultTestToolDTO testToolDTO) {
+    private Boolean isTestToolDuplicate(
+            final DuplicateValidationResult<PendingCertificationResultTestToolDTO> dupResults,
+            final PendingCertificationResultTestToolDTO testToolDTO) {
         return dupResults.existsInObjects(testToolDTO, new Predicate<PendingCertificationResultTestToolDTO>() {
             @Override
             public boolean test(PendingCertificationResultTestToolDTO dto2) {
-                return testToolDTO.getName().equals(dto2.getName()) && testToolDTO.getVersion().equals(dto2.getVersion());
+                if (testToolDTO.getName() != null && dto2.getName() != null
+                        && testToolDTO.getVersion() != null && dto2.getVersion() != null) {
+                    return testToolDTO.getName().equals(dto2.getName())
+                            && testToolDTO.getVersion().equals(dto2.getVersion());
+                } else {
+                    return false;
+                }
             }
         });
     }
 
     private DuplicateValidationResult<PendingCertificationResultTestProcedureDTO> removeDuplicateTestProcedure(
-            PendingCertificationResultDTO certificationResult) {
+            final PendingCertificationResultDTO certificationResult) {
 
         DuplicateValidationResult<PendingCertificationResultTestProcedureDTO> dupResults =
                 new DuplicateValidationResult<PendingCertificationResultTestProcedureDTO>();
@@ -158,18 +187,25 @@ public class DuplicateDataReviewer implements Reviewer {
     }
 
     private Boolean isTestProcedureDuplicate(
-            DuplicateValidationResult<PendingCertificationResultTestProcedureDTO> dupResults,
-            PendingCertificationResultTestProcedureDTO testProcedureDTO) {
+            final DuplicateValidationResult<PendingCertificationResultTestProcedureDTO> dupResults,
+            final PendingCertificationResultTestProcedureDTO testProcedureDTO) {
         return dupResults.existsInObjects(testProcedureDTO, new Predicate<PendingCertificationResultTestProcedureDTO>() {
             @Override
             public boolean test(PendingCertificationResultTestProcedureDTO dto2) {
-                return testProcedureDTO.getEnteredName().equals(dto2.getEnteredName()) && testProcedureDTO.getVersion().equals(dto2.getVersion());
+
+                if (testProcedureDTO.getEnteredName() != null && dto2.getEnteredName() != null
+                        && testProcedureDTO.getVersion() != null && dto2.getVersion() != null) {
+                    return testProcedureDTO.getEnteredName().equals(dto2.getEnteredName())
+                            && testProcedureDTO.getVersion().equals(dto2.getVersion());
+                } else {
+                    return false;
+                }
             }
         });
     }
 
     private DuplicateValidationResult<PendingCertificationResultTestDataDTO> removeDuplicateTestData(
-            PendingCertificationResultDTO certificationResult) {
+            final PendingCertificationResultDTO certificationResult) {
 
         DuplicateValidationResult<PendingCertificationResultTestDataDTO> dupResults =
                 new DuplicateValidationResult<PendingCertificationResultTestDataDTO>();
@@ -193,14 +229,21 @@ public class DuplicateDataReviewer implements Reviewer {
     }
 
     private Boolean isTestDataDuplicate(
-            DuplicateValidationResult<PendingCertificationResultTestDataDTO> dupResults,
-            PendingCertificationResultTestDataDTO testDataDTO) {
+            final DuplicateValidationResult<PendingCertificationResultTestDataDTO> dupResults,
+            final PendingCertificationResultTestDataDTO testDataDTO) {
         return dupResults.existsInObjects(testDataDTO, new Predicate<PendingCertificationResultTestDataDTO>() {
             @Override
             public boolean test(PendingCertificationResultTestDataDTO dto2) {
-                return testDataDTO.getEnteredName().equals(dto2.getEnteredName())
-                        && testDataDTO.getVersion().equals(dto2.getVersion())
-                        && testDataDTO.getAlteration().equals(dto2.getAlteration());
+                if (testDataDTO.getEnteredName() != null && dto2.getEnteredName() != null
+                        && testDataDTO.getVersion() != null && dto2.getVersion() != null
+                        && testDataDTO.getAlteration() != null && dto2.getAlteration() != null) {
+
+                    return testDataDTO.getEnteredName().equals(dto2.getEnteredName())
+                            && testDataDTO.getVersion().equals(dto2.getVersion())
+                            && testDataDTO.getAlteration().equals(dto2.getAlteration());
+                } else {
+                    return false;
+                }
             }
         });
     }
@@ -209,7 +252,7 @@ public class DuplicateDataReviewer implements Reviewer {
         private List<String> messages = new ArrayList<String>();
         private List<T> objects = new ArrayList<T>();
 
-        public Boolean existsInObjects(T t, Predicate<T> predicate) {
+        public Boolean existsInObjects(final T t, final Predicate<T> predicate) {
             for (T item : objects) {
                 if (predicate.test(item)) {
                     return true;
