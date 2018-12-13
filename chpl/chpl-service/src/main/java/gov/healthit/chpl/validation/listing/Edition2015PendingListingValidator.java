@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.validation.pendingListing.reviewer.CertificationDateReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.ChplNumberReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.DeveloperStatusReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.DuplicateDataReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.FieldLengthReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.ForbiddenMacraMeasureReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.FuzzyMatchReviewer;
@@ -91,6 +92,10 @@ public class Edition2015PendingListingValidator extends PendingValidator {
     @Qualifier("pendingForbiddenMacraMeasureReviewer")
     private ForbiddenMacraMeasureReviewer forbiddenMacraMeasureReviewer;
 
+    @Autowired
+    @Qualifier("pendingDuplicateDataReviewer")
+    private DuplicateDataReviewer duplicateDataReviewer;
+
     private List<Reviewer> reviewers;
 
     @Override
@@ -112,6 +117,7 @@ public class Edition2015PendingListingValidator extends PendingValidator {
             reviewers.add(urlReviewer);
             reviewers.add(testFunctionalityReviewer);
             reviewers.add(forbiddenMacraMeasureReviewer);
+            reviewers.add(duplicateDataReviewer);
         }
         return reviewers;
     }
