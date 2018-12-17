@@ -102,6 +102,7 @@ public class Edition2015PendingListingValidator extends PendingValidator {
     public List<Reviewer> getReviewers() {
         if (reviewers == null) {
             reviewers = new ArrayList<Reviewer>();
+            reviewers.add(duplicateDataReviewer);
             reviewers.add(chplNumberReviewer);
             reviewers.add(devStatusReviewer);
             reviewers.add(certDateReviewer);
@@ -117,7 +118,6 @@ public class Edition2015PendingListingValidator extends PendingValidator {
             reviewers.add(urlReviewer);
             reviewers.add(testFunctionalityReviewer);
             reviewers.add(forbiddenMacraMeasureReviewer);
-            reviewers.add(duplicateDataReviewer);
         }
         return reviewers;
     }
