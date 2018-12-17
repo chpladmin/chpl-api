@@ -380,7 +380,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
         task.setDescription(record.get(colIndex++).trim());
         String successAvgStr = record.get(colIndex++).trim();
         try {
-            Float successAvg = new Float(successAvgStr);
+            Float successAvg = Float.valueOf(successAvgStr);
             task.setTaskSuccessAverage(successAvg);
         } catch (Exception ex) {
             LOGGER.error("Cannot convert " + successAvgStr + " to a Float.");
@@ -409,7 +409,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
         String taskTimeAvgStr = record.get(colIndex++).trim();
         try {
             Integer taskTimeAvg = Math.round(new Float(taskTimeAvgStr));
-            task.setTaskTimeAvg(new Long(taskTimeAvg));
+            task.setTaskTimeAvg(Long.valueOf(taskTimeAvg));
         } catch (Exception ex) {
             LOGGER.error("Cannot convert " + taskTimeAvgStr + " to a Integer.");
         }
@@ -478,7 +478,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
         List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion(pendingCertifiedProduct, cqmName, cqmVersions,
                 cqmCriteria);
         for (PendingCqmCriterionEntity entity : criterion) {
-            if (entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
+            if (entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria()) {
                 pendingCertifiedProduct.getCqmCriterion().add(entity);
             }
         }
@@ -654,7 +654,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                 && cert.getAdditionalSoftware().size() == 0) {
             product.getErrorMessages().add("Certification " + cert.getMappedCriterion().getNumber() + " for product "
                     + product.getUniqueId() + " indicates additional software should be present but none was found.");
-        } else if ((cert.getHasAdditionalSoftware() == null || cert.getHasAdditionalSoftware().booleanValue() == false)
+        } else if ((cert.getHasAdditionalSoftware() == null || !cert.getHasAdditionalSoftware().booleanValue())
                 && cert.getAdditionalSoftware().size() > 0) {
             product.getErrorMessages()
             .add("Certification " + cert.getMappedCriterion().getNumber() + " for product "

@@ -1,5 +1,6 @@
 package gov.healthit.chpl.entity.listing;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -15,10 +16,12 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.TestToolEntity;
+import gov.healthit.chpl.util.Util;
 
 @Entity
 @Table(name = "certification_result_test_tool")
-public class CertificationResultTestToolEntity {
+public class CertificationResultTestToolEntity implements Serializable {
+    private static final long serialVersionUID = -4001381872451124331L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -95,11 +98,11 @@ public class CertificationResultTestToolEntity {
     protected Long lastModifiedUser;
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Boolean getDeleted() {
@@ -111,11 +114,11 @@ public class CertificationResultTestToolEntity {
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public Long getLastModifiedUser() {

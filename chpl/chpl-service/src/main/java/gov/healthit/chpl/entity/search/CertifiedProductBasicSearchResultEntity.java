@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.util.Util;
+
 /**
  * Entity used for basic search results.
  * @author alarned
@@ -82,11 +84,11 @@ public class CertifiedProductBasicSearchResultEntity {
     private Date meaningfulUseUserDate;
 
     public Date getMeaningfulUseUserDate() {
-        return meaningfulUseUserDate;
+        return Util.getNewDate(meaningfulUseUserDate);
     }
 
     public void setMeaningfulUseUserDate(Date meaningfulUseUserDate) {
-        this.meaningfulUseUserDate = meaningfulUseUserDate;
+        this.meaningfulUseUserDate = Util.getNewDate(meaningfulUseUserDate);
     }
 
     @Column(name = "certs")
@@ -206,11 +208,11 @@ public class CertifiedProductBasicSearchResultEntity {
     }
 
     public Date getCertificationDate() {
-        return certificationDate;
+        return Util.getNewDate(certificationDate);
     }
 
     public void setCertificationDate(final Date certificationDate) {
-        this.certificationDate = certificationDate;
+        this.certificationDate = Util.getNewDate(certificationDate);
     }
 
     public String getCertificationStatus() {
@@ -270,11 +272,11 @@ public class CertifiedProductBasicSearchResultEntity {
     }
 
     public Date getDecertificationDate() {
-        return decertificationDate;
+        return Util.getNewDate(decertificationDate);
     }
 
     public void setDecertificationDate(final Date decertificationDate) {
-        this.decertificationDate = decertificationDate;
+        this.decertificationDate = Util.getNewDate(decertificationDate);
     }
 
     public Long getMeaningfulUseUserCount() {

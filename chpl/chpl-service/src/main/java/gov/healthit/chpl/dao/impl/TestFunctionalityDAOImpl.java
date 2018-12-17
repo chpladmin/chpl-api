@@ -8,7 +8,9 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
+import gov.healthit.chpl.dto.TestFunctionalityCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
+import gov.healthit.chpl.entity.TestFunctionalityCriteriaMapEntity;
 import gov.healthit.chpl.entity.TestFunctionalityEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
@@ -53,13 +55,33 @@ public class TestFunctionalityDAOImpl extends BaseDAOImpl implements TestFunctio
 
     }
 
+    @Override
+    public List<TestFunctionalityCriteriaMapDTO> getTestFunctionalityCritieriaMaps() {
+        List<TestFunctionalityCriteriaMapEntity> maps = getAllMapEntities();
+        List<TestFunctionalityCriteriaMapDTO> dtos = new ArrayList<TestFunctionalityCriteriaMapDTO>();
+        for (TestFunctionalityCriteriaMapEntity entity : maps) {
+            dtos.add(new TestFunctionalityCriteriaMapDTO(entity));
+        }
+        return dtos;
+    }
+
+    private List<TestFunctionalityCriteriaMapEntity> getAllMapEntities() {
+        return entityManager
+                .createQuery("FROM TestFunctionalityCriteriaMapEntity tfcm "
+                            + "LEFT OUTER JOIN FETCH tfcm.testFunctionality tf "
+                            + "LEFT OUTER JOIN FETCH tf.practiceType pt "
+                            + "LEFT OUTER JOIN FETCH tfcm.criteria c "
+                            + "LEFT OUTER JOIN FETCH c.certificationEdition "
+                            + "WHERE (NOT tfcm.deleted = true) ", TestFunctionalityCriteriaMapEntity.class)
+                .getResultList();
+    }
+
     private List<TestFunctionalityEntity> getAllEntities() {
         return entityManager
-                .createQuery("SELECT tf " 
-                            + "FROM TestFunctionalityEntity tf " 
+                .createQuery("SELECT tf "
+                            + "FROM TestFunctionalityEntity tf "
                             + "LEFT OUTER JOIN FETCH tf.certificationEdition "
                             + "LEFT OUTER JOIN FETCH tf.practiceType "
-                            + "LEFT OUTER JOIN FETCH tf.certificationCriterion "
                             + "WHERE (NOT tf.deleted = true) ", TestFunctionalityEntity.class)
                 .getResultList();
     }
@@ -69,11 +91,10 @@ public class TestFunctionalityDAOImpl extends BaseDAOImpl implements TestFunctio
         TestFunctionalityEntity entity = null;
 
         Query query = entityManager
-                .createQuery("SELECT tf " 
-                        + "FROM TestFunctionalityEntity tf " 
+                .createQuery("SELECT tf "
+                        + "FROM TestFunctionalityEntity tf "
                         + "LEFT OUTER JOIN FETCH tf.certificationEdition "
                         + "LEFT OUTER JOIN FETCH tf.practiceType "
-                        + "LEFT OUTER JOIN FETCH tf.certificationCriterion "
                         + "WHERE (NOT tf.deleted = true) " + "AND (tf.id = :entityid) ",
                         TestFunctionalityEntity.class);
         query.setParameter("entityid", id);
@@ -94,13 +115,12 @@ public class TestFunctionalityDAOImpl extends BaseDAOImpl implements TestFunctio
 
         TestFunctionalityEntity entity = null;
 
-        Query query = entityManager.createQuery("SELECT tf " 
-                        + "FROM TestFunctionalityEntity tf " 
+        Query query = entityManager.createQuery("SELECT tf "
+                        + "FROM TestFunctionalityEntity tf "
                         + "LEFT OUTER JOIN FETCH tf.certificationEdition "
                         + "LEFT OUTER JOIN FETCH tf.practiceType "
-                        + "LEFT OUTER JOIN FETCH tf.certificationCriterion "
                         + "WHERE tf.deleted <> true "
-                        + "AND UPPER(tf.number) = :number " 
+                        + "AND UPPER(tf.number) = :number "
                         + "AND tf.certificationEdition.id = :editionId ", TestFunctionalityEntity.class);
         query.setParameter("number", number.toUpperCase());
         query.setParameter("editionId", editionId);

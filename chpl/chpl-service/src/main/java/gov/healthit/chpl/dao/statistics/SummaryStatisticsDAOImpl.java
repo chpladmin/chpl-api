@@ -13,7 +13,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository("summaryStatisticsDAO")
 public class SummaryStatisticsDAOImpl extends BaseDAOImpl implements SummaryStatisticsDAO {
-    
+
     @Override
     @Transactional
     public SummaryStatisticsEntity create(SummaryStatisticsEntity summaryStatistics)
@@ -25,7 +25,7 @@ public class SummaryStatisticsDAOImpl extends BaseDAOImpl implements SummaryStat
         summaryStatistics.setDeleted(false);
         entityManager.persist(summaryStatistics);
         entityManager.flush();
-        
+
         return summaryStatistics;
     }
 

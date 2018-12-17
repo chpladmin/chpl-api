@@ -8,21 +8,21 @@ public class QuestionableActivityListingDTO extends QuestionableActivityDTO {
     private String certificationStatusChangeReason;
     private String reason;
     private CertifiedProductDetailsDTO listing;
-    
+
     public QuestionableActivityListingDTO() {
         super();
     }
-    
+
     public QuestionableActivityListingDTO(QuestionableActivityListingEntity entity) {
         super(entity);
         this.listingId = entity.getListingId();
         this.certificationStatusChangeReason = entity.getCertificationStatusChangeReason();
         this.reason = entity.getReason();
-        if(entity.getListing() != null) {
+        if (entity.getListing() != null) {
             this.listing = new CertifiedProductDetailsDTO(entity.getListing());
         }
     }
-    
+
     public Class<?> getActivityObjectClass() {
         return CertifiedProductDetailsDTO.class;
     }

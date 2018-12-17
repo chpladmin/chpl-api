@@ -42,7 +42,7 @@ public class CertifiedProductControllerMockitoTest {
 
     @Mock
     private ChplNumberReviewer chplNumberReviewer;
-    
+
     @Mock
     private CertifiedProductDetailsManager cpdManager;
 
@@ -68,30 +68,29 @@ public class CertifiedProductControllerMockitoTest {
         //          -> Mock Method getValidator to return instance of MyValidator
         //MyValidator Spy (local class which extends CertifiedProductValidatorImpl)
         //      -> Spy Method validateUniqueId to return true (since we're not testing this...)
-        //      -> Inject Mock of CertificationResultManager 
+        //      -> Inject Mock of CertificationResultManager
         //          -> Mock Method getCertifiedProductHasAdditionalSoftware to return true
-                
         //Use doReturn(...).when(spy).method(...) when setting up spies
         //only return one reviewer for the chpl product number since that is where the
         //additional software code check happens
         List<Reviewer> reviewers = new ArrayList<Reviewer>();
         reviewers.add(chplNumberReviewer);
         doReturn(reviewers).when(edition2015Validator).getReviewers();
-        
+
         //use when(mock.method(...)).thenReturn(...) when setting up mocks
         when(chplNumberReviewer.validateUniqueId(ArgumentMatchers.anyString())).thenReturn(false);
         when(certificationResultManager.getCertifiedProductHasAdditionalSoftware(anyLong())).thenReturn(true);
         when(cpdManager.getCertifiedProductDetailsBasic(anyLong())).thenReturn(getCertifiedProductBasicForAdditionalSoftwareTest());
         when(valFactory.getValidator(any(CertifiedProductSearchDetails.class))).thenReturn(edition2015Validator);
-        
-        CertifiedProductSearchDetails cp = myController.getCertifiedProductByIdBasic(8252l);
-        
+
+        CertifiedProductSearchDetails cp = myController.getCertifiedProductByIdBasic(8252L);
+
         assertEquals("15.04.04.2945.Ligh.21.00.1.161229", cp.getChplProductNumber());
     }
 
     private CertifiedProductSearchDetails getCertifiedProductBasicForAdditionalSoftwareTest() {
         CertifiedProductSearchDetails cp = new CertifiedProductSearchDetails();
-        cp.setId(8252l);
+        cp.setId(8252L);
         cp.setChplProductNumber("15.04.04.2945.Ligh.21.00.1.161229");
         cp.setDeveloper(new Developer());
         cp.getDeveloper().setDeveloperCode("2495");
@@ -104,8 +103,7 @@ public class CertifiedProductControllerMockitoTest {
         cp.getTestingLabs().add(new CertifiedProductTestingLab());
         cp.getTestingLabs().get(0).setTestingLabName("Drummond Group");
         cp.getTestingLabs().get(0).setTestingLabCode("04");
-        cp.setCertificationDate(1482987600000l);
-               
+        cp.setCertificationDate(1482987600000L);
         return cp;
     }
 }

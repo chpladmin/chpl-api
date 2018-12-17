@@ -12,6 +12,7 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 
 /**
  * Specific extension for 2014 CSV version of file.
+ *
  * @author alarned
  *
  */
@@ -27,6 +28,14 @@ public class CertifiedProduct2014CsvPresenter extends CertifiedProductCsvPresent
         result.add("ACB Name");
         result.add("Previous ACB Name");
         result.add("Developer Name");
+        result.add("Vendor Street Address");
+        result.add("Vendor City");
+        result.add("Vendor State");
+        result.add("Vendor Zip Code");
+        result.add("Vendor Website");
+        result.add("Vendor Contact Name");
+        result.add("Vendor Contact Email");
+        result.add("Vendor Contact Phone");
         result.add("Product Name");
         result.add("Version");
         result.add("Practice Type");
@@ -54,6 +63,48 @@ public class CertifiedProduct2014CsvPresenter extends CertifiedProductCsvPresent
         result.add(data.getCertifyingBody().get("name").toString());
         result.add(data.getOtherAcb());
         result.add(data.getDeveloper().getName());
+        if (data.getDeveloper().getAddress() != null) {
+            if (data.getDeveloper().getAddress().getLine1() != null
+                    && data.getDeveloper().getAddress().getLine2() != null) {
+                result.add(data.getDeveloper().getAddress().getLine1()
+                        + data.getDeveloper().getAddress().getLine2());
+            } else {
+                result.add(data.getDeveloper().getAddress().getLine1() == null
+                        ? "" : data.getDeveloper().getAddress().getLine1());
+            }
+            result.add(data.getDeveloper().getAddress().getCity() == null
+                    ? "" : data.getDeveloper().getAddress().getCity());
+            result.add(data.getDeveloper().getAddress().getState() == null
+                    ? "" : data.getDeveloper().getAddress().getState());
+            result.add(data.getDeveloper().getAddress().getZipcode() == null
+                    ? "" : data.getDeveloper().getAddress().getZipcode());
+        } else {
+            result.add("");
+            result.add("");
+            result.add("");
+            result.add("");
+        }
+        result.add(data.getDeveloper().getWebsite() == null
+                ? "" : data.getDeveloper().getWebsite());
+        if (data.getProduct().getContact() != null) {
+            result.add(data.getProduct().getContact().getFullName() == null
+                    ? "" : data.getProduct().getContact().getFullName());
+            result.add(data.getProduct().getContact().getEmail() == null
+                    ? "" : data.getProduct().getContact().getEmail());
+            result.add(data.getProduct().getContact().getPhoneNumber() == null
+                    ? "" : data.getProduct().getContact().getPhoneNumber());
+        } else if (data.getDeveloper().getContact() != null) {
+            result.add(data.getDeveloper().getContact().getFullName() == null
+                    ? "" : data.getDeveloper().getContact().getFullName());
+            result.add(data.getDeveloper().getContact().getEmail() == null
+                    ? "" : data.getDeveloper().getContact().getEmail());
+            result.add(data.getDeveloper().getContact().getPhoneNumber() == null
+                    ? "" : data.getDeveloper().getContact().getPhoneNumber());
+        } else {
+            result.add("");
+            result.add("");
+            result.add("");
+        }
         result.add(data.getProduct().getName());
         result.add(data.getVersion().getVersion());
         result.add(data.getPracticeType().get("name").toString());

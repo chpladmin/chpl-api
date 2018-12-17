@@ -20,10 +20,8 @@ import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.UploadTemplateVersion;
-import gov.healthit.chpl.domain.notification.NotificationType;
 
 public interface SearchMenuManager {
-    Set<NotificationType> getNotificationTypes();
 
     Set<KeyValueModel> getJobTypes();
 
@@ -43,7 +41,7 @@ public interface SearchMenuManager {
 
     Set<KeyValueModelStatuses> getDeveloperNames();
 
-    Set<KeyValueModel> getCertBodyNames(Boolean showDeleted);
+    Set<KeyValueModel> getCertBodyNames();
 
     Set<KeyValueModel> getAccessibilityStandards();
 
@@ -62,9 +60,9 @@ public interface SearchMenuManager {
     Set<TestStandard> getTestStandards();
 
     Set<KeyValueModel> getTestTools();
-    public Set<CriteriaSpecificDescriptiveModel> getTestProcedures();
-    public Set<CriteriaSpecificDescriptiveModel> getTestData();
-    
+    Set<CriteriaSpecificDescriptiveModel> getTestProcedures();
+    Set<CriteriaSpecificDescriptiveModel> getTestData();
+
     Set<KeyValueModel> getDeveloperStatuses();
 
     Set<KeyValueModel> getSurveillanceTypes();
@@ -79,7 +77,7 @@ public interface SearchMenuManager {
 
     Set<KeyValueModel> getNonconformityTypeOptions();
 
-    public Set<UploadTemplateVersion> getUploadTemplateVersions();
+    Set<UploadTemplateVersion> getUploadTemplateVersions();
 
     Set<CriteriaSpecificDescriptiveModel> getMacraMeasures();
 

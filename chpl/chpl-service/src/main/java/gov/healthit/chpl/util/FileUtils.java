@@ -11,8 +11,10 @@ import org.springframework.web.multipart.MultipartFile;
 import gov.healthit.chpl.exception.ValidationException;
 
 
-public class FileUtils {
+public final class FileUtils {
     private static final Logger LOGGER = LogManager.getLogger(FileUtils.class);
+
+    private FileUtils() {}
 
     public static String readFileAsString(MultipartFile file) throws ValidationException {
         //read the file into a string

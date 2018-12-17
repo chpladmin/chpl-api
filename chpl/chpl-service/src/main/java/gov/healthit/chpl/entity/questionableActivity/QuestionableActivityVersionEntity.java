@@ -14,6 +14,7 @@ import javax.persistence.Table;
 
 import gov.healthit.chpl.auth.entity.UserEntity;
 import gov.healthit.chpl.entity.ProductVersionEntity;
+import gov.healthit.chpl.util.Util;
 
 @Entity
 @Table(name = "questionable_activity_version")
@@ -26,7 +27,7 @@ public class QuestionableActivityVersionEntity implements QuestionableActivityEn
 
     @Column(name = "questionable_activity_trigger_id")
     private Long triggerId;
-    
+
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "questionable_activity_trigger_id", insertable = false, updatable = false)
     private QuestionableActivityTriggerEntity trigger;
@@ -37,23 +38,23 @@ public class QuestionableActivityVersionEntity implements QuestionableActivityEn
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "version_id", insertable = false, updatable = false)
     private ProductVersionEntity version;
-    
+
     @Column(name = "before_data")
     private String before;
-    
+
     @Column(name = "after_data")
     private String after;
-    
+
     @Column(name = "activity_date")
     private Date activityDate;
-    
+
     @Column(name = "activity_user_id")
     private Long userId;
-    
+
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "activity_user_id", insertable = false, updatable = false)
     private UserEntity user;
-    
+
     @Column(name = "deleted")
     private Boolean deleted;
 
@@ -107,11 +108,11 @@ public class QuestionableActivityVersionEntity implements QuestionableActivityEn
     }
 
     public Date getActivityDate() {
-        return activityDate;
+        return Util.getNewDate(activityDate);
     }
 
     public void setActivityDate(Date activityDate) {
-        this.activityDate = activityDate;
+        this.activityDate = Util.getNewDate(activityDate);
     }
 
     public Long getUserId() {
@@ -147,19 +148,20 @@ public class QuestionableActivityVersionEntity implements QuestionableActivityEn
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
+    
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public String getBefore() {

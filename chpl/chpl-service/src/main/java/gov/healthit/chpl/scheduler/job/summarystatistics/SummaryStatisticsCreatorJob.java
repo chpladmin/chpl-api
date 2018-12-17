@@ -43,15 +43,15 @@ import gov.healthit.chpl.scheduler.job.QuartzJob;
 public class SummaryStatisticsCreatorJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("summaryStatisticsCreatorJobLogger");
     private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
-    
+
     @Autowired
     private AsynchronousSummaryStatisticsInitializor asynchronousStatisticsInitializor;
-    
+
     @Autowired
     private SummaryStatisticsDAO summaryStatisticsDAO;
-    
+
     private Properties props;
-    
+
     /**
      * Constructor to initialize SummaryStatisticsJobCreator object.
      * @throws Exception is thrown
@@ -62,14 +62,13 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         loadProperties();
     }
 
-    
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         LOGGER.info("********* Starting the Summary Statistics Creation job. *********");
         try {
             SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
             asynchronousStatisticsInitializor.setLogger(LOGGER);
-            
+
             Boolean generateCsv = Boolean.valueOf(jobContext.getMergedJobDataMap().getString("generateCsvFile"));
             Date startDate = getStartDate();
             if (startDate == null) {
@@ -88,7 +87,7 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
 
         } catch (Exception e) {
             LOGGER.error(e);
-        } 
+        }
         LOGGER.info("********* Completed the Summary Statistics Creation job. *********");
     }
 
@@ -118,13 +117,13 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
             endDateCal.add(Calendar.DATE, numDaysInPeriod);
         }
         LOGGER.info("Finished getting statistics");
-        
+
         LOGGER.info("Writing statistics CSV");
         StatsCsvFileWriter csvFileWriter = new StatsCsvFileWriter();
-        csvFileWriter.writeCsvFile(props.getProperty("downloadFolderPath") + File.separator
+        csvFileWriter.writeCsvFile(System.getenv("downloadFolderPath") + File.separator
                 + props.getProperty("summaryEmailName", "summaryStatistics.csv"), csvStats);
 
-        new File(props.getProperty("downloadFolderPath") + File.separator
+        new File(System.getenv("downloadFolderPath") + File.separator
                 + props.getProperty("summaryEmailName", "summaryStatistics.csv"));
         LOGGER.info("Completed statistics CSV");
     }
@@ -161,14 +160,14 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         //This is a constant date, which marks the beginning of time for
         //retrieving statistics;
         startDateCalendar.set(2016, 3, 1, 0, 0, 0);
-        
+
         //What DOW is today?
         Calendar now = Calendar.getInstance();
         Integer dow = now.get(Calendar.DAY_OF_WEEK);
         if (startDateCalendar.get(Calendar.DAY_OF_WEEK) == dow) {
             return startDateCalendar.getTime();
         }
-        for (int i = 0; i <= 6; i++ ) {
+        for (int i = 0; i <= 6; i++) {
             startDateCalendar.add(Calendar.DATE, (-1));
             if (startDateCalendar.get(Calendar.DAY_OF_WEEK) == dow) {
                 return startDateCalendar.getTime();

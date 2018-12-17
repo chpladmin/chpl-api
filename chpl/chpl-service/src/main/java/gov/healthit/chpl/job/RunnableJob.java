@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.auth.EmailBuilder;
@@ -26,7 +27,7 @@ public class RunnableJob implements Runnable {
 
     @Autowired
     protected Environment env;
-    
+
     @Autowired
     protected JobDAO jobDao;
     protected JobDTO job;
@@ -56,6 +57,7 @@ public class RunnableJob implements Runnable {
         this.jobDao = jobDao;
     }
 
+    @Transactional
     protected void start() {
         SecurityContextHolder.getContext().setAuthentication(this.user);
         LOGGER.info("Starting " + job.getJobType().getName() + " job for " + job.getUser().getSubjectName());
@@ -66,6 +68,7 @@ public class RunnableJob implements Runnable {
         }
     }
 
+    @Transactional
     protected void updateStatus(double percentComplete, JobStatusType statusType) {
         try {
             jobDao.updateStatus(this.job, (int) percentComplete, statusType);
@@ -74,6 +77,7 @@ public class RunnableJob implements Runnable {
         }
     }
 
+    @Transactional
     protected void addJobMessage(String message) {
         try {
             jobDao.addJobMessage(this.job, message);
@@ -88,6 +92,7 @@ public class RunnableJob implements Runnable {
      * should say the job is done and include any status or messages from the
      * job execution.
      */
+    @Transactional
     public void complete() {
         updateStatus(100, JobStatusType.Complete);
 
@@ -106,24 +111,31 @@ public class RunnableJob implements Runnable {
                 this.job.getUser().getEmail()
         };
         String subject = this.job.getJobType().getSuccessMessage();
-        String htmlMessage = "<h3>Job Details:</h3>" + "<ul>" + "<li>Started: " + this.job.getStartTime() + "</li>"
-                + "<li>Ended: " + this.job.getEndTime() + "</li>" + "<li>Status: "
-                + this.job.getStatus().getStatus().toString() + "</li>" + "</ul>";
+        StringBuilder htmlMessage = new StringBuilder();
+        htmlMessage.append("<h3>Job Details:</h3>ul><li>Started: ") 
+        .append(this.job.getStartTime())
+        .append("</li><li>Ended: ")
+        .append(this.job.getEndTime())
+        .append("</li><li>Status: ")
+        .append(this.job.getStatus().getStatus().toString())
+        .append("</li></ul>");
         if (this.job.getMessages() != null && this.job.getMessages().size() > 0) {
-            htmlMessage += "<h4>The following messages were generated: </h4>" + "<ul>";
+            htmlMessage.append("<h4>The following messages were generated: </h4><ul>");
             for (JobMessageDTO message : this.job.getMessages()) {
-                htmlMessage += "<li>" + message.getMessage() + "</li>";
+                htmlMessage.append("<li>")
+                .append(message.getMessage())
+                .append("</li>");
             }
-            htmlMessage += "</ul>";
+            htmlMessage.append("</ul>");
         } else {
-            htmlMessage += "<p>No messages were generated.</p>";
+            htmlMessage.append("<p>No messages were generated.</p>");
         }
 
         try {
             EmailBuilder emailBuilder = new EmailBuilder(env);
             emailBuilder.recipients(new ArrayList<String>(Arrays.asList(to)))
                             .subject(subject)
-                            .htmlMessage(htmlMessage)
+                            .htmlMessage(htmlMessage.toString())
                             .sendEmail();
         } catch (final MessagingException ex) {
             LOGGER.error("Error sending email " + ex.getMessage(), ex);

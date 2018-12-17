@@ -6,39 +6,39 @@ import gov.healthit.chpl.entity.developer.DeveloperEntity;
 
 public interface ProductOwnerEntity {
 
-    public Long getId();
+    Long getId();
 
-    public void setId(final Long id);
+    void setId(Long id);
 
-    public Long getDeveloperId();
+    Long getDeveloperId();
 
-    public void setDeveloperId(final Long developerId);
+    void setDeveloperId(Long developerId);
 
-    public Long getProductId();
+    Long getProductId();
 
-    public void setProductId(final Long productId);
+    void setProductId(Long productId);
 
-    public Date getTransferDate();
+    Date getTransferDate();
 
-    public void setTransferDate(final Date transferDate);
+    void setTransferDate(Date transferDate);
 
-    public Date getCreationDate();
+    Date getCreationDate();
 
-    public void setCreationDate(final Date creationDate);
+    void setCreationDate(Date creationDate);
 
-    public Boolean getDeleted();
+    Boolean getDeleted();
 
-    public void setDeleted(final Boolean deleted);
+    void setDeleted(Boolean deleted);
 
-    public Date getLastModifiedDate();
+    Date getLastModifiedDate();
 
-    public void setLastModifiedDate(final Date lastModifiedDate);
+    void setLastModifiedDate(Date lastModifiedDate);
 
-    public Long getLastModifiedUser();
+    Long getLastModifiedUser();
 
-    public void setLastModifiedUser(final Long lastModifiedUser);
+    void setLastModifiedUser(Long lastModifiedUser);
 
-    public DeveloperEntity getDeveloper();
+    DeveloperEntity getDeveloper();
 
-    public void setDeveloper(final DeveloperEntity developer);
+    void setDeveloper(DeveloperEntity developer);
 }

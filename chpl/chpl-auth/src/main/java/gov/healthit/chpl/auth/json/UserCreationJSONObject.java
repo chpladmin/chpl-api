@@ -1,6 +1,9 @@
 package gov.healthit.chpl.auth.json;
 
-public class UserCreationJSONObject {
+import java.io.Serializable;
+
+public class UserCreationJSONObject implements Serializable {
+    private static final long serialVersionUID = -8036620754066927881L;
 
     private String subjectName;
     private String fullName;

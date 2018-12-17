@@ -29,8 +29,6 @@ public interface CertifiedProductManager {
 
     List<CertifiedProductDetailsDTO> getAll();
 
-    List<CertifiedProductDetailsDTO> getAllWithEditPermission();
-
     List<CertifiedProductDetailsDTO> getByProduct(Long productId) throws EntityRetrievalException;
 
     List<CertifiedProductDetailsDTO> getByVersion(Long versionId) throws EntityRetrievalException;

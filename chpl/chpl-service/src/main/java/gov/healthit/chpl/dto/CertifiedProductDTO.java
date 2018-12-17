@@ -5,11 +5,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.springframework.util.StringUtils;
+
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.util.Util;
 
 /**
  * Basic Certified Product DTO.
@@ -168,14 +170,14 @@ public class CertifiedProductDTO implements Serializable {
      */
     public CertifiedProductDTO(final CertifiedProductSearchDetails from) throws InvalidArgumentsException {
         this.setId(from.getId());
-        this.setCertificationBodyId(new Long(from.getCertifyingBody().get("id").toString()));
+        this.setCertificationBodyId(Long.valueOf(from.getCertifyingBody().get("id").toString()));
         if (from.getPracticeType() != null && from.getPracticeType().get("id") != null) {
-            this.setPracticeTypeId(new Long(from.getPracticeType().get("id").toString()));
+            this.setPracticeTypeId(Long.valueOf(from.getPracticeType().get("id").toString()));
         }
         if (from.getClassificationType() != null && from.getClassificationType().get("id") != null) {
-            this.setProductClassificationTypeId(new Long(from.getClassificationType().get("id").toString()));
+            this.setProductClassificationTypeId(Long.valueOf(from.getClassificationType().get("id").toString()));
         }
-        this.setProductVersionId(new Long(from.getVersion().getVersionId()));
+        this.setProductVersionId(from.getVersion().getVersionId());
 
         CertificationStatus fromStatus = from.getCurrentStatus().getStatus();
         if (fromStatus != null) {
@@ -183,14 +185,14 @@ public class CertifiedProductDTO implements Serializable {
             this.certificationStatus.setId(fromStatus.getId());
             this.certificationStatus.setStatus(fromStatus.getName());
         }
-        this.setCertificationEditionId(new Long(from.getCertificationEdition().get("id").toString()));
+        this.setCertificationEditionId(Long.valueOf(from.getCertificationEdition().get("id").toString()));
         this.setReportFileLocation(from.getReportFileLocation());
         this.setSedReportFileLocation(from.getSedReportFileLocation());
         this.setSedIntendedUserDescription(from.getSedIntendedUserDescription());
         this.setSedTestingEnd(from.getSedTestingEndDate());
         this.setAcbCertificationId(from.getAcbCertificationId());
         this.setOtherAcb(from.getOtherAcb());
-        this.setIcs(from.getIcs() == null || from.getIcs().getInherits() == null ? false : from.getIcs().getInherits());
+        this.setIcs(from.getIcs() == null || from.getIcs().getInherits() == null ? Boolean.FALSE : from.getIcs().getInherits());
         this.setAccessibilityCertified(from.getAccessibilityCertified());
         this.setProductAdditionalSoftware(from.getProductAdditionalSoftware());
 
@@ -279,11 +281,11 @@ public class CertifiedProductDTO implements Serializable {
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Boolean getDeleted() {
@@ -295,11 +297,11 @@ public class CertifiedProductDTO implements Serializable {
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public Long getLastModifiedUser() {
@@ -463,11 +465,11 @@ public class CertifiedProductDTO implements Serializable {
     }
 
     public Date getSedTestingEnd() {
-        return sedTestingEnd;
+        return Util.getNewDate(sedTestingEnd);
     }
 
     public void setSedTestingEnd(final Date sedTestingEnd) {
-        this.sedTestingEnd = sedTestingEnd;
+        this.sedTestingEnd = Util.getNewDate(sedTestingEnd);
     }
 
     public CertificationStatusDTO getCertificationStatus() {

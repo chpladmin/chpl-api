@@ -48,10 +48,10 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
     private DateTimeFormatter dateFormatter;
     private Properties props;
     private Map<SurveillanceOversightRule, Integer> allBrokenRulesCounts;
-    
+
     @Autowired
     private BrokenSurveillanceRulesDAO brokenSurveillanceRulesDAO;
-    
+
     @Autowired
     private Environment env;
 
@@ -91,7 +91,7 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Broken Surveillance Rules Email job. *********");
         LOGGER.info("Sending email to: " + jobContext.getMergedJobDataMap().getString("email"));
-        
+
         List<BrokenSurveillanceRulesDTO> errors = getAppropriateErrors(jobContext);
         String filename = null;
         if (jobContext.getMergedJobDataMap().getString("type").equalsIgnoreCase("All")) {
@@ -132,7 +132,7 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
         try {
             List<String> addresses = new ArrayList<String>();
             addresses.add(to);
-            
+
             EmailBuilder emailBuilder = new EmailBuilder(env);
             emailBuilder.recipients(addresses)
                             .subject(subject)
@@ -141,7 +141,7 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
                             .sendEmail();
         } catch (MessagingException e) {
             LOGGER.error(e);
-        } 
+        }
         LOGGER.info("********* Completed the Broken Surveillance Rules Email job. *********");
     }
 
@@ -201,11 +201,11 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
         try {
             temp = File.createTempFile(reportFilename, ".csv");
             temp.deleteOnExit();
-        } catch(IOException ex) {
+        } catch (IOException ex) {
             LOGGER.error("Could not create temporary file " + ex.getMessage(), ex);
         }
 
-        if(temp != null) {
+        if (temp != null) {
             try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(temp), Charset.forName("UTF-8").newEncoder());
                 CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
                 csvPrinter.printRecord(getHeaderRow());

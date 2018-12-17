@@ -30,13 +30,15 @@ public class CriteriaSpecificDescriptiveModel extends DescriptiveModel implement
     public void setCriteria(final CertificationCriterion criteria) {
         this.criteria = criteria;
     }
-    
+
     @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof CriteriaSpecificDescriptiveModel))
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof CriteriaSpecificDescriptiveModel)) {
             return false;
-        if (obj == this)
+        }
+        if (obj == this) {
             return true;
+        }
 
         CriteriaSpecificDescriptiveModel rhs = (CriteriaSpecificDescriptiveModel) obj;
 
@@ -44,14 +46,14 @@ public class CriteriaSpecificDescriptiveModel extends DescriptiveModel implement
             return false;
         }
 
-        if(this.criteria == null || rhs.criteria == null) {
+        if (this.criteria == null || rhs.criteria == null) {
             return false;
         }
-        
-        if(this.criteria.getId() == null || rhs.criteria.getId() == null) {
+
+        if (this.criteria.getId() == null || rhs.criteria.getId() == null) {
             return false;
         }
-        
+
         return rhs.getName().equals(this.getName()) && this.criteria.getId().longValue() == rhs.criteria.getId().longValue();
     }
 

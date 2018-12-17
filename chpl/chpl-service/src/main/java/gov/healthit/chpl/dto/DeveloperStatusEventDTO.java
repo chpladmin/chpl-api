@@ -2,8 +2,10 @@ package gov.healthit.chpl.dto;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 import gov.healthit.chpl.entity.developer.DeveloperStatusEventEntity;
+import gov.healthit.chpl.util.Util;
 
 /**
  * Developer Status Event DTO.
@@ -18,6 +20,7 @@ public class DeveloperStatusEventDTO implements Serializable {
     private DeveloperStatusDTO status;
     private Date statusDate;
     private String reason;
+    private Boolean deleted;
 
     /** Default constructor. */
     public DeveloperStatusEventDTO() {
@@ -34,6 +37,19 @@ public class DeveloperStatusEventDTO implements Serializable {
         this.status = new DeveloperStatusDTO(entity.getDeveloperStatus());
         this.statusDate = entity.getStatusDate();
         this.reason = entity.getReason();
+        this.setDeleted(entity.getDeleted());
+    }
+
+    /**
+     * Copy constructor.
+     * @param dto the DeveloperStatusEventDTO to copy
+     */
+    public DeveloperStatusEventDTO(final DeveloperStatusEventDTO dto) {
+        this.id = dto.getId();
+        this.developerId = dto.getDeveloperId();
+        this.status = dto.getStatus(); //Shallow copy
+        this.statusDate = dto.getStatusDate();
+        this.reason = dto.getReason();
     }
 
     public Long getId() {
@@ -53,11 +69,11 @@ public class DeveloperStatusEventDTO implements Serializable {
     }
 
     public Date getStatusDate() {
-        return statusDate;
+        return Util.getNewDate(statusDate);
     }
 
     public void setStatusDate(final Date statusDate) {
-        this.statusDate = statusDate;
+        this.statusDate = Util.getNewDate(statusDate);
     }
 
     public DeveloperStatusDTO getStatus() {
@@ -98,5 +114,36 @@ public class DeveloperStatusEventDTO implements Serializable {
                 + "[Status: " + this.status.getStatusName() + "] "
                 + "[Reason: " + this.reason + "]"
                 + "]";
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        DeveloperStatusEventDTO dto = (DeveloperStatusEventDTO) obj;
+        return Objects.equals(getId(), dto.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        return result;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
     }
 }

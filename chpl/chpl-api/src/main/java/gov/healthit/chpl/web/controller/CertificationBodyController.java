@@ -4,11 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.util.StringUtils;
@@ -22,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.json.User;
@@ -55,8 +51,6 @@ public class CertificationBodyController {
     @Autowired
     private UserManager userManager;
 
-    private static final Logger LOGGER = LogManager.getLogger(CertificationBodyController.class);
-
     @ApiOperation(value = "List all certification bodies (ACBs).",
             notes = "Setting the 'editable' parameter to true will return all ACBs that the logged in user has "
                     + "edit permissions on.  Setting 'showDeleted' to true will include even those ACBs that "
@@ -64,23 +58,19 @@ public class CertificationBodyController {
                     + "behavior of this service is to list all of the ACBs in the system that are not deleted.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody CertificationBodyResults getAcbs(
-            @RequestParam(required = false, defaultValue = "false") final boolean editable,
-            @RequestParam(value = "showDeleted", required = false, defaultValue = "false") final boolean showDeleted) {
+            @RequestParam(required = false, defaultValue = "false") final boolean editable) {
+        //TODO confirm a user is logged in here
         CertificationBodyResults results = new CertificationBodyResults();
-        if (!Util.isUserRoleAdmin() && showDeleted) {
-            throw new AccessDeniedException("Only Admins can see deleted ACB's.");
-        } else {
             List<CertificationBodyDTO> acbs = null;
-            if (editable) {
-                acbs = acbManager.getAllForUser(showDeleted);
-            } else {
-                acbs = acbManager.getAll(showDeleted);
-            }
+        if (editable) {
+            acbs = acbManager.getAllForUser();
+        } else {
+            acbs = acbManager.getAll();
+        }
 
-            if (acbs != null) {
-                for (CertificationBodyDTO acb : acbs) {
-                    results.getAcbs().add(new CertificationBody(acb));
-                }
+        if (acbs != null) {
+            for (CertificationBodyDTO acb : acbs) {
+                results.getAcbs().add(new CertificationBody(acb));
             }
         }
         return results;
@@ -95,18 +85,6 @@ public class CertificationBodyController {
         CertificationBodyDTO acb = acbManager.getById(acbId);
 
         return new CertificationBody(acb);
-    }
-
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED.  Create a new ACB.", notes = "The logged in user must have ROLE_ADMIN to "
-            + "create a new ACB.")
-    @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
-    public CertificationBody createAcbDeprecated(@RequestBody final CertificationBody acbInfo)
-            throws InvalidArgumentsException, UserRetrievalException, EntityRetrievalException, EntityCreationException,
-            JsonProcessingException {
-
-        return create(acbInfo);
     }
 
     @ApiOperation(value = "Create a new ACB.", notes = "The logged in user must have ROLE_ADMIN to create a new ACB.")
@@ -147,18 +125,6 @@ public class CertificationBodyController {
         return new CertificationBody(toCreate);
     }
 
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED.  Update an existing ACB.",
-            notes = "The logged in user must either have ROLE_ADMIN or have ROLE_ACB "
-                    + " to update an existing ACB.")
-    @RequestMapping(value = "/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
-    public CertificationBody updateAcbDeprecated(@RequestBody final CertificationBody acbInfo)
-            throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
-            EntityCreationException, UpdateCertifiedBodyException {
-
-        return update(acbInfo);
-    }
 
     @ApiOperation(value = "Update an existing ACB.",
             notes = "The logged in user must either have ROLE_ADMIN or have ROLE_ACB "
@@ -171,106 +137,48 @@ public class CertificationBodyController {
         return update(acbInfo);
     }
 
-    private CertificationBody update(final CertificationBody acbInfo) throws InvalidArgumentsException,
+    private CertificationBody update(final CertificationBody updatedAcb) throws InvalidArgumentsException,
             EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
-        CertificationBodyDTO toUpdate = new CertificationBodyDTO();
-        toUpdate.setId(acbInfo.getId());
-        toUpdate.setAcbCode(acbInfo.getAcbCode());
-        toUpdate.setName(acbInfo.getName());
-        if (StringUtils.isEmpty(acbInfo.getWebsite())) {
-            throw new InvalidArgumentsException("A website is required to update the certification body");
-        }
-        toUpdate.setWebsite(acbInfo.getWebsite());
+        //Get the ACB as it is currently in the database to find out if
+        //the retired flag was changed.
+        //Retirement and un-retirement is done as a separate manager action because
+        //security is different from normal ACB updates - only admins are allowed
+        //whereas an ACB admin can update other info
+        CertificationBodyDTO existingAcb = acbManager.getById(updatedAcb.getId());
+        if (existingAcb.isRetired() != updatedAcb.isRetired() && updatedAcb.isRetired()) {
+            //we are retiring this ACB - no other updates can happen
+            acbManager.retire(updatedAcb.getId());
+        } else {
+            if (existingAcb.isRetired() != updatedAcb.isRetired() && !updatedAcb.isRetired()) {
+                //unretire the ACB
+                acbManager.unretire(updatedAcb.getId());
+            }
+            CertificationBodyDTO toUpdate = new CertificationBodyDTO();
+            toUpdate.setId(updatedAcb.getId());
+            toUpdate.setAcbCode(updatedAcb.getAcbCode());
+            toUpdate.setName(updatedAcb.getName());
+            toUpdate.setRetired(updatedAcb.isRetired());
+            if (StringUtils.isEmpty(updatedAcb.getWebsite())) {
+                throw new InvalidArgumentsException("A website is required to update the certification body");
+            }
+            toUpdate.setWebsite(updatedAcb.getWebsite());
 
-        if (acbInfo.getAddress() == null) {
-            throw new InvalidArgumentsException("An address is required to update the certification body");
+            if (updatedAcb.getAddress() == null) {
+                throw new InvalidArgumentsException("An address is required to update the certification body");
+            }
+            AddressDTO address = new AddressDTO();
+            address.setId(updatedAcb.getAddress().getAddressId());
+            address.setStreetLineOne(updatedAcb.getAddress().getLine1());
+            address.setStreetLineTwo(updatedAcb.getAddress().getLine2());
+            address.setCity(updatedAcb.getAddress().getCity());
+            address.setState(updatedAcb.getAddress().getState());
+            address.setZipcode(updatedAcb.getAddress().getZipcode());
+            address.setCountry(updatedAcb.getAddress().getCountry());
+            toUpdate.setAddress(address);
+            acbManager.update(toUpdate);
         }
-        AddressDTO address = new AddressDTO();
-        address.setId(acbInfo.getAddress().getAddressId());
-        address.setStreetLineOne(acbInfo.getAddress().getLine1());
-        address.setStreetLineTwo(acbInfo.getAddress().getLine2());
-        address.setCity(acbInfo.getAddress().getCity());
-        address.setState(acbInfo.getAddress().getState());
-        address.setZipcode(acbInfo.getAddress().getZipcode());
-        address.setCountry(acbInfo.getAddress().getCountry());
-        toUpdate.setAddress(address);
-
-        CertificationBodyDTO result = acbManager.update(toUpdate);
+        CertificationBodyDTO result = acbManager.getById(updatedAcb.getId());
         return new CertificationBody(result);
-    }
-
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED.  Delete an ACB.", notes = "The logged in user must have ROLE_ADMIN.")
-    @RequestMapping(value = "/{acbId}/delete", method = RequestMethod.POST,
-            produces = "application/json; charset=utf-8")
-    public String deleteAcbDeprecated(@PathVariable("acbId") final Long acbId)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
-
-        return delete(acbId);
-    }
-
-    @ApiOperation(value = "Delete an ACB.", notes = "The logged in user must have ROLE_ADMIN.")
-    @RequestMapping(value = "/{acbId}", method = RequestMethod.DELETE,
-            produces = "application/json; charset=utf-8")
-    public String deleteAcb(@PathVariable("acbId") final Long acbId)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
-
-        return delete(acbId);
-    }
-
-    private String delete(final Long acbId)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
-
-        CertificationBodyDTO toDelete = acbManager.getById(acbId);
-        acbManager.delete(toDelete);
-        return "{\"deletedAcb\" : true}";
-    }
-
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED.  Restore a deleted ACB.",
-            notes = "ACBs are unique in the CHPL in that they can be restored after a delete."
-                    + " The logged in user must have ROLE_ADMIN.")
-    @RequestMapping(value = "/{acbId}/undelete", method = RequestMethod.POST,
-            produces = "application/json; charset=utf-8")
-    public String undeleteAcbDeprecated(@PathVariable("acbId") final Long acbId)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
-
-        return undelete(acbId);
-    }
-
-    @ApiOperation(value = "Restore a deleted ACB.",
-            notes = "ACBs are unique in the CHPL in that they can be restored after a delete."
-                    + " The logged in user must have ROLE_ADMIN.")
-    @RequestMapping(value = "/{acbId}/undelete", method = RequestMethod.PUT,
-            produces = "application/json; charset=utf-8")
-    public String undeleteAcb(@PathVariable("acbId") final Long acbId)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
-
-        return undelete(acbId);
-    }
-
-    private String undelete(final Long acbId)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
-
-        CertificationBodyDTO toResurrect = acbManager.getById(acbId, true);
-        acbManager.undelete(toResurrect);
-        return "{\"resurrectedAcb\" : true}";
-    }
-
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED.  Add a user to an ACB.",
-            notes = "The logged in user must have ROLE_ADMIN or ROLE_ACB and have administrative authority on the "
-                    + " specified ACB. It is recommended to pass 'ADMIN' in as the 'authority' field"
-                    + " to guarantee maximum compatibility although 'READ' and 'DELETE' are also valid choices. "
-                    + " Note that this method gives special permission on a specific ACB and is not the "
-                    + " equivalent of assigning the ROLE_ACB role. Please view /users/grant_role "
-                    + " request for more information on that.")
-    @RequestMapping(value = "/add_user", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
-    public String addUserToAcbDeprecated(@RequestBody final UpdateUserAndAcbRequest updateRequest)
-            throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
-
-        return addUser(updateRequest);
     }
 
     @ApiOperation(value = "Add a user to an ACB.",
@@ -288,7 +196,7 @@ public class CertificationBodyController {
         return addUser(updateRequest);
     }
 
-    public String addUser(final UpdateUserAndAcbRequest updateRequest)
+    private String addUser(final UpdateUserAndAcbRequest updateRequest)
             throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
 
         if (updateRequest.getAcbId() == null || updateRequest.getUserId() == null || updateRequest.getUserId() <= 0
@@ -308,18 +216,6 @@ public class CertificationBodyController {
         return "{\"userAdded\" : true}";
     }
 
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED.  Remove user permissions from an ACB.",
-            notes = "The logged in user must have ROLE_ADMIN or ROLE_ACB and have administrative authority on the "
-                    + " specified ACB. The user specified in the request will have all authorities "
-                    + " removed that are associated with the specified ACB.")
-    @RequestMapping(value = "{acbId}/remove_user/{userId}", method = RequestMethod.POST,
-            consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
-    public String deleteUserFromAcbDeprecated(@PathVariable final Long acbId, @PathVariable final Long userId)
-            throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
-
-        return deleteUser(acbId, userId);
-    }
 
     @ApiOperation(value = "Remove user permissions from an ACB.",
             notes = "The logged in user must have ROLE_ADMIN or ROLE_ACB and have administrative authority on the "

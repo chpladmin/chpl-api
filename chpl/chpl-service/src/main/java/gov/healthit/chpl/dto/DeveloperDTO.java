@@ -8,6 +8,7 @@ import java.util.List;
 import gov.healthit.chpl.domain.Statuses;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import gov.healthit.chpl.entity.developer.DeveloperStatusEventEntity;
+import gov.healthit.chpl.util.Util;
 
 public class DeveloperDTO implements Serializable {
     private static final long serialVersionUID = -2492373079266782228L;
@@ -80,11 +81,11 @@ public class DeveloperDTO implements Serializable {
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Boolean getDeleted() {
@@ -96,11 +97,11 @@ public class DeveloperDTO implements Serializable {
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public Long getLastModifiedUser() {

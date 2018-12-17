@@ -17,7 +17,7 @@ public class CqmResultDetailsXmlGenerator extends XmlGenerator {
             sw.writeEndElement();
         }
     }
-    
+
     public static void add(CQMResultDetails detail, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (detail != null) {
             sw.writeStartElement(rootNodeName);

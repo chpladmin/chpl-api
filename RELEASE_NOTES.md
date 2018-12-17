@@ -1,5 +1,95 @@
 # Release Notes
 
+## Version 20.0.0
+_17 December 2018_
+
+### Backwards compatibility breaking changes
+* Removed all previously deprecated API endpoints
+* Removed the following endpoints:
+  * /atls/{id}/delete
+  * /atls/{id}/undelete
+  * /acbs/{id}/delete
+  * /acbs/{id}/undelete
+* Remove showDeleted parameter from the following endpoints:
+  * /activity/acbs
+  * /activity/acbs/{id}
+  * /activity/atls
+  * /activity/atls/{id}
+  * /data/search_options
+  * /atls
+  * /acbs
+* Removed space following the colon in the /cache_status response. {"status": "OK"} becomes {"status":"OK"}
+* Removed space following the colon in the /status response. {"status": "OK"} becomes {"status":"OK"}
+* Removed /notifications endpoints.
+
+### New Features
+* Add retired flag to ACBs and ATLs to replace the functionality that previously used the deleted flag.
+* Add Quartz job to require all users to change password on next login
+* Update email notification about potential Developer ban to include:
+  * Reason for status change
+  * Reason for listing change
+* Prevent users from using the following macra measures which are under review: RT13 EH/CAH Stage 3, RT14 EH/CAH Stage 3, RT15 EH/CAH Stage 3 
+
+### Bugs Fixed
+* Do not show error for 2014 listings on upload or edit if they attest to g3, have ICS = true, and do not have any criteria marked as SED.
+* Fix issue with determining whether there is additional software associated with the certified product
+
+---
+
+## Version 19.2.0
+_3 December 2018_
+
+### New Features
+* 2015 Functionality testing is restricted by criteria.
+* Save 'reason' for developer's status change in questionable activivty.
+* Output 'reason' for developer's status change on questionable activity report.
+* When uploading a listing, remove duplicate G1 and G2 macra measures and provide a warning.
+* Implement user ability to reset their password using a unique link
+* Change /cache_status endpoint to report "OK" status only when all pre-loaded caches have completed.
+* Add "user must reset password on next login" workflow
+  * Gives error when user tries to log in and needs to change password
+  * Adds end point to change_expired_password
+  * Update User edit to allow admins to require password change
+* Add API Documentation file upload and download endpoints
+
+---
+
+## Version 19.1.0
+_19 November 2018_
+
+### New Features
+* Update ONC contact information for CHPL API and on user invitation emails.
+* Check various site counts in surveillance to make sure they are reasonable
+* Refresh the listing collection cache on demand when data has changed vs at timed intervals.
+
+### Bug Fixes
+* Fix dependency injection problem that prevented implementing security in the chpl-service classes.
+
+---
+
+## Version 19.0.0
+_5 November 2018_
+
+### Backwards compatibility breaking API changes
+* Changed PUT /products call to not accept a productID
+* Updated DELETE of api key to not use body
+
+### New Features
+* Add developer and product contact information to 2014/2015 download file
+* Add Quartz job to allow interruption of other jobs
+  * Enhanced "Certified Product Download File generation job" to be interruptable
+* Add validation for submitted user information when creating a new user
+
+### Bugs Fixed
+* Properly handle invalid test tools entered into upload files by removing them and informing the user
+* Make sure test tools are optional for 2014 ambulatory listings on g1, g2, and f3
+* Remove required productID in /products PUT call that isn't used by the back end
+* Insert listing update activity during meaningful use user uploads
+* Update the description of the /certified_products endpoint to indicate that 'versionId' is a required parameter
+* Fixed issue where adding ROLE via POST required body, even though no data was needed
+
+---
+
 ## Version 18.0.0
 _22 October 2018_
 
@@ -23,8 +113,8 @@ _22 October 2018_
 ### Bugs Fixed
 * Fix creation of public announcement ignoring 'public' checkbox.
 * Fix incorrect error messages when editing SED = false for a criteria
----
 
+---
 
 ## Version 17.0.0
 _8 October 2018_
@@ -80,7 +170,7 @@ _10 September 2018_
 
 ### Bugs Fixed
 * Extra test data/test procedure/test functionality/etc. no longer appears after attesting to a criteria with previously entered phantom data.
-* Fixed the "basic" certified product service to return the correct additional software code in the CHPL Product Number	
+* Fixed the "basic" certified product service to return the correct additional software code in the CHPL Product Number
 * Fixed XML generation process to properly output `<tasks></tasks>` tag - was previously outputing as `<></>`.
 * Use "full name" and "friendly name" for users/contacts
 * Fix reason required error to show again for certain listing updates.
@@ -510,7 +600,7 @@ _10 October 2017_
   * Add `0 1 1 1,4,7,10 * cd /opt/chpl && ./generateListingResources.sh 2011`
   * Add `0 1 * * * cd /opt/chpl && ./generateListingResources.sh 2014`
   * Add `0 1 * * * cd /opt/chpl && ./generateListingResources.sh 2015`
-  * Add `0 1 * * * cd /opt/chpl && ./generateSurveillanceResources.sh` 
+  * Add `0 1 * * * cd /opt/chpl && ./generateSurveillanceResources.sh`
   * Add lines as well for the cleanup script (may have been done by andlar already)
 * Return HTTP 404 for /certified_products/{id}/details if listing has never existed or has been deleted.
 * Change any URL with an ID in the path to return 404 if that ID is not found.

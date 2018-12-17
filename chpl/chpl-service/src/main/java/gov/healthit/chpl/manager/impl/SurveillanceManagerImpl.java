@@ -372,7 +372,9 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
             }
             throw alreadyDeletedEx;
         }
-        return pendingSurv != null;
+        //If pendingSurv were null, we would have gotten an NPE by this point
+        //return pendingSurv != null;
+        return true;
     }
 
     @Override
@@ -410,7 +412,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
         surv.setStartDate(pr.getStartDate());
         surv.setEndDate(pr.getEndDate());
         surv.setRandomizedSitesUsed(pr.getNumRandomizedSites());
-        
+
         SurveillanceType survType = new SurveillanceType();
         survType.setName(pr.getSurveillanceType());
         surv.setType(survType);

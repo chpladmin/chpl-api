@@ -118,7 +118,7 @@ public abstract class Validator {
                 // See what version we've already met...
                 Integer verMet = cqmsMet.get(cqmDetail.getCmsId());
                 if (null == verMet) {
-                    verMet = new Integer(0);
+                    verMet = Integer.valueOf(0);
                 }
 
                 // ...store the version that's higher.

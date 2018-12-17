@@ -17,7 +17,7 @@ public class SurveillanceRequirementXmlGenerator extends XmlGenerator {
             sw.writeEndElement();
         }
     }
-    
+
     public static void add(SurveillanceRequirement sr, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (sr != null) {
             sw.writeStartElement(rootNodeName);
@@ -25,7 +25,7 @@ public class SurveillanceRequirementXmlGenerator extends XmlGenerator {
             createSimpleElement(sr.getRequirement(), "requirement", sw);
             SurveillanceResultTypeXmlGenerator.add(sr.getResult(), "result", sw);
             SurveillanceRequirementTypeXmlGenerator.addSurveillanceRequirementType(sr.getType(), "type", sw);
-            sw.writeEndElement();            
+            sw.writeEndElement();
         }
     }
 }

@@ -9,9 +9,11 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.util.Util;
+
 @Entity
 @Table(name = "certified_product_summary")
-public class CertifiedProductSummaryEntity implements Serializable{
+public class CertifiedProductSummaryEntity implements Serializable {
     private static final long serialVersionUID = -7006206379019745873L;
 
     @Id
@@ -206,11 +208,11 @@ public class CertifiedProductSummaryEntity implements Serializable{
     }
 
     public Date getSedTestingEnd() {
-        return sedTestingEnd;
+        return Util.getNewDate(sedTestingEnd);
     }
 
     public void setSedTestingEnd(final Date sedTestingEnd) {
-        this.sedTestingEnd = sedTestingEnd;
+        this.sedTestingEnd = Util.getNewDate(sedTestingEnd);
     }
 
     public Long getAcbCertificationId() {
@@ -334,19 +336,19 @@ public class CertifiedProductSummaryEntity implements Serializable{
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public String getLastModifiedUser() {

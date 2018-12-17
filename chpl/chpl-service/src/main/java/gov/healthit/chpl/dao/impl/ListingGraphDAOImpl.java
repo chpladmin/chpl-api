@@ -17,9 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.ListingGraphDAO;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.ListingToListingMapDTO;
-import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
+import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 import gov.healthit.chpl.entity.listing.ListingToListingMapEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 
@@ -70,8 +70,8 @@ public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO 
     }
 
     /**
-     * Get the maximum ICS value from the proposed parent nodes
-     * 
+     * Get the maximum ICS value from the proposed parent nodes.
+     *
      * @param listingIds
      *            proposed parent nodes
      * @return largest ICS value
@@ -85,56 +85,78 @@ public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO 
                         BigDecimal.class);
         query.setParameter("listingIds", listingIds);
         BigDecimal result = (BigDecimal) query.getSingleResult();
-        if(result == null) {
+        if (result == null) {
             return null;
         }
-        return new Integer(result.intValue());
+        return Integer.valueOf(result.intValue());
     }
 
     /**
-     * Find the first-level parent nodes of a specific listing
-     * 
+     * Find the first-level parent nodes of a specific listing.
+     *
      * @param listingId
      *            Listing to find the parents of
      * @return The first-level parents (can have multiple)
      */
     @Override
     @Transactional
-    public List<CertifiedProductDetailsDTO> getParents(Long listingId) {
+    public List<CertifiedProductDTO> getParents(Long listingId) {
         Query query = entityManager.createQuery(
-                "SELECT listingMap.parent " + "FROM ListingToListingMapEntity listingMap "
-                        + "WHERE listingMap.childId = :childId " + "AND listingMap.deleted <> true ",
-                CertifiedProductDetailsEntity.class);
+                    "SELECT listingMap.parentId "
+                    + "FROM ListingToListingMapEntity listingMap "
+                    + "WHERE listingMap.childId = :childId "
+                    + "AND listingMap.deleted <> true ",
+                Long.class);
         query.setParameter("childId", listingId);
-        List<CertifiedProductDetailsEntity> parentEntities = query.getResultList();
+        List<Long> parentIds = query.getResultList();
 
-        List<CertifiedProductDetailsDTO> result = new ArrayList<CertifiedProductDetailsDTO>();
-        for (CertifiedProductDetailsEntity parentEntity : parentEntities) {
-            result.add(new CertifiedProductDetailsDTO(parentEntity));
+        //Retrieve the CertifiedProduct for each parent listing
+        List<CertifiedProductDTO> result = new ArrayList<CertifiedProductDTO>();
+        for (Long parentId : parentIds) {
+            Query query2 = entityManager.createQuery(
+                            "SELECT certifiedProduct "
+                            + "FROM CertifiedProductEntity certifiedProduct "
+                            + "WHERE certifiedProduct.id = :id "
+                            + "AND certifiedProduct.deleted <> true ",
+                    CertifiedProductEntity.class);
+            query2.setParameter("id", parentId);
+            List<CertifiedProductEntity> parentEntities = query2.getResultList();
+            result.add(new CertifiedProductDTO(parentEntities.get(0)));
         }
         return result;
     }
 
     /**
-     * Find the first-level child nodes of a specific listing
-     * 
+     * Find the first-level child nodes of a specific listing.
+     *
      * @param listingId
      *            Listing to find the children of
      * @return The first-level children (can have multiple)
      */
     @Override
     @Transactional
-    public List<CertifiedProductDetailsDTO> getChildren(Long listingId) {
+    public List<CertifiedProductDTO> getChildren(Long listingId) {
         Query query = entityManager.createQuery(
-                "SELECT listingMap.child " + "FROM ListingToListingMapEntity listingMap "
-                        + "WHERE listingMap.parentId = :parentId " + "AND listingMap.deleted <> true",
-                CertifiedProductDetailsEntity.class);
+                    "SELECT listingMap.childId "
+                    + "FROM ListingToListingMapEntity listingMap "
+                    + "WHERE listingMap.parentId = :parentId "
+                    + "AND listingMap.deleted <> true ",
+                Long.class);
         query.setParameter("parentId", listingId);
-        List<CertifiedProductDetailsEntity> childEntities = query.getResultList();
+        List<Long> childIds = query.getResultList();
 
-        List<CertifiedProductDetailsDTO> result = new ArrayList<CertifiedProductDetailsDTO>();
-        for (CertifiedProductDetailsEntity childEntity : childEntities) {
-            result.add(new CertifiedProductDetailsDTO(childEntity));
+        //Retrieve the CertifiedProduct for each child listing
+        List<CertifiedProductDTO> result = new ArrayList<CertifiedProductDTO>();
+        for (Long childId : childIds) {
+            Query query2 = entityManager.createQuery(
+                            "SELECT certifiedProduct "
+                            + "FROM CertifiedProductEntity certifiedProduct "
+                            + "WHERE certifiedProduct.id = :id "
+                            + "AND certifiedProduct.deleted <> true ",
+                    CertifiedProductEntity.class);
+            query2.setParameter("id", childId);
+            List<CertifiedProductEntity> parentEntities = query2.getResultList();
+            result.add(new CertifiedProductDTO(parentEntities.get(0)));
         }
         return result;
     }

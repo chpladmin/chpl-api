@@ -35,6 +35,7 @@ import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
+import gov.healthit.chpl.dto.DeveloperStatusEventPair;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.entity.AttestationType;
@@ -51,32 +52,49 @@ import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 
+/**
+ * Implementation of DeveloperManager class.
+ * @author TYoung
+ *
+ */
 @Service
 public class DeveloperManagerImpl implements DeveloperManager {
     private static final Logger LOGGER = LogManager.getLogger(DeveloperManagerImpl.class);
 
-    @Autowired
     private DeveloperDAO developerDao;
-
-    @Autowired
     private ProductManager productManager;
-
-    @Autowired
     private CertificationBodyManager acbManager;
-
-    @Autowired
     private CertificationBodyDAO certificationBodyDao;
-
-    @Autowired
     private CertifiedProductDAO certifiedProductDAO;
-
-    @Autowired
     private ChplProductNumberUtil chplProductNumberUtil;
-
-    @Autowired
     private ActivityManager activityManager;
+    private ErrorMessageUtil msgUtil;
 
-    @Autowired private ErrorMessageUtil msgUtil;
+    /**
+     * Autowired constructor for dependency injection.
+     * @param developerDao
+     * @param productManager
+     * @param acbManager
+     * @param certificationBodyDao
+     * @param certifiedProductDAO
+     * @param chplProductNumberUtil
+     * @param activityManager
+     * @param msgUtil
+     */
+    @Autowired
+    public DeveloperManagerImpl(final DeveloperDAO developerDao, final ProductManager productManager,
+            final CertificationBodyManager acbManager, final CertificationBodyDAO certificationBodyDao,
+            final CertifiedProductDAO certifiedProductDAO, final ChplProductNumberUtil chplProductNumberUtil,
+            final ActivityManager activityManager, final ErrorMessageUtil msgUtil) {
+        this.developerDao = developerDao;
+        this.productManager = productManager;
+        this.acbManager = acbManager;
+        this.certificationBodyDao = certificationBodyDao;
+        this.certifiedProductDAO = certifiedProductDAO;
+        this.chplProductNumberUtil = chplProductNumberUtil;
+        this.activityManager = activityManager;
+        this.msgUtil = msgUtil;
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -101,9 +119,9 @@ public class DeveloperManagerImpl implements DeveloperManager {
     @Transactional(readOnly = true)
     public DeveloperDTO getById(final Long id) throws EntityRetrievalException {
         DeveloperDTO developer = developerDao.getById(id);
-        List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
+        List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser();
         if (availableAcbs == null || availableAcbs.size() == 0) {
-            availableAcbs = acbManager.getAll(true);
+            availableAcbs = acbManager.getAll();
         }
         // someone will see either the transparencies that apply to the ACBs to
         // which they have access
@@ -212,63 +230,60 @@ public class DeveloperManagerImpl implements DeveloperManager {
             // if the developer is not active and not going to be active
             // only its current status can be updated
             updateStatusHistory(beforeDev, updatedDev);
-            return getById(updatedDev.getId());
-        }
-
-        /*
-         * Check to see that the Developer's website is valid.
-         */
-        if (!StringUtils.isEmpty(updatedDev.getWebsite())) {
-            if (!ValidationUtils.isWellFormedUrl(updatedDev.getWebsite())) {
-                String msg = msgUtil.getMessage("developer.websiteIsInvalid");
-                throw new EntityCreationException(msg);
+        } else {
+            /*
+             * Check to see that the Developer's website is valid.
+             */
+            if (!StringUtils.isEmpty(updatedDev.getWebsite())) {
+                if (!ValidationUtils.isWellFormedUrl(updatedDev.getWebsite())) {
+                    String msg = msgUtil.getMessage("developer.websiteIsInvalid");
+                    throw new EntityCreationException(msg);
+                }
             }
-        }
 
-        if (beforeDev.getContact() != null && beforeDev.getContact().getId() != null) {
-            updatedDev.getContact().setId(beforeDev.getContact().getId());
-        }
+            if (beforeDev.getContact() != null && beforeDev.getContact().getId() != null) {
+                updatedDev.getContact().setId(beforeDev.getContact().getId());
+            }
+            // if either the before or updated statuses are active and the user is
+            // ROLE_ADMIN
+            // OR if before status is active and user is not ROLE_ADMIN - proceed
+            if (((currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
+                    || newDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()))
+                    && Util.isUserRoleAdmin())
+                    || (currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
+                            && !Util.isUserRoleAdmin())) {
 
-        // if either the before or updated statuses are active and the user is
-        // ROLE_ADMIN
-        // OR if before status is active and user is not ROLE_ADMIN - proceed
-        if (((currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
-                || newDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()))
-                && Util.isUserRoleAdmin())
-                || (currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
-                        && !Util.isUserRoleAdmin())) {
+                developerDao.update(updatedDev);
+                updateStatusHistory(beforeDev, updatedDev);
 
-            developerDao.update(updatedDev);
-            updateStatusHistory(beforeDev, updatedDev);
-
-            List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
-            if (availableAcbs != null && availableAcbs.size() > 0) {
-                for (CertificationBodyDTO acb : availableAcbs) {
-                    DeveloperACBMapDTO existingMap = developerDao.getTransparencyMapping(updatedDev.getId(),
-                            acb.getId());
-                    if (existingMap == null) {
-                        DeveloperACBMapDTO developerMappingToCreate = new DeveloperACBMapDTO();
-                        developerMappingToCreate.setAcbId(acb.getId());
-                        developerMappingToCreate.setDeveloperId(beforeDev.getId());
-                        for (DeveloperACBMapDTO attMap : updatedDev.getTransparencyAttestationMappings()) {
-                            if (attMap.getAcbName().equals(acb.getName())) {
-                                developerMappingToCreate
-                                .setTransparencyAttestation(attMap.getTransparencyAttestation());
-                                developerDao.createTransparencyMapping(developerMappingToCreate);
+                List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser();
+                if (availableAcbs != null && availableAcbs.size() > 0) {
+                    for (CertificationBodyDTO acb : availableAcbs) {
+                        DeveloperACBMapDTO existingMap = developerDao.getTransparencyMapping(updatedDev.getId(),
+                                acb.getId());
+                        if (existingMap == null) {
+                            DeveloperACBMapDTO developerMappingToCreate = new DeveloperACBMapDTO();
+                            developerMappingToCreate.setAcbId(acb.getId());
+                            developerMappingToCreate.setDeveloperId(beforeDev.getId());
+                            for (DeveloperACBMapDTO attMap : updatedDev.getTransparencyAttestationMappings()) {
+                                if (attMap.getAcbName().equals(acb.getName())) {
+                                    developerMappingToCreate
+                                    .setTransparencyAttestation(attMap.getTransparencyAttestation());
+                                    developerDao.createTransparencyMapping(developerMappingToCreate);
+                                }
                             }
-                        }
-                    } else {
-                        for (DeveloperACBMapDTO attMap : updatedDev.getTransparencyAttestationMappings()) {
-                            if (attMap.getAcbName().equals(acb.getName())) {
-                                existingMap.setTransparencyAttestation(attMap.getTransparencyAttestation());
-                                developerDao.updateTransparencyMapping(existingMap);
+                        } else {
+                            for (DeveloperACBMapDTO attMap : updatedDev.getTransparencyAttestationMappings()) {
+                                if (attMap.getAcbName().equals(acb.getName())) {
+                                    existingMap.setTransparencyAttestation(attMap.getTransparencyAttestation());
+                                    developerDao.updateTransparencyMapping(existingMap);
+                                }
                             }
                         }
                     }
                 }
             }
         }
-
         DeveloperDTO after = getById(updatedDev.getId());
         activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, after.getId(),
                 "Developer " + updatedDev.getName() + " was updated.", beforeDev, after);
@@ -282,49 +297,12 @@ public class DeveloperManagerImpl implements DeveloperManager {
         List<DeveloperStatusEventPair> statusEventsToUpdate = new ArrayList<DeveloperStatusEventPair>();
         List<DeveloperStatusEventDTO> statusEventsToRemove = new ArrayList<DeveloperStatusEventDTO>();
 
-        // figure out which status events to add
-        if (updatedDev.getStatusEvents() != null && updatedDev.getStatusEvents().size() > 0) {
-            if (beforeDev.getStatusEvents() == null || beforeDev.getStatusEvents().size() == 0) {
-                // current developer has none, add all from the update
-                for (DeveloperStatusEventDTO statusEvent : updatedDev.getStatusEvents()) {
-                    statusEventsToAdd.add(statusEvent);
-                }
-            } else if (beforeDev.getStatusEvents().size() > 0) {
-                // current developer has at least one status event,
-                // compare to the updated developer to see if any status(es) are different
-                for (DeveloperStatusEventDTO updatedStatusEvent : updatedDev.getStatusEvents()) {
-                    boolean inExistingStatusHistory = false;
-                    for (DeveloperStatusEventDTO existingStatusEvent : beforeDev.getStatusEvents()) {
-                        if (updatedStatusEvent.matches(existingStatusEvent)) {
-                            inExistingStatusHistory = true;
-                            statusEventsToUpdate.add(new DeveloperStatusEventPair(
-                                    existingStatusEvent, updatedStatusEvent));
-                        }
-                    }
-
-                    if (!inExistingStatusHistory) {
-                        statusEventsToAdd.add(updatedStatusEvent);
-                    }
-                }
-            }
-        }
-
-        // figure out which status event(s) to remove
-        if (beforeDev.getStatusEvents() != null && beforeDev.getStatusEvents().size() > 0) {
-            // if the updated developer has none, that's an error
-            if (updatedDev.getStatusEvents().size() > 0) {
-                for (DeveloperStatusEventDTO existingStatusEvent : beforeDev.getStatusEvents()) {
-                    boolean inUpdatedStatusHistory = false;
-                    for (DeveloperStatusEventDTO updatedStatusEvent : updatedDev.getStatusEvents()) {
-                        inUpdatedStatusHistory = !inUpdatedStatusHistory
-                                ? existingStatusEvent.matches(updatedStatusEvent) : inUpdatedStatusHistory;
-                    }
-                    if (!inUpdatedStatusHistory) {
-                        statusEventsToRemove.add(existingStatusEvent);
-                    }
-                }
-            }
-        }
+        statusEventsToUpdate = DeveloperStatusEventsHelper.getUpdatedEvents(
+                beforeDev.getStatusEvents(), updatedDev.getStatusEvents());
+        statusEventsToRemove = DeveloperStatusEventsHelper.getRemovedEvents(
+                beforeDev.getStatusEvents(), updatedDev.getStatusEvents());
+        statusEventsToAdd = DeveloperStatusEventsHelper.getAddedEvents(
+                beforeDev.getStatusEvents(), updatedDev.getStatusEvents());
 
         for (DeveloperStatusEventPair toUpdate : statusEventsToUpdate) {
             boolean hasChanged = false;
@@ -378,7 +356,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 
         DeveloperDTO created = developerDao.create(dto);
 
-        List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
+        List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser();
         if (availableAcbs != null && availableAcbs.size() > 0) {
             for (CertificationBodyDTO acb : availableAcbs) {
                 for (DeveloperACBMapDTO attMap : dto.getTransparencyAttestationMappings()) {
@@ -438,7 +416,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 
         // check if the transparency attestation for each developer is
         // conflicting
-        List<CertificationBodyDTO> allAcbs = acbManager.getAll(false);
+        List<CertificationBodyDTO> allAcbs = acbManager.getAll();
         for (CertificationBodyDTO acb : allAcbs) {
             AttestationType transparencyAttestation = null;
             for (DeveloperDTO dev : beforeDevelopers) {
@@ -482,7 +460,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
         }
         // - mark the passed in developers as deleted
         for (Long developerId : developerIdsToMerge) {
-            List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
+            List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser();
             if (availableAcbs != null && availableAcbs.size() > 0) {
                 for (CertificationBodyDTO acb : availableAcbs) {
                     developerDao.deleteTransparencyMapping(developerId, acb.getId());
@@ -498,6 +476,20 @@ public class DeveloperManagerImpl implements DeveloperManager {
                 beforeDevelopers, createdDeveloper);
 
         return createdDeveloper;
+    }
+
+    /**
+     * Clones a list of DeveloperStatusEventDTO.
+     * @param original - List<DeveloperStatusEventDTO>
+     * @return List<DeveloperStatusEventDTO>
+     */
+    public static List<DeveloperStatusEventDTO> cloneDeveloperStatusEventList(
+            final List<DeveloperStatusEventDTO> original) {
+        List<DeveloperStatusEventDTO> clone = new ArrayList<DeveloperStatusEventDTO>();
+        for (DeveloperStatusEventDTO event : original) {
+            clone.add(new DeveloperStatusEventDTO(event));
+        }
+        return clone;
     }
 
     private Set<String> getDuplicateChplProductNumberErrorMessages(
@@ -579,7 +571,8 @@ public class DeveloperManagerImpl implements DeveloperManager {
 
             DecertifiedDeveloperResult decertifiedDeveloper = new DecertifiedDeveloperResult(
                     developerDao.getById(dto.getDeveloperId()), certifyingBody, dto.getDecertificationDate(),
-                    dto.getNumMeaningfulUse(), dto.getEarliestNumMeaningfulUseDate(), dto.getLatestNumMeaningfulUseDate());
+                    dto.getNumMeaningfulUse(), dto.getEarliestNumMeaningfulUseDate(),
+                    dto.getLatestNumMeaningfulUseDate());
             decertifiedDeveloperResults.add(decertifiedDeveloper);
         }
         return decertifiedDeveloperResults;
@@ -598,10 +591,11 @@ public class DeveloperManagerImpl implements DeveloperManager {
             for (DeveloperStatusEventDTO origStatusHistory : original.getStatusEvents()) {
                 boolean foundMatchInChanged = false;
                 for (DeveloperStatusEventDTO changedStatusHistory : changed.getStatusEvents()) {
-                    if (origStatusHistory.getStatus().getId().longValue() == changedStatusHistory.getStatus().getId()
-                            .longValue()
-                            && origStatusHistory.getStatusDate().getTime() == changedStatusHistory.getStatusDate()
-                            .getTime()) {
+                    if (origStatusHistory.getStatus().getId() != null
+                            && changedStatusHistory.getStatus().getId() != null
+                            && origStatusHistory.getStatus().getId().equals(changedStatusHistory.getStatus().getId())
+                            && origStatusHistory.getStatusDate().getTime()
+                                == changedStatusHistory.getStatusDate().getTime()) {
                         foundMatchInChanged = true;
                     }
                 }
@@ -629,71 +623,22 @@ public class DeveloperManagerImpl implements DeveloperManager {
         return ret;
     }
 
-    private class DeveloperStatusEventPair {
-        private DeveloperStatusEventDTO orig;
-        private DeveloperStatusEventDTO updated;
-
-        DeveloperStatusEventPair() { }
-
-        DeveloperStatusEventPair(final DeveloperStatusEventDTO orig,
-                final DeveloperStatusEventDTO updated) {
-
-            this.orig = orig;
-            this.updated = updated;
-        }
-
-        public DeveloperStatusEventDTO getOrig() {
-            return orig;
-        }
-
-        public void setOrig(final DeveloperStatusEventDTO orig) {
-            this.orig = orig;
-        }
-
-        public DeveloperStatusEventDTO getUpdated() {
-            return updated;
-        }
-
-        public void setUpdated(final DeveloperStatusEventDTO updated) {
-            this.updated = updated;
-        }
-
-    }
-
     private class DuplicateChplProdNumber {
         private String origChplProductNumberA;
         private String origChplProductNumberB;
-        private String newChplProductNumber;
 
-        public DuplicateChplProdNumber(final String origChplProductNumberA, final String origChplProductNumberB,
+        DuplicateChplProdNumber(final String origChplProductNumberA, final String origChplProductNumberB,
                 final String newChplProductNumber) {
             this.origChplProductNumberA = origChplProductNumberA;
             this.origChplProductNumberB = origChplProductNumberB;
-            this.newChplProductNumber = newChplProductNumber;
         }
 
         public String getOrigChplProductNumberA() {
             return origChplProductNumberA;
         }
 
-        public void setOrigChplProductNumberA(final String origChplProductNumberA) {
-            this.origChplProductNumberA = origChplProductNumberA;
-        }
-
         public String getOrigChplProductNumberB() {
             return origChplProductNumberB;
-        }
-
-        public void setOrigChplProductNumberB(final String origChplProductNumberB) {
-            this.origChplProductNumberB = origChplProductNumberB;
-        }
-
-        public String getNewChplProductNumber() {
-            return newChplProductNumber;
-        }
-
-        public void setNewChplProductNumber(final String newChplProductNumber) {
-            this.newChplProductNumber = newChplProductNumber;
         }
 
         @Override

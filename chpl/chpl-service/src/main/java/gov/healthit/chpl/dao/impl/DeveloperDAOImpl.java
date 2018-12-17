@@ -39,7 +39,6 @@ import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.util.ValidationUtils;
 
 @Repository("developerDAO")
 public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
@@ -249,10 +248,10 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
     }
 
     @Override
-    public void createDeveloperStatusEvent(DeveloperStatusEventDTO statusEventDto) 
+    public void createDeveloperStatusEvent(final DeveloperStatusEventDTO statusEventDto)
             throws EntityCreationException {
-        if (statusEventDto.getStatus() != null && 
-                !StringUtils.isEmpty(statusEventDto.getStatus().getStatusName())
+        if (statusEventDto.getStatus() != null
+                && !StringUtils.isEmpty(statusEventDto.getStatus().getStatusName())
                 && statusEventDto.getStatusDate() != null) {
             DeveloperStatusEventEntity statusEvent = new DeveloperStatusEventEntity();
             statusEvent.setDeveloperId(statusEventDto.getDeveloperId());
@@ -266,7 +265,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
                 entityManager.persist(statusEvent);
                 entityManager.flush();
             } else {
-                String msg = msgUtil.getMessage("developer.updateStatus.statusNotFound", 
+                String msg = msgUtil.getMessage("developer.updateStatus.statusNotFound",
                         statusEventDto.getStatus().getStatusName(), statusEventDto.getDeveloperId());
                 LOGGER.error(msg);
                 throw new EntityCreationException(msg);
@@ -280,11 +279,11 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
     }
 
     @Override
-    public void updateDeveloperStatusEvent(DeveloperStatusEventDTO statusEventDto) 
+    public void updateDeveloperStatusEvent(DeveloperStatusEventDTO statusEventDto)
             throws EntityRetrievalException {
-        DeveloperStatusEventEntity entityToUpdate = 
+        DeveloperStatusEventEntity entityToUpdate =
                 entityManager.find(DeveloperStatusEventEntity.class, statusEventDto.getId());
-        if(entityToUpdate == null) {
+        if (entityToUpdate == null) {
             String msg = msgUtil.getMessage("developer.updateStatus.idNotFound", statusEventDto.getId());
             LOGGER.error(msg);
             throw new EntityRetrievalException(msg);
@@ -306,11 +305,11 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
     }
 
     @Override
-    public void deleteDeveloperStatusEvent(DeveloperStatusEventDTO statusEventDto) 
+    public void deleteDeveloperStatusEvent(DeveloperStatusEventDTO statusEventDto)
             throws EntityRetrievalException {
-        DeveloperStatusEventEntity statusEventEntity = 
+        DeveloperStatusEventEntity statusEventEntity =
                 entityManager.find(DeveloperStatusEventEntity.class, statusEventDto.getId());
-        if(statusEventEntity == null) {
+        if (statusEventEntity == null) {
             String msg = msgUtil.getMessage("developer.updateStatus.idNotFound", statusEventDto.getId());
             LOGGER.error(msg);
             throw new EntityRetrievalException(msg);
@@ -318,6 +317,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
             statusEventEntity.setDeleted(Boolean.TRUE);
             entityManager.merge(statusEventEntity);
             entityManager.flush();
+            entityManager.clear();
         }
     }
 
@@ -588,7 +588,6 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
     private DeveloperEntity getEntityById(Long id) throws EntityRetrievalException {
 
         DeveloperEntity entity = null;
-
         Query query = entityManager
                 .createQuery("SELECT DISTINCT v from " + "DeveloperEntity v " + "LEFT OUTER JOIN FETCH v.address "
                         + "LEFT OUTER JOIN FETCH v.contact " + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "

@@ -23,10 +23,11 @@ import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.entity.AddressEntity;
 import gov.healthit.chpl.entity.ContactEntity;
+import gov.healthit.chpl.util.Util;
 
 @Entity
 @Table(name = "vendor")
-public class DeveloperEntity implements Cloneable, Serializable {
+public class DeveloperEntity implements Serializable {
 
     private static final long serialVersionUID = -1396979009499564864L;
 
@@ -98,7 +99,7 @@ public class DeveloperEntity implements Cloneable, Serializable {
 
     /**
      * Constructor taking a given ID.
-     * 
+     *
      * @param id
      *            to set
      */
@@ -108,7 +109,7 @@ public class DeveloperEntity implements Cloneable, Serializable {
 
     /**
      * Constructor taking a given ID.
-     * 
+     *
      * @param creationDate
      *            Date object;
      * @param deleted
@@ -131,7 +132,7 @@ public class DeveloperEntity implements Cloneable, Serializable {
 
     /**
      * Return the type of this class. Useful for when dealing with proxies.
-     * 
+     *
      * @return Defining class.
      */
     @Transient
@@ -141,7 +142,7 @@ public class DeveloperEntity implements Cloneable, Serializable {
 
     /**
      * Return the value associated with the column: address.
-     * 
+     *
      * @return A Address object (this.address)
      */
     public AddressEntity getAddress() {
@@ -150,7 +151,7 @@ public class DeveloperEntity implements Cloneable, Serializable {
 
     /**
      * Set the value related to the column: address.
-     * 
+     *
      * @param address
      *            the address value you wish to set
      */
@@ -158,29 +159,17 @@ public class DeveloperEntity implements Cloneable, Serializable {
         this.address = address;
     }
 
-    /**
-     * Return the value associated with the column: creationDate.
-     * 
-     * @return A Date object (this.creationDate)
-     */
     public Date getCreationDate() {
-        return this.creationDate;
-
+        return Util.getNewDate(creationDate);
     }
 
-    /**
-     * Set the value related to the column: creationDate.
-     * 
-     * @param creationDate
-     *            the creationDate value you wish to set
-     */
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     /**
      * Return the value associated with the column: deleted.
-     * 
+     *
      * @return A Boolean object (this.deleted)
      */
     public Boolean isDeleted() {
@@ -190,7 +179,7 @@ public class DeveloperEntity implements Cloneable, Serializable {
 
     /**
      * Set the value related to the column: deleted.
-     * 
+     *
      * @param deleted
      *            the deleted value you wish to set
      */
@@ -200,7 +189,7 @@ public class DeveloperEntity implements Cloneable, Serializable {
 
     /**
      * Return the value associated with the column: id.
-     * 
+     *
      * @return A Long object (this.id)
      */
     public Long getId() {
@@ -210,7 +199,7 @@ public class DeveloperEntity implements Cloneable, Serializable {
 
     /**
      * Set the value related to the column: id.
-     * 
+     *
      * @param id
      *            the id value you wish to set
      */
@@ -218,29 +207,17 @@ public class DeveloperEntity implements Cloneable, Serializable {
         this.id = id;
     }
 
-    /**
-     * Return the value associated with the column: lastModifiedDate.
-     * 
-     * @return A Date object (this.lastModifiedDate)
-     */
     public Date getLastModifiedDate() {
-        return this.lastModifiedDate;
-
+        return Util.getNewDate(lastModifiedDate);
     }
 
-    /**
-     * Set the value related to the column: lastModifiedDate.
-     * 
-     * @param lastModifiedDate
-     *            the lastModifiedDate value you wish to set
-     */
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     /**
      * Return the value associated with the column: lastModifiedUser.
-     * 
+     *
      * @return A Long object (this.lastModifiedUser)
      */
     public Long getLastModifiedUser() {
@@ -250,7 +227,7 @@ public class DeveloperEntity implements Cloneable, Serializable {
 
     /**
      * Set the value related to the column: lastModifiedUser.
-     * 
+     *
      * @param lastModifiedUser
      *            the lastModifiedUser value you wish to set
      */
@@ -260,7 +237,7 @@ public class DeveloperEntity implements Cloneable, Serializable {
 
     /**
      * Return the value associated with the column: name.
-     * 
+     *
      * @return A String object (this.name)
      */
     public String getName() {
@@ -270,7 +247,7 @@ public class DeveloperEntity implements Cloneable, Serializable {
 
     /**
      * Set the value related to the column: name.
-     * 
+     *
      * @param name
      *            the name value you wish to set
      */
@@ -280,7 +257,7 @@ public class DeveloperEntity implements Cloneable, Serializable {
 
     /**
      * Return the value associated with the column: website.
-     * 
+     *
      * @return A String object (this.website)
      */
     public String getWebsite() {
@@ -290,7 +267,7 @@ public class DeveloperEntity implements Cloneable, Serializable {
 
     /**
      * Set the value related to the column: website.
-     * 
+     *
      * @param website
      *            the website value you wish to set
      */
@@ -302,7 +279,7 @@ public class DeveloperEntity implements Cloneable, Serializable {
         return this.developerCertificationStatuses;
     }
 
-    public void setDeveloperCertificationStatuses(final 
+    public void setDeveloperCertificationStatuses(final
             DeveloperCertificationStatusesEntity developerCertificationStatusesEntity) {
         this.developerCertificationStatuses = developerCertificationStatusesEntity;
     }

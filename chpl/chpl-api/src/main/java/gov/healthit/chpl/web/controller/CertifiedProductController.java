@@ -53,7 +53,6 @@ import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.IdListContainer;
-import gov.healthit.chpl.domain.Job;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
@@ -120,9 +119,6 @@ public class CertifiedProductController {
     private ListingValidatorFactory validatorFactory;
 
     @Autowired
-    private MeaningfulUseController meaningfulUseController;
-
-    @Autowired
     private Environment env;
 
     @Autowired
@@ -140,7 +136,7 @@ public class CertifiedProductController {
      */
     @ApiOperation(value = "List all certified products",
             notes = "Default behavior is to return all certified products in the system. "
-                    + " The optional 'versionId' parameter filters the certified products to those"
+                    + " The required 'versionId' parameter filters the certified products to those"
                     + " assigned to that version. The 'editable' parameter will return only those"
                     + " certified products that the logged in user has permission to edit as "
                     + " determined by ACB roles and authorities. Not all information about "
@@ -188,6 +184,21 @@ public class CertifiedProductController {
         return certifiedProduct;
     }
 
+    /**
+     * Get certified product details for a listing based on unique CHPL ID.
+     * @param year two-digit year (14 or 15)
+     * @param testingLab two-digit ATL code
+     * @param certBody two-digit ACB code
+     * @param vendorCode assigned developer code
+     * @param productCode user-defined product code
+     * @param versionCode user-defined version code
+     * @param icsCode two-digit ICS code
+     * @param addlSoftwareCode single-digit additional software code (0 or 1)
+     * @param certDateCode certified date code (YYMMDD format)
+     * @return details for the listing with the unique CHPL ID specified
+     * @throws EntityRetrievalException if a listing with the unique CHPL ID cannot be found.
+     */
+    @SuppressWarnings({"checkstyle:parameternumber"})
     @ApiOperation(value = "Get all details for a specified certified product.",
             notes = "Returns all information in the CHPL related to the specified certified product.  "
                     + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
@@ -261,6 +272,22 @@ public class CertifiedProductController {
         return certifiedProduct;
     }
 
+    /**
+     * Get "basic" information for a listing which includes all details
+     * except for certification results and cqm results.
+     * @param year two-digit year (14 or 15)
+     * @param testingLab two-digit ATL code
+     * @param certBody two-digit ACB code
+     * @param vendorCode assigned developer code
+     * @param productCode user-defined product code
+     * @param versionCode user-defined version code
+     * @param icsCode two-digit ICS code
+     * @param addlSoftwareCode single-digit additional software code (0 or 1)
+     * @param certDateCode certified date code (YYMMDD format)
+     * @return the basic information about the listing identified by the unique CHPL ID specified
+     * @throws EntityRetrievalException if the listing cannot be found
+     */
+    @SuppressWarnings({"checkstyle:parameternumber"})
     @ApiOperation(value = "Get all basic information for a specified certified product.  Does not include "
             + "the CQM results and certification results.",
             notes = "Returns basic information in the CHPL related to the specified certified product.  "
@@ -551,35 +578,6 @@ public class CertifiedProductController {
         return familyTree;
     }
 
-    /**
-     * Update an existing certified product.
-     * @param updateRequest the update request
-     * @return the updated listing
-     * @throws EntityCreationException if cannot create entity
-     * @throws EntityRetrievalException if cannot retrieve entity
-     * @throws InvalidArgumentsException if invalid arguments
-     * @throws JsonProcessingException if cannot parse JSON
-     * @throws IOException if IO Exception
-     * @throws ValidationException if invalid update
-     * @throws MissingReasonException if missing reason for change
-     */
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED.  Update an existing certified product.",
-    notes = "Updates the certified product after first validating the request. The logged in"
-            + " user must have ROLE_ADMIN or ROLE_ACB and have administrative "
-            + " authority on the ACB that certified the product. If a different ACB is passed in"
-            + " as part of the request, an ownership change will take place and the logged in "
-            + " user must have ROLE_ADMIN.")
-    @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-    public ResponseEntity<CertifiedProductSearchDetails> updateCertifiedProductDeprecated(
-            @RequestBody(required = true) final ListingUpdateRequest updateRequest)
-                    throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
-                    JsonProcessingException, IOException, ValidationException, MissingReasonException {
-
-
-        return update(updateRequest);
-    }
-
     @ApiOperation(value = "Update an existing certified product.",
             notes = "Updates the certified product after first validating the request. The logged in"
                     + " user must have ROLE_ADMIN or ROLE_ACB and have administrative "
@@ -708,7 +706,7 @@ public class CertifiedProductController {
             throw new AccessDeniedException(msgUtil.getMessage("access.pendingCertifiedProducts"));
         }
 
-        List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
+        List<CertificationBodyDTO> acbs = acbManager.getAllForUser();
         List<PendingCertifiedProductDTO> allProductDtos = new ArrayList<PendingCertifiedProductDTO>();
 
         if (acbs != null) {
@@ -752,33 +750,9 @@ public class CertifiedProductController {
     public @ResponseBody PendingCertifiedProductDetails getPendingCertifiedProductById(
             @PathVariable("pcpId") final Long pcpId) throws EntityRetrievalException, EntityNotFoundException,
     AccessDeniedException, ObjectMissingValidationException {
-        List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
+        List<CertificationBodyDTO> acbs = acbManager.getAllForUser();
         PendingCertifiedProductDetails details = pcpManager.getById(acbs, pcpId);
         return details;
-    }
-
-    /**
-     * Reject a pending Listing.
-     * @param id the listing to reject
-     * @return status of request
-     * @throws EntityRetrievalException if entity can not be retrieved
-     * @throws JsonProcessingException if JSON cannot be processed
-     * @throws EntityCreationException if entity cannot be created
-     * @throws EntityNotFoundException if entity not found
-     * @throws AccessDeniedException if user does not have access
-     * @throws ObjectMissingValidationException if missing validation
-     */
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED.  Reject a pending certified product.",
-    notes = "Essentially deletes a pending certified product. ROLE_ACB "
-            + " and administrative authority on the ACB is required.")
-    @RequestMapping(value = "/pending/{pcpId}/reject", method = RequestMethod.POST,
-    produces = "application/json; charset=utf-8")
-    public @ResponseBody String rejectPendingCertifiedProductDeprecated(@PathVariable("pcpId") final Long id)
-            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
-            AccessDeniedException, ObjectMissingValidationException {
-
-        return deletePendingCertifiedProduct(id);
     }
 
     @ApiOperation(value = "Reject a pending certified product.",
@@ -797,34 +771,9 @@ public class CertifiedProductController {
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
             AccessDeniedException, ObjectMissingValidationException {
 
-        List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
+        List<CertificationBodyDTO> acbs = acbManager.getAllForUser();
         pcpManager.deletePendingCertifiedProduct(acbs, id);
         return "{\"success\" : true}";
-    }
-
-    /**
-     * Reject several pending listings.
-     * @param idList list of ids
-     * @return status of request
-     * @throws EntityRetrievalException if entity can not be retrieved
-     * @throws JsonProcessingException if JSON cannot be processed
-     * @throws EntityCreationException if entity cannot be created
-     * @throws EntityNotFoundException if entity not found
-     * @throws AccessDeniedException if user does not have access
-     * @throws InvalidArgumentsException if arguments are invalid
-     * @throws ObjectsMissingValidationException if missing validation
-     */
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED.  Reject several pending certified products.",
-    notes = "Marks a list of pending certified products as deleted. ROLE_ACB "
-            + " and administrative authority on the ACB for each pending certified product is required.")
-    @RequestMapping(value = "/pending/reject", method = RequestMethod.POST,
-    produces = "application/json; charset=utf-8")
-    public @ResponseBody String rejectPendingCertifiedProductsDeprecated(@RequestBody final IdListContainer idList)
-            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
-            AccessDeniedException, InvalidArgumentsException, ObjectsMissingValidationException {
-
-        return deletePendingCertifiedProducts(idList);
     }
 
     @ApiOperation(value = "Reject several pending certified products.",
@@ -847,7 +796,7 @@ public class CertifiedProductController {
         }
 
         ObjectsMissingValidationException possibleExceptions = new ObjectsMissingValidationException();
-        List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
+        List<CertificationBodyDTO> acbs = acbManager.getAllForUser();
         for (Long id : idList.getIds()) {
             try {
                 pcpManager.deletePendingCertifiedProduct(acbs, id);
@@ -862,39 +811,8 @@ public class CertifiedProductController {
         return "{\"success\" : true}";
     }
 
-
-    /**
-     * Confirm a pending listing.
-     * @param pendingCp the listing's id
-     * @return the created listing
-     * @throws InvalidArgumentsException if arguments are invalid
-     * @throws ValidationException if validation fails
-     * @throws EntityCreationException if entity can not be created
-     * @throws EntityRetrievalException if entity can not be retrieved
-     * @throws ObjectMissingValidationException if object is missing validation
-     * @throws IOException if IO Exception occurs
-     */
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED.  Confirm a pending certified product.",
-    notes = "Creates a new certified product in the system based on all of the information "
-            + " passed in on the request. This information may differ from what was previously "
-            + " entered for the pending certified product during upload. It will first be validated "
-            + " to check for errors, then a new certified product is created, and the old pending certified"
-            + " product will be removed. ROLE_ACB "
-            + " and administrative authority on the ACB is required.")
-    @RequestMapping(value = "/pending/confirm", method = RequestMethod.POST,
-    produces = "application/json; charset=utf-8")
-    public synchronized ResponseEntity<CertifiedProductSearchDetails> confirmPendingCertifiedProductDprecated(
-            @RequestBody(required = true) final PendingCertifiedProductDetails pendingCp)
-                    throws InvalidArgumentsException, ValidationException,
-                    EntityCreationException, EntityRetrievalException,
-                    ObjectMissingValidationException, IOException {
-
-        return addPendingCertifiedProduct(pendingCp);
-    }
-
     //TODO - We might want to take a look at reworking this.  Maybe should be a PUT and the parameters
-    //  should be re-evaluated 
+    //should be re-evaluated
     @ApiOperation(value = "Confirm a pending certified product.",
             notes = "Creates a new certified product in the system based on all of the information "
                     + " passed in on the request. This information may differ from what was previously "

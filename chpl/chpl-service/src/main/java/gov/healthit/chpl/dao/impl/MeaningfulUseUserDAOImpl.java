@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.MeaningfulUseUserDAO;
@@ -23,6 +24,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 public class MeaningfulUseUserDAOImpl extends BaseDAOImpl implements MeaningfulUseUserDAO {
 
     @Override
+    @Transactional
     public MeaningfulUseUserDTO create(final MeaningfulUseUserDTO dto)
             throws EntityCreationException, EntityRetrievalException {
 
@@ -113,7 +115,7 @@ public class MeaningfulUseUserDAOImpl extends BaseDAOImpl implements MeaningfulU
         Query query = entityManager.createQuery("SELECT muu "
                 + "FROM MeaningfulUseUserEntity muu "
                 + "WHERE muu.certifiedProductId = :cpId "
-                + "AND (NOT muu.deleted = true)", 
+                + "AND (NOT muu.deleted = true)",
                 MeaningfulUseUserEntity.class);
         query.setParameter("cpId", cpId);
         List<MeaningfulUseUserEntity> result = query.getResultList();

@@ -11,7 +11,6 @@ import javax.mail.internet.AddressException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -44,40 +43,26 @@ public class ApiKeyController {
     @Autowired
     private Environment env;
 
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED.  Sign up for a new API key.",
-            notes = "Anyone wishing to access the methods listed in this API must have an API key. This service "
-                    + " will auto-generate a key and send it to the supplied email address. It must be included "
-                    + " in subsequent API calls via either a header with the name 'API-Key' or as a URL parameter"
-                    + " named 'api_key'.")
-    @RequestMapping(value = "/register", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
-    public String registerDeprecated(@RequestBody final ApiKeyRegistration registration) 
-            throws EntityCreationException, AddressException, MessagingException, JsonProcessingException,
-            EntityRetrievalException {
-
-        return create(registration);
-    }
-
     @ApiOperation(value = "Sign up for a new API key.",
             notes = "Anyone wishing to access the methods listed in this API must have an API key. This service "
                     + " will auto-generate a key and send it to the supplied email address. It must be included "
                     + " in subsequent API calls via either a header with the name 'API-Key' or as a URL parameter"
                     + " named 'api_key'.")
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public String register(@RequestBody final ApiKeyRegistration registration) throws EntityCreationException,
-            AddressException, MessagingException, JsonProcessingException, EntityRetrievalException {
+    AddressException, MessagingException, JsonProcessingException, EntityRetrievalException {
 
         return create(registration);
     }
 
     private String create(final ApiKeyRegistration registration) throws EntityCreationException,
-            AddressException, MessagingException, JsonProcessingException, EntityRetrievalException {
+    AddressException, MessagingException, JsonProcessingException, EntityRetrievalException {
 
         Date now = new Date();
 
-        String apiKey = gov.healthit.chpl.util.Util.md5(registration.getName() + registration.getEmail() + now.getTime());
+        String apiKey = gov.healthit.chpl.util.Util.md5(registration.getName()
+                + registration.getEmail() + now.getTime());
         ApiKeyDTO toCreate = new ApiKeyDTO();
 
         toCreate.setApiKey(apiKey);
@@ -96,34 +81,19 @@ public class ApiKeyController {
         return "{\"keyRegistered\" : \"" + apiKey + "\"}";
     }
 
-
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED.  Remove an API key.", notes = "This service is only available to CHPL users "
-            + "with ROLE_ADMIN.")
-    @RequestMapping(value = "/revoke", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public String revokeDeprecated(@RequestBody final ApiKey key,
-            @RequestHeader(value = "API-Key", required = false) final String userApiKey,
-            @RequestParam(value = "apiKey", required = false) final String userApiKeyParam) throws Exception {
-
-        return delete(key, userApiKey, userApiKeyParam);
-    }
-
     @ApiOperation(value = "Remove an API key.", notes = "This service is only available to CHPL users with ROLE_ADMIN.")
-    @RequestMapping(value = "/{apiKey}", method = RequestMethod.DELETE, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public String revoke(@RequestBody final ApiKey key,
+    @RequestMapping(value = "/{key}", method = RequestMethod.DELETE,
+    produces = "application/json; charset=utf-8")
+    public String revoke(@PathVariable("key") final String key,
             @RequestHeader(value = "API-Key", required = false) final String userApiKey,
             @RequestParam(value = "apiKey", required = false) final String userApiKeyParam) throws Exception {
 
         return delete(key, userApiKey, userApiKeyParam);
     }
 
-    private String delete(final ApiKey key, final String userApiKey, final String userApiKeyParam) throws Exception {
+    private String delete(final String key, final String userApiKey, final String userApiKeyParam) throws Exception {
 
-        String keyToRevoke = key.getKey();
+        String keyToRevoke = key;
         if (keyToRevoke.equals(userApiKey) || keyToRevoke.equals(userApiKeyParam)) {
             throw new Exception("A user can not delete their own API key.");
         }
@@ -135,7 +105,6 @@ public class ApiKeyController {
     @ApiOperation(value = "List all API keys that have been created.",
             notes = "This service is only available to CHPL users with ROLE_ADMIN.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<ApiKey> listKeys() {
 
         List<ApiKey> keys = new ArrayList<ApiKey>();
@@ -154,27 +123,9 @@ public class ApiKeyController {
         return keys;
     }
 
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED.  View the calls made per API key.",
-            notes = "This service is only available to CHPL users with ROLE_ADMIN.")
-    @RequestMapping(value = "/activity", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
-    public List<ApiKeyActivity> listActivityDeprecated(
-            @RequestParam(value = "pageNumber", required = false) final Integer pageNumber,
-            @RequestParam(value = "pageSize", required = false) final Integer pageSize,
-            @RequestParam(value = "filter", required = false) final String apiKeyFilter,
-            @RequestParam(value = "dateAscending", required = false) final boolean dateAscending,
-            @RequestParam(value = "start", required = false) final Long startDateMilli,
-            @RequestParam(value = "end", required = false) final Long endDateMilli) throws EntityRetrievalException {
-
-        return getActivity(pageNumber, pageSize, apiKeyFilter, dateAscending, startDateMilli, endDateMilli);
-    }
-
     @ApiOperation(value = "View the calls made per API key.",
             notes = "This service is only available to CHPL users with ROLE_ADMIN.")
     @RequestMapping(value = "/activity", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
     public List<ApiKeyActivity> listActivity(
             @RequestParam(value = "pageNumber", required = false) final Integer pageNumber,
             @RequestParam(value = "pageSize", required = false) final Integer pageSize,
@@ -207,26 +158,10 @@ public class ApiKeyController {
         return apiKeyActivitiesList;
     }
 
-
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED.  View the calls made by a specific API key.",
-            notes = "This service is only available to CHPL users with ROLE_ADMIN.")
-    @RequestMapping(value = "/activity/{apiKey}", method = RequestMethod.POST,
-            consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
-    public List<ApiKeyActivity> listActivityByKeyDeprecated(@PathVariable("apiKey") final String apiKey,
-            @RequestParam(value = "pageNumber", required = false) final Integer pageNumber,
-            @RequestParam(value = "pageSize", required = false) final Integer pageSize)
-                    throws EntityRetrievalException {
-
-        return getActivityByKey(apiKey, pageNumber, pageSize);
-    }
-
     @ApiOperation(value = "View the calls made by a specific API key.",
             notes = "This service is only available to CHPL users with ROLE_ADMIN.")
     @RequestMapping(value = "/activity/{apiKey}", method = RequestMethod.GET,
-                    produces = "application/json; charset=utf-8")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
+    produces = "application/json; charset=utf-8")
     public List<ApiKeyActivity> listActivityByKey(@PathVariable("apiKey") final String apiKey,
             @RequestParam(value = "pageNumber", required = false) final Integer pageNumber,
             @RequestParam(value = "pageSize", required = false) final Integer pageSize)
@@ -269,11 +204,11 @@ public class ApiKeyController {
         String[] toEmails = {
                 email
         };
-        
+
         EmailBuilder emailBuilder = new EmailBuilder(env);
         emailBuilder.recipients(new ArrayList<String>(Arrays.asList(toEmails)))
-                        .subject(subject)
-                        .htmlMessage(htmlMessage)
-                        .sendEmail();
+        .subject(subject)
+        .htmlMessage(htmlMessage)
+        .sendEmail();
     }
 }

@@ -15,6 +15,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
+import gov.healthit.chpl.util.Util;
 
 @Entity
 @Table(name = "cqm_result_criteria")
@@ -60,29 +61,17 @@ public class CQMResultCriteriaEntity implements Serializable {
         // Default constructor
     }
 
-    /**
-     * Return the value associated with the column: creationDate.
-     * 
-     * @return A Date object (this.creationDate)
-     */
     public Date getCreationDate() {
-        return this.creationDate;
-
+        return Util.getNewDate(creationDate);
     }
 
-    /**
-     * Set the value related to the column: creationDate.
-     * 
-     * @param creationDate
-     *            the creationDate value you wish to set
-     */
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     /**
      * Return the value associated with the column: deleted.
-     * 
+     *
      * @return A Boolean object (this.deleted)
      */
     public Boolean isDeleted() {
@@ -92,7 +81,7 @@ public class CQMResultCriteriaEntity implements Serializable {
 
     /**
      * Set the value related to the column: deleted.
-     * 
+     *
      * @param deleted
      *            the deleted value you wish to set
      */
@@ -102,7 +91,7 @@ public class CQMResultCriteriaEntity implements Serializable {
 
     /**
      * Return the value associated with the column: id.
-     * 
+     *
      * @return A Long object (this.id)
      */
     public Long getId() {
@@ -112,7 +101,7 @@ public class CQMResultCriteriaEntity implements Serializable {
 
     /**
      * Set the value related to the column: id.
-     * 
+     *
      * @param id
      *            the id value you wish to set
      */
@@ -120,29 +109,17 @@ public class CQMResultCriteriaEntity implements Serializable {
         this.id = id;
     }
 
-    /**
-     * Return the value associated with the column: lastModifiedDate.
-     * 
-     * @return A Date object (this.lastModifiedDate)
-     */
     public Date getLastModifiedDate() {
-        return this.lastModifiedDate;
-
+        return Util.getNewDate(lastModifiedDate);
     }
 
-    /**
-     * Set the value related to the column: lastModifiedDate.
-     * 
-     * @param lastModifiedDate
-     *            the lastModifiedDate value you wish to set
-     */
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     /**
      * Return the value associated with the column: lastModifiedUser.
-     * 
+     *
      * @return A Long object (this.lastModifiedUser)
      */
     public Long getLastModifiedUser() {
@@ -152,7 +129,7 @@ public class CQMResultCriteriaEntity implements Serializable {
 
     /**
      * Set the value related to the column: lastModifiedUser.
-     * 
+     *
      * @param lastModifiedUser
      *            the lastModifiedUser value you wish to set
      */

@@ -1,5 +1,6 @@
 package gov.healthit.chpl.entity.listing;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -17,10 +18,12 @@ import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.entity.TestParticipantEntity;
 import gov.healthit.chpl.entity.TestTaskEntity;
+import gov.healthit.chpl.util.Util;
 
 @Entity
 @Table(name = "test_task_participant_map")
-public class TestTaskParticipantMapEntity {
+public class TestTaskParticipantMapEntity implements Serializable {
+    private static final long serialVersionUID = -1114257207589782550L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -73,11 +76,11 @@ public class TestTaskParticipantMapEntity {
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Boolean getDeleted() {
@@ -89,11 +92,11 @@ public class TestTaskParticipantMapEntity {
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public Long getLastModifiedUser() {

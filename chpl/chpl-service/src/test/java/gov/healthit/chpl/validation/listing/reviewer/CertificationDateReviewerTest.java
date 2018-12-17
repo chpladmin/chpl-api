@@ -9,11 +9,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -26,16 +26,18 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 public class CertificationDateReviewerTest {
     private static final String FUTURE_CERT_DATE_ERROR = "Certification date occurs in the future.";
     @Autowired private ListingMockUtil mockUtil;
+    @Autowired private MessageSource messageSource;
 
     @Spy
-    private ErrorMessageUtil msgUtil;
-    
-    @InjectMocks
+    private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
+
     private CertificationDateReviewer certDateReviewer;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+
+        certDateReviewer = new CertificationDateReviewer(msgUtil);
     }
 
     //Case: A valid certification date
@@ -58,7 +60,6 @@ public class CertificationDateReviewerTest {
         cal.add(Calendar.YEAR, 1);
         listing.setCertificationDate(cal.getTimeInMillis());
         certDateReviewer.review(listing);
-        
         assertTrue(listing.getErrorMessages().contains(FUTURE_CERT_DATE_ERROR));
     }
 }

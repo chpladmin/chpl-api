@@ -13,9 +13,9 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("unattestedCriteriaWithDataReviewer")
 public class UnattestedCriteriaWithDataReviewer implements Reviewer {
-    
+
     @Autowired ErrorMessageUtil msgUtil;
-    
+
     public void review(CertifiedProductSearchDetails listing) {
         for (CertificationResult cert : listing.getCertificationResults()) {
             if ((cert.isSuccess() == null || !cert.isSuccess().booleanValue())) {
@@ -29,7 +29,7 @@ public class UnattestedCriteriaWithDataReviewer implements Reviewer {
                 }
                 if (!StringUtils.isEmpty(cert.getApiDocumentation())) {
                     listing.getWarningMessages()
-                    .add(msgUtil.getMessage("listing.criteria.falseCriteriaHasData", 
+                    .add(msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
                             cert.getNumber(), "API Documentation"));
                 }
                 if (!StringUtils.isEmpty(cert.getPrivacySecurityFramework())) {
@@ -38,7 +38,7 @@ public class UnattestedCriteriaWithDataReviewer implements Reviewer {
                 }
                 if (cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
                     listing.getWarningMessages()
-                    .add(msgUtil.getMessage("listing.criteria.falseCriteriaHasData", 
+                    .add(msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
                             cert.getNumber(), "Additional Software"));
                 }
                 if (cert.getTestDataUsed() != null && cert.getTestDataUsed().size() > 0) {

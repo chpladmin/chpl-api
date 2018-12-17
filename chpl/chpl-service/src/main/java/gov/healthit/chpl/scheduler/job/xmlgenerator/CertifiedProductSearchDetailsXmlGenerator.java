@@ -13,11 +13,11 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 
 public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductSearchDetailsXmlGenerator.class);
-    
+
     public static void add(List<CertifiedProductSearchDetails> cps, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (cps != null) {
             sw.writeStartElement(rootNodeName);
-            
+
             for (CertifiedProductSearchDetails cp : cps) {
                 add(cp, "listing", sw);
             }
