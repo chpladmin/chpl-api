@@ -1,4 +1,4 @@
-package gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.duplicate;
+package gov.healthit.chpl.validation.pendingListing.reviewer.edition2014.duplicate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,13 +11,14 @@ import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.validation.pendingListing.reviewer.duplicate.DuplicateReviewResult;
 
-@Component("testDataDuplicateReviewer")
-public class TestDataDuplicateReviewer {
+@Component("testData2014DuplicateReviewer")
+public class TestData2014DuplicateReviewer {
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public TestDataDuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
+    public TestData2014DuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
         this.errorMessageUtil = errorMessageUtil;
     }
 
@@ -32,7 +33,7 @@ public class TestDataDuplicateReviewer {
             }
         }
 
-        if (testDataDuplicateResults.getDuplicateList().size() > 0) {
+        if (testDataDuplicateResults.duplicatesExist()) {
             listing.getWarningMessages().addAll(getWarnings(testDataDuplicateResults.getDuplicateList(), certificationResult.getNumber()));
             certificationResult.setTestData(testDataDuplicateResults.getUniqueList());
         }
@@ -41,8 +42,8 @@ public class TestDataDuplicateReviewer {
     private List<String> getWarnings(List<PendingCertificationResultTestDataDTO> duplicates, String criteria) {
         List<String> warnings = new ArrayList<String>();
         for (PendingCertificationResultTestDataDTO duplicate : duplicates) {
-            String warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestData.2015",
-                    criteria, duplicate.getEnteredName(), duplicate.getVersion(), duplicate.getAlteration());
+            String warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestData.2014",
+                    criteria, duplicate.getVersion());
             warnings.add(warning);
         }
         return warnings;
@@ -52,13 +53,8 @@ public class TestDataDuplicateReviewer {
         return new BiPredicate<PendingCertificationResultTestDataDTO, PendingCertificationResultTestDataDTO>() {
             @Override
             public boolean test(PendingCertificationResultTestDataDTO dto1, PendingCertificationResultTestDataDTO dto2) {
-                if (dto1.getEnteredName() != null && dto2.getEnteredName() != null
-                        && dto1.getVersion() != null && dto2.getVersion() != null
-                        && dto1.getAlteration() != null && dto2.getAlteration() != null) {
-
-                    return dto1.getEnteredName().equals(dto2.getEnteredName())
-                            && dto1.getVersion().equals(dto2.getVersion())
-                            && dto1.getAlteration().equals(dto2.getAlteration());
+                if (dto1.getVersion() != null && dto2.getVersion() != null) {
+                    return dto1.getVersion().equals(dto2.getVersion());
                 } else {
                     return false;
                 }

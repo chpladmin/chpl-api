@@ -8,35 +8,40 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
-import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.duplicate.AccessibilityStandardDuplicateReviewer;
-import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.duplicate.AdditionalSoftwareDuplicateReviewer;
-import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.duplicate.TestDataDuplicateReviewer;
-import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.duplicate.TestFunctionalityDuplicateReviewer;
-import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.duplicate.TestProcedureDuplicateReviewer;
-import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.duplicate.TestStandardDuplicateReviewer;
-import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.duplicate.TestToolDuplicateReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.duplicate.TestFunctionalityDuplicateReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.duplicate.TestStandardDuplicateReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.duplicate.TestToolDuplicateReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.duplicate.AccessibilityStandard2015DuplicateReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.duplicate.AdditionalSoftware2015DuplicateReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.duplicate.IcsSource2015DuplicateReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.duplicate.QmsStandard2015DuplicateReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.duplicate.TestData2015DuplicateReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.duplicate.TestProcedure2015DuplicateReviewer;
 
 @Component("pendingDuplicateData2015Reviewer")
 public class DuplicateData2015Reviewer implements Reviewer {
     private static final Logger LOGGER = LogManager.getLogger(DuplicateData2015Reviewer.class);
 
-    //private ErrorMessageUtil errorMessageUtil;
     private TestFunctionalityDuplicateReviewer testFunctionalityDuplicateReviewer;
-    private TestDataDuplicateReviewer testDataDuplicateReviewer;
+    private TestData2015DuplicateReviewer testDataDuplicateReviewer;
     private TestToolDuplicateReviewer testToolDuplicateReviewer;
-    private TestProcedureDuplicateReviewer testProcedureDuplicateReviewer;
+    private TestProcedure2015DuplicateReviewer testProcedureDuplicateReviewer;
     private TestStandardDuplicateReviewer testStandardDuplicateReviewer;
-    private AdditionalSoftwareDuplicateReviewer additionalSoftwareDuplicateReviewer;
-    private AccessibilityStandardDuplicateReviewer accessibilityStandardDuplicateReviewer;
+    private AdditionalSoftware2015DuplicateReviewer additionalSoftwareDuplicateReviewer;
+    private AccessibilityStandard2015DuplicateReviewer accessibilityStandardDuplicateReviewer;
+    private QmsStandard2015DuplicateReviewer qmsStandardDuplicateReviewer;
+    private IcsSource2015DuplicateReviewer icsSourceDuplicateReviewer;
 
     @Autowired
     public DuplicateData2015Reviewer(TestFunctionalityDuplicateReviewer testFunctionalityDuplicateReviewer,
-            TestDataDuplicateReviewer testDataDuplicateReviewer,
+            TestData2015DuplicateReviewer testDataDuplicateReviewer,
             TestToolDuplicateReviewer testToolDuplicateReviewer,
-            TestProcedureDuplicateReviewer testProcedureDuplicateReviewer,
+            TestProcedure2015DuplicateReviewer testProcedureDuplicateReviewer,
             TestStandardDuplicateReviewer testStandardDuplicateReviewer,
-            AdditionalSoftwareDuplicateReviewer additionalSoftwareDuplicateReviewer,
-            AccessibilityStandardDuplicateReviewer accessibilityStandardDuplicateReviewer) {
+            AdditionalSoftware2015DuplicateReviewer additionalSoftwareDuplicateReviewer,
+            AccessibilityStandard2015DuplicateReviewer accessibilityStandardDuplicateReviewer,
+            QmsStandard2015DuplicateReviewer qmsStandardDuplicateReviewer,
+            IcsSource2015DuplicateReviewer icsSourceDuplicateReviewer) {
         this.testFunctionalityDuplicateReviewer = testFunctionalityDuplicateReviewer;
         this.testDataDuplicateReviewer = testDataDuplicateReviewer;
         this.testToolDuplicateReviewer = testToolDuplicateReviewer;
@@ -44,11 +49,15 @@ public class DuplicateData2015Reviewer implements Reviewer {
         this.testStandardDuplicateReviewer = testStandardDuplicateReviewer;
         this.additionalSoftwareDuplicateReviewer = additionalSoftwareDuplicateReviewer;
         this.accessibilityStandardDuplicateReviewer = accessibilityStandardDuplicateReviewer;
+        this.qmsStandardDuplicateReviewer = qmsStandardDuplicateReviewer;
+        this.icsSourceDuplicateReviewer = icsSourceDuplicateReviewer;
     }
 
     @Override
     public void review(final PendingCertifiedProductDTO listing) {
         accessibilityStandardDuplicateReviewer.review(listing);
+        qmsStandardDuplicateReviewer.review(listing);
+        icsSourceDuplicateReviewer.review(listing);
 
         for (PendingCertificationResultDTO pcr : listing.getCertificationCriterion()) {
             additionalSoftwareDuplicateReviewer.review(listing, pcr);

@@ -1,4 +1,4 @@
-package gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.duplicate;
+package gov.healthit.chpl.validation.pendingListing.reviewer.duplicate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,5 +28,9 @@ public class DuplicateReviewResult<T> {
 
     public List<T> getDuplicateList() {
         return duplicateList;
+    }
+
+    public Boolean duplicatesExist() {
+        return getDuplicateList().size() > 0;
     }
 }

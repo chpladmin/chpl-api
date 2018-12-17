@@ -11,13 +11,14 @@ import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.validation.pendingListing.reviewer.duplicate.DuplicateReviewResult;
 
-@Component("testProcedureDuplicateReviewer")
-public class TestProcedureDuplicateReviewer {
+@Component("testProcedure2015DuplicateReviewer")
+public class TestProcedure2015DuplicateReviewer {
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public TestProcedureDuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
+    public TestProcedure2015DuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
         this.errorMessageUtil = errorMessageUtil;
     }
 
@@ -32,7 +33,7 @@ public class TestProcedureDuplicateReviewer {
             }
         }
 
-        if (testProcedureDuplicateResults.getDuplicateList().size() > 0) {
+        if (testProcedureDuplicateResults.duplicatesExist()) {
             listing.getWarningMessages().addAll(getWarnings(testProcedureDuplicateResults.getDuplicateList(), certificationResult.getNumber()));
             certificationResult.setTestProcedures(testProcedureDuplicateResults.getUniqueList());
         }

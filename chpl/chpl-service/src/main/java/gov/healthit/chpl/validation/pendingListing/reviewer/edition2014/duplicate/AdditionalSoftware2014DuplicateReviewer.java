@@ -1,4 +1,4 @@
-package gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.duplicate;
+package gov.healthit.chpl.validation.pendingListing.reviewer.edition2014.duplicate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,13 +11,14 @@ import gov.healthit.chpl.dto.PendingCertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.validation.pendingListing.reviewer.duplicate.DuplicateReviewResult;
 
-@Component("additionalSoftwareDuplicateReviewer")
-public class AdditionalSoftwareDuplicateReviewer {
+@Component("additionalSoftware2014DuplicateReviewer")
+public class AdditionalSoftware2014DuplicateReviewer {
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public AdditionalSoftwareDuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
+    public AdditionalSoftware2014DuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
         this.errorMessageUtil = errorMessageUtil;
     }
 
@@ -32,7 +33,7 @@ public class AdditionalSoftwareDuplicateReviewer {
             }
         }
 
-        if (addtlSoftwareDuplicateResults.getDuplicateList().size() > 0) {
+        if (addtlSoftwareDuplicateResults.duplicatesExist()) {
             listing.getWarningMessages().addAll(getWarnings(addtlSoftwareDuplicateResults.getDuplicateList(), certificationResult.getNumber()));
             certificationResult.setAdditionalSoftware(addtlSoftwareDuplicateResults.getUniqueList());
         }
@@ -42,13 +43,13 @@ public class AdditionalSoftwareDuplicateReviewer {
         List<String> warnings = new ArrayList<String>();
         for (PendingCertificationResultAdditionalSoftwareDTO duplicate : duplicates) {
             String warning = "";
-            if (duplicate.getChplId() != null && duplicate.getGrouping() != null) {
-                warning = errorMessageUtil.getMessage("listing.criteria.duplicateAdditionalSoftwareCP.2015",
-                        criteria, duplicate.getChplId(), duplicate.getGrouping());
+            if (duplicate.getChplId() != null) {
+                warning = errorMessageUtil.getMessage("listing.criteria.duplicateAdditionalSoftwareCP.2014",
+                        criteria, duplicate.getChplId());
             } else if (duplicate.getName() != null && duplicate.getVersion() != null
                     && duplicate.getGrouping() != null) {
-                warning = errorMessageUtil.getMessage("listing.criteria.duplicateAdditionalSoftwareNonCP.2015",
-                        criteria, duplicate.getName(), duplicate.getVersion(), duplicate.getGrouping());
+                warning = errorMessageUtil.getMessage("listing.criteria.duplicateAdditionalSoftwareNonCP.2014",
+                        criteria, duplicate.getName(), duplicate.getVersion());
             }
             warnings.add(warning);
         }
@@ -59,19 +60,15 @@ public class AdditionalSoftwareDuplicateReviewer {
         return new BiPredicate<PendingCertificationResultAdditionalSoftwareDTO, PendingCertificationResultAdditionalSoftwareDTO>() {
             @Override
             public boolean test(PendingCertificationResultAdditionalSoftwareDTO dto1, PendingCertificationResultAdditionalSoftwareDTO dto2) {
-                if (dto1.getChplId() != null && dto2.getChplId() != null
-                        && dto1.getGrouping() != null && dto2.getGrouping() != null) {
+                if (dto1.getChplId() != null && dto2.getChplId() != null) {
 
-                    return dto1.getChplId().equals(dto2.getChplId())
-                            && dto1.getGrouping().equals(dto2.getGrouping());
+                    return dto1.getChplId().equals(dto2.getChplId());
 
                 } else if (dto1.getName() != null && dto2.getName() != null
-                        && dto1.getVersion() != null && dto2.getVersion()!= null
-                        && dto1.getGrouping() != null && dto2.getGrouping()!= null) {
+                        && dto1.getVersion() != null && dto2.getVersion()!= null) {
 
                     return dto1.getName().equals(dto2.getName())
-                            && dto1.getVersion().equals(dto2.getVersion())
-                            && dto1.getGrouping().equals(dto2.getGrouping());
+                            && dto1.getVersion().equals(dto2.getVersion());
                 } else {
                     return false;
                 }

@@ -10,13 +10,14 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.dto.PendingCertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.validation.pendingListing.reviewer.duplicate.DuplicateReviewResult;
 
-@Component("accessibilityStandardDuplicateReviewer")
-public class AccessibilityStandardDuplicateReviewer {
+@Component("accessibilityStandard2015DuplicateReviewer")
+public class AccessibilityStandard2015DuplicateReviewer {
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public AccessibilityStandardDuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
+    public AccessibilityStandard2015DuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
         this.errorMessageUtil = errorMessageUtil;
     }
 
@@ -32,7 +33,7 @@ public class AccessibilityStandardDuplicateReviewer {
             }
         }
 
-        if (accessibilityStandardDuplicateResults.getDuplicateList().size() > 0) {
+        if (accessibilityStandardDuplicateResults.duplicatesExist()) {
             listing.getWarningMessages().addAll(getWarnings(accessibilityStandardDuplicateResults.getDuplicateList()));
             listing.setAccessibilityStandards(accessibilityStandardDuplicateResults.getUniqueList());
         }

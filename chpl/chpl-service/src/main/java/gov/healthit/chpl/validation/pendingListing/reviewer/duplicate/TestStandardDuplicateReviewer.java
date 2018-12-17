@@ -1,4 +1,4 @@
-package gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.duplicate;
+package gov.healthit.chpl.validation.pendingListing.reviewer.duplicate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +33,7 @@ public class TestStandardDuplicateReviewer {
             }
         }
 
-        if (testStandardDuplicateResults.getDuplicateList().size() > 0) {
+        if (testStandardDuplicateResults.duplicatesExist()) {
             listing.getWarningMessages().addAll(getWarnings(testStandardDuplicateResults.getDuplicateList(), certificationResult.getNumber()));
             certificationResult.setTestStandards(testStandardDuplicateResults.getUniqueList());
         }
@@ -42,7 +42,7 @@ public class TestStandardDuplicateReviewer {
     private List<String> getWarnings(List<PendingCertificationResultTestStandardDTO> duplicates, String criteria) {
         List<String> warnings = new ArrayList<String>();
         for (PendingCertificationResultTestStandardDTO duplicate : duplicates) {
-            String warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestStandard.2015",
+            String warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestStandard",
                     criteria, duplicate.getName());
             warnings.add(warning);
         }
