@@ -33,6 +33,7 @@ public final class FileUtils {
      */
     public static final int BUFFER_SIZE = 1024;
 
+    private static final String DOWNLOAD_FOLDER_PROPERTY_NAME = "downloadFolderPath";
     private static final Logger LOGGER = LogManager.getLogger(FileUtils.class);
 
     @Autowired private Environment env;
@@ -72,7 +73,7 @@ public final class FileUtils {
      * @throws IOException if the file does not exist or cannot be read
      */
     public byte[] readDownloadFile(final String filename) throws IOException {
-        Path path = Paths.get(env.getProperty("downloadFolderPath"), filename);
+        Path path = Paths.get(env.getProperty(DOWNLOAD_FOLDER_PROPERTY_NAME), filename);
         byte[] data = Files.readAllBytes(path);
         return data;
     }
@@ -85,7 +86,7 @@ public final class FileUtils {
      * found under downloadFolderPath or if the file exists but cannot be read.
      */
     public File getDownloadFile(final String filename) throws IOException {
-        String downloadFolderPath = env.getProperty("downloadFolderPath");
+        String downloadFolderPath = env.getProperty(DOWNLOAD_FOLDER_PROPERTY_NAME);
         File downloadFolder = new File(downloadFolderPath);
         if (!downloadFolder.exists() || !downloadFolder.canRead()) {
             throw new IOException(msgUtil.getMessage("resources.noReadPermission", downloadFolderPath));
@@ -109,7 +110,7 @@ public final class FileUtils {
      * @throws IOException if the download folder does not exist or cannot be read
      */
     public File getNewestFileMatchingName(final String filenamePattern) throws IOException {
-        String downloadFolderPath = env.getProperty("downloadFolderPath");
+        String downloadFolderPath = env.getProperty(DOWNLOAD_FOLDER_PROPERTY_NAME);
         File downloadFolder = new File(downloadFolderPath);
         if (!downloadFolder.exists() || !downloadFolder.canRead()) {
             throw new IOException(msgUtil.getMessage("resources.noReadPermission", downloadFolderPath));
