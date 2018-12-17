@@ -4,5 +4,8 @@ _Date TBD_
 ### New Features
 * Change surveillance and sed report filenames to include timestamp when the file was last generated.
 
+### Bugs Fixed
+* Save "Developer identified targeted users" on upload/confirm
+
 ---
 

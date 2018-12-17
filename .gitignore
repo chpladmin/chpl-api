@@ -261,3 +261,4 @@ pip-log.txt
 /chpl/.recommenders/
 *-api.sh
 push-*.sh
+node_modules/

@@ -22,6 +22,7 @@ import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
+import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
@@ -257,6 +258,17 @@ public class PendingCertifiedProductDTO implements Serializable {
                 asDto.setAccessibilityStandardId(as.getAccessibilityStandardId());
                 asDto.setName(as.getAccessibilityStandardName());
                 this.accessibilityStandards.add(asDto);
+            }
+        }
+
+        List<CertifiedProductTargetedUser> targetedUsers = details.getTargetedUsers();
+        if (targetedUsers != null && targetedUsers.size() > 0) {
+            for (CertifiedProductTargetedUser tu : targetedUsers) {
+                PendingCertifiedProductTargetedUserDTO tuDto =
+                        new PendingCertifiedProductTargetedUserDTO();
+                tuDto.setName(tu.getTargetedUserName());
+                tuDto.setTargetedUserId(tu.getTargetedUserId());
+                this.targetedUsers.add(tuDto);
             }
         }
 
