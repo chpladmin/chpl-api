@@ -77,7 +77,7 @@ public class CertificationResultTest extends TestCase {
     @Test
     @Transactional
     @Rollback
-    public void testUpdateGap() throws EntityCreationException, EntityRetrievalException, ValidationException,
+    public void testUpdateGap() throws EntityCreationException, EntityRetrievalException,
     InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
@@ -90,7 +90,11 @@ public class CertificationResultTest extends TestCase {
         }
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(listing);
-        cpController.updateCertifiedProduct(updateRequest);
+        try {
+            cpController.updateCertifiedProduct(updateRequest);
+        } catch (ValidationException e) {
+            assertEquals(e.getErrorMessages().size(), 3);
+        }
         Date afterActivity = new Date();
 
         List<QuestionableActivityCertificationResultDTO> activities = qaDao
@@ -113,8 +117,7 @@ public class CertificationResultTest extends TestCase {
     @Transactional
     @Rollback
     public void testUpdateG1Success() throws
-        EntityCreationException, EntityRetrievalException,
-        ValidationException, InvalidArgumentsException, JsonProcessingException,
+        EntityCreationException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException,
         MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
@@ -127,7 +130,11 @@ public class CertificationResultTest extends TestCase {
         }
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(listing);
-        cpController.updateCertifiedProduct(updateRequest);
+        try {
+            cpController.updateCertifiedProduct(updateRequest);
+        } catch (ValidationException e) {
+            assertEquals(e.getErrorMessages().size(), 3);
+        }
         Date afterActivity = new Date();
 
         List<QuestionableActivityCertificationResultDTO> activities =
@@ -149,7 +156,7 @@ public class CertificationResultTest extends TestCase {
     @Test
     @Transactional
     @Rollback
-    public void testUpdateG2Success() throws EntityCreationException, EntityRetrievalException, ValidationException,
+    public void testUpdateG2Success() throws EntityCreationException, EntityRetrievalException,
     InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
@@ -162,7 +169,11 @@ public class CertificationResultTest extends TestCase {
         }
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(listing);
-        cpController.updateCertifiedProduct(updateRequest);
+        try {
+            cpController.updateCertifiedProduct(updateRequest);
+        } catch (ValidationException e) {
+            assertEquals(e.getErrorMessages().size(), 3);
+        }
         Date afterActivity = new Date();
 
         List<QuestionableActivityCertificationResultDTO> activities = qaDao
