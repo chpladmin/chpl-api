@@ -166,7 +166,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
      * will need to be added to the list.
      */
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ACB')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ONC', 'ROLE_ACB')")
     public List<ChplJob> getAllJobs() throws SchedulerException {
         List<ChplJob> jobs = new ArrayList<ChplJob>();
         Scheduler scheduler = getScheduler();

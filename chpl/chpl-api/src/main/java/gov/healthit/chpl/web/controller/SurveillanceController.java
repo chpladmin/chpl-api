@@ -24,6 +24,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -182,8 +183,9 @@ public class SurveillanceController implements MessageSourceAware {
             notes = "Creates a new surveillance activity, surveilled requirements, and any applicable non-conformities "
                     + "in the system and associates them with the certified product indicated in the "
                     + "request body. The surveillance passed into this request will first be validated "
-                    + " to check for errors. " + "ROLE_ACB "
-                    + " and administrative authority on the ACB associated with the certified product is required.")
+                    + " to check for errors. "
+                    + "ROLE_ADMIN, ROLE_ONC, or ROLE_ACB "
+                    + " along with administrative authority on the ACB associated with the certified product is required.")
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public synchronized ResponseEntity<Surveillance> createSurveillance(
             @RequestBody(required = true) final Surveillance survToInsert) throws ValidationException,
@@ -310,7 +312,8 @@ public class SurveillanceController implements MessageSourceAware {
     @ApiOperation(value = "Update a surveillance activity for a certified product.",
             notes = "Updates an existing surveillance activity, surveilled requirements, and any applicable "
                     + "non-conformities in the system. The surveillance passed into this request will first be "
-                    + "validated to check for errors. ROLE_ACB and administrative authority on the ACB associated "
+                    + "validated to check for errors. ROLE_ADMIN, ROLE_ONC, or "
+                    + "ROLE_ACB and administrative authority on the ACB associated "
                     + "with the certified product is required.")
     @RequestMapping(value = "/{surveillanceId}", method = RequestMethod.PUT,
     produces = "application/json; charset=utf-8")

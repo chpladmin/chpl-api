@@ -84,7 +84,20 @@ public class InvitationManagerImpl implements InvitationManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
+    public InvitationDTO inviteOnc(final String emailAddress, final List<String> permissions)
+            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
+        InvitationDTO dto = new InvitationDTO();
+        dto.setEmail(emailAddress);
+        Date now = new Date();
+        dto.setInviteToken(Util.md5(emailAddress + now.getTime()));
+
+        return createInvitation(dto, permissions);
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
     public InvitationDTO inviteWithRolesOnly(final String emailAddress, final List<String> permissions)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
         InvitationDTO dto = new InvitationDTO();
@@ -97,7 +110,7 @@ public class InvitationManagerImpl implements InvitationManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or "
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or "
             + "(hasRole('ROLE_ACB') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     public InvitationDTO inviteWithAcbAccess(final String emailAddress, final Long acbId,
             final List<String> permissions)
@@ -115,7 +128,7 @@ public class InvitationManagerImpl implements InvitationManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or "
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or "
             + "(hasRole('ROLE_ATL') and hasPermission(#atlId, 'gov.healthit.chpl.dto.TestingLabDTO', admin))")
     public InvitationDTO inviteWithAtlAccess(final String emailAddress, final Long atlId,
             final List<String> permissions)
@@ -133,10 +146,12 @@ public class InvitationManagerImpl implements InvitationManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or " + "("
-            + "hasRole('ROLE_ACB') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin) "
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') "
+            + "or "
+            + "(hasRole('ROLE_ACB') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin) "
             + " and "
-            + "hasRole('ROLE_ATL') and hasPermission(#atlId, 'gov.healthit.chpl.dto.TestingLabDTO', admin)" + ")")
+            + "hasRole('ROLE_ATL') and hasPermission(#atlId, 'gov.healthit.chpl.dto.TestingLabDTO', admin)"
+            + ")")
     public InvitationDTO inviteWithAcbAndAtlAccess(final String emailAddress, final Long acbId, final Long atlId,
             final List<String> permissions)
                     throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
