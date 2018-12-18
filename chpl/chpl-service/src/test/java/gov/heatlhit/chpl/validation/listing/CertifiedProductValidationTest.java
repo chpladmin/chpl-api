@@ -845,8 +845,8 @@ public class CertifiedProductValidationTest {
             validator.validate(listing);
         }
 
-        assertTrue(listing.getWarningMessages().contains(B4_RETIRED_TEST_TOOL_NOT_ALLOWED));
-        assertFalse(listing.getErrorMessages().contains(B4_RETIRED_TEST_TOOL_NOT_ALLOWED));
+        assertFalse(listing.getWarningMessages().contains(B4_RETIRED_TEST_TOOL_NOT_ALLOWED));
+        assertTrue(listing.getErrorMessages().contains(B4_RETIRED_TEST_TOOL_NOT_ALLOWED));
     }
 
     @Transactional

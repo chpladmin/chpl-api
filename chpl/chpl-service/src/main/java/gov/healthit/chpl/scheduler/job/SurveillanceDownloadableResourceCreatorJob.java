@@ -2,6 +2,7 @@ package gov.healthit.chpl.scheduler.job;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -76,7 +77,9 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
             throws IOException {
         String csvFilename = downloadFolder.getAbsolutePath()
                 + File.separator
-                + "surveillance-all.csv";
+                + getProperties().getProperty("surveillanceAllReportName") + "-"
+                + getFilenameTimestampFormat().format(new Date())
+                + ".csv";
         File csvFile = getFile(csvFilename);
         SurveillanceCsvPresenter csvPresenter = new SurveillanceCsvPresenter(getProperties());
         csvPresenter.presentAsFile(csvFile, results);
@@ -87,7 +90,9 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
             final List<CertifiedProductSearchDetails> results) throws IOException {
         String csvFilename = downloadFolder.getAbsolutePath()
                 + File.separator
-                + "surveillance-with-nonconformities.csv";
+                + getProperties().getProperty("surveillanceNonconformitiesReportName") + "-"
+                + getFilenameTimestampFormat().format(new Date())
+                + ".csv";
         File csvFile = getFile(csvFilename);
         NonconformityCsvPresenter csvPresenter = new NonconformityCsvPresenter(getProperties());
         csvPresenter.presentAsFile(csvFile, results);
@@ -98,7 +103,9 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
             final List<CertifiedProductSearchDetails> results) throws IOException {
         String csvFilename = downloadFolder.getAbsolutePath()
                 + File.separator
-                + "surveillance-basic-report.csv";
+                + getProperties().getProperty("surveillanceBasicReportName") + "-"
+                + getFilenameTimestampFormat().format(new Date())
+                + ".csv";
         File csvFile = getFile(csvFilename);
         SurveillanceReportCsvPresenter csvPresenter = new SurveillanceReportCsvPresenter(getProperties());
         csvPresenter.presentAsFile(csvFile, results);

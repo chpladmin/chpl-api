@@ -42,7 +42,7 @@ public class SurveillanceUploadManagerImpl implements SurveillanceUploadManager 
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceUploadManagerImpl.class);
 
     @Autowired private MessageSource messageSource;
-
+    @Autowired private FileUtils fileUtils;
     @Autowired private CertificationBodyManager acbManager;
     @Autowired private CertifiedProductDAO cpDao;
     @Autowired private SurveillanceUploadHandlerFactory uploadHandlerFactory;
@@ -50,7 +50,7 @@ public class SurveillanceUploadManagerImpl implements SurveillanceUploadManager 
     @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     public int countSurveillanceRecords(MultipartFile file) throws ValidationException {
-        String data = FileUtils.readFileAsString(file);
+        String data = fileUtils.readFileAsString(file);
         return countSurveillanceRecords(data);
     }
 
