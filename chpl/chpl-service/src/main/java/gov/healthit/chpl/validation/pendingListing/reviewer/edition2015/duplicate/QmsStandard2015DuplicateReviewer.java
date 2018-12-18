@@ -17,11 +17,11 @@ public class QmsStandard2015DuplicateReviewer {
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public QmsStandard2015DuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
+    public QmsStandard2015DuplicateReviewer(final ErrorMessageUtil errorMessageUtil) {
         this.errorMessageUtil = errorMessageUtil;
     }
 
-    public void review(PendingCertifiedProductDTO listing) {
+    public void review(final PendingCertifiedProductDTO listing) {
 
         DuplicateReviewResult<PendingCertifiedProductQmsStandardDTO> qmsStandardDuplicateResults =
                 new DuplicateReviewResult<PendingCertifiedProductQmsStandardDTO>(getPredicate());
@@ -38,7 +38,7 @@ public class QmsStandard2015DuplicateReviewer {
         }
     }
 
-    private List<String> getWarnings(List<PendingCertifiedProductQmsStandardDTO> duplicates) {
+    private List<String> getWarnings(final List<PendingCertifiedProductQmsStandardDTO> duplicates) {
         List<String> warnings = new ArrayList<String>();
         for (PendingCertifiedProductQmsStandardDTO duplicate : duplicates) {
             String warning = errorMessageUtil.getMessage("listing.duplicateQmsStandard.2015",
@@ -51,7 +51,8 @@ public class QmsStandard2015DuplicateReviewer {
     private BiPredicate<PendingCertifiedProductQmsStandardDTO, PendingCertifiedProductQmsStandardDTO> getPredicate() {
         return new BiPredicate<PendingCertifiedProductQmsStandardDTO, PendingCertifiedProductQmsStandardDTO>() {
             @Override
-            public boolean test(PendingCertifiedProductQmsStandardDTO dto1, PendingCertifiedProductQmsStandardDTO dto2) {
+            public boolean test(final PendingCertifiedProductQmsStandardDTO dto1,
+                    final PendingCertifiedProductQmsStandardDTO dto2) {
                 if (dto1.getName() != null && dto2.getName() != null
                         && dto1.getApplicableCriteria() != null && dto2.getApplicableCriteria() != null) {
                     return dto1.getName().equals(dto2.getName())

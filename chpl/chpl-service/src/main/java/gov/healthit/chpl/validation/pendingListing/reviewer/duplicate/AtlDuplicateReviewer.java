@@ -16,11 +16,11 @@ public class AtlDuplicateReviewer {
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public AtlDuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
+    public AtlDuplicateReviewer(final ErrorMessageUtil errorMessageUtil) {
         this.errorMessageUtil = errorMessageUtil;
     }
 
-    public void review(PendingCertifiedProductDTO listing) {
+    public void review(final PendingCertifiedProductDTO listing) {
 
         DuplicateReviewResult<PendingCertifiedProductTestingLabDTO> atlDuplicateResults =
                 new DuplicateReviewResult<PendingCertifiedProductTestingLabDTO>(getPredicate());
@@ -37,7 +37,7 @@ public class AtlDuplicateReviewer {
         }
     }
 
-    private List<String> getWarnings(List<PendingCertifiedProductTestingLabDTO> duplicates) {
+    private List<String> getWarnings(final List<PendingCertifiedProductTestingLabDTO> duplicates) {
         List<String> warnings = new ArrayList<String>();
         for (PendingCertifiedProductTestingLabDTO duplicate : duplicates) {
             String warning = errorMessageUtil.getMessage("listing.duplicateTestingLab", duplicate.getTestingLabName());
@@ -49,7 +49,8 @@ public class AtlDuplicateReviewer {
     private BiPredicate<PendingCertifiedProductTestingLabDTO, PendingCertifiedProductTestingLabDTO> getPredicate() {
         return new BiPredicate<PendingCertifiedProductTestingLabDTO, PendingCertifiedProductTestingLabDTO>() {
             @Override
-            public boolean test(PendingCertifiedProductTestingLabDTO dto1, PendingCertifiedProductTestingLabDTO dto2) {
+            public boolean test(final PendingCertifiedProductTestingLabDTO dto1,
+                    final PendingCertifiedProductTestingLabDTO dto2) {
                 if (dto1.getTestingLabName() != null && dto2.getTestingLabName() != null) {
                     return dto1.getTestingLabName().equals(dto2.getTestingLabName());
                 } else {

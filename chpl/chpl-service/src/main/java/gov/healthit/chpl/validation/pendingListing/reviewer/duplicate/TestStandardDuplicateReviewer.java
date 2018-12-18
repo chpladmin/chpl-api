@@ -17,11 +17,11 @@ public class TestStandardDuplicateReviewer {
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public TestStandardDuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
+    public TestStandardDuplicateReviewer(final ErrorMessageUtil errorMessageUtil) {
         this.errorMessageUtil = errorMessageUtil;
     }
 
-    public void review(PendingCertifiedProductDTO listing, final PendingCertificationResultDTO certificationResult) {
+    public void review(final PendingCertifiedProductDTO listing, final PendingCertificationResultDTO certificationResult) {
 
         DuplicateReviewResult<PendingCertificationResultTestStandardDTO> testStandardDuplicateResults =
                 new DuplicateReviewResult<PendingCertificationResultTestStandardDTO>(getPredicate());
@@ -34,12 +34,13 @@ public class TestStandardDuplicateReviewer {
         }
 
         if (testStandardDuplicateResults.duplicatesExist()) {
-            listing.getWarningMessages().addAll(getWarnings(testStandardDuplicateResults.getDuplicateList(), certificationResult.getNumber()));
+            listing.getWarningMessages().addAll(
+                    getWarnings(testStandardDuplicateResults.getDuplicateList(), certificationResult.getNumber()));
             certificationResult.setTestStandards(testStandardDuplicateResults.getUniqueList());
         }
     }
 
-    private List<String> getWarnings(List<PendingCertificationResultTestStandardDTO> duplicates, String criteria) {
+    private List<String> getWarnings(final List<PendingCertificationResultTestStandardDTO> duplicates, final String criteria) {
         List<String> warnings = new ArrayList<String>();
         for (PendingCertificationResultTestStandardDTO duplicate : duplicates) {
             String warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestStandard",
@@ -52,7 +53,8 @@ public class TestStandardDuplicateReviewer {
     private BiPredicate<PendingCertificationResultTestStandardDTO, PendingCertificationResultTestStandardDTO> getPredicate() {
         return new BiPredicate<PendingCertificationResultTestStandardDTO, PendingCertificationResultTestStandardDTO>() {
             @Override
-            public boolean test(PendingCertificationResultTestStandardDTO dto1, PendingCertificationResultTestStandardDTO dto2) {
+            public boolean test(final PendingCertificationResultTestStandardDTO dto1,
+                    final PendingCertificationResultTestStandardDTO dto2) {
                 if (dto1.getName() != null && dto2.getName() != null) {
                     return dto1.getName().equals(dto2.getName());
                 } else {

@@ -17,11 +17,11 @@ public class AccessibilityStandard2015DuplicateReviewer {
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public AccessibilityStandard2015DuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
+    public AccessibilityStandard2015DuplicateReviewer(final ErrorMessageUtil errorMessageUtil) {
         this.errorMessageUtil = errorMessageUtil;
     }
 
-    public void review(PendingCertifiedProductDTO listing) {
+    public void review(final PendingCertifiedProductDTO listing) {
 
         DuplicateReviewResult<PendingCertifiedProductAccessibilityStandardDTO> accessibilityStandardDuplicateResults =
                 new DuplicateReviewResult<PendingCertifiedProductAccessibilityStandardDTO>(getPredicate());
@@ -39,7 +39,7 @@ public class AccessibilityStandard2015DuplicateReviewer {
         }
     }
 
-    private List<String> getWarnings(List<PendingCertifiedProductAccessibilityStandardDTO> duplicates) {
+    private List<String> getWarnings(final List<PendingCertifiedProductAccessibilityStandardDTO> duplicates) {
         List<String> warnings = new ArrayList<String>();
         for (PendingCertifiedProductAccessibilityStandardDTO duplicate : duplicates) {
             String warning = errorMessageUtil.getMessage("listing.duplicateAccessibilityStandard.2015", duplicate.getName());
@@ -48,10 +48,13 @@ public class AccessibilityStandard2015DuplicateReviewer {
         return warnings;
     }
 
-    private BiPredicate<PendingCertifiedProductAccessibilityStandardDTO, PendingCertifiedProductAccessibilityStandardDTO> getPredicate() {
-        return new BiPredicate<PendingCertifiedProductAccessibilityStandardDTO, PendingCertifiedProductAccessibilityStandardDTO>() {
+    private BiPredicate<
+    PendingCertifiedProductAccessibilityStandardDTO, PendingCertifiedProductAccessibilityStandardDTO> getPredicate() {
+        return new BiPredicate<
+                PendingCertifiedProductAccessibilityStandardDTO, PendingCertifiedProductAccessibilityStandardDTO>() {
             @Override
-            public boolean test(PendingCertifiedProductAccessibilityStandardDTO dto1, PendingCertifiedProductAccessibilityStandardDTO dto2) {
+            public boolean test(final PendingCertifiedProductAccessibilityStandardDTO dto1,
+                    final PendingCertifiedProductAccessibilityStandardDTO dto2) {
                 if (dto1.getName() != null && dto2.getName() != null) {
                     return dto1.getName().equals(dto2.getName());
                 } else {

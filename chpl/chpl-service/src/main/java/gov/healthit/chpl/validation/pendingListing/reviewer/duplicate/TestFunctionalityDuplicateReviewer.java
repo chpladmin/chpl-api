@@ -17,11 +17,11 @@ public class TestFunctionalityDuplicateReviewer {
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public TestFunctionalityDuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
+    public TestFunctionalityDuplicateReviewer(final ErrorMessageUtil errorMessageUtil) {
         this.errorMessageUtil = errorMessageUtil;
     }
 
-    public void review(PendingCertifiedProductDTO listing, final PendingCertificationResultDTO certificationResult) {
+    public void review(final PendingCertifiedProductDTO listing, final PendingCertificationResultDTO certificationResult) {
 
         DuplicateReviewResult<PendingCertificationResultTestFunctionalityDTO> testFunctionalityDuplicateResults =
                 new DuplicateReviewResult<PendingCertificationResultTestFunctionalityDTO>(getPredicate());
@@ -33,12 +33,14 @@ public class TestFunctionalityDuplicateReviewer {
         }
 
         if (testFunctionalityDuplicateResults.duplicatesExist()) {
-            listing.getWarningMessages().addAll(getWarnings(testFunctionalityDuplicateResults.getDuplicateList(), certificationResult.getNumber()));
+            listing.getWarningMessages().addAll(
+                    getWarnings(testFunctionalityDuplicateResults.getDuplicateList(), certificationResult.getNumber()));
             certificationResult.setTestFunctionality(testFunctionalityDuplicateResults.getUniqueList());
         }
     }
 
-    private List<String> getWarnings(List<PendingCertificationResultTestFunctionalityDTO> duplicates, String criteria) {
+    private List<String> getWarnings(final List<PendingCertificationResultTestFunctionalityDTO> duplicates,
+            final String criteria) {
         List<String> warnings = new ArrayList<String>();
         for (PendingCertificationResultTestFunctionalityDTO duplicate : duplicates) {
             String warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestFunctionality",
@@ -48,11 +50,14 @@ public class TestFunctionalityDuplicateReviewer {
         return warnings;
     }
 
-    private BiPredicate<PendingCertificationResultTestFunctionalityDTO, PendingCertificationResultTestFunctionalityDTO> getPredicate() {
+    private BiPredicate<
+    PendingCertificationResultTestFunctionalityDTO, PendingCertificationResultTestFunctionalityDTO> getPredicate() {
         return
-                new BiPredicate<PendingCertificationResultTestFunctionalityDTO, PendingCertificationResultTestFunctionalityDTO>() {
+                new BiPredicate<
+                PendingCertificationResultTestFunctionalityDTO, PendingCertificationResultTestFunctionalityDTO>() {
             @Override
-            public boolean test(PendingCertificationResultTestFunctionalityDTO dto1, PendingCertificationResultTestFunctionalityDTO dto2) {
+            public boolean test(final PendingCertificationResultTestFunctionalityDTO dto1,
+                    final PendingCertificationResultTestFunctionalityDTO dto2) {
                 if (dto1.getNumber() != null && dto2.getNumber() != null) {
                     return dto1.getNumber().equals(dto2.getNumber());
                 } else {

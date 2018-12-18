@@ -18,11 +18,11 @@ public class IcsSource2015DuplicateReviewer {
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public IcsSource2015DuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
+    public IcsSource2015DuplicateReviewer(final ErrorMessageUtil errorMessageUtil) {
         this.errorMessageUtil = errorMessageUtil;
     }
 
-    public void review(PendingCertifiedProductDTO listing) {
+    public void review(final PendingCertifiedProductDTO listing) {
 
         DuplicateReviewResult<CertifiedProductDetailsDTO> icsSourceDuplicateResults =
                 new DuplicateReviewResult<CertifiedProductDetailsDTO>(getPredicate());
@@ -39,7 +39,7 @@ public class IcsSource2015DuplicateReviewer {
         }
     }
 
-    private List<String> getWarnings(List<CertifiedProductDetailsDTO> duplicates) {
+    private List<String> getWarnings(final List<CertifiedProductDetailsDTO> duplicates) {
         List<String> warnings = new ArrayList<String>();
         for (CertifiedProductDetailsDTO duplicate : duplicates) {
             String warning = errorMessageUtil.getMessage("listing.duplicateIcsSource.2015",
@@ -52,7 +52,8 @@ public class IcsSource2015DuplicateReviewer {
     private BiPredicate<CertifiedProductDetailsDTO, CertifiedProductDetailsDTO> getPredicate() {
         return new BiPredicate<CertifiedProductDetailsDTO, CertifiedProductDetailsDTO>() {
             @Override
-            public boolean test(CertifiedProductDetailsDTO dto1, CertifiedProductDetailsDTO dto2) {
+            public boolean test(final CertifiedProductDetailsDTO dto1,
+                    final CertifiedProductDetailsDTO dto2) {
                 if (dto1.getChplProductNumber() != null && dto2.getChplProductNumber() != null) {
                     return dto1.getChplProductNumber().equals(dto2.getChplProductNumber());
                 } else {

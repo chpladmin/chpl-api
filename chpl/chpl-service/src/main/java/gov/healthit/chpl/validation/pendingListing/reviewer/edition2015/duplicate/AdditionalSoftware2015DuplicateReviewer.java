@@ -18,11 +18,11 @@ public class AdditionalSoftware2015DuplicateReviewer {
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public AdditionalSoftware2015DuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
+    public AdditionalSoftware2015DuplicateReviewer(final ErrorMessageUtil errorMessageUtil) {
         this.errorMessageUtil = errorMessageUtil;
     }
 
-    public void review(PendingCertifiedProductDTO listing, final PendingCertificationResultDTO certificationResult) {
+    public void review(final PendingCertifiedProductDTO listing, final PendingCertificationResultDTO certificationResult) {
 
         DuplicateReviewResult<PendingCertificationResultAdditionalSoftwareDTO> addtlSoftwareDuplicateResults =
                 new DuplicateReviewResult<PendingCertificationResultAdditionalSoftwareDTO>(getPredicate());
@@ -34,12 +34,14 @@ public class AdditionalSoftware2015DuplicateReviewer {
         }
 
         if (addtlSoftwareDuplicateResults.duplicatesExist()) {
-            listing.getWarningMessages().addAll(getWarnings(addtlSoftwareDuplicateResults.getDuplicateList(), certificationResult.getNumber()));
+            listing.getWarningMessages().addAll(
+                    getWarnings(addtlSoftwareDuplicateResults.getDuplicateList(), certificationResult.getNumber()));
             certificationResult.setAdditionalSoftware(addtlSoftwareDuplicateResults.getUniqueList());
         }
     }
 
-    private List<String> getWarnings(List<PendingCertificationResultAdditionalSoftwareDTO> duplicates, String criteria) {
+    private List<String> getWarnings(final List<PendingCertificationResultAdditionalSoftwareDTO> duplicates,
+            final String criteria) {
         List<String> warnings = new ArrayList<String>();
         for (PendingCertificationResultAdditionalSoftwareDTO duplicate : duplicates) {
             String warning = "";
@@ -56,10 +58,13 @@ public class AdditionalSoftware2015DuplicateReviewer {
         return warnings;
     }
 
-    private BiPredicate<PendingCertificationResultAdditionalSoftwareDTO, PendingCertificationResultAdditionalSoftwareDTO> getPredicate() {
-        return new BiPredicate<PendingCertificationResultAdditionalSoftwareDTO, PendingCertificationResultAdditionalSoftwareDTO>() {
+    private BiPredicate<
+    PendingCertificationResultAdditionalSoftwareDTO, PendingCertificationResultAdditionalSoftwareDTO> getPredicate() {
+        return new BiPredicate<
+                PendingCertificationResultAdditionalSoftwareDTO, PendingCertificationResultAdditionalSoftwareDTO>() {
             @Override
-            public boolean test(PendingCertificationResultAdditionalSoftwareDTO dto1, PendingCertificationResultAdditionalSoftwareDTO dto2) {
+            public boolean test(final PendingCertificationResultAdditionalSoftwareDTO dto1,
+                    final PendingCertificationResultAdditionalSoftwareDTO dto2) {
                 if (dto1.getChplId() != null && dto2.getChplId() != null
                         && dto1.getGrouping() != null && dto2.getGrouping() != null) {
 
@@ -67,8 +72,8 @@ public class AdditionalSoftware2015DuplicateReviewer {
                             && dto1.getGrouping().equals(dto2.getGrouping());
 
                 } else if (dto1.getName() != null && dto2.getName() != null
-                        && dto1.getVersion() != null && dto2.getVersion()!= null
-                        && dto1.getGrouping() != null && dto2.getGrouping()!= null) {
+                        && dto1.getVersion() != null && dto2.getVersion() != null
+                        && dto1.getGrouping() != null && dto2.getGrouping() != null) {
 
                     return dto1.getName().equals(dto2.getName())
                             && dto1.getVersion().equals(dto2.getVersion())

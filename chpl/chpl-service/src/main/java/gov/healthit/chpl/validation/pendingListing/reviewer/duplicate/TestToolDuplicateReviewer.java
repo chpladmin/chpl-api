@@ -17,11 +17,11 @@ public class TestToolDuplicateReviewer {
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public TestToolDuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
+    public TestToolDuplicateReviewer(final ErrorMessageUtil errorMessageUtil) {
         this.errorMessageUtil = errorMessageUtil;
     }
 
-    public void review(PendingCertifiedProductDTO listing, final PendingCertificationResultDTO certificationResult) {
+    public void review(final PendingCertifiedProductDTO listing, final PendingCertificationResultDTO certificationResult) {
 
         DuplicateReviewResult<PendingCertificationResultTestToolDTO> testToolDuplicateResults =
                 new DuplicateReviewResult<PendingCertificationResultTestToolDTO>(getPredicate());
@@ -33,12 +33,13 @@ public class TestToolDuplicateReviewer {
         }
 
         if (testToolDuplicateResults.duplicatesExist()) {
-            listing.getWarningMessages().addAll(getWarnings(testToolDuplicateResults.getDuplicateList(), certificationResult.getNumber()));
+            listing.getWarningMessages().addAll(
+                    getWarnings(testToolDuplicateResults.getDuplicateList(), certificationResult.getNumber()));
             certificationResult.setTestTools(testToolDuplicateResults.getUniqueList());
         }
     }
 
-    private List<String> getWarnings(List<PendingCertificationResultTestToolDTO> duplicates, String criteria) {
+    private List<String> getWarnings(final List<PendingCertificationResultTestToolDTO> duplicates, final String criteria) {
         List<String> warnings = new ArrayList<String>();
         for (PendingCertificationResultTestToolDTO duplicate : duplicates) {
             String warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestTool",
@@ -51,7 +52,8 @@ public class TestToolDuplicateReviewer {
     private BiPredicate<PendingCertificationResultTestToolDTO, PendingCertificationResultTestToolDTO> getPredicate() {
         return new BiPredicate<PendingCertificationResultTestToolDTO, PendingCertificationResultTestToolDTO>() {
             @Override
-            public boolean test(PendingCertificationResultTestToolDTO dto1, PendingCertificationResultTestToolDTO dto2) {
+            public boolean test(final PendingCertificationResultTestToolDTO dto1,
+                    final PendingCertificationResultTestToolDTO dto2) {
                 if (dto1.getName() != null && dto2.getName() != null
                         && dto1.getVersion() != null && dto2.getVersion() != null) {
                     return dto1.getName().equals(dto2.getName())

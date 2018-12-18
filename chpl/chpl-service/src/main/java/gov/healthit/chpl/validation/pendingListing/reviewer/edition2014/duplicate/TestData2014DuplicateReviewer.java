@@ -18,11 +18,11 @@ public class TestData2014DuplicateReviewer {
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public TestData2014DuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
+    public TestData2014DuplicateReviewer(final ErrorMessageUtil errorMessageUtil) {
         this.errorMessageUtil = errorMessageUtil;
     }
 
-    public void review(PendingCertifiedProductDTO listing, final PendingCertificationResultDTO certificationResult) {
+    public void review(final PendingCertifiedProductDTO listing, final PendingCertificationResultDTO certificationResult) {
 
         DuplicateReviewResult<PendingCertificationResultTestDataDTO> testDataDuplicateResults =
                 new DuplicateReviewResult<PendingCertificationResultTestDataDTO>(getPredicate());
@@ -34,12 +34,13 @@ public class TestData2014DuplicateReviewer {
         }
 
         if (testDataDuplicateResults.duplicatesExist()) {
-            listing.getWarningMessages().addAll(getWarnings(testDataDuplicateResults.getDuplicateList(), certificationResult.getNumber()));
+            listing.getWarningMessages().addAll(
+                    getWarnings(testDataDuplicateResults.getDuplicateList(), certificationResult.getNumber()));
             certificationResult.setTestData(testDataDuplicateResults.getUniqueList());
         }
     }
 
-    private List<String> getWarnings(List<PendingCertificationResultTestDataDTO> duplicates, String criteria) {
+    private List<String> getWarnings(final List<PendingCertificationResultTestDataDTO> duplicates, final String criteria) {
         List<String> warnings = new ArrayList<String>();
         for (PendingCertificationResultTestDataDTO duplicate : duplicates) {
             String warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestData.2014",
@@ -52,7 +53,8 @@ public class TestData2014DuplicateReviewer {
     private BiPredicate<PendingCertificationResultTestDataDTO, PendingCertificationResultTestDataDTO> getPredicate() {
         return new BiPredicate<PendingCertificationResultTestDataDTO, PendingCertificationResultTestDataDTO>() {
             @Override
-            public boolean test(PendingCertificationResultTestDataDTO dto1, PendingCertificationResultTestDataDTO dto2) {
+            public boolean test(final PendingCertificationResultTestDataDTO dto1,
+                    final PendingCertificationResultTestDataDTO dto2) {
                 if (dto1.getVersion() != null && dto2.getVersion() != null) {
                     return dto1.getVersion().equals(dto2.getVersion());
                 } else {
@@ -61,58 +63,4 @@ public class TestData2014DuplicateReviewer {
             }
         };
     }
-
-    //    public void review(PendingCertifiedProductDTO listing, final PendingCertificationResultDTO certificationResult) {
-    //        DuplicateReviewResult<PendingCertificationResultTestDataDTO> testDataDuplicateResults =
-    //                removeDuplicates(certificationResult);
-    //        if (testDataDuplicateResults.getMessages().size() > 0) {
-    //            listing.getWarningMessages().addAll(testDataDuplicateResults.getMessages());
-    //            certificationResult.setTestData(testDataDuplicateResults.getObjects());
-    //        }
-    //    }
-    //
-    //    private DuplicateReviewResult<PendingCertificationResultTestDataDTO> removeDuplicates(
-    //            final PendingCertificationResultDTO certificationResult) {
-    //
-    //        DuplicateReviewResult<PendingCertificationResultTestDataDTO> dupResults =
-    //                new DuplicateReviewResult<PendingCertificationResultTestDataDTO>();
-    //
-    //        if (certificationResult.getTestData() != null) {
-    //            for (PendingCertificationResultTestDataDTO dto : certificationResult.getTestData()) {
-    //                if (isDuplicate(dupResults, dto)) {
-    //                    // Item already exists
-    //                    String warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestData.2015",
-    //                            certificationResult.getNumber(), dto.getEnteredName(), dto.getVersion(),
-    //                            dto.getAlteration());
-    //                    dupResults.getMessages().add(warning);
-    //                } else {
-    //                    //Add the item to the final list
-    //                    dupResults.getObjects().add(dto);
-    //                }
-    //            }
-    //        }
-    //
-    //        return dupResults;
-    //    }
-    //
-    //    private Boolean isDuplicate(
-    //            final DuplicateReviewResult<PendingCertificationResultTestDataDTO> dupResults,
-    //            final PendingCertificationResultTestDataDTO testDataDTO) {
-    //        return dupResults.existsInObjects(testDataDTO, new Predicate<PendingCertificationResultTestDataDTO>() {
-    //            @Override
-    //            public boolean test(PendingCertificationResultTestDataDTO dto2) {
-    //                if (testDataDTO.getEnteredName() != null && dto2.getEnteredName() != null
-    //                        && testDataDTO.getVersion() != null && dto2.getVersion() != null
-    //                        && testDataDTO.getAlteration() != null && dto2.getAlteration() != null) {
-    //
-    //                    return testDataDTO.getEnteredName().equals(dto2.getEnteredName())
-    //                            && testDataDTO.getVersion().equals(dto2.getVersion())
-    //                            && testDataDTO.getAlteration().equals(dto2.getAlteration());
-    //                } else {
-    //                    return false;
-    //                }
-    //            }
-    //        });
-    //    }
-
 }

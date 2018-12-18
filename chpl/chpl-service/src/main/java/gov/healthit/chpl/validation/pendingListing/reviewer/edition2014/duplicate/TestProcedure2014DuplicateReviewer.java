@@ -18,11 +18,11 @@ public class TestProcedure2014DuplicateReviewer {
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public TestProcedure2014DuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
+    public TestProcedure2014DuplicateReviewer(final ErrorMessageUtil errorMessageUtil) {
         this.errorMessageUtil = errorMessageUtil;
     }
 
-    public void review(PendingCertifiedProductDTO listing, final PendingCertificationResultDTO certificationResult) {
+    public void review(final PendingCertifiedProductDTO listing, final PendingCertificationResultDTO certificationResult) {
 
         DuplicateReviewResult<PendingCertificationResultTestProcedureDTO> testProcedureDuplicateResults =
                 new DuplicateReviewResult<PendingCertificationResultTestProcedureDTO>(getPredicate());
@@ -34,12 +34,14 @@ public class TestProcedure2014DuplicateReviewer {
         }
 
         if (testProcedureDuplicateResults.duplicatesExist()) {
-            listing.getWarningMessages().addAll(getWarnings(testProcedureDuplicateResults.getDuplicateList(), certificationResult.getNumber()));
+            listing.getWarningMessages().addAll(
+                    getWarnings(testProcedureDuplicateResults.getDuplicateList(), certificationResult.getNumber()));
             certificationResult.setTestProcedures(testProcedureDuplicateResults.getUniqueList());
         }
     }
 
-    private List<String> getWarnings(List<PendingCertificationResultTestProcedureDTO> duplicates, String criteria) {
+    private List<String> getWarnings(final List<PendingCertificationResultTestProcedureDTO> duplicates,
+            final String criteria) {
         List<String> warnings = new ArrayList<String>();
         for (PendingCertificationResultTestProcedureDTO duplicate : duplicates) {
             String warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestProcedure.2014",
@@ -52,7 +54,8 @@ public class TestProcedure2014DuplicateReviewer {
     private BiPredicate<PendingCertificationResultTestProcedureDTO, PendingCertificationResultTestProcedureDTO> getPredicate() {
         return new BiPredicate<PendingCertificationResultTestProcedureDTO, PendingCertificationResultTestProcedureDTO>() {
             @Override
-            public boolean test(PendingCertificationResultTestProcedureDTO dto1, PendingCertificationResultTestProcedureDTO dto2) {
+            public boolean test(final PendingCertificationResultTestProcedureDTO dto1,
+                    final PendingCertificationResultTestProcedureDTO dto2) {
                 if (dto1.getVersion() != null && dto2.getVersion() != null) {
                     return dto1.getVersion().equals(dto2.getVersion());
                 } else {
