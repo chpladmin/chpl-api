@@ -4,5 +4,6 @@ _Date TBD_
 
 ### Bugs Fixed
 * Save "Developer identified targeted users" on upload/confirm
+* Update invalid error and warning messages for upload file
 
 ---
