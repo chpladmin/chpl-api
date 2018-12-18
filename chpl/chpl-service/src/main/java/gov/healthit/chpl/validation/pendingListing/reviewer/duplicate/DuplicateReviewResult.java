@@ -17,6 +17,7 @@ public class DuplicateReviewResult<T> {
         for (T item : uniqueList) {
             if (predicate.test(item, t)) {
                 duplicateList.add(t);
+                return;
             }
         }
         uniqueList.add(t);
