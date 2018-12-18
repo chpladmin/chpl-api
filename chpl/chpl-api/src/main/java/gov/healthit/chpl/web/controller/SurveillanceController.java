@@ -2,7 +2,6 @@ package gov.healthit.chpl.web.controller;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -82,13 +81,14 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/surveillance")
 public class SurveillanceController implements MessageSourceAware {
 
-    private static final int BUFFER_SIZE = 1024;
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceController.class);
     private static final int SURV_THRESHOLD_DEFAULT = 50;
     private final JobTypeConcept allowedJobType = JobTypeConcept.SURV_UPLOAD;
 
     @Autowired
     private Environment env;
+    @Autowired
+    private FileUtils fileUtils;
     @Autowired
     private MessageSource messageSource;
     @Autowired
@@ -167,7 +167,7 @@ public class SurveillanceController implements MessageSourceAware {
                 String headerValue = String.format("attachment; filename=\"%s\"", doc.getFileName());
                 response.setHeader(headerKey, headerValue);
 
-                byte[] buffer = new byte[BUFFER_SIZE];
+                byte[] buffer = new byte[FileUtils.BUFFER_SIZE];
                 int bytesRead = -1;
 
                 // write bytes read from the input stream into the output stream
@@ -619,29 +619,15 @@ public class SurveillanceController implements MessageSourceAware {
 
         File downloadFile = null;
         if (isDefinition != null && isDefinition.booleanValue()) {
-            String downloadFolderLocation = env.getProperty("downloadFolderPath");
-            File downloadFolder = new File(downloadFolderLocation);
-            String schemaFilename = env.getProperty("schemaSurveillanceName");
-            String absolutePath = downloadFolder.getAbsolutePath() + File.separator + schemaFilename;
-            if (!StringUtils.isEmpty(absolutePath)) {
-                downloadFile = new File(absolutePath);
-                if (!downloadFile.exists()) {
-                    response.getWriter()
-                    .write(String.format(messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("resources.schemaFileNotFound"),
-                            LocaleContextHolder.getLocale()), absolutePath));
-                    return;
-                }
-            }
-
+            downloadFile = fileUtils.getDownloadFile(env.getProperty("schemaSurveillanceName"));
         } else {
             try {
                 if (type.equalsIgnoreCase("all")) {
-                    downloadFile = survManager.getDownloadFile("surveillance-all.csv");
+                    downloadFile = survManager.getAllSurveillanceDownloadFile();
                 } else if (type.equalsIgnoreCase("basic")) {
-                    downloadFile = survManager.getProtectedDownloadFile("surveillance-basic-report.csv");
+                    downloadFile = survManager.getBasicReportDownloadFile();
                 } else {
-                    downloadFile = survManager.getDownloadFile("surveillance-with-nonconformities.csv");
+                    downloadFile = survManager.getSurveillanceWithNonconformitiesDownloadFile();
                 }
             } catch (final IOException ex) {
                 response.getWriter().append(ex.getMessage());
@@ -656,29 +642,16 @@ public class SurveillanceController implements MessageSourceAware {
                     LocaleContextHolder.getLocale())));
             return;
         }
+        if (!downloadFile.exists()) {
+            response.getWriter()
+            .write(String.format(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("resources.schemaFileNotFound"),
+                    LocaleContextHolder.getLocale()), downloadFile.getAbsolutePath()));
+            return;
+        }
 
         LOGGER.info("Downloading " + downloadFile.getName());
-
-        try (FileInputStream inputStream = new FileInputStream(downloadFile);
-                OutputStream outStream = response.getOutputStream();) {
-
-            // set content attributes for the response
-            response.setContentType("text/csv");
-            response.setContentLength((int) downloadFile.length());
-
-            // set headers for the response
-            String headerKey = "Content-Disposition";
-            String headerValue = String.format("attachment; filename=\"%s\"", downloadFile.getName());
-            response.setHeader(headerKey, headerValue);
-
-            byte[] buffer = new byte[BUFFER_SIZE];
-            int bytesRead = -1;
-
-            // write bytes read from the input stream into the output stream
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outStream.write(buffer, 0, bytesRead);
-            }
-        }
+        fileUtils.streamFileAsResponse(downloadFile, "text/csv", response);
     }
 
     @ApiOperation(value = "Upload a file with surveillance and nonconformities for certified products.",
@@ -710,7 +683,7 @@ public class SurveillanceController implements MessageSourceAware {
 
         //first we need to count how many surveillance records are in the file
         //to know if we handle it normally or as a background job
-        String data = FileUtils.readFileAsString(file);
+        String data = fileUtils.readFileAsString(file);
 
         int numSurveillance = survUploadManager.countSurveillanceRecords(data);
         if (numSurveillance < surveillanceThresholdToProcessAsJob) {

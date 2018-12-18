@@ -1,9 +1,7 @@
 package gov.healthit.chpl.web.controller;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashSet;
@@ -59,6 +57,7 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.SearchMenuManager;
+import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -75,7 +74,6 @@ import io.swagger.annotations.ApiOperation;
 @Api
 @RestController
 public class SearchViewController {
-    private static final int BUFFER_SIZE = 1024;
     private static final int MAX_PAGE_SIZE = 100;
 
     @Autowired
@@ -92,6 +90,8 @@ public class SearchViewController {
 
     @Autowired
     private DeveloperManager developerManager;
+
+    @Autowired private FileUtils fileUtils;
 
     private static final Logger LOGGER = LogManager.getLogger(SearchViewController.class);
 
@@ -120,119 +120,62 @@ public class SearchViewController {
             @RequestParam(value = "format", defaultValue = "xml", required = false) final String formatInput,
             @RequestParam(value = "definition", defaultValue = "false", required = false) final Boolean isDefinition,
             final HttpServletRequest request, final HttpServletResponse response) throws IOException {
-        String downloadFileLocation = env.getProperty("downloadFolderPath");
-        File downloadFile = new File(downloadFileLocation);
-        if (!downloadFile.exists() || !downloadFile.canRead()) {
-            response.getWriter()
-            .write(String.format(
-                    messageSource.getMessage(new DefaultMessageSourceResolvable("resources.noReadPermission"),
-                            LocaleContextHolder.getLocale()),
-                    downloadFileLocation));
-            return;
+        //parse inputs
+        String edition = editionInput;
+        String format = formatInput;
+        String responseType = "text/csv";
+
+        if (!StringUtils.isEmpty(edition)) {
+            // make sure it's a 4 character year
+            edition = edition.trim();
+            if (!edition.startsWith("20")) {
+                edition = "20" + edition;
+            }
+        } else {
+            edition = "all";
         }
 
-        if (downloadFile.isDirectory()) {
-            // find the most recent file in the directory and use that
-            File[] children = downloadFile.listFiles();
-            if (children == null || children.length == 0) {
+        if (!StringUtils.isEmpty(format) && format.equalsIgnoreCase("csv")) {
+            format = "csv";
+        } else {
+            format = "xml";
+            responseType = "application/xml";
+        }
+
+        File toDownload = null;
+        //if the user wants a definition file, find it
+        if (isDefinition != null && isDefinition.booleanValue()) {
+            if (format.equals("xml")) {
+                toDownload = fileUtils.getDownloadFile(env.getProperty("schemaXmlName"));
+            } else if (edition.equals("2014")) {
+                toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2014Name"));
+            } else if (edition.equals("2015")) {
+                toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2015Name"));
+            }
+
+            if (!toDownload.exists()) {
                 response.getWriter()
-                .write(String.format(
-                        messageSource.getMessage(new DefaultMessageSourceResolvable("resources.noFilesExist"),
-                                LocaleContextHolder.getLocale()),
-                        downloadFileLocation));
+                .write(String.format(messageSource.getMessage(
+                        new DefaultMessageSourceResolvable("resources.schemaFileNotFound"),
+                        LocaleContextHolder.getLocale()), toDownload.getAbsolutePath()));
                 return;
+            }
+        } else {
+            File newestFileWithFormat = fileUtils.getNewestFileMatchingName("^chpl-" + edition + "-.+\\." + format + "$");
+            if (newestFileWithFormat != null) {
+                toDownload = newestFileWithFormat;
             } else {
-                String edition = editionInput;
-                String format = formatInput;
-                if (!StringUtils.isEmpty(edition)) {
-                    // make sure it's a 4 character year
-                    edition = edition.trim();
-                    if (!edition.startsWith("20")) {
-                        edition = "20" + edition;
-                    }
-                } else {
-                    edition = "all";
-                }
-
-                if (!StringUtils.isEmpty(format) && format.equalsIgnoreCase("csv")) {
-                    format = "csv";
-                } else {
-                    format = "xml";
-                }
-
-                if (isDefinition != null && isDefinition.booleanValue()) {
-                    String absolutePath = null;
-                    if (format.equals("xml")) {
-                        String schemaFilename = env.getProperty("schemaXmlName");
-                        absolutePath = downloadFile.getAbsolutePath() + File.separator + schemaFilename;
-                    } else if (edition.equals("2014")) {
-                        String schemaFilename = env.getProperty("schemaCsv2014Name");
-                        absolutePath = downloadFile.getAbsolutePath() + File.separator + schemaFilename;
-                    } else if (edition.equals("2015")) {
-                        String schemaFilename = env.getProperty("schemaCsv2015Name");
-                        absolutePath = downloadFile.getAbsolutePath() + File.separator + schemaFilename;
-                    }
-
-                    if (!StringUtils.isEmpty(absolutePath)) {
-                        downloadFile = new File(absolutePath);
-                        if (!downloadFile.exists()) {
-                            response.getWriter()
-                            .write(String.format(messageSource.getMessage(
-                                    new DefaultMessageSourceResolvable("resources.schemaFileNotFound"),
-                                    LocaleContextHolder.getLocale()), absolutePath));
-                            return;
-                        }
-                    }
-                } else {
-                    File newestFileWithFormat = null;
-                    for (int i = 0; i < children.length; i++) {
-
-                        if (children[i].getName().matches("^chpl-" + edition + "-.+\\." + format + "$")) {
-                            if (newestFileWithFormat == null) {
-                                newestFileWithFormat = children[i];
-                            } else {
-                                if (children[i].lastModified() > newestFileWithFormat.lastModified()) {
-                                    newestFileWithFormat = children[i];
-                                }
-                            }
-                        }
-                    }
-                    if (newestFileWithFormat != null) {
-                        downloadFile = newestFileWithFormat;
-                    } else {
-                        response.getWriter()
-                        .write(String.format(messageSource.getMessage(
-                                new DefaultMessageSourceResolvable(
-                                        "resources.fileWithEditionAndFormatNotFound"),
-                                LocaleContextHolder.getLocale()), edition, format));
-                        return;
-                    }
-                }
+                response.getWriter()
+                .write(String.format(messageSource.getMessage(
+                        new DefaultMessageSourceResolvable(
+                                "resources.fileWithEditionAndFormatNotFound"),
+                        LocaleContextHolder.getLocale()), edition, format));
+                return;
             }
         }
 
-        LOGGER.info("Downloading " + downloadFile.getName());
-
-        try (FileInputStream inputStream = new FileInputStream(downloadFile);
-                OutputStream outStream = response.getOutputStream()) {
-
-            // set content attributes for the response
-            response.setContentType("application/xml");
-            response.setContentLength((int) downloadFile.length());
-
-            // set headers for the response
-            String headerKey = "Content-Disposition";
-            String headerValue = String.format("attachment; filename=\"%s\"", downloadFile.getName());
-            response.setHeader(headerKey, headerValue);
-
-            byte[] buffer = new byte[BUFFER_SIZE];
-            int bytesRead = -1;
-
-            // write bytes read from the input stream into the output stream
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outStream.write(buffer, 0, bytesRead);
-            }
-        }
+        LOGGER.info("Downloading " + toDownload.getName());
+        fileUtils.streamFileAsResponse(toDownload, responseType, response);
     }
 
     /**
