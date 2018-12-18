@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.duplicate.AtlDuplicateReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.duplicate.TestFunctionalityDuplicateReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.duplicate.TestToolDuplicateReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2014.duplicate.AdditionalSoftware2014DuplicateReviewer;
@@ -25,6 +26,7 @@ public class DuplicateData2014Reviewer implements Reviewer {
     private TestToolDuplicateReviewer testToolDuplicateReviewer;
     private TestProcedure2014DuplicateReviewer testProcedureDuplicateReviewer;
     private TestData2014DuplicateReviewer testDataDuplicateReviewer;
+    private AtlDuplicateReviewer atlDuplicateReviewer;
 
     @Autowired
     public DuplicateData2014Reviewer(QmsStandard2014DuplicateReviewer qmsStandard2014DuplicateReviewer,
@@ -32,17 +34,20 @@ public class DuplicateData2014Reviewer implements Reviewer {
             AdditionalSoftware2014DuplicateReviewer additionalSoftwareDuplicateReviewer,
             TestToolDuplicateReviewer testToolDuplicateReviewer,
             TestProcedure2014DuplicateReviewer testProcedureDuplicateReviewer,
-            TestData2014DuplicateReviewer testDataDuplicateReviewer) {
+            TestData2014DuplicateReviewer testDataDuplicateReviewer,
+            AtlDuplicateReviewer atlDuplicateReviewer) {
         this.qmsStandardDuplicateReviewer = qmsStandard2014DuplicateReviewer;
         this.testFunctionalityDuplicateReviewer = testFunctionalityDuplicateReviewer;
         this.additionalSoftwareDuplicateReviewer = additionalSoftwareDuplicateReviewer;
         this.testToolDuplicateReviewer = testToolDuplicateReviewer;
         this.testProcedureDuplicateReviewer = testProcedureDuplicateReviewer;
         this.testDataDuplicateReviewer = testDataDuplicateReviewer;
+        this.atlDuplicateReviewer = atlDuplicateReviewer;
     }
 
     @Override
     public void review(PendingCertifiedProductDTO listing) {
+        atlDuplicateReviewer.review(listing);
         qmsStandardDuplicateReviewer.review(listing);
 
         for (PendingCertificationResultDTO pcr : listing.getCertificationCriterion()) {
@@ -53,6 +58,4 @@ public class DuplicateData2014Reviewer implements Reviewer {
             testDataDuplicateReviewer.review(listing, pcr);
         }
     }
-
-
 }
