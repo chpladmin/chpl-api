@@ -101,10 +101,10 @@ public class ChplNumberReviewer implements Reviewer {
                 } else {
                     TestingLabDTO testingLab = atlDao.getByName(testingLabs.get(0).getTestingLabName());
                     if ("99".equals(atlCode)) {
-                        listing.getWarningMessages()
+                        listing.getErrorMessages()
                         .add(msgUtil.getMessage("atl.shouldNotBe99"));
                     } else if (!testingLab.getTestingLabCode().equals(atlCode)) {
-                        listing.getWarningMessages()
+                        listing.getErrorMessages()
                         .add(msgUtil.getMessage("atl.codeMismatch", testingLab.getName(), atlCode));
                     }
                 }
