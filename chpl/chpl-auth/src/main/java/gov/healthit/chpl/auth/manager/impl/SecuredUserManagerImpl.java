@@ -62,12 +62,12 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
         return user;
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC, 'ROLE_ACB', 'ROLE_ATL') or hasPermission(#user, admin)")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB', 'ROLE_ATL') or hasPermission(#user, admin)")
     public UserDTO update(final UserDTO user) throws UserRetrievalException {
         return userDAO.update(user);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC, 'ROLE_ACB', 'ROLE_ATL') or hasPermission(#user, admin)")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB', 'ROLE_ATL') or hasPermission(#user, admin)")
     public void updateContactInfo(final UserEntity user) {
         userContactDAO.update(user.getContact());
     }

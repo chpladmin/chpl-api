@@ -207,8 +207,8 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 
     @Override
     @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('ROLE_ACB') "
-            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') "
+            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     public List<Surveillance> getPendingByAcb(final Long acbId) {
         List<PendingSurveillanceEntity> pendingResults = survDao.getPendingSurveillanceByAcb(acbId);
         List<Surveillance> results = new ArrayList<Surveillance>();
@@ -223,8 +223,8 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 
     @Override
     @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('ROLE_ACB') "
-            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') "
+            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     public Surveillance getPendingById(final Long acbId, final Long survId, final boolean includeDeleted)
             throws EntityRetrievalException {
         PendingSurveillanceEntity pending = survDao.getPendingSurveillanceById(survId, includeDeleted);
@@ -234,8 +234,8 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ACB') "
-            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') "
+            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     public Long createPendingSurveillance(final Long acbId, final Surveillance surv) {
         Long insertedId = null;
 
@@ -250,8 +250,8 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ACB') "
-            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') "
+            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     public void deletePendingSurveillance(final Long acbId, final Long survId, final boolean isConfirmed)
             throws ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException,
             EntityCreationException {
@@ -283,7 +283,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ACB')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     public void deletePendingSurveillance(final List<CertificationBodyDTO> userAcbs,
             final Long survId, final boolean isConfirmed)
             throws EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException,
@@ -331,8 +331,8 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ACB') "
-            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') "
+            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     public boolean isPendingSurveillanceAvailableForUpdate(final Long acbId, final Long pendingSurvId)
             throws EntityRetrievalException, ObjectMissingValidationException {
         PendingSurveillanceEntity pendingSurv = survDao.getPendingSurveillanceById(pendingSurvId, true);
@@ -341,8 +341,8 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ACB') "
-            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') "
+            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     public boolean isPendingSurveillanceAvailableForUpdate(final Long acbId,
             final PendingSurveillanceEntity pendingSurv)
             throws EntityRetrievalException, ObjectMissingValidationException {

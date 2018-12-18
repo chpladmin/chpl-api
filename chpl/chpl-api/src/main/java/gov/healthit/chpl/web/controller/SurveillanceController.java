@@ -115,13 +115,6 @@ public class SurveillanceController implements MessageSourceAware {
     @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody SurveillanceResults getAllPendingSurveillanceForAcbUser() throws AccessDeniedException {
 
-        if (!Util.isUserRoleAcbAdmin()) {
-            throw new AccessDeniedException(String
-                    .format(messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("access.pendingSurveillances"),
-                            LocaleContextHolder.getLocale())));
-        }
-
         List<CertificationBodyDTO> acbs = acbManager.getAllForUser();
         List<Surveillance> pendingSurvs = new ArrayList<Surveillance>();
 
@@ -535,8 +528,8 @@ public class SurveillanceController implements MessageSourceAware {
                     + "activity will be marked as deleted and the surveillance in this request body will "
                     + "be inserted. The surveillance passed into this request will first be validated "
                     + " to check for errors and the related pending surveillance will be removed. "
-                    + "ROLE_ACB "
-                    + " and administrative authority on the ACB associated with the certified product is required.")
+                    + "ROLE_ADMIN or ROLE_ACB "
+                    + " plus administrative authority on the ACB associated with the certified product is required.")
     @RequestMapping(value = "/pending/confirm", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
     public synchronized ResponseEntity<Surveillance> confirmPendingSurveillance(
