@@ -246,7 +246,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     }
 
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN' 'ROLE_ONC') or (hasRole('ROLE_ACB') and hasPermission(#acb, admin))")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or (hasRole('ROLE_ACB') and hasPermission(#acb, admin))")
     public void deleteAllPermissionsOnAcb(final CertificationBodyDTO acb, final Sid recipient) {
         ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
         MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);

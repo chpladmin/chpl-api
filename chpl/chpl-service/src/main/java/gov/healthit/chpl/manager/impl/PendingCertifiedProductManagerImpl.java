@@ -166,7 +166,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
             CacheNames.FIND_BY_ACB_ID
     }, allEntries = true)
     @PreAuthorize("hasRole('ROLE_ADMIN') or "
-            + "(hasRole('ROLE_ACB') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
+            + "(hasRole('ROLE_ACB') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     public void deletePendingCertifiedProduct(final Long acbId, final Long pendingProductId)
             throws EntityRetrievalException, EntityNotFoundException, EntityCreationException, AccessDeniedException,
             JsonProcessingException, ObjectMissingValidationException {
