@@ -214,7 +214,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole(ROLE_ADMIN') or (hasRole('ROLE_ACB') "
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') "
             + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     public boolean isPendingListingAvailableForUpdate(final Long acbId, final PendingCertifiedProductDTO pendingCp)
             throws EntityRetrievalException, ObjectMissingValidationException {

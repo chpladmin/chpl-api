@@ -450,10 +450,8 @@ public class ActivityController {
             @RequestParam(required = false) final Long start,
             @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
-        List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser();
-
         //pcpManager will return 404 if the user is not allowed to access it b/c of acb permissions
-        PendingCertifiedProductDetails pendingListing = pcpManager.getById(allowedAcbs, id, true);
+        PendingCertifiedProductDetails pendingListing = pcpManager.getById(id, true);
 
         //if one of start of end is provided then the other must also be provided.
         //if neither is provided then query all dates

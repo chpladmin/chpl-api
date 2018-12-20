@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.auth.dao.UserContactDAO;
 import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dao.UserPermissionDAO;
+import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.entity.UserEntity;
@@ -79,7 +80,7 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
         //find the granted permissions for this user and remove them
         Set<UserPermissionDTO> permissions = getGrantedPermissionsForUser(user);
         for (UserPermissionDTO permission : permissions) {
-            if (permission.getAuthority().equals("ROLE_ADMIN")) {
+            if (permission.getAuthority().equals(Authority.ROLE_ADMIN)) {
                 removeAdmin(user.getSubjectName());
             } else {
                 removeRole(user, permission.getAuthority());
@@ -148,7 +149,7 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_INVITED_USER_CREATOR')")
     public void grantRole(final String userName, final String role)
             throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
-        if (role.equals("ROLE_ADMIN") || role.equals("ROLE_ONC")
+        if (role.equals(Authority.ROLE_ADMIN)
                 || role.equals("ROLE_ACL_ADMIN") || role.equals("ROLE_ADMINISTRATOR")
                 || role.equals("ROLE_USER_AUTHENTICATOR")) {
             throw new UserManagementException("This role cannot be granted using the grant role functionality");
@@ -161,7 +162,7 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_INVITED_USER_CREATOR')")
     public void grantAdmin(final String userName)
             throws UserPermissionRetrievalException, UserRetrievalException, UserManagementException {
-        userDAO.addPermission(userName, "ROLE_ADMIN");
+        userDAO.addPermission(userName, Authority.ROLE_ADMIN);
     }
 
     @Override
@@ -175,7 +176,7 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or hasPermission(#user, admin)")
     public void removeRole(final String userName, final String role)
             throws UserManagementException, UserRetrievalException, UserPermissionRetrievalException {
-        if (role.equals("ROLE_ADMIN") || role.equals("ROLE_ACL_ADMIN") || role.equals("ROLE_ADMINISTRATOR")
+        if (role.equals(Authority.ROLE_ADMIN) || role.equals("ROLE_ACL_ADMIN") || role.equals("ROLE_ADMINISTRATOR")
                 || role.equals("ROLE_USER_AUTHENTICATOR")) {
             throw new UserManagementException("This role cannot be removed using the remove role functionality");
         }
@@ -187,7 +188,7 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void removeAdmin(final String userName)
             throws UserPermissionRetrievalException, UserRetrievalException, UserManagementException {
-        userDAO.removePermission(userName, "ROLE_ADMIN");
+        userDAO.removePermission(userName, Authority.ROLE_ADMIN);
     }
 
     @Override
@@ -209,7 +210,7 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_USER_AUTHENTICATOR', 'ROLE_ADMIN', 'ROLE_ONC') "
+    @PreAuthorize("hasAnyRole('ROLE_USER_AUTHENTICATOR', 'ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB', 'ROLE_ATL') "
             + " or hasPermission(#user, 'read') or hasPermission(#user, admin)")
     public Set<UserPermissionDTO> getGrantedPermissionsForUser(final UserDTO user) {
         return this.userPermissionDAO.findPermissionsForUser(user.getId());

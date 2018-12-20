@@ -299,9 +299,9 @@ public class UserManagementController {
         boolean isChplAdmin = false;
         boolean isOnc = false;
         for (String permission : invitation.getPermissions()) {
-            if (permission.equals("ADMIN") || permission.equals("ROLE_ADMIN")) {
+            if (permission.equals("ADMIN") || permission.equals(Authority.ROLE_ADMIN)) {
                 isChplAdmin = true;
-            } else if (permission.equals("ONC") || permission.equals("ROLE_ONC")) {
+            } else if (permission.equals("ONC") || permission.equals(Authority.ROLE_ONC)) {
                 isOnc = true;
             }
         }

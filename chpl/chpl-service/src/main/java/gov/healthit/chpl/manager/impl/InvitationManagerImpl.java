@@ -21,6 +21,7 @@ import gov.healthit.chpl.auth.dao.InvitationDAO;
 import gov.healthit.chpl.auth.dao.InvitationPermissionDAO;
 import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dao.UserPermissionDAO;
+import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.auth.dto.InvitationDTO;
 import gov.healthit.chpl.auth.dto.InvitationPermissionDTO;
 import gov.healthit.chpl.auth.dto.UserDTO;
@@ -344,7 +345,7 @@ public class InvitationManagerImpl implements InvitationManager {
             for (InvitationPermissionDTO permission : invitation.getPermissions()) {
                 UserPermissionDTO userPermission = userPermissionDao.findById(permission.getPermissionId());
                 try {
-                    if (userPermission.getAuthority().equals("ROLE_ADMIN")) {
+                    if (userPermission.getAuthority().equals(Authority.ROLE_ADMIN)) {
                         userManager.grantAdmin(user.getUsername());
                     } else {
                         userManager.grantRole(user.getUsername(), userPermission.getAuthority());
