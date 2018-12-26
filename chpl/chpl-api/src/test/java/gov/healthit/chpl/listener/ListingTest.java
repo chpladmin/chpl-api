@@ -31,11 +31,13 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.QuestionableActivityDAO;
 import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
+import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.domain.concept.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -573,8 +575,8 @@ public class ListingTest extends TestCase {
     @Transactional
     @Rollback
     public void testRemoveCriteriaIncludesReason() throws EntityCreationException,
-    EntityRetrievalException,
-    InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException {
+    EntityRetrievalException, ValidationException,
+    InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date();
@@ -582,8 +584,16 @@ public class ListingTest extends TestCase {
         for (CertificationResult cert : listing.getCertificationResults()) {
             if (cert.getId().longValue() == 1) {
                 cert.setSuccess(Boolean.FALSE);
+                for (UcdProcess ucd : listing.getSed().getUcdProcesses()) {
+                    for (CertificationCriterion ucdCriteria : ucd.getCriteria()) {
+                        if (ucdCriteria.getNumber() != null && ucdCriteria.getNumber().equals("170.314 (a)(1)")) {
+                            ucd.getCriteria().remove(ucdCriteria);
+                        }
+                    }
+                }
             }
         }
+
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(listing);
         updateRequest.setReason("unit test");
@@ -622,11 +632,16 @@ public class ListingTest extends TestCase {
         for (CertificationResult cert : listing.getCertificationResults()) {
             if (cert.getId().longValue() == 1) {
                 cert.setSuccess(Boolean.FALSE);
+                cert.setSed(Boolean.FALSE);
             }
         }
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(listing);
-        cpController.updateCertifiedProduct(updateRequest);
+        try {
+            cpController.updateCertifiedProduct(updateRequest);
+        } catch (ValidationException e) {
+            assertEquals(e.getErrorMessages().size(), 3);
+        }
         Date afterActivity = new Date();
 
         List<QuestionableActivityListingDTO> activities = qaDao.findListingActivityBetweenDates(beforeActivity,
