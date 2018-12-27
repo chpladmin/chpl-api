@@ -112,10 +112,21 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 
     @Override
     @Transactional(readOnly = true)
-    @PostFilter("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') and "
-            + "hasPermission(filterObject.certificationBodyId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-    public List<PendingCertifiedProductDTO> getPendingCertifiedProducts() {
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public List<PendingCertifiedProductDTO> getAllPendingCertifiedProducts() {
         List<PendingCertifiedProductDTO> products = pcpDao.findAll();
+        updateCertResults(products);
+        validate(products);
+
+        return products;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') and "
+            + "hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+    public List<PendingCertifiedProductDTO> getPendingCertifiedProducts(final Long acbId) {
+        List<PendingCertifiedProductDTO> products = pcpDao.findByAcbId(acbId);
         updateCertResults(products);
         validate(products);
 

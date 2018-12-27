@@ -57,6 +57,7 @@ import gov.healthit.chpl.domain.IdListContainer;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
@@ -70,6 +71,7 @@ import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.exception.ObjectsMissingValidationException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
@@ -105,6 +107,9 @@ public class CertifiedProductController {
 
     @Autowired
     private CertifiedProductManager cpManager;
+
+    @Autowired
+    private CertificationBodyManager acbManager;
 
     @Autowired
     private PendingCertifiedProductManager pcpManager;
@@ -679,7 +684,15 @@ public class CertifiedProductController {
     public @ResponseBody PendingCertifiedProductResults getPendingCertifiedProducts()
             throws EntityRetrievalException, AccessDeniedException {
 
-        List<PendingCertifiedProductDTO> pcps = pcpManager.getPendingCertifiedProducts();
+        List<PendingCertifiedProductDTO> pcps = new ArrayList<PendingCertifiedProductDTO>();
+        if (Util.isUserRoleAdmin()) {
+            pcps = pcpManager.getAllPendingCertifiedProducts();
+        } else {
+            List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser();
+            for (CertificationBodyDTO acb : allowedAcbs) {
+                pcps.addAll(pcpManager.getPendingCertifiedProducts(acb.getId()));
+            }
+        }
 
         List<PendingCertifiedProductDetails> result = new ArrayList<PendingCertifiedProductDetails>();
         for (PendingCertifiedProductDTO product : pcps) {
@@ -751,11 +764,11 @@ public class CertifiedProductController {
         ObjectsMissingValidationException possibleExceptions = new ObjectsMissingValidationException();
         for (Long pcpId : idList.getIds()) {
             try {
-                PendingCertifiedProductDTO pcp = pcpDao.findById(pcpId, true);
-                if (pcp == null) {
+                Long acbId = pcpDao.findAcbIdById(pcpId);
+                if (acbId == null) {
                     throw new EntityNotFoundException(msgUtil.getMessage("pendingListing.notFound"));
                 }
-                pcpManager.deletePendingCertifiedProduct(pcp.getCertificationBodyId(), pcpId);
+                pcpManager.deletePendingCertifiedProduct(acbId, pcpId);
             } catch (final ObjectMissingValidationException ex) {
                 possibleExceptions.getExceptions().add(ex);
             }

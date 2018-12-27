@@ -1083,8 +1083,9 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     }
 
     @Override
-    @PreAuthorize("hasRole('ROLE_ADMIN') or " + "hasRole('ROLE_ACB')"
-            + "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or "
+            + "(hasRole('ROLE_ACB')"
+            + " and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     @Transactional(readOnly = false)
     public void sanitizeUpdatedListingData(final Long acbId, final CertifiedProductSearchDetails listing)
             throws EntityNotFoundException {
