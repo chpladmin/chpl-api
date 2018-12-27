@@ -16,6 +16,7 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.duplicat
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.duplicate.AdditionalSoftware2015DuplicateReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.duplicate.IcsSource2015DuplicateReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.duplicate.QmsStandard2015DuplicateReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.duplicate.TargetedUser2015DuplicateReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.duplicate.TestData2015DuplicateReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.duplicate.TestProcedure2015DuplicateReviewer;
 
@@ -33,6 +34,7 @@ public class DuplicateData2015Reviewer implements Reviewer {
     private QmsStandard2015DuplicateReviewer qmsStandardDuplicateReviewer;
     private IcsSource2015DuplicateReviewer icsSourceDuplicateReviewer;
     private AtlDuplicateReviewer atlDuplicateReviewer;
+    private TargetedUser2015DuplicateReviewer targetedUser2015DuplicateReviewer;
 
     @Autowired
     public DuplicateData2015Reviewer(TestFunctionalityDuplicateReviewer testFunctionalityDuplicateReviewer,
@@ -44,7 +46,8 @@ public class DuplicateData2015Reviewer implements Reviewer {
             AccessibilityStandard2015DuplicateReviewer accessibilityStandardDuplicateReviewer,
             QmsStandard2015DuplicateReviewer qmsStandardDuplicateReviewer,
             IcsSource2015DuplicateReviewer icsSourceDuplicateReviewer,
-            AtlDuplicateReviewer atlDuplicateReviewer) {
+            AtlDuplicateReviewer atlDuplicateReviewer,
+            TargetedUser2015DuplicateReviewer targetedUser2015DuplicateReviewer) {
         this.testFunctionalityDuplicateReviewer = testFunctionalityDuplicateReviewer;
         this.testDataDuplicateReviewer = testDataDuplicateReviewer;
         this.testToolDuplicateReviewer = testToolDuplicateReviewer;
@@ -55,6 +58,7 @@ public class DuplicateData2015Reviewer implements Reviewer {
         this.qmsStandardDuplicateReviewer = qmsStandardDuplicateReviewer;
         this.icsSourceDuplicateReviewer = icsSourceDuplicateReviewer;
         this.atlDuplicateReviewer = atlDuplicateReviewer;
+        this.targetedUser2015DuplicateReviewer = targetedUser2015DuplicateReviewer;
     }
 
     @Override
@@ -63,6 +67,7 @@ public class DuplicateData2015Reviewer implements Reviewer {
         accessibilityStandardDuplicateReviewer.review(listing);
         qmsStandardDuplicateReviewer.review(listing);
         icsSourceDuplicateReviewer.review(listing);
+        targetedUser2015DuplicateReviewer.review(listing);
 
         for (PendingCertificationResultDTO pcr : listing.getCertificationCriterion()) {
             additionalSoftwareDuplicateReviewer.review(listing, pcr);
