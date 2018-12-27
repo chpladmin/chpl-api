@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiPredicate;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -55,60 +56,9 @@ public class TestStandardDuplicateReviewer {
             @Override
             public boolean test(final PendingCertificationResultTestStandardDTO dto1,
                     final PendingCertificationResultTestStandardDTO dto2) {
-                if (dto1.getName() != null && dto2.getName() != null) {
-                    return dto1.getName().equals(dto2.getName());
-                } else {
-                    return false;
-                }
+                return ObjectUtils.allNotNull(dto1.getName(), dto2.getName())
+                        && dto1.getName().equals(dto2.getName());
             }
         };
     }
-
-    //    public void review(PendingCertifiedProductDTO listing, final PendingCertificationResultDTO certificationResult) {
-    //        DuplicateReviewResult<PendingCertificationResultTestStandardDTO> testStandardDuplicateResults =
-    //                removeDuplicates(certificationResult);
-    //        if (testStandardDuplicateResults.getMessages().size() > 0) {
-    //            listing.getWarningMessages().addAll(testStandardDuplicateResults.getMessages());
-    //            certificationResult.setTestStandards(testStandardDuplicateResults.getObjects());
-    //        }
-    //    }
-    //
-    //    private DuplicateReviewResult<PendingCertificationResultTestStandardDTO> removeDuplicates(
-    //            final PendingCertificationResultDTO certificationResult) {
-    //
-    //        DuplicateReviewResult<PendingCertificationResultTestStandardDTO> dupResults =
-    //                new DuplicateReviewResult<PendingCertificationResultTestStandardDTO>();
-    //
-    //        if (certificationResult.getTestStandards() != null) {
-    //            for (PendingCertificationResultTestStandardDTO dto : certificationResult.getTestStandards()) {
-    //                if (isDuplicate(dupResults, dto)) {
-    //                    // Item already exists
-    //                    String warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestStandard.2015",
-    //                            certificationResult.getNumber(), dto.getName());
-    //                    dupResults.getMessages().add(warning);
-    //                } else {
-    //                    //Add the item to the final list
-    //                    dupResults.getObjects().add(dto);
-    //                }
-    //            }
-    //        }
-    //
-    //        return dupResults;
-    //    }
-    //
-    //    private Boolean isDuplicate(
-    //            final DuplicateReviewResult<PendingCertificationResultTestStandardDTO> dupResults,
-    //            final PendingCertificationResultTestStandardDTO testStandardDTO) {
-    //        return dupResults.existsInObjects(testStandardDTO, new Predicate<PendingCertificationResultTestStandardDTO>() {
-    //            @Override
-    //            public boolean test(PendingCertificationResultTestStandardDTO dto2) {
-    //                if (testStandardDTO.getName() != null && dto2.getName() != null) {
-    //                    return testStandardDTO.getName().equals(dto2.getName());
-    //                } else {
-    //                    return false;
-    //                }
-    //            }
-    //        });
-    //    }
-    //
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiPredicate;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -54,11 +55,8 @@ public class IcsSource2015DuplicateReviewer {
             @Override
             public boolean test(final CertifiedProductDetailsDTO dto1,
                     final CertifiedProductDetailsDTO dto2) {
-                if (dto1.getChplProductNumber() != null && dto2.getChplProductNumber() != null) {
-                    return dto1.getChplProductNumber().equals(dto2.getChplProductNumber());
-                } else {
-                    return false;
-                }
+                return ObjectUtils.allNotNull(dto1.getChplProductNumber(), dto2.getChplProductNumber())
+                        && dto1.getChplProductNumber().equals(dto2.getChplProductNumber());
             }
         };
     }

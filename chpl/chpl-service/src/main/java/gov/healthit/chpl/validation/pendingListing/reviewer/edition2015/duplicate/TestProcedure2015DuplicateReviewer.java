@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiPredicate;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -56,13 +57,10 @@ public class TestProcedure2015DuplicateReviewer {
             @Override
             public boolean test(final PendingCertificationResultTestProcedureDTO dto1,
                     final PendingCertificationResultTestProcedureDTO dto2) {
-                if (dto1.getEnteredName() != null && dto2.getEnteredName() != null
-                        && dto1.getVersion() != null && dto2.getVersion() != null) {
-                    return dto1.getEnteredName().equals(dto2.getEnteredName())
-                            && dto1.getVersion().equals(dto2.getVersion());
-                } else {
-                    return false;
-                }
+                return ObjectUtils.allNotNull(dto1.getEnteredName(), dto2.getEnteredName(),
+                        dto1.getVersion(), dto2.getVersion())
+                        &&dto1.getEnteredName().equals(dto2.getEnteredName())
+                        && dto1.getVersion().equals(dto2.getVersion());
             }
         };
     }

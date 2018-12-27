@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiPredicate;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -53,13 +54,10 @@ public class QmsStandard2015DuplicateReviewer {
             @Override
             public boolean test(final PendingCertifiedProductQmsStandardDTO dto1,
                     final PendingCertifiedProductQmsStandardDTO dto2) {
-                if (dto1.getName() != null && dto2.getName() != null
-                        && dto1.getApplicableCriteria() != null && dto2.getApplicableCriteria() != null) {
-                    return dto1.getName().equals(dto2.getName())
-                            && dto1.getApplicableCriteria().equals(dto2.getApplicableCriteria());
-                } else {
-                    return false;
-                }
+                return ObjectUtils.allNotNull(dto1.getName(), dto2.getName(),
+                        dto1.getApplicableCriteria(), dto2.getApplicableCriteria())
+                        && dto1.getName().equals(dto2.getName())
+                        && dto1.getApplicableCriteria().equals(dto2.getApplicableCriteria());
             }
         };
     }
