@@ -29,7 +29,7 @@ import gov.healthit.chpl.scheduler.SchedulerCertifiedProductSearchDetailsAsync;
  *
  */
 public abstract class DownloadableResourceCreatorJob extends QuartzJob {
-    private SimpleDateFormat timestampFormat;
+    private SimpleDateFormat filenameTimestampFormat;
 
     @Autowired
     private SchedulerCertifiedProductSearchDetailsAsync schedulerCertifiedProductSearchDetailsAsync;
@@ -58,7 +58,7 @@ public abstract class DownloadableResourceCreatorJob extends QuartzJob {
     public DownloadableResourceCreatorJob(final Logger logger) {
         Logger rootLogger = LogManager.getLogger(DownloadableResourceCreatorJob.class);
         rootLogger.info("Constructor for DownloadableResourceCreatorJob invoked");
-        timestampFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
+        filenameTimestampFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
         setLogger(logger);
     }
 
@@ -144,12 +144,12 @@ public abstract class DownloadableResourceCreatorJob extends QuartzJob {
         this.certifiedProductDao = certifiedProductDao;
     }
 
-    public SimpleDateFormat getTimestampFormat() {
-        return timestampFormat;
+    public SimpleDateFormat getFilenameTimestampFormat() {
+        return filenameTimestampFormat;
     }
 
-    public void setTimestampFormat(final SimpleDateFormat timestampFormat) {
-        this.timestampFormat = timestampFormat;
+    public void setFilenameTimestampFormat(final SimpleDateFormat filenameTimestampFormat) {
+        this.filenameTimestampFormat = filenameTimestampFormat;
     }
 
     public CertifiedProductDetailsManager getCpdManager() {

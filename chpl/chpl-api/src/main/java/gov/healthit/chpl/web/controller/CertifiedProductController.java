@@ -78,6 +78,7 @@ import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandler;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandlerFactory;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import gov.healthit.chpl.validation.listing.PendingValidator;
 import gov.healthit.chpl.validation.listing.Validator;
@@ -123,6 +124,9 @@ public class CertifiedProductController {
 
     @Autowired
     private ErrorMessageUtil msgUtil;
+
+    @Autowired
+    private FileUtils fileUtils;
 
     @Autowired
     private ChplProductNumberUtil chplProductNumberUtil;
@@ -486,35 +490,8 @@ public class CertifiedProductController {
     @RequestMapping(value = "/sed_details", method = RequestMethod.GET)
     public void streamSEDDetailsDocumentContents(final HttpServletResponse response)
             throws EntityRetrievalException, IOException {
-        Path path = Paths.get(env.getProperty("downloadFolderPath"), env.getProperty("SEDDownloadName"));
-        File downloadFile = new File(path.toUri());
-        final int bufferSize = 1024;
-        byte[] data = Files.readAllBytes(path);
-
-        if (data.length > 0) {
-            try (ByteArrayInputStream inputStream = new ByteArrayInputStream(data);
-                    OutputStream outStream = response.getOutputStream()) {
-
-                // get MIME type of the file
-                String mimeType = "text/csv";
-                // set content attributes for the response
-                response.setContentType(mimeType);
-                response.setContentLength(data.length);
-
-                // set headers for the response
-                String headerKey = "Content-Disposition";
-                String headerValue = String.format("attachment; filename=\"%s\"", downloadFile.getName());
-                response.setHeader(headerKey, headerValue);
-
-                byte[] buffer = new byte[bufferSize];
-                int bytesRead = -1;
-
-                // write bytes read from the input stream into the output stream
-                while ((bytesRead = inputStream.read(buffer)) != -1) {
-                    outStream.write(buffer, 0, bytesRead);
-                }
-            }
-        }
+        File downloadFile = fileUtils.getNewestFileMatchingName("^" + env.getProperty("SEDDownloadName") + "-.+\\.csv$");
+        fileUtils.streamFileAsResponse(downloadFile, "text/csv", response);
     }
 
     /**
