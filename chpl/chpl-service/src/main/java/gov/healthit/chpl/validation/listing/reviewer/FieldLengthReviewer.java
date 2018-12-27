@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.TestParticipant;
+import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("fieldLengthReviewer")
@@ -25,6 +27,14 @@ public class FieldLengthReviewer implements Reviewer {
         }
         if (listing.getVersion() != null && !StringUtils.isEmpty(listing.getVersion().getVersion())) {
             checkField(listing, listing.getVersion().getVersion(), "productVersion");
+        }
+        if (listing.getSed() != null && listing.getSed().getTestTasks() != null) {
+            for(TestTask task : listing.getSed().getTestTasks()) {
+                checkField(listing, task.getUniqueId(), "taskIdentifier");
+                for(TestParticipant tp : task.getTestParticipants()) {
+                    checkField(listing, tp.getUniqueId(), "participantIdentifier");
+                }
+            }
         }
     }
 
