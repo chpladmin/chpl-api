@@ -143,7 +143,6 @@ public class ValidDataReviewerTest {
         listing.setSed(sed);
         fieldLengthReivewer.review(listing);
         System.out.println(listing.getErrorMessages());
-        assertFalse(listing.getErrorMessages().contains(BAD_PRIVACY_SECURITY_ERROR));
         assertTrue(listing.getErrorMessages().contains(BAD_LENGTH_TASK_ID));
     }
 }
