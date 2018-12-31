@@ -47,13 +47,12 @@ public class ValidDataReviewerTest {
     private static final String BAD_LENGTH_TASK_ID = "You have exceeded the max length for the Task Identifier.";
 
     @Spy private CertifiedProductManager cpManager;
-    @Spy private MessageSource messageSource;
     @Autowired private ListingMockUtil mockUtil;
 
     @InjectMocks
     private ValidDataReviewer validDataReivewer;
     
-    @InjectMocks
+    @Autowired
     private FieldLengthReviewer fieldLengthReivewer;
 
     @Before
