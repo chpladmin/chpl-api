@@ -312,12 +312,17 @@ public class ListingTest extends TestCase {
     @Rollback
     public void testUpdateCertificationStatusHistoryDate() throws
     EntityCreationException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException,
-    MissingReasonException, IOException {
+    MissingReasonException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final long dateDifference = 1000L;
         Date beforeActivity = new Date();
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
+        for(CertificationResult result : listing.getCertificationResults()) {
+            result.setSed(Boolean.FALSE);
+            result.setGap(Boolean.FALSE);
+        }
+        
         List<CertificationStatusEvent> events = listing.getCertificationEvents();
         int statusEventIndex = 0;
         for (int i = 0; i < events.size(); i++) {
@@ -335,11 +340,7 @@ public class ListingTest extends TestCase {
 
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(listing);
-        try {
-            cpController.updateCertifiedProduct(updateRequest);
-        } catch (ValidationException e) {
-            assertEquals(e.getErrorMessages().size(), 3);
-        }
+        cpController.updateCertifiedProduct(updateRequest);
         Date afterActivity = new Date();
 
         List<QuestionableActivityListingDTO> activities =
@@ -458,11 +459,15 @@ public class ListingTest extends TestCase {
     @Rollback
     public void testRemoveCqmIncludesReason() throws
     EntityCreationException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException,
-    MissingReasonException, IOException {
+    MissingReasonException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date();
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
+        for(CertificationResult result : listing.getCertificationResults()) {
+            result.setSed(Boolean.FALSE);
+            result.setGap(Boolean.FALSE);
+        }
         for (CQMResultDetails cqm : listing.getCqmResults()) {
             if (cqm.getCmsId() != null && cqm.getCmsId().equals("CMS146")) {
                 cqm.setSuccess(Boolean.FALSE);
@@ -473,11 +478,7 @@ public class ListingTest extends TestCase {
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(listing);
         updateRequest.setReason("unit test");
-        try {
-            cpController.updateCertifiedProduct(updateRequest);
-        } catch (ValidationException e) {
-            assertEquals(e.getErrorMessages().size(), 3);
-        }
+        cpController.updateCertifiedProduct(updateRequest);
         Date afterActivity = new Date();
 
         List<QuestionableActivityListingDTO> activities =
@@ -574,7 +575,7 @@ public class ListingTest extends TestCase {
     @Rollback
     public void testRemoveCriteriaIncludesReason() throws EntityCreationException,
     EntityRetrievalException,
-    InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException {
+    InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date();
@@ -587,11 +588,7 @@ public class ListingTest extends TestCase {
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(listing);
         updateRequest.setReason("unit test");
-        try {
-            cpController.updateCertifiedProduct(updateRequest);
-        } catch (ValidationException e) {
-            assertEquals(e.getErrorMessages().size(), 3);
-        }
+        cpController.updateCertifiedProduct(updateRequest);
         Date afterActivity = new Date();
 
         List<QuestionableActivityListingDTO> activities = qaDao.findListingActivityBetweenDates(beforeActivity,

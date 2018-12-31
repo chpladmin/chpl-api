@@ -32,6 +32,7 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProduct;
@@ -312,10 +313,14 @@ public class CacheRefreshTest extends TestCase {
     @Transactional
     @Rollback
     public void testUpdateListingStatusRefreshesCache() throws EntityRetrievalException, EntityCreationException,
-    JsonProcessingException, InvalidArgumentsException, MissingReasonException, IOException {
+    JsonProcessingException, InvalidArgumentsException, MissingReasonException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         CertifiedProductSearchDetails listingToUpdate = cpdManager.getCertifiedProductDetails(1L);
+        for(CertificationResult result : listingToUpdate.getCertificationResults()) {
+            result.setSed(Boolean.FALSE);
+            result.setGap(Boolean.FALSE);
+        }
 
         //get the cache before this update, should pull the listings and cache them
         List<CertifiedProductFlatSearchResult> allListingsBeforeUpdate = searchManager.search();
@@ -348,11 +353,7 @@ public class CacheRefreshTest extends TestCase {
 
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(listingToUpdate);
-        try {
-            cpController.updateCertifiedProduct(updateRequest);
-        } catch (ValidationException e) {
-            assertEquals(e.getErrorMessages().size(), 3);
-        }
+        cpController.updateCertifiedProduct(updateRequest);
 
         //get the cached listings now, should have been updated in the aspect and have
         //the latest status value
