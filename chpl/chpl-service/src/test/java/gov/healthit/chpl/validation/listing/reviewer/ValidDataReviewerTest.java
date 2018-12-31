@@ -5,6 +5,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.awt.List;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -23,6 +25,7 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSed;
+import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.concept.PrivacyAndSecurityFrameworkConcept;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -144,5 +147,25 @@ public class ValidDataReviewerTest {
         fieldLengthReivewer.review(listing);
         System.out.println(listing.getErrorMessages());
         assertTrue(listing.getErrorMessages().contains(BAD_LENGTH_TASK_ID));
+    }
+    
+    @Test
+    public void testBadTestParticipant_HasErrors() {
+        CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
+        CertifiedProductSed sed = new CertifiedProductSed();
+        TestTask tt = new TestTask();
+        tt.setUniqueId("participant");
+        ArrayList<TestTask> tts = new ArrayList<TestTask>();
+        tts.add(tt);
+        sed.setTestTasks(tts);
+        TestParticipant tp = new TestParticipant();
+        tp.setUniqueId("This is more than twenty characters long.");
+        Set<TestParticipant> tps = new HashSet<TestParticipant>();
+        tps.add(tp);
+        sed.getTestTasks().get(0).setTestParticipants(tps);
+        listing.setSed(sed);
+        fieldLengthReivewer.review(listing);
+        System.out.println(listing.getErrorMessages());
+        assertTrue(listing.getErrorMessages().contains(BAD_LENGTH_PARTICIPANT_ID));
     }
 }
