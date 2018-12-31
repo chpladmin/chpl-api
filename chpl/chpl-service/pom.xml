@@ -424,14 +424,6 @@
                             <source>src/main/java/gov/healthit/chpl/domain/TransparencyAttestationMap.java</source>
                         </sources>
                     </configuration>
-                    <executions>
-                        <execution>
-                            <id>schemagen</id>
-                            <goals>
-                                <goal>schemagen</goal>
-                            </goals>
-                        </execution>
-                    </executions>
                 </plugin>
             </plugins>
         <!-- </pluginManagement> -->
