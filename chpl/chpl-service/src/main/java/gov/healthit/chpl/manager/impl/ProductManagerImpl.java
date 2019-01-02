@@ -89,7 +89,7 @@ public class ProductManagerImpl implements ProductManager {
 
     @Override
     @Transactional(readOnly = false)
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
     @CacheEvict(value = {
             CacheNames.PRODUCT_NAMES
     }, allEntries = true)
