@@ -87,7 +87,7 @@ public class ActivityManagerTest extends TestCase {
 
     @Test
     @Transactional
-    //@Rollback
+    @Rollback
     public void testAddActivity() throws EntityCreationException, EntityRetrievalException, IOException {
 
         SecurityContextHolder.getContext().setAuthentication(adminUser);
