@@ -112,7 +112,7 @@ public class RunnableJob implements Runnable {
         };
         String subject = this.job.getJobType().getSuccessMessage();
         StringBuilder htmlMessage = new StringBuilder();
-        htmlMessage.append("<h3>Job Details:</h3>ul><li>Started: ") 
+        htmlMessage.append("<h3>Job Details:</h3><ul><li>Started: ") 
         .append(this.job.getStartTime())
         .append("</li><li>Ended: ")
         .append(this.job.getEndTime())
