@@ -105,7 +105,7 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
         return userDAO.getUsersWithPermission(permissionName);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or "
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB', 'ROLE_ATL', 'ROLE_ONC') or "
             + "hasPermission(#id, 'gov.healthit.chpl.auth.dto.UserDTO', admin)")
     public UserDTO getById(final Long id) throws UserRetrievalException {
         return userDAO.getById(id);
@@ -146,7 +146,7 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_INVITED_USER_CREATOR')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB', 'ROLE_ATL', 'ROLE_INVITED_USER_CREATOR')")
     public void grantRole(final String userName, final String role)
             throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
         if (role.equals(Authority.ROLE_ADMIN)
@@ -166,14 +166,14 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or hasPermission(#user, admin)")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB', 'ROLE_ATL') or hasPermission(#user, admin)")
     public void removeRole(final UserDTO user, final String role)
             throws UserManagementException, UserRetrievalException, UserPermissionRetrievalException {
         removeRole(user.getSubjectName(), role);
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or hasPermission(#user, admin)")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB', 'ROLE_ATL') or hasPermission(#user, admin)")
     public void removeRole(final String userName, final String role)
             throws UserManagementException, UserRetrievalException, UserPermissionRetrievalException {
         if (role.equals(Authority.ROLE_ADMIN) || role.equals("ROLE_ACL_ADMIN") || role.equals("ROLE_ADMINISTRATOR")
