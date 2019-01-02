@@ -2,9 +2,7 @@
 _Date TBD_
 
 ### New Features
-* Update invalid input fields
-
-### Bugs Fixed
+* Update some warning messages to error messages, fix typos and update error messages
 
 ---
 
