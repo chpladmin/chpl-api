@@ -507,6 +507,16 @@ throws EntityCreationException {
         return new PendingCertifiedProductDTO(entity);
     }
 
+    @Override
+    public Long findAcbIdById(final Long pcpId)
+            throws EntityRetrievalException {
+        PendingCertifiedProductEntity entity = getEntityById(pcpId, false);
+        if (entity == null) {
+            return null;
+        }
+        return entity.getCertificationBodyId();
+    }
+
     @Cacheable(CacheNames.FIND_BY_ACB_ID)
     @Override
     public List<PendingCertifiedProductDTO> findByAcbId(final Long acbId) {

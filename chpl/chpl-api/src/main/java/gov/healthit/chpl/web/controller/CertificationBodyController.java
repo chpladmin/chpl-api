@@ -53,9 +53,8 @@ public class CertificationBodyController {
 
     @ApiOperation(value = "List all certification bodies (ACBs).",
             notes = "Setting the 'editable' parameter to true will return all ACBs that the logged in user has "
-                    + "edit permissions on.  Setting 'showDeleted' to true will include even those ACBs that "
-                    + "have been deleted. The logged in user must have ROLE_ADMIN to see deleted ACBs. The default "
-                    + "behavior of this service is to list all of the ACBs in the system that are not deleted.")
+                    + "edit permissions on. The logged in user must have ROLE_ADMIN or ROLE_ONC to see retired ACBs."
+                    + "The default behavior of this service is to list all of the ACBs in the system that are not retired.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody CertificationBodyResults getAcbs(
             @RequestParam(required = false, defaultValue = "false") final boolean editable) {
@@ -144,7 +143,7 @@ public class CertificationBodyController {
         //Retirement and un-retirement is done as a separate manager action because
         //security is different from normal ACB updates - only admins are allowed
         //whereas an ACB admin can update other info
-        CertificationBodyDTO existingAcb = acbManager.getById(updatedAcb.getId());
+        CertificationBodyDTO existingAcb = acbManager.getIfPermissionById(updatedAcb.getId());
         if (existingAcb.isRetired() != updatedAcb.isRetired() && updatedAcb.isRetired()) {
             //we are retiring this ACB - no other updates can happen
             acbManager.retire(updatedAcb.getId());
@@ -205,7 +204,7 @@ public class CertificationBodyController {
         }
 
         UserDTO user = userManager.getById(updateRequest.getUserId());
-        CertificationBodyDTO acb = acbManager.getById(updateRequest.getAcbId());
+        CertificationBodyDTO acb = acbManager.getIfPermissionById(updateRequest.getAcbId());
 
         if (user == null || acb == null) {
             throw new InvalidArgumentsException("Could not find either ACB or User specified");
@@ -233,7 +232,7 @@ public class CertificationBodyController {
             throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
 
         UserDTO user = userManager.getById(userId);
-        CertificationBodyDTO acb = acbManager.getById(acbId);
+        CertificationBodyDTO acb = acbManager.getIfPermissionById(acbId);
 
         if (user == null || acb == null) {
             throw new InvalidArgumentsException("Could not find either ACB or User specified");
@@ -252,7 +251,7 @@ public class CertificationBodyController {
             produces = "application/json; charset=utf-8")
     public @ResponseBody PermittedUserResults getUsers(@PathVariable("acbId") final Long acbId)
             throws InvalidArgumentsException, EntityRetrievalException {
-        CertificationBodyDTO acb = acbManager.getById(acbId);
+        CertificationBodyDTO acb = acbManager.getIfPermissionById(acbId);
         if (acb == null) {
             throw new InvalidArgumentsException("Could not find the ACB specified.");
         }
