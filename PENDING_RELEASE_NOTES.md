@@ -3,6 +3,8 @@ _Date TBD_
 
 ### New Features
 * Change surveillance and sed report filenames to include timestamp when the file was last generated.
+* Update some warning messages to error messages, fix typos and update error messages
+* When validating pending listings, check for duplicate values, remove the duplicate value, and provide a warning message that the duplicate was removed
 
 ### Bugs Fixed
 * Save "Developer identified targeted users" on upload/confirm
