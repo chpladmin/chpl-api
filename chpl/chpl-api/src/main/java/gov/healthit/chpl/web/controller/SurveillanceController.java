@@ -113,7 +113,7 @@ public class SurveillanceController implements MessageSourceAware {
 
     @ApiOperation(value = "Get the listing of all pending surveillance items that this user has access to.")
     @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody SurveillanceResults getAllPendingSurveillanceForAcbUser() throws AccessDeniedException {
+    public @ResponseBody SurveillanceResults getAllowedPendingSurveillance() throws AccessDeniedException {
 
         List<CertificationBodyDTO> acbs = acbManager.getAllForUser();
         List<Surveillance> pendingSurvs = new ArrayList<Surveillance>();

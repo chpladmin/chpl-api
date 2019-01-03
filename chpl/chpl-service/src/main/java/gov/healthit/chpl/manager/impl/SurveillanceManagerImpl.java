@@ -210,7 +210,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 
     @Override
     @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') "
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or (hasRole('ROLE_ACB') "
             + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     public List<Surveillance> getPendingByAcb(final Long acbId) {
         List<PendingSurveillanceEntity> pendingResults = survDao.getPendingSurveillanceByAcb(acbId);
@@ -286,7 +286,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
     public void deletePendingSurveillance(final List<CertificationBodyDTO> userAcbs,
             final Long survId, final boolean isConfirmed)
             throws EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException,
@@ -334,7 +334,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') "
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or (hasRole('ROLE_ACB') "
             + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     public boolean isPendingSurveillanceAvailableForUpdate(final Long acbId, final Long pendingSurvId)
             throws EntityRetrievalException, ObjectMissingValidationException {
@@ -344,7 +344,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') "
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or (hasRole('ROLE_ACB') "
             + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     public boolean isPendingSurveillanceAvailableForUpdate(final Long acbId,
             final PendingSurveillanceEntity pendingSurv)
@@ -591,7 +591,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     }
 
     private void checkSurveillanceAuthority(final Surveillance surv) throws SurveillanceAuthorityAccessDeniedException {
-        Boolean hasOncAdmin = Util.isUserRoleAdmin();
+        Boolean hasOncAdmin = Util.isUserRoleAdmin() || Util.isUserRoleOnc();
         Boolean hasAcbAdmin = Util.isUserRoleAcbAdmin();
         if (StringUtils.isEmpty(surv.getAuthority())) {
             // If user has ROLE_ADMIN and ROLE_ACB

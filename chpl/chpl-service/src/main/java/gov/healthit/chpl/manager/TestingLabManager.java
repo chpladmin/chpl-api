@@ -42,6 +42,8 @@ public interface TestingLabManager {
 
     TestingLabDTO getById(Long id) throws EntityRetrievalException;
 
+    TestingLabDTO getIfPermissionById(final Long id) throws EntityRetrievalException;
+
     List<UserDTO> getAllUsersOnAtl(TestingLabDTO atl);
 
     List<Permission> getPermissionsForUser(TestingLabDTO atl, Sid recipient);
