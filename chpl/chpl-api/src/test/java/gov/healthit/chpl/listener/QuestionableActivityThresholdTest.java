@@ -104,7 +104,7 @@ public class QuestionableActivityThresholdTest extends TestCase {
     @Rollback
     public void testUpdateGapInsideActivityThreshold_DoesNotRecordActivity()
             throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
-            JsonProcessingException, MissingReasonException, IOException {
+            JsonProcessingException, MissingReasonException, IOException, ValidationException {
 
         // perform an update that would generate questionable activity outside
         // of the threshold but make sure that no questionable activity was
@@ -121,11 +121,7 @@ public class QuestionableActivityThresholdTest extends TestCase {
 
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(listing);
-        try {
-            cpController.updateCertifiedProduct(updateRequest);
-        } catch (ValidationException e) {
-            assertEquals(e.getErrorMessages().size(), 3);
-        }
+        cpController.updateCertifiedProduct(updateRequest);
         Date afterActivity = new Date();
 
         List<QuestionableActivityCertificationResultDTO> activities = qaDao
@@ -139,7 +135,7 @@ public class QuestionableActivityThresholdTest extends TestCase {
     @Rollback
     public void testAddCqmInsideActivityThreshold_DoesNotRecordActivity() throws
     EntityCreationException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException,
-    MissingReasonException, IOException {
+    MissingReasonException, IOException, ValidationException {
 
         //perform an update that would generate questionable activity outside
         //of the threshold but make sure that no questionable activity was entered.
@@ -156,11 +152,7 @@ public class QuestionableActivityThresholdTest extends TestCase {
 
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(listing);
-        try {
-            cpController.updateCertifiedProduct(updateRequest);
-        } catch (ValidationException e) {
-            assertEquals(e.getErrorMessages().size(), 3);
-        }
+        cpController.updateCertifiedProduct(updateRequest);
         Date afterActivity = new Date();
 
         List<QuestionableActivityListingDTO> activities =

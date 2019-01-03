@@ -312,7 +312,7 @@ public class CacheRefreshTest extends TestCase {
     @Transactional
     @Rollback
     public void testUpdateListingStatusRefreshesCache() throws EntityRetrievalException, EntityCreationException,
-    JsonProcessingException, InvalidArgumentsException, MissingReasonException, IOException {
+    JsonProcessingException, InvalidArgumentsException, MissingReasonException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         CertifiedProductSearchDetails listingToUpdate = cpdManager.getCertifiedProductDetails(1L);
@@ -348,11 +348,7 @@ public class CacheRefreshTest extends TestCase {
 
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(listingToUpdate);
-        try {
-            cpController.updateCertifiedProduct(updateRequest);
-        } catch (ValidationException e) {
-            assertEquals(e.getErrorMessages().size(), 3);
-        }
+        cpController.updateCertifiedProduct(updateRequest);
 
         //get the cached listings now, should have been updated in the aspect and have
         //the latest status value
