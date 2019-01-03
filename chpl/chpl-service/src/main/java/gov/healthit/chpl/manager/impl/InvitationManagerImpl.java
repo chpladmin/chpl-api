@@ -333,7 +333,7 @@ public class InvitationManagerImpl implements InvitationManager {
         }
         TestingLabDTO userAtl = null;
         if (invitation.getTestingLabId() != null) {
-            userAtl = atlManager.getById(invitation.getTestingLabId());
+            userAtl = atlManager.getIfPermissionById(invitation.getTestingLabId());
             if (userAtl == null) {
                 throw new InvalidArgumentsException(
                         "Could not find the testing lab with id " + invitation.getTestingLabId());

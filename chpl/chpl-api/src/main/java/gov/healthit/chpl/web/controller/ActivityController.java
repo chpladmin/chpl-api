@@ -235,7 +235,7 @@ public class ActivityController {
     public List<ActivityEvent> activityForATLById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
-        TestingLabDTO atl = atlManager.getById(id); // throws 404 if bad id
+        TestingLabDTO atl = atlManager.getIfPermissionById(id); // throws 404 if bad id
         if (atl != null && atl.isRetired() && !Util.isUserRoleAdmin()) {
             LOGGER.warn("Non-admin user " + Util.getUsername()
             + " tried to see activity for retired ATL " + atl.getName());

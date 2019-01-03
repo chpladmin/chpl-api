@@ -32,6 +32,7 @@ import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -311,10 +312,16 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
     }
 
     @Transactional(readOnly = true)
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_INVITED_USER_CREATOR') or "
-            + "hasPermission(#id, 'gov.healthit.chpl.dto.TestingLabDTO', read) or "
-            + "hasPermission(#id, 'gov.healthit.chpl.dto.TestingLabDTO', admin)")
     public TestingLabDTO getById(final Long id) throws EntityRetrievalException {
         return testingLabDAO.getById(id);
     }
+
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_INVITED_USER_CREATOR') or "
+            + "hasPermission(#id, 'gov.healthit.chpl.dto.TestingLabDTO', read) or "
+            + "hasPermission(#id, 'gov.healthit.chpl.dto.TestingLabDTO', admin)")
+    public TestingLabDTO getIfPermissionById(final Long id) throws EntityRetrievalException {
+        return testingLabDAO.getById(id);
+    }
+
 }
