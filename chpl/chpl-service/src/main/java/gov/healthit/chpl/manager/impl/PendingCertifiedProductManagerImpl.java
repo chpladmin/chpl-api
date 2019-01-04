@@ -83,17 +83,27 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 
     @Override
     @Transactional(readOnly = true)
-    @PostFilter("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') and "
-            + "hasPermission(filterObject.certificationBodyId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     public PendingCertifiedProductDetails getById(final Long id)
             throws EntityRetrievalException, AccessDeniedException {
             return getById(id, false);
     }
 
+    /**
+     * ROLE_ONC is allowed to see pending listings only for activity
+     * and no other times.
+     */
     @Override
     @Transactional(readOnly = true)
-    @PostFilter("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') and "
-            + "hasPermission(filterObject.certificationBodyId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
+    public PendingCertifiedProductDetails getByIdForActivity(final Long id)
+            throws EntityRetrievalException, AccessDeniedException {
+            return getById(id, true);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     public PendingCertifiedProductDetails getById(final Long id, final boolean includeRetired)
             throws EntityRetrievalException, AccessDeniedException {
 
@@ -106,7 +116,6 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
         PendingCertifiedProductDetails pcpDetails = new PendingCertifiedProductDetails(pendingCp);
         addAllVersionsToCmsCriterion(pcpDetails);
         addAllMeasuresToCertificationCriteria(pcpDetails);
-
         return pcpDetails;
     }
 

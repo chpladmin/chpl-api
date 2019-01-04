@@ -723,6 +723,14 @@ public class CertifiedProductController {
             @PathVariable("pcpId") final Long pcpId) throws EntityRetrievalException, EntityNotFoundException,
     AccessDeniedException, ObjectMissingValidationException {
         PendingCertifiedProductDetails details = pcpManager.getById(pcpId);
+        if (details == null) {
+            throw new EntityNotFoundException(msgUtil.getMessage("pendingListing.notFound"));
+        } else {
+            //make sure the user has permissions on the pending listings acb
+            //will throw access denied if they do not have the permissions
+            Long pendingListingAcbId = new Long(details.getCertifyingBody().get("id").toString());
+            acbManager.getIfPermissionById(pendingListingAcbId);
+        }
         return details;
     }
 
@@ -734,11 +742,17 @@ public class CertifiedProductController {
     public @ResponseBody String rejectPendingCertifiedProduct(@PathVariable("pcpId") final Long pcpId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
             AccessDeniedException, ObjectMissingValidationException {
-        PendingCertifiedProductDTO pcp = pcpDao.findById(pcpId, true);
+        PendingCertifiedProductDetails pcp = pcpManager.getById(pcpId, true);
+        Long pendingListingAcbId = null;
         if (pcp == null) {
             throw new EntityNotFoundException(msgUtil.getMessage("pendingListing.notFound"));
+        } else {
+            //make sure the user has permissions on the pending listings acb
+            //will throw access denied if they do not have the permissions
+            pendingListingAcbId = new Long(pcp.getCertifyingBody().get("id").toString());
+            acbManager.getIfPermissionById(pendingListingAcbId);
         }
-        pcpManager.deletePendingCertifiedProduct(pcp.getCertificationBodyId(), pcpId);
+        pcpManager.deletePendingCertifiedProduct(pendingListingAcbId, pcpId);
         return "{\"success\" : true}";
     }
 
