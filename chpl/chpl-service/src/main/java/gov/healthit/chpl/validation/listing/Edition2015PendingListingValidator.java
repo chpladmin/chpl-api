@@ -20,6 +20,7 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.UnattestedCriteriaWi
 import gov.healthit.chpl.validation.pendingListing.reviewer.UnsupportedCharacterReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.UrlReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.ValidDataReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.DuplicateData2015Reviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.RequiredData2015Reviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.SedG32015Reviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.TestFunctionality2015Reviewer;
@@ -91,12 +92,17 @@ public class Edition2015PendingListingValidator extends PendingValidator {
     @Qualifier("pendingForbiddenMacraMeasureReviewer")
     private ForbiddenMacraMeasureReviewer forbiddenMacraMeasureReviewer;
 
+    @Autowired
+    @Qualifier("pendingDuplicateData2015Reviewer")
+    private DuplicateData2015Reviewer duplicateDataReviewer;
+
     private List<Reviewer> reviewers;
 
     @Override
     public List<Reviewer> getReviewers() {
         if (reviewers == null) {
             reviewers = new ArrayList<Reviewer>();
+            reviewers.add(duplicateDataReviewer);
             reviewers.add(chplNumberReviewer);
             reviewers.add(devStatusReviewer);
             reviewers.add(certDateReviewer);
