@@ -43,8 +43,9 @@ public class ValidDataReviewerTest {
             + PrivacyAndSecurityFrameworkConcept.getFormattedValues();
     private static final String BAD_ADDL_SOFTWARE_ERROR =
             "No CHPL product was found matching additional software CHP-12345 for " + D_1;
-    private static final String BAD_LENGTH_PARTICIPANT_ID = "You have exceeded the max length for the Participant Identifier.";
-    private static final String BAD_LENGTH_TASK_ID = "You have exceeded the max length for the Task Identifier.";
+    
+    private static final String BAD_LENGTH_PARTICIPANT_ID = "You have exceeded the max length, 20 characters, for the Participant Identifier ID This is more than twenty characters long..";
+    private static final String BAD_LENGTH_TASK_ID = "You have exceeded the max length, 20 characters, for the Task Identifier with ID This is more than twenty characters long..";
 
     @Spy private CertifiedProductManager cpManager;
     @Autowired private ListingMockUtil mockUtil;
