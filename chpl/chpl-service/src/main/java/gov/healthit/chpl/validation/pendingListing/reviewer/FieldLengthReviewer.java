@@ -47,13 +47,15 @@ public class FieldLengthReviewer implements Reviewer {
             Long fieldCasted = (Long) field;
             if (fieldCasted.toString().length() > getMaxLength("maxLength." + errorField)) {
                 PendingCertifiedProductDTO productCasted = (PendingCertifiedProductDTO) listing;
-                productCasted.getErrorMessages().add(msgUtil.getMessage("listing." + errorField + ".maxlength"));
+                productCasted.getErrorMessages().add(msgUtil.getMessage("listing." + errorField + ".maxlength",
+                        String.valueOf(getMaxLength("maxLength." + errorField)), fieldCasted));
             }
         } else if (field instanceof String) {
             String fieldCasted = (String) field;
             if (fieldCasted.length() > getMaxLength("maxLength." + errorField)) {
                 PendingCertifiedProductDTO productCasted = (PendingCertifiedProductDTO) listing;
-                productCasted.getErrorMessages().add(msgUtil.getMessage("listing." + errorField + ".maxlength"));
+                productCasted.getErrorMessages().add(msgUtil.getMessage("listing." + errorField + ".maxlength",
+                        String.valueOf(getMaxLength("maxLength." + errorField)), fieldCasted));
             }
         }
     }
