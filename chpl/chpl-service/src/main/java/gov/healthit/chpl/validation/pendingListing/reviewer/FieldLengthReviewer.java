@@ -20,25 +20,25 @@ public class FieldLengthReviewer implements Reviewer {
         checkField(listing, listing.getAcbCertificationId(), "acbCertificationId");
         checkField(listing, listing.getCertificationBodyId(), "certifyingAcb");
         checkField(listing, listing.getUniqueId(), "uniqueCHPLId");
-        checkField(listing, listing.getDeveloperName(), "vendorName");
+        checkField(listing, listing.getDeveloperName(), "developerName");
         checkField(listing, listing.getProductName(), "productName");
         checkField(listing, listing.getProductVersion(), "productVersion");
         if (listing.getDeveloperAddress() != null) {
-            checkField(listing, listing.getDeveloperAddress().getStreetLineOne(), "vendorStreetAddress");
-            checkField(listing, listing.getDeveloperAddress().getStreetLineTwo(), "vendorStreetAddressTwo");
-            checkField(listing, listing.getDeveloperAddress().getCity(), "vendorCity");
-            checkField(listing, listing.getDeveloperAddress().getState(), "vendorState");
-            checkField(listing, listing.getDeveloperAddress().getZipcode(), "vendorZip");
+            checkField(listing, listing.getDeveloperAddress().getStreetLineOne(), "developerStreetAddress");
+            checkField(listing, listing.getDeveloperAddress().getStreetLineTwo(), "developerStreetAddressTwo");
+            checkField(listing, listing.getDeveloperAddress().getCity(), "developerCity");
+            checkField(listing, listing.getDeveloperAddress().getState(), "developerState");
+            checkField(listing, listing.getDeveloperAddress().getZipcode(), "developerZip");
         }  else {
-            checkField(listing, listing.getDeveloperStreetAddress(), "vendorStreetAddress");
-            checkField(listing, listing.getDeveloperCity(), "vendorCity");
-            checkField(listing, listing.getDeveloperState(), "vendorState");
-            checkField(listing, listing.getDeveloperZipCode(), "vendorZip");
+            checkField(listing, listing.getDeveloperStreetAddress(), "developerStreetAddress");
+            checkField(listing, listing.getDeveloperCity(), "developerCity");
+            checkField(listing, listing.getDeveloperState(), "developerState");
+            checkField(listing, listing.getDeveloperZipCode(), "developerZip");
         }
-        checkField(listing, listing.getDeveloperWebsite(), "vendorWebsite");
-        checkField(listing, listing.getDeveloperEmail(), "vendorEmail");
-        checkField(listing, listing.getDeveloperPhoneNumber(), "vendorPhone");
-        checkField(listing, listing.getDeveloperContactName(), "vendorContactName");
+        checkField(listing, listing.getDeveloperWebsite(), "developerWebsite");
+        checkField(listing, listing.getDeveloperEmail(), "developerEmail");
+        checkField(listing, listing.getDeveloperPhoneNumber(), "developerPhone");
+        checkField(listing, listing.getDeveloperContactName(), "developerContactName");
 
     }
 
