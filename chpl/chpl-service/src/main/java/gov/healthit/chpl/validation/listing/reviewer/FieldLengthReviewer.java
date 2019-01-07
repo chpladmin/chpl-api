@@ -14,12 +14,14 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("fieldLengthReviewer")
 public class FieldLengthReviewer implements Reviewer {
-    @Autowired private ErrorMessageUtil msgUtil;
-    @Autowired private MessageSource messageSource;
+    @Autowired
+    private ErrorMessageUtil msgUtil;
+    @Autowired
+    private MessageSource messageSource;
 
     @Override
     public void review(CertifiedProductSearchDetails listing) {
-        if(listing.getCertificationEdition() != null && listing.getCertificationEdition().get("id") != null) {
+        if (listing.getCertificationEdition() != null && listing.getCertificationEdition().get("id") != null) {
             checkField(listing, listing.getCertificationEdition().get("id"), "certificationEdition");
         }
         if (listing.getProduct() != null && !StringUtils.isEmpty(listing.getProduct().getName())) {
@@ -29,9 +31,9 @@ public class FieldLengthReviewer implements Reviewer {
             checkField(listing, listing.getVersion().getVersion(), "productVersion");
         }
         if (listing.getSed() != null && listing.getSed().getTestTasks() != null) {
-            for(TestTask task : listing.getSed().getTestTasks()) {
+            for (TestTask task : listing.getSed().getTestTasks()) {
                 checkField(listing, task.getUniqueId(), "taskIdentifier");
-                for(TestParticipant tp : task.getTestParticipants()) {
+                for (TestParticipant tp : task.getTestParticipants()) {
                     checkField(listing, tp.getUniqueId(), "participantIdentifier");
                 }
             }
@@ -58,7 +60,6 @@ public class FieldLengthReviewer implements Reviewer {
 
     private int getMaxLength(final String field) {
         return Integer.parseInt(String.format(
-                messageSource.getMessage(new DefaultMessageSourceResolvable(field),
-                        LocaleContextHolder.getLocale())));
+                messageSource.getMessage(new DefaultMessageSourceResolvable(field), LocaleContextHolder.getLocale())));
     }
 }
