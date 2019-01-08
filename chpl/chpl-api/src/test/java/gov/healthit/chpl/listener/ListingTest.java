@@ -172,6 +172,10 @@ public class ListingTest extends TestCase {
 
         Date beforeActivity = new Date();
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
+        for(CertificationResult result : listing.getCertificationResults()) {
+            result.setSed(Boolean.FALSE);
+            result.setGap(Boolean.FALSE);
+        }
         CertificationStatusEvent currentStatus = listing.getCurrentStatus();
         int currStatusIndex = 0;
         List<CertificationStatusEvent> events = listing.getCertificationEvents();
@@ -220,6 +224,10 @@ public class ListingTest extends TestCase {
 
         Date beforeActivity = new Date();
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
+        for(CertificationResult result : listing.getCertificationResults()) {
+            result.setSed(Boolean.FALSE);
+            result.setGap(Boolean.FALSE);
+        }
         CertificationStatusEvent currentStatus = listing.getCurrentStatus();
         int currStatusIndex = 0;
         List<CertificationStatusEvent> events = listing.getCertificationEvents();
@@ -267,6 +275,10 @@ public class ListingTest extends TestCase {
         Date beforeActivity = new Date();
         Date eventDate = new Date("2/14/2018");
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
+        for(CertificationResult result : listing.getCertificationResults()) {
+            result.setSed(Boolean.FALSE);
+            result.setGap(Boolean.FALSE);
+        }
         CertificationStatusEvent currentStatus = listing.getCurrentStatus();
         int currStatusIndex = 0;
         List<CertificationStatusEvent> events = listing.getCertificationEvents();
@@ -313,6 +325,11 @@ public class ListingTest extends TestCase {
         final long dateDifference = 1000L;
         Date beforeActivity = new Date();
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
+        for(CertificationResult result : listing.getCertificationResults()) {
+            result.setSed(Boolean.FALSE);
+            result.setGap(Boolean.FALSE);
+        }
+        
         List<CertificationStatusEvent> events = listing.getCertificationEvents();
         int statusEventIndex = 0;
         for (int i = 0; i < events.size(); i++) {
@@ -360,6 +377,10 @@ public class ListingTest extends TestCase {
         final long statusId = 4L;
         Date beforeActivity = new Date();
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
+        for(CertificationResult result : listing.getCertificationResults()) {
+            result.setSed(Boolean.FALSE);
+            result.setGap(Boolean.FALSE);
+        }
         List<CertificationStatusEvent> events = listing.getCertificationEvents();
         int statusEventIndex = 0;
         for (int i = 0; i < events.size(); i++) {
@@ -409,6 +430,10 @@ public class ListingTest extends TestCase {
         final long cms82Id = 60L;
         Date beforeActivity = new Date();
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
+        for(CertificationResult result : listing.getCertificationResults()) {
+            result.setSed(Boolean.FALSE);
+            result.setGap(Boolean.FALSE);
+        }
         CQMResultDetails addedCqm = new CQMResultDetails();
         addedCqm.setId(cms82Id);
         addedCqm.setCmsId("CMS82");
@@ -446,6 +471,10 @@ public class ListingTest extends TestCase {
 
         Date beforeActivity = new Date();
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
+        for(CertificationResult result : listing.getCertificationResults()) {
+            result.setSed(Boolean.FALSE);
+            result.setGap(Boolean.FALSE);
+        }
         for (CQMResultDetails cqm : listing.getCqmResults()) {
             if (cqm.getCmsId() != null && cqm.getCmsId().equals("CMS146")) {
                 cqm.setSuccess(Boolean.FALSE);
@@ -520,6 +549,10 @@ public class ListingTest extends TestCase {
         final int critId = 4;
         Date beforeActivity = new Date();
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
+        for(CertificationResult result : listing.getCertificationResults()) {
+            result.setSed(Boolean.FALSE);
+            result.setGap(Boolean.FALSE);
+        }
         for (CertificationResult cert : listing.getCertificationResults()) {
             if (cert.getId().longValue() == critId) {
                 cert.setSuccess(Boolean.TRUE);
