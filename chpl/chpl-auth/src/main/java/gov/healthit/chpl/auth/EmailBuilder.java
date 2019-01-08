@@ -76,8 +76,8 @@ public class EmailBuilder {
         subject = val;
         //Add the environment to the subject
         String suffix = "";
-        if (!StringUtils.isEmpty(env.getProperty("emailSubjectSuffix"))) {
-            suffix = env.getProperty("emailSubjectSuffix");
+        if (!StringUtils.isEmpty(env.getProperty("emailBuilder.config.emailSubjectSuffix"))) {
+            suffix = env.getProperty("emailBuilder.config.emailSubjectSuffix");
             subject = subject + " " +suffix;
         } 
         return this;
