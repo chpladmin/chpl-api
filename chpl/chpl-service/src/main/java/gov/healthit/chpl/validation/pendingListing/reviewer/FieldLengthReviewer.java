@@ -1,5 +1,7 @@
 package gov.healthit.chpl.validation.pendingListing.reviewer;
 
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -25,29 +27,35 @@ public class FieldLengthReviewer implements Reviewer {
         checkField(listing, listing.getCertificationEditionId(), "certificationEdition", ERROR);
         checkField(listing, listing.getAcbCertificationId(), "acbCertificationId", ERROR);
         checkField(listing, listing.getCertificationBodyId(), "certifyingAcb", ERROR);
+        ArrayList<PendingCertifiedProductTargetedUserDTO> toRemove = new ArrayList<PendingCertifiedProductTargetedUserDTO>();
         for (PendingCertifiedProductTargetedUserDTO tu : listing.getTargetedUsers()) {
             checkField(listing, tu.getName(), "targetedUser", WARNING);
+            if (listing.getWarningMessages().contains(msgUtil.getMessage("listing.targetedUser.maxlength",
+                    String.valueOf(getMaxLength("maxLength.targetedUser")), tu.getName()))) {
+                toRemove.add(tu);
+            }
         }
+        listing.getTargetedUsers().removeAll(toRemove);
         checkField(listing, listing.getUniqueId(), "uniqueCHPLId", ERROR);
-        checkField(listing, listing.getDeveloperName(), "developerName", ERROR); // TODO: change vendor to developer
+        checkField(listing, listing.getDeveloperName(), "developerName", ERROR);
         checkField(listing, listing.getProductName(), "productName", ERROR);
         checkField(listing, listing.getProductVersion(), "productVersion", ERROR);
         if (listing.getDeveloperAddress() != null) {
-            checkField(listing, listing.getDeveloperAddress().getStreetLineOne(), "vendorStreetAddress", ERROR);
-            checkField(listing, listing.getDeveloperAddress().getStreetLineTwo(), "vendorStreetAddressTwo", ERROR);
-            checkField(listing, listing.getDeveloperAddress().getCity(), "vendorCity", ERROR);
-            checkField(listing, listing.getDeveloperAddress().getState(), "vendorState", ERROR);
-            checkField(listing, listing.getDeveloperAddress().getZipcode(), "vendorZip", ERROR);
+            checkField(listing, listing.getDeveloperAddress().getStreetLineOne(), "developerStreetAddress", ERROR);
+            checkField(listing, listing.getDeveloperAddress().getStreetLineTwo(), "developerStreetAddressTwo", ERROR);
+            checkField(listing, listing.getDeveloperAddress().getCity(), "developerCity", ERROR);
+            checkField(listing, listing.getDeveloperAddress().getState(), "developerState", ERROR);
+            checkField(listing, listing.getDeveloperAddress().getZipcode(), "developerZip", ERROR);
         } else {
-            checkField(listing, listing.getDeveloperStreetAddress(), "vendorStreetAddress", ERROR);
-            checkField(listing, listing.getDeveloperCity(), "vendorCity", ERROR);
-            checkField(listing, listing.getDeveloperState(), "vendorState", ERROR);
-            checkField(listing, listing.getDeveloperZipCode(), "vendorZip", ERROR);
+            checkField(listing, listing.getDeveloperStreetAddress(), "developerStreetAddress", ERROR);
+            checkField(listing, listing.getDeveloperCity(), "developerCity", ERROR);
+            checkField(listing, listing.getDeveloperState(), "developerState", ERROR);
+            checkField(listing, listing.getDeveloperZipCode(), "developerZip", ERROR);
         }
-        checkField(listing, listing.getDeveloperWebsite(), "vendorWebsite", ERROR);
-        checkField(listing, listing.getDeveloperEmail(), "vendorEmail", ERROR);
-        checkField(listing, listing.getDeveloperPhoneNumber(), "vendorPhone", ERROR);
-        checkField(listing, listing.getDeveloperContactName(), "vendorContactName", ERROR);
+        checkField(listing, listing.getDeveloperWebsite(), "developerWebsite", ERROR);
+        checkField(listing, listing.getDeveloperEmail(), "developerEmail", ERROR);
+        checkField(listing, listing.getDeveloperPhoneNumber(), "developerPhone", ERROR);
+        checkField(listing, listing.getDeveloperContactName(), "developerContactName", ERROR);
 
     }
 
@@ -57,28 +65,28 @@ public class FieldLengthReviewer implements Reviewer {
             if (field instanceof Long) {
                 Long fieldCasted = (Long) field;
                 if (fieldCasted.toString().length() > getMaxLength("maxLength." + errorField)) {
-                    PendingCertifiedProductDTO productCasted = (PendingCertifiedProductDTO) listing;
-                    productCasted.getErrorMessages().add(msgUtil.getMessage("listing." + errorField + ".maxlength"));
+                    listing.getErrorMessages().add(msgUtil.getMessage("listing." + errorField + ".maxlength",
+                            String.valueOf(getMaxLength("maxLength." + errorField)), fieldCasted));
                 }
             } else if (field instanceof String) {
                 String fieldCasted = (String) field;
                 if (fieldCasted.length() > getMaxLength("maxLength." + errorField)) {
-                    PendingCertifiedProductDTO productCasted = (PendingCertifiedProductDTO) listing;
-                    productCasted.getErrorMessages().add(msgUtil.getMessage("listing." + errorField + ".maxlength"));
+                    listing.getErrorMessages().add(msgUtil.getMessage("listing." + errorField + ".maxlength",
+                            String.valueOf(getMaxLength("maxLength." + errorField)), fieldCasted));
                 }
             }
         } else {
             if (field instanceof Long) {
                 Long fieldCasted = (Long) field;
                 if (fieldCasted.toString().length() > getMaxLength("maxLength." + errorField)) {
-                    PendingCertifiedProductDTO productCasted = (PendingCertifiedProductDTO) listing;
-                    productCasted.getWarningMessages().add(msgUtil.getMessage("listing." + errorField + ".maxlength"));
+                    listing.getWarningMessages().add(msgUtil.getMessage("listing." + errorField + ".maxlength",
+                            String.valueOf(getMaxLength("maxLength." + errorField)), fieldCasted));
                 }
             } else if (field instanceof String) {
                 String fieldCasted = (String) field;
                 if (fieldCasted.length() > getMaxLength("maxLength." + errorField)) {
-                    PendingCertifiedProductDTO productCasted = (PendingCertifiedProductDTO) listing;
-                    productCasted.getWarningMessages().add(msgUtil.getMessage("listing." + errorField + ".maxlength"));
+                    listing.getWarningMessages().add(msgUtil.getMessage("listing." + errorField + ".maxlength",
+                            String.valueOf(getMaxLength("maxLength." + errorField)), fieldCasted));
                 }
             }
         }
