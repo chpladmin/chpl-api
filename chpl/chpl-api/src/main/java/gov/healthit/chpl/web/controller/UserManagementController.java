@@ -289,8 +289,7 @@ public class UserManagementController {
                     + "or add the permissions contained within the invitation to an exisitng account "
                     + "if they have one. Said another way, an invitation can be used to create or "
                     + "modify CHPL user accounts." + "The correct order to call invitation requests is "
-                    + "the following: 1) /invite 2) /create or /authorize 3) /confirm. "
-                    + "A user must have ")
+                    + "the following: 1) /invite 2) /create or /authorize 3) /confirm. ")
     @RequestMapping(value = "/invite", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public UserInvitation inviteUser(@RequestBody final UserInvitation invitation)
