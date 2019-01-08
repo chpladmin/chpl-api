@@ -320,8 +320,8 @@ public class CertifiedProductValidationTest {
             validator.validate(pendingListing);
         }
 
-        assertTrue(pendingListing.getWarningMessages().contains(B4_RETIRED_TEST_TOOL_NOT_ALLOWED));
-        assertFalse(pendingListing.getErrorMessages().contains(B4_RETIRED_TEST_TOOL_NOT_ALLOWED));
+        assertFalse(pendingListing.getWarningMessages().contains(B4_RETIRED_TEST_TOOL_NOT_ALLOWED));
+        assertTrue(pendingListing.getErrorMessages().contains(B4_RETIRED_TEST_TOOL_NOT_ALLOWED));
     }
 
     @Transactional
