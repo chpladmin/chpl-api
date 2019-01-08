@@ -29,7 +29,7 @@ public class FieldLengthReviewer implements Reviewer {
             checkField(listing, tu.getName(), "targetedUser", WARNING);
         }
         checkField(listing, listing.getUniqueId(), "uniqueCHPLId", ERROR);
-        checkField(listing, listing.getDeveloperName(), "vendorName", ERROR);
+        checkField(listing, listing.getDeveloperName(), "developerName", ERROR); // TODO: change vendor to developer
         checkField(listing, listing.getProductName(), "productName", ERROR);
         checkField(listing, listing.getProductVersion(), "productVersion", ERROR);
         if (listing.getDeveloperAddress() != null) {
