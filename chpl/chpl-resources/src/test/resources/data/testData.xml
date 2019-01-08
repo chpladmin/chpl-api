@@ -1526,7 +1526,7 @@
         practice_type_id="1" vendor_id="-1" vendor_address_id="-1"
         vendor_contact_id="-1" product_id="-1" product_version_id="1722"
         certification_edition_id="2" certification_body_id="-1"
-        product_classification_id="1" testing_lab_id="-1"
+        product_classification_id="1"
         creation_date="2016-04-01 23:46:27.707"
         last_modified_date="2016-06-07 15:49:23.117772"
         last_modified_user="1" deleted="true"
@@ -1557,11 +1557,18 @@
         practice_type_id="1" vendor_id="-1" vendor_address_id="-1"
         vendor_contact_id="-1" product_id="-1" product_version_id="1722"
         certification_edition_id="2" certification_body_id="-1"
-        product_classification_id="1" testing_lab_id="-1"
+        product_classification_id="1"
         creation_date="2016-04-01 23:46:27.707"
         last_modified_date="2016-06-07 15:49:23.117772"
         last_modified_user="1" deleted="false"
         certification_status_id="3" />
+
+    <pending_certified_product_testing_lab_map
+        id="-1" pending_certified_product_id="-1" testing_lab_id="-1"
+        last_modified_user="-2" />
+    <pending_certified_product_testing_lab_map
+        id="-2" pending_certified_product_id="-2" testing_lab_id="-1"
+        last_modified_user="-2" />
 
     <pending_certification_result
         pending_certification_result_id="-1"
