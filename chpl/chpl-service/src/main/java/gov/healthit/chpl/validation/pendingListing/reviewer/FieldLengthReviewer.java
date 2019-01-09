@@ -59,36 +59,26 @@ public class FieldLengthReviewer implements Reviewer {
 
     }
 
-    private void checkField(final PendingCertifiedProductDTO listing, final Object field, final String errorField,
-            String type) {
+    private void checkField(final PendingCertifiedProductDTO listing, final Object field, final String errorField, String type) {
+        String message = null;
+        
+        if (field instanceof Long) {
+            Long fieldCasted = (Long) field;
+            if (fieldCasted.toString().length() > getMaxLength("maxLength." + errorField)) {
+                message = msgUtil.getMessage("listing." + errorField + ".maxlength",
+                        String.valueOf(getMaxLength("maxLength." + errorField)), fieldCasted);
+            }
+        } else if (field instanceof String) {
+            String fieldCasted = (String) field;
+            if (fieldCasted.length() > getMaxLength("maxLength." + errorField)) {
+                message = msgUtil.getMessage("listing." + errorField + ".maxlength",
+                        String.valueOf(getMaxLength("maxLength." + errorField)), fieldCasted);
+            }
+        }
         if (type.equals(ERROR)) {
-            if (field instanceof Long) {
-                Long fieldCasted = (Long) field;
-                if (fieldCasted.toString().length() > getMaxLength("maxLength." + errorField)) {
-                    listing.getErrorMessages().add(msgUtil.getMessage("listing." + errorField + ".maxlength",
-                            String.valueOf(getMaxLength("maxLength." + errorField)), fieldCasted));
-                }
-            } else if (field instanceof String) {
-                String fieldCasted = (String) field;
-                if (fieldCasted.length() > getMaxLength("maxLength." + errorField)) {
-                    listing.getErrorMessages().add(msgUtil.getMessage("listing." + errorField + ".maxlength",
-                            String.valueOf(getMaxLength("maxLength." + errorField)), fieldCasted));
-                }
-            }
+            listing.getErrorMessages().add(message);
         } else {
-            if (field instanceof Long) {
-                Long fieldCasted = (Long) field;
-                if (fieldCasted.toString().length() > getMaxLength("maxLength." + errorField)) {
-                    listing.getWarningMessages().add(msgUtil.getMessage("listing." + errorField + ".maxlength",
-                            String.valueOf(getMaxLength("maxLength." + errorField)), fieldCasted));
-                }
-            } else if (field instanceof String) {
-                String fieldCasted = (String) field;
-                if (fieldCasted.length() > getMaxLength("maxLength." + errorField)) {
-                    listing.getWarningMessages().add(msgUtil.getMessage("listing." + errorField + ".maxlength",
-                            String.valueOf(getMaxLength("maxLength." + errorField)), fieldCasted));
-                }
-            }
+            listing.getWarningMessages().add(message);
         }
     }
 
