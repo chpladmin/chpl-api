@@ -1,3 +1,4 @@
+
 ## Version 20.1.0
 _Date TBD_
 
@@ -6,10 +7,10 @@ _Date TBD_
 * Update some warning messages to error messages, fix typos and update error messages
 * When validating pending listings, check for duplicate values, remove the duplicate value, and provide a warning message that the duplicate was removed
 * Show better error message when user uploads Test Tasks with IDs that are too long
+* Add definition file for the Surveillance - Basic download file
 
 ### Bugs Fixed
 * Save "Developer identified targeted users" on upload/confirm
 * Update invalid error and warning messages for upload file
 
 ---
-
