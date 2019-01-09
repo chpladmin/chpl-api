@@ -113,7 +113,7 @@ public class FieldLengthReviewerTest {
         tu.setName("This name is not too long");
         listing.getTargetedUsers().add(tu);
         fieldLengthReivewerPending.review(listing);
-        assertFalse(listing.getWarningMessages().contains(BAD_LENGTH_TARGETED_USER));
+        assertTrue(listing.getWarningMessages().isEmpty());
         assertTrue(listing.getTargetedUsers().contains(tu));
     }
 }
