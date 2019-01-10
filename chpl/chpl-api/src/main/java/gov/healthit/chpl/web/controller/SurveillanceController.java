@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
@@ -36,7 +35,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -102,27 +100,7 @@ public class SurveillanceController implements MessageSourceAware {
     @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody SurveillanceResults getAllPendingSurveillanceForAcbUser() throws AccessDeniedException {
 
-        if (!Util.isUserRoleAcbAdmin()) {
-            throw new AccessDeniedException(String
-                    .format(messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("access.pendingSurveillances"),
-                            LocaleContextHolder.getLocale())));
-        }
-
-        List<CertificationBodyDTO> acbs = acbManager.getAllForUser();
-        List<Surveillance> pendingSurvs = new ArrayList<Surveillance>();
-
-        if (acbs != null) {
-            for (CertificationBodyDTO acb : acbs) {
-                try {
-                    List<Surveillance> survsOnAcb = survManager.getPendingByAcb(acb.getId());
-                    pendingSurvs.addAll(survsOnAcb);
-                } catch (final AccessDeniedException denied) {
-                    LOGGER.warn("Access denied to pending surveillance for acb " + acb.getName() + " and user "
-                            + Util.getUsername());
-                }
-            }
-        }
+        List<Surveillance> pendingSurvs = pendingSurveillanceManager.getAllPendingSurveillances();
 
         SurveillanceResults results = new SurveillanceResults();
         results.setPendingSurveillance(pendingSurvs);
@@ -488,7 +466,7 @@ public class SurveillanceController implements MessageSourceAware {
         ObjectsMissingValidationException possibleExceptions = new ObjectsMissingValidationException();
         for (Long id : idList.getIds()) {
             try {
-                pendingSurveillanceManager.deletePendingSurveillance(id, false);
+                pendingSurveillanceManager.rejectPendingSurveillance(id);
             } catch (final ObjectMissingValidationException ex) {
                 possibleExceptions.getExceptions().add(ex);
             }
@@ -551,7 +529,10 @@ public class SurveillanceController implements MessageSourceAware {
             // delete the pending surveillance item if this one was successfully
             // inserted
             try {
-                pendingSurveillanceManager.deletePendingSurveillance(pendingSurvToDelete, true);
+                //************************************
+                //Need to add this line back in
+                //************************************
+                //pendingSurveillanceManager.deletePendingSurveillance(pendingSurvToDelete, true);
             } catch (Exception ex) {
                 LOGGER.error("Error deleting pending surveillance with id " + pendingSurvToDelete, ex);
             }

@@ -7,6 +7,7 @@ import javax.persistence.EntityNotFoundException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -78,6 +79,7 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
     private ActivityManager activityManager;
     private CertificationBodyManager acbManager;
 
+    @Autowired
     public PendingSurveillanceManagerImpl(Permissions permissions, Environment env, FileUtils fileUtils,
             SurveillanceUploadManager survUploadManager, JobManager jobManager, UserManager userManager,
             CertifiedProductManager cpManager, SurveillanceValidator survValidator, SurveillanceDAO survDao,
@@ -99,7 +101,7 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
     @Override
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_SURVEILLANCE, "
-            + "T(gov.healthit.chpl.permissions.domain.PendingSurveillanceDomainPermissions).GET_BY_ACB)")
+            + "T(gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions).UPLOAD)")
     public SurveillanceUploadResult uploadPendingSurveillance(final MultipartFile file) throws ValidationException, EntityCreationException, EntityRetrievalException {
         if (file.isEmpty()) {
             throw new ValidationException("You cannot upload an empty file!");
@@ -138,7 +140,7 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
     @Override
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_SURVEILLANCE, "
-            + "T(gov.healthit.chpl.permissions.domain.PendingSurveillanceDomainPermissions).DELETE, "
+            + "T(gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions).DELETE, "
             + "#pendingSurveillanceId)")
     public void rejectPendingSurveillance(Long pendingSurveillanceId)
             throws ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException, EntityCreationException {
@@ -149,7 +151,7 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
     @Override
     @Transactional(readOnly = true)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_SURVEILLANCE, "
-            + "T(gov.healthit.chpl.permissions.domain.PendingSurveillanceDomainPermissions).GET_ALL)")
+            + "T(gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions).GET_ALL)")
     public List<Surveillance> getAllPendingSurveillances() {
         List<CertificationBodyDTO> acbs = acbManager.getAllForUser();
         List<Surveillance> pendingSurvs = new ArrayList<Surveillance>();
