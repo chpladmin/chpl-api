@@ -43,7 +43,7 @@ public interface CertificationBodyManager {
     List<CertificationBodyDTO> getAllActive();
 
     CertificationBodyDTO getById(Long id) throws EntityRetrievalException;
-
+    CertificationBodyDTO getIfPermissionById(final Long id) throws EntityRetrievalException;
     List<UserDTO> getAllUsersOnAcb(CertificationBodyDTO acb);
 
     List<Permission> getPermissionsForUser(CertificationBodyDTO acb, Sid recipient);

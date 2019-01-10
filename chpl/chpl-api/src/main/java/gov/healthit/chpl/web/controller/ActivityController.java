@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +53,7 @@ import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.manager.TestingLabManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -64,6 +67,8 @@ public class ActivityController {
 
     @Autowired
     private Environment env;
+    @Autowired
+    private ErrorMessageUtil msgUtil;
     @Autowired
     private ActivityManager activityManager;
     @Autowired
@@ -92,11 +97,7 @@ public class ActivityController {
     @Autowired private MessageSource messageSource;
 
     @ApiOperation(value = "Get auditable data for certification bodies.",
-            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "
-                    + "Only users calling this API with ROLE_ADMIN may set the 'showDeleted' flag to true. "
-                    + "Those users are allowed to see activity for all "
-                    + "certification bodies including that have been deleted. "
-                    + "The default behavior is to show activity for non-deleted ACBs.")
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
     @RequestMapping(value = "/acbs", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForACBs(@RequestParam final Long start,
             @RequestParam final Long end)
@@ -105,7 +106,7 @@ public class ActivityController {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
-        if (Util.isUserRoleAdmin()) {
+        if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
             return activityManager.getAllAcbActivity(startDate, endDate);
         }
         List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser();
@@ -113,16 +114,14 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get auditable data for a specific certification body.",
-            notes = "Only users calling this API with ROLE_ADMIN may set the 'showDeleted' flag to true and should "
-                    + "do so if the certification body specified in the path has been deleted. "
-                    + "A start and end date may optionally be provided to limit activity results.")
+            notes = "A start and end date may optionally be provided to limit activity results.")
     @RequestMapping(value = "/acbs/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
 
     public List<ActivityEvent> activityForACBById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
-        CertificationBodyDTO acb = acbManager.getById(id); // throws 404 if ACB doesn't exist
-        if (acb != null && acb.isRetired() && !Util.isUserRoleAdmin()) {
+        CertificationBodyDTO acb = acbManager.getIfPermissionById(id); // throws 404 if ACB doesn't exist
+        if (acb != null && acb.isRetired() && !Util.isUserRoleAdmin() && !Util.isUserRoleOnc()) {
             LOGGER.warn("Non-admin user " + Util.getUsername()
             + " tried to see activity for retired ACB " + acb.getName());
             throw new AccessDeniedException("Only Admins can see retired ACBs.");
@@ -210,17 +209,14 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get auditable data for testing labs.",
-            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "
-                    + "Only users calling this API with ROLE_ADMIN may set the 'showDeleted' flag to true. "
-                    + "Those users are allowed to see activity for all testing labs including that have been deleted. "
-                    + "The default behavior is to show activity for non-deleted ATLs.")
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
     @RequestMapping(value = "/atls", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityforATLs(@RequestParam final Long start, @RequestParam final Long end)
             throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
-        if (Util.isUserRoleAdmin()) {
+        if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
             return activityManager.getAllAtlActivity(startDate, endDate);
         }
         List<TestingLabDTO> allowedAtls = atlManager.getAllForUser();
@@ -228,15 +224,13 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get auditable data for a specific testing lab.",
-            notes = "Only users calling this API with ROLE_ADMIN may set the 'showDeleted' flag to true and should "
-                    + "do so if the testing lab specified in the path has been deleted. "
-                    + "A start and end date may optionally be provided to limit activity results.")
+            notes = "A start and end date may optionally be provided to limit activity results.")
     @RequestMapping(value = "/atls/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForATLById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
-        TestingLabDTO atl = atlManager.getById(id); // throws 404 if bad id
-        if (atl != null && atl.isRetired() && !Util.isUserRoleAdmin()) {
+        TestingLabDTO atl = atlManager.getIfPermissionById(id); // throws 404 if bad id
+        if (atl != null && atl.isRetired() && !Util.isUserRoleAdmin() && !Util.isUserRoleOnc()) {
             LOGGER.warn("Non-admin user " + Util.getUsername()
             + " tried to see activity for retired ATL " + atl.getName());
             throw new AccessDeniedException("Only Admins can see retired ATLs.");
@@ -435,7 +429,7 @@ public class ActivityController {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
-        if (Util.isUserRoleAdmin()) {
+        if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
             return activityManager.getAllPendingListingActivity(startDate, endDate);
         }
         List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser();
@@ -450,10 +444,18 @@ public class ActivityController {
             @RequestParam(required = false) final Long start,
             @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
-        List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser();
-
         //pcpManager will return 404 if the user is not allowed to access it b/c of acb permissions
-        PendingCertifiedProductDetails pendingListing = pcpManager.getById(allowedAcbs, id, true);
+        //using the "getByIdForActivity" call so ROLE_ONC has access to the pending listing activity.
+        //Normally they are not able to see anything else regarding pending listings.
+        PendingCertifiedProductDetails pendingListing = pcpManager.getByIdForActivity(id);
+        if (pendingListing == null) {
+            throw new EntityNotFoundException(msgUtil.getMessage("pendingListing.notFound"));
+        } else {
+            //make sure the user has permissions on the pending listings acb
+            //will throw access denied if they do not have the permissions
+            Long pendingListingAcbId = new Long(pendingListing.getCertifyingBody().get("id").toString());
+            acbManager.getIfPermissionById(pendingListingAcbId);
+        }
 
         //if one of start of end is provided then the other must also be provided.
         //if neither is provided then query all dates
@@ -474,7 +476,7 @@ public class ActivityController {
         }
 
         //admin can get anything
-        if (Util.isUserRoleAdmin()) {
+        if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
             return activityManager.getPendingListingActivity(id, startDate, endDate);
         }
         return activityManager.getPendingListingActivity(pendingListing.getId(), startDate, endDate);
@@ -571,7 +573,7 @@ public class ActivityController {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
-        if (Util.isUserRoleAdmin()) {
+        if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
             return activityManager.getAllUserActivity(startDate, endDate);
         }
         Set<Long> userIdsToSearch = getAllowedUsersForActivitySearch();
@@ -607,7 +609,7 @@ public class ActivityController {
 
         //ROLE_ADMIN can get user activity on any user; other roles must
         //have some association to the user so check if this request is allowed.
-        if (!Util.isUserRoleAdmin()) {
+        if (!Util.isUserRoleAdmin() && !Util.isUserRoleOnc()) {
             Set<Long> allowedUserIds = getAllowedUsersForActivitySearch();
             if (!allowedUserIds.contains(id)) {
                 throw new AccessDeniedException("User " + Util.getUsername()

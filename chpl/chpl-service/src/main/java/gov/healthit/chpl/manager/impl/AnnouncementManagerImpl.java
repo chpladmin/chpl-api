@@ -36,7 +36,7 @@ public class AnnouncementManagerImpl extends ApplicationObjectSupport implements
     @Autowired private MessageSource messageSource;
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     public AnnouncementDTO create(AnnouncementDTO announcement)
             throws UserRetrievalException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
         // Create the announcement itself
@@ -50,7 +50,7 @@ public class AnnouncementManagerImpl extends ApplicationObjectSupport implements
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     public AnnouncementDTO update(AnnouncementDTO announcement)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 
@@ -67,7 +67,7 @@ public class AnnouncementManagerImpl extends ApplicationObjectSupport implements
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     public void delete(AnnouncementDTO announcement)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
 
@@ -108,12 +108,12 @@ public class AnnouncementManagerImpl extends ApplicationObjectSupport implements
         this.announcementDAO = announcementDAO;
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     public List<AnnouncementDTO> getAllFuture() {
         return announcementDAO.findAllFuture();
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     public List<AnnouncementDTO> getAllCurrentAndFuture() {
         return announcementDAO.findAllCurrentAndFuture();
     }
