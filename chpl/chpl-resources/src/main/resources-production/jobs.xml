@@ -56,10 +56,6 @@
                     <value>ROLE_ADMIN;ROLE_ONC</value> <!-- Semi-colon delimited string -->
                 </entry>
                 <entry>
-                    <key>email</key>
-                    <value>amore@ainq.com☺aiyer@ainq.com</value>
-                </entry>
-                <entry>
                     <key>editableJobFields</key>
                     <value>email-Subscribers</value>
                 </entry>
