@@ -10,6 +10,7 @@ import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.duplicate.AtlDuplicateReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.duplicate.TestFunctionalityDuplicateReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.duplicate.TestStandardDuplicateReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.duplicate.TestToolDuplicateReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2014.duplicate.AdditionalSoftware2014DuplicateReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2014.duplicate.QmsStandard2014DuplicateReviewer;
@@ -24,6 +25,7 @@ public class DuplicateData2014Reviewer implements Reviewer {
     private TestFunctionalityDuplicateReviewer testFunctionalityDuplicateReviewer;
     private AdditionalSoftware2014DuplicateReviewer additionalSoftwareDuplicateReviewer;
     private TestToolDuplicateReviewer testToolDuplicateReviewer;
+    private TestStandardDuplicateReviewer testStandardDuplicateReviewer;
     private TestProcedure2014DuplicateReviewer testProcedureDuplicateReviewer;
     private TestData2014DuplicateReviewer testDataDuplicateReviewer;
     private AtlDuplicateReviewer atlDuplicateReviewer;
@@ -33,6 +35,7 @@ public class DuplicateData2014Reviewer implements Reviewer {
             TestFunctionalityDuplicateReviewer testFunctionalityDuplicateReviewer,
             AdditionalSoftware2014DuplicateReviewer additionalSoftwareDuplicateReviewer,
             TestToolDuplicateReviewer testToolDuplicateReviewer,
+            TestStandardDuplicateReviewer testStandardDuplicateReviewer,
             TestProcedure2014DuplicateReviewer testProcedureDuplicateReviewer,
             TestData2014DuplicateReviewer testDataDuplicateReviewer,
             AtlDuplicateReviewer atlDuplicateReviewer) {
@@ -40,6 +43,7 @@ public class DuplicateData2014Reviewer implements Reviewer {
         this.testFunctionalityDuplicateReviewer = testFunctionalityDuplicateReviewer;
         this.additionalSoftwareDuplicateReviewer = additionalSoftwareDuplicateReviewer;
         this.testToolDuplicateReviewer = testToolDuplicateReviewer;
+        this.testStandardDuplicateReviewer = testStandardDuplicateReviewer;
         this.testProcedureDuplicateReviewer = testProcedureDuplicateReviewer;
         this.testDataDuplicateReviewer = testDataDuplicateReviewer;
         this.atlDuplicateReviewer = atlDuplicateReviewer;
@@ -54,6 +58,7 @@ public class DuplicateData2014Reviewer implements Reviewer {
             testFunctionalityDuplicateReviewer.review(listing, pcr);
             additionalSoftwareDuplicateReviewer.review(listing, pcr);
             testToolDuplicateReviewer.review(listing, pcr);
+            testStandardDuplicateReviewer.review(listing, pcr);
             testProcedureDuplicateReviewer.review(listing, pcr);
             testDataDuplicateReviewer.review(listing, pcr);
         }

@@ -48,8 +48,8 @@ public class AdditionalSoftware2014DuplicateReviewer {
             if (duplicate.getChplId() != null) {
                 warning = errorMessageUtil.getMessage("listing.criteria.duplicateAdditionalSoftwareCP.2014",
                         criteria, duplicate.getChplId());
-            } else if (duplicate.getName() != null && duplicate.getVersion() != null
-                    && duplicate.getGrouping() != null) {
+            } else if (duplicate.getName() != null || duplicate.getVersion() != null
+                    || duplicate.getGrouping() != null) {
                 warning = errorMessageUtil.getMessage("listing.criteria.duplicateAdditionalSoftwareNonCP.2014",
                         criteria, duplicate.getName(), duplicate.getVersion());
             }

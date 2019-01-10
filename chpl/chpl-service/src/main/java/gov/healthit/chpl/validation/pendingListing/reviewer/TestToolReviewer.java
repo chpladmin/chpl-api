@@ -63,7 +63,7 @@ public class TestToolReviewer implements Reviewer {
                                 if (foundTestTool.isRetired() && icsCodeInteger != null
                                         && icsCodeInteger.intValue() == 0) {
                                     if (productNumUtil.hasIcsConflict(listing.getUniqueId(), listing.getIcs())) {
-                                        listing.getWarningMessages().add(
+                                        listing.getErrorMessages().add(
                                                 msgUtil.getMessage("listing.criteria.retiredTestToolNotAllowed",
                                                         testTool.getName(), cert.getNumber()));
                                     } else {

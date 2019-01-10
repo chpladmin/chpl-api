@@ -32,6 +32,7 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProduct;
@@ -316,6 +317,10 @@ public class CacheRefreshTest extends TestCase {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         CertifiedProductSearchDetails listingToUpdate = cpdManager.getCertifiedProductDetails(1L);
+        for(CertificationResult result : listingToUpdate.getCertificationResults()) {
+            result.setSed(Boolean.FALSE);
+            result.setGap(Boolean.FALSE);
+        }
 
         //get the cache before this update, should pull the listings and cache them
         List<CertifiedProductFlatSearchResult> allListingsBeforeUpdate = searchManager.search();

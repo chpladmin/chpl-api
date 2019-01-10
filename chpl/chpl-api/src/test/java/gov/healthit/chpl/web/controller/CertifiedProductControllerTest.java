@@ -470,7 +470,7 @@ public class CertifiedProductControllerTest {
             validator.validate(pcpDTO);
         }
         // ICS is true, 15.07.07.2642.IC04.36.00.1.160402 shows true ICS. ICS Mismatch = warning message
-        assertTrue(pcpDTO.getWarningMessages().contains("Test Tool 'Retired Test Tool' can not be used for criteria '170.315 (b)(6)', "
+        assertTrue(pcpDTO.getErrorMessages().contains("Test Tool 'Retired Test Tool' can not be used for criteria '170.315 (b)(6)', "
                 + "as it is a retired tool, and this Certified Product does not carry ICS."));
 
         // test 3
