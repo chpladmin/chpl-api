@@ -20,51 +20,34 @@ public class UnattestedCriteriaWithDataReviewer implements Reviewer {
         for (CertificationResult cert : listing.getCertificationResults()) {
             if ((cert.isSuccess() == null || !cert.isSuccess().booleanValue())) {
                 if (cert.isGap() != null && cert.isGap().booleanValue()) {
-                    listing.getErrorMessages()
-                    .add(msgUtil.getMessage("listing.criteria.falseCriteriaHasData", cert.getNumber(), "GAP"));
+                    cert.setGap(null);
                 }
                 if (cert.isSed() != null && cert.isSed().booleanValue()) {
-                    listing.getErrorMessages()
-                    .add(msgUtil.getMessage("listing.criteria.falseCriteriaHasData", cert.getNumber(), "SED"));
+                    cert.setSed(null);
                 }
                 if (!StringUtils.isEmpty(cert.getApiDocumentation())) {
-                    listing.getErrorMessages()
-                    .add(msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
-                            cert.getNumber(), "API Documentation"));
+                    cert.setApiDocumentation(null);
                 }
                 if (!StringUtils.isEmpty(cert.getPrivacySecurityFramework())) {
-                    listing.getErrorMessages()
-                    .add(msgUtil.getMessage("listing.criteria.falseCriteriaHasData", cert.getNumber(), "Privacy and Security Framework"));
+                    cert.setPrivacySecurityFramework(null);
                 }
                 if (cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
-                    listing.getErrorMessages()
-                    .add(msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
-                            cert.getNumber(), "Additional Software"));
+                    cert.getAdditionalSoftware().clear();
                 }
                 if (cert.getTestDataUsed() != null && cert.getTestDataUsed().size() > 0) {
-                    listing.getErrorMessages()
-                    .add(msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
-                            cert.getNumber(), "Test Data"));
+                    cert.getTestDataUsed().clear();
                 }
                 if (cert.getTestFunctionality() != null && cert.getTestFunctionality().size() > 0) {
-                    listing.getErrorMessages()
-                    .add(msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
-                            cert.getNumber(), "Test Functionality"));
+                    cert.getTestFunctionality().clear();
                 }
                 if (cert.getTestProcedures() != null && cert.getTestProcedures().size() > 0) {
-                    listing.getErrorMessages()
-                    .add(msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
-                            cert.getNumber(), "Test Procedures"));
+                    cert.getTestProcedures().clear();
                 }
                 if (cert.getTestStandards() != null && cert.getTestStandards().size() > 0) {
-                    listing.getErrorMessages()
-                    .add(msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
-                            cert.getNumber(), "Test Standards"));
+                    cert.getTestStandards().clear();
                 }
                 if (cert.getTestToolsUsed() != null && cert.getTestToolsUsed().size() > 0) {
-                    listing.getErrorMessages()
-                    .add(msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
-                            cert.getNumber(), "Test Tools"));
+                    cert.getTestToolsUsed().clear();
                 }
 
                 if (listing.getSed() != null && listing.getSed().getTestTasks() != null
@@ -72,9 +55,7 @@ public class UnattestedCriteriaWithDataReviewer implements Reviewer {
                     for (TestTask tt : listing.getSed().getTestTasks()) {
                         for (CertificationCriterion ttCriteria : tt.getCriteria()) {
                             if (ttCriteria.getNumber() != null && ttCriteria.getNumber().equals(cert.getNumber())) {
-                                listing.getErrorMessages().add(msgUtil.getMessage(
-                                        "listing.criteria.falseCriteriaHasData",
-                                        cert.getNumber(), "Test Tasks"));
+                                listing.getSed().getTestTasks().remove(tt);
                             }
                         }
                     }
@@ -84,9 +65,7 @@ public class UnattestedCriteriaWithDataReviewer implements Reviewer {
                     for (UcdProcess ucd : listing.getSed().getUcdProcesses()) {
                         for (CertificationCriterion ucdCriteria : ucd.getCriteria()) {
                             if (ucdCriteria.getNumber() != null && ucdCriteria.getNumber().equals(cert.getNumber())) {
-                                listing.getErrorMessages().add(msgUtil.getMessage(
-                                        "listing.criteria.falseCriteriaHasData",
-                                        cert.getNumber(), "UCD Processes"));
+                                listing.getSed().getUcdProcesses().remove(ucd);
                             }
                         }
                     }
