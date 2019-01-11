@@ -67,7 +67,7 @@ public class SwaggerConfig implements EnvironmentAware {
         return or(regex("/acbs.*"), regex("/activity.*"), regex("/announcements.*"), regex("/atls.*"), regex("/auth.*"),
                 regex("/certification_ids.*"), regex("/certified_products.*"), regex("/certified_product_details.*"),
                 regex("/collections.*"), regex("/data/.*"), regex("/download.*"), regex("/files.*"), regex("/jobs.*"),
-                regex("/key.*"), regex("/meaningful_use"), regex("/products.*"),
+                regex("/key.*"), regex("/meaningful_use.*"), regex("/products.*"),
                 regex("/search.*"), regex("/surveillance.*"), regex("/status"), regex("/cache_status"),
                 regex("/users.*"), regex("/developers.*"), regex("/versions.*"), regex("/decertifications/.*"),
                 regex("/schedules.*"));

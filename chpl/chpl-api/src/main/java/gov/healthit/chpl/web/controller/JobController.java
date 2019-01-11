@@ -37,7 +37,7 @@ public class JobController {
     @PreAuthorize("isAuthenticated()")
     public @ResponseBody JobResults getAllJobs() throws EntityRetrievalException {
         List<JobDTO> jobDtos = null;
-        if (Util.isUserRoleAdmin()) {
+        if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
             jobDtos = jobManager.getAllJobs();
         } else {
             UserDTO currentUser = new UserDTO();

@@ -60,7 +60,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     private ActivityManager activityManager;
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     @ClearAllCaches
     public CertificationBodyDTO create(final CertificationBodyDTO acb)
             throws UserRetrievalException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
@@ -99,7 +99,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#acb, admin)")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or (hasRole('ROLE_ACB') and hasPermission(#acb, admin))")
     @ClearAllCaches
     public CertificationBodyDTO update(final CertificationBodyDTO acb) throws EntityRetrievalException,
             JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
@@ -115,7 +115,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     @CacheEvict(CacheNames.CERT_BODY_NAMES)
     public CertificationBodyDTO retire(final Long acbId) throws EntityRetrievalException,
         JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
@@ -131,7 +131,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     @CacheEvict(CacheNames.CERT_BODY_NAMES)
     public CertificationBodyDTO unretire(final Long acbId) throws EntityRetrievalException,
         JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
@@ -147,7 +147,8 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#acb, admin) or hasPermission(#acb, read)")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or "
+            + "(hasRole('ROLE_ACB') and (hasPermission(#acb, admin) or hasPermission(#acb, read)))")
     public List<UserDTO> getAllUsersOnAcb(final CertificationBodyDTO acb) {
         ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
         MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -173,7 +174,8 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
         return users;
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#acb, read) or hasPermission(#acb, admin)")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or "
+            + "(hasRole('ROLE_ACB') and (hasPermission(#acb, read) or hasPermission(#acb, admin)))")
     public List<Permission> getPermissionsForUser(final CertificationBodyDTO acb, final Sid recipient) {
         ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
         MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -190,7 +192,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_INVITED_USER_CREATOR') or "
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_INVITED_USER_CREATOR') or "
             + "(hasRole('ROLE_ACB') and hasPermission(#acb, admin))")
     public void addPermission(final CertificationBodyDTO acb, final Long userId, final Permission permission)
             throws UserRetrievalException {
@@ -219,7 +221,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') and hasPermission(#acb, admin))")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or (hasRole('ROLE_ACB') and hasPermission(#acb, admin))")
     public void deletePermission(final CertificationBodyDTO acb, final Sid recipient, final Permission permission) {
         ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
         MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -244,7 +246,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') and hasPermission(#acb, admin))")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or (hasRole('ROLE_ACB') and hasPermission(#acb, admin))")
     public void deleteAllPermissionsOnAcb(final CertificationBodyDTO acb, final Sid recipient) {
         ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
         MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -268,7 +270,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
         LOGGER.debug("Deleted all acb " + acb + " ACL permissions for recipient " + recipient);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
     public void deletePermissionsForUser(final UserDTO userDto) throws UserRetrievalException {
         UserDTO foundUser = userDto;
         if (foundUser.getSubjectName() == null) {
@@ -315,16 +317,22 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     }
 
     @Transactional(readOnly = true)
-    @PostFilter("hasRole('ROLE_ADMIN') or hasPermission(filterObject, 'read') or hasPermission(filterObject, admin)")
+    @PostFilter("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or "
+            + "hasPermission(filterObject, 'read') or hasPermission(filterObject, admin)")
     public List<CertificationBodyDTO> getAllForUser() {
         return certificationBodyDAO.findAll();
     }
 
     @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_INVITED_USER_CREATOR') or "
+    public CertificationBodyDTO getById(final Long id) throws EntityRetrievalException {
+        return certificationBodyDAO.getById(id);
+    }
+
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_INVITED_USER_CREATOR') or "
             + "hasPermission(#id, 'gov.healthit.chpl.dto.CertificationBodyDTO', read) or "
             + "hasPermission(#id, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-    public CertificationBodyDTO getById(final Long id) throws EntityRetrievalException {
+    public CertificationBodyDTO getIfPermissionById(final Long id) throws EntityRetrievalException {
         return certificationBodyDAO.getById(id);
     }
 
