@@ -81,7 +81,7 @@ public class RequiredData2014Reviewer extends RequiredDataReviewer {
                             listing.getWarningMessages().add(
                                     msgUtil.getMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
                         } else {
-                            listing.getWarningMessages().add(
+                            listing.getErrorMessages().add(
                                     msgUtil.getMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
                         }
                     } else if (cert.getSed() != null && !cert.getSed().booleanValue()
