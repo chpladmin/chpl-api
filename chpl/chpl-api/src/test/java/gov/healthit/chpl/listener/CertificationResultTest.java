@@ -122,10 +122,6 @@ public class CertificationResultTest extends TestCase {
 
         Date beforeActivity = new Date();
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
-        for(CertificationResult result : listing.getCertificationResults()) {
-            result.setSed(Boolean.FALSE);
-            result.setGap(Boolean.FALSE);
-        }
         for(CertificationResult certResult : listing.getCertificationResults()) {
             if(certResult.getId().longValue() == 1) {
                 certResult.setG1Success(Boolean.FALSE);
@@ -139,7 +135,7 @@ public class CertificationResultTest extends TestCase {
         List<QuestionableActivityCertificationResultDTO> activities =
                 qaDao.findCertificationResultActivityBetweenDates(beforeActivity, afterActivity);
         assertNotNull(activities);
-        assertEquals(3, activities.size());
+        assertEquals(1, activities.size());
         QuestionableActivityCertificationResultDTO activity = activities.get(0);
         assertEquals(1, activity.getCertResultId().longValue());
         assertNotNull(activity.getCertResult());
@@ -161,10 +157,6 @@ public class CertificationResultTest extends TestCase {
 
         Date beforeActivity = new Date();
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
-        for(CertificationResult result : listing.getCertificationResults()) {
-            result.setSed(Boolean.FALSE);
-            result.setGap(Boolean.FALSE);
-        }
         for (CertificationResult certResult : listing.getCertificationResults()) {
             if (certResult.getId().longValue() == 1) {
                 certResult.setG2Success(Boolean.TRUE);
@@ -178,7 +170,7 @@ public class CertificationResultTest extends TestCase {
         List<QuestionableActivityCertificationResultDTO> activities = qaDao
                 .findCertificationResultActivityBetweenDates(beforeActivity, afterActivity);
         assertNotNull(activities);
-        assertEquals(3, activities.size());
+        assertEquals(1, activities.size());
         QuestionableActivityCertificationResultDTO activity = activities.get(0);
         assertEquals(1, activity.getCertResultId().longValue());
         assertNotNull(activity.getCertResult());
