@@ -4,7 +4,8 @@ _Date TBD_
 
 ### New Features
 * Change surveillance and sed report filenames to include timestamp when the file was last generated.
-* Update some warning messages to error messages, fix typos and update error messages
+* Update edit and confirm of criteria to remove phantom data
+* Update certain warnings to errors for uploading, editing, and confirming certified products
 * When validating pending listings, check for duplicate values, remove the duplicate value, and provide a warning message that the duplicate was removed
 * Show better error message when user uploads Test Tasks with IDs that are too long
 * Add definition file for the Surveillance - Basic download file
