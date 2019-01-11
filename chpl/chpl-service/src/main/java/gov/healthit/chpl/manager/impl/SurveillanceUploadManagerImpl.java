@@ -19,7 +19,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -48,14 +47,12 @@ public class SurveillanceUploadManagerImpl implements SurveillanceUploadManager 
     @Autowired private SurveillanceUploadHandlerFactory uploadHandlerFactory;
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     public int countSurveillanceRecords(MultipartFile file) throws ValidationException {
         String data = fileUtils.readFileAsString(file);
         return countSurveillanceRecords(data);
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     public int countSurveillanceRecords(String fileContents) throws ValidationException {
         int survCount = 0;
 
@@ -108,7 +105,6 @@ public class SurveillanceUploadManagerImpl implements SurveillanceUploadManager 
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     public List<Surveillance> parseUploadFile(MultipartFile file) throws ValidationException {
         List<Surveillance> pendingSurvs = new ArrayList<Surveillance>();
 
@@ -220,7 +216,6 @@ public class SurveillanceUploadManagerImpl implements SurveillanceUploadManager 
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     public List<String> checkUploadedSurveillanceOwnership(Surveillance pendingSurv) {
         List<String> errors = new ArrayList<String>();
         // perform additional checks if there are no errors in the uploaded
@@ -250,7 +245,7 @@ public class SurveillanceUploadManagerImpl implements SurveillanceUploadManager 
                             new DefaultMessageSourceResolvable(
                                     "pendingSurveillance.certificationBodyIdNotFound"),
                             LocaleContextHolder.getLocale()),
-                    surveilledProduct.getCertificationBodyId());
+                            surveilledProduct.getCertificationBodyId());
                     LOGGER.error(msg);
                     errors.add(msg);
                 } catch (final AccessDeniedException denied) {

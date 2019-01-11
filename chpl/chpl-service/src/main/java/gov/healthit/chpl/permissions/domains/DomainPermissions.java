@@ -16,7 +16,7 @@ public class DomainPermissions {
 
     public boolean hasAccess(String action, Object obj) {
         if (getActionPermissions().containsKey(action)) {
-            return getActionPermissions().get(action).hasAccess();
+            return getActionPermissions().get(action).hasAccess(obj);
         } else {
             return false;
         }

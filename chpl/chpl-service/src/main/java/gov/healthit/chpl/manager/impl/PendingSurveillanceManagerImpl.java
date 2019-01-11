@@ -69,7 +69,7 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
     private Environment env;
     private Permissions permissions;
     private FileUtils fileUtils;
-    private SurveillanceUploadManager survUploadManager;
+    private SurveillanceUploadManager survUploadHelper;
     private JobManager jobManager;
     private UserManager userManager;
     private CertifiedProductManager cpManager;
@@ -87,7 +87,7 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
         this.env = env;
         this.permissions = permissions;
         this.fileUtils = fileUtils;
-        this.survUploadManager = survUploadManager;
+        this.survUploadHelper = survUploadManager;
         this.jobManager = jobManager;
         this.userManager = userManager;
         this.cpManager = cpManager;
@@ -112,23 +112,16 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
             throw new ValidationException("File must be a CSV document.");
         }
 
-        String surveillanceThresholdToProcessAsJobStr = env.getProperty("surveillanceThresholdToProcessAsJob").trim();
-        Integer surveillanceThresholdToProcessAsJob = SURV_THRESHOLD_DEFAULT;
-        try {
-            surveillanceThresholdToProcessAsJob = Integer.parseInt(surveillanceThresholdToProcessAsJobStr);
-        } catch (final NumberFormatException ex) {
-            LOGGER.error(
-                    "Could not format " + surveillanceThresholdToProcessAsJobStr + " as an integer. Defaulting to"
-                            + " 50 instead.");
-        }
+        Integer surveillanceThresholdToProcessAsJob = getSurveillanceRecordThreshold();
 
         //first we need to count how many surveillance records are in the file
         //to know if we handle it normally or as a background job
         String data = fileUtils.readFileAsString(file);
 
+        //This is a container used for 2 different result types...
         SurveillanceUploadResult uploadResult = new SurveillanceUploadResult();
 
-        int numSurveillance = survUploadManager.countSurveillanceRecords(data);
+        int numSurveillance = survUploadHelper.countSurveillanceRecords(data);
         if (numSurveillance < surveillanceThresholdToProcessAsJob) {
             uploadResult = processAsFile(file);
         } else { //process as job
@@ -140,7 +133,7 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
     @Override
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_SURVEILLANCE, "
-            + "T(gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions).DELETE, "
+            + "T(gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions).REJECT, "
             + "#pendingSurveillanceId)")
     public void rejectPendingSurveillance(Long pendingSurveillanceId)
             throws ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException, EntityCreationException {
@@ -228,10 +221,9 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
 
     private SurveillanceUploadResult processAsFile(final MultipartFile file) throws ValidationException {
         SurveillanceUploadResult result = new SurveillanceUploadResult();
-
-        //process as normal
         List<Surveillance> uploadedSurveillance = new ArrayList<Surveillance>();
-        List<Surveillance> pendingSurvs = survUploadManager.parseUploadFile(file);
+        List<Surveillance> pendingSurvs = survUploadHelper.parseUploadFile(file);
+
         for (Surveillance surv : pendingSurvs) {
             CertifiedProductDTO owningCp = null;
             try {
@@ -404,7 +396,18 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
         return true;
     }
 
-
+    private Integer getSurveillanceRecordThreshold() {
+        String surveillanceThresholdToProcessAsJobStr = env.getProperty("surveillanceThresholdToProcessAsJob").trim();
+        Integer surveillanceThresholdToProcessAsJob = SURV_THRESHOLD_DEFAULT;
+        try {
+            surveillanceThresholdToProcessAsJob = Integer.parseInt(surveillanceThresholdToProcessAsJobStr);
+        } catch (final NumberFormatException ex) {
+            LOGGER.error(
+                    "Could not format " + surveillanceThresholdToProcessAsJobStr + " as an integer. Defaulting to"
+                            + " 50 instead.");
+        }
+        return surveillanceThresholdToProcessAsJob;
+    }
 
 
 

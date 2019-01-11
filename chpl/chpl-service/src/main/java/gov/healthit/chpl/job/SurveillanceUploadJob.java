@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.job.JobDTO;
@@ -35,7 +36,7 @@ import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 
 @Component
 @Scope("prototype") // tells spring to make a new instance of this class every
-                    // time it is needed
+// time it is needed
 public class SurveillanceUploadJob extends RunnableJob {
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceUploadJob.class);
 
@@ -51,6 +52,9 @@ public class SurveillanceUploadJob extends RunnableJob {
     @Autowired
     private SurveillanceUploadHandlerFactory uploadHandlerFactory;
 
+    @Autowired
+    private SurveillanceDAO surveillanceDAO;
+
     public SurveillanceUploadJob() {
         LOGGER.debug("Created new Surveillance Upload Job");
     }
@@ -60,6 +64,7 @@ public class SurveillanceUploadJob extends RunnableJob {
         this.job = job;
     }
 
+    @Override
     public void run() {
         super.run();
 
@@ -127,7 +132,7 @@ public class SurveillanceUploadJob extends RunnableJob {
                                             pendingSurvs.add(pendingSurv);
 
                                             //Add some percent complete between 2 and 50
-                                            jobPercentComplete += 48.0 / (double) survCount;
+                                            jobPercentComplete += 48.0 / survCount;
                                             updateStatus(jobPercentComplete, JobStatusType.In_Progress);
                                         } catch (final InvalidArgumentsException ex) {
                                             LOGGER.error(ex.getMessage());
@@ -182,16 +187,20 @@ public class SurveillanceUploadJob extends RunnableJob {
             try {
                 owningCp = cpManager.getById(surv.getCertifiedProduct().getId());
                 survValidator.validate(surv);
-                survManager.createPendingSurveillance(owningCp.getCertificationBodyId(), surv);
 
-                jobPercentComplete += 50.0 / (double) pendingSurvs.size();
+                //TODO - This needs to be fixed
+                //survManager.createPendingSurveillance(owningCp.getCertificationBodyId(), surv);
+                surveillanceDAO.insertPendingSurveillance(surv);
+
+
+                jobPercentComplete += 50.0 / pendingSurvs.size();
                 updateStatus(jobPercentComplete, JobStatusType.In_Progress);
             } catch (final AccessDeniedException denied) {
                 String msg = "User " + Util.getCurrentUser().getSubjectName()
-                                + " does not have access to add surveillance"
-                                + (owningCp != null
-                                        ? " to ACB with ID '" + owningCp.getCertificationBodyId() + "'."
-                                        : ".");
+                        + " does not have access to add surveillance"
+                        + (owningCp != null
+                        ? " to ACB with ID '" + owningCp.getCertificationBodyId() + "'."
+                                : ".");
                 LOGGER.error(msg);
                 addJobMessage(msg);
             } catch (Exception ex) {
