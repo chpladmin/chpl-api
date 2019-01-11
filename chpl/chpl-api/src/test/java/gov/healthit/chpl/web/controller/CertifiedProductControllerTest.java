@@ -457,7 +457,7 @@ public class CertifiedProductControllerTest {
         }
         // test 1
         // ICS is false, 15.07.07.2642.IC04.36.00.1.160402 shows false ICS. No mismatch = error message
-        assertTrue(pcpDTO.getErrorMessages().contains(
+        assertTrue(pcpDTO.getWarningMessages().contains(
                 "Test Tool 'Retired Test Tool' can not be used for criteria '170.315 (b)(6)', "
                         + "as it is a retired tool, and this Certified Product does not carry ICS."));
 
@@ -470,7 +470,7 @@ public class CertifiedProductControllerTest {
             validator.validate(pcpDTO);
         }
         // ICS is true, 15.07.07.2642.IC04.36.00.1.160402 shows true ICS. ICS Mismatch = warning message
-        assertTrue(pcpDTO.getErrorMessages().contains("Test Tool 'Retired Test Tool' can not be used for criteria '170.315 (b)(6)', "
+        assertTrue(pcpDTO.getWarningMessages().contains("Test Tool 'Retired Test Tool' can not be used for criteria '170.315 (b)(6)', "
                 + "as it is a retired tool, and this Certified Product does not carry ICS."));
 
         // test 3
@@ -485,7 +485,7 @@ public class CertifiedProductControllerTest {
             validator.validate(pcpDTO);
         }
         // ICS is false, 15.07.07.2642.IC04.36.00.1.160402 shows false ICS. No mismatch = error message
-        assertTrue(pcpDTO.getErrorMessages().contains("Test Tool 'Retired Test Tool' can not be used for criteria '170.315 (b)(6)', "
+        assertTrue(pcpDTO.getWarningMessages().contains("Test Tool 'Retired Test Tool' can not be used for criteria '170.315 (b)(6)', "
                 + "as it is a retired tool, and this Certified Product does not carry ICS."));
 
         // test 4
@@ -495,7 +495,7 @@ public class CertifiedProductControllerTest {
             validator.validate(pcpDTO);
         }
         // ICS is false, 15.07.07.2642.IC04.36.00.1.160402 shows false ICS. No mismatch = error message
-        assertTrue(pcpDTO.getErrorMessages().contains("Test Tool 'Retired Test Tool' can not be used for criteria '170.315 (b)(6)', "
+        assertTrue(pcpDTO.getWarningMessages().contains("Test Tool 'Retired Test Tool' can not be used for criteria '170.315 (b)(6)', "
                 + "as it is a retired tool, and this Certified Product does not carry ICS."));
     }
 
