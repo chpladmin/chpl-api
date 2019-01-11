@@ -28,7 +28,7 @@ public class JWTAuthenticatedUser implements User {
         this.subjectName = null;
     }
 
-    public JWTAuthenticatedUser(String subjectName) {
+    public JWTAuthenticatedUser(final String subjectName) {
         this.subjectName = subjectName;
     }
 
@@ -60,17 +60,17 @@ public class JWTAuthenticatedUser implements User {
         return this.permissions;
     }
 
-    public void addPermission(GrantedPermission permission){
+    public void addPermission(final GrantedPermission permission) {
         this.permissions.add(permission);
     }
 
-    public void addPermission(String permissionValue) {
+    public void addPermission(final String permissionValue) {
         GrantedPermission permission = new GrantedPermission(permissionValue);
         this.permissions.add(permission);
     }
 
     @Override
-    public void removePermission(final String permissionValue){
+    public void removePermission(final String permissionValue) {
         this.permissions.remove(new GrantedPermission(permissionValue));
     }
 

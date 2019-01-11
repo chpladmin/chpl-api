@@ -119,6 +119,10 @@ public class UserAuthenticator implements Authenticator {
         identity.add(user.getId().toString());
         identity.add(user.getUsername());
         identity.add(user.getFullName());
+        if (user.getImpersonatedBy() != null) {
+            identity.add(user.getImpersonatedBy().getId().toString());
+            identity.add(user.getSubjectName());
+        }
 
         claims.put("Identity", identity);
 
@@ -128,35 +132,15 @@ public class UserAuthenticator implements Authenticator {
     }
 
     @Override
-    public String refreshJWT() throws JWTCreationException {
+    public String refreshJWT() throws JWTCreationException, UserRetrievalException {
 
         User user = Util.getCurrentUser();
-        String jwt = null;
 
         if (user != null) {
-            Map<String, List<String>> claims = new HashMap<String, List<String>>();
-            List<String> claimStrings = new ArrayList<String>();
-
-            Set<GrantedPermission> permissions = user.getPermissions();
-
-            for (GrantedPermission claim : permissions) {
-                claimStrings.add(claim.getAuthority());
-            }
-            claims.put("Authorities", claimStrings);
-
-            List<String> identity = new ArrayList<String>();
-
-            identity.add(user.getId().toString());
-            identity.add(user.getUsername());
-            identity.add(user.getFullName());
-
-            claims.put("Identity", identity);
-
-            jwt = jwtAuthor.createJWT(user.getSubjectName(), claims);
+            return getJWT(getUserByName(user.getSubjectName()));
         } else {
             throw new JWTCreationException("Cannot generate token for Anonymous user.");
         }
-        return jwt;
     }
 
     @Override
@@ -344,6 +328,20 @@ public class UserAuthenticator implements Authenticator {
 
     public void setJwtAuthor(final JWTAuthor jwtAuthor) {
         this.jwtAuthor = jwtAuthor;
+    }
+
+    @Override
+    public String impersonateUser(final String username) throws UserRetrievalException, JWTCreationException {
+        User user = Util.getCurrentUser();
+        UserDTO impersonatingUser = getUserByName(user.getSubjectName());
+        UserDTO impersonatedUser = getUserByName(username);
+        impersonatedUser.setImpersonatedBy(impersonatingUser);
+        return getJWT(impersonatedUser);
+    }
+
+    @Override
+    public String unimpersonateUser(final User user) throws JWTCreationException, UserRetrievalException {
+        return getJWT(getUserByName(user.getSubjectName()));
     }
 
 }
