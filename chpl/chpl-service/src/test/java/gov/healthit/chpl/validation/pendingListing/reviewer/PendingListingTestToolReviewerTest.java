@@ -238,7 +238,7 @@ public class PendingListingTestToolReviewerTest {
         testToolReviewer.review(listing);
         assertFalse(listing.getErrorMessages().contains(NO_TEST_TOOL_NAME_ERROR));
         assertFalse(listing.getErrorMessages().contains(TEST_TOOL_NOT_FOUND_AND_REMOVED_ERROR));
-        assertTrue(listing.getErrorMessages().contains(RETIRED_TEST_TOOL_NOT_ALLOWED_ERROR));
+        assertTrue(listing.getWarningMessages().contains(RETIRED_TEST_TOOL_NOT_ALLOWED_ERROR));
         assertFalse(listing.getErrorMessages().contains(NO_TEST_TOOL_VERSION_ERROR));
     }
 
@@ -264,8 +264,8 @@ public class PendingListingTestToolReviewerTest {
         testToolReviewer.review(listing);
         assertFalse(listing.getErrorMessages().contains(NO_TEST_TOOL_NAME_ERROR));
         assertFalse(listing.getErrorMessages().contains(TEST_TOOL_NOT_FOUND_AND_REMOVED_ERROR));
-        assertTrue(listing.getErrorMessages().contains(RETIRED_TEST_TOOL_NOT_ALLOWED_ERROR));
-        assertFalse(listing.getWarningMessages().contains(RETIRED_TEST_TOOL_NOT_ALLOWED_ERROR));
+        assertFalse(listing.getErrorMessages().contains(RETIRED_TEST_TOOL_NOT_ALLOWED_ERROR));
+        assertTrue(listing.getWarningMessages().contains(RETIRED_TEST_TOOL_NOT_ALLOWED_ERROR));
     }
 
     @Test

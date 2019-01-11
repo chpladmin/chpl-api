@@ -49,7 +49,7 @@ public class AmbulatoryG1G2RequiredData2014Reviewer implements Reviewer {
             }
 
             if (!hasG1Complement) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingG1Related"));
+                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.missingG1Related"));
             }
         }
 
@@ -71,7 +71,7 @@ public class AmbulatoryG1G2RequiredData2014Reviewer implements Reviewer {
             }
 
             if (!hasG2Complement) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingG2Related"));
+                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.missingG2Related"));
             }
         }
 
