@@ -45,7 +45,6 @@ import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceRequirementEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ObjectMissingValidationException;
-import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.permissions.Permissions;
 import gov.healthit.chpl.util.FileUtils;
@@ -62,21 +61,19 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     private UserDAO userDAO;
     private SurveillanceValidator validator;
     private UserPermissionDAO userPermissionDao;
-    private ActivityManager activityManager;
     private FileUtils fileUtils;
     private Environment env;
     private Permissions permissions;
 
     @Autowired
     public SurveillanceManagerImpl(SurveillanceDAO survDao, CertifiedProductDAO cpDao, UserDAO userDao,
-            SurveillanceValidator validator, UserPermissionDAO userPermissionDao, ActivityManager activityManager,
-            FileUtils fileUtils, Environment env, Permissions permissions) {
+            SurveillanceValidator validator, UserPermissionDAO userPermissionDao, FileUtils fileUtils, Environment env,
+            Permissions permissions) {
         this.survDao = survDao;
         this.cpDao = cpDao;
         this.userDAO = userDao;
         this.validator = validator;
         this.userPermissionDao = userPermissionDao;
-        this.activityManager = activityManager;
         this.fileUtils = fileUtils;
         this.env = env;
         this.permissions = permissions;

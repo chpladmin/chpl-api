@@ -22,7 +22,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,7 +45,6 @@ import gov.healthit.chpl.domain.SurveillanceNonconformityDocument;
 import gov.healthit.chpl.domain.SurveillanceUploadResult;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.exception.CertificationBodyAccessException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -491,78 +489,19 @@ public class SurveillanceController implements MessageSourceAware {
     @RequestMapping(value = "/pending/confirm", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
     public synchronized ResponseEntity<Surveillance> confirmPendingSurveillance(
-            @RequestBody(required = true) final Surveillance survToInsert) throws ValidationException,
-    EntityRetrievalException, EntityCreationException, JsonProcessingException,
-    UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
-        if (survToInsert == null || survToInsert.getId() == null) {
-            throw new ValidationException("An id must be provided in the request body.");
-        }
-        HttpHeaders responseHeaders = new HttpHeaders();
-        CertifiedProductSearchDetails beforeCp = cpdetailsManager
-                .getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
-        CertificationBodyDTO owningAcb = null;
-        try {
-            owningAcb = acbManager.getById(Long.valueOf(beforeCp.getCertifyingBody().get("id").toString()));
-        } catch (Exception ex) {
-            LOGGER.error("Error looking up ACB associated with surveillance.", ex);
-            throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
-        }
+            @RequestBody(required = true) final Surveillance survToInsert)
+                    throws ValidationException, EntityRetrievalException, EntityCreationException,
+                    JsonProcessingException, UserPermissionRetrievalException,
+                    SurveillanceAuthorityAccessDeniedException {
 
-        Long pendingSurvToDelete = survToInsert.getId();
-        if (survManager.isPendingSurveillanceAvailableForUpdate(owningAcb.getId(), pendingSurvToDelete)) {
-            survToInsert.getErrorMessages().clear();
-
-            // validate first. this ensures we have all the info filled in
-            // that we need to continue
-            survManager.validate(survToInsert);
-            if (survToInsert.getErrorMessages() != null && survToInsert.getErrorMessages().size() > 0) {
-                throw new ValidationException(survToInsert.getErrorMessages(), null);
-            }
-
-            // insert or update the surveillance
-            Long insertedSurv = survManager.createSurveillance(owningAcb.getId(), survToInsert);
+        Surveillance newSurveillance = pendingSurveillanceManager.confirmPendingSurveillance(survToInsert);
+        if (newSurveillance != null) {
+            HttpHeaders responseHeaders = new HttpHeaders();
             responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
-            if (insertedSurv == null) {
-                throw new EntityCreationException("Error creating new surveillance.");
-            }
-
-            // delete the pending surveillance item if this one was successfully
-            // inserted
-            try {
-                //************************************
-                //Need to add this line back in
-                //************************************
-                //pendingSurveillanceManager.deletePendingSurveillance(pendingSurvToDelete, true);
-            } catch (Exception ex) {
-                LOGGER.error("Error deleting pending surveillance with id " + pendingSurvToDelete, ex);
-            }
-
-            try {
-                // if a surveillance was getting replaced, delete it
-                if (!StringUtils.isEmpty(survToInsert.getSurveillanceIdToReplace())) {
-                    Surveillance survToReplace = survManager.getByFriendlyIdAndProduct(
-                            survToInsert.getCertifiedProduct().getId(), survToInsert.getSurveillanceIdToReplace());
-                    CertifiedProductDTO survToReplaceOwningCp = cpManager
-                            .getById(survToReplace.getCertifiedProduct().getId());
-                    survManager.deleteSurveillance(survToReplaceOwningCp.getCertificationBodyId(), survToReplace);
-                    responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
-                    responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
-                }
-            } catch (Exception ex) {
-                LOGGER.error("Deleting surveillance with id " + survToInsert.getSurveillanceIdToReplace()
-                + " as part of the replace operation failed", ex);
-            }
-
-            CertifiedProductSearchDetails afterCp = cpdetailsManager
-                    .getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
-            activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, afterCp.getId(),
-                    "Surveillance upload was confirmed for certified product " + afterCp.getChplProductNumber(),
-                    beforeCp, afterCp);
-            // query the inserted surveillance
-            Surveillance result = survManager.getById(insertedSurv);
-            return new ResponseEntity<Surveillance>(result, responseHeaders, HttpStatus.OK);
+            return new ResponseEntity<Surveillance>(newSurveillance, responseHeaders, HttpStatus.OK);
+        } else {
+            return null;
         }
-        return null;
     }
 
     @ApiOperation(value = "Download surveillance as CSV.",
