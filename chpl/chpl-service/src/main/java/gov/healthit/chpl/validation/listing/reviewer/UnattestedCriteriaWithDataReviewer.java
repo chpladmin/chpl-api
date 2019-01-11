@@ -1,5 +1,7 @@
 package gov.healthit.chpl.validation.listing.reviewer;
 
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -53,21 +55,25 @@ public class UnattestedCriteriaWithDataReviewer implements Reviewer {
                 if (listing.getSed() != null && listing.getSed().getTestTasks() != null
                         && listing.getSed().getTestTasks().size() > 0) {
                     for (TestTask tt : listing.getSed().getTestTasks()) {
+                        ArrayList<CertificationCriterion> remove = new ArrayList<CertificationCriterion>();
                         for (CertificationCriterion ttCriteria : tt.getCriteria()) {
                             if (ttCriteria.getNumber() != null && ttCriteria.getNumber().equals(cert.getNumber())) {
-                                listing.getSed().getTestTasks().remove(tt);
+                                remove.add(ttCriteria);
                             }
                         }
+                        tt.getCriteria().removeAll(remove);
                     }
                 }
                 if (listing.getSed() != null && listing.getSed().getUcdProcesses() != null
                         && listing.getSed().getUcdProcesses().size() > 0) {
                     for (UcdProcess ucd : listing.getSed().getUcdProcesses()) {
+                        ArrayList<CertificationCriterion> remove = new ArrayList<CertificationCriterion>();
                         for (CertificationCriterion ucdCriteria : ucd.getCriteria()) {
                             if (ucdCriteria.getNumber() != null && ucdCriteria.getNumber().equals(cert.getNumber())) {
-                                listing.getSed().getUcdProcesses().remove(ucd);
+                                remove.add(ucdCriteria);
                             }
                         }
+                        ucd.getCriteria().removeAll(remove);
                     }
                 }
             }
