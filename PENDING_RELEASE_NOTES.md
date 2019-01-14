@@ -8,6 +8,7 @@ _Date TBD_
 * Update certain warnings to errors for uploading, editing, and confirming certified products
 * When validating pending listings, check for duplicate values, remove the duplicate value, and provide a warning message that the duplicate was removed
 * Show better error message when user uploads Test Tasks with IDs that are too long
+* Show warning and delete targeted user that is too long on upload
 * Add definition file for the Surveillance - Basic download file
 
 ### Bugs Fixed
