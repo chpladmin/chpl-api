@@ -44,15 +44,15 @@ public class StatisticsManagerTest extends TestCase {
     public void testStatisticsManagerCanRetrieveStats() {
         List<CriterionProductStatistics> stats = statisticsManager.getCriterionProductStatisticsResult();
         assertNotNull(stats);
-        
+
         //Sort so test works consistently
         Collections.sort(stats, new Comparator<CriterionProductStatistics>() {
             @Override
             public int compare(CriterionProductStatistics one, CriterionProductStatistics other) {
                 return one.getCertificationCriterionId().compareTo(other.getCertificationCriterionId());
             }
-        }); 
-        
+        });
+
         assertEquals("170.315 (d)(10)", stats.get(0).getCriterion().getNumber());
     }
 

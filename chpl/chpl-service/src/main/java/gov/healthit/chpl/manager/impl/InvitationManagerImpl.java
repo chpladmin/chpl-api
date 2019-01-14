@@ -101,7 +101,7 @@ public class InvitationManagerImpl implements InvitationManager {
             + "(hasRole('ROLE_ACB') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     public InvitationDTO inviteWithAcbAccess(final String emailAddress, final Long acbId,
             final List<String> permissions)
-            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
+                    throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
         InvitationDTO dto = new InvitationDTO();
         dto.setEmail(emailAddress);
         dto.setAcbId(acbId);
@@ -119,7 +119,7 @@ public class InvitationManagerImpl implements InvitationManager {
             + "(hasRole('ROLE_ATL') and hasPermission(#atlId, 'gov.healthit.chpl.dto.TestingLabDTO', admin))")
     public InvitationDTO inviteWithAtlAccess(final String emailAddress, final Long atlId,
             final List<String> permissions)
-            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
+                    throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
         InvitationDTO dto = new InvitationDTO();
         dto.setEmail(emailAddress);
         dto.setTestingLabId(atlId);
@@ -359,7 +359,7 @@ public class InvitationManagerImpl implements InvitationManager {
 
             @Override
             public Long getId() {
-                return id == null ? -2L : id;
+                return id == null ? Long.valueOf(-2L) : id;
             }
 
             @Override

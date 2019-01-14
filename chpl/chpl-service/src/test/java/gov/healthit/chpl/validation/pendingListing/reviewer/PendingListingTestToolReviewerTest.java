@@ -7,11 +7,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -34,33 +34,36 @@ public class PendingListingTestToolReviewerTest {
     private static final String G_1 = "170.314 (g)(1)";
     private static final String G_2 = "170.314 (g)(2)";
     private static final String F_3 = "170.314 (f)(3)";
-    private static final String NO_TEST_TOOL_ERROR = 
+    private static final String NO_TEST_TOOL_ERROR =
             "Test tools are required for certification criteria " + B_2 + ".";
-    private static final String NO_TEST_TOOL_NAME_ERROR = 
+    private static final String NO_TEST_TOOL_NAME_ERROR =
             "There was no test tool name found for certification " + B_2 + ".";
-    private static final String NO_TEST_TOOL_VERSION_ERROR = 
+    private static final String NO_TEST_TOOL_VERSION_ERROR =
             "There was no version found for test tool Bogus Test Tool and certification " + B_2 + ".";
-    private static final String TEST_TOOL_NOT_FOUND_AND_REMOVED_ERROR = 
+    private static final String TEST_TOOL_NOT_FOUND_AND_REMOVED_ERROR =
             "Criteria " + B_2 + " contains an invalid test tool 'Bogus Test Tool'. It has been removed from the pending listing.";
-    private static final String RETIRED_TEST_TOOL_NOT_ALLOWED_ERROR = 
+    private static final String RETIRED_TEST_TOOL_NOT_ALLOWED_ERROR =
             "Test Tool 'Bogus Test Tool' can not be used for criteria '" + B_2
             + "', as it is a retired tool, and this Certified Product does not carry ICS.";
 
+    @Autowired private ListingMockUtil mockUtil;
+    @Autowired private MessageSource messageSource;
+
     @Spy private TestToolDAO testToolDao;
     @Spy private ChplProductNumberUtil productNumberUtil;
-    @Spy private ErrorMessageUtil msgUtil;
+    @Spy private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
     @Spy private CertificationResultRules certRules;
-    @Autowired private ListingMockUtil mockUtil;
 
-    @InjectMocks
     private TestToolReviewer testToolReviewer;
-
-    @InjectMocks
     private AmbulatoryRequiredTestToolReviewer ambulatoryTestToolReviewier;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+
+        testToolReviewer = new TestToolReviewer(testToolDao, msgUtil, productNumberUtil);
+        ambulatoryTestToolReviewier = new AmbulatoryRequiredTestToolReviewer(msgUtil, certRules);
+
         Mockito.doReturn(NO_TEST_TOOL_ERROR)
         .when(msgUtil).getMessage(
                 ArgumentMatchers.eq("listing.criteria.missingTestTool"), ArgumentMatchers.anyString());
@@ -261,18 +264,18 @@ public class PendingListingTestToolReviewerTest {
         testToolReviewer.review(listing);
         assertFalse(listing.getErrorMessages().contains(NO_TEST_TOOL_NAME_ERROR));
         assertFalse(listing.getErrorMessages().contains(TEST_TOOL_NOT_FOUND_AND_REMOVED_ERROR));
-        assertFalse(listing.getErrorMessages().contains(RETIRED_TEST_TOOL_NOT_ALLOWED_ERROR));
-        assertTrue(listing.getWarningMessages().contains(RETIRED_TEST_TOOL_NOT_ALLOWED_ERROR));
+        assertTrue(listing.getErrorMessages().contains(RETIRED_TEST_TOOL_NOT_ALLOWED_ERROR));
+        assertFalse(listing.getWarningMessages().contains(RETIRED_TEST_TOOL_NOT_ALLOWED_ERROR));
     }
 
     @Test
     public void testListingWithIcsAndRetiredTestTool_HasNoError() {
         PendingCertifiedProductDTO listing = mockUtil.createPending2014Listing();
         listing.setIcs(Boolean.TRUE);
-        String updatedListingId = 
+        String updatedListingId =
                 mockUtil.getChangedListingId(listing.getUniqueId(), CertifiedProductDTO.ICS_CODE_INDEX, "01");
         listing.setUniqueId(updatedListingId);
-        for(PendingCertificationResultDTO certResult : listing.getCertificationCriterion()) {
+        for (PendingCertificationResultDTO certResult : listing.getCertificationCriterion()) {
             if (certResult.getNumber().equals(B_2)) {
                 certResult.getTestTools().clear();
                 PendingCertificationResultTestToolDTO crtt = new PendingCertificationResultTestToolDTO();
@@ -296,7 +299,7 @@ public class PendingListingTestToolReviewerTest {
     @Test
     public void testMissingRequiredTestTool_HasError() {
         PendingCertifiedProductDTO listing = mockUtil.createPending2014Listing();
-        for(PendingCertificationResultDTO certResult : listing.getCertificationCriterion()) {
+        for (PendingCertificationResultDTO certResult : listing.getCertificationCriterion()) {
             if(certResult.getNumber().equals(B_2)) {
                 certResult.getTestTools().clear();
             }
@@ -308,8 +311,8 @@ public class PendingListingTestToolReviewerTest {
     @Test
     public void testMissingOptionalTestTools_NoError() {
         PendingCertifiedProductDTO listing = mockUtil.createPending2014Listing();
-        for(PendingCertificationResultDTO certResult : listing.getCertificationCriterion()) {
-            if(certResult.getNumber().equals(G_1)
+        for (PendingCertificationResultDTO certResult : listing.getCertificationCriterion()) {
+            if (certResult.getNumber().equals(G_1)
                     || certResult.getNumber().equals(G_2)
                     || certResult.getNumber().equals(F_3)) {
                 certResult.getTestTools().clear();

@@ -50,7 +50,7 @@ public class SurveillanceUploadJob extends RunnableJob {
     private SurveillanceValidator survValidator;
     @Autowired
     private SurveillanceUploadHandlerFactory uploadHandlerFactory;
-    
+
     public SurveillanceUploadJob() {
         LOGGER.debug("Created new Surveillance Upload Job");
     }
@@ -65,12 +65,9 @@ public class SurveillanceUploadJob extends RunnableJob {
 
         double jobPercentComplete = 0;
         Set<Surveillance> pendingSurvs = new LinkedHashSet<Surveillance>();
-        
-        BufferedReader reader = null;
-        CSVParser parser = null;
-        try {
-            reader = new BufferedReader(new StringReader(job.getData()));
-            parser = new CSVParser(reader, CSVFormat.EXCEL);
+
+        try (BufferedReader reader = new BufferedReader(new StringReader(job.getData()));
+                CSVParser parser = new CSVParser(reader, CSVFormat.EXCEL)) {
 
             List<CSVRecord> records = parser.getRecords();
             if (records.size() <= 1) {
@@ -92,14 +89,14 @@ public class SurveillanceUploadJob extends RunnableJob {
                 int survCount = 0;
                 try {
                     survCount = survUploadManager.countSurveillanceRecords(job.getData());
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     addJobMessage(ex.getMessage());
                     updateStatus(100, JobStatusType.Error);
                 }
-                if(survCount > 0) {
+                if (survCount > 0) {
                     jobPercentComplete = 2.0;
                     updateStatus(jobPercentComplete, JobStatusType.In_Progress);
-                    
+
                     //now do the actual parsing
                     List<String> parserErrors = new ArrayList<String>();
                     CSVRecord heading = null;
@@ -113,7 +110,7 @@ public class SurveillanceUploadJob extends RunnableJob {
                         } else if (heading != null) {
                             if (!StringUtils.isEmpty(currRecord.get(0).trim())) {
                                 String currRecordStatus = currRecord.get(0).trim();
-    
+
                                 if (currRecordStatus.equalsIgnoreCase(SurveillanceUploadManager.NEW_SURVEILLANCE_BEGIN_INDICATOR)
                                         || currRecordStatus.equalsIgnoreCase(SurveillanceUploadManager.UPDATE_SURVEILLANCE_BEGIN_INDICATOR)) {
                                     // parse the previous recordset because we hit a new surveillance item
@@ -122,14 +119,15 @@ public class SurveillanceUploadJob extends RunnableJob {
                                         try {
                                             SurveillanceUploadHandler handler = uploadHandlerFactory.getHandler(heading, rows);
                                             Surveillance pendingSurv = handler.handle();
-                                            List<String> errors = survUploadManager.checkUploadedSurveillanceOwnership(pendingSurv);
-                                            for(String error : errors) {
+                                            List<String> errors =
+                                                    survUploadManager.checkUploadedSurveillanceOwnership(pendingSurv);
+                                            for (String error : errors) {
                                                 parserErrors.add(error);
                                             }
                                             pendingSurvs.add(pendingSurv);
-                                            
+
                                             //Add some percent complete between 2 and 50
-                                            jobPercentComplete += 48.0 / (double)(survCount);
+                                            jobPercentComplete += 48.0 / (double) survCount;
                                             updateStatus(jobPercentComplete, JobStatusType.In_Progress);
                                         } catch (final InvalidArgumentsException ex) {
                                             LOGGER.error(ex.getMessage());
@@ -143,7 +141,7 @@ public class SurveillanceUploadJob extends RunnableJob {
                                 } // ignore blank rows
                             }
                         }
-    
+
                         // add the last object
                         if (i == records.size() - 1 && !rows.isEmpty()) {
                             try {
@@ -160,9 +158,9 @@ public class SurveillanceUploadJob extends RunnableJob {
                             }
                         }
                     }
-                    
-                    if(parserErrors != null && parserErrors.size() > 0) {
-                        for(String error: parserErrors) {
+
+                    if (parserErrors != null && parserErrors.size() > 0) {
+                        for (String error: parserErrors) {
                             addJobMessage(error);
                         }
                         updateStatus(100, JobStatusType.Error);
@@ -176,13 +174,6 @@ public class SurveillanceUploadJob extends RunnableJob {
             LOGGER.error(msg);
             addJobMessage(msg);
             updateStatus(100, JobStatusType.Error);
-            try {
-                parser.close();
-            } catch (Exception ignore) {
-            }
-            try {
-                reader.close();
-            } catch (Exception ignore) { }
         }
 
         // now load everything that was parsed
@@ -192,7 +183,7 @@ public class SurveillanceUploadJob extends RunnableJob {
                 owningCp = cpManager.getById(surv.getCertifiedProduct().getId());
                 survValidator.validate(surv);
                 survManager.createPendingSurveillance(owningCp.getCertificationBodyId(), surv);
-                
+
                 jobPercentComplete += 50.0 / (double) pendingSurvs.size();
                 updateStatus(jobPercentComplete, JobStatusType.In_Progress);
             } catch (final AccessDeniedException denied) {

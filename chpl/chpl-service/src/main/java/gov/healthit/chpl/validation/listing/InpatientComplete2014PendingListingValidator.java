@@ -11,7 +11,7 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.edition2014.Inpatien
 
 @Component("inpatientComplete2014PendingListingValidator")
 public class InpatientComplete2014PendingListingValidator extends InpatientModular2014PendingListingValidator {
-    @Autowired 
+    @Autowired
     @Qualifier("pendingInpatientCompleteRequiredCriteriaReviewer")
     private InpatientCompleteRequiredCriteriaReviewer reqCriteriaReviewer;
 
@@ -19,7 +19,7 @@ public class InpatientComplete2014PendingListingValidator extends InpatientModul
 
     @Override
     public List<Reviewer> getReviewers() {
-        if(reviewers == null) {
+        if (reviewers == null) {
             reviewers = super.getReviewers();
             reviewers.add(reqCriteriaReviewer);
         }

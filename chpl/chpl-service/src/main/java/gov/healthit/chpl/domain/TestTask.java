@@ -1,9 +1,7 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -346,7 +344,7 @@ public class TestTask implements Serializable {
     public void setTaskPathDeviationOptimal(final String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
-                taskPathDeviationOptimal = Math.round(new Float(value));
+                taskPathDeviationOptimal = Math.round(Float.valueOf(value));
             } catch (final NumberFormatException e) {
                 LOGGER.error("can't parse " + value + " as a float or integer.");
             }
@@ -360,7 +358,7 @@ public class TestTask implements Serializable {
     public void setTaskTimeAvg(final String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
-                taskTimeAvg = new Long(Math.round(new Float(value)));
+                taskTimeAvg = Long.valueOf(Math.round(Float.valueOf((value))));
             } catch (final NumberFormatException e) {
                 LOGGER.error("can't parse " + value + " as a float or integer.");
             }
@@ -374,7 +372,7 @@ public class TestTask implements Serializable {
     public void setTaskTimeStddev(final String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
-                taskTimeStddev = Math.round(new Float(value));
+                taskTimeStddev = Math.round(Float.valueOf(value));
             } catch (final NumberFormatException e) {
                 LOGGER.error("can't parse " + value + " as a float or integer.");
             }

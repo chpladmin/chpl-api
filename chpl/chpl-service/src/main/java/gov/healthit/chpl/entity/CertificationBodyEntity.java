@@ -1,5 +1,6 @@
 package gov.healthit.chpl.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -13,9 +14,17 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.util.Util;
+
+/**
+ * Certification body mapping to database.
+ * @author kekey
+ *
+ */
 @Entity
 @Table(name = "certification_body")
-public class CertificationBodyEntity {
+public class CertificationBodyEntity implements Serializable {
+    private static final long serialVersionUID = -4603773689327950041L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,12 +47,15 @@ public class CertificationBodyEntity {
     @Column(name = "website", nullable = true)
     private String website;
 
+    @Column(name = "retired", nullable = false)
+    private Boolean retired;
+
     @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false)
+    @Column(name = "creation_date", insertable = false, updatable = false)
     private Date creationDate;
 
     @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false)
+    @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
 
     @Basic(optional = false)
@@ -51,7 +63,7 @@ public class CertificationBodyEntity {
     private Long lastModifiedUser;
 
     @Basic(optional = false)
-    @Column(nullable = false)
+    @Column(name = "deleted", nullable = false, insertable = false)
     private Boolean deleted;
 
     public Long getId() {
@@ -79,19 +91,19 @@ public class CertificationBodyEntity {
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public Long getLastModifiedUser() {
@@ -124,6 +136,14 @@ public class CertificationBodyEntity {
 
     public void setAcbCode(final String acbCode) {
         this.acbCode = acbCode;
+    }
+
+    public Boolean getRetired() {
+        return retired;
+    }
+
+    public void setRetired(Boolean retired) {
+        this.retired = retired;
     }
 
 }

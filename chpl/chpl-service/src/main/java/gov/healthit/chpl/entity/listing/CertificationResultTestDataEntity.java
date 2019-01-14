@@ -14,6 +14,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.TestDataEntity;
+import gov.healthit.chpl.util.Util;
 
 @Entity
 @Table(name = "certification_result_test_data")
@@ -35,7 +36,7 @@ public class CertificationResultTestDataEntity {
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "test_data_id", insertable = false, updatable = false)
     private TestDataEntity testData;
-    
+
     @Column(name = "version")
     private String testDataVersion;
 
@@ -91,11 +92,11 @@ public class CertificationResultTestDataEntity {
     protected Long lastModifiedUser;
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Boolean getDeleted() {
@@ -107,11 +108,11 @@ public class CertificationResultTestDataEntity {
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public Long getLastModifiedUser() {

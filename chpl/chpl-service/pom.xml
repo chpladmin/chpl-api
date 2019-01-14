@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
 <project
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-    xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>gov.healthit.chpl</groupId>
@@ -26,16 +27,16 @@
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
-        <!-- Core utilities used by other modules. Define this if you use 
-            Spring Utility APIs (org.springframework.core.*/org.springframework.util.*) -->
+        <!-- Core utilities used by other modules. Define this if you use Spring 
+            Utility APIs (org.springframework.core.*/org.springframework.util.*) -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
             <version>${org.springframework.version}</version>
         </dependency>
-        <!-- Spring MVC for Servlet Environments (depends on spring-core, 
-            spring-beans, spring-context, spring-web) Define this if you use Spring MVC 
-            with a Servlet Container such as Apache Tomcat (org.springframework.web.servlet.*) -->
+        <!-- Spring MVC for Servlet Environments (depends on spring-core, spring-beans, 
+            spring-context, spring-web) Define this if you use Spring MVC with a Servlet 
+            Container such as Apache Tomcat (org.springframework.web.servlet.*) -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
@@ -263,7 +264,12 @@
             <version>2.19.0</version>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.8.1</version>
+        </dependency>
+        
         <!-- for unit/integration testing of the dao calls -->
         <dependency>
             <groupId>gov.healthit.chpl</groupId>
@@ -319,6 +325,7 @@
 
     <build>
         <finalName>chpl-service</finalName>
+        <!-- <pluginManagement> -->
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -344,8 +351,7 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
-                    <!-- add the main class App to the manifest for the created 
-                        jar -->
+                    <!-- add the main class App to the manifest for the created jar -->
                     <archive>
                         <manifest>
                             <mainClass>gov.healthit.chpl.app.App</mainClass>
@@ -433,6 +439,7 @@
                 </executions>
             </plugin>
         </plugins>
+        <!-- </pluginManagement> -->
     </build>
 
     <profiles>
@@ -446,8 +453,7 @@
 
             <build>
                 <plugins>
-                    <!-- this plugin copies the correct resource into the 
-                        jar for the environment -->
+                    <!-- this plugin copies the correct resource into the jar for the environment -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-resources-plugin</artifactId>

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import gov.healthit.chpl.entity.ApiKeyEntity;
+import gov.healthit.chpl.util.Util;
 
 public class ApiKeyDTO implements Serializable {
     private static final long serialVersionUID = 7091753452944248313L;
@@ -84,19 +85,19 @@ public class ApiKeyDTO implements Serializable {
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public Long getLastModifiedUser() {
@@ -116,18 +117,18 @@ public class ApiKeyDTO implements Serializable {
     }
 
     public Date getLastUsedDate() {
-        return lastUsedDate;
+        return Util.getNewDate(lastUsedDate);
     }
 
     public void setLastUsedDate(final Date lastUsedDate) {
-        this.lastUsedDate = lastUsedDate;
+        this.lastUsedDate = Util.getNewDate(lastUsedDate);
     }
 
     public Date getDeleteWarningSentDate() {
-        return deleteWarningSentDate;
+        return Util.getNewDate(deleteWarningSentDate);
     }
 
     public void setDeleteWarningSentDate(final Date deleteWarningSentDate) {
-        this.deleteWarningSentDate = deleteWarningSentDate;
+        this.deleteWarningSentDate = Util.getNewDate(deleteWarningSentDate);
     }
 }

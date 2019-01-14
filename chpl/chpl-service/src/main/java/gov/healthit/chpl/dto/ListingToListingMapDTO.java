@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import gov.healthit.chpl.entity.listing.ListingToListingMapEntity;
+import gov.healthit.chpl.util.Util;
 
 public class ListingToListingMapDTO implements Serializable {
     private static final long serialVersionUID = -1863384989196377585L;
@@ -68,11 +69,11 @@ public class ListingToListingMapDTO implements Serializable {
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Boolean getDeleted() {
@@ -92,11 +93,11 @@ public class ListingToListingMapDTO implements Serializable {
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public Long getLastModifiedUser() {

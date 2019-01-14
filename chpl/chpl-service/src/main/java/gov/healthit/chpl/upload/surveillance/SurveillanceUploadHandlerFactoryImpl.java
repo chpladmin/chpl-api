@@ -10,8 +10,8 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 
 @Service
-public class SurveillanceUploadHandlerFactoryImpl implements SurveillanceUploadHandlerFactory {
-    public static int NUM_FIELDS_2015 = 23;
+public final class SurveillanceUploadHandlerFactoryImpl implements SurveillanceUploadHandlerFactory {
+    public static final int NUM_FIELDS_2015 = 23;
 
     @Autowired
     private SurveillanceUploadHandler handler2015;
@@ -20,7 +20,7 @@ public class SurveillanceUploadHandlerFactoryImpl implements SurveillanceUploadH
     }
 
     @Override
-    public SurveillanceUploadHandler getHandler(CSVRecord heading, List<CSVRecord> survRecords)
+    public SurveillanceUploadHandler getHandler(final CSVRecord heading, final List<CSVRecord> survRecords)
             throws InvalidArgumentsException {
         SurveillanceUploadHandler handler = null;
 

@@ -24,61 +24,63 @@ import gov.healthit.chpl.dto.MacraMeasureDTO;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
+@TestExecutionListeners({
+        DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
+})
 @DatabaseSetup("classpath:data/testData.xml")
 public class MacraMeasureDaoTest extends TestCase {
 
-	@Autowired 
-	private MacraMeasureDAO macraDao;
-	
-	@Rule
+    @Autowired
+    private MacraMeasureDAO macraDao;
+
+    @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
-	
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-	}
 
-	@Test
-	@Transactional
-	public void getAllMeasures() {
-		List<MacraMeasureDTO> results = macraDao.findAll();
-		assertNotNull(results);
-		assertEquals(138, results.size());
-	}
-	
-	@Test
-	@Transactional
-	public void getMeasuresForCertificationCriteriaSingleResult() {
-		List<MacraMeasureDTO> results = macraDao.getByCriteriaNumber("170.315 (a)(1)");
-		assertNotNull(results);
-		assertEquals(6, results.size());
-	}
-	
-	@Test
-	@Transactional
-	public void getMeasuresForCertificationCriteriaMultipleResults() {
-		List<MacraMeasureDTO> results = macraDao.getByCriteriaNumber("170.315 (b)(1)");
-		assertNotNull(results);
-		assertEquals(10, results.size());
-	}
-	
-	@Test
-	@Transactional
-	public void getMeasureForCriteriaAndValue() {
-		MacraMeasureDTO result = macraDao.getByCriteriaNumberAndValue("170.315 (b)(1)", "RT8 EP Stage 3");
-		assertNotNull(result);
-		assertEquals("RT8 EP Stage 3", result.getValue());
-	}
-	
-	@Test
-	@Transactional
-	public void getNoMeasureForCriteriaAndValue() {
-		MacraMeasureDTO result = macraDao.getByCriteriaNumberAndValue("170.315 (b)(1)", "Junk Value");
-		assertNull(result);
-	}
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+    }
+
+    @Test
+    @Transactional
+    public void getAllMeasures() {
+        List<MacraMeasureDTO> results = macraDao.findAll();
+        assertNotNull(results);
+        assertEquals(138, results.size());
+    }
+
+    @Test
+    @Transactional
+    public void getMeasuresForCertificationCriteriaSingleResult() {
+        List<MacraMeasureDTO> results = macraDao.getByCriteriaNumber("170.315 (a)(1)");
+        assertNotNull(results);
+        assertEquals(6, results.size());
+    }
+
+    @Test
+    @Transactional
+    public void getMeasuresForCertificationCriteriaMultipleResults() {
+        List<MacraMeasureDTO> results = macraDao.getByCriteriaNumber("170.315 (b)(1)");
+        assertNotNull(results);
+        assertEquals(10, results.size());
+    }
+
+    @Test
+    @Transactional
+    public void getMeasureForCriteriaAndValue() {
+        MacraMeasureDTO result = macraDao.getByCriteriaNumberAndValue("170.315 (b)(1)", "RT8 EP Stage 3");
+        assertNotNull(result);
+        assertEquals("RT8 EP Stage 3", result.getValue());
+    }
+
+    @Test
+    @Transactional
+    public void getNoMeasureForCriteriaAndValue() {
+        MacraMeasureDTO result = macraDao.getByCriteriaNumberAndValue("170.315 (b)(1)", "Junk Value");
+        assertNull(result);
+    }
 }

@@ -39,7 +39,7 @@ public class ChplNumberReviewer implements Reviewer {
     @Autowired private CertificationEditionDAO certEditionDao;
     @Autowired private ChplProductNumberUtil chplProductNumberUtil;
     @Autowired private ErrorMessageUtil msgUtil;
-    
+
     /**
      * Looks at the format of the CHPL Product Number
      * Makes sure each part of the identifier is correctly formatted and is the correct value.
@@ -79,7 +79,7 @@ public class ChplNumberReviewer implements Reviewer {
         } catch (IndexOutOfBoundsException e) {
             listing.getErrorMessages().add(msgUtil.getMessage("atl.notFound"));
         }
-        
+
         try {
             CertificationEditionDTO certificationEdition = certEditionDao.getById(listing.getCertificationEditionId());
             if (("2014".equals(certificationEdition.getYear()) && !"14".equals(editionCode))
@@ -101,10 +101,10 @@ public class ChplNumberReviewer implements Reviewer {
                 } else {
                     TestingLabDTO testingLab = atlDao.getByName(testingLabs.get(0).getTestingLabName());
                     if ("99".equals(atlCode)) {
-                        listing.getWarningMessages()
+                        listing.getErrorMessages()
                         .add(msgUtil.getMessage("atl.shouldNotBe99"));
                     } else if (!testingLab.getTestingLabCode().equals(atlCode)) {
-                        listing.getWarningMessages()
+                        listing.getErrorMessages()
                         .add(msgUtil.getMessage("atl.codeMismatch", testingLab.getName(), atlCode));
                     }
                 }
@@ -212,7 +212,7 @@ public class ChplNumberReviewer implements Reviewer {
 
         if (!validateAdditionalSoftwareCodeCharacters(listing.getUniqueId())) {
             listing.getErrorMessages()
-            .add(msgUtil.getMessage("listing.badAdditionalSoftwareCodeChars", 
+            .add(msgUtil.getMessage("listing.badAdditionalSoftwareCodeChars",
                     CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_LENGTH));
         } else {
             if (additionalSoftwareCode.equals("0")) {
@@ -242,7 +242,7 @@ public class ChplNumberReviewer implements Reviewer {
 
         if (!validateCertifiedDateCodeCharacters(listing.getUniqueId())) {
             listing.getErrorMessages()
-            .add(msgUtil.getMessage("listing.badCertifiedDateCodeChars", 
+            .add(msgUtil.getMessage("listing.badCertifiedDateCodeChars",
                     CertifiedProductDTO.CERTIFIED_DATE_CODE_LENGTH));
         }
         SimpleDateFormat idDateFormat = new SimpleDateFormat("yyMMdd");
@@ -258,7 +258,7 @@ public class ChplNumberReviewer implements Reviewer {
             .add("Could not parse the certification date part of the product id: " + certifiedDateCode);
         }
     }
-    
+
     private boolean validateUniqueId(final String chplProductNumber) {
         try {
             CertifiedProductDetailsDTO dup = cpDao.getByChplUniqueId(chplProductNumber);

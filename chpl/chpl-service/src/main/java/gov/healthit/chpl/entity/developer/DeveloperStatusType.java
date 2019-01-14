@@ -7,11 +7,11 @@ public enum DeveloperStatusType {
 
     private String name;
 
-    private DeveloperStatusType() {
+    DeveloperStatusType() {
 
     }
 
-    private DeveloperStatusType(String name) {
+    DeveloperStatusType(String name) {
         this.name = name;
     }
 

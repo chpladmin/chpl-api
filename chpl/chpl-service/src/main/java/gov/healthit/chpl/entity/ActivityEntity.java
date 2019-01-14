@@ -23,51 +23,52 @@ import org.hibernate.annotations.FetchMode;
 import gov.healthit.chpl.auth.entity.UserEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.util.Util;
 
 @Entity
 @Table(name = "activity")
 @NamedNativeQueries({
     @NamedNativeQuery(
             name = "getPublicAnnouncementActivityByDate",
-            query = "SELECT * " + 
-                    "FROM " + BaseDAOImpl.SCHEMA_NAME + ".activity a " + 
-                    "LEFT OUTER JOIN " + BaseDAOImpl.SCHEMA_NAME + ".user u "
-                            + "ON a.last_modified_user = u.user_id " + 
-                    "WHERE a.activity_object_concept_id = :conceptId " + 
-                    "AND a.original_data IS NOT NULL AND cast(a.original_data as json)->>'isPublic'= 'true' " + 
-                    "AND a.new_data IS NOT NULL AND cast(a.new_data as json)->>'isPublic' = 'true' " +
-                    "AND (a.activity_date >= :startDate) " +
-                    "AND (a.activity_date <= :endDate)",
+            query = "SELECT * "
+                    + "FROM " + BaseDAOImpl.SCHEMA_NAME + ".activity a "
+                    + "LEFT OUTER JOIN " + BaseDAOImpl.SCHEMA_NAME + ".user u "
+                    + "ON a.last_modified_user = u.user_id "
+                    + "WHERE a.activity_object_concept_id = :conceptId "
+                    + "AND a.original_data IS NOT NULL AND cast(a.original_data as json)->>'isPublic'= 'true' "
+                    + "AND a.new_data IS NOT NULL AND cast(a.new_data as json)->>'isPublic' = 'true' "
+                    + "AND (a.activity_date >= :startDate) "
+                    + "AND (a.activity_date <= :endDate)",
                     resultClass = ActivityEntity.class
             ),
     @NamedNativeQuery(
             name = "getPublicAnnouncementActivityByIdAndDate",
-            query = "SELECT * " + 
-                    "FROM " + BaseDAOImpl.SCHEMA_NAME + ".activity a " + 
-                    "LEFT OUTER JOIN " + BaseDAOImpl.SCHEMA_NAME + ".user u "
-                            + "ON a.last_modified_user = u.user_id " + 
-                    "WHERE a.activity_object_id = :announcementId " +
-                    "AND a.activity_object_concept_id = :conceptId " + 
-                    "AND a.original_data IS NOT NULL AND cast(a.original_data as json)->>'isPublic'= 'true' " + 
-                    "AND a.new_data IS NOT NULL AND cast(a.new_data as json)->>'isPublic' = 'true' " +
-                    "AND (a.activity_date >= :startDate) " +
-                    "AND (a.activity_date <= :endDate)",
+            query = "SELECT * "
+                    + "FROM " + BaseDAOImpl.SCHEMA_NAME + ".activity a "
+                    + "LEFT OUTER JOIN " + BaseDAOImpl.SCHEMA_NAME + ".user u "
+                    + "ON a.last_modified_user = u.user_id "
+                    + "WHERE a.activity_object_id = :announcementId "
+                    + "AND a.activity_object_concept_id = :conceptId "
+                    + "AND a.original_data IS NOT NULL AND cast(a.original_data as json)->>'isPublic'= 'true' "
+                    + "AND a.new_data IS NOT NULL AND cast(a.new_data as json)->>'isPublic' = 'true' "
+                    + "AND (a.activity_date >= :startDate) "
+                    + "AND (a.activity_date <= :endDate)",
                     resultClass = ActivityEntity.class
             ),
     @NamedNativeQuery(
             name = "getPendingListingActivityByAcbIdsAndDate",
-            query = "SELECT * " + 
-                    "FROM " + BaseDAOImpl.SCHEMA_NAME + ".activity a " +
-                    "LEFT OUTER JOIN " + BaseDAOImpl.SCHEMA_NAME + ".user u " +
-                        "ON a.last_modified_user = u.user_id " +
-                    "WHERE a.activity_object_concept_id = :conceptId "  +
-                    "AND ( " +
-                        "cast(a.original_data as json)->>'certificationBodyId' IN (:acbIds) " +
-                        "OR cast(a.new_data as json)->>'certificationBodyId' IN (:acbIds) " + 
-                     ")" +
-                     "AND (a.activity_date >= :startDate) " +
-                     "AND (a.activity_date <= :endDate)",
-                     resultClass = ActivityEntity.class
+            query = "SELECT * "
+                    + "FROM " + BaseDAOImpl.SCHEMA_NAME + ".activity a "
+                    + "LEFT OUTER JOIN " + BaseDAOImpl.SCHEMA_NAME + ".user u "
+                    + "ON a.last_modified_user = u.user_id "
+                    + "WHERE a.activity_object_concept_id = :conceptId "
+                    + "AND ( "
+                    + "cast(a.original_data as json)->>'certificationBodyId' IN (:acbIds) "
+                    + "OR cast(a.new_data as json)->>'certificationBodyId' IN (:acbIds) "
+                    + ")"
+                    + "AND (a.activity_date >= :startDate) "
+                    + "AND (a.activity_date <= :endDate)",
+                    resultClass = ActivityEntity.class
             )
 })
 public class ActivityEntity {
@@ -143,11 +144,11 @@ public class ActivityEntity {
     }
 
     public Date getActivityDate() {
-        return activityDate;
+        return Util.getNewDate(activityDate);
     }
 
     public void setActivityDate(final Date activityDate) {
-        this.activityDate = activityDate;
+        this.activityDate = Util.getNewDate(activityDate);
     }
 
     public Long getActivityObjectId() {
@@ -193,19 +194,19 @@ public class ActivityEntity {
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public Long getLastModifiedUser() {

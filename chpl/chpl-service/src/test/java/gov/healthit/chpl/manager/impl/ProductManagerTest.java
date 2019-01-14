@@ -315,7 +315,7 @@ public class ProductManagerTest extends TestCase {
             productManager.update(product);
         } catch (Exception ex) {
             fail("could not update product!");
-            System.out.println(ex.getStackTrace());
+            ex.printStackTrace();
         }
 
         try {
@@ -324,7 +324,7 @@ public class ProductManagerTest extends TestCase {
             assertTrue(updatedProduct.getOwnerHistory() == null || updatedProduct.getOwnerHistory().size() == 0);
         } catch (Exception ex) {
             fail("could not find product!");
-            System.out.println(ex.getStackTrace());
+            ex.printStackTrace();
         }
         SecurityContextHolder.getContext().setAuthentication(null);
     }
@@ -458,7 +458,7 @@ public class ProductManagerTest extends TestCase {
     @Transactional
     @Rollback
     public void testProductSplitFailsWithSuspendedDeveloper()
-            throws EntityRetrievalException, EntityCreationException, 
+            throws EntityRetrievalException, EntityCreationException,
             JsonProcessingException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         DeveloperDTO developer = developerManager.getById(-1L);

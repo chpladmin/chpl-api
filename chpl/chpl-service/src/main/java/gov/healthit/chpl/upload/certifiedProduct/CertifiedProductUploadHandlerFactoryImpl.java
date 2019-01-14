@@ -22,7 +22,7 @@ import gov.healthit.chpl.dto.UploadTemplateVersionDTO;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 
 @Service
-public class CertifiedProductUploadHandlerFactoryImpl implements CertifiedProductUploadHandlerFactory {
+public final class CertifiedProductUploadHandlerFactoryImpl implements CertifiedProductUploadHandlerFactory {
     @Autowired
     private MessageSource messageSource;
     @Autowired
@@ -47,46 +47,45 @@ public class CertifiedProductUploadHandlerFactoryImpl implements CertifiedProduc
     }
 
     @Override
-    public CertifiedProductUploadHandler getHandler(CSVRecord heading, List<CSVRecord> cpRecords)
+    public CertifiedProductUploadHandler getHandler(final CSVRecord heading, final List<CSVRecord> cpRecords)
             throws InvalidArgumentsException {
-        if(heading == null) {
+        if (heading == null) {
             String msg = String
                     .format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.upload.badHeader"),
                             LocaleContextHolder.getLocale()), "null");
             throw new InvalidArgumentsException(msg);
         }
-        
+
         //write out heading record as csv string
         //trim each column value
         List<String> trimmedHeaderVals = new ArrayList<String>(heading.size());
-        for(int i = 0; i < heading.size(); i++) {
+        for (int i = 0; i < heading.size(); i++) {
             String headerVal = heading.get(i).trim();
             trimmedHeaderVals.add(headerVal);
         }
-        
+
         //it is common for a bunch of extra blank columns to get put at the end
         //of an xls/csv file without the user knowing, so delete any that are at the end
         //use a list iterator to go from the end of the list to tbe beginning
-        //deleting blank columns from the end until we come to the first one that's 
+        //deleting blank columns from the end until we come to the first one that's
         //not blank, they we won't delete anymore
         ListIterator<String> headerValIter = trimmedHeaderVals.listIterator(trimmedHeaderVals.size());
         boolean foundLastColumnWithText = false;
-        while(headerValIter.hasPrevious()) {
+        while (headerValIter.hasPrevious()) {
             String lastItem = headerValIter.previous();
-            if(!foundLastColumnWithText) {
-                if(StringUtils.isEmpty(lastItem)) {
+            if (!foundLastColumnWithText) {
+                if (StringUtils.isEmpty(lastItem)) {
                     headerValIter.remove();
                 } else {
                     foundLastColumnWithText = true;
                 }
             }
         }
-        
+
         StringBuffer buf = new StringBuffer();
-        
         try (CSVPrinter writer = new CSVPrinter(buf, CSVFormat.EXCEL.withRecordSeparator(""))) {
-            //adding a blank char as the record separator prevents an \r\n char 
-            //from getting appended to the end of the string (\r\n at the end 
+            //adding a blank char as the record separator prevents an \r\n char
+            //from getting appended to the end of the string (\r\n at the end
             //would not match any of the options in the db)
             writer.printRecord(trimmedHeaderVals);
         } catch (IOException ex) {
@@ -94,7 +93,7 @@ public class CertifiedProductUploadHandlerFactoryImpl implements CertifiedProduc
                     .format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.upload.badHeader"),
                             LocaleContextHolder.getLocale()), "a bad header value");
             throw new InvalidArgumentsException(msg);
-        } 
+        }
 
         String trimmedHeadingStr = buf.toString();
         if (trimmedHeadingStr == null || StringUtils.isEmpty(heading.toString())) {
@@ -134,9 +133,11 @@ public class CertifiedProductUploadHandlerFactoryImpl implements CertifiedProduc
             handler = handler2015Version3;
         }
 
-        handler.setRecord(cpRecords);
-        handler.setHeading(heading);
-        handler.setUploadTemplateVersion(templateVersion);
+        if (handler != null)  {
+            handler.setRecord(cpRecords);
+            handler.setHeading(heading);
+            handler.setUploadTemplateVersion(templateVersion);
+        }
         return handler;
     }
 }

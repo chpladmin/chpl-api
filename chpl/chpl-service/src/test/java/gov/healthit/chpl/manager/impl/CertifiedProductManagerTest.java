@@ -555,7 +555,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Test
     @Transactional(readOnly = false)
     @Rollback
-    public void testUpdateQmsModification() 
+    public void testUpdateQmsModification()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -635,7 +635,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Test
     @Transactional(readOnly = false)
     @Rollback
-    public void testAddNonExistingTargetedUser() throws EntityRetrievalException, 
+    public void testAddNonExistingTargetedUser() throws EntityRetrievalException,
     EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
@@ -774,7 +774,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Test
     @Transactional(readOnly = false)
     @Rollback
-    public void testDeleteAccessibilityStandard() 
+    public void testDeleteAccessibilityStandard()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -841,8 +841,8 @@ public class CertifiedProductManagerTest extends TestCase {
         assertEquals(origMuuCount + 1, updatedListing.getMeaningfulUseUserHistory().size());
         boolean foundAddedMuu = false;
         for (MeaningfulUseUser muu : updatedListing.getMeaningfulUseUserHistory()) {
-            if (muu.getMuuCount().longValue() == newMuuCount.longValue() && 
-                    muu.getMuuDate().longValue() == now.longValue()) {
+            if (muu.getMuuCount().longValue() == newMuuCount.longValue()
+                    && muu.getMuuDate().longValue() == now.longValue()) {
                 foundAddedMuu = true;
             }
         }
@@ -896,7 +896,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Test
     @Transactional(readOnly = false)
     @Rollback
-    public void testUpdateCertificationResultSuccess() 
+    public void testUpdateCertificationResultSuccess()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -930,13 +930,13 @@ public class CertifiedProductManagerTest extends TestCase {
     }
 
     /*********************
-     * Certification Result additional software tests
+     * Certification Result additional software tests.
      * *************************/
 
     @Test
     @Transactional(readOnly = false)
     @Rollback
-    public void testAddCertificationResultAdditionalSoftware() 
+    public void testAddCertificationResultAdditionalSoftware()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -1168,13 +1168,13 @@ public class CertifiedProductManagerTest extends TestCase {
     }
 
     /*********************
-     * Certification Result macra measure tests
+     * Certification Result macra measure tests.
      * *************************/
 
     @Test
     @Transactional(readOnly = false)
     @Rollback
-    public void testAddCertificationResultMacraMeasure() 
+    public void testAddCertificationResultMacraMeasure()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -1260,13 +1260,13 @@ public class CertifiedProductManagerTest extends TestCase {
     }
 
     /*********************
-     * Certification Result UCD process tests
+     * Certification Result UCD process tests.
      * *************************/
 
     @Test
     @Transactional(readOnly = false)
     @Rollback
-    public void testAddCertificationResultUcdProcess() 
+    public void testAddCertificationResultUcdProcess()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -1301,7 +1301,7 @@ public class CertifiedProductManagerTest extends TestCase {
 
         UcdProcess ucd = updatedListing.getSed().getUcdProcesses().get(0);
         assertNotNull(ucd.getCriteria());
-        assertEquals(1, ucd.getCriteria().size());
+        assertEquals(2, ucd.getCriteria().size());
     }
 
     @Test
@@ -1397,13 +1397,13 @@ public class CertifiedProductManagerTest extends TestCase {
     }
 
     /*********************
-     * Certification Result test standard tests
+     * Certification Result test standard tests.
      * *************************/
 
     @Test
     @Transactional(readOnly = false)
     @Rollback
-    public void testAddExistingCertificationResultTestStandard() 
+    public void testAddExistingCertificationResultTestStandard()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -2035,13 +2035,13 @@ public class CertifiedProductManagerTest extends TestCase {
     }
 
     /*********************
-     * CQM tests
+     * CQM tests.
      * *************************/
 
     @Test
     @Transactional(readOnly = false)
     @Rollback
-    public void testAddCqm() throws EntityRetrievalException, EntityCreationException, 
+    public void testAddCqm() throws EntityRetrievalException, EntityCreationException,
     JsonProcessingException, InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 

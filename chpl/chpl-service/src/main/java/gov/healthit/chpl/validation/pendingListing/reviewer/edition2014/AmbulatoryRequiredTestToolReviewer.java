@@ -16,17 +16,23 @@ public class AmbulatoryRequiredTestToolReviewer implements Reviewer {
             "170.314 (g)(1)", "170.314 (g)(2)", "170.314 (f)(3)"
     };
 
-    @Autowired private ErrorMessageUtil msgUtil;
-    @Autowired private CertificationResultRules certRules;
+    private ErrorMessageUtil msgUtil;
+    private CertificationResultRules certRules;
+
+    @Autowired
+    public AmbulatoryRequiredTestToolReviewer(ErrorMessageUtil msgUtil, CertificationResultRules certRules) {
+        this.msgUtil = msgUtil;
+        this.certRules = certRules;
+    }
 
     @Override
     public void review(final PendingCertifiedProductDTO listing) {
         //check for test tools
         for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
-            if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria() == Boolean.TRUE) {
+            if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria()) {
                 boolean gapEligibleAndTrue = false;
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP)
-                        && cert.getGap() == Boolean.TRUE) {
+                        && cert.getGap() != null &&  cert.getGap()) {
                     gapEligibleAndTrue = true;
                 }
 

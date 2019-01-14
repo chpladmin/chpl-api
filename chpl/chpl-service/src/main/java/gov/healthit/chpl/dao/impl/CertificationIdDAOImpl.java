@@ -363,7 +363,7 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
                 CertificationIdEntity.class);
 
         query.setParameter("productIds", productIds);
-        query.setParameter("productCount", new Long(productIds.size()));
+        query.setParameter("productCount", Long.valueOf(productIds.size()));
         query.setParameter("year", year);
         result = query.getResultList();
         if (result.size() > 0) {
@@ -379,16 +379,16 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
         Collections.sort(numbers);
 
         // Collect encoded version of all numbers.
-        String numbersString = "";
+        StringBuilder numbersString = new StringBuilder();
         for (Long number : numbers) {
             StringBuffer encodedNumber = new StringBuffer(Long.toString(number, ENCODED_RADIX));
             while (encodedNumber.length() < ENCODED_PADDED_LENGTH) {
                 encodedNumber.insert(0, "0");
             }
-            numbersString += encodedNumber;
+            numbersString.append(encodedNumber);
         }
 
-        return numbersString.toUpperCase();
+        return numbersString.toString().toUpperCase();
     }
 
     private List<CertificationIdAndCertifiedProductEntity> getAllCertificationIdsWithProductsEntities() {

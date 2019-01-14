@@ -1,5 +1,89 @@
 # Release Notes
 
+## Version 20.1.0
+_14 January 2019_
+
+### New Features
+* Change surveillance and sed report filenames to include timestamp when the file was last generated.
+* Update edit and confirm of criteria to remove phantom data
+* Update certain warnings to errors for uploading, editing, and confirming certified products
+* When validating pending listings, check for duplicate values, remove the duplicate value, and provide a warning message that the duplicate was removed
+* Show better error message when user uploads Test Tasks with IDs that are too long
+* Add definition file for the Surveillance - Basic download file
+
+### Bugs Fixed
+* Save "Developer identified targeted users" on upload/confirm
+* Update invalid error and warning messages for upload file
+
+---
+
+## Version 20.0.0
+_17 December 2018_
+
+### Backwards compatibility breaking changes
+* Removed all previously deprecated API endpoints
+* Removed the following endpoints:
+  * /atls/{id}/delete
+  * /atls/{id}/undelete
+  * /acbs/{id}/delete
+  * /acbs/{id}/undelete
+* Remove showDeleted parameter from the following endpoints:
+  * /activity/acbs
+  * /activity/acbs/{id}
+  * /activity/atls
+  * /activity/atls/{id}
+  * /data/search_options
+  * /atls
+  * /acbs
+* Removed space following the colon in the /cache_status response. {"status": "OK"} becomes {"status":"OK"}
+* Removed space following the colon in the /status response. {"status": "OK"} becomes {"status":"OK"}
+* Removed /notifications endpoints.
+
+### New Features
+* Add retired flag to ACBs and ATLs to replace the functionality that previously used the deleted flag.
+* Add Quartz job to require all users to change password on next login
+* Update email notification about potential Developer ban to include:
+  * Reason for status change
+  * Reason for listing change
+* Prevent users from using the following macra measures which are under review: RT13 EH/CAH Stage 3, RT14 EH/CAH Stage 3, RT15 EH/CAH Stage 3 
+
+### Bugs Fixed
+* Do not show error for 2014 listings on upload or edit if they attest to g3, have ICS = true, and do not have any criteria marked as SED.
+* Fix issue with determining whether there is additional software associated with the certified product
+
+---
+
+## Version 19.2.0
+_3 December 2018_
+
+### New Features
+* 2015 Functionality testing is restricted by criteria.
+* Save 'reason' for developer's status change in questionable activivty.
+* Output 'reason' for developer's status change on questionable activity report.
+* When uploading a listing, remove duplicate G1 and G2 macra measures and provide a warning.
+* Implement user ability to reset their password using a unique link
+* Change /cache_status endpoint to report "OK" status only when all pre-loaded caches have completed.
+* Add "user must reset password on next login" workflow
+  * Gives error when user tries to log in and needs to change password
+  * Adds end point to change_expired_password
+  * Update User edit to allow admins to require password change
+* Add API Documentation file upload and download endpoints
+
+---
+
+## Version 19.1.0
+_19 November 2018_
+
+### New Features
+* Update ONC contact information for CHPL API and on user invitation emails.
+* Check various site counts in surveillance to make sure they are reasonable
+* Refresh the listing collection cache on demand when data has changed vs at timed intervals.
+
+### Bug Fixes
+* Fix dependency injection problem that prevented implementing security in the chpl-service classes.
+
+---
+
 ## Version 19.0.0
 _5 November 2018_
 

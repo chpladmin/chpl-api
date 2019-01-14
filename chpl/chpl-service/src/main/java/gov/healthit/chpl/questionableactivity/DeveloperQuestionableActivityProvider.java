@@ -84,6 +84,7 @@ public class DeveloperQuestionableActivityProvider {
          for (DeveloperStatusEventDTO newStatusEvent : addedStatuses) {
              QuestionableActivityDeveloperDTO activity =
                      getQuestionableActivityDeveloper(null, getFormattedStatus(newStatusEvent));
+             activity.setReason(newStatusEvent.getReason());
              statusAddedActivities.add(activity);
          }
         return statusAddedActivities;
@@ -129,6 +130,7 @@ public class DeveloperQuestionableActivityProvider {
                     getQuestionableActivityDeveloper(
                             getFormattedStatus(eventPair.getOrig()),
                             getFormattedStatus(eventPair.getUpdated()));
+            activity.setReason(eventPair.getUpdated().getReason());
             statusEditedActivities.add(activity);
         }
         return statusEditedActivities;

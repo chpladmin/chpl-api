@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import gov.healthit.chpl.dto.PracticeTypeDTO;
+import gov.healthit.chpl.util.Util;
 
 public class PracticeType implements Serializable {
     private static final long serialVersionUID = 8826782928545744059L;
@@ -35,10 +36,10 @@ public class PracticeType implements Serializable {
         this.id = id;
     }
     public final Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
     public final void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
     public final Boolean getDeleted() {
         return deleted;
@@ -52,12 +53,14 @@ public class PracticeType implements Serializable {
     public final void setDescription(final String description) {
         this.description = description;
     }
-    public final Date getLastModifiedDate() {
-        return lastModifiedDate;
+    public Date getLastModifiedDate() {
+        return Util.getNewDate(lastModifiedDate);
     }
-    public final void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
+
     public final Long getLastModifiedUser() {
         return lastModifiedUser;
     }

@@ -109,14 +109,14 @@ extends DownloadableResourceCreatorJob implements InterruptableJob {
     private File getXmlFile() throws IOException {
         File downloadFolder = getDownloadFolder();
         String xmlFilename = getFileName(downloadFolder.getAbsolutePath(),
-                getTimestampFormat().format(new Date()), "xml");
+                getFilenameTimestampFormat().format(new Date()), "xml");
         return getFile(xmlFilename);
     }
 
     private File getCsvFile() throws IOException {
         File downloadFolder = getDownloadFolder();
         String xmlFilename = getFileName(downloadFolder.getAbsolutePath(),
-                getTimestampFormat().format(new Date()), "csv");
+                getFilenameTimestampFormat().format(new Date()), "csv");
         return getFile(xmlFilename);
     }
 

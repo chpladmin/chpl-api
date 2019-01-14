@@ -5,6 +5,12 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Rate limiter object that tracks the number of accesses during
+ * a given time period.
+ * @author blindsey
+ *
+ */
 public class SimpleRateLimiter {
     private Semaphore semaphore;
     private int maxPermits;

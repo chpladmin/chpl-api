@@ -23,9 +23,17 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
  */
 @Component("testToolReviewer")
 public class TestToolReviewer implements Reviewer {
-    @Autowired private TestToolDAO testToolDao;
-    @Autowired private ErrorMessageUtil msgUtil;
-    @Autowired private ChplProductNumberUtil productNumUtil;
+    private TestToolDAO testToolDao;
+    private ErrorMessageUtil msgUtil;
+    private ChplProductNumberUtil productNumUtil;
+
+    @Autowired
+    public TestToolReviewer(TestToolDAO testToolDAO, ErrorMessageUtil msgUtil,
+            ChplProductNumberUtil chplProductNumberUtil) {
+        this.testToolDao = testToolDAO;
+        this.msgUtil = msgUtil;
+        this.productNumUtil = chplProductNumberUtil;
+    }
 
     @Override
     public void review(final CertifiedProductSearchDetails listing) {
@@ -51,9 +59,9 @@ public class TestToolReviewer implements Reviewer {
                             TestToolDTO tt = testToolDao.getByName(testTool.getTestToolName());
                             if (tt != null) {
                                 if (tt.isRetired() && icsCodeInteger != null && icsCodeInteger.intValue() == 0) {
-                                    if (productNumUtil.hasIcsConflict(listing.getChplProductNumber(), 
+                                    if (productNumUtil.hasIcsConflict(listing.getChplProductNumber(),
                                             (listing.getIcs() == null ? Boolean.FALSE : listing.getIcs().getInherits()))) {
-                                        listing.getWarningMessages().add(
+                                        listing.getErrorMessages().add(
                                                 msgUtil.getMessage("listing.criteria.retiredTestToolNotAllowed",
                                                         testTool.getTestToolName(), cert.getNumber()));
                                     } else {

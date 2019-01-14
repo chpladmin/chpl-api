@@ -26,21 +26,17 @@ import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
-import gov.healthit.chpl.dto.TargetedUserDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.entity.AddressEntity;
 import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
-import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTargetedUserEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTestingLabMapEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap;
 
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 @Component("certifiedProductHandler")
 public abstract class CertifiedProductHandler extends CertifiedProductUploadHandlerImpl {
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductHandler.class);
@@ -53,16 +49,18 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
     @Autowired
     MessageSource messageSource;
 
+    @Override
     public abstract PendingCertifiedProductEntity handle() throws InvalidArgumentsException;
     public abstract TemplateColumnIndexMap getColumnIndexMap();
     public abstract String[] getCriteriaNames();
 
-    public String getErrorMessage(String errorField){
+    public String getErrorMessage(String errorField) {
         return String.format(
                 messageSource.getMessage(new DefaultMessageSourceResolvable(errorField),
                         LocaleContextHolder.getLocale()));
     }
 
+    @Override
     public Long getDefaultStatusId() {
         CertificationStatusDTO statusDto = statusDao.getByStatusName("Pending");
         if (statusDto != null) {
@@ -182,7 +180,7 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         }
         CertificationEditionDTO foundEdition = editionDao.getByYear(certificaitonYear);
         if (foundEdition != null) {
-            pendingCertifiedProduct.setCertificationEditionId(new Long(foundEdition.getId()));
+            pendingCertifiedProduct.setCertificationEditionId(foundEdition.getId());
         }
     }
 
@@ -253,7 +251,7 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         String hasQmsStr = record.get(getColumnIndexMap().getQmsStartIndex());
         Boolean hasQms = asBoolean(hasQmsStr);
         if (hasQms != null) {
-            pendingCertifiedProduct.setHasQms(hasQms.booleanValue());
+            pendingCertifiedProduct.setHasQms(hasQms);
         }
     }
 
@@ -282,6 +280,7 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         }
     }
 
+    @Override
     public List<CQMCriterion> getApplicableCqmCriterion(final List<CQMCriterion> allCqms) {
         List<CQMCriterion> criteria = new ArrayList<CQMCriterion>();
         for (CQMCriterion criterion : allCqms) {
@@ -304,7 +303,7 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
      */
     protected PendingCertificationResultEntity getCertificationResult(final String criterionName,
             final String columnValue)
-            throws InvalidArgumentsException {
+                    throws InvalidArgumentsException {
         CertificationCriterionEntity certEntity = certDao.getEntityByName(criterionName);
         if (certEntity == null) {
             throw new InvalidArgumentsException("Could not find a certification criterion matching " + criterionName);
@@ -316,15 +315,15 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         return result;
     }
 
-    protected Boolean asBooleanEmpty(String value) {
-        value = value.trim();
-
-        if (StringUtils.isEmpty(value)) {
-            return null;
-        }
-
-        return parseBoolean(value);
-    }
+    //    protected Boolean asBooleanEmpty(String value) {
+    //        value = value.trim();
+    //
+    //        if (StringUtils.isEmpty(value)) {
+    //            return null;
+    //        }
+    //
+    //        return parseBoolean(value);
+    //    }
 
     protected Boolean asBoolean(String value) {
         value = value.trim();

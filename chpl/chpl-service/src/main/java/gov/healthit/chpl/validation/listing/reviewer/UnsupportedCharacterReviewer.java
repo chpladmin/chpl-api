@@ -24,9 +24,9 @@ import gov.healthit.chpl.util.ValidationUtils;
 
 @Component("unsupportedCharacterReviewer")
 public class UnsupportedCharacterReviewer implements Reviewer {
-    
+
     @Autowired ErrorMessageUtil msgUtil;
-    
+
     public void review(CertifiedProductSearchDetails listing) {
         //check all string fields at the listing level
         addListingWarningIfNotValid(listing, listing.getAcbCertificationId(),
@@ -184,19 +184,20 @@ public class UnsupportedCharacterReviewer implements Reviewer {
                                 "Test Task Description '" + task.getDescription() + "'");
                         addListingWarningIfNotValid(listing, task.getTaskRatingScale(),
                                 "Test Task Rating Scale '" + task.getTaskRatingScale() + "'");
-                    }
-                    if (task.getTestParticipants() != null) {
-                        for (TestParticipant participant : task.getTestParticipants()) {
-                            if (participant != null) {
-                                //not checking age range or education level because they have to map
-                                //to existing values. also not checking anything converted to a number
-                                addListingWarningIfNotValid(listing, participant.getAssistiveTechnologyNeeds(),
-                                        "Participant Assistive Technology Needs '"
-                                                + participant.getAssistiveTechnologyNeeds() + "'");
-                                addListingWarningIfNotValid(listing, participant.getGender(),
-                                        "Participant Gender '" + participant.getGender() + "'");
-                                addListingWarningIfNotValid(listing, participant.getOccupation(),
-                                        "Participant Occupation '" + participant.getOccupation() + "'");
+
+                        if (task.getTestParticipants() != null) {
+                            for (TestParticipant participant : task.getTestParticipants()) {
+                                if (participant != null) {
+                                    //not checking age range or education level because they have to map
+                                    //to existing values. also not checking anything converted to a number
+                                    addListingWarningIfNotValid(listing, participant.getAssistiveTechnologyNeeds(),
+                                            "Participant Assistive Technology Needs '"
+                                                    + participant.getAssistiveTechnologyNeeds() + "'");
+                                    addListingWarningIfNotValid(listing, participant.getGender(),
+                                            "Participant Gender '" + participant.getGender() + "'");
+                                    addListingWarningIfNotValid(listing, participant.getOccupation(),
+                                            "Participant Occupation '" + participant.getOccupation() + "'");
+                                }
                             }
                         }
                     }

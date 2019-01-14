@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,10 +14,7 @@ public final class Util {
     private static final int BASE_16 = 16;
     private static final String dateFormat = "yyyy-MM-dd";
     private static final String timestampFormat = "yyyyMMdd_HHmmss";
-    
-    public static SimpleDateFormat dateFormatter = new SimpleDateFormat(dateFormat);
-    public static SimpleDateFormat timestampFormatter = new SimpleDateFormat(timestampFormat);
-    
+
     private Util() {
 
     }
@@ -42,13 +40,13 @@ public final class Util {
         }
         return md5;
     }
-    
+
     public static SimpleDateFormat getDateFormatter() {
-        return Util.dateFormatter;
+        return new SimpleDateFormat(dateFormat);
     }
-    
+
     public static SimpleDateFormat getTimestampFormatter() {
-        return Util.timestampFormatter;
+        return new SimpleDateFormat(timestampFormat);
     }
 
     public static String coerceToCriterionNumberFormat(final String input) {
@@ -90,5 +88,13 @@ public final class Util {
         }
 
         return input;
+    }
+
+    public static Date getNewDate(Date orig) {
+        if (orig != null) {
+            return new Date(orig.getTime());
+        } else {
+            return null;
+        }
     }
 }

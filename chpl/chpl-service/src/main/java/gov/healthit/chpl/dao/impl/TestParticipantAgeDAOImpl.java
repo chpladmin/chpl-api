@@ -24,7 +24,7 @@ public class TestParticipantAgeDAOImpl extends BaseDAOImpl implements TestPartic
         return dto;
 
     }
-    
+
     private TestParticipantAgeEntity getEntityById(Long id) {
 
         TestParticipantAgeEntity entity = null;

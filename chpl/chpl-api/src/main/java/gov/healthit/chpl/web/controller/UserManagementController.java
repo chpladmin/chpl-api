@@ -18,6 +18,7 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.util.StringUtils;
@@ -89,7 +90,7 @@ public class UserManagementController {
 
     @Autowired
     private Environment env;
-    
+
     @Autowired
     private ErrorMessageUtil errorMessageUtil;
 
@@ -107,7 +108,7 @@ public class UserManagementController {
                     + "the following: 1) /invite 2) /create or /authorize 3) /confirm ")
     @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
-    public @ResponseBody User createUserDeprecated(@RequestBody final CreateUserFromInvitationRequest userInfo)
+    public @ResponseBody User createUser(@RequestBody final CreateUserFromInvitationRequest userInfo)
             throws ValidationException, EntityRetrievalException, InvalidArgumentsException, UserRetrievalException,
             UserCreationException, MessagingException, JsonProcessingException, EntityCreationException {
 
@@ -141,7 +142,8 @@ public class UserManagementController {
         String htmlMessage = "<p>Thank you for setting up your administrator account on ONC's CHPL. "
                 + "Please click the link below to activate your account: <br/>" + env.getProperty("chplUrlBegin")
                 + "/#/registration/confirm-user/" + invitation.getConfirmToken() + "</p>"
-                + "<p>If you have any questions, please contact the ONC CHPL Team at onc_chpl@hhs.gov.</p>"
+                + "<p>If you have any issues completing the registration, "
+                + "please contact the ONC CHPL Team at <a href=\"mailto:onc_chpl@hhs.gov\">onc_chpl@hhs.gov</a>.</p>"
                 + "<p>The CHPL Team</p>";
 
         String[] toEmails = {
@@ -225,19 +227,6 @@ public class UserManagementController {
                 createdUser, createdUser, createdUser.getId());
 
         return new User(createdUser);
-    }
-
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED.  Update an existing user account with new permissions.",
-    notes = "Adds all permissions from the invitation identified by the user key "
-            + "to the appropriate existing user account." + "The correct order to call invitation requests is "
-            + "the following: 1) /invite 2) /create or /authorize 3) /confirm ")
-    @RequestMapping(value = "/authorize", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
-    public String authorizeUserDeprecated(@RequestBody final AuthorizeCredentials credentials)
-            throws InvalidArgumentsException, JWTCreationException, UserRetrievalException, EntityRetrievalException {
-
-        return authorize(credentials);
     }
 
     @ApiOperation(value = "Update an existing user account with new permissions.",
@@ -337,7 +326,9 @@ public class UserManagementController {
                 + "which will allow you to manage certified product listings on the CHPL. "
                 + "Please click the link below to create or update your account: <br/>"
                 + env.getProperty("chplUrlBegin") + "/#/registration/create-user/" + createdInvite.getInviteToken()
-                + "</p>" + "<p>If you have any questions, please contact the ONC CHPL Team at onc_chpl@hhs.gov.</p>"
+                + "</p>"
+                + "<p>If you have any issues completing the registration, "
+                + "please contact the ONC CHPL Team at <a href=\"mailto:onc_chpl@hhs.gov\">onc_chpl@hhs.gov</a>.</p>"
                 + "<p>Take care,<br/> " + "The CHPL Team</p>";
 
         String[] toEmails = {
@@ -352,17 +343,6 @@ public class UserManagementController {
 
         UserInvitation result = new UserInvitation(createdInvite);
         return result;
-    }
-
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED.  Modify user information.", notes = "")
-    @RequestMapping(value = "/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
-    public User updateUserDetailsDeprecated(@RequestBody final User userInfo)
-            throws UserRetrievalException, UserPermissionRetrievalException, JsonProcessingException,
-            EntityCreationException, EntityRetrievalException {
-
-        return update(userInfo);
     }
 
     @ApiOperation(value = "Modify user information.", notes = "")
@@ -391,19 +371,6 @@ public class UserManagementController {
                 updated);
 
         return new User(updated);
-    }
-
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED.  Delete a user.",
-    notes = "Deletes a user account and all associated authorities on ACBs and ATLs. "
-            + "The logged in user must have ROLE_ADMIN.")
-    @RequestMapping(value = "/{userId}/delete", method = RequestMethod.POST,
-    produces = "application/json; charset=utf-8")
-    public String deleteUserDeprecated(@PathVariable("userId") final Long userId)
-            throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException,
-            JsonProcessingException, EntityCreationException, EntityRetrievalException {
-
-        return delete(userId);
     }
 
     @ApiOperation(value = "Delete a user.",
@@ -442,20 +409,6 @@ public class UserManagementController {
                 toDelete, null);
 
         return "{\"deletedUser\" : true}";
-    }
-
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED.  Give additional roles to a user.",
-    notes = "Users may be given ROLE_ADMIN, ROLE_ACB, "
-            + "ROLE_ATL, or ROLE_ONC_STAFF roles within the system.")
-    @RequestMapping(value = "/grant_role", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
-    public String grantUserRoleDeprecated(@RequestBody final GrantRoleJSONObject grantRoleObj)
-            throws InvalidArgumentsException, UserRetrievalException, UserManagementException,
-            UserPermissionRetrievalException, JsonProcessingException, EntityCreationException,
-            EntityRetrievalException {
-
-        return grant(grantRoleObj);
     }
 
     @ApiOperation(value = "Give additional roles to a user.",
@@ -505,21 +458,6 @@ public class UserManagementController {
         return "{\"roleAdded\" : true}";
     }
 
-
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED.  Remove roles previously granted to a user.",
-    notes = "Users may be given ROLE_ADMIN, ROLE_ACB, "
-            + "ROLE_ATL, or ROLE_ONC_STAFF roles within the system.")
-    @RequestMapping(value = "/revoke_role", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
-    public String revokeUserRoleDeprecated(@RequestBody final GrantRoleJSONObject grantRoleObj)
-            throws InvalidArgumentsException, UserRetrievalException, UserManagementException,
-            UserPermissionRetrievalException, JsonProcessingException, EntityCreationException,
-            EntityRetrievalException {
-
-        return revoke(grantRoleObj);
-    }
-
     @ApiOperation(value = "Remove roles previously granted to a user.",
             notes = "Users may be given ROLE_ADMIN, ROLE_ACB, "
                     + "ROLE_ATL, or ROLE_ONC_STAFF roles within the system.")
@@ -559,7 +497,7 @@ public class UserManagementController {
 
                 // if they were an acb admin then they need to have all ACB
                 // access removed
-                List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
+                List<CertificationBodyDTO> acbs = acbManager.getAllForUser();
                 for (CertificationBodyDTO acb : acbs) {
                     acbManager.deletePermission(acb, new PrincipalSid(user.getSubjectName()),
                             BasePermission.ADMINISTRATION);
@@ -584,8 +522,8 @@ public class UserManagementController {
 
     @ApiOperation(value = "View users of the system.", notes = "Only ROLE_ADMIN will be able to see all users.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @PreAuthorize("isAuthenticated()")
     public @ResponseBody UserListJSONObject getUsers() {
-
         List<UserDTO> userList = userManager.getAll();
         List<UserInfoJSONObject> userInfos = new ArrayList<UserInfoJSONObject>();
 

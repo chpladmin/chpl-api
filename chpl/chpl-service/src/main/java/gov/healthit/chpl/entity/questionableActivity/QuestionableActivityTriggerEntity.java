@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.util.Util;
+
 @Entity
 @Table(name = "questionable_activity_trigger")
 public class QuestionableActivityTriggerEntity {
@@ -77,19 +79,19 @@ public class QuestionableActivityTriggerEntity {
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 }
 

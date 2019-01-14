@@ -7,11 +7,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -29,27 +29,39 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
 public class TestToolReviewerTest {
     private static final String C_3 = "170.315 (c)(3)";
-    private static final String NO_TEST_TOOL_NAME_ERROR = 
+    private static final String NO_TEST_TOOL_NAME_ERROR =
             "There was no test tool name found for certification " + C_3 + ".";
-    private static final String NO_TEST_TOOL_VERSION_ERROR = 
+    private static final String NO_TEST_TOOL_VERSION_ERROR =
             "There was no version found for test tool Bogus Test Tool and certification " + C_3 + ".";
-    private static final String TEST_TOOL_NOT_FOUND_AND_REMOVED_ERROR = 
+    private static final String TEST_TOOL_NOT_FOUND_AND_REMOVED_ERROR =
             "Criteria " + C_3 + " contains an invalid test tool 'Bogus Test Tool'. It has been removed from the pending listing.";
-    private static final String RETIRED_TEST_TOOL_NOT_ALLOWED_ERROR = 
+    private static final String RETIRED_TEST_TOOL_NOT_ALLOWED_ERROR =
             "Test Tool 'Bogus Test Tool' can not be used for criteria '" + C_3
             + "', as it is a retired tool, and this Certified Product does not carry ICS.";
 
-    @Spy private TestToolDAO testToolDao;
-    @Spy private ChplProductNumberUtil productNumberUtil;
-    @Spy private ErrorMessageUtil msgUtil;
-    @Autowired private ListingMockUtil mockUtil;
+    @Autowired
+    private ListingMockUtil mockUtil;
 
-    @InjectMocks
+    @Autowired
+    private MessageSource messageSource;
+
+    @Spy
+    private TestToolDAO testToolDao;
+
+    @Spy
+    private ChplProductNumberUtil productNumberUtil;
+
+    @Spy
+    private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
+
     private TestToolReviewer testToolReviewer;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+
+        testToolReviewer = new TestToolReviewer(testToolDao, msgUtil, productNumberUtil);
+
         Mockito.doReturn(NO_TEST_TOOL_NAME_ERROR)
         .when(msgUtil).getMessage(
                 ArgumentMatchers.eq("listing.criteria.missingTestToolName"), ArgumentMatchers.anyString());
@@ -76,8 +88,8 @@ public class TestToolReviewerTest {
     @Test
     public void testNoTestTools_NoError() {
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
-        for(CertificationResult certResult : listing.getCertificationResults()) {
-            if(certResult.getTestToolsUsed() != null && certResult.getTestToolsUsed().size() > 0) {
+        for (CertificationResult certResult : listing.getCertificationResults()) {
+            if (certResult.getTestToolsUsed() != null && certResult.getTestToolsUsed().size() > 0) {
                 certResult.getTestToolsUsed().clear();
             }
         }
@@ -85,7 +97,7 @@ public class TestToolReviewerTest {
         assertFalse(listing.getErrorMessages().contains(NO_TEST_TOOL_NAME_ERROR));
         assertFalse(listing.getErrorMessages().contains(TEST_TOOL_NOT_FOUND_AND_REMOVED_ERROR));
         assertFalse(listing.getErrorMessages().contains(RETIRED_TEST_TOOL_NOT_ALLOWED_ERROR));
-        assertFalse(listing.getErrorMessages().contains(NO_TEST_TOOL_VERSION_ERROR));                
+        assertFalse(listing.getErrorMessages().contains(NO_TEST_TOOL_VERSION_ERROR));
     }
 
     @Test
@@ -229,20 +241,20 @@ public class TestToolReviewerTest {
         testToolReviewer.review(listing);
         assertFalse(listing.getErrorMessages().contains(NO_TEST_TOOL_NAME_ERROR));
         assertFalse(listing.getErrorMessages().contains(TEST_TOOL_NOT_FOUND_AND_REMOVED_ERROR));
-        assertFalse(listing.getErrorMessages().contains(RETIRED_TEST_TOOL_NOT_ALLOWED_ERROR));
-        assertTrue(listing.getWarningMessages().contains(RETIRED_TEST_TOOL_NOT_ALLOWED_ERROR));
+        assertTrue(listing.getErrorMessages().contains(RETIRED_TEST_TOOL_NOT_ALLOWED_ERROR));
+        assertFalse(listing.getWarningMessages().contains(RETIRED_TEST_TOOL_NOT_ALLOWED_ERROR));
     }
 
     @Test
     public void testListingWithIcsAndRetiredTestTool_HasNoError() {
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
-        String updatedListingId = 
+        String updatedListingId =
                 mockUtil.getChangedListingId(listing.getChplProductNumber(), CertifiedProductDTO.ICS_CODE_INDEX, "01");
         listing.setChplProductNumber(updatedListingId);
         listing.getIcs().setInherits(Boolean.TRUE);
 
-        for(CertificationResult certResult : listing.getCertificationResults()) {
-            if(certResult.getNumber().equals(C_3)) {
+        for (CertificationResult certResult : listing.getCertificationResults()) {
+            if (certResult.getNumber().equals(C_3)) {
                 CertificationResultTestTool crtt = new CertificationResultTestTool();
                 crtt.setId(1L);
                 crtt.setRetired(true);

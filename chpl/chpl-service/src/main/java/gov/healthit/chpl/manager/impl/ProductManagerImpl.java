@@ -237,7 +237,7 @@ public class ProductManagerImpl implements ProductManager {
             List<ProductVersionDTO> newProductVersions)
             throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
         // what ACB does the user have??
-        List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser(true);
+        List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser();
 
         // create the new product and log activity
         // this method checks that the related developer is Active and will

@@ -5,6 +5,7 @@ import java.util.Date;
 
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.entity.listing.CertificationResultAdditionalSoftwareEntity;
+import gov.healthit.chpl.util.Util;
 
 public class CertificationResultAdditionalSoftwareDTO implements Serializable {
     private static final long serialVersionUID = 4034572440468231407L;
@@ -63,11 +64,11 @@ public class CertificationResultAdditionalSoftwareDTO implements Serializable {
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Boolean getDeleted() {

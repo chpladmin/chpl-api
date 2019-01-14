@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.util.Util;
+
 @Entity
 @Table(name = "nonconformity_type_statistics")
 public class NonconformityTypeStatisticsEntity {
@@ -18,15 +20,15 @@ public class NonconformityTypeStatisticsEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-    
+
     @Basic(optional = false)
     @Column(name = "nonconformity_count", nullable = false)
     private Long nonconformityCount;
-    
+
     @Basic(optional = false)
     @Column(name = "nonconformity_type", nullable = false)
     private String nonconformityType;
-    
+
     @Column(name = "deleted")
     private Boolean deleted;
 
@@ -48,27 +50,27 @@ public class NonconformityTypeStatisticsEntity {
     }
 
     public Long getNonconformityCount() {
-		return nonconformityCount;
-	}
+        return nonconformityCount;
+    }
 
-	public void setNonconformityCount(Long nonconformityCount) {
-		this.nonconformityCount = nonconformityCount;
-	}
+    public void setNonconformityCount(Long nonconformityCount) {
+        this.nonconformityCount = nonconformityCount;
+    }
 
-	public String getNonconformityType() {
-		return nonconformityType;
-	}
+    public String getNonconformityType() {
+        return nonconformityType;
+    }
 
-	public void setNonconformityType(String nonconformityType) {
-		this.nonconformityType = nonconformityType;
-	}
+    public void setNonconformityType(String nonconformityType) {
+        this.nonconformityType = nonconformityType;
+    }
 
-	public Date getCreationDate() {
-        return creationDate;
+    public Date getCreationDate() {
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Boolean getDeleted() {
@@ -80,11 +82,11 @@ public class NonconformityTypeStatisticsEntity {
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public Long getLastModifiedUser() {

@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.UnitTestUtil;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
@@ -30,70 +31,57 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class })
-@DatabaseSetup("classpath:data/testData.xml") 
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
+@TestExecutionListeners({
+        DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
+})
+@DatabaseSetup("classpath:data/testData.xml")
 public class CertificationBodyControllerTest {
-	private static JWTAuthenticatedUser adminUser;
-	
-	@Autowired Environment env;
-	
-	@Autowired CertificationBodyController acbController;
-	
-	@Rule
+    private static JWTAuthenticatedUser adminUser;
+
+    @Autowired
+    Environment env;
+
+    @Autowired
+    CertificationBodyController acbController;
+
+    @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
-	
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-		adminUser = new JWTAuthenticatedUser();
-		adminUser.setFullName("Administrator");
-		adminUser.setId(-2L);
-		adminUser.setFriendlyName("Administrator");
-		adminUser.setSubjectName("admin");
-		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
-	}
-	
-	@Transactional
-	@Test(expected=EntityRetrievalException.class)
-	public void testGetAcbByBadId() 
-		throws EntityRetrievalException, IOException, ValidationException {
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		acbController.getAcbById(-100L);
-	}
-	
-	@Transactional
-	@Test(expected=EntityRetrievalException.class)
-	public void testDeleteAcbByBadId()  
-		throws EntityRetrievalException, IOException, ValidationException, EntityCreationException, UserRetrievalException {
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		acbController.deleteAcb(-100L);
-	}
-	
-	@Transactional
-	@Test(expected=EntityRetrievalException.class)
-	public void testUndeleteAcbByBadId()  
-		throws EntityRetrievalException, IOException, ValidationException, EntityCreationException, UserRetrievalException {
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		acbController.undeleteAcb(-100L);
-	}
-	
-	@Transactional
-	@Test(expected=EntityRetrievalException.class)
-	public void testRemoveUserFromAcbByBadAcbId()  
-		throws EntityRetrievalException, IOException, InvalidArgumentsException, ValidationException, EntityCreationException, UserRetrievalException {
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		acbController.deleteUserFromAcb(-100L, -2L);
-	}
-	
-	@Transactional
-	@Test(expected=UserRetrievalException.class)
-	public void testRemoveUserFromAcbByBadUserId()  
-		throws EntityRetrievalException, IOException, InvalidArgumentsException, ValidationException, EntityCreationException, UserRetrievalException {
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		acbController.deleteUserFromAcb(-1L, -100L);
-	}
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        adminUser = new JWTAuthenticatedUser();
+        adminUser.setFullName("Administrator");
+        adminUser.setId(UnitTestUtil.ADMIN_ID);
+        adminUser.setFriendlyName("Administrator");
+        adminUser.setSubjectName("admin");
+        adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+    }
+
+    @Transactional
+    @Test(expected = EntityRetrievalException.class)
+    public void testGetAcbByBadId() throws EntityRetrievalException, IOException, ValidationException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        acbController.getAcbById(-100L);
+    }
+
+    @Transactional
+    @Test(expected = EntityRetrievalException.class)
+    public void testRemoveUserFromAcbByBadAcbId() throws EntityRetrievalException, IOException,
+            InvalidArgumentsException, ValidationException, EntityCreationException, UserRetrievalException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        acbController.deleteUserFromAcb(-100L, -2L);
+    }
+
+    @Transactional
+    @Test(expected = UserRetrievalException.class)
+    public void testRemoveUserFromAcbByBadUserId() throws EntityRetrievalException, IOException,
+            InvalidArgumentsException, ValidationException, EntityCreationException, UserRetrievalException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        acbController.deleteUserFromAcb(-1L, -100L);
+    }
 }

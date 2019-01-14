@@ -17,7 +17,7 @@ public class CertificationResultTestStandardXmlGenerator extends XmlGenerator {
             sw.writeEndElement();
         }
     }
-    
+
     public static void add(CertificationResultTestStandard standard, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (standard != null) {
             sw.writeStartElement(rootNodeName);
@@ -28,6 +28,5 @@ public class CertificationResultTestStandardXmlGenerator extends XmlGenerator {
             sw.writeEndElement();
         }
      }
-    
 }
 

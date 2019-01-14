@@ -13,6 +13,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.util.Util;
+
 @Entity
 @Table(name = "pending_certified_product_accessibility_standard")
 public class PendingCertifiedProductAccessibilityStandardEntity {
@@ -70,12 +72,12 @@ public class PendingCertifiedProductAccessibilityStandardEntity {
         this.name = name;
     }
 
-	public Date getLastModifiedDate() {
-        return lastModifiedDate;
+    public Date getLastModifiedDate() {
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public Long getLastModifiedUser() {
@@ -87,11 +89,11 @@ public class PendingCertifiedProductAccessibilityStandardEntity {
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Boolean getDeleted() {

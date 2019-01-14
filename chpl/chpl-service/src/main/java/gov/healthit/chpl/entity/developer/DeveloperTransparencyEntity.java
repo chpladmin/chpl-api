@@ -148,7 +148,7 @@ public class DeveloperTransparencyEntity {
         return countWithdrawnByDeveloperUnderSurveillanceListings;
     }
 
-    public void setCountWithdrawnByDeveloperUnderSurveillanceListings(final 
+    public void setCountWithdrawnByDeveloperUnderSurveillanceListings(final
             Long countWithdrawnByDeveloperUnderSurveillanceListings) {
         this.countWithdrawnByDeveloperUnderSurveillanceListings = countWithdrawnByDeveloperUnderSurveillanceListings;
     }

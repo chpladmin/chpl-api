@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,7 +34,7 @@ import gov.healthit.chpl.auth.user.UserRetrievalException;
 
 @Service
 public class UserAuthenticator implements Authenticator {
-    private static final Logger logger = LogManager.getLogger(UserAuthenticator.class);
+    private static final Logger LOGGER = LogManager.getLogger(UserAuthenticator.class);
 
     @Autowired
     private JWTAuthor jwtAuthor;
@@ -73,7 +74,7 @@ public class UserAuthenticator implements Authenticator {
                             user.setFailedLoginCount(0);
                             updateFailedLogins(user);
                         } catch (UserManagementException ex) {
-                            logger.error("Error adding failed login", ex);
+                            LOGGER.error("Error adding failed login", ex);
                         }
                     }
                 } catch (AccountStatusException ex) {
@@ -86,7 +87,7 @@ public class UserAuthenticator implements Authenticator {
                     user.setFailedLoginCount(user.getFailedLoginCount() + 1);
                     updateFailedLogins(user);
                 } catch (UserManagementException ex) {
-                    logger.error("Error adding failed login", ex);
+                    LOGGER.error("Error adding failed login", ex);
                 }
                 throw new BadCredentialsException("Bad username and password combination.");
             }
@@ -133,7 +134,6 @@ public class UserAuthenticator implements Authenticator {
         String jwt = null;
 
         if (user != null) {
-
             Map<String, List<String>> claims = new HashMap<String, List<String>>();
             List<String> claimStrings = new ArrayList<String>();
 
@@ -168,8 +168,6 @@ public class UserAuthenticator implements Authenticator {
 
         try {
             user = getUser(credentials);
-        } catch (BadCredentialsException e) {
-            throw new BadCredentialsException("Bad username and password combination.");
         } catch (AccountStatusException e1) {
             throw new JWTCreationException(e1.getMessage());
         } catch (UserRetrievalException e2) {

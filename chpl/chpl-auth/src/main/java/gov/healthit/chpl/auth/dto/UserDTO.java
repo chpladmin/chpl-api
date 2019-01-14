@@ -8,6 +8,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import gov.healthit.chpl.auth.entity.UserEntity;
 
+/**
+ * User data transfer object.
+ */
 public class UserDTO implements UserDetails {
 
     private static final long serialVersionUID = 1L;
@@ -26,6 +29,7 @@ public class UserDTO implements UserDetails {
     private boolean accountLocked;
     private boolean credentialsExpired;
     private boolean accountEnabled;
+    private boolean passwordResetRequired;
 
     /**
      * Default constructor.
@@ -51,6 +55,8 @@ public class UserDTO implements UserDetails {
             this.accountExpired = !entity.isAccountNonExpired();
             this.accountLocked = !entity.isAccountNonLocked();
             this.accountEnabled = entity.isEnabled();
+            this.credentialsExpired = entity.isCredentialsExpired();
+            this.passwordResetRequired = entity.getPasswordResetRequired();
         }
     }
 
@@ -110,16 +116,15 @@ public class UserDTO implements UserDetails {
         this.title = title;
     }
 
+    /**
+     * We return null rather than returning authorities here because we
+     * don't actually want the DTO to have granted permissions (those
+     * come from the JWT token).
+     * @return a null collection
+     */
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // We return null rather than returning authorities here because we
-        // don't actually want the DTO to have granted permissions (those
-        // come from the JWT token.)
         return null;
     }
-
-//    public String getName() {
-//        return subjectName;
-//    }
 
     @Override
     public String getUsername() {
@@ -205,5 +210,34 @@ public class UserDTO implements UserDetails {
 
     public boolean isCredentialsExpired() {
         return credentialsExpired;
+    }
+
+    public boolean getPasswordResetRequired() {
+        return passwordResetRequired;
+    }
+
+    public void setPasswordResetRequired(final boolean passwordResetRequired) {
+        this.passwordResetRequired = passwordResetRequired;
+    }
+
+    @Override
+    public String toString() {
+        String ret = "[UserDTO: "
+                + "[id: " + this.id + "]"
+                + "[subjectName: " + this.subjectName + "]"
+                + "[fullName: " + this.fullName + "]"
+                + "[friendlyName: " + this.friendlyName + "]"
+                + "[email: " + this.email + "]"
+                + "[phoneNumber: " + this.phoneNumber + "]"
+                + "[title: " + this.title + "]"
+                + "[signatureDate: " + this.signatureDate + "]"
+                + "[complianceSignatureDate: " + this.complianceSignatureDate + "]"
+                + "[failedLoginCount: " + this.failedLoginCount + "]"
+                + "[accountExpired: " + this.accountExpired + "]"
+                + "[accountLocked: " + this.accountLocked + "]"
+                + "[credentialsExpired: " + this.credentialsExpired + "]"
+                + "[accountEnabled: " + this.accountEnabled + "]"
+                + "[passwordResetRequired: " + this.passwordResetRequired + "]]";
+        return ret;
     }
 }

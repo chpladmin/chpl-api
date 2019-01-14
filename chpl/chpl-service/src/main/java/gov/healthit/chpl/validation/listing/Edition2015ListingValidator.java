@@ -12,9 +12,9 @@ import gov.healthit.chpl.validation.listing.reviewer.CertificationStatusReviewer
 import gov.healthit.chpl.validation.listing.reviewer.ChplNumberReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.DeveloperStatusReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.FieldLengthReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.ForbiddenMacraMeasureReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.InheritedCertificationStatusReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
-import gov.healthit.chpl.validation.listing.reviewer.SedG3Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestToolReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestingLabReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnattestedCriteriaWithDataReviewer;
@@ -22,6 +22,8 @@ import gov.healthit.chpl.validation.listing.reviewer.UnsupportedCharacterReviewe
 import gov.healthit.chpl.validation.listing.reviewer.UrlReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ValidDataReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredData2015Reviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Reviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestFunctionality2015Reviewer;
 
 /**
  * Validation interface for any listing that is already uploaded and confirmed on the CHPL.
@@ -59,8 +61,8 @@ public class Edition2015ListingValidator extends Validator {
     private ValidDataReviewer validDataReviewer;
 
     @Autowired
-    @Qualifier("sedG3Reviewer")
-    private SedG3Reviewer sedG3Reviewer;
+    @Qualifier("sedG32015Reviewer")
+    private SedG32015Reviewer sedG3Reviewer;
 
     @Autowired
     @Qualifier("certificationStatusReviewer")
@@ -86,6 +88,14 @@ public class Edition2015ListingValidator extends Validator {
     @Qualifier("urlReviewer")
     private UrlReviewer urlReviewer;
 
+    @Autowired
+    @Qualifier("testFunctionality2015Reviewer")
+    private TestFunctionality2015Reviewer testFunctionalityReviewer;
+
+    @Autowired
+    @Qualifier("forbiddenMacraMeasureReviewer")
+    private ForbiddenMacraMeasureReviewer forbiddenMacraMeasureReviewer;
+
     private List<Reviewer> reviewers;
 
     @Override
@@ -106,6 +116,8 @@ public class Edition2015ListingValidator extends Validator {
             reviewers.add(icsReviewer);
             reviewers.add(ttReviewer);
             reviewers.add(urlReviewer);
+            reviewers.add(testFunctionalityReviewer);
+            reviewers.add(forbiddenMacraMeasureReviewer);
         }
         return reviewers;
     }

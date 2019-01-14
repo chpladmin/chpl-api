@@ -36,11 +36,11 @@ public class DataCollectorAsyncSchedulerHelper {
         getLogger().info("Finishing retrieving Details for: " + id);
         return new AsyncResult<CertifiedProductSearchDetails>(dto);
     }
-    
+
     public void setLogger(Logger logger) {
         this.logger = logger;
     }
-    
+
     public Logger getLogger() {
         if (logger == null) {
             logger = LogManager.getLogger(SchedulerCertifiedProductSearchDetailsAsync.class);
