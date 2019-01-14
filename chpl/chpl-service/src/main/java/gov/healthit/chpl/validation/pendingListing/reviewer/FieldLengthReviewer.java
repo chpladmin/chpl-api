@@ -6,6 +6,9 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.dto.PendingCertificationResultDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultTestTaskDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultTestTaskParticipantDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -23,6 +26,18 @@ public class FieldLengthReviewer implements Reviewer {
         checkField(listing, listing.getDeveloperName(), "developerName");
         checkField(listing, listing.getProductName(), "productName");
         checkField(listing, listing.getProductVersion(), "productVersion");
+        if (listing.getCertificationCriterion() != null) {
+            for (PendingCertificationResultDTO certResult : listing.getCertificationCriterion()) {
+                if(certResult != null && certResult.getTestTasks() != null) {
+                    for(PendingCertificationResultTestTaskDTO task : certResult.getTestTasks()) {
+                        checkField(listing, task.getPendingTestTask().getUniqueId(), "taskIdentifier");
+                        for (PendingCertificationResultTestTaskParticipantDTO tp : task.getTaskParticipants()) {
+                            checkField(listing, tp.getTestParticipant().getUniqueId(), "participantIdentifier");
+                        }
+                    }
+                }
+            }
+        }
         if (listing.getDeveloperAddress() != null) {
             checkField(listing, listing.getDeveloperAddress().getStreetLineOne(), "developerStreetAddress");
             checkField(listing, listing.getDeveloperAddress().getStreetLineTwo(), "developerStreetAddressTwo");
