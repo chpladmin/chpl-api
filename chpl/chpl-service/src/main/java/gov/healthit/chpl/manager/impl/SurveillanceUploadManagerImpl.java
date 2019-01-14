@@ -228,7 +228,7 @@ public class SurveillanceUploadManagerImpl implements SurveillanceUploadManager 
         // perform additional checks if there are no errors in the uploaded
         // surveillance already
         if (pendingSurv.getErrorMessages() == null || pendingSurv.getErrorMessages().size() == 0) {
-            if (permissions.hasAccess(Permissions.PENDING_SURVEILLANCE, PendingSurveillanceDomainPermissions.UPLOAD, pendingSurv)) {
+            if (!permissions.hasAccess(Permissions.PENDING_SURVEILLANCE, PendingSurveillanceDomainPermissions.UPLOAD, pendingSurv)) {
                 String msg = errorMessageUtil.getMessage(
                         "pendingSurveillance.addSurveillancePermissionDenied",
                         pendingSurv.getCertifiedProduct().getChplProductNumber());

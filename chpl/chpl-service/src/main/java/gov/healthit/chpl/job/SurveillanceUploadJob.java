@@ -18,6 +18,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.auth.Util;
@@ -65,6 +66,7 @@ public class SurveillanceUploadJob extends RunnableJob {
     }
 
     @Override
+    @Transactional
     public void run() {
         super.run();
 
