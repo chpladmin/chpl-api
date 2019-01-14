@@ -16,35 +16,42 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.Surveillance;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.SurveillanceUploadManager;
+import gov.healthit.chpl.permissions.Permissions;
+import gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions;
 import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandler;
 import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandlerFactory;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.FileUtils;
 
 @Service
 public class SurveillanceUploadManagerImpl implements SurveillanceUploadManager {
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceUploadManagerImpl.class);
 
-    @Autowired private MessageSource messageSource;
-    @Autowired private FileUtils fileUtils;
-    @Autowired private CertificationBodyManager acbManager;
-    @Autowired private CertifiedProductDAO cpDao;
-    @Autowired private SurveillanceUploadHandlerFactory uploadHandlerFactory;
+    private MessageSource messageSource;
+    private FileUtils fileUtils;
+    private SurveillanceUploadHandlerFactory uploadHandlerFactory;
+    private Permissions permissions;
+    private ErrorMessageUtil errorMessageUtil;
+
+    @Autowired
+    public SurveillanceUploadManagerImpl(MessageSource messageSource, FileUtils fileUtils,
+            SurveillanceUploadHandlerFactory uploadHandlerFactory, Permissions permissions,
+            ErrorMessageUtil errorMessageUtil) {
+        this.messageSource = messageSource;
+        this.fileUtils = fileUtils;
+        this.uploadHandlerFactory = uploadHandlerFactory;
+        this.permissions = permissions;
+        this.errorMessageUtil = errorMessageUtil;
+    }
 
     @Override
     public int countSurveillanceRecords(MultipartFile file) throws ValidationException {
@@ -221,46 +228,19 @@ public class SurveillanceUploadManagerImpl implements SurveillanceUploadManager 
         // perform additional checks if there are no errors in the uploaded
         // surveillance already
         if (pendingSurv.getErrorMessages() == null || pendingSurv.getErrorMessages().size() == 0) {
-            // check this pendingSurv to confirm the user has ACB permissions on
-            // the appropriate ACB for the CHPL ID specified
-            CertifiedProductDTO surveilledProduct = null;
-            try {
-                surveilledProduct = cpDao.getById(pendingSurv.getCertifiedProduct().getId());
-            } catch (final EntityRetrievalException ex) {
-                String msg = String.format(
-                        messageSource.getMessage(
-                                new DefaultMessageSourceResolvable(
-                                        "pendingSurveillance.certifiedProductIdNotFound"),
-                                LocaleContextHolder.getLocale()),
-                        pendingSurv.getCertifiedProduct().getId());
-                LOGGER.error(msg);
-                errors.add(msg);
-            }
+            if (permissions.hasAccess(Permissions.PENDING_SURVEILLANCE, PendingSurveillanceDomainPermissions.UPLOAD, pendingSurv)) {
+                String msg = errorMessageUtil.getMessage(
+                        "pendingSurveillance.addSurveillancePermissionDenied",
+                        pendingSurv.getCertifiedProduct().getChplProductNumber());
+                LOGGER.error("User " + Util.getCurrentUser().getSubjectName()
+                        + " does not have access to " + pendingSurv.getCertifiedProduct().getChplProductNumber()
+                        + " due to ACB restrictions.");
 
-            if (surveilledProduct != null) {
-                try {
-                    acbManager.getById(surveilledProduct.getCertificationBodyId());
-                } catch (final EntityRetrievalException ex) {
-                    String msg = String.format(messageSource.getMessage(
-                            new DefaultMessageSourceResolvable(
-                                    "pendingSurveillance.certificationBodyIdNotFound"),
-                            LocaleContextHolder.getLocale()),
-                            surveilledProduct.getCertificationBodyId());
-                    LOGGER.error(msg);
-                    errors.add(msg);
-                } catch (final AccessDeniedException denied) {
-                    String msg = String.format(
-                            messageSource.getMessage(
-                                    new DefaultMessageSourceResolvable(
-                                            "pendingSurveillance.addSurveillancePermissionDenied"),
-                                    LocaleContextHolder.getLocale()),
-                            pendingSurv.getCertifiedProduct().getChplProductNumber());
-                    LOGGER.error("User " + Util.getCurrentUser().getSubjectName()
-                            + " does not have access to the ACB with id " + surveilledProduct.getCertificationBodyId());
-                    errors.add(msg);
-                }
+                errors.add(msg);
             }
         }
         return errors;
     }
+
+
 }

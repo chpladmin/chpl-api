@@ -7,9 +7,7 @@ import java.util.List;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformityDocument;
-import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
 
 public interface SurveillanceManager {
@@ -30,8 +28,6 @@ public interface SurveillanceManager {
 
     Surveillance getById(Long survId) throws EntityRetrievalException;
 
-    Surveillance getByFriendlyIdAndProduct(Long certifiedProductId, String survFriendlyId);
-
     List<Surveillance> getByCertifiedProduct(Long cpId);
 
     SurveillanceNonconformityDocument getDocumentById(Long docId, boolean getFileContents)
@@ -41,10 +37,4 @@ public interface SurveillanceManager {
             throws EntityRetrievalException, SurveillanceAuthorityAccessDeniedException;
 
     void deleteNonconformityDocument(Long acbId, Long documentId) throws EntityRetrievalException;
-
-    boolean isPendingSurveillanceAvailableForUpdate(Long acbId, Long pendingSurvId)
-            throws EntityRetrievalException, ObjectMissingValidationException;
-
-    boolean isPendingSurveillanceAvailableForUpdate(Long acbId, PendingSurveillanceEntity pendingSurv)
-            throws EntityRetrievalException, ObjectMissingValidationException;
 }

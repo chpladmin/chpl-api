@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.EntityNotFoundException;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,17 +15,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dao.UserPermissionDAO;
 import gov.healthit.chpl.auth.domain.Authority;
-import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
-import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.SurveillanceNonconformityDocument;
@@ -38,15 +32,12 @@ import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
-import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityDocumentationEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceRequirementEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.manager.SurveillanceManager;
-import gov.healthit.chpl.permissions.Permissions;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 
@@ -54,49 +45,28 @@ import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 public class SurveillanceManagerImpl implements SurveillanceManager {
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceManagerImpl.class);
 
-
-
     private SurveillanceDAO survDao;
     private CertifiedProductDAO cpDao;
-    private UserDAO userDAO;
     private SurveillanceValidator validator;
     private UserPermissionDAO userPermissionDao;
     private FileUtils fileUtils;
     private Environment env;
-    private Permissions permissions;
 
     @Autowired
-    public SurveillanceManagerImpl(SurveillanceDAO survDao, CertifiedProductDAO cpDao, UserDAO userDao,
-            SurveillanceValidator validator, UserPermissionDAO userPermissionDao, FileUtils fileUtils, Environment env,
-            Permissions permissions) {
+    public SurveillanceManagerImpl(SurveillanceDAO survDao, CertifiedProductDAO cpDao, SurveillanceValidator validator,
+            UserPermissionDAO userPermissionDao, FileUtils fileUtils, Environment env) {
         this.survDao = survDao;
         this.cpDao = cpDao;
-        this.userDAO = userDao;
         this.validator = validator;
         this.userPermissionDao = userPermissionDao;
         this.fileUtils = fileUtils;
         this.env = env;
-        this.permissions = permissions;
     }
 
     @Override
     @Transactional(readOnly = true)
     public Surveillance getById(final Long survId) throws EntityRetrievalException {
         SurveillanceEntity surv = survDao.getSurveillanceById(survId);
-        Surveillance result = convertToDomain(surv);
-        validator.validate(result);
-        return result;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Surveillance getByFriendlyIdAndProduct(final Long certifiedProductId, final String survFriendlyId) {
-        SurveillanceEntity surv = survDao.getSurveillanceByCertifiedProductAndFriendlyId(certifiedProductId,
-                survFriendlyId);
-        if (surv == null) {
-            throw new EntityNotFoundException("Could not find surveillance for certified product " + certifiedProductId
-                    + " with friendly id " + survFriendlyId);
-        }
         Surveillance result = convertToDomain(surv);
         validator.validate(result);
         return result;
@@ -203,59 +173,6 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
             + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     public void deleteNonconformityDocument(final Long acbId, final Long documentId) throws EntityRetrievalException {
         survDao.deleteNonconformityDocument(documentId);
-    }
-
-
-
-
-
-
-    @Override
-    @Transactional
-    @PreAuthorize("hasRole('ROLE_ACB') "
-            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-    public boolean isPendingSurveillanceAvailableForUpdate(final Long acbId, final Long pendingSurvId)
-            throws EntityRetrievalException, ObjectMissingValidationException {
-        PendingSurveillanceEntity pendingSurv = survDao.getPendingSurveillanceById(pendingSurvId, true);
-        return isPendingSurveillanceAvailableForUpdate(acbId, pendingSurv);
-    }
-
-    @Override
-    @Transactional
-    @PreAuthorize("hasRole('ROLE_ACB') "
-            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-    public boolean isPendingSurveillanceAvailableForUpdate(final Long acbId,
-            final PendingSurveillanceEntity pendingSurv)
-                    throws EntityRetrievalException, ObjectMissingValidationException {
-        if (pendingSurv.getDeleted().booleanValue()) {
-            ObjectMissingValidationException alreadyDeletedEx = new ObjectMissingValidationException();
-            alreadyDeletedEx.getErrorMessages()
-            .add("This pending surveillance has already been confirmed or rejected by another user.");
-            alreadyDeletedEx.setObjectId(pendingSurv.getId().toString());
-            alreadyDeletedEx.setStartDate(pendingSurv.getStartDate());
-            alreadyDeletedEx.setEndDate(pendingSurv.getEndDate());
-
-            try {
-                UserDTO lastModifiedUser = userDAO.getById(pendingSurv.getLastModifiedUser());
-                if (lastModifiedUser != null) {
-                    Contact contact = new Contact();
-                    contact.setFullName(lastModifiedUser.getFullName());
-                    contact.setFriendlyName(lastModifiedUser.getFriendlyName());
-                    contact.setEmail(lastModifiedUser.getEmail());
-                    contact.setPhoneNumber(lastModifiedUser.getPhoneNumber());
-                    contact.setTitle(lastModifiedUser.getTitle());
-                    alreadyDeletedEx.setContact(contact);
-                } else {
-                    alreadyDeletedEx.setContact(null);
-                }
-            } catch (final UserRetrievalException ex) {
-                alreadyDeletedEx.setContact(null);
-            }
-            throw alreadyDeletedEx;
-        }
-        //If pendingSurv were null, we would have gotten an NPE by this point
-        //return pendingSurv != null;
-        return true;
     }
 
     @Override

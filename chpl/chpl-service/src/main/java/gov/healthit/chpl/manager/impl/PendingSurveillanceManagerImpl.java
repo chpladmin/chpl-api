@@ -544,6 +544,7 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
             }
         }
     }
+
     private Long createSurveillance(final Surveillance surv)
             throws UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
         Long insertedId = null;
