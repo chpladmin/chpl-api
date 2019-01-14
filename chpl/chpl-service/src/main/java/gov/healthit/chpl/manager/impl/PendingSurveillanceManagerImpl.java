@@ -466,7 +466,7 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
 
     private boolean isPendingSurveillanceAvailableForUpdate(final PendingSurveillanceEntity pendingSurv)
             throws EntityRetrievalException, ObjectMissingValidationException {
-        if (pendingSurv.getDeleted().booleanValue()) {
+        if (pendingSurv.getDeleted()) {
             ObjectMissingValidationException alreadyDeletedEx = new ObjectMissingValidationException();
             alreadyDeletedEx.getErrorMessages()
             .add("This pending surveillance has already been confirmed or rejected by another user.");

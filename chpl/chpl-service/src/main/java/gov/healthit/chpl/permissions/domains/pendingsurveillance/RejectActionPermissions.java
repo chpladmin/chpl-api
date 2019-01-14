@@ -28,7 +28,7 @@ public class RejectActionPermissions  extends ActionPermissions {
             try {
                 //Make sure the user has access to the pendingSurveillance
                 Long pendingSurveillanceId = (Long) obj;
-                PendingSurveillanceEntity entity = surveillanceDAO.getPendingSurveillanceById(pendingSurveillanceId, false);
+                PendingSurveillanceEntity entity = surveillanceDAO.getPendingSurveillanceById(pendingSurveillanceId, true);
                 return isAcbValidForCurrentUser(entity.getCertifiedProduct().getCertificationBodyId());
             } catch (Exception e) {
                 return false;
