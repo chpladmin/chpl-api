@@ -430,12 +430,8 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
 
     private void deletePendingSurveillance(final Long pendingSurveillanceId, boolean isConfirmed)
             throws ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException, EntityCreationException {
-        PendingSurveillanceEntity surv = survDao.getPendingSurveillanceById(pendingSurveillanceId, true);
-        CertifiedProductEntity ownerCp = surv.getCertifiedProduct();
-        if (ownerCp == null) {
-            throw new EntityNotFoundException("Could not find certified product associated with pending surveillance.");
-        }
 
+        PendingSurveillanceEntity surv = survDao.getPendingSurveillanceById(pendingSurveillanceId, true);
         Surveillance toDelete = getPendingById(pendingSurveillanceId, true);
 
         if (isPendingSurveillanceAvailableForUpdate(surv)) {
