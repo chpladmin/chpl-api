@@ -28,10 +28,6 @@ public class Util {
         return doesUserHaveRole(Authority.ROLE_ONC);
     }
 
-    public static boolean isUserRoleOncStaff() {
-        return doesUserHaveRole(Authority.ROLE_ONC_STAFF);
-    }
-
     public static boolean isUserRoleCmsStaff() {
         return doesUserHaveRole(Authority.ROLE_CMS_STAFF);
     }

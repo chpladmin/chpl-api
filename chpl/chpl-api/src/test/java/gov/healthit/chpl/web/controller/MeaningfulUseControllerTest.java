@@ -83,7 +83,7 @@ public class MeaningfulUseControllerTest extends TestCase {
     }
 
     /**
-     * Given that a user with ROLE_ONC_STAFF or ROLE_ADMIN has uploaded a CSV
+     * Given that a user with ROLE_ONC or ROLE_ADMIN has uploaded a CSV
      * with meaningfulUseUser counts (passed in as MultipartFile file) When the
      * UI calls the API at /uploadMeaningfulUse When the CSV contains
      * incorrectly named headers When the CSV contains some incorrect
@@ -189,7 +189,7 @@ public class MeaningfulUseControllerTest extends TestCase {
     }
 
     /**
-     * Given that a user with ROLE_ONC_STAFF or ROLE_ADMIN has uploaded a CSV
+     * Given that a user with ROLE_ONC or ROLE_ADMIN has uploaded a CSV
      * with meaningfulUseUser counts (passed in as MultipartFile file) When the
      * UI calls the API at /uploadMeaningfulUse When the CSV contains no header
      * When the CSV contains a 2014 CHPL Product Number with a non-legacy format

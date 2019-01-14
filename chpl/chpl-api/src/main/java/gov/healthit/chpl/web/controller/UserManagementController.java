@@ -417,8 +417,8 @@ public class UserManagementController {
     }
 
     @ApiOperation(value = "Give additional roles to a user.",
-            notes = "Users may be given ROLE_ADMIN, ROLE_ONC, ROLE_ACB, "
-                    + "ROLE_ATL, or ROLE_ONC_STAFF roles within the system.")
+            notes = "Users may be given ROLE_ADMIN, ROLE_ONC, ROLE_ACB, or "
+                    + "ROLE_ATL roles within the system.")
     @RequestMapping(value = "/{userName}/roles/{roleName}", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
     public String grantUserRole(@PathVariable("userName") final String userName,
@@ -464,8 +464,8 @@ public class UserManagementController {
     }
 
     @ApiOperation(value = "Remove roles previously granted to a user.",
-            notes = "Users may be given ROLE_ADMIN, ROLE_ACB, "
-                    + "ROLE_ATL, or ROLE_ONC_STAFF roles within the system.")
+            notes = "Users may be given ROLE_ADMIN, ROLE_ACB, or "
+                    + "ROLE_ATL roles within the system.")
     @RequestMapping(value = "/{userName}/roles/{roleName}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public String revokeUserRole(@PathVariable("userName") final String userName,

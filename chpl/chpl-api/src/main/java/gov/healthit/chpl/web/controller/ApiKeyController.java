@@ -124,7 +124,7 @@ public class ApiKeyController {
     }
 
     @ApiOperation(value = "View the calls made per API key.",
-            notes = "This service is only available to CHPL users with ROLE_ADMIN, ROLE_ONC_STAFF, or ROLE_ONC.")
+            notes = "This service is only available to CHPL users with ROLE_ADMIN, or ROLE_ONC.")
     @RequestMapping(value = "/activity", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ApiKeyActivity> listActivity(
             @RequestParam(value = "pageNumber", required = false) final Integer pageNumber,
@@ -159,7 +159,7 @@ public class ApiKeyController {
     }
 
     @ApiOperation(value = "View the calls made by a specific API key.",
-            notes = "This service is only available to CHPL users with ROLE_ADMIN, ROLE_ONC_STAFF, or ROLE_ONC.")
+            notes = "This service is only available to CHPL users with ROLE_ADMIN, or ROLE_ONC.")
     @RequestMapping(value = "/activity/{apiKey}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ApiKeyActivity> listActivityByKey(@PathVariable("apiKey") final String apiKey,
