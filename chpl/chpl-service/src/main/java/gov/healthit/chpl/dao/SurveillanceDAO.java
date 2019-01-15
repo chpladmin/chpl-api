@@ -38,7 +38,7 @@ public interface SurveillanceDAO {
 
     void deleteNonconformityDocument(Long documentId) throws EntityRetrievalException;
 
-    Long insertPendingSurveillance(Surveillance surv);
+    Long insertPendingSurveillance(Surveillance surv) throws UserPermissionRetrievalException;
 
     PendingSurveillanceEntity getPendingSurveillanceById(Long id, boolean includeDeleted)
             throws EntityRetrievalException;

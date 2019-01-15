@@ -288,11 +288,13 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
         return results;
     }
 
-    private Long getSurveillanceAuthority() {
-        if (Util.isUserRoleAdmin()) {
-            return -2l;
+    private Long getSurveillanceAuthority() throws UserPermissionRetrievalException {
+
+        if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
+            return userPermissionDao.getIdFromAuthority("ROLE_ONC");
+
         } else if (Util.isUserRoleAcbAdmin()) {
-            return 2l;
+            return userPermissionDao.getIdFromAuthority("ROLE_ACB");
         } else {
             return null;
         }
@@ -300,7 +302,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
     }
 
     @Override
-    public Long insertPendingSurveillance(Surveillance surv) {
+    public Long insertPendingSurveillance(Surveillance surv) throws UserPermissionRetrievalException {
         PendingSurveillanceEntity toInsert = new PendingSurveillanceEntity();
         toInsert.setSurvFriendlyIdToReplace(surv.getSurveillanceIdToReplace());
         if (surv.getCertifiedProduct() != null) {
