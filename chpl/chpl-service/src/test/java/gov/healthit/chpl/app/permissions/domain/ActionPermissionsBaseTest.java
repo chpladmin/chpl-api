@@ -1,4 +1,4 @@
-package gov.healthit.chpl.app.permissions.domain.pendingsurveillance;
+package gov.healthit.chpl.app.permissions.domain;
 
 import java.util.ArrayList;
 import java.util.List;

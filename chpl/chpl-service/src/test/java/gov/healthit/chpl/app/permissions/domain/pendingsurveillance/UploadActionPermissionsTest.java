@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -15,26 +16,35 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.healthit.chpl.app.permissions.domain.ActionPermissionsBaseTest;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.Surveillance;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertificationBodyManager;
-import gov.healthit.chpl.permissions.domains.pendingsurveillance.GetAllActionPermissions;
+import gov.healthit.chpl.permissions.domains.pendingsurveillance.UploadActionPermissions;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
-public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
+public class UploadActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Spy
     private CertificationBodyManager acbManager;
 
+    @Spy
+    private CertifiedProductDAO cpDAO;
+
     @InjectMocks
-    private GetAllActionPermissions permissions;
+    private UploadActionPermissions permissions;
 
     @Before
-    public void setup() {
+    public void setup() throws EntityRetrievalException {
         MockitoAnnotations.initMocks(this);
 
         Mockito.when(acbManager.getAllForUser())
         .thenReturn(getAllAcbForUser(2l, 4l));
+
+        Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong()))
+        .thenReturn(getCertifiedProduct(2l));
     }
 
     @Override
@@ -44,7 +54,6 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
 
         assertFalse(permissions.hasAccess());
 
-        //This should always return false
         Surveillance surv = new Surveillance();
         assertFalse(permissions.hasAccess(surv));
     }
@@ -56,8 +65,16 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
 
         assertTrue(permissions.hasAccess());
 
-        //This should always return false
         Surveillance surv = new Surveillance();
+        surv.setCertifiedProduct(new CertifiedProduct());
+        surv.getCertifiedProduct().setId(1l);
+
+        Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong()))
+        .thenReturn(getCertifiedProduct(2l));
+        assertTrue(permissions.hasAccess(surv));
+
+        Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong()))
+        .thenReturn(getCertifiedProduct(3l));
         assertFalse(permissions.hasAccess(surv));
     }
 
@@ -68,7 +85,6 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
 
         assertFalse(permissions.hasAccess());
 
-        //This should always return false
         Surveillance surv = new Surveillance();
         assertFalse(permissions.hasAccess(surv));
     }
@@ -80,7 +96,6 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
 
         assertFalse(permissions.hasAccess());
 
-        //This should always return false
         Surveillance surv = new Surveillance();
         assertFalse(permissions.hasAccess(surv));
     }
@@ -90,7 +105,6 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_Anon() throws Exception {
         assertFalse(permissions.hasAccess());
 
-        //This should always return false
         Surveillance surv = new Surveillance();
         assertFalse(permissions.hasAccess(surv));
     }
