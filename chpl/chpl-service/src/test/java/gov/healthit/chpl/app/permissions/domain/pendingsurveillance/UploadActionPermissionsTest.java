@@ -52,10 +52,21 @@ public class UploadActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_Admin() throws Exception {
         SecurityContextHolder.getContext().setAuthentication(getAdminUser());
 
-        assertFalse(permissions.hasAccess());
+        assertTrue(permissions.hasAccess());
 
         Surveillance surv = new Surveillance();
-        assertFalse(permissions.hasAccess(surv));
+        assertTrue(permissions.hasAccess(surv));
+    }
+
+    @Override
+    @Test
+    public void hasAccess_Onc() throws Exception {
+        SecurityContextHolder.getContext().setAuthentication(getOncUser());
+
+        assertTrue(permissions.hasAccess());
+
+        Surveillance surv = new Surveillance();
+        assertTrue(permissions.hasAccess(surv));
     }
 
     @Override
