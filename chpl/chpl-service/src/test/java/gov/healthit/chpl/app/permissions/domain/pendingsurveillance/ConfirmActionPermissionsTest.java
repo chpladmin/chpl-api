@@ -65,7 +65,7 @@ public class ConfirmActionPermissionsTest extends ActionPermissionsBaseTest {
 
         //Setup Mock
         Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong()))
-        .thenReturn(getCertifiedProduct(2l));
+        .thenReturn(getCertifiedProduct(1l, 2l));
 
         //With the above mock, the user should have access
         Surveillance surv = new Surveillance();
@@ -76,7 +76,7 @@ public class ConfirmActionPermissionsTest extends ActionPermissionsBaseTest {
 
         //Setup Mock
         Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong()))
-        .thenReturn(getCertifiedProduct(3l));
+        .thenReturn(getCertifiedProduct(1l, 3l));
 
         //With the above mock, the user should NOT have access
         surv = new Surveillance();

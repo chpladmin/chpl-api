@@ -28,10 +28,10 @@ public abstract class ActionPermissionsBaseTest {
         return dtos;
     }
 
-    public CertifiedProductDTO getCertifiedProduct(Long certifiectionBodyId) {
+    public CertifiedProductDTO getCertifiedProduct(Long id, Long certificationBodyId) {
         CertifiedProductDTO dto = new CertifiedProductDTO();
-        dto.setId(1l);
-        dto.setCertificationBodyId(certifiectionBodyId);
+        dto.setId(id);
+        dto.setCertificationBodyId(certificationBodyId);
 
         return dto;
     }

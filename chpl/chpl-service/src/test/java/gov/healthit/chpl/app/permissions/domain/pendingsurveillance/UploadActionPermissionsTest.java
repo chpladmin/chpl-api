@@ -44,7 +44,7 @@ public class UploadActionPermissionsTest extends ActionPermissionsBaseTest {
         .thenReturn(getAllAcbForUser(2l, 4l));
 
         Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong()))
-        .thenReturn(getCertifiedProduct(2l));
+        .thenReturn(getCertifiedProduct(1l, 2l));
     }
 
     @Override
@@ -70,11 +70,11 @@ public class UploadActionPermissionsTest extends ActionPermissionsBaseTest {
         surv.getCertifiedProduct().setId(1l);
 
         Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong()))
-        .thenReturn(getCertifiedProduct(2l));
+        .thenReturn(getCertifiedProduct(1l, 2l));
         assertTrue(permissions.hasAccess(surv));
 
         Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong()))
-        .thenReturn(getCertifiedProduct(3l));
+        .thenReturn(getCertifiedProduct(1l, 3l));
         assertFalse(permissions.hasAccess(surv));
     }
 
