@@ -5,16 +5,21 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.permissions.domains.pendingsurveillance.GetAllActionPermissions;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
 public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Spy
