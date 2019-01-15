@@ -1,6 +1,7 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
@@ -11,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,6 +71,7 @@ import gov.healthit.chpl.manager.JobManager;
 import gov.healthit.chpl.manager.PendingSurveillanceManager;
 import gov.healthit.chpl.manager.SurveillanceUploadManager;
 import gov.healthit.chpl.permissions.Permissions;
+import gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 
@@ -166,8 +167,8 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
     @Transactional(readOnly = true)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_SURVEILLANCE, "
             + "T(gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions).GET_ALL)")
-    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_SURVEILLANCE, "
-            + "T(gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions).GET_ALL, filterObject)")
+    //@PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_SURVEILLANCE, "
+    //        + "T(gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions).GET_ALL, filterObject)")
     public List<Surveillance> getAllPendingSurveillances() {
         List<PendingSurveillanceEntity> pendingResults = survDao.getAllPendingSurveillance();
         List<Surveillance> results = new ArrayList<Surveillance>();
@@ -175,6 +176,18 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
             for (PendingSurveillanceEntity pr : pendingResults) {
                 Surveillance surv = convertToDomain(pr);
                 results.add(surv);
+            }
+        }
+
+        //TODO: There is a problem using @PostFilter - some sort of ACL issue
+        //Until that is figured out...
+        Iterator<Surveillance> iterator = results.iterator();
+        while (iterator.hasNext()) {
+            if (!permissions.hasAccess(
+                    Permissions.PENDING_SURVEILLANCE,
+                    PendingSurveillanceDomainPermissions.GET_ALL,
+                    iterator.next())) {
+                iterator.remove();
             }
         }
         return results;
@@ -362,6 +375,7 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
         surv.setStartDate(pr.getStartDate());
         surv.setEndDate(pr.getEndDate());
         surv.setRandomizedSitesUsed(pr.getNumRandomizedSites());
+        surv.setAuthority(userPermissionDAO.findById(pr.getUserPermissionId()).getAuthority());
 
         SurveillanceType survType = new SurveillanceType();
         survType.setName(pr.getSurveillanceType());
