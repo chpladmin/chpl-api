@@ -286,25 +286,30 @@ public class UserManagementController {
     @ApiOperation(value = "Invite a user to the CHPL.",
             notes = "This request creates an invitation that is sent to the email address provided. "
                     + "The recipient of this invitation can then choose to create a new account "
-                    + "or add the permissions contained within the invitation to an exisitng account "
+                    + "or add the permissions contained within the invitation to an existing account "
                     + "if they have one. Said another way, an invitation can be used to create or "
                     + "modify CHPL user accounts." + "The correct order to call invitation requests is "
-                    + "the following: 1) /invite 2) /create or /authorize 3) /confirm ")
+                    + "the following: 1) /invite 2) /create or /authorize 3) /confirm. ")
     @RequestMapping(value = "/invite", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public UserInvitation inviteUser(@RequestBody final UserInvitation invitation)
             throws InvalidArgumentsException, UserCreationException, UserRetrievalException,
             UserPermissionRetrievalException, AddressException, MessagingException {
         boolean isChplAdmin = false;
+        boolean isOnc = false;
         for (String permission : invitation.getPermissions()) {
-            if (permission.equals("ADMIN") || permission.equals("ROLE_ADMIN")) {
+            if (permission.equals("ADMIN") || permission.equals(Authority.ROLE_ADMIN)) {
                 isChplAdmin = true;
+            } else if (permission.equals("ONC") || permission.equals(Authority.ROLE_ONC)) {
+                isOnc = true;
             }
         }
 
         InvitationDTO createdInvite = null;
         if (isChplAdmin) {
             createdInvite = invitationManager.inviteAdmin(invitation.getEmailAddress(), invitation.getPermissions());
+        } else if (isOnc) {
+            createdInvite = invitationManager.inviteOnc(invitation.getEmailAddress(), invitation.getPermissions());
         } else {
             if (invitation.getAcbId() == null && invitation.getTestingLabId() == null) {
                 createdInvite = invitationManager.inviteWithRolesOnly(invitation.getEmailAddress(),
@@ -412,7 +417,7 @@ public class UserManagementController {
     }
 
     @ApiOperation(value = "Give additional roles to a user.",
-            notes = "Users may be given ROLE_ADMIN, ROLE_ACB, "
+            notes = "Users may be given ROLE_ADMIN, ROLE_ONC, ROLE_ACB, "
                     + "ROLE_ATL, or ROLE_ONC_STAFF roles within the system.")
     @RequestMapping(value = "/{userName}/roles/{roleName}", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
@@ -520,7 +525,8 @@ public class UserManagementController {
         return "{\"roleRemoved\" : true }";
     }
 
-    @ApiOperation(value = "View users of the system.", notes = "Only ROLE_ADMIN will be able to see all users.")
+    @ApiOperation(value = "View users of the system.",
+            notes = "Only ROLE_ADMIN and ROLE_ONC will be able to see all users.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @PreAuthorize("isAuthenticated()")
     public @ResponseBody UserListJSONObject getUsers() {

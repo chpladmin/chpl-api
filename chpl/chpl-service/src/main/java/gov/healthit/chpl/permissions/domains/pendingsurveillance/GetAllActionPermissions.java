@@ -6,7 +6,7 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
 @Component
-public class GetAllActionPermissions extends ActionPermissions{
+public class GetAllActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess() {

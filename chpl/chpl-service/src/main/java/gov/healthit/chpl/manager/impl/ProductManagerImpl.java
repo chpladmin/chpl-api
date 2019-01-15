@@ -89,7 +89,7 @@ public class ProductManagerImpl implements ProductManager {
 
     @Override
     @Transactional(readOnly = false)
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
     @CacheEvict(value = {
             CacheNames.PRODUCT_NAMES
     }, allEntries = true)
@@ -126,7 +126,7 @@ public class ProductManagerImpl implements ProductManager {
 
     @Override
     @Transactional(readOnly = false)
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
     @CacheEvict(value = {
             CacheNames.PRODUCT_NAMES
     }, allEntries = true)
@@ -172,7 +172,7 @@ public class ProductManagerImpl implements ProductManager {
 
     @Override
     @Transactional(readOnly = false)
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     @CacheEvict(value = {
             CacheNames.PRODUCT_NAMES
     }, allEntries = true)
@@ -229,7 +229,7 @@ public class ProductManagerImpl implements ProductManager {
             EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class,
             AccessDeniedException.class
     })
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
     @CacheEvict(value = {
             CacheNames.PRODUCT_NAMES
     }, allEntries = true)

@@ -34,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -44,6 +45,7 @@ import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformityDocument;
 import gov.healthit.chpl.domain.SurveillanceUploadResult;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.concept.JobTypeConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.CertificationBodyAccessException;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -57,8 +59,10 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.manager.JobManager;
 import gov.healthit.chpl.manager.PendingSurveillanceManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
+import gov.healthit.chpl.manager.SurveillanceUploadManager;
 import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
@@ -72,6 +76,8 @@ import io.swagger.annotations.ApiOperation;
 public class SurveillanceController implements MessageSourceAware {
 
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceController.class);
+    private static final int SURV_THRESHOLD_DEFAULT = 50;
+    private final JobTypeConcept allowedJobType = JobTypeConcept.SURV_UPLOAD;
 
     @Autowired
     private Environment env;
@@ -80,9 +86,13 @@ public class SurveillanceController implements MessageSourceAware {
     @Autowired
     private MessageSource messageSource;
     @Autowired
+    private UserManager userManager;
+    @Autowired
+    private JobManager jobManager;
+    @Autowired
     private SurveillanceManager survManager;
     @Autowired
-    private PendingSurveillanceManager pendingSurveillanceManager;
+    private SurveillanceUploadManager survUploadManager;
     @Autowired
     private CertifiedProductManager cpManager;
     @Autowired
@@ -93,13 +103,14 @@ public class SurveillanceController implements MessageSourceAware {
     private CertificationBodyManager acbManager;
     @Autowired
     private SurveillanceValidator survValidator;
+    @Autowired
+    private PendingSurveillanceManager pendingSurveillanceManager;
 
     @ApiOperation(value = "Get the listing of all pending surveillance items that this user has access to.")
     @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody SurveillanceResults getAllPendingSurveillanceForAcbUser() throws AccessDeniedException {
 
         List<Surveillance> pendingSurvs = pendingSurveillanceManager.getAllPendingSurveillances();
-
         SurveillanceResults results = new SurveillanceResults();
         results.setPendingSurveillance(pendingSurvs);
         return results;
@@ -146,8 +157,9 @@ public class SurveillanceController implements MessageSourceAware {
             notes = "Creates a new surveillance activity, surveilled requirements, and any applicable non-conformities "
                     + "in the system and associates them with the certified product indicated in the "
                     + "request body. The surveillance passed into this request will first be validated "
-                    + " to check for errors. " + "ROLE_ACB "
-                    + " and administrative authority on the ACB associated with the certified product is required.")
+                    + " to check for errors. "
+                    + "ROLE_ADMIN, ROLE_ONC, or ROLE_ACB "
+                    + " along with administrative authority on the ACB associated with the certified product is required.")
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public synchronized ResponseEntity<Surveillance> createSurveillance(
             @RequestBody(required = true) final Surveillance survToInsert) throws ValidationException,
@@ -177,7 +189,7 @@ public class SurveillanceController implements MessageSourceAware {
                 .getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
         CertificationBodyDTO owningAcb = null;
         try {
-            owningAcb = acbManager.getById(Long.valueOf(beforeCp.getCertifyingBody().get("id").toString()));
+            owningAcb = acbManager.getIfPermissionById(Long.valueOf(beforeCp.getCertifyingBody().get("id").toString()));
         } catch (final AccessDeniedException ex) {
             throw new CertificationBodyAccessException(
                     "User does not have permission to add surveillance to a certified product under ACB "
@@ -251,7 +263,7 @@ public class SurveillanceController implements MessageSourceAware {
 
         CertificationBodyDTO owningAcb = null;
         try {
-            owningAcb = acbManager.getById(Long.valueOf(beforeCp.getCertifyingBody().get("id").toString()));
+            owningAcb = acbManager.getIfPermissionById(Long.valueOf(beforeCp.getCertifyingBody().get("id").toString()));
         } catch (Exception ex) {
             LOGGER.error("Error looking up ACB associated with surveillance.", ex);
             throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
@@ -274,7 +286,8 @@ public class SurveillanceController implements MessageSourceAware {
     @ApiOperation(value = "Update a surveillance activity for a certified product.",
             notes = "Updates an existing surveillance activity, surveilled requirements, and any applicable "
                     + "non-conformities in the system. The surveillance passed into this request will first be "
-                    + "validated to check for errors. ROLE_ACB and administrative authority on the ACB associated "
+                    + "validated to check for errors. ROLE_ADMIN, ROLE_ONC, or "
+                    + "ROLE_ACB and administrative authority on the ACB associated "
                     + "with the certified product is required.")
     @RequestMapping(value = "/{surveillanceId}", method = RequestMethod.PUT,
     produces = "application/json; charset=utf-8")
@@ -304,7 +317,7 @@ public class SurveillanceController implements MessageSourceAware {
                 .getCertifiedProductDetails(survToUpdate.getCertifiedProduct().getId());
         CertificationBodyDTO owningAcb = null;
         try {
-            owningAcb = acbManager.getById(Long.valueOf(beforeCp.getCertifyingBody().get("id").toString()));
+            owningAcb = acbManager.getIfPermissionById(Long.valueOf(beforeCp.getCertifyingBody().get("id").toString()));
         } catch (Exception ex) {
             LOGGER.error("Error looking up ACB associated with surveillance.", ex);
             throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
@@ -367,7 +380,7 @@ public class SurveillanceController implements MessageSourceAware {
         CertifiedProductSearchDetails beforeCp = cpdetailsManager
                 .getCertifiedProductDetails(survToDelete.getCertifiedProduct().getId());
         CertificationBodyDTO owningAcb =
-                acbManager.getById(Long.valueOf(beforeCp.getCertifyingBody().get("id").toString()));
+                acbManager.getIfPermissionById(Long.valueOf(beforeCp.getCertifyingBody().get("id").toString()));
 
         HttpHeaders responseHeaders = new HttpHeaders();
         // delete it
@@ -417,7 +430,7 @@ public class SurveillanceController implements MessageSourceAware {
                 .getCertifiedProductDetails(surv.getCertifiedProduct().getId());
         CertificationBodyDTO owningAcb = null;
         try {
-            owningAcb = acbManager.getById(Long.valueOf(beforeCp.getCertifyingBody().get("id").toString()));
+            owningAcb = acbManager.getIfPermissionById(Long.valueOf(beforeCp.getCertifyingBody().get("id").toString()));
         } catch (Exception ex) {
             LOGGER.error("Error looking up ACB associated with surveillance.", ex);
             throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
@@ -456,12 +469,18 @@ public class SurveillanceController implements MessageSourceAware {
     public @ResponseBody String rejectPendingSurveillance(@RequestBody final IdListContainer idList)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
             AccessDeniedException, InvalidArgumentsException, ObjectsMissingValidationException {
+        return deletePendingSurveillance(idList);
+    }
 
+    private @ResponseBody String deletePendingSurveillance(final IdListContainer idList)
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
+            AccessDeniedException, InvalidArgumentsException, ObjectsMissingValidationException {
         if (idList == null || idList.getIds() == null || idList.getIds().size() == 0) {
             throw new InvalidArgumentsException("At least one id must be provided for rejection.");
         }
 
         ObjectsMissingValidationException possibleExceptions = new ObjectsMissingValidationException();
+        List<CertificationBodyDTO> acbs = acbManager.getAllForUser();
         for (Long id : idList.getIds()) {
             try {
                 pendingSurveillanceManager.rejectPendingSurveillance(id);
@@ -484,8 +503,8 @@ public class SurveillanceController implements MessageSourceAware {
                     + "activity will be marked as deleted and the surveillance in this request body will "
                     + "be inserted. The surveillance passed into this request will first be validated "
                     + " to check for errors and the related pending surveillance will be removed. "
-                    + "ROLE_ACB "
-                    + " and administrative authority on the ACB associated with the certified product is required.")
+                    + "ROLE_ADMIN or ROLE_ACB "
+                    + " plus administrative authority on the ACB associated with the certified product is required.")
     @RequestMapping(value = "/pending/confirm", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
     public synchronized ResponseEntity<Surveillance> confirmPendingSurveillance(
@@ -562,7 +581,6 @@ public class SurveillanceController implements MessageSourceAware {
     public @ResponseBody ResponseEntity<?> upload(@RequestParam("file") final MultipartFile file)
             throws ValidationException, MaxUploadSizeExceededException, EntityRetrievalException,
             EntityCreationException {
-
         SurveillanceUploadResult uploadResult = pendingSurveillanceManager.uploadPendingSurveillance(file);
 
         //Interpret the results...
@@ -588,7 +606,6 @@ public class SurveillanceController implements MessageSourceAware {
             return new ResponseEntity<Job>(uploadResult.getJob(), status);
         }
     }
-
 
     @Override
     public void setMessageSource(final MessageSource messageSource) {

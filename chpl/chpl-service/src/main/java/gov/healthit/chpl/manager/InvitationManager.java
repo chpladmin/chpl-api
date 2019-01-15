@@ -16,6 +16,9 @@ public interface InvitationManager {
     InvitationDTO inviteAdmin(String emailAddress, List<String> permissions)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException;
 
+    InvitationDTO inviteOnc(String emailAddress, List<String> permissions)
+            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException;
+
     InvitationDTO inviteWithRolesOnly(String emailAddress, List<String> permissions)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException;
 

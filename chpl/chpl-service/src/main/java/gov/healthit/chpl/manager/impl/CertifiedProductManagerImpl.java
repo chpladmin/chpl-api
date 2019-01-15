@@ -436,8 +436,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     }
 
     @Override
-    @PreAuthorize("hasRole('ROLE_ACB') "
-            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') "
+            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
@@ -1072,7 +1072,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     }
 
     @Override
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     @Transactional(readOnly = false)
     @ClearAllCaches
     public CertifiedProductDTO changeOwnership(final Long certifiedProductId, final Long acbId)
@@ -1083,8 +1083,9 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     }
 
     @Override
-    @PreAuthorize("hasRole('ROLE_ADMIN') or " + "hasRole('ROLE_ACB')"
-            + "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or "
+            + "(hasRole('ROLE_ACB')"
+            + " and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     @Transactional(readOnly = false)
     public void sanitizeUpdatedListingData(final Long acbId, final CertifiedProductSearchDetails listing)
             throws EntityNotFoundException {
@@ -1128,7 +1129,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     }
 
     @Override
-    @PreAuthorize("hasRole('ROLE_ADMIN') or " + "(hasRole('ROLE_ACB')"
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or " + "(hasRole('ROLE_ACB')"
             + "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     @Transactional(rollbackFor = {
             EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class,
@@ -1163,7 +1164,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             case SuspendedByOnc:
             case TerminatedByOnc:
                 // only onc admin can do this and it always triggers developer ban
-                if (Util.isUserRoleAdmin()) {
+                if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
                     // find the new developer status
                     if (updatedStatusDto.getStatus().equals(CertificationStatusType.SuspendedByOnc.toString())) {
                         newDevStatusDto = devStatusDao.getByName(DeveloperStatusType.SuspendedByOnc.toString());
@@ -1171,7 +1172,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                             .equals(CertificationStatusType.TerminatedByOnc.toString())) {
                         newDevStatusDto = devStatusDao.getByName(DeveloperStatusType.UnderCertificationBanByOnc.toString());
                     }
-                } else if (!Util.isUserRoleAdmin()) {
+                } else if (!Util.isUserRoleAdmin() && !Util.isUserRoleOnc()) {
                     LOGGER.error("User " + Util.getUsername()
                     + " does not have ROLE_ADMIN and cannot change the status of developer for certified product with id "
                     + listingId);
@@ -1182,15 +1183,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             case WithdrawnByAcb:
             case WithdrawnByDeveloperUnderReview:
                 // initiate TriggerDeveloperBan job, telling ONC that they might need to ban a Developer
-                if ((Util.isUserRoleAdmin() || Util.isUserRoleAcbAdmin())) {
-                    triggerDeveloperBan(updatedListing, updateRequest.getReason());
-                } else if (!Util.isUserRoleAdmin() && !Util.isUserRoleAcbAdmin()) {
-                    LOGGER.error("User " + Util.getUsername()
-                    + " does not have ROLE_ADMIN or ROLE_ACB and cannot change the status of "
-                    + "developer for certified product with id " + listingId);
-                    throw new AccessDeniedException(
-                            "User does not have admin permission to change " + cpDeveloper.getName() + " status.");
-                }
+                triggerDeveloperBan(updatedListing, updateRequest.getReason());
                 break;
             default:
                 LOGGER.info("New listing status is " + updatedStatusDto.getStatus()
