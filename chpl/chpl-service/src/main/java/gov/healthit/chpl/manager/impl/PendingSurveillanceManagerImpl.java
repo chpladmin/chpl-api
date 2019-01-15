@@ -167,7 +167,7 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_SURVEILLANCE, "
             + "T(gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions).GET_ALL)")
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_SURVEILLANCE, "
-            + "T(gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions).GET_ALL), filterObject")
+            + "T(gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions).GET_ALL, filterObject)")
     public List<Surveillance> getAllPendingSurveillances() {
         List<PendingSurveillanceEntity> pendingResults = survDao.getAllPendingSurveillance();
         List<Surveillance> results = new ArrayList<Surveillance>();

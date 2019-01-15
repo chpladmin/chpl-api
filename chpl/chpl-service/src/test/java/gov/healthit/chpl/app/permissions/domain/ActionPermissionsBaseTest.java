@@ -9,7 +9,12 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 
 public abstract class ActionPermissionsBaseTest {
+    public final static Long ROLE_ONC_ID = 8l;
+    public final static Long ROLE_ADMIN_ID = -2l;
+    public final static Long ROLE_ACB_ID = 2l;
+
     public abstract void hasAccess_Admin() throws Exception;
+    public abstract void hasAccess_Onc() throws Exception;
     public abstract void hasAccess_Acb() throws Exception;
     public abstract void hasAccess_Atl() throws Exception;
     public abstract void hasAccess_Cms() throws Exception;
@@ -74,6 +79,16 @@ public abstract class ActionPermissionsBaseTest {
         cmsUser.setSubjectName("cmsUser");
         cmsUser.getPermissions().add(new GrantedPermission("ROLE_CMS_STAFF"));
         return cmsUser;
+    }
+
+    public JWTAuthenticatedUser getOncUser() {
+        JWTAuthenticatedUser oncUser = new JWTAuthenticatedUser();
+        oncUser.setFullName("ONC");
+        oncUser.setId(3L);
+        oncUser.setFriendlyName("User");
+        oncUser.setSubjectName("oncUser");
+        oncUser.getPermissions().add(new GrantedPermission("ROLE_ONC"));
+        return oncUser;
     }
 
 }

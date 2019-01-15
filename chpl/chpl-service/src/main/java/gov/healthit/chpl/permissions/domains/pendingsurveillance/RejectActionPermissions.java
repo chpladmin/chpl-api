@@ -11,7 +11,6 @@ import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
 @Component
 public class RejectActionPermissions  extends ActionPermissions {
-    @Autowired
     private SurveillanceDAO surveillanceDAO;
     private UserPermissionDAO userPermissionDAO;
 
