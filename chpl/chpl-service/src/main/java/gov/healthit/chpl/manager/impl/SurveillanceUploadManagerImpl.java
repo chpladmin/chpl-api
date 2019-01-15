@@ -15,7 +15,6 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,17 +35,14 @@ import gov.healthit.chpl.util.FileUtils;
 public class SurveillanceUploadManagerImpl implements SurveillanceUploadManager {
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceUploadManagerImpl.class);
 
-    private MessageSource messageSource;
     private FileUtils fileUtils;
     private SurveillanceUploadHandlerFactory uploadHandlerFactory;
     private Permissions permissions;
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public SurveillanceUploadManagerImpl(MessageSource messageSource, FileUtils fileUtils,
-            SurveillanceUploadHandlerFactory uploadHandlerFactory, Permissions permissions,
-            ErrorMessageUtil errorMessageUtil) {
-        this.messageSource = messageSource;
+    public SurveillanceUploadManagerImpl(FileUtils fileUtils, SurveillanceUploadHandlerFactory uploadHandlerFactory,
+            Permissions permissions, ErrorMessageUtil errorMessageUtil) {
         this.fileUtils = fileUtils;
         this.uploadHandlerFactory = uploadHandlerFactory;
         this.permissions = permissions;
@@ -72,7 +68,8 @@ public class SurveillanceUploadManagerImpl implements SurveillanceUploadManager 
             List<CSVRecord> records = parser.getRecords();
             if (records.size() <= 1) {
                 throw new ValidationException(
-                        "The file appears to have a header line with no other information. Please make sure there are at least two rows in the CSV file.");
+                        "The file appears to have a header line with no other information. Please make sure there "
+                                + "are at least two rows in the CSV file.");
             }
             CSVRecord heading = null;
             for (int i = 0; i < records.size(); i++) {
