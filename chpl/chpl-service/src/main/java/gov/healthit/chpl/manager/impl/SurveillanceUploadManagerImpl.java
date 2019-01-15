@@ -244,7 +244,7 @@ public class SurveillanceUploadManagerImpl implements SurveillanceUploadManager 
 
             if (surveilledProduct != null) {
                 try {
-                    acbManager.getById(surveilledProduct.getCertificationBodyId());
+                    acbManager.getIfPermissionById(surveilledProduct.getCertificationBodyId());
                 } catch (final EntityRetrievalException ex) {
                     String msg = String.format(messageSource.getMessage(
                             new DefaultMessageSourceResolvable(

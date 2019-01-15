@@ -86,7 +86,8 @@ public class ProductVersionController {
                     + "that a new version is created with all of the information provided and all of the certified "
                     + "products previously assigned to the old versionIds are reassigned to the newly created version."
                     + "  The old versions are then deleted. "
-                    + " The logged in user must have ROLE_ADMIN or ROLE_ACB. ")
+                    + " The logged in user must have ROLE_ADMIN, ROLE_ONC, or ROLE_ACB. "
+                    + "Users with ROLE_ACB are not able to perform a merge. ")
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public ResponseEntity<ProductVersion> updateVersion(

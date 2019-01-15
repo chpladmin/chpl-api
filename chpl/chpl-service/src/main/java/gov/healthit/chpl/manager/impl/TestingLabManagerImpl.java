@@ -32,6 +32,7 @@ import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -52,7 +53,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
     private ActivityManager activityManager;
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     public TestingLabDTO create(final TestingLabDTO atl)
             throws UserRetrievalException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
         String maxCode = testingLabDAO.getMaxCode();
@@ -87,7 +88,8 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#atl, admin)")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') "
+            + "or hasPermission(#atl, admin)")
     public TestingLabDTO update(final TestingLabDTO atl) throws EntityRetrievalException, JsonProcessingException,
             EntityCreationException, UpdateTestingLabException {
 
@@ -101,7 +103,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     public TestingLabDTO retire(final Long atlId) throws EntityRetrievalException,
         JsonProcessingException, EntityCreationException, UpdateTestingLabException {
         TestingLabDTO result = null;
@@ -116,7 +118,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     public TestingLabDTO unretire(final Long atlId) throws EntityRetrievalException,
         JsonProcessingException, EntityCreationException, UpdateTestingLabException {
         TestingLabDTO result = null;
@@ -131,7 +133,8 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#atl, admin) or hasPermission(#atl, read)")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') "
+            + "or hasPermission(#atl, admin) or hasPermission(#atl, read)")
     public List<UserDTO> getAllUsersOnAtl(final TestingLabDTO atl) {
         ObjectIdentity oid = new ObjectIdentityImpl(TestingLabDTO.class, atl.getId());
         MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -157,7 +160,8 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
         return users;
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#atl, read) or hasPermission(#atl, admin)")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') "
+            + "or hasPermission(#atl, read) or hasPermission(#atl, admin)")
     public List<Permission> getPermissionsForUser(final TestingLabDTO atl, final Sid recipient) {
         ObjectIdentity oid = new ObjectIdentityImpl(TestingLabDTO.class, atl.getId());
         MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -174,8 +178,8 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_INVITED_USER_CREATOR') or "
-            + "(hasRole('ROLE_ATL') and hasPermission(#atl, admin))")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_INVITED_USER_CREATOR') "
+            + "or (hasRole('ROLE_ATL') and hasPermission(#atl, admin))")
     public void addPermission(final TestingLabDTO atl, final Long userId, final Permission permission) throws UserRetrievalException {
         MutableAcl acl;
         ObjectIdentity oid = new ObjectIdentityImpl(TestingLabDTO.class, atl.getId());
@@ -202,7 +206,8 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ATL') and hasPermission(#atl, admin))")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') "
+            + "or (hasRole('ROLE_ATL') and hasPermission(#atl, admin))")
     public void deletePermission(final TestingLabDTO atl, final Sid recipient, final Permission permission) {
         ObjectIdentity oid = new ObjectIdentityImpl(TestingLabDTO.class, atl.getId());
         MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -228,7 +233,8 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ATL') and hasPermission(#atl, admin))")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') "
+            + "or (hasRole('ROLE_ATL') and hasPermission(#atl, admin))")
     public void deleteAllPermissionsOnAtl(final TestingLabDTO atl, final Sid recipient) {
         ObjectIdentity oid = new ObjectIdentityImpl(TestingLabDTO.class, atl.getId());
         MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -252,7 +258,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
         LOGGER.debug("Deleted all testing lab " + atl.getName() + " ACL permissions for recipient " + recipient);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ATL')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ATL')")
     public void deletePermissionsForUser(final UserDTO userDto) throws UserRetrievalException {
         UserDTO foundUser = userDto;
         if (foundUser.getSubjectName() == null) {
@@ -299,16 +305,23 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
     }
 
     @Transactional(readOnly = true)
-    @PostFilter("hasRole('ROLE_ADMIN') or hasPermission(filterObject, 'read') or hasPermission(filterObject, admin)")
+    @PostFilter("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') "
+            + "or hasPermission(filterObject, 'read') or hasPermission(filterObject, admin)")
     public List<TestingLabDTO> getAllForUser() {
         return testingLabDAO.findAll();
     }
 
     @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_INVITED_USER_CREATOR') or "
-            + "hasPermission(#id, 'gov.healthit.chpl.dto.TestingLabDTO', read) or "
-            + "hasPermission(#id, 'gov.healthit.chpl.dto.TestingLabDTO', admin)")
     public TestingLabDTO getById(final Long id) throws EntityRetrievalException {
         return testingLabDAO.getById(id);
     }
+
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_INVITED_USER_CREATOR') or "
+            + "hasPermission(#id, 'gov.healthit.chpl.dto.TestingLabDTO', read) or "
+            + "hasPermission(#id, 'gov.healthit.chpl.dto.TestingLabDTO', admin)")
+    public TestingLabDTO getIfPermissionById(final Long id) throws EntityRetrievalException {
+        return testingLabDAO.getById(id);
+    }
+
 }

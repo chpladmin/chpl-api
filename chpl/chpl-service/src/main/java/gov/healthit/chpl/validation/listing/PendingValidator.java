@@ -3,6 +3,7 @@ package gov.healthit.chpl.validation.listing;
 import java.util.List;
 
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
 
 /**
@@ -23,8 +24,9 @@ public abstract class PendingValidator {
      * Validation simply calls each reviewer. The reviewers add
      * errors and warnings as appropriate.
      * @param listing a pending listing
+     * @throws ValidationException 
      */
-    public void validate(final PendingCertifiedProductDTO listing) {
+    public void validate(final PendingCertifiedProductDTO listing) throws ValidationException {
         for (Reviewer reviewer : getReviewers()) {
             reviewer.review(listing);
         }

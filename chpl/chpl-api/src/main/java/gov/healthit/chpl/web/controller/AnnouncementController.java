@@ -40,7 +40,7 @@ public class AnnouncementController {
                     + "private and only public announcements will be returned if a non-authenticated user "
                     + "calls this method. Both public and private announcements will be returned to an "
                     + "authenticated user.  Scheduled future announcements can be retrieved by setting the "
-                    + "'future' flag to true and only CHPL users with ROLE_ADMIN will be granted access to "
+                    + "'future' flag to true and only CHPL users with ROLE_ADMIN or ROLE_ONC will be granted access to "
                     + "that data.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody AnnouncementResults getAnnouncements(
@@ -71,7 +71,7 @@ public class AnnouncementController {
     }
 
     @ApiOperation(value = "Create a new announcement.",
-            notes = "Only CHPL users with ROLE_ADMIN are able to create announcements.")
+            notes = "Only CHPL users with ROLE_ADMIN and ROLE_ONC are able to create announcements.")
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public Announcement create(@RequestBody final Announcement announcementInfo) throws InvalidArgumentsException,
@@ -106,7 +106,7 @@ public class AnnouncementController {
     }
 
     @ApiOperation(value = "Change an existing announcement.",
-            notes = "Only CHPL users with ROLE_ADMIN are able to update announcements.")
+            notes = "Only CHPL users with ROLE_ADMIN or ROLE_ONC are able to update announcements.")
     @RequestMapping(value = "/{announcementId}", method = RequestMethod.PUT,
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
@@ -132,7 +132,7 @@ public class AnnouncementController {
     }
 
     @ApiOperation(value = "Delete an existing announcement.",
-            notes = "Only CHPL users with ROLE_ADMIN are able to delete announcements.")
+            notes = "Only CHPL users with ROLE_ADMIN or ROLE_ONC are able to delete announcements.")
     @RequestMapping(value = "/{announcementId}", method = RequestMethod.DELETE,
             produces = "application/json; charset=utf-8")
     public String deleteAnnouncement(@PathVariable("announcementId") final Long announcementId)

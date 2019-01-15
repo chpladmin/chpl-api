@@ -147,7 +147,7 @@ public class TestingLabController {
         //Retirement and un-retirement is done as a separate manager action because
         //security is different from normal ATL updates - only admins are allowed
         //whereas an ATL admin can update other info
-        TestingLabDTO existingAtl = atlManager.getById(updatedAtl.getId());
+        TestingLabDTO existingAtl = atlManager.getIfPermissionById(updatedAtl.getId());
         if (existingAtl.isRetired() != updatedAtl.isRetired() && updatedAtl.isRetired()) {
             //we are retiring this ATL and no other changes can be made
             atlManager.retire(updatedAtl.getId());
@@ -182,54 +182,19 @@ public class TestingLabController {
             atlManager.update(toUpdate);
         }
 
-        TestingLabDTO result = atlManager.getById(updatedAtl.getId());
+        TestingLabDTO result = atlManager.getIfPermissionById(updatedAtl.getId());
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
         TestingLab response = new TestingLab(result);
         return new ResponseEntity<TestingLab>(response, responseHeaders, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Add a user to an ATL.",
-            notes = "The logged in user must have ROLE_ADMIN or ROLE_ATL and have administrative authority on the "
-                    + " specified ATL. It is recommended to pass 'ADMIN' in as the 'authority' field"
-                    + " to guarantee maximum compatibility although 'READ' and 'DELETE' are also valid choices. "
-                    + " Note that this method gives special permission on a specific ATL and is not the "
-                    + " equivalent of assigning the ROLE_ATL role. Please view /users/grant_role "
-                    + " request for more information on that.")
-    @RequestMapping(value = "/{atlId}/users", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
-    public String addUserToAtl(@RequestBody final UpdateUserAndAtlRequest updateRequest)
-            throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
-
-        return addUser(updateRequest);
-    }
-
-    private String addUser(final UpdateUserAndAtlRequest updateRequest)
-            throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
-
-        if (updateRequest.getAtlId() == null || updateRequest.getUserId() == null || updateRequest.getUserId() <= 0
-                || updateRequest.getAuthority() == null) {
-            throw new InvalidArgumentsException("ATL ID, User ID (greater than 0), and Authority are required.");
-        }
-
-        UserDTO user = userManager.getById(updateRequest.getUserId());
-        TestingLabDTO atl = atlManager.getById(updateRequest.getAtlId());
-
-        if (user == null || atl == null) {
-            throw new InvalidArgumentsException("Could not find either ATL or User specified");
-        }
-
-        Permission permission = ChplPermission.toPermission(updateRequest.getAuthority());
-        atlManager.addPermission(atl, updateRequest.getUserId(), permission);
-        return "{\"userAdded\" : true}";
-    }
-
     @ApiOperation(value = "Remove user permissions from an ATL.",
             notes = "The logged in user must have ROLE_ADMIN or ROLE_ATL and have administrative authority on the "
                     + " specified ATL. The user specified in the request will have all authorities "
                     + " removed that are associated with the specified ATL.")
-    @RequestMapping(value = "{atlId}/users/{userId}", method = RequestMethod.DELETE,
-    consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "{atlId}/users/{userId}", method = RequestMethod.DELETE, 
+    produces = "application/json; charset=utf-8")
     public String deleteUserFromAtl(@PathVariable final Long atlId, @PathVariable final Long userId)
             throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
 
@@ -240,7 +205,7 @@ public class TestingLabController {
             throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
 
         UserDTO user = userManager.getById(userId);
-        TestingLabDTO atl = atlManager.getById(atlId);
+        TestingLabDTO atl = atlManager.getIfPermissionById(atlId);
 
         if (user == null || atl == null) {
             throw new InvalidArgumentsException("Could not find either ATL or User specified");
@@ -259,7 +224,7 @@ public class TestingLabController {
     produces = "application/json; charset=utf-8")
     public @ResponseBody PermittedUserResults getUsers(@PathVariable("atlId") final Long atlId)
             throws InvalidArgumentsException, EntityRetrievalException {
-        TestingLabDTO atl = atlManager.getById(atlId);
+        TestingLabDTO atl = atlManager.getIfPermissionById(atlId);
         if (atl == null) {
             throw new InvalidArgumentsException("Could not find the ATL specified.");
         }

@@ -53,9 +53,8 @@ public class CertificationBodyController {
 
     @ApiOperation(value = "List all certification bodies (ACBs).",
             notes = "Setting the 'editable' parameter to true will return all ACBs that the logged in user has "
-                    + "edit permissions on.  Setting 'showDeleted' to true will include even those ACBs that "
-                    + "have been deleted. The logged in user must have ROLE_ADMIN to see deleted ACBs. The default "
-                    + "behavior of this service is to list all of the ACBs in the system that are not deleted.")
+                    + "edit permissions on. The logged in user must have ROLE_ADMIN or ROLE_ONC to see retired ACBs."
+                    + "The default behavior of this service is to list all of the ACBs in the system that are not retired.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody CertificationBodyResults getAcbs(
             @RequestParam(required = false, defaultValue = "false") final boolean editable) {
@@ -144,7 +143,7 @@ public class CertificationBodyController {
         //Retirement and un-retirement is done as a separate manager action because
         //security is different from normal ACB updates - only admins are allowed
         //whereas an ACB admin can update other info
-        CertificationBodyDTO existingAcb = acbManager.getById(updatedAcb.getId());
+        CertificationBodyDTO existingAcb = acbManager.getIfPermissionById(updatedAcb.getId());
         if (existingAcb.isRetired() != updatedAcb.isRetired() && updatedAcb.isRetired()) {
             //we are retiring this ACB - no other updates can happen
             acbManager.retire(updatedAcb.getId());
@@ -181,48 +180,12 @@ public class CertificationBodyController {
         return new CertificationBody(result);
     }
 
-    @ApiOperation(value = "Add a user to an ACB.",
-            notes = "The logged in user must have ROLE_ADMIN or ROLE_ACB and have administrative authority on the "
-                    + " specified ACB. It is recommended to pass 'ADMIN' in as the 'authority' field"
-                    + " to guarantee maximum compatibility although 'READ' and 'DELETE' are also valid choices. "
-                    + " Note that this method gives special permission on a specific ACB and is not the "
-                    + " equivalent of assigning the ROLE_ACB role. Please view /users/grant_role "
-                    + " request for more information on that.")
-    @RequestMapping(value = "/{acbId}/users", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
-    public String addUserToAcb(@RequestBody final UpdateUserAndAcbRequest updateRequest)
-            throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
-
-        return addUser(updateRequest);
-    }
-
-    private String addUser(final UpdateUserAndAcbRequest updateRequest)
-            throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
-
-        if (updateRequest.getAcbId() == null || updateRequest.getUserId() == null || updateRequest.getUserId() <= 0
-                || updateRequest.getAuthority() == null) {
-            throw new InvalidArgumentsException("ACB ID, User ID (greater than 0), and Authority are required.");
-        }
-
-        UserDTO user = userManager.getById(updateRequest.getUserId());
-        CertificationBodyDTO acb = acbManager.getById(updateRequest.getAcbId());
-
-        if (user == null || acb == null) {
-            throw new InvalidArgumentsException("Could not find either ACB or User specified");
-        }
-
-        Permission permission = ChplPermission.toPermission(updateRequest.getAuthority());
-        acbManager.addPermission(acb, updateRequest.getUserId(), permission);
-        return "{\"userAdded\" : true}";
-    }
-
-
     @ApiOperation(value = "Remove user permissions from an ACB.",
             notes = "The logged in user must have ROLE_ADMIN or ROLE_ACB and have administrative authority on the "
                     + " specified ACB. The user specified in the request will have all authorities "
                     + " removed that are associated with the specified ACB.")
     @RequestMapping(value = "{acbId}/users/{userId}", method = RequestMethod.DELETE,
-            consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public String deleteUserFromAcb(@PathVariable final Long acbId, @PathVariable final Long userId)
             throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
 
@@ -233,7 +196,7 @@ public class CertificationBodyController {
             throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
 
         UserDTO user = userManager.getById(userId);
-        CertificationBodyDTO acb = acbManager.getById(acbId);
+        CertificationBodyDTO acb = acbManager.getIfPermissionById(acbId);
 
         if (user == null || acb == null) {
             throw new InvalidArgumentsException("Could not find either ACB or User specified");
@@ -252,7 +215,7 @@ public class CertificationBodyController {
             produces = "application/json; charset=utf-8")
     public @ResponseBody PermittedUserResults getUsers(@PathVariable("acbId") final Long acbId)
             throws InvalidArgumentsException, EntityRetrievalException {
-        CertificationBodyDTO acb = acbManager.getById(acbId);
+        CertificationBodyDTO acb = acbManager.getIfPermissionById(acbId);
         if (acb == null) {
             throw new InvalidArgumentsException("Could not find the ACB specified.");
         }
