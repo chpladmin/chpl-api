@@ -10,6 +10,9 @@ import gov.healthit.chpl.auth.user.User;
 
 public class Util {
 
+    public final static String ROLE_ACB_AUTHORITY = "ROLE_ACB";
+    public final static String ROLE_ONC_AUTHORITY = "ROLE_ONC";
+
     public static String getUsername() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 

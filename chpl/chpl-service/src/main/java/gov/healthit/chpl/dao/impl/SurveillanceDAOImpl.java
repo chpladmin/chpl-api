@@ -717,6 +717,14 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
         return result;
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<PendingSurveillanceEntity> getAllPendingSurveillance() {
+        Query query = entityManager.createQuery("from PendingSurveillanceEntity where deleted <> true",
+                PendingSurveillanceEntity.class);
+        return query.getResultList();
+    }
+
     private SurveillanceEntity fetchSurveillanceById(Long id) throws EntityRetrievalException {
         entityManager.clear();
         Query query = entityManager.createQuery("SELECT DISTINCT surv " + "FROM SurveillanceEntity surv "

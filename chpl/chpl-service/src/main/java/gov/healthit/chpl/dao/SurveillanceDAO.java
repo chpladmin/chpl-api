@@ -74,4 +74,6 @@ public interface SurveillanceDAO {
     List<SurveillanceEntity> getAllSurveillance();
 
     List<SurveillanceNonconformityEntity> getAllSurveillanceNonConformities();
+
+    List<PendingSurveillanceEntity> getAllPendingSurveillance();
 }

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,7 +46,6 @@ import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.domain.SurveillanceUploadResult;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.domain.concept.JobTypeConcept;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.job.JobDTO;
@@ -65,7 +65,6 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
-import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.JobManager;
@@ -92,7 +91,6 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
     private SurveillanceDAO survDao;
     private UserDAO userDao;
     private ActivityManager activityManager;
-    private CertificationBodyManager acbManager;
     private CertifiedProductDetailsManager cpDetailsManager;
     private SurveillanceValidator validator;
     private UserPermissionDAO userPermissionDAO;
@@ -102,9 +100,8 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
     public PendingSurveillanceManagerImpl(Permissions permissions, Environment env, FileUtils fileUtils,
             SurveillanceUploadManager survUploadManager, JobManager jobManager, UserManager userManager,
             CertifiedProductManager cpManager, SurveillanceValidator survValidator, SurveillanceDAO survDao,
-            UserDAO userDao, ActivityManager activityManager, CertificationBodyManager acbManager,
-            CertifiedProductDetailsManager cpDetailsManager, SurveillanceValidator validator,
-            UserPermissionDAO userPermissionDAO, CertifiedProductDAO cpDAO) {
+            UserDAO userDao, ActivityManager activityManager, CertifiedProductDetailsManager cpDetailsManager,
+            SurveillanceValidator validator, UserPermissionDAO userPermissionDAO, CertifiedProductDAO cpDAO) {
         this.env = env;
         this.permissions = permissions;
         this.fileUtils = fileUtils;
@@ -116,7 +113,6 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
         this.survDao = survDao;
         this.userDao = userDao;
         this.activityManager = activityManager;
-        this.acbManager = acbManager;
         this.cpDetailsManager = cpDetailsManager;
         this.validator = validator;
         this.userPermissionDAO = userPermissionDAO;
@@ -170,22 +166,18 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
     @Transactional(readOnly = true)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_SURVEILLANCE, "
             + "T(gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions).GET_ALL)")
+    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_SURVEILLANCE, "
+            + "T(gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions).GET_ALL), filterObject")
     public List<Surveillance> getAllPendingSurveillances() {
-        List<CertificationBodyDTO> acbs = acbManager.getAllForUser();
-        List<Surveillance> pendingSurvs = new ArrayList<Surveillance>();
-
-        if (acbs != null) {
-            for (CertificationBodyDTO acb : acbs) {
-                try {
-                    List<Surveillance> survsOnAcb = getPendingByAcb(acb.getId());
-                    pendingSurvs.addAll(survsOnAcb);
-                } catch (final AccessDeniedException denied) {
-                    LOGGER.warn("Access denied to pending surveillance for acb " + acb.getName() + " and user "
-                            + Util.getUsername());
-                }
+        List<PendingSurveillanceEntity> pendingResults = survDao.getAllPendingSurveillance();
+        List<Surveillance> results = new ArrayList<Surveillance>();
+        if (pendingResults != null) {
+            for (PendingSurveillanceEntity pr : pendingResults) {
+                Surveillance surv = convertToDomain(pr);
+                results.add(surv);
             }
         }
-        return pendingSurvs;
+        return results;
     }
 
     @Override
@@ -714,18 +706,6 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
         Surveillance result = convertToDomain(surv);
         validator.validate(result);
         return result;
-    }
-
-    private List<Surveillance> getPendingByAcb(final Long acbId) {
-        List<PendingSurveillanceEntity> pendingResults = survDao.getPendingSurveillanceByAcb(acbId);
-        List<Surveillance> results = new ArrayList<Surveillance>();
-        if (pendingResults != null) {
-            for (PendingSurveillanceEntity pr : pendingResults) {
-                Surveillance surv = convertToDomain(pr);
-                results.add(surv);
-            }
-        }
-        return results;
     }
 }
 
