@@ -52,6 +52,28 @@ public class ConfirmActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         Surveillance surv = new Surveillance();
+        surv.setAuthority("ROLE_ONC");
+        assertTrue(permissions.hasAccess(surv));
+
+        surv = new Surveillance();
+        surv.setAuthority("ROLE_ACB");
+        assertFalse(permissions.hasAccess(surv));
+    }
+
+    @Override
+    @Test
+    public void hasAccess_Onc()  throws Exception {
+        SecurityContextHolder.getContext().setAuthentication(getOncUser());
+
+        //This should always return false
+        assertFalse(permissions.hasAccess());
+
+        Surveillance surv = new Surveillance();
+        surv.setAuthority("ROLE_ONC");
+        assertTrue(permissions.hasAccess(surv));
+
+        surv = new Surveillance();
+        surv.setAuthority("ROLE_ACB");
         assertFalse(permissions.hasAccess(surv));
     }
 
@@ -68,20 +90,31 @@ public class ConfirmActionPermissionsTest extends ActionPermissionsBaseTest {
         .thenReturn(getCertifiedProduct(1l, 2l));
 
         //With the above mock, the user should have access
+        //The ACB is correct, but the authority is incorrect
         Surveillance surv = new Surveillance();
         surv.setCertifiedProduct(new CertifiedProduct());
         surv.getCertifiedProduct().setId(1l);
+        surv.setAuthority("ROLE_ACB");
         assertTrue(permissions.hasAccess(surv));
 
+        //With the above mock, the user should have access.
+        //The ACB is correct, and the authority is correct
+        surv = new Surveillance();
+        surv.setCertifiedProduct(new CertifiedProduct());
+        surv.getCertifiedProduct().setId(1l);
+        surv.setAuthority("ROLE_ONC");
+        assertFalse(permissions.hasAccess(surv));
 
         //Setup Mock
         Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong()))
         .thenReturn(getCertifiedProduct(1l, 3l));
 
         //With the above mock, the user should NOT have access
+        //The ACB is incorrect, but the authority is correct
         surv = new Surveillance();
         surv.setCertifiedProduct(new CertifiedProduct());
         surv.getCertifiedProduct().setId(1l);
+        surv.setAuthority("ROLE_ACB");
         assertFalse(permissions.hasAccess(surv));
     }
 
