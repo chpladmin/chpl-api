@@ -9,6 +9,7 @@ import static org.quartz.impl.matchers.GroupMatcher.groupEquals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -33,6 +34,8 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.SchedulerManager;
+import gov.healthit.chpl.permissions.Permissions;
+import gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions;
 import gov.healthit.chpl.scheduler.ChplSchedulerReference;
 
 /**
@@ -45,11 +48,17 @@ public class SchedulerManagerImpl implements SchedulerManager {
 
     private static final String AUTHORITY_DELIMITER = ";";
 
-    @Autowired
     private ChplSchedulerReference chplScheduler;
+    private CertificationBodyManager acbManager;
+    private Permissions permissions;
 
     @Autowired
-    private CertificationBodyManager acbManager;
+    public SchedulerManagerImpl(final ChplSchedulerReference chplScheduler,
+            final CertificationBodyManager acbManager, final Permissions permissions) {
+        this.chplScheduler = chplScheduler;
+        this.acbManager = acbManager;
+        this.permissions = permissions;
+    }
 
     @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
@@ -166,20 +175,34 @@ public class SchedulerManagerImpl implements SchedulerManager {
      * will need to be added to the list.
      */
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ONC', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
+            + "T(gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions).GET_ALL)")
+    //@PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
+    //        + "T(gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions).GET_ALL, filterObject)")
     public List<ChplJob> getAllJobs() throws SchedulerException {
         List<ChplJob> jobs = new ArrayList<ChplJob>();
         Scheduler scheduler = getScheduler();
+
+        //Get all the jobs (no security)
         for (String group : scheduler.getJobGroupNames()) {
-            if (group.equals("chplJobs")) {
-                for (JobKey jobKey : scheduler.getJobKeys(groupEquals(group))) {
-                    JobDetail jobDetail = scheduler.getJobDetail(jobKey);
-                    if (doesUserHavePermissionToJob(jobDetail)) {
-                        jobs.add(new ChplJob(jobDetail));
-                    }
-                }
+            for (JobKey jobKey : scheduler.getJobKeys(groupEquals(group))) {
+                JobDetail jobDetail = scheduler.getJobDetail(jobKey);
+                jobs.add(new ChplJob(jobDetail));
             }
         }
+
+        //TODO: There is a problem using @PostFilter - some sort of ACL issue
+        //Until that is figured out...
+        Iterator<ChplJob> iterator = jobs.iterator();
+        while (iterator.hasNext()) {
+            if (!permissions.hasAccess(
+                    Permissions.SCHEDULER,
+                    SchedulerDomainPermissions.GET_ALL,
+                    iterator.next())) {
+                iterator.remove();
+            }
+        }
+
         return jobs;
     }
 
