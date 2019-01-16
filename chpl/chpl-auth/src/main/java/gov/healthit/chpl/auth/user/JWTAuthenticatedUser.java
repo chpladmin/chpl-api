@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
 
+import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 
 public class JWTAuthenticatedUser implements User {
@@ -22,6 +23,7 @@ public class JWTAuthenticatedUser implements User {
     private final boolean accountEnabled = true;
     private boolean passwordResetRequired = false;
     private boolean authenticated = true;
+    private UserDTO impersonatingUser;
 
     /** Default constructor. */
     public JWTAuthenticatedUser() {
@@ -102,6 +104,14 @@ public class JWTAuthenticatedUser implements User {
     @Override
     public void setAuthenticated(final boolean arg0) throws IllegalArgumentException {
         this.authenticated = arg0;
+    }
+
+    public UserDTO getImpersonatingUser() {
+        return impersonatingUser;
+    }
+
+    public void setImpersonatingUser(final UserDTO impersonatingUser) {
+        this.impersonatingUser = impersonatingUser;
     }
 
     @Override

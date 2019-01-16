@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -283,6 +284,7 @@ public class AuthenticationController {
     }
 
     @ApiOperation(value = "Impersonate another user.", notes = "")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     @RequestMapping(value = "/impersonate", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public String impersonateUser(@RequestParam(value = "username", required = true) final String username)
@@ -296,9 +298,9 @@ public class AuthenticationController {
     @ApiOperation(value = "Stop impersonating another user.", notes = "")
     @RequestMapping(value = "/unimpersonate", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
-    public String unimpersonateUser(@RequestHeader(value = "Bearer", required = true) final String userJwt)
+    public String unimpersonateUser(@RequestHeader(value = "Authorization", required = true) final String userJwt)
             throws JWTValidationException, JWTCreationException, UserRetrievalException {
-        User user = userConverter.getAuthenticatedUser(userJwt.split(" ")[1]);
+        User user = userConverter.getImpersonatingUser(userJwt.split(" ")[1]);
         String jwt = authenticator.unimpersonateUser(user);
         String jwtJSON = "{\"token\": \"" + jwt + "\"}";
         return jwtJSON;

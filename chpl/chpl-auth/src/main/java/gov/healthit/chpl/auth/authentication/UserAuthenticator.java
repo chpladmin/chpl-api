@@ -28,6 +28,7 @@ import gov.healthit.chpl.auth.jwt.JWTAuthor;
 import gov.healthit.chpl.auth.jwt.JWTCreationException;
 import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
@@ -121,7 +122,7 @@ public class UserAuthenticator implements Authenticator {
         identity.add(user.getFullName());
         if (user.getImpersonatedBy() != null) {
             identity.add(user.getImpersonatedBy().getId().toString());
-            identity.add(user.getSubjectName());
+            identity.add(user.getImpersonatedBy().getSubjectName());
         }
 
         claims.put("Identity", identity);
@@ -134,10 +135,14 @@ public class UserAuthenticator implements Authenticator {
     @Override
     public String refreshJWT() throws JWTCreationException, UserRetrievalException {
 
-        User user = Util.getCurrentUser();
+        JWTAuthenticatedUser user = (JWTAuthenticatedUser) Util.getCurrentUser();
 
         if (user != null) {
-            return getJWT(getUserByName(user.getSubjectName()));
+            UserDTO userDto = getUserByName(user.getSubjectName());
+            if (user.getImpersonatingUser() != null) {
+                userDto.setImpersonatedBy(user.getImpersonatingUser());
+            }
+            return getJWT(userDto);
         } else {
             throw new JWTCreationException("Cannot generate token for Anonymous user.");
         }
