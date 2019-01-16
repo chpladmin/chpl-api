@@ -16,10 +16,10 @@ public class PendingSurveillanceDomainPermissions extends DomainPermissions {
     public static final String CONFIRM = "CONFIRM";
 
     @Autowired
-    public PendingSurveillanceDomainPermissions(GetAllActionPermissions getAllActionPermissions,
-            UploadActionPermissions uploadActionPermissions,
-            RejectActionPermissions rejectActionPermissions,
-            ConfirmActionPermissions confirmActionPermissions) {
+    public PendingSurveillanceDomainPermissions(final GetAllActionPermissions getAllActionPermissions,
+            final UploadActionPermissions uploadActionPermissions,
+            final RejectActionPermissions rejectActionPermissions,
+            final ConfirmActionPermissions confirmActionPermissions) {
         getActionPermissions().put(GET_ALL, getAllActionPermissions);
         getActionPermissions().put(UPLOAD, uploadActionPermissions);
         getActionPermissions().put(REJECT, rejectActionPermissions);

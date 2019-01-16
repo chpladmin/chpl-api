@@ -71,7 +71,8 @@ public class PendingSurveillanceEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingSurveillanceId")
     @Basic(optional = false)
     @Column(name = "pending_surveillance_id", nullable = false)
-    private Set<PendingSurveillanceRequirementEntity> surveilledRequirements = new HashSet<PendingSurveillanceRequirementEntity>();
+    private Set<PendingSurveillanceRequirementEntity> surveilledRequirements =
+    new HashSet<PendingSurveillanceRequirementEntity>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingSurveillanceId")
     @Basic(optional = false)

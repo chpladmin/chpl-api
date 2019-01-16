@@ -16,7 +16,7 @@ public class SurveillanceUploadResult {
         return surveillances;
     }
 
-    public void setSurveillances(List<Surveillance> surveillances) {
+    public void setSurveillances(final List<Surveillance> surveillances) {
         this.surveillances = surveillances;
     }
 
@@ -24,7 +24,7 @@ public class SurveillanceUploadResult {
         return job;
     }
 
-    public void setJob(Job job) {
+    public void setJob(final Job job) {
         this.job = job;
     }
 
@@ -32,7 +32,7 @@ public class SurveillanceUploadResult {
         return jobStatus;
     }
 
-    public void setJobStatus(String jobStatus) {
+    public void setJobStatus(final String jobStatus) {
         this.jobStatus = jobStatus;
     }
 }

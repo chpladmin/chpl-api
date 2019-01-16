@@ -6,7 +6,7 @@ import java.util.Map;
 public class DomainPermissions {
     private Map<String, ActionPermissions> actionPermissions = new HashMap<String, ActionPermissions>();
 
-    public boolean hasAccess(String action) {
+    public boolean hasAccess(final String action) {
         if (getActionPermissions().containsKey(action)) {
             return getActionPermissions().get(action).hasAccess();
         } else {
@@ -14,7 +14,7 @@ public class DomainPermissions {
         }
     }
 
-    public boolean hasAccess(String action, Object obj) {
+    public boolean hasAccess(final String action, final Object obj) {
         if (getActionPermissions().containsKey(action)) {
             return getActionPermissions().get(action).hasAccess(obj);
         } else {
@@ -26,7 +26,7 @@ public class DomainPermissions {
         return actionPermissions;
     }
 
-    public void setActionPermissions(Map<String, ActionPermissions> actionPermissions) {
+    public void setActionPermissions(final Map<String, ActionPermissions> actionPermissions) {
         this.actionPermissions = actionPermissions;
     }
 

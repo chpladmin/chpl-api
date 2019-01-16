@@ -31,12 +31,7 @@ import gov.healthit.chpl.domain.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.entity.ValidationMessageType;
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
-import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
-import gov.healthit.chpl.entity.surveillance.PendingSurveillanceNonconformityEntity;
-import gov.healthit.chpl.entity.surveillance.PendingSurveillanceRequirementEntity;
-import gov.healthit.chpl.entity.surveillance.PendingSurveillanceValidationEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityDocumentationEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity;
@@ -58,8 +53,9 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     private Environment env;
 
     @Autowired
-    public SurveillanceManagerImpl(SurveillanceDAO survDao, CertifiedProductDAO cpDao, SurveillanceValidator validator,
-            UserPermissionDAO userPermissionDao, FileUtils fileUtils, Environment env) {
+    public SurveillanceManagerImpl(final SurveillanceDAO survDao, final CertifiedProductDAO cpDao,
+            final SurveillanceValidator validator, final UserPermissionDAO userPermissionDao,
+            final FileUtils fileUtils, final Environment env) {
         this.survDao = survDao;
         this.cpDao = cpDao;
         this.validator = validator;
@@ -73,7 +69,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     public Surveillance getById(final Long survId) throws EntityRetrievalException {
         SurveillanceEntity surv = survDao.getSurveillanceById(survId);
         Surveillance result = convertToDomain(surv);
-        validator.validate(result);
+        validator.validate(result, true);
         return result;
     }
 
@@ -85,7 +81,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
         if (survResults != null) {
             for (SurveillanceEntity survResult : survResults) {
                 Surveillance surv = convertToDomain(survResult);
-                validator.validate(surv);
+                validator.validate(surv, true);
                 results.add(surv);
             }
         }
@@ -183,7 +179,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     @Transactional(readOnly = true)
     @Override
     public void validate(final Surveillance surveillance) {
-        validator.validate(surveillance);
+        validator.validate(surveillance, true);
     }
 
     @Override
@@ -201,71 +197,6 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     public File getSurveillanceWithNonconformitiesDownloadFile() throws IOException {
         return fileUtils.getNewestFileMatchingName("^" + env.getProperty("surveillanceNonconformitiesReportName")
         + "-.+\\.csv$");
-    }
-
-    private Surveillance convertToDomain(final PendingSurveillanceEntity pr) {
-        Surveillance surv = new Surveillance();
-        surv.setId(pr.getId());
-        surv.setSurveillanceIdToReplace(pr.getSurvFriendlyIdToReplace());
-        surv.setStartDate(pr.getStartDate());
-        surv.setEndDate(pr.getEndDate());
-        surv.setRandomizedSitesUsed(pr.getNumRandomizedSites());
-
-        SurveillanceType survType = new SurveillanceType();
-        survType.setName(pr.getSurveillanceType());
-        surv.setType(survType);
-
-        if (pr.getSurveilledRequirements() != null) {
-            for (PendingSurveillanceRequirementEntity preq : pr.getSurveilledRequirements()) {
-                SurveillanceRequirement req = new SurveillanceRequirement();
-                req.setId(preq.getId());
-                req.setRequirement(preq.getSurveilledRequirement());
-                SurveillanceResultType result = new SurveillanceResultType();
-                result.setName(preq.getResult());
-                req.setResult(result);
-                SurveillanceRequirementType reqType = new SurveillanceRequirementType();
-                reqType.setName(preq.getRequirementType());
-                req.setType(reqType);
-
-                CertifiedProduct cp = new CertifiedProduct();
-                cp.setId(pr.getCertifiedProductId());
-                cp.setChplProductNumber(pr.getCertifiedProductUniqueId());
-                surv.setCertifiedProduct(cp);
-
-                if (preq.getNonconformities() != null) {
-                    for (PendingSurveillanceNonconformityEntity pnc : preq.getNonconformities()) {
-                        SurveillanceNonconformity nc = new SurveillanceNonconformity();
-                        nc.setCapApprovalDate(pnc.getCapApproval());
-                        nc.setCapEndDate(pnc.getCapEndDate());
-                        nc.setCapMustCompleteDate(pnc.getCapMustCompleteDate());
-                        nc.setCapStartDate(pnc.getCapStart());
-                        nc.setDateOfDetermination(pnc.getDateOfDetermination());
-                        nc.setDeveloperExplanation(pnc.getDeveloperExplanation());
-                        nc.setFindings(pnc.getFindings());
-                        nc.setId(pnc.getId());
-                        nc.setNonconformityType(pnc.getType());
-                        nc.setResolution(pnc.getResolution());
-                        nc.setSitesPassed(pnc.getSitesPassed());
-                        nc.setSummary(pnc.getSummary());
-                        nc.setTotalSites(pnc.getTotalSites());
-                        SurveillanceNonconformityStatus status = new SurveillanceNonconformityStatus();
-                        status.setName(pnc.getStatus());
-                        nc.setStatus(status);
-                        req.getNonconformities().add(nc);
-                    }
-                }
-                surv.getRequirements().add(req);
-            }
-        }
-
-        if (pr.getValidation() != null && pr.getValidation().size() > 0) {
-            for (PendingSurveillanceValidationEntity validation : pr.getValidation()) {
-                if (validation.getMessageType() == ValidationMessageType.Error) {
-                    surv.getErrorMessages().add(validation.getMessage());
-                }
-            }
-        }
-        return surv;
     }
 
     private SurveillanceNonconformityDocument convertToDomain(final SurveillanceNonconformityDocumentationEntity entity,

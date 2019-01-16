@@ -34,7 +34,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -45,7 +44,6 @@ import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformityDocument;
 import gov.healthit.chpl.domain.SurveillanceUploadResult;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
-import gov.healthit.chpl.domain.concept.JobTypeConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.CertificationBodyAccessException;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -58,11 +56,8 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
-import gov.healthit.chpl.manager.CertifiedProductManager;
-import gov.healthit.chpl.manager.JobManager;
 import gov.healthit.chpl.manager.PendingSurveillanceManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
-import gov.healthit.chpl.manager.SurveillanceUploadManager;
 import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
@@ -76,8 +71,6 @@ import io.swagger.annotations.ApiOperation;
 public class SurveillanceController implements MessageSourceAware {
 
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceController.class);
-    private static final int SURV_THRESHOLD_DEFAULT = 50;
-    private final JobTypeConcept allowedJobType = JobTypeConcept.SURV_UPLOAD;
 
     @Autowired
     private Environment env;
@@ -86,15 +79,7 @@ public class SurveillanceController implements MessageSourceAware {
     @Autowired
     private MessageSource messageSource;
     @Autowired
-    private UserManager userManager;
-    @Autowired
-    private JobManager jobManager;
-    @Autowired
     private SurveillanceManager survManager;
-    @Autowired
-    private SurveillanceUploadManager survUploadManager;
-    @Autowired
-    private CertifiedProductManager cpManager;
     @Autowired
     private ActivityManager activityManager;
     @Autowired
@@ -462,8 +447,9 @@ public class SurveillanceController implements MessageSourceAware {
     }
 
     @ApiOperation(value = "Reject several pending surveillance.",
-            notes = "Marks a list of pending surveillance as deleted. ROLE_ACB "
-                    + " and administrative authority on the ACB for each pending surveillance is required.")
+            notes = "Marks a list of pending surveillance as deleted. "
+                    + "If ROLE_ACB, administrative authority on the ACB for each pending surveillance is required. "
+                    + "If ROLE_ADMIN or ROLE_ONC, authority for each pending surveillance is required.")
     @RequestMapping(value = "/pending", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public @ResponseBody String rejectPendingSurveillance(@RequestBody final IdListContainer idList)
@@ -503,8 +489,8 @@ public class SurveillanceController implements MessageSourceAware {
                     + "activity will be marked as deleted and the surveillance in this request body will "
                     + "be inserted. The surveillance passed into this request will first be validated "
                     + " to check for errors and the related pending surveillance will be removed. "
-                    + "ROLE_ADMIN or ROLE_ACB "
-                    + " plus administrative authority on the ACB associated with the certified product is required.")
+                    + "If ROLE_ACB, administrative authority on the ACB for each pending surveillance is required. "
+                    + "If ROLE_ADMIN or ROLE_ONC, authority for each pending surveillance is required.")
     @RequestMapping(value = "/pending/confirm", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
     public synchronized ResponseEntity<Surveillance> confirmPendingSurveillance(
@@ -575,8 +561,9 @@ public class SurveillanceController implements MessageSourceAware {
 
     @ApiOperation(value = "Upload a file with surveillance and nonconformities for certified products.",
             notes = "Accepts a CSV file with very specific fields to create pending surveillance items. "
-                    + " The user uploading the file must have ROLE_ACB "
-                    + " and administrative authority on the ACB(s) responsible for the product(s) in the file.")
+                    + "If ROLE_ACB, administrative authority on the ACB(s) responsible for the product(s) "
+                    + "in the file is required. "
+                    + "If ROLE_ADMIN or ROLE_ONC, no special authority is required.")
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody ResponseEntity<?> upload(@RequestParam("file") final MultipartFile file)
             throws ValidationException, MaxUploadSizeExceededException, EntityRetrievalException,

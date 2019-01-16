@@ -41,26 +41,33 @@ import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 public class SurveillanceUploadJob extends RunnableJob {
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceUploadJob.class);
 
-    @Autowired
-    MessageSource messageSource;
-    @Autowired
+    private MessageSource messageSource;
     private CertifiedProductManager cpManager;
-    @Autowired
     private SurveillanceManager survManager;
-    @Autowired private SurveillanceUploadManager survUploadManager;
-    @Autowired
+    private SurveillanceUploadManager survUploadManager;
     private SurveillanceValidator survValidator;
-    @Autowired
     private SurveillanceUploadHandlerFactory uploadHandlerFactory;
+    private SurveillanceDAO surveillanceDAO;
 
     @Autowired
-    private SurveillanceDAO surveillanceDAO;
+    public SurveillanceUploadJob(final MessageSource messageSource, final CertifiedProductManager cpManager,
+            final SurveillanceManager survManager, final SurveillanceUploadManager survUploadManager,
+            final SurveillanceValidator survValidator, final SurveillanceUploadHandlerFactory uploadHandlerFactory,
+            final SurveillanceDAO surveillanceDAO) {
+        this.messageSource = messageSource;
+        this.cpManager = cpManager;
+        this.survManager = survManager;
+        this.survUploadManager = survUploadManager;
+        this.survValidator = survValidator;
+        this.uploadHandlerFactory = uploadHandlerFactory;
+        this.surveillanceDAO = surveillanceDAO;
+    }
 
     public SurveillanceUploadJob() {
         LOGGER.debug("Created new Surveillance Upload Job");
     }
 
-    public SurveillanceUploadJob(JobDTO job) {
+    public SurveillanceUploadJob(final JobDTO job) {
         LOGGER.debug("Created new Surveillance Upload Job");
         this.job = job;
     }
@@ -78,7 +85,8 @@ public class SurveillanceUploadJob extends RunnableJob {
 
             List<CSVRecord> records = parser.getRecords();
             if (records.size() <= 1) {
-                String msg = "The file appears to have a header line with no other information. Please make sure there are at least two rows in the CSV file.";
+                String msg = "The file appears to have a header line with no other information. "
+                        + "Please make sure there are at least two rows in the CSV file.";
                 LOGGER.error(msg);
                 addJobMessage(msg);
                 updateStatus(100, JobStatusType.Error);
@@ -119,7 +127,8 @@ public class SurveillanceUploadJob extends RunnableJob {
                                 String currRecordStatus = currRecord.get(0).trim();
 
                                 if (currRecordStatus.equalsIgnoreCase(SurveillanceUploadManager.NEW_SURVEILLANCE_BEGIN_INDICATOR)
-                                        || currRecordStatus.equalsIgnoreCase(SurveillanceUploadManager.UPDATE_SURVEILLANCE_BEGIN_INDICATOR)) {
+                                        || currRecordStatus.equalsIgnoreCase(
+                                                SurveillanceUploadManager.UPDATE_SURVEILLANCE_BEGIN_INDICATOR)) {
                                     // parse the previous recordset because we hit a new surveillance item
                                     // if this is the last recordset, we'll handle that later
                                     if (rows.size() > 0) {
@@ -155,7 +164,7 @@ public class SurveillanceUploadJob extends RunnableJob {
                                 SurveillanceUploadHandler handler = uploadHandlerFactory.getHandler(heading, rows);
                                 Surveillance pendingSurv = handler.handle();
                                 List<String> errors = survUploadManager.checkUploadedSurveillanceOwnership(pendingSurv);
-                                for(String error : errors) {
+                                for (String error : errors) {
                                     parserErrors.add(error);
                                 }
                                 pendingSurvs.add(pendingSurv);
@@ -188,7 +197,7 @@ public class SurveillanceUploadJob extends RunnableJob {
             CertifiedProductDTO owningCp = null;
             try {
                 owningCp = cpManager.getById(surv.getCertifiedProduct().getId());
-                survValidator.validate(surv);
+                survValidator.validate(surv, false);
 
                 //TODO - This needs to be fixed
                 //survManager.createPendingSurveillance(owningCp.getCertificationBodyId(), surv);
@@ -219,7 +228,7 @@ public class SurveillanceUploadJob extends RunnableJob {
         return survManager;
     }
 
-    public void setSurvManager(SurveillanceManager survManager) {
+    public void setSurvManager(final SurveillanceManager survManager) {
         this.survManager = survManager;
     }
 
@@ -227,7 +236,7 @@ public class SurveillanceUploadJob extends RunnableJob {
         return survValidator;
     }
 
-    public void setSurvValidator(SurveillanceValidator survValidator) {
+    public void setSurvValidator(final SurveillanceValidator survValidator) {
         this.survValidator = survValidator;
     }
 
@@ -235,7 +244,7 @@ public class SurveillanceUploadJob extends RunnableJob {
         return uploadHandlerFactory;
     }
 
-    public void setUploadHandlerFactory(SurveillanceUploadHandlerFactory uploadHandlerFactory) {
+    public void setUploadHandlerFactory(final SurveillanceUploadHandlerFactory uploadHandlerFactory) {
         this.uploadHandlerFactory = uploadHandlerFactory;
     }
 
@@ -243,7 +252,7 @@ public class SurveillanceUploadJob extends RunnableJob {
         return messageSource;
     }
 
-    public void setMessageSource(MessageSource messageSource) {
+    public void setMessageSource(final MessageSource messageSource) {
         this.messageSource = messageSource;
     }
 
@@ -251,7 +260,7 @@ public class SurveillanceUploadJob extends RunnableJob {
         return cpManager;
     }
 
-    public void setCpManager(CertifiedProductManager cpManager) {
+    public void setCpManager(final CertifiedProductManager cpManager) {
         this.cpManager = cpManager;
     }
 }

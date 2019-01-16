@@ -10,9 +10,6 @@ import gov.healthit.chpl.auth.user.User;
 
 public class Util {
 
-    public final static String ROLE_ACB_AUTHORITY = "ROLE_ACB";
-    public final static String ROLE_ONC_AUTHORITY = "ROLE_ONC";
-
     public static String getUsername() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
@@ -59,11 +56,11 @@ public class Util {
         return user;
     }
 
-    public static String fromInt(Integer toStr) {
+    public static String fromInt(final Integer toStr) {
         return toStr.toString();
     }
 
-    private static boolean doesUserHaveRole(String authority) {
+    private static boolean doesUserHaveRole(final String authority) {
         User user = getCurrentUser();
         if (user == null) {
             return false;

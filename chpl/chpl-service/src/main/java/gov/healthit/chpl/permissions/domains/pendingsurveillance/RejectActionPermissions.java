@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dao.UserPermissionDAO;
+import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
@@ -15,7 +16,8 @@ public class RejectActionPermissions  extends ActionPermissions {
     private UserPermissionDAO userPermissionDAO;
 
     @Autowired
-    public RejectActionPermissions(SurveillanceDAO surveillanceDAO, UserPermissionDAO userPermissionDAO) {
+    public RejectActionPermissions(final SurveillanceDAO surveillanceDAO,
+            final UserPermissionDAO userPermissionDAO) {
         this.surveillanceDAO = surveillanceDAO;
         this.userPermissionDAO = userPermissionDAO;
     }
@@ -25,7 +27,7 @@ public class RejectActionPermissions  extends ActionPermissions {
     }
 
     @Override
-    public boolean hasAccess(Object obj) {
+    public boolean hasAccess(final Object obj) {
         try {
             if (!(obj instanceof Long)) {
                 return false;
@@ -35,7 +37,7 @@ public class RejectActionPermissions  extends ActionPermissions {
 
                 //Make sure the user belongs to the same authority as the pending surveillance
                 String authority = userPermissionDAO.findById(entity.getUserPermissionId()).getAuthority();
-                if (!authority.equals(Util.ROLE_ACB_AUTHORITY)) {
+                if (!authority.equals(Authority.ROLE_ACB)) {
                     return false;
                 } else {
                     //Make sure the user has access to the pendingSurveillance
@@ -47,7 +49,7 @@ public class RejectActionPermissions  extends ActionPermissions {
 
                 //Make sure the user belongs to the same authority as the pending surveillance
                 String authority = userPermissionDAO.findById(entity.getUserPermissionId()).getAuthority();
-                return authority.equals(Util.ROLE_ONC_AUTHORITY);
+                return authority.equals(Authority.ROLE_ONC);
             } else {
                 return false;
             }

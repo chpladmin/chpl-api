@@ -18,14 +18,14 @@ import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException
 public interface PendingSurveillanceManager {
     List<Surveillance> getAllPendingSurveillances();
 
-    SurveillanceUploadResult uploadPendingSurveillance(final MultipartFile file)
+    SurveillanceUploadResult uploadPendingSurveillance(MultipartFile file)
             throws ValidationException, EntityCreationException, EntityRetrievalException;
 
-    void rejectPendingSurveillance(final Long id)
+    void rejectPendingSurveillance(Long id)
             throws ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException,
             EntityCreationException;
 
-    Surveillance confirmPendingSurveillance(final Surveillance survToInsert)
+    Surveillance confirmPendingSurveillance(Surveillance survToInsert)
             throws ValidationException, EntityRetrievalException, UserPermissionRetrievalException,
             SurveillanceAuthorityAccessDeniedException, EntityCreationException, JsonProcessingException;
 }

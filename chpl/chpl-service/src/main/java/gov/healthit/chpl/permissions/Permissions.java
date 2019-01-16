@@ -16,11 +16,11 @@ public class Permissions {
     private Map<String, DomainPermissions> domainPermissions = new HashMap<String, DomainPermissions>();
 
     @Autowired
-    public Permissions(PendingSurveillanceDomainPermissions pendingSurveillanceDomainPermissions) {
+    public Permissions(final PendingSurveillanceDomainPermissions pendingSurveillanceDomainPermissions) {
         domainPermissions.put(PENDING_SURVEILLANCE, pendingSurveillanceDomainPermissions);
     }
 
-    public boolean hasAccess(String domain, String action) {
+    public boolean hasAccess(final String domain, final String action) {
         if (domainPermissions.containsKey(domain)) {
             return domainPermissions.get(domain).hasAccess(action);
         } else {
@@ -28,7 +28,7 @@ public class Permissions {
         }
     }
 
-    public boolean hasAccess(String domain, String action, Object obj) {
+    public boolean hasAccess(final String domain, final String action, final Object obj) {
         if (domainPermissions.containsKey(domain)) {
             return domainPermissions.get(domain).hasAccess(action, obj);
         } else {

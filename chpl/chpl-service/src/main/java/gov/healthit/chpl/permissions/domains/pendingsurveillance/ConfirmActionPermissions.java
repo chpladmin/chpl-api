@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
@@ -15,7 +16,7 @@ public class ConfirmActionPermissions extends ActionPermissions{
     private CertifiedProductDAO certifiedProductDAO;
 
     @Autowired
-    public ConfirmActionPermissions(CertifiedProductDAO certifiedProductDAO) {
+    public ConfirmActionPermissions(final CertifiedProductDAO certifiedProductDAO) {
         this.certifiedProductDAO = certifiedProductDAO;
     }
 
@@ -25,14 +26,14 @@ public class ConfirmActionPermissions extends ActionPermissions{
     }
 
     @Override
-    public boolean hasAccess(Object obj) {
+    public boolean hasAccess(final Object obj) {
         try {
             if (!(obj instanceof Surveillance)) {
                 return false;
             } else if (Util.isUserRoleAcbAdmin()) {
                 Surveillance surv = (Surveillance) obj;
                 //Make sure the pending surveillance belongs to the correct authority
-                if (!surv.getAuthority().equals(Util.ROLE_ACB_AUTHORITY)) {
+                if (!surv.getAuthority().equals(Authority.ROLE_ACB)) {
                     return false;
                 } else {
                     //Make sure the user has access to the pending surv acb
@@ -42,7 +43,7 @@ public class ConfirmActionPermissions extends ActionPermissions{
             } else if (Util.isUserRoleOnc() || Util.isUserRoleAdmin()) {
                 Surveillance surv = (Surveillance) obj;
                 //Make sure the pending surveillance belongs to the correct authority
-                return surv.getAuthority().equals(Util.ROLE_ONC_AUTHORITY);
+                return surv.getAuthority().equals(Authority.ROLE_ONC);
             } else {
                 return false;
             }
