@@ -142,6 +142,7 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     @Override
     @Test
     public void hasAccess_Anon() throws Exception {
+        SecurityContextHolder.getContext().setAuthentication(null);
         assertFalse(permissions.hasAccess());
 
         //This should always return false

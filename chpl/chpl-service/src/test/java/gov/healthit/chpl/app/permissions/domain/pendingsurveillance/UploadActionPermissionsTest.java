@@ -114,6 +114,8 @@ public class UploadActionPermissionsTest extends ActionPermissionsBaseTest {
     @Override
     @Test
     public void hasAccess_Anon() throws Exception {
+        SecurityContextHolder.getContext().setAuthentication(null);
+
         assertFalse(permissions.hasAccess());
 
         Surveillance surv = new Surveillance();
