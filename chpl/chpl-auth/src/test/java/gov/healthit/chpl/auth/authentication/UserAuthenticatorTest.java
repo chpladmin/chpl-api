@@ -97,7 +97,7 @@ public class UserAuthenticatorTest {
 
 
     public void testRefreshJWT()
-            throws JWTCreationException, JWTValidationException{
+            throws JWTCreationException, JWTValidationException, UserRetrievalException{
 
         JWTAuthenticatedUser adminUser;
         adminUser = new JWTAuthenticatedUser();
