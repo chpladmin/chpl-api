@@ -664,7 +664,7 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Track the actions of all users in the system",
-            notes = "The authenticated user calling this method must have ROLE_ADMIN or ROLE_ONC_STAFF. "
+            notes = "The authenticated user calling this method must have ROLE_ADMIN or ROLE_ONC. "
                     + "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
     @RequestMapping(value = "/user_activities", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
@@ -678,7 +678,7 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Track the actions of a specific user in the system",
-            notes = "The authenticated user calling this method must have ROLE_ADMIN or ROLE_ONC_STAFF. "
+            notes = "The authenticated user calling this method must have ROLE_ADMIN or ROLE_ONC. "
                     + "A start and end date may optionally be provided to limit activity results.")
     @RequestMapping(value = "/user_activities/{id}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
@@ -738,13 +738,6 @@ public class ActivityController {
         if (Util.isUserRoleCmsStaff()) {
             List<UserDTO> cmsStaffUsers = userManager.getUsersWithPermission("ROLE_CMS_STAFF");
             for (UserDTO user : cmsStaffUsers) {
-                allowedUserIds.add(user.getId());
-            }
-        }
-        //user can see activity for other users with role onc_staff
-        if (Util.isUserRoleOncStaff()) {
-            List<UserDTO> oncStaffUsers = userManager.getUsersWithPermission("ROLE_ONC_STAFF");
-            for (UserDTO user : oncStaffUsers) {
                 allowedUserIds.add(user.getId());
             }
         }

@@ -391,7 +391,7 @@ public class ActivityManagerImpl implements ActivityManager {
 
     @Override
     @Transactional(readOnly = true)
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ONC_STAFF')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     public List<UserActivity> getActivityByUserInDateRange(Date startDate, Date endDate)
             throws JsonParseException, IOException, UserRetrievalException {
 
@@ -421,7 +421,7 @@ public class ActivityManagerImpl implements ActivityManager {
 
     @Override
     @Transactional(readOnly = true)
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ONC_STAFF')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     public List<ActivityEvent> getActivityForUserInDateRange(Long userId, Date startDate, Date endDate)
             throws JsonParseException, IOException {
 

@@ -46,8 +46,8 @@ public class InvitationDaoTest {
 	@Autowired private MutableAclService mutableAclService;
 	
 	private static final String ROLE_CHPL_ADMIN = "ROLE_ADMIN";
+	private static final String ROLE_ONC = "ROLE_ONC";
 	private static final String ROLE_ACB = "ROLE_ACB";
-	private static final String ROLE_ONC_STAFF = "ROLE_ONC_STAFF";
 	private static JWTAuthenticatedUser chplAdminUser;
 	private static JWTAuthenticatedUser acbAdminUser;
 	
@@ -86,7 +86,7 @@ public class InvitationDaoTest {
 	
 	@Test
 	@Transactional
-	public void testInviteOncStaff() throws UserCreationException, UserRetrievalException {
+	public void testInviteOnc() throws UserCreationException, UserRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(chplAdminUser);
 
 		String emailAddress = "dlucas@ainq.com";
@@ -98,7 +98,7 @@ public class InvitationDaoTest {
 		testDto.setEmail(emailAddress);
 		testDto.setInviteToken(token);
 		InvitationPermissionDTO permissionDto = new InvitationPermissionDTO();
-		permissionDto.setPermissionName(ROLE_ONC_STAFF);
+		permissionDto.setPermissionName(ROLE_ONC);
 		permissionDto.setPermissionId(-2L);
 
 		testDto = dao.create(testDto);
