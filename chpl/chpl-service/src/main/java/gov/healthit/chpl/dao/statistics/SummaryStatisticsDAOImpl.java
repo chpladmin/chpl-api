@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.entity.SummaryStatisticsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -21,7 +22,7 @@ public class SummaryStatisticsDAOImpl extends BaseDAOImpl implements SummaryStat
 
         summaryStatistics.setCreationDate(new Date());
         summaryStatistics.setLastModifiedDate(new Date());
-        summaryStatistics.setLastModifiedUser(getUserId(SYSTEM_USER_ID));
+        summaryStatistics.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
         summaryStatistics.setDeleted(false);
         entityManager.persist(summaryStatistics);
         entityManager.flush();

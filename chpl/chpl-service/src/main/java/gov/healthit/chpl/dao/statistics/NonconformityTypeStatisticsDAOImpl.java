@@ -1,5 +1,6 @@
 package gov.healthit.chpl.dao.statistics;
 
+import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
 import gov.healthit.chpl.entity.surveillance.NonconformityTypeStatisticsEntity;
@@ -63,7 +64,7 @@ public class NonconformityTypeStatisticsDAOImpl extends BaseDAOImpl implements N
     @Override
     @Transactional
     public void deleteAllOldNonConformityStatistics() throws EntityRetrievalException {
-        String hql = "UPDATE NonconformityTypeStatisticsEntity SET deleted = true, lastModifiedUser = " + getUserId(SYSTEM_USER_ID) + " WHERE deleted = false";
+        String hql = "UPDATE NonconformityTypeStatisticsEntity SET deleted = true, lastModifiedUser = " + getUserId(User.SYSTEM_USER_ID) + " WHERE deleted = false";
         Query query = entityManager.createQuery(hql);
         query.executeUpdate();
     }
