@@ -507,7 +507,7 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
     }
 
     private void checkSurveillanceAuthority(final Surveillance surv) throws SurveillanceAuthorityAccessDeniedException {
-        Boolean hasOncAdmin = Util.isUserRoleAdmin();
+        Boolean hasOncAdmin = Util.isUserRoleAdmin() || Util.isUserRoleOnc();
         Boolean hasAcbAdmin = Util.isUserRoleAcbAdmin();
         if (StringUtils.isEmpty(surv.getAuthority())) {
             // If user has ROLE_ADMIN and ROLE_ACB
