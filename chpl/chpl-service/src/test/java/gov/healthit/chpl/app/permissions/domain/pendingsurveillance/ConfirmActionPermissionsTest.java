@@ -89,16 +89,16 @@ public class ConfirmActionPermissionsTest extends ActionPermissionsBaseTest {
         Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong()))
         .thenReturn(getCertifiedProduct(1l, 2l));
 
-        //With the above mock, the user should have access
-        //The ACB is correct, but the authority is incorrect
+        //With the above mock, the user should have access.
+        //The ACB is correct, and the authority is correct
         Surveillance surv = new Surveillance();
         surv.setCertifiedProduct(new CertifiedProduct());
         surv.getCertifiedProduct().setId(1l);
         surv.setAuthority("ROLE_ACB");
         assertTrue(permissions.hasAccess(surv));
 
-        //With the above mock, the user should have access.
-        //The ACB is correct, and the authority is correct
+        //With the above mock, the user should have access
+        //The ACB is correct, but the authority is incorrect
         surv = new Surveillance();
         surv.setCertifiedProduct(new CertifiedProduct());
         surv.getCertifiedProduct().setId(1l);
