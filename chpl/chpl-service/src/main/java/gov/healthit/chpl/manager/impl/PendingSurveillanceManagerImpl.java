@@ -319,7 +319,7 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
 
         // query the now running job
         result.setJob(new Job(createdJob));
-        result.setJobStatus(SurveillanceUploadResult.SUCCESS);
+        result.setJobStatus(SurveillanceUploadResult.STARTED);
         return result;
     }
 

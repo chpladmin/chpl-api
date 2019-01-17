@@ -14,7 +14,6 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
@@ -33,6 +32,7 @@ import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.manager.SurveillanceUploadManager;
 import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandler;
 import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandlerFactory;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 
 @Component
@@ -41,7 +41,7 @@ import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 public class SurveillanceUploadJob extends RunnableJob {
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceUploadJob.class);
 
-    private MessageSource messageSource;
+    private ErrorMessageUtil errorMessageUtil;
     private CertifiedProductManager cpManager;
     private SurveillanceManager survManager;
     private SurveillanceUploadManager survUploadManager;
@@ -50,11 +50,11 @@ public class SurveillanceUploadJob extends RunnableJob {
     private SurveillanceDAO surveillanceDAO;
 
     @Autowired
-    public SurveillanceUploadJob(final MessageSource messageSource, final CertifiedProductManager cpManager,
+    public SurveillanceUploadJob(final ErrorMessageUtil errorMessageUtil, final CertifiedProductManager cpManager,
             final SurveillanceManager survManager, final SurveillanceUploadManager survUploadManager,
             final SurveillanceValidator survValidator, final SurveillanceUploadHandlerFactory uploadHandlerFactory,
             final SurveillanceDAO surveillanceDAO) {
-        this.messageSource = messageSource;
+        this.errorMessageUtil = errorMessageUtil;
         this.cpManager = cpManager;
         this.survManager = survManager;
         this.survUploadManager = survUploadManager;
@@ -186,7 +186,7 @@ public class SurveillanceUploadJob extends RunnableJob {
                 }
             }
         } catch (final IOException ioEx) {
-            String msg = "Could not get input stream for job data string for job with ID " + job.getId();
+            String msg = errorMessageUtil.getMessage("surveillance.inputStream", job.getId());
             LOGGER.error(msg);
             addJobMessage(msg);
             updateStatus(100, JobStatusType.Error);
@@ -198,25 +198,24 @@ public class SurveillanceUploadJob extends RunnableJob {
             try {
                 owningCp = cpManager.getById(surv.getCertifiedProduct().getId());
                 survValidator.validate(surv, false);
-
-                //TODO - This needs to be fixed
-                //survManager.createPendingSurveillance(owningCp.getCertificationBodyId(), surv);
                 surveillanceDAO.insertPendingSurveillance(surv);
-
 
                 jobPercentComplete += 50.0 / pendingSurvs.size();
                 updateStatus(jobPercentComplete, JobStatusType.In_Progress);
             } catch (final AccessDeniedException denied) {
-                String msg = "User " + Util.getCurrentUser().getSubjectName()
-                        + " does not have access to add surveillance"
-                        + (owningCp != null
-                        ? " to ACB with ID '" + owningCp.getCertificationBodyId() + "'."
-                                : ".");
+                String msg = "";
+                if (owningCp != null) {
+                    msg = errorMessageUtil.getMessage("surveillance.permissionErrorWithAcb",
+                            Util.getCurrentUser().getSubjectName(), owningCp.getCertificationBodyId());
+                } else {
+                    msg = errorMessageUtil.getMessage("surveillance.permissionError",
+                            Util.getCurrentUser().getSubjectName());
+                }
+
                 LOGGER.error(msg);
                 addJobMessage(msg);
             } catch (Exception ex) {
-                String msg =
-                        "Error adding a new pending surveillance. Please make sure all required fields are present.";
+                String msg = errorMessageUtil.getMessage("surveillance.errorAdding");
                 LOGGER.error(msg);
                 addJobMessage(msg);
             }
@@ -246,14 +245,6 @@ public class SurveillanceUploadJob extends RunnableJob {
 
     public void setUploadHandlerFactory(final SurveillanceUploadHandlerFactory uploadHandlerFactory) {
         this.uploadHandlerFactory = uploadHandlerFactory;
-    }
-
-    public MessageSource getMessageSource() {
-        return messageSource;
-    }
-
-    public void setMessageSource(final MessageSource messageSource) {
-        this.messageSource = messageSource;
     }
 
     public CertifiedProductManager getCpManager() {

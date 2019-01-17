@@ -17,6 +17,7 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dao.UserPermissionDAO;
+import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
@@ -294,16 +295,13 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
     }
 
     private Long getSurveillanceAuthority() throws UserPermissionRetrievalException {
-
         if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
-            return userPermissionDao.getIdFromAuthority("ROLE_ONC");
-
+            return userPermissionDao.getIdFromAuthority(Authority.ROLE_ONC);
         } else if (Util.isUserRoleAcbAdmin()) {
-            return userPermissionDao.getIdFromAuthority("ROLE_ACB");
+            return userPermissionDao.getIdFromAuthority(Authority.ROLE_ACB);
         } else {
             return null;
         }
-
     }
 
     @Override
