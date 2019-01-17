@@ -23,7 +23,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dao.UserPermissionDAO;
-import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
@@ -506,42 +505,9 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
         validator.validate(surveillance, false);
     }
 
-    private void checkSurveillanceAuthority(final Surveillance surv) throws SurveillanceAuthorityAccessDeniedException {
-        Boolean hasOncAdmin = Util.isUserRoleAdmin() || Util.isUserRoleOnc();
-        Boolean hasAcbAdmin = Util.isUserRoleAcbAdmin();
-        if (StringUtils.isEmpty(surv.getAuthority())) {
-            // If user has ROLE_ADMIN and ROLE_ACB
-            // return 403
-            if (hasOncAdmin && hasAcbAdmin) {
-                String errorMsg = "Surveillance cannot be created by user having " + Authority.ROLE_ADMIN + " and "
-                        + Authority.ROLE_ACB;
-                LOGGER.error(errorMsg);
-                throw new SurveillanceAuthorityAccessDeniedException(errorMsg);
-            }
-        } else {
-            // Cannot have surveillance authority as ROLE_ADMIN for user lacking
-            // ROLE_ADMIN
-            if (surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ADMIN) && !hasOncAdmin) {
-                String errorMsg = "User must have authority " + Authority.ROLE_ADMIN;
-                LOGGER.error(errorMsg);
-                throw new SurveillanceAuthorityAccessDeniedException(errorMsg);
-            } else if (surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB)) {
-                // Cannot have surveillance authority as ACB for user lacking ONC
-                // and ACB roles
-                if (!hasOncAdmin && !hasAcbAdmin) {
-                    String errorMsg = "User must have ONC or ACB roles for a surveillance authority created by ACB";
-                    LOGGER.error(errorMsg);
-                    throw new SurveillanceAuthorityAccessDeniedException(errorMsg);
-                }
-            }
-        }
-    }
-
     private Long createSurveillance(final Surveillance surv)
             throws UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
         Long insertedId = null;
-        checkSurveillanceAuthority(surv);
-        updateNullAuthority(surv);
 
         try {
             insertedId = survDao.insertSurveillance(surv);
@@ -551,18 +517,6 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
         }
 
         return insertedId;
-    }
-
-    private void updateNullAuthority(final Surveillance surv) {
-        Boolean hasOncAdmin = Util.isUserRoleAdmin();
-        Boolean hasAcbAdmin = Util.isUserRoleAcbAdmin();
-        if (StringUtils.isEmpty(surv.getAuthority())) {
-            if (hasOncAdmin) {
-                surv.setAuthority(Authority.ROLE_ADMIN);
-            } else if (hasAcbAdmin) {
-                surv.setAuthority(Authority.ROLE_ACB);
-            }
-        }
     }
 
     public Surveillance getByFriendlyIdAndProduct(final Long certifiedProductId, final String survFriendlyId) {
@@ -701,7 +655,6 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
 
     private void deleteSurveillance(final Surveillance surv)
             throws EntityRetrievalException, SurveillanceAuthorityAccessDeniedException {
-        checkSurveillanceAuthority(surv);
         survDao.deleteSurveillance(surv);
     }
 
