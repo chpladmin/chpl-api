@@ -40,8 +40,7 @@ public interface SurveillanceDAO {
 
     Long insertPendingSurveillance(Surveillance surv) throws UserPermissionRetrievalException;
 
-    PendingSurveillanceEntity getPendingSurveillanceById(Long id, boolean includeDeleted)
-            throws EntityRetrievalException;
+    PendingSurveillanceEntity getPendingSurveillanceById(Long id) throws EntityRetrievalException;
 
     List<PendingSurveillanceEntity> getPendingSurveillanceByAcb(Long acbId);
 

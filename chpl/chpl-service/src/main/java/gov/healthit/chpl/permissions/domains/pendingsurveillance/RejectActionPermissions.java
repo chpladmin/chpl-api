@@ -33,7 +33,7 @@ public class RejectActionPermissions  extends ActionPermissions {
                 return false;
             } else if (Util.isUserRoleAcbAdmin()) {
                 Long pendingSurveillanceId = (Long) obj;
-                PendingSurveillanceEntity entity = surveillanceDAO.getPendingSurveillanceById(pendingSurveillanceId, true);
+                PendingSurveillanceEntity entity = surveillanceDAO.getPendingSurveillanceById(pendingSurveillanceId);
 
                 //Make sure the user belongs to the same authority as the pending surveillance
                 String authority = userPermissionDAO.findById(entity.getUserPermissionId()).getAuthority();
@@ -45,7 +45,7 @@ public class RejectActionPermissions  extends ActionPermissions {
                 }
             } else if (Util.isUserRoleOnc() || Util.isUserRoleAdmin()) {
                 Long pendingSurveillanceId = (Long) obj;
-                PendingSurveillanceEntity entity = surveillanceDAO.getPendingSurveillanceById(pendingSurveillanceId, true);
+                PendingSurveillanceEntity entity = surveillanceDAO.getPendingSurveillanceById(pendingSurveillanceId);
 
                 //Make sure the user belongs to the same authority as the pending surveillance
                 String authority = userPermissionDAO.findById(entity.getUserPermissionId()).getAuthority();

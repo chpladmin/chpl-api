@@ -321,7 +321,7 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
                 owningCp = cpManager.getById(surv.getCertifiedProduct().getId());
                 survValidator.validate(surv, false);
                 Long pendingId = createPendingSurveillance(surv);
-                Surveillance uploaded = getPendingById(pendingId, false);
+                Surveillance uploaded = getPendingById(pendingId);
                 uploadedSurveillance.add(uploaded);
             } catch (final AccessDeniedException denied) {
                 LOGGER.error(
@@ -351,9 +351,9 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
         return insertedId;
     }
 
-    private Surveillance getPendingById(final Long survId, final boolean includeDeleted)
+    private Surveillance getPendingById(final Long survId)
             throws EntityRetrievalException {
-        PendingSurveillanceEntity pending = survDao.getPendingSurveillanceById(survId, includeDeleted);
+        PendingSurveillanceEntity pending = survDao.getPendingSurveillanceById(survId);
         Surveillance surv = convertToDomain(pending);
         return surv;
     }
@@ -427,8 +427,8 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
     private void deletePendingSurveillance(final Long pendingSurveillanceId, final boolean isConfirmed)
             throws ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException, EntityCreationException {
 
-        PendingSurveillanceEntity surv = survDao.getPendingSurveillanceById(pendingSurveillanceId, true);
-        Surveillance toDelete = getPendingById(pendingSurveillanceId, true);
+        PendingSurveillanceEntity surv = survDao.getPendingSurveillanceById(pendingSurveillanceId);
+        Surveillance toDelete = getPendingById(pendingSurveillanceId);
 
         if (isPendingSurveillanceAvailableForUpdate(surv)) {
             try {
@@ -452,7 +452,7 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
 
     private boolean isPendingSurveillanceAvailableForUpdate(final Long pendingSurvId)
             throws EntityRetrievalException, ObjectMissingValidationException {
-        PendingSurveillanceEntity pendingSurv = survDao.getPendingSurveillanceById(pendingSurvId, true);
+        PendingSurveillanceEntity pendingSurv = survDao.getPendingSurveillanceById(pendingSurvId);
         return isPendingSurveillanceAvailableForUpdate(pendingSurv);
     }
 

@@ -48,8 +48,7 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
         Mockito.when(acbManager.getAllForUser())
         .thenReturn(getAllAcbForUser(2l, 4l));
 
-        Mockito.when(survDAO.getPendingSurveillanceById(
-                ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+        Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))
         .thenReturn(getPendingSurveillanceEntity(1l, 1l, 1l, ROLE_ACB_ID));
 
         Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))
@@ -67,8 +66,7 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
         Long id = 1l;
 
         //Check where authority matches
-        Mockito.when(survDAO.getPendingSurveillanceById(
-                ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+        Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))
         .thenReturn(getPendingSurveillanceEntity(1l, 1l, 1l, ROLE_ONC_ID));
 
         Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))
@@ -77,8 +75,7 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
         assertTrue(permissions.hasAccess(id));
 
         //Check where authority is not correct for role
-        Mockito.when(survDAO.getPendingSurveillanceById(
-                ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+        Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))
         .thenReturn(getPendingSurveillanceEntity(1l, 1l, 1l, ROLE_ACB_ID));
 
         Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))
@@ -98,8 +95,7 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
         Long id = 1l;
 
         //Check where authority matches the user's role
-        Mockito.when(survDAO.getPendingSurveillanceById(
-                ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+        Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))
         .thenReturn(getPendingSurveillanceEntity(1l, 1l, 1l, ROLE_ONC_ID));
 
         Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))
@@ -108,8 +104,7 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
         assertTrue(permissions.hasAccess(id));
 
         //Check where authority does not match the user's role
-        Mockito.when(survDAO.getPendingSurveillanceById(
-                ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+        Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))
         .thenReturn(getPendingSurveillanceEntity(1l, 1l, 1l, ROLE_ACB_ID));
 
         Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))
@@ -131,8 +126,7 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
         Long id = 1l;
 
         //The user does not have access to this acb
-        Mockito.when(survDAO.getPendingSurveillanceById(
-                ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+        Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))
         .thenReturn(getPendingSurveillanceEntity(1l, 1l, 3l, ROLE_ACB_ID));
 
         Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))
@@ -141,8 +135,7 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess(id));
 
         //Should work...
-        Mockito.when(survDAO.getPendingSurveillanceById(
-                ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+        Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))
         .thenReturn(getPendingSurveillanceEntity(1l, 1l, 4l, ROLE_ACB_ID));
 
         Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))
@@ -151,8 +144,7 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
         assertTrue(permissions.hasAccess(id));
 
         //This one belongs to the wrong authority....
-        Mockito.when(survDAO.getPendingSurveillanceById(
-                ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+        Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))
         .thenReturn(getPendingSurveillanceEntity(1l, 1l, 4l, ROLE_ONC_ID));
 
         Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))

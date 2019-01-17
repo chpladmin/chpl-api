@@ -433,7 +433,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 
     @Override
     public void deletePendingSurveillance(final Surveillance surv) throws EntityRetrievalException {
-        PendingSurveillanceEntity toDelete = fetchPendingSurveillanceById(surv.getId(), true);
+        PendingSurveillanceEntity toDelete = fetchPendingSurveillanceById(surv.getId());
 
         if (toDelete.getValidation() != null) {
             for (PendingSurveillanceValidationEntity val : toDelete.getValidation()) {
@@ -467,9 +467,9 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
     }
 
     @Override
-    public PendingSurveillanceEntity getPendingSurveillanceById(final Long id, final boolean includeDeleted)
+    public PendingSurveillanceEntity getPendingSurveillanceById(final Long id)
             throws EntityRetrievalException {
-        PendingSurveillanceEntity entity = fetchPendingSurveillanceById(id, includeDeleted);
+        PendingSurveillanceEntity entity = fetchPendingSurveillanceById(id);
         return entity;
     }
 
@@ -776,16 +776,14 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
         return results;
     }
 
-    private PendingSurveillanceEntity fetchPendingSurveillanceById(final Long id, final boolean includeDeleted)
+    private PendingSurveillanceEntity fetchPendingSurveillanceById(final Long id)
             throws EntityRetrievalException {
         PendingSurveillanceEntity entity = null;
         String hql = "SELECT DISTINCT surv " + "FROM PendingSurveillanceEntity surv "
                 + "JOIN FETCH surv.certifiedProduct " + "LEFT OUTER JOIN FETCH surv.surveilledRequirements reqs "
                 + "LEFT OUTER JOIN FETCH reqs.nonconformities ncs " + "LEFT OUTER JOIN FETCH surv.validation "
-                + "WHERE surv.id = :entityid ";
-        if (!includeDeleted) {
-            hql += "AND surv.deleted <> true ";
-        }
+                + "WHERE surv.id = :entityid "
+                + "AND surv.deleted <> true ";
 
         entityManager.clear();
         Query query = entityManager.createQuery(hql, PendingSurveillanceEntity.class);
