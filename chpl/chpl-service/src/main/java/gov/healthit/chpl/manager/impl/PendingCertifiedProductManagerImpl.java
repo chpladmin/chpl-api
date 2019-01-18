@@ -11,7 +11,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +18,6 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
@@ -35,7 +33,6 @@ import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
@@ -43,7 +40,6 @@ import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ObjectMissingValidationException;
-import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.manager.TestingFunctionalityManager;
@@ -86,20 +82,19 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
     @Transactional(readOnly = true)
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     public PendingCertifiedProductDetails getById(final Long id)
-            throws EntityRetrievalException, AccessDeniedException, ValidationException {
+            throws EntityRetrievalException, AccessDeniedException {
             return getById(id, false);
     }
 
     /**
      * ROLE_ONC is allowed to see pending listings only for activity
      * and no other times.
-     * @throws ValidationException 
      */
     @Override
     @Transactional(readOnly = true)
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
     public PendingCertifiedProductDetails getByIdForActivity(final Long id)
-            throws EntityRetrievalException, AccessDeniedException, ValidationException {
+            throws EntityRetrievalException, AccessDeniedException {
             return getById(id, true);
     }
 
@@ -107,7 +102,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
     @Transactional(readOnly = true)
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     public PendingCertifiedProductDetails getById(final Long id, final boolean includeRetired)
-            throws EntityRetrievalException, AccessDeniedException, ValidationException {
+            throws EntityRetrievalException, AccessDeniedException {
 
         PendingCertifiedProductDTO pendingCp = pcpDao.findById(id, includeRetired);
 
@@ -124,7 +119,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
     @Override
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public List<PendingCertifiedProductDTO> getAllPendingCertifiedProducts() throws ValidationException {
+    public List<PendingCertifiedProductDTO> getAllPendingCertifiedProducts() {
         List<PendingCertifiedProductDTO> products = pcpDao.findAll();
         updateCertResults(products);
         validate(products);
@@ -136,7 +131,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') and "
             + "hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-    public List<PendingCertifiedProductDTO> getPendingCertifiedProducts(final Long acbId) throws ValidationException {
+    public List<PendingCertifiedProductDTO> getPendingCertifiedProducts(final Long acbId) {
         List<PendingCertifiedProductDTO> products = pcpDao.findByAcbId(acbId);
         updateCertResults(products);
         validate(products);
@@ -368,7 +363,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
         return criteria;
     }
 
-    private void validate(final List<PendingCertifiedProductDTO> products) throws ValidationException {
+    private void validate(final List<PendingCertifiedProductDTO> products) {
         for (PendingCertifiedProductDTO dto : products) {
             PendingValidator validator = validatorFactory.getValidator(dto);
             if (validator != null) {
@@ -377,7 +372,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
         }
     }
 
-    private void validate(final PendingCertifiedProductDTO... products) throws ValidationException {
+    private void validate(final PendingCertifiedProductDTO... products) {
         for (PendingCertifiedProductDTO dto : products) {
             PendingValidator validator = validatorFactory.getValidator(dto);
             if (validator != null) {

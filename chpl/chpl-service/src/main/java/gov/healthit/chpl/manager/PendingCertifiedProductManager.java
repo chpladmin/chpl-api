@@ -14,18 +14,17 @@ import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ObjectMissingValidationException;
-import gov.healthit.chpl.exception.ValidationException;
 
 public interface PendingCertifiedProductManager {
     PendingCertifiedProductDetails getById(Long id)
-            throws EntityNotFoundException, EntityRetrievalException, AccessDeniedException, ValidationException;
+            throws EntityNotFoundException, EntityRetrievalException, AccessDeniedException;
     PendingCertifiedProductDetails getById(Long id, boolean includeDeleted)
-            throws EntityRetrievalException, AccessDeniedException, ValidationException;
+            throws EntityRetrievalException, AccessDeniedException;
     public PendingCertifiedProductDetails getByIdForActivity(final Long id)
-            throws EntityRetrievalException, AccessDeniedException, ValidationException;
+            throws EntityRetrievalException, AccessDeniedException;
 
-    List<PendingCertifiedProductDTO> getAllPendingCertifiedProducts() throws ValidationException;
-    List<PendingCertifiedProductDTO> getPendingCertifiedProducts(Long acbId) throws ValidationException;
+    List<PendingCertifiedProductDTO> getAllPendingCertifiedProducts();
+    List<PendingCertifiedProductDTO> getPendingCertifiedProducts(Long acbId);
 
     PendingCertifiedProductDTO createOrReplace(Long acbId, PendingCertifiedProductEntity toCreate)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException;

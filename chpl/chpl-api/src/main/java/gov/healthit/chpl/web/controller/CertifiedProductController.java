@@ -676,14 +676,13 @@ public class CertifiedProductController {
      * @return list of pending Listings
      * @throws EntityRetrievalException if cannot retrieve entity
      * @throws AccessDeniedException if user doesn't have access
-     * @throws ValidationException 
      */
     @ApiOperation(value = "List pending certified products.",
             notes = "Pending certified products are created via CSV file upload and are left in the 'pending' state "
                     + " until validated and approved by an appropriate administrator.")
     @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody PendingCertifiedProductResults getPendingCertifiedProducts()
-            throws EntityRetrievalException, AccessDeniedException, ValidationException {
+            throws EntityRetrievalException, AccessDeniedException {
 
         List<PendingCertifiedProductDTO> pcps = new ArrayList<PendingCertifiedProductDTO>();
         if (Util.isUserRoleAdmin()) {
@@ -715,14 +714,13 @@ public class CertifiedProductController {
      * @throws EntityRetrievalException if entity could not be retrieved
      * @throws EntityNotFoundException if entity could not be found
      * @throws AccessDeniedException if user does not have access to listing
-     * @throws ValidationException 
      */
     @ApiOperation(value = "List a specific pending certified product.", notes = "")
     @RequestMapping(value = "/pending/{pcpId}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody PendingCertifiedProductDetails getPendingCertifiedProductById(
             @PathVariable("pcpId") final Long pcpId) throws EntityRetrievalException, EntityNotFoundException,
-    AccessDeniedException, ValidationException {
+    AccessDeniedException {
         PendingCertifiedProductDetails details = pcpManager.getById(pcpId);
         if (details == null) {
             throw new EntityNotFoundException(msgUtil.getMessage("pendingListing.notFound"));
@@ -742,7 +740,7 @@ public class CertifiedProductController {
     produces = "application/json; charset=utf-8")
     public @ResponseBody String rejectPendingCertifiedProduct(@PathVariable("pcpId") final Long pcpId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
-            AccessDeniedException, ValidationException {
+            AccessDeniedException, ObjectMissingValidationException {
         PendingCertifiedProductDetails pcp = pcpManager.getById(pcpId, true);
         Long pendingListingAcbId = null;
         if (pcp == null) {
@@ -866,10 +864,10 @@ public class CertifiedProductController {
             throw new ValidationException(msgUtil.getMessage("upload.emptyFile"));
         }
 
-        if (!file.getContentType().equalsIgnoreCase("text/csv")
-                && !file.getContentType().equalsIgnoreCase("application/vnd.ms-excel")) {
-            throw new ValidationException(msgUtil.getMessage("upload.notCSV"));
-        }
+        //if (!file.getContentType().equalsIgnoreCase("text/csv")
+        //        && !file.getContentType().equalsIgnoreCase("application/vnd.ms-excel")) {
+        //    throw new ValidationException(msgUtil.getMessage("upload.notCSV"));
+        //}
         HttpHeaders responseHeaders = new HttpHeaders();
         List<PendingCertifiedProductDetails> uploadedProducts = new ArrayList<PendingCertifiedProductDetails>();
 
