@@ -16,10 +16,11 @@ public final class UploadFileUtils {
 
     private static final String UPLOAD_2014 = "2014_V11_hasGAP.csv";
     private static final String UPLOAD_2015_V12 = "2015_Test_ICSA.csv";
+    private static final String UPLOAD_2015_V12_TOO_LONG = "2015_Test_ICSA-Participant_TestTask_Too_Long.csv";
 
     private UploadFileUtils() {}
 
-    public static MultipartFile getUploadFile(final String edition, final String version) {
+    public static MultipartFile getUploadFile(final String edition, final String version, final String id) {
         ClassLoader classLoader = UploadFileUtils.class.getClassLoader();
         File file = null;
         Path filePath = null;
@@ -30,8 +31,14 @@ public final class UploadFileUtils {
             filePath = Paths.get(file.getPath());
             name = UPLOAD_2014;
             originalFileName = UPLOAD_2014;
-        } else {
+        } else if (id == null){
             String resource = UPLOAD_2015_V12;
+            file = new File(classLoader.getResource(resource).getFile());
+            filePath = Paths.get(file.getPath());
+            name = resource;
+            originalFileName = resource;
+        } else if (id.equals("upLoadCertifiedProduct2015LongTestParticipant")){
+            String resource = UPLOAD_2015_V12_TOO_LONG;
             file = new File(classLoader.getResource(resource).getFile());
             filePath = Paths.get(file.getPath());
             name = resource;

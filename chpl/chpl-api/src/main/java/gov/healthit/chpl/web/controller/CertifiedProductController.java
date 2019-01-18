@@ -714,13 +714,14 @@ public class CertifiedProductController {
      * @throws EntityRetrievalException if entity could not be retrieved
      * @throws EntityNotFoundException if entity could not be found
      * @throws AccessDeniedException if user does not have access to listing
+     * @throws ObjectMissingValidationException if validation is missing
      */
     @ApiOperation(value = "List a specific pending certified product.", notes = "")
     @RequestMapping(value = "/pending/{pcpId}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody PendingCertifiedProductDetails getPendingCertifiedProductById(
             @PathVariable("pcpId") final Long pcpId) throws EntityRetrievalException, EntityNotFoundException,
-    AccessDeniedException {
+    AccessDeniedException, ObjectMissingValidationException {
         PendingCertifiedProductDetails details = pcpManager.getById(pcpId);
         if (details == null) {
             throw new EntityNotFoundException(msgUtil.getMessage("pendingListing.notFound"));
@@ -864,10 +865,10 @@ public class CertifiedProductController {
             throw new ValidationException(msgUtil.getMessage("upload.emptyFile"));
         }
 
-        //if (!file.getContentType().equalsIgnoreCase("text/csv")
-        //        && !file.getContentType().equalsIgnoreCase("application/vnd.ms-excel")) {
-        //    throw new ValidationException(msgUtil.getMessage("upload.notCSV"));
-        //}
+        if (!file.getContentType().equalsIgnoreCase("text/csv")
+                && !file.getContentType().equalsIgnoreCase("application/vnd.ms-excel")) {
+            throw new ValidationException(msgUtil.getMessage("upload.notCSV"));
+        }
         HttpHeaders responseHeaders = new HttpHeaders();
         List<PendingCertifiedProductDetails> uploadedProducts = new ArrayList<PendingCertifiedProductDetails>();
 
