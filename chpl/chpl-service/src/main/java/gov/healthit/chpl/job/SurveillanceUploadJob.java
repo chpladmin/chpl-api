@@ -21,8 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.Surveillance;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.entity.job.JobStatusType;
@@ -48,12 +50,13 @@ public class SurveillanceUploadJob extends RunnableJob {
     private SurveillanceValidator survValidator;
     private SurveillanceUploadHandlerFactory uploadHandlerFactory;
     private SurveillanceDAO surveillanceDAO;
+    private CertificationBodyDAO acbDAO;
 
     @Autowired
     public SurveillanceUploadJob(final ErrorMessageUtil errorMessageUtil, final CertifiedProductManager cpManager,
             final SurveillanceManager survManager, final SurveillanceUploadManager survUploadManager,
             final SurveillanceValidator survValidator, final SurveillanceUploadHandlerFactory uploadHandlerFactory,
-            final SurveillanceDAO surveillanceDAO) {
+            final SurveillanceDAO surveillanceDAO, CertificationBodyDAO acbDAO) {
         this.errorMessageUtil = errorMessageUtil;
         this.cpManager = cpManager;
         this.survManager = survManager;
@@ -61,6 +64,7 @@ public class SurveillanceUploadJob extends RunnableJob {
         this.survValidator = survValidator;
         this.uploadHandlerFactory = uploadHandlerFactory;
         this.surveillanceDAO = surveillanceDAO;
+        this.acbDAO = acbDAO;
     }
 
     public SurveillanceUploadJob() {
@@ -186,7 +190,7 @@ public class SurveillanceUploadJob extends RunnableJob {
                 }
             }
         } catch (final IOException ioEx) {
-            String msg = errorMessageUtil.getMessage("surveillance.inputStream", job.getId());
+            String msg = errorMessageUtil.getMessage("surveillance.inputStream");
             LOGGER.error(msg);
             addJobMessage(msg);
             updateStatus(100, JobStatusType.Error);
@@ -204,9 +208,15 @@ public class SurveillanceUploadJob extends RunnableJob {
                 updateStatus(jobPercentComplete, JobStatusType.In_Progress);
             } catch (final AccessDeniedException denied) {
                 String msg = "";
-                if (owningCp != null) {
-                    msg = errorMessageUtil.getMessage("surveillance.permissionErrorWithAcb",
-                            Util.getCurrentUser().getSubjectName(), owningCp.getCertificationBodyId());
+                if (owningCp != null && owningCp.getCertificationBodyId() != null) {
+                    try {
+                        CertificationBodyDTO acbDTO = acbDAO.getById(owningCp.getCertificationBodyId());
+                        msg = errorMessageUtil.getMessage("surveillance.permissionErrorWithAcb",
+                                Util.getCurrentUser().getSubjectName(), owningCp.getChplProductNumber(), acbDTO.getName());
+                    } catch (Exception e) {
+                        msg = errorMessageUtil.getMessage("surveillance.permissionError",
+                                Util.getCurrentUser().getSubjectName());
+                    }
                 } else {
                     msg = errorMessageUtil.getMessage("surveillance.permissionError",
                             Util.getCurrentUser().getSubjectName());
