@@ -30,14 +30,6 @@ public class FieldLengthReviewer implements Reviewer {
         if (listing.getVersion() != null && !StringUtils.isEmpty(listing.getVersion().getVersion())) {
             checkField(listing, listing.getVersion().getVersion(), "productVersion");
         }
-        if (listing.getSed() != null && listing.getSed().getTestTasks() != null) {
-            for (TestTask task : listing.getSed().getTestTasks()) {
-                checkField(listing, task.getUniqueId(), "taskIdentifier");
-                for (TestParticipant tp : task.getTestParticipants()) {
-                    checkField(listing, tp.getUniqueId(), "participantIdentifier");
-                }
-            }
-        }
     }
 
     private void checkField(final CertifiedProductSearchDetails product, final Object field, final String errorField) {

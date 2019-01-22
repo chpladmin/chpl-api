@@ -3,9 +3,6 @@ package gov.healthit.chpl.validation.pendingListing.reviewer;
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
@@ -16,8 +13,6 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 public class FieldLengthReviewer implements Reviewer {
     @Autowired
     private ErrorMessageUtil msgUtil;
-    @Autowired
-    private MessageSource messageSource;
 
     private static String ERROR = "error";
     private static String WARNING = "warning";
@@ -31,7 +26,7 @@ public class FieldLengthReviewer implements Reviewer {
         for (PendingCertifiedProductTargetedUserDTO tu : listing.getTargetedUsers()) {
             checkField(listing, tu.getName(), "targetedUser", WARNING);
             if (listing.getWarningMessages().contains(msgUtil.getMessage("listing.targetedUser.maxlength",
-                    String.valueOf(getMaxLength("maxLength.targetedUser")), tu.getName()))) {
+                    String.valueOf(msgUtil.getMaxLength("maxLength.targetedUser")), tu.getName()))) {
                 toRemove.add(tu);
             }
         }
@@ -64,26 +59,23 @@ public class FieldLengthReviewer implements Reviewer {
         
         if (field instanceof Long) {
             Long fieldCasted = (Long) field;
-            if (fieldCasted.toString().length() > getMaxLength("maxLength." + errorField)) {
+            if (fieldCasted.toString().length() > msgUtil.getMaxLength("maxLength." + errorField)) {
                 message = msgUtil.getMessage("listing." + errorField + ".maxlength",
-                        String.valueOf(getMaxLength("maxLength." + errorField)), fieldCasted);
+                        String.valueOf(msgUtil.getMaxLength("maxLength." + errorField)), fieldCasted);
             }
         } else if (field instanceof String) {
             String fieldCasted = (String) field;
-            if (fieldCasted.length() > getMaxLength("maxLength." + errorField)) {
+            if (fieldCasted.length() > msgUtil.getMaxLength("maxLength." + errorField)) {
                 message = msgUtil.getMessage("listing." + errorField + ".maxlength",
-                        String.valueOf(getMaxLength("maxLength." + errorField)), fieldCasted);
+                        String.valueOf(msgUtil.getMaxLength("maxLength." + errorField)), fieldCasted);
             }
         }
-        if (type.equals(ERROR)) {
-            listing.getErrorMessages().add(message);
-        } else {
-            listing.getWarningMessages().add(message);
+        if(message != null) {
+            if (type.equals(ERROR) ) {
+                listing.getErrorMessages().add(message);
+            } else {
+                listing.getWarningMessages().add(message);
+            }
         }
-    }
-
-    private int getMaxLength(final String field) {
-        return Integer.parseInt(String.format(
-                messageSource.getMessage(new DefaultMessageSourceResolvable(field), LocaleContextHolder.getLocale())));
     }
 }
