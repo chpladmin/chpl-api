@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.domain.schedule.ChplJob;
+import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.domain.schedule.ChplTrigger;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.web.controller.results.ChplJobsResults;
+import gov.healthit.chpl.web.controller.results.ScheduleOneTimeTriggersResults;
 import gov.healthit.chpl.web.controller.results.ScheduleTriggersResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -46,6 +48,23 @@ public class SchedulerController {
     final ChplTrigger trigger) throws SchedulerException, ValidationException {
         ChplTrigger result = schedulerManager.createTrigger(trigger);
         ScheduleTriggersResults results = new ScheduleTriggersResults();
+        results.getResults().add(result);
+        return results;
+    }
+
+    /**
+     * Create a new one timeSimpleTrigger based on passed information.
+     * @param trigger input
+     * @return the new trigger
+     * @throws SchedulerException if exception is thrown
+     * @throws ValidationException if job values aren't correct
+     */
+    @ApiOperation(value = "Create a new trigger and return it")
+    @RequestMapping(value = "/triggers/one_time", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+    public @ResponseBody ScheduleOneTimeTriggersResults createOneTimeTrigger(@RequestBody(required = true)
+    final ChplOneTimeTrigger trigger) throws SchedulerException, ValidationException {
+        ChplOneTimeTrigger result = schedulerManager.createOneTimeTrigger(trigger);
+        ScheduleOneTimeTriggersResults results = new ScheduleOneTimeTriggersResults();
         results.getResults().add(result);
         return results;
     }

@@ -5,6 +5,7 @@ import java.util.List;
 import org.quartz.SchedulerException;
 
 import gov.healthit.chpl.domain.schedule.ChplJob;
+import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.domain.schedule.ChplTrigger;
 import gov.healthit.chpl.exception.ValidationException;
 
@@ -23,6 +24,7 @@ public interface SchedulerManager {
      */
     ChplTrigger createTrigger(ChplTrigger trigger) throws SchedulerException, ValidationException;
 
+    ChplOneTimeTrigger createOneTimeTrigger(ChplOneTimeTrigger trigger)  throws SchedulerException, ValidationException;
     /**
      * Delete an existing Trigger.
      * @param triggerGroup group name of trigger
