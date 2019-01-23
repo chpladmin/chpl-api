@@ -1,7 +1,6 @@
 package gov.healthit.chpl.domain.schedule;
 
 import java.io.Serializable;
-import java.util.Date;
 
 public class ChplOneTimeTrigger implements Serializable{
     private static final long serialVersionUID = -3583084568526672515L;
@@ -9,7 +8,7 @@ public class ChplOneTimeTrigger implements Serializable{
     //private String name;
     //private String group;
     private ChplJob job;
-    private Date runDate;
+    private Long runDateMillis;
 
     //    public String getName() {
     //        return name;
@@ -29,11 +28,11 @@ public class ChplOneTimeTrigger implements Serializable{
     public void setJob(ChplJob job) {
         this.job = job;
     }
-    public Date getRunDate() {
-        return runDate;
+    public Long getRunDateMillis() {
+        return runDateMillis;
     }
-    public void setRunDate(Date runDate) {
-        this.runDate = runDate;
+    public void setRunDateMillis(Long runDateMillis) {
+        this.runDateMillis = runDateMillis;
     }
 
 }

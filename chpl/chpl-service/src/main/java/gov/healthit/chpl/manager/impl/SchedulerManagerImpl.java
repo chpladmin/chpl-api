@@ -10,6 +10,7 @@ import static org.quartz.impl.matchers.GroupMatcher.groupEquals;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -113,7 +114,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
 
         SimpleTrigger trigger = (SimpleTrigger) newTrigger()
                 .withIdentity(createTriggerName(chplTrigger), createTriggerGroup(chplTrigger.getJob()))
-                .startAt(chplTrigger.getRunDate())
+                .startAt(new Date(chplTrigger.getRunDateMillis()))
                 .forJob(chplTrigger.getJob().getName(), chplTrigger.getJob().getGroup())
                 .build();
 
@@ -328,7 +329,8 @@ public class SchedulerManagerImpl implements SchedulerManager {
     }
 
     private String createTriggerName(final ChplOneTimeTrigger trigger) {
+        Date toFormat = new Date(trigger.getRunDateMillis());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
-        return sdf.format(trigger.getRunDate());
+        return sdf.format(toFormat);
     }
 }
