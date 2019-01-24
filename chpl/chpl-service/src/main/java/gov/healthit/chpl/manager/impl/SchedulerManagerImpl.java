@@ -7,8 +7,11 @@ import static org.quartz.TriggerBuilder.newTrigger;
 import static org.quartz.TriggerKey.triggerKey;
 import static org.quartz.impl.matchers.GroupMatcher.groupEquals;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -17,6 +20,7 @@ import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.TriggerKey;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +32,14 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.domain.schedule.ChplJob;
+import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.domain.schedule.ChplTrigger;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.SchedulerManager;
+import gov.healthit.chpl.permissions.Permissions;
+import gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions;
 import gov.healthit.chpl.scheduler.ChplSchedulerReference;
 
 /**
@@ -45,18 +52,24 @@ public class SchedulerManagerImpl implements SchedulerManager {
 
     private static final String AUTHORITY_DELIMITER = ";";
 
-    @Autowired
     private ChplSchedulerReference chplScheduler;
+    private CertificationBodyManager acbManager;
+    private Permissions permissions;
 
     @Autowired
-    private CertificationBodyManager acbManager;
+    public SchedulerManagerImpl(final ChplSchedulerReference chplScheduler,
+            final CertificationBodyManager acbManager, final Permissions permissions) {
+        this.chplScheduler = chplScheduler;
+        this.acbManager = acbManager;
+        this.permissions = permissions;
+    }
 
     @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
     public ChplTrigger createTrigger(final ChplTrigger trigger) throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
 
-        TriggerKey triggerId = triggerKey(createTriggerName(trigger), createTriggerGroup(trigger));
+        TriggerKey triggerId = triggerKey(createTriggerName(trigger), createTriggerGroup(trigger.getJob()));
         JobKey jobId = jobKey(trigger.getJob().getName(), trigger.getJob().getGroup());
         if (doesUserHavePermissionToJob(scheduler.getJobDetail(jobId))) {
             Trigger qzTrigger = null;
@@ -90,6 +103,24 @@ public class SchedulerManagerImpl implements SchedulerManager {
         } else {
             throw new AccessDeniedException("Can not create this trigger");
         }
+    }
+
+    @Override
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
+            + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).CREATE_ONE_TIME_TRIGGER)")
+    public ChplOneTimeTrigger createOneTimeTrigger(ChplOneTimeTrigger chplTrigger)
+            throws SchedulerException, ValidationException {
+        Scheduler scheduler = getScheduler();
+
+        SimpleTrigger trigger = (SimpleTrigger) newTrigger()
+                .withIdentity(createTriggerName(chplTrigger), createTriggerGroup(chplTrigger.getJob()))
+                .startAt(new Date(chplTrigger.getRunDateMillis()))
+                .forJob(chplTrigger.getJob().getName(), chplTrigger.getJob().getGroup())
+                .build();
+
+        scheduler.scheduleJob(trigger);
+
+        return chplTrigger;
     }
 
     @Override
@@ -166,20 +197,34 @@ public class SchedulerManagerImpl implements SchedulerManager {
      * will need to be added to the list.
      */
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ONC', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
+            + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).CREATE_ONE_TIME_TRIGGER)")
+    //@PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
+    //        + "T(gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions).GET_ALL, filterObject)")
     public List<ChplJob> getAllJobs() throws SchedulerException {
         List<ChplJob> jobs = new ArrayList<ChplJob>();
         Scheduler scheduler = getScheduler();
+
+        //Get all the jobs (no security)
         for (String group : scheduler.getJobGroupNames()) {
-            if (group.equals("chplJobs")) {
-                for (JobKey jobKey : scheduler.getJobKeys(groupEquals(group))) {
-                    JobDetail jobDetail = scheduler.getJobDetail(jobKey);
-                    if (doesUserHavePermissionToJob(jobDetail)) {
-                        jobs.add(new ChplJob(jobDetail));
-                    }
-                }
+            for (JobKey jobKey : scheduler.getJobKeys(groupEquals(group))) {
+                JobDetail jobDetail = scheduler.getJobDetail(jobKey);
+                jobs.add(new ChplJob(jobDetail));
             }
         }
+
+        //TODO: There is a problem using @PostFilter - some sort of ACL issue
+        //Until that is figured out...
+        Iterator<ChplJob> iterator = jobs.iterator();
+        while (iterator.hasNext()) {
+            if (!permissions.hasAccess(
+                    Permissions.SCHEDULER,
+                    SchedulerDomainPermissions.GET_ALL,
+                    iterator.next())) {
+                iterator.remove();
+            }
+        }
+
         return jobs;
     }
 
@@ -265,8 +310,12 @@ public class SchedulerManagerImpl implements SchedulerManager {
         return false;
     }
 
-    private String createTriggerGroup(final ChplTrigger trigger) {
-        String group = trigger.getJob().getName().replaceAll(" ", "");
+    private String createTriggerGroup(final ChplJob job) {
+        return createTriggerGroup(job.getName());
+    }
+
+    private String createTriggerGroup(final String triggerName) {
+        String group = triggerName.replaceAll(" ", "");
         group += "Trigger";
         return group;
     }
@@ -277,5 +326,11 @@ public class SchedulerManagerImpl implements SchedulerManager {
             name += trigger.getAcb();
         }
         return name;
+    }
+
+    private String createTriggerName(final ChplOneTimeTrigger trigger) {
+        Date toFormat = new Date(trigger.getRunDateMillis());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
+        return sdf.format(toFormat);
     }
 }
