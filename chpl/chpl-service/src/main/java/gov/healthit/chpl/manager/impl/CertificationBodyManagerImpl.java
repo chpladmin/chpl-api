@@ -1,6 +1,7 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -117,11 +118,16 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     @Transactional
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     @CacheEvict(CacheNames.CERT_BODY_NAMES)
-    public CertificationBodyDTO retire(final Long acbId) throws EntityRetrievalException,
+    public CertificationBodyDTO retire(final CertificationBodyDTO acb) throws EntityRetrievalException,
         JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
+        Date now = new Date();
+        if (now.before(acb.getRetirementDate())) {
+            throw new UpdateCertifiedBodyException("Retirement date must be before \"now\".");
+        }
         CertificationBodyDTO result = null;
-        CertificationBodyDTO toUpdate = certificationBodyDAO.getById(acbId);
+        CertificationBodyDTO toUpdate = certificationBodyDAO.getById(acb.getId());
         toUpdate.setRetired(true);
+        toUpdate.setRetirementDate(acb.getRetirementDate());
         result = certificationBodyDAO.update(toUpdate);
 
         String activityMsg = "Retired acb " + toUpdate.getName();
@@ -138,6 +144,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
         CertificationBodyDTO result = null;
         CertificationBodyDTO toUpdate = certificationBodyDAO.getById(acbId);
         toUpdate.setRetired(false);
+        toUpdate.setRetirementDate(null);
         result = certificationBodyDAO.update(toUpdate);
 
         String activityMsg = "Unretired acb " + toUpdate.getName();

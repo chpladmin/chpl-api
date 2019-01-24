@@ -146,7 +146,10 @@ public class CertificationBodyController {
         CertificationBodyDTO existingAcb = acbManager.getIfPermissionById(updatedAcb.getId());
         if (existingAcb.isRetired() != updatedAcb.isRetired() && updatedAcb.isRetired()) {
             //we are retiring this ACB - no other updates can happen
-            acbManager.retire(updatedAcb.getId());
+            CertificationBodyDTO toRetire = new CertificationBodyDTO();
+            toRetire.setRetirementDate(updatedAcb.getRetirementDate());
+            toRetire.setId(updatedAcb.getId());
+            acbManager.retire(toRetire);
         } else {
             if (existingAcb.isRetired() != updatedAcb.isRetired() && !updatedAcb.isRetired()) {
                 //unretire the ACB
@@ -156,7 +159,8 @@ public class CertificationBodyController {
             toUpdate.setId(updatedAcb.getId());
             toUpdate.setAcbCode(updatedAcb.getAcbCode());
             toUpdate.setName(updatedAcb.getName());
-            toUpdate.setRetired(updatedAcb.isRetired());
+            toUpdate.setRetired(false);
+            toUpdate.setRetirementDate(null);
             if (StringUtils.isEmpty(updatedAcb.getWebsite())) {
                 throw new InvalidArgumentsException("A website is required to update the certification body");
             }
