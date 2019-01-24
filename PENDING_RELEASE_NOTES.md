@@ -8,4 +8,3 @@ _Date TBD_
 * Add upload errors for test task id and participant id being too long
 
 ---
-
