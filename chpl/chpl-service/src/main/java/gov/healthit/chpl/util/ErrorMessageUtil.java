@@ -38,4 +38,9 @@ public class ErrorMessageUtil {
         }
         return result;
     }
+    
+    public int getMaxLength(final String field) {
+        return Integer.parseInt(String.format(
+                messageSource.getMessage(new DefaultMessageSourceResolvable(field), LocaleContextHolder.getLocale())));
+    }
 }
