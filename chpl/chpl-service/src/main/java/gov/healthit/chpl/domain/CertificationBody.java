@@ -32,7 +32,7 @@ public class CertificationBody implements Serializable {
         this.name = dto.getName();
         this.website = dto.getWebsite();
         this.retired = dto.isRetired();
-        this.setRetirementDate(dto.getRetirementDate());
+        this.retirementDate = dto.getRetirementDate();
         if (dto.getAddress() != null) {
             this.address = new Address(dto.getAddress());
         }

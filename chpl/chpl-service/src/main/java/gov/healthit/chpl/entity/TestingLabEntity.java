@@ -53,6 +53,9 @@ public class TestingLabEntity implements Serializable {
     @Column(name = "retired", nullable = false)
     private Boolean retired;
 
+    @Column(name = "retirement_date", nullable = true)
+    private Date retirementDate;
+
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
     private Date creationDate;
@@ -73,13 +76,7 @@ public class TestingLabEntity implements Serializable {
         // Default constructor
     }
 
-    /**
-     * Constructor taking a given ID.
-     *
-     * @param id
-     *            to set
-     */
-    public TestingLabEntity(Long id) {
+    public TestingLabEntity(final Long id) {
         this.id = id;
     }
 
@@ -101,42 +98,18 @@ public class TestingLabEntity implements Serializable {
         this.creationDate = Util.getNewDate(creationDate);
     }
 
-    /**
-     * Return the value associated with the column: deleted.
-     *
-     * @return A Boolean object (this.deleted)
-     */
     public Boolean isDeleted() {
         return this.deleted;
-
     }
 
-    /**
-     * Set the value related to the column: deleted.
-     *
-     * @param deleted
-     *            the deleted value you wish to set
-     */
     public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
-    /**
-     * Return the value associated with the column: id.
-     *
-     * @return A Long object (this.id)
-     */
     public Long getId() {
         return this.id;
-
     }
 
-    /**
-     * Set the value related to the column: id.
-     *
-     * @param id
-     *            the id value you wish to set
-     */
     public void setId(final Long id) {
         this.id = id;
     }
@@ -149,42 +122,18 @@ public class TestingLabEntity implements Serializable {
         this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
-    /**
-     * Return the value associated with the column: lastModifiedUser.
-     *
-     * @return A Long object (this.lastModifiedUser)
-     */
     public Long getLastModifiedUser() {
         return this.lastModifiedUser;
-
     }
 
-    /**
-     * Set the value related to the column: lastModifiedUser.
-     *
-     * @param lastModifiedUser
-     *            the lastModifiedUser value you wish to set
-     */
     public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
-    /**
-     * Return the value associated with the column: name.
-     *
-     * @return A String object (this.name)
-     */
     public String getName() {
         return this.name;
-
     }
 
-    /**
-     * Set the value related to the column: name.
-     *
-     * @param name
-     *            the name value you wish to set
-     */
     public void setName(final String name) {
         this.name = name;
     }
@@ -229,7 +178,23 @@ public class TestingLabEntity implements Serializable {
         return retired;
     }
 
-    public void setRetired(Boolean retired) {
+    public void setRetired(final Boolean retired) {
         this.retired = retired;
+    }
+
+    public final Date getRetirementDate() {
+        return retirementDate;
+    }
+
+    public final void setRetirementDate(final Date retirementDate) {
+        this.retirementDate = retirementDate;
+    }
+
+    @Override
+    public String toString() {
+        return "TestingLabEntity [id=" + id + ", testingLabCode=" + testingLabCode + ", address=" + address + ", name="
+                + name + ", accredidationNumber=" + accredidationNumber + ", website=" + website + ", retired="
+                + retired + ", retirementDate=" + retirementDate + ", creationDate=" + creationDate + ", deleted="
+                + deleted + ", lastModifiedDate=" + lastModifiedDate + ", lastModifiedUser=" + lastModifiedUser + "]";
     }
 }
