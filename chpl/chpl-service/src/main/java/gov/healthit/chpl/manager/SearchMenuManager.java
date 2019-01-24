@@ -15,6 +15,7 @@ import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.FuzzyChoices;
 import gov.healthit.chpl.domain.KeyValueModel;
+import gov.healthit.chpl.domain.KeyValueModelBody;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
 import gov.healthit.chpl.domain.TestFunctionality;
@@ -27,7 +28,8 @@ public interface SearchMenuManager {
 
     Set<FuzzyChoices> getFuzzyChoices() throws EntityRetrievalException, JsonParseException, JsonMappingException, IOException;
 
-    FuzzyChoices updateFuzzyChoices(FuzzyChoicesDTO fuzzyChoicesDTO) throws EntityRetrievalException, JsonProcessingException, EntityCreationException, IOException;
+    FuzzyChoices updateFuzzyChoices(FuzzyChoicesDTO fuzzyChoicesDTO)
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, IOException;
 
     Set<KeyValueModel> getClassificationNames();
 
@@ -41,7 +43,7 @@ public interface SearchMenuManager {
 
     Set<KeyValueModelStatuses> getDeveloperNames();
 
-    Set<KeyValueModel> getCertBodyNames();
+    Set<KeyValueModelBody> getCertBodyNames();
 
     Set<KeyValueModel> getAccessibilityStandards();
 
@@ -60,7 +62,9 @@ public interface SearchMenuManager {
     Set<TestStandard> getTestStandards();
 
     Set<KeyValueModel> getTestTools();
+
     Set<CriteriaSpecificDescriptiveModel> getTestProcedures();
+
     Set<CriteriaSpecificDescriptiveModel> getTestData();
 
     Set<KeyValueModel> getDeveloperStatuses();

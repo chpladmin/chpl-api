@@ -121,8 +121,8 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     public CertificationBodyDTO retire(final CertificationBodyDTO acb) throws EntityRetrievalException,
         JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
         Date now = new Date();
-        if (now.before(acb.getRetirementDate())) {
-            throw new UpdateCertifiedBodyException("Retirement date must be before \"now\".");
+        if (acb.getRetirementDate() == null || now.before(acb.getRetirementDate())) {
+            throw new UpdateCertifiedBodyException("Retirement date is required and must be before \"now\".");
         }
         CertificationBodyDTO result = null;
         CertificationBodyDTO toUpdate = certificationBodyDAO.getById(acb.getId());

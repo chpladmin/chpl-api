@@ -107,8 +107,8 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
     public TestingLabDTO retire(final TestingLabDTO atl) throws EntityRetrievalException,
     JsonProcessingException, EntityCreationException, UpdateTestingLabException {
         Date now = new Date();
-        if (now.before(atl.getRetirementDate())) {
-            throw new UpdateTestingLabException("Retirement date must be before \"now\".");
+        if (atl.getRetirementDate() == null || now.before(atl.getRetirementDate())) {
+            throw new UpdateTestingLabException("Retirement date is required and must be before \"now\".");
         }
         TestingLabDTO result = null;
         TestingLabDTO toUpdate = testingLabDAO.getById(atl.getId());

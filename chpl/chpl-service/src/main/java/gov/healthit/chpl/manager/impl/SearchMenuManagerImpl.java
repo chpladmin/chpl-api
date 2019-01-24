@@ -47,6 +47,7 @@ import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.FuzzyChoices;
 import gov.healthit.chpl.domain.KeyValueModel;
+import gov.healthit.chpl.domain.KeyValueModelBody;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;
@@ -168,7 +169,8 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
     @Transactional
     @Override
-    public Set<FuzzyChoices> getFuzzyChoices() throws EntityRetrievalException, JsonParseException, JsonMappingException, IOException {
+    public Set<FuzzyChoices> getFuzzyChoices() throws EntityRetrievalException, JsonParseException,
+    JsonMappingException, IOException {
         List<FuzzyChoicesDTO> fuzzyChoices = fuzzyChoicesDAO.findAllTypes();
         Set<FuzzyChoices> results = new HashSet<FuzzyChoices>();
         for (FuzzyChoicesDTO dto : fuzzyChoices) {
@@ -180,7 +182,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
     @Transactional
     @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    public FuzzyChoices updateFuzzyChoices(FuzzyChoicesDTO fuzzyChoicesDTO)
+    public FuzzyChoices updateFuzzyChoices(final FuzzyChoicesDTO fuzzyChoicesDTO)
         throws EntityRetrievalException, JsonProcessingException, EntityCreationException, IOException {
 
         FuzzyChoices result = null;
@@ -206,7 +208,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
     @Transactional
     @Override
     @Cacheable(CacheNames.EDITION_NAMES)
-    public Set<KeyValueModel> getEditionNames(Boolean simple) {
+    public Set<KeyValueModel> getEditionNames(final Boolean simple) {
 
         List<CertificationEditionDTO> certificationEditions = certificationEditionDAO.findAll();
         Set<KeyValueModel> editionNames = new HashSet<KeyValueModel>();
@@ -286,13 +288,13 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
     @Transactional
     @Override
     @Cacheable(CacheNames.CERT_BODY_NAMES)
-    public Set<KeyValueModel> getCertBodyNames() {
+    public Set<KeyValueModelBody> getCertBodyNames() {
 
         List<CertificationBodyDTO> dtos = this.certificationBodyDAO.findAll();
-        Set<KeyValueModel> acbNames = new HashSet<KeyValueModel>();
+        Set<KeyValueModelBody> acbNames = new HashSet<KeyValueModelBody>();
 
         for (CertificationBodyDTO dto : dtos) {
-            acbNames.add(new KeyValueModel(dto.getId(), dto.getName()));
+            acbNames.add(new KeyValueModelBody(dto.getId(), dto.getName(), dto.getRetirementDate()));
         }
 
         return acbNames;
@@ -572,7 +574,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
     @Transactional
     @Override
     @Cacheable(CacheNames.CERTIFICATION_CRITERION_NUMBERS)
-    public Set<DescriptiveModel> getCertificationCriterionNumbers(Boolean simple) throws EntityRetrievalException {
+    public Set<DescriptiveModel> getCertificationCriterionNumbers(final Boolean simple) throws EntityRetrievalException {
 
         List<CertificationCriterionDTO> dtos = this.certificationCriterionDAO.findAll();
         Set<DescriptiveModel> criterionNames = new HashSet<DescriptiveModel>();
@@ -604,7 +606,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
     @Transactional
     @Override
     @Cacheable(CacheNames.CQM_CRITERION_NUMBERS)
-    public Set<DescriptiveModel> getCQMCriterionNumbers(Boolean simple) {
+    public Set<DescriptiveModel> getCQMCriterionNumbers(final Boolean simple) {
 
         List<CQMCriterionDTO> dtos = this.cqmCriterionDAO.findAll();
         Set<DescriptiveModel> criterionNames = new HashSet<DescriptiveModel>();
