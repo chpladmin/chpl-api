@@ -1,16 +1,11 @@
 package gov.healthit.chpl.web.controller;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -208,11 +203,11 @@ public class CertifiedProductController {
      */
     @SuppressWarnings({"checkstyle:parameternumber"})
     @ApiOperation(value = "Get all details for a specified certified product.",
-            notes = "Returns all information in the CHPL related to the specified certified product.  "
-                    + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
-                    + "{addlSoftwareCode}.{certDateCode} represents a valid CHPL Product Number.  A valid call "
-                    + "to this service would look like "
-                    + "/certified_products/YY.99.99.9999.XXXX.99.99.9.YYMMDD/details")
+    notes = "Returns all information in the CHPL related to the specified certified product.  "
+            + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
+            + "{addlSoftwareCode}.{certDateCode} represents a valid CHPL Product Number.  A valid call "
+            + "to this service would look like "
+            + "/certified_products/YY.99.99.9999.XXXX.99.99.9.YYMMDD/details")
     @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
             + "{addlSoftwareCode}.{certDateCode}/details",
             method = RequestMethod.GET,
@@ -687,11 +682,13 @@ public class CertifiedProductController {
         List<PendingCertifiedProductDTO> pcps = new ArrayList<PendingCertifiedProductDTO>();
         if (Util.isUserRoleAdmin()) {
             pcps = pcpManager.getAllPendingCertifiedProducts();
-        } else {
+        } else if (Util.isUserRoleAcbAdmin()) {
             List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser();
             for (CertificationBodyDTO acb : allowedAcbs) {
                 pcps.addAll(pcpManager.getPendingCertifiedProducts(acb.getId()));
             }
+        } else {
+            throw new AccessDeniedException(msgUtil.getMessage("access.denied"));
         }
 
         List<PendingCertifiedProductDetails> result = new ArrayList<PendingCertifiedProductDetails>();
