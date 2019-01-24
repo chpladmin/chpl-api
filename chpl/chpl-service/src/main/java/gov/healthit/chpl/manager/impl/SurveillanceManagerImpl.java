@@ -226,7 +226,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 
     @Override
     @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') "
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or (hasRole('ROLE_ACB') "
             + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     public Surveillance getPendingById(final Long acbId, final Long survId, final boolean includeDeleted)
             throws EntityRetrievalException {
@@ -237,7 +237,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') "
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or (hasRole('ROLE_ACB') "
             + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     public Long createPendingSurveillance(final Long acbId, final Surveillance surv) {
         Long insertedId = null;
@@ -253,7 +253,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') "
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or (hasRole('ROLE_ACB') "
             + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     public void deletePendingSurveillance(final Long acbId, final Long survId, final boolean isConfirmed)
             throws ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException,
@@ -387,7 +387,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ONC_STAFF')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     public File getBasicReportDownloadFile() throws IOException {
         return fileUtils.getNewestFileMatchingName("^" + env.getProperty("surveillanceBasicReportName") + "-.+\\.csv$");
     }
@@ -622,7 +622,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     }
 
     private void updateNullAuthority(final Surveillance surv) {
-        Boolean hasOncAdmin = Util.isUserRoleAdmin();
+        Boolean hasOncAdmin = Util.isUserRoleAdmin() || Util.isUserRoleOnc();
         Boolean hasAcbAdmin = Util.isUserRoleAcbAdmin();
         if (StringUtils.isEmpty(surv.getAuthority())) {
             if (hasOncAdmin) {

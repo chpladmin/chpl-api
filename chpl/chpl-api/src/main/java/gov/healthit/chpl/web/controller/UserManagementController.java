@@ -286,11 +286,10 @@ public class UserManagementController {
     @ApiOperation(value = "Invite a user to the CHPL.",
             notes = "This request creates an invitation that is sent to the email address provided. "
                     + "The recipient of this invitation can then choose to create a new account "
-                    + "or add the permissions contained within the invitation to an exisitng account "
+                    + "or add the permissions contained within the invitation to an existing account "
                     + "if they have one. Said another way, an invitation can be used to create or "
                     + "modify CHPL user accounts." + "The correct order to call invitation requests is "
-                    + "the following: 1) /invite 2) /create or /authorize 3) /confirm. "
-                    + "A user must have ")
+                    + "the following: 1) /invite 2) /create or /authorize 3) /confirm. ")
     @RequestMapping(value = "/invite", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public UserInvitation inviteUser(@RequestBody final UserInvitation invitation)
@@ -418,8 +417,8 @@ public class UserManagementController {
     }
 
     @ApiOperation(value = "Give additional roles to a user.",
-            notes = "Users may be given ROLE_ADMIN, ROLE_ONC, ROLE_ACB, "
-                    + "ROLE_ATL, or ROLE_ONC_STAFF roles within the system.")
+            notes = "Users may be given ROLE_ADMIN, ROLE_ONC, ROLE_ACB, or "
+                    + "ROLE_ATL roles within the system.")
     @RequestMapping(value = "/{userName}/roles/{roleName}", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
     public String grantUserRole(@PathVariable("userName") final String userName,
@@ -465,8 +464,8 @@ public class UserManagementController {
     }
 
     @ApiOperation(value = "Remove roles previously granted to a user.",
-            notes = "Users may be given ROLE_ADMIN, ROLE_ACB, "
-                    + "ROLE_ATL, or ROLE_ONC_STAFF roles within the system.")
+            notes = "Users may be given ROLE_ADMIN, ROLE_ACB, or "
+                    + "ROLE_ATL roles within the system.")
     @RequestMapping(value = "/{userName}/roles/{roleName}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public String revokeUserRole(@PathVariable("userName") final String userName,

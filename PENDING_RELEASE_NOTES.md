@@ -1,12 +1,10 @@
-## Version 20.1.0
+
+## Version 20.2.0
 _Date TBD_
 
 ### New Features
-* Change surveillance and sed report filenames to include timestamp when the file was last generated.
-
-### Bugs Fixed
-* Save "Developer identified targeted users" on upload/confirm
-* Update invalid error and warning messages for upload file
+* Added ROLE_ONC user role. ROLE_ONC replaces the existing ROLE_ADMIN and all relevant accounts were converted to the new role.
+* Removed references to ROLE_ONC_STAFF.
+* Add upload errors for test task id and participant id being too long
 
 ---
-

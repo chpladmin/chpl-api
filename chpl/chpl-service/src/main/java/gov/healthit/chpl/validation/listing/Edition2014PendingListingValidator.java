@@ -18,6 +18,7 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.UnattestedCriteriaWi
 import gov.healthit.chpl.validation.pendingListing.reviewer.UnsupportedCharacterReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.UrlReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.ValidDataReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.edition2014.DuplicateData2014Reviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2014.RequiredData2014Reviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2014.SedG32014Reviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2014.TestFunctionality2014Reviewer;
@@ -81,12 +82,17 @@ public class Edition2014PendingListingValidator extends PendingValidator {
     @Qualifier("pendingUrlReviewer")
     private UrlReviewer urlReviewer;
 
+    @Autowired
+    @Qualifier("pendingDuplicateData2014Reviewer")
+    private DuplicateData2014Reviewer duplicateData2014Reviewer;
+
     private List<Reviewer> reviewers;
 
     @Override
     public List<Reviewer> getReviewers() {
         if (reviewers == null) {
             reviewers = new ArrayList<Reviewer>();
+            reviewers.add(duplicateData2014Reviewer);
             reviewers.add(chplNumberReviewer);
             reviewers.add(devStatusReviewer);
             reviewers.add(certDateReviewer);

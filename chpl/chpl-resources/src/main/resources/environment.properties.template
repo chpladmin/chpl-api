@@ -14,8 +14,21 @@ jobThresholdDays=7
 #how many surveillances should be in a file before it's turned into a job?
 surveillanceThresholdToProcessAsJob=50
 
+#
+# fuzzy matching properties
+#
+fuzzyChoiceThreshold=80
+fuzzyChoiceLimit=1
+
+#####
+# Filenames for report files that are created within the system.
+#####
 #file name that daily SED details will be written to
-SEDDownloadName=chpl-sed-all-details.csv
+SEDDownloadName=chpl-sed-all-details
+#surveillance reports
+surveillanceAllReportName=surveillance-all
+surveillanceBasicReportName=surveillance-basic-report
+surveillanceNonconformitiesReportName=surveillance-with-nonconformities
 
 # number of tokens per API Key per time unit below
 rateTokenLimit=5
@@ -23,13 +36,14 @@ rateTokenLimit=5
 # values are: second, minute, hour
 rateLimitTimeUnit=minute
 
-fuzzyChoiceThreshold=80
-fuzzyChoiceLimit=1
-
-#cache properties
+#caching properties
 enableCacheInitialization=true
 cacheClearTimeoutSecs=15
 cacheInitializeTimeoutSecs=300
+#how long to wait before first loading the prefetched listing cache
+listingCacheRefreshInitialDelayMillis=300000
+#how to long to wait after prefetched listing cache has loaded before starting to load it again
+listingCacheRefreshDelayMillis=900000
 
 #chpl/app/statistics/SummaryStatistics properties
 summaryEmailSubject=CHPL - Weekly Summary Statistics Report
@@ -41,6 +55,9 @@ questionableActivityReportFilename=questionable-activity
 questionableActivityEmailSubject=Questionable Activity Report
 questionableActivityHasDataEmailBody=<p>A summary of questionable activity found between %s and %s is attached.</p>"
 questionableActivityNoDataEmailBody=<p>No questionable activity was found between %s and %s.</p>
+
+#chpl-service download jar properties
+dataSourceName=java:/comp/env/jdbc/openchpl
 
 #oversight email properties
 suspendedDaysAllowed=30
@@ -77,9 +94,7 @@ schemaXmlName=listingSchema.xsd
 schemaCsv2014Name=listing2014Schema.csv
 schemaCsv2015Name=listing2015Schema.csv
 schemaSurveillanceName=surveillanceSchema.csv
-
-#chpl-service download jar properties
-dataSourceName=java:/comp/env/jdbc/openchpl
+schemaBasicSurveillanceName=Surveillance (basic) CSV Data Dictionary.csv
 
 #chpl-auth properties
 authJndiName=java:comp/env/jdbc/openchpl
@@ -92,14 +107,6 @@ jwtAudience=ONCCHPL
 jwtExpirationTimeMinutesInTheFuture=30
 jwtNotBeforeMinutesInThePast=4
 resetLinkExpirationTimeInHours=24
-
-chplUrlBegin=http://localhost:8000/app
-
-#Asynchronous properties
-#leave listing details false for now
-asyncListingDetailsEnabled=false
-#cache refresh should be true except for unit testing
-asyncCacheRefreshEnabled=true
 
 ####### Email Builder Settings #######
 #Do we want to 'check' emails before sending them?
@@ -121,3 +128,11 @@ job.apiKeyWarningEmailJob.config.subject=[LOCAL] ONC-CHPL: Your API key will be 
 #ApiKeyDeleteJob
 job.apiKeyDeleteJob.config.message=Name/Organization: %s<br/><br/>A warning was previously sent as your key, %s, was last used on %s.  As per the warning and ONC's policy, your key has been removed.<br/><br/>If you would like to resume using the CHPL's public API, you may register for a new key at <a href='%s'>%s</a>.<br/><br/>Thank you
 job.apiKeyDeleteJob.config.subject=[LOCAL] ONC-CHPL: Your API key has been deleted
+
+chplUrlBegin=http://localhost:8000/app
+
+#Asynchronous properties
+#leave listing details false for now
+asyncListingDetailsEnabled=false
+#cache refresh should be true except for unit testing
+asyncCacheRefreshEnabled=true
