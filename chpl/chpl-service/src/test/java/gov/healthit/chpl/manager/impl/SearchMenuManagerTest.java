@@ -32,6 +32,7 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
+import gov.healthit.chpl.domain.KeyValueModelBody;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.Statuses;
 import gov.healthit.chpl.domain.TestFunctionality;
@@ -92,7 +93,7 @@ public class SearchMenuManagerTest {
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         final int maxDuration = 100;
         long startTime = System.currentTimeMillis();
-        Set<KeyValueModel> results = searchMenuManager.getCertBodyNames();
+        Set<KeyValueModelBody> results = searchMenuManager.getCertBodyNames();
         // certBodyNames should now be cached
         long endTime = System.currentTimeMillis();
         long timeLength = endTime - startTime;
