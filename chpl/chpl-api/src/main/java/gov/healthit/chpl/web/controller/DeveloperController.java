@@ -52,7 +52,9 @@ public class DeveloperController {
     @Autowired
     private DeveloperManager developerManager;
 
-    @ApiOperation(value = "List all developers in the system.", notes = "")
+    @ApiOperation(value = "List all developers in the system.",
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC_ADMIN, ROLE_ONC_STAFF, and ROLE_ACB can see deleted "
+                    + "developers.  Everyone else can only see active developers.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody DeveloperResults getDevelopers(
             @RequestParam(value = "showDeleted", required = false, defaultValue = "false") final boolean showDeleted) {
@@ -78,7 +80,7 @@ public class DeveloperController {
 
     @ApiOperation(value = "Get information about a specific developer.", notes = "")
     @RequestMapping(value = "/{developerId}", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody Developer getDeveloperById(@PathVariable("developerId") final Long developerId)
             throws EntityRetrievalException {
         DeveloperDTO developer = developerManager.getById(developerId);
@@ -97,13 +99,13 @@ public class DeveloperController {
                     + "meaning that a new developer is created with all of the information provided (name, address, "
                     + "etc.) and all of the prodcuts previously assigned to the developerId's specified are "
                     + "reassigned to the newly created developer. The old developers are then deleted. "
-                    + " The logged in user must have ROLE_ADMIN, ROLE_ONC, or ROLE_ACB. ")
+                    + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB")
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public ResponseEntity<Developer> updateDeveloper(
             @RequestBody(required = true) final UpdateDevelopersRequest developerInfo) throws InvalidArgumentsException,
-            EntityCreationException, EntityRetrievalException, JsonProcessingException,
-            ValidationException, MissingReasonException {
+    EntityCreationException, EntityRetrievalException, JsonProcessingException,
+    ValidationException, MissingReasonException {
         return update(developerInfo);
     }
 
