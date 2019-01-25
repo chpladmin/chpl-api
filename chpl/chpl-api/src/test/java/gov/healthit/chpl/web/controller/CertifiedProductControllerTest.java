@@ -98,7 +98,10 @@ public class CertifiedProductControllerTest {
 
     @Autowired
     ListingValidatorFactory validatorFactory;
-
+    
+    private static final String TEST_TASK_TOO_LONG = "You have exceeded the max length, 20 characters, for the Task Identifier with ID A1.100000000000000000000.";
+    private static final String PARTICIPANT_ID_TOO_LONG = "You have exceeded the max length, 20 characters, for the Participant Identifier ID ID0100000000000000000000.";
+    
     private static JWTAuthenticatedUser adminUser;
     private static final long ADMIN_ID = -2L;
 
@@ -470,7 +473,7 @@ public class CertifiedProductControllerTest {
             validator.validate(pcpDTO);
         }
         // ICS is true, 15.07.07.2642.IC04.36.00.1.160402 shows true ICS. ICS Mismatch = warning message
-        assertTrue(pcpDTO.getWarningMessages().contains("Test Tool 'Retired Test Tool' can not be used for criteria '170.315 (b)(6)', "
+        assertTrue(pcpDTO.getErrorMessages().contains("Test Tool 'Retired Test Tool' can not be used for criteria '170.315 (b)(6)', "
                 + "as it is a retired tool, and this Certified Product does not carry ICS."));
 
         // test 3
@@ -1151,7 +1154,7 @@ public class CertifiedProductControllerTest {
     public void test_uploadCertifiedProduct2014v2()
             throws EntityRetrievalException, EntityCreationException, IOException, MaxUploadSizeExceededException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        MultipartFile file = UploadFileUtils.getUploadFile("2014", null);
+        MultipartFile file = UploadFileUtils.getUploadFile("2014", null, null);
         ResponseEntity<PendingCertifiedProductResults> response = null;
         try {
             response = certifiedProductController.upload(file);
@@ -1167,7 +1170,7 @@ public class CertifiedProductControllerTest {
     public void test_uploadCertifiedProduct2014v2Maxlength()
             throws EntityRetrievalException, EntityCreationException, IOException, MaxUploadSizeExceededException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        MultipartFile file = UploadFileUtils.getUploadFile("2014", null);
+        MultipartFile file = UploadFileUtils.getUploadFile("2014", null, null);
         ResponseEntity<PendingCertifiedProductResults> response = null;
         try {
             response = certifiedProductController.upload(file);
@@ -1184,7 +1187,7 @@ public class CertifiedProductControllerTest {
             throws EntityRetrievalException, EntityCreationException, IOException, MaxUploadSizeExceededException {
         final int expectedParticipantCount = 52;
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        MultipartFile file = UploadFileUtils.getUploadFile("2015", "v12");
+        MultipartFile file = UploadFileUtils.getUploadFile("2015", "v12", null);
         ResponseEntity<PendingCertifiedProductResults> response = null;
         try {
             response = certifiedProductController.upload(file);
@@ -1201,6 +1204,22 @@ public class CertifiedProductControllerTest {
         assertEquals(expectedParticipantCount, testParticipantCount);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
+    
+    @Transactional
+    @Test
+    public void upLoadCertifiedProduct2015LongTestParticipant_TaskId()
+            throws EntityRetrievalException, EntityCreationException, IOException, MaxUploadSizeExceededException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        MultipartFile file = UploadFileUtils.getUploadFile("2015", "v12", "upLoadCertifiedProduct2015LongTestParticipant");
+        ResponseEntity<PendingCertifiedProductResults> response = null;
+        try {
+            response = certifiedProductController.upload(file);
+        } catch (ValidationException e) {
+            assertNotNull(e.getErrorMessages());
+            assertTrue(e.getErrorMessages().contains(TEST_TASK_TOO_LONG));
+            assertTrue(e.getErrorMessages().contains(PARTICIPANT_ID_TOO_LONG));
+        }
+    }
 
     @Transactional
     @Rollback
@@ -1210,7 +1229,7 @@ public class CertifiedProductControllerTest {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         //upload a new listing to pending
-        MultipartFile file = UploadFileUtils.getUploadFile("2015", "v12");
+        MultipartFile file = UploadFileUtils.getUploadFile("2015", "v12", null);
         ResponseEntity<PendingCertifiedProductResults> response = null;
         try {
             response = certifiedProductController.upload(file);

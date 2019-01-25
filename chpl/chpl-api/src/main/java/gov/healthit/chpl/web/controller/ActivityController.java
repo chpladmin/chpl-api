@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +53,7 @@ import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.manager.TestingLabManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -64,6 +67,8 @@ public class ActivityController {
 
     @Autowired
     private Environment env;
+    @Autowired
+    private ErrorMessageUtil msgUtil;
     @Autowired
     private ActivityManager activityManager;
     @Autowired
@@ -104,7 +109,7 @@ public class ActivityController {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
-        if (Util.isUserRoleAdmin()) {
+        if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
             return activityManager.getAllAcbActivity(startDate, endDate);
         }
         List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser();
@@ -121,7 +126,7 @@ public class ActivityController {
             @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
         CertificationBodyDTO acb = acbManager.getIfPermissionById(id); // throws 404 if ACB doesn't exist
-        if (acb != null && acb.isRetired() && !Util.isUserRoleAdmin()) {
+        if (acb != null && acb.isRetired() && !Util.isUserRoleAdmin() && !Util.isUserRoleOnc()) {
             LOGGER.warn("Non-admin user " + Util.getUsername()
             + " tried to see activity for retired ACB " + acb.getName());
             throw new AccessDeniedException("Only Admins can see retired ACBs.");
@@ -221,7 +226,7 @@ public class ActivityController {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
-        if (Util.isUserRoleAdmin()) {
+        if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
             return activityManager.getAllAtlActivity(startDate, endDate);
         }
         List<TestingLabDTO> allowedAtls = atlManager.getAllForUser();
@@ -237,7 +242,7 @@ public class ActivityController {
             @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
         TestingLabDTO atl = atlManager.getIfPermissionById(id); // throws 404 if bad id
-        if (atl != null && atl.isRetired() && !Util.isUserRoleAdmin()) {
+        if (atl != null && atl.isRetired() && !Util.isUserRoleAdmin() && !Util.isUserRoleOnc()) {
             LOGGER.warn("Non-admin user " + Util.getUsername()
             + " tried to see activity for retired ATL " + atl.getName());
             throw new AccessDeniedException("Only Admins can see retired ATLs.");
@@ -438,7 +443,7 @@ public class ActivityController {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
-        if (Util.isUserRoleAdmin()) {
+        if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
             return activityManager.getAllPendingListingActivity(startDate, endDate);
         }
         List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser();
@@ -455,7 +460,17 @@ public class ActivityController {
             @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
         //pcpManager will return 404 if the user is not allowed to access it b/c of acb permissions
-        PendingCertifiedProductDetails pendingListing = pcpManager.getById(id, true);
+        //using the "getByIdForActivity" call so ROLE_ONC has access to the pending listing activity.
+        //Normally they are not able to see anything else regarding pending listings.
+        PendingCertifiedProductDetails pendingListing = pcpManager.getByIdForActivity(id);
+        if (pendingListing == null) {
+            throw new EntityNotFoundException(msgUtil.getMessage("pendingListing.notFound"));
+        } else {
+            //make sure the user has permissions on the pending listings acb
+            //will throw access denied if they do not have the permissions
+            Long pendingListingAcbId = new Long(pendingListing.getCertifyingBody().get("id").toString());
+            acbManager.getIfPermissionById(pendingListingAcbId);
+        }
 
         //if one of start of end is provided then the other must also be provided.
         //if neither is provided then query all dates
@@ -476,7 +491,7 @@ public class ActivityController {
         }
 
         //admin can get anything
-        if (Util.isUserRoleAdmin()) {
+        if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
             return activityManager.getPendingListingActivity(id, startDate, endDate);
         }
         return activityManager.getPendingListingActivity(pendingListing.getId(), startDate, endDate);
@@ -575,7 +590,7 @@ public class ActivityController {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
-        if (Util.isUserRoleAdmin()) {
+        if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
             return activityManager.getAllUserActivity(startDate, endDate);
         }
         Set<Long> userIdsToSearch = getAllowedUsersForActivitySearch();
@@ -613,7 +628,7 @@ public class ActivityController {
 
         //ROLE_ADMIN can get user activity on any user; other roles must
         //have some association to the user so check if this request is allowed.
-        if (!Util.isUserRoleAdmin()) {
+        if (!Util.isUserRoleAdmin() && !Util.isUserRoleOnc()) {
             Set<Long> allowedUserIds = getAllowedUsersForActivitySearch();
             if (!allowedUserIds.contains(id)) {
                 throw new AccessDeniedException("User " + Util.getUsername()
@@ -742,13 +757,6 @@ public class ActivityController {
         if (Util.isUserRoleCmsStaff()) {
             List<UserDTO> cmsStaffUsers = userManager.getUsersWithPermission("ROLE_CMS_STAFF");
             for (UserDTO user : cmsStaffUsers) {
-                allowedUserIds.add(user.getId());
-            }
-        }
-        //user can see activity for other users with role onc_staff
-        if (Util.isUserRoleOncStaff()) {
-            List<UserDTO> oncStaffUsers = userManager.getUsersWithPermission("ROLE_ONC_STAFF");
-            for (UserDTO user : oncStaffUsers) {
                 allowedUserIds.add(user.getId());
             }
         }

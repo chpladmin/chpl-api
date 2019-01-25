@@ -164,7 +164,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN</value> <!-- Semi-colon delimited string -->
+                    <value>ROLE_ADMIN;ROLE_ONC</value> <!-- Semi-colon delimited string -->
                 </entry>
                 <entry>
                     <key>frequency</key>
@@ -184,7 +184,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN</value> <!-- Semi-colon delimited string -->
+                    <value>ROLE_ADMIN;ROLE_ONC</value> <!-- Semi-colon delimited string -->
                 </entry>
                 <entry>
                     <key>email</key>
@@ -228,7 +228,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN</value>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
                 </entry>
                 <entry>
                     <key>frequency</key>
@@ -246,7 +246,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ACB</value>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB</value>
                 </entry>
                 <entry>
                     <key>frequency</key>
@@ -290,7 +290,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN</value>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
                 </entry>
                 <entry>
                     <key>frequency</key>
@@ -312,7 +312,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ACB</value>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB</value>
                 </entry>
                 <entry>
                     <key>frequency</key>
@@ -338,7 +338,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN</value>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
                 </entry>
                 <entry>
                     <key>frequency</key>
@@ -360,7 +360,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ACB</value>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB</value>
                 </entry>
                 <entry>
                     <key>frequency</key>
@@ -388,7 +388,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN</value>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
                 </entry>
                 <entry>
                     <key>frequency</key>

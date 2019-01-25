@@ -1301,7 +1301,7 @@ public class CertifiedProductManagerTest extends TestCase {
 
         UcdProcess ucd = updatedListing.getSed().getUcdProcesses().get(0);
         assertNotNull(ucd.getCriteria());
-        assertEquals(1, ucd.getCriteria().size());
+        assertEquals(2, ucd.getCriteria().size());
     }
 
     @Test

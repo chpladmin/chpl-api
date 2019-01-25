@@ -20,6 +20,8 @@ public interface PendingCertifiedProductManager {
             throws EntityNotFoundException, EntityRetrievalException, AccessDeniedException;
     PendingCertifiedProductDetails getById(Long id, boolean includeDeleted)
             throws EntityRetrievalException, AccessDeniedException;
+    public PendingCertifiedProductDetails getByIdForActivity(final Long id)
+            throws EntityRetrievalException, AccessDeniedException;
 
     List<PendingCertifiedProductDTO> getAllPendingCertifiedProducts();
     List<PendingCertifiedProductDTO> getPendingCertifiedProducts(Long acbId);

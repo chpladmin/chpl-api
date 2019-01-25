@@ -614,7 +614,11 @@ public class SurveillanceController implements MessageSourceAware {
 
         File downloadFile = null;
         if (isDefinition != null && isDefinition.booleanValue()) {
-            downloadFile = fileUtils.getDownloadFile(env.getProperty("schemaSurveillanceName"));
+            if (type.equalsIgnoreCase("basic")) {
+                downloadFile = fileUtils.getDownloadFile(env.getProperty("schemaBasicSurveillanceName"));
+            } else {
+                downloadFile = fileUtils.getDownloadFile(env.getProperty("schemaSurveillanceName"));
+            }
         } else {
             try {
                 if (type.equalsIgnoreCase("all")) {

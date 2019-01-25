@@ -27,9 +27,6 @@ public class CertifiedProductSummaryEntity implements Serializable {
     @Column(name = "product_version_id")
     private Long productVersionId;
 
-    @Column(name = "testing_lab_id")
-    private Long testingLabId;
-
     @Column(name = "certification_body_id")
     private Long certificationBodyId;
 
@@ -157,14 +154,6 @@ public class CertifiedProductSummaryEntity implements Serializable {
 
     public void setProductVersionId(final Long productVersionId) {
         this.productVersionId = productVersionId;
-    }
-
-    public Long getTestingLabId() {
-        return testingLabId;
-    }
-
-    public void setTestingLabId(final Long testingLabId) {
-        this.testingLabId = testingLabId;
     }
 
     public Long getCertificationBodyId() {

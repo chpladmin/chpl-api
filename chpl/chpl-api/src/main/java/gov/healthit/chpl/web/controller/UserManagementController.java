@@ -287,7 +287,7 @@ public class UserManagementController {
     @ApiOperation(value = "Invite a user to the CHPL.",
             notes = "This request creates an invitation that is sent to the email address provided. "
                     + "The recipient of this invitation can then choose to create a new account "
-                    + "or add the permissions contained within the invitation to an exisitng account "
+                    + "or add the permissions contained within the invitation to an existing account "
                     + "if they have one. Said another way, an invitation can be used to create or "
                     + "modify CHPL user accounts." + "The correct order to call invitation requests is "
                     + "the following: 1) /invite 2) /create or /authorize 3) /confirm. "

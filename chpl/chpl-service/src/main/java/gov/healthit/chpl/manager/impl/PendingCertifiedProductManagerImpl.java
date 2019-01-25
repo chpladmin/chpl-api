@@ -11,7 +11,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +18,6 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
@@ -35,7 +33,6 @@ import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
@@ -83,17 +80,27 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 
     @Override
     @Transactional(readOnly = true)
-    @PostFilter("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') and "
-            + "hasPermission(filterObject.certificationBodyId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     public PendingCertifiedProductDetails getById(final Long id)
             throws EntityRetrievalException, AccessDeniedException {
             return getById(id, false);
     }
 
+    /**
+     * ROLE_ONC is allowed to see pending listings only for activity
+     * and no other times.
+     */
     @Override
     @Transactional(readOnly = true)
-    @PostFilter("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') and "
-            + "hasPermission(filterObject.certificationBodyId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
+    public PendingCertifiedProductDetails getByIdForActivity(final Long id)
+            throws EntityRetrievalException, AccessDeniedException {
+            return getById(id, true);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     public PendingCertifiedProductDetails getById(final Long id, final boolean includeRetired)
             throws EntityRetrievalException, AccessDeniedException {
 
@@ -106,7 +113,6 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
         PendingCertifiedProductDetails pcpDetails = new PendingCertifiedProductDetails(pendingCp);
         addAllVersionsToCmsCriterion(pcpDetails);
         addAllMeasuresToCertificationCriteria(pcpDetails);
-
         return pcpDetails;
     }
 
