@@ -555,11 +555,11 @@ public class CertifiedProductController {
     }
 
     @ApiOperation(value = "Update an existing certified product.",
-            notes = "Updates the certified product after first validating the request. The logged in"
-                    + " user must have ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and have administrative "
-                    + " authority on the ACB that certified the product. If a different ACB is passed in"
-                    + " as part of the request, an ownership change will take place and the logged in "
-                    + " user must have ROLE_ADMIN or ROLE_ONC.")
+            notes = "Updates the certified product after first validating the request. If a different "
+                    + "ACB is passed in as part of the request, an ownership change will take place and "
+                    + "the logged in user must have ROLE_ADMIN or ROLE_ONC.  Security Restrictions: ROLE_ADMIN, "
+                    + "ROLE_ONC_ADMIN, or ROLE_ACB and have administrative authority on the ACB that certified "
+                    + "the product.")
     @RequestMapping(value = "/{certifiedProductId}", method = RequestMethod.PUT,
     produces = "application/json; charset=utf-8")
     public ResponseEntity<CertifiedProductSearchDetails> updateCertifiedProduct(
