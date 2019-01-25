@@ -43,6 +43,7 @@ import gov.healthit.chpl.manager.CertificationBodyManager;
 
 /**
  * Business logic for accessing and updating ACBs.
+ * 
  * @author kekey
  *
  */
@@ -117,8 +118,8 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     @Transactional
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     @CacheEvict(CacheNames.CERT_BODY_NAMES)
-    public CertificationBodyDTO retire(final Long acbId) throws EntityRetrievalException,
-        JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
+    public CertificationBodyDTO retire(final Long acbId) throws EntityRetrievalException, JsonProcessingException,
+            EntityCreationException, UpdateCertifiedBodyException {
         CertificationBodyDTO result = null;
         CertificationBodyDTO toUpdate = certificationBodyDAO.getById(acbId);
         toUpdate.setRetired(true);
@@ -133,8 +134,8 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     @Transactional
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     @CacheEvict(CacheNames.CERT_BODY_NAMES)
-    public CertificationBodyDTO unretire(final Long acbId) throws EntityRetrievalException,
-        JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
+    public CertificationBodyDTO unretire(final Long acbId) throws EntityRetrievalException, JsonProcessingException,
+            EntityCreationException, UpdateCertifiedBodyException {
         CertificationBodyDTO result = null;
         CertificationBodyDTO toUpdate = certificationBodyDAO.getById(acbId);
         toUpdate.setRetired(false);
