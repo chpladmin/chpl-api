@@ -232,7 +232,8 @@ public class UserManagementController {
     @ApiOperation(value = "Update an existing user account with new permissions.",
             notes = "Adds all permissions from the invitation identified by the user key "
                     + "to the appropriate existing user account." + "The correct order to call invitation requests is "
-                    + "the following: 1) /invite 2) /create or /authorize 3) /confirm ")
+                    + "the following: 1) /invite 2) /create or /authorize 3) /confirm.  Security Restrictions: ROLE_ADMIN "
+                    + "or ROLE_ONC_ADMIN.")
     @RequestMapping(value = "/{userId}/authorize", method = RequestMethod.POST,
     consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
@@ -290,7 +291,8 @@ public class UserManagementController {
                     + "if they have one. Said another way, an invitation can be used to create or "
                     + "modify CHPL user accounts." + "The correct order to call invitation requests is "
                     + "the following: 1) /invite 2) /create or /authorize 3) /confirm. "
-                    + "A user must have ")
+                    + "Security Restrictions: ROLE_ADMIN and ROLE_ONC_ADMIN can invite users to any organization.  "
+                    + "ROLE_ACB and ROLE_ATL can add users to their own organization.")
     @RequestMapping(value = "/invite", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public UserInvitation inviteUser(@RequestBody final UserInvitation invitation)
@@ -381,7 +383,7 @@ public class UserManagementController {
 
     @ApiOperation(value = "Delete a user.",
             notes = "Deletes a user account and all associated authorities on ACBs and ATLs. "
-                    + "The logged in user must have ROLE_ADMIN.")
+                    + "Security Restrictions: ROLE_ADMIN or ROLE_ONC_ADMIN")
     @RequestMapping(value = "/{userId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public String deleteUser(@PathVariable("userId") final Long userId)
@@ -419,7 +421,8 @@ public class UserManagementController {
 
     @ApiOperation(value = "Give additional roles to a user.",
             notes = "Users may be given ROLE_ADMIN, ROLE_ONC, ROLE_ACB, "
-                    + "ROLE_ATL, or ROLE_ONC_STAFF roles within the system.")
+                    + "ROLE_ATL, or ROLE_ONC_STAFF roles within the system.  Security Restrictions: ROLE_ADMIN or "
+                    + "ROLE_ONC_ADMIN.")
     @RequestMapping(value = "/{userName}/roles/{roleName}", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
     public String grantUserRole(@PathVariable("userName") final String userName,
@@ -466,7 +469,8 @@ public class UserManagementController {
 
     @ApiOperation(value = "Remove roles previously granted to a user.",
             notes = "Users may be given ROLE_ADMIN, ROLE_ACB, "
-                    + "ROLE_ATL, or ROLE_ONC_STAFF roles within the system.")
+                    + "ROLE_ATL, or ROLE_ONC_STAFF roles within the system.  Security Restrictions: ROLE_ADMIN and "
+                    + "ONC_ROLE_ADMIN.")
     @RequestMapping(value = "/{userName}/roles/{roleName}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public String revokeUserRole(@PathVariable("userName") final String userName,
@@ -527,7 +531,8 @@ public class UserManagementController {
     }
 
     @ApiOperation(value = "View users of the system.",
-            notes = "Only ROLE_ADMIN and ROLE_ONC will be able to see all users.")
+            notes = "Security Restrictions: ROLE_ADMIN and ROLE_ONC_ADMIN can see all users.  ROLE_ACB, ROLE_ATL, "
+                    + "ROLE_CMS_STAFF, and ROLE_ONC_STAFF can see their self.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @PreAuthorize("isAuthenticated()")
     public @ResponseBody UserListJSONObject getUsers() {
