@@ -13,6 +13,7 @@ import gov.healthit.chpl.permissions.domains.DomainPermissions;
 import gov.healthit.chpl.permissions.domains.InvitationDomainPermissions;
 import gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions;
 import gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions;
+import gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions;
 
 @Component
 public class Permissions {
@@ -22,6 +23,7 @@ public class Permissions {
     public static final String CORRECTIVE_ACTION_PLAN = "CORRECTIVE_ACTION_PLAN";
     public static final String INVITATION = "INVITATION";
     public static final String PENDING_CERTIFIED_PRODUCTS = "PENDING_CERTIFIED_PRODUCTS";
+    public static final String SURVEILLANCE = "SURVEILLANCE";
 
     private Map<String, DomainPermissions> domainPermissions = new HashMap<String, DomainPermissions>();
 
@@ -31,13 +33,16 @@ public class Permissions {
             final CertifiedProductDomainPermissions certifiedProductDomainPermissions,
             final CorrectiveActionPlanDomainPermissions correctiveActionPlanDomainPermissions,
             final InvitationDomainPermissions invitationDomainPermissions,
-            final PendingCertifiedProductDomainPermissions pendingCertifiedProductDomainPermissions) {
+            final PendingCertifiedProductDomainPermissions pendingCertifiedProductDomainPermissions,
+            final SurveillanceDomainPermissions surveillanceDomainPermissions) {
+
         domainPermissions.put(PENDING_SURVEILLANCE, pendingSurveillanceDomainPermissions);
         domainPermissions.put(CERTIFICATION_RESULTS, certificationResultsDomainPermissions);
         domainPermissions.put(CERTIFIED_PRODUCT, certifiedProductDomainPermissions);
         domainPermissions.put(CORRECTIVE_ACTION_PLAN, correctiveActionPlanDomainPermissions);
         domainPermissions.put(INVITATION, invitationDomainPermissions);
         domainPermissions.put(PENDING_CERTIFIED_PRODUCTS, pendingCertifiedProductDomainPermissions);
+        domainPermissions.put(SURVEILLANCE, surveillanceDomainPermissions);
     }
 
     public boolean hasAccess(final String domain, final String action) {
