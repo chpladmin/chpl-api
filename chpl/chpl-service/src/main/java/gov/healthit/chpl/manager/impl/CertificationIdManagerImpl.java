@@ -79,7 +79,7 @@ public class CertificationIdManagerImpl implements CertificationIdManager {
     @Transactional(readOnly = true)
     @Cacheable(CacheNames.ALL_CERT_IDS)
     /**
-     * Should be secured at controller level for ROLE_ADMIN || ROLE_ONC_STAFF ||
+     * Should be secured at controller level for ROLE_ADMIN ||
      * ROLE_CMS_STAFF
      */
     public List<SimpleCertificationId> getAll() {
@@ -95,7 +95,7 @@ public class CertificationIdManagerImpl implements CertificationIdManager {
     @Transactional(readOnly = true)
     @Cacheable(CacheNames.ALL_CERT_IDS_WITH_PRODUCTS)
     /**
-     * Should be secured at controller level for ROLE_ADMIN || ROLE_ONC_STAFF
+     * Should be secured at controller level for ROLE_ADMIN || ROLE_ONC
      */
     public List<SimpleCertificationId> getAllWithProducts() {
         List<SimpleCertificationId> results = new ArrayList<SimpleCertificationId>();

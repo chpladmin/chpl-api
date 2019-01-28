@@ -27,13 +27,8 @@ import gov.healthit.chpl.listing.ListingMockUtil;
 })
 public class FieldLengthReviewerTest {
 
-    private static final String BAD_LENGTH_PARTICIPANT_ID = "You have exceeded the max length, 20 characters, for the Participant Identifier ID This is more than twenty characters long..";
-    private static final String BAD_LENGTH_TASK_ID = "You have exceeded the max length, 20 characters, for the Task Identifier with ID This is more than twenty characters long..";
     private static final String BAD_LENGTH_DEVELOPER_PHONE = "You have exceeded the max length, 100 characters, for the Developer Phone 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000.";
     private static final String BAD_LENGTH_DEVELOPER_ZIP = "You have exceeded the max length, 25 characters, for the Developer Zip 20910209102091020910209102091020910209102091020910.";
-
-    @Autowired
-    private FieldLengthReviewer fieldLengthReivewer;
 
     @Autowired
     private gov.healthit.chpl.validation.pendingListing.reviewer.FieldLengthReviewer fieldLengthReivewerPending;
@@ -44,41 +39,6 @@ public class FieldLengthReviewerTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-    }
-
-    @Test
-    public void testBadTestTask_HasErrors() {
-        CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
-        CertifiedProductSed sed = new CertifiedProductSed();
-        TestTask tt = new TestTask();
-        tt.setUniqueId("This is more than twenty characters long.");
-        ArrayList<TestTask> tts = new ArrayList<TestTask>();
-        tts.add(tt);
-        sed.setTestTasks(tts);
-        listing.setSed(sed);
-        fieldLengthReivewer.review(listing);
-        System.out.println(listing.getErrorMessages());
-        assertTrue(listing.getErrorMessages().contains(BAD_LENGTH_TASK_ID));
-    }
-
-    @Test
-    public void testBadTestParticipant_HasErrors() {
-        CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
-        CertifiedProductSed sed = new CertifiedProductSed();
-        TestTask tt = new TestTask();
-        tt.setUniqueId("participant");
-        ArrayList<TestTask> tts = new ArrayList<TestTask>();
-        tts.add(tt);
-        sed.setTestTasks(tts);
-        TestParticipant tp = new TestParticipant();
-        tp.setUniqueId("This is more than twenty characters long.");
-        Set<TestParticipant> tps = new HashSet<TestParticipant>();
-        tps.add(tp);
-        sed.getTestTasks().get(0).setTestParticipants(tps);
-        listing.setSed(sed);
-        fieldLengthReivewer.review(listing);
-        System.out.println(listing.getErrorMessages());
-        assertTrue(listing.getErrorMessages().contains(BAD_LENGTH_PARTICIPANT_ID));
     }
 
     @Test

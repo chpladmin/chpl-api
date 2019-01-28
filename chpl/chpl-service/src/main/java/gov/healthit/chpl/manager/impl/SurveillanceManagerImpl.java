@@ -387,7 +387,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ONC_STAFF')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     public File getBasicReportDownloadFile() throws IOException {
         return fileUtils.getNewestFileMatchingName("^" + env.getProperty("surveillanceBasicReportName") + "-.+\\.csv$");
     }
