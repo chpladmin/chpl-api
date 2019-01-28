@@ -119,10 +119,10 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     @CacheEvict(CacheNames.CERT_BODY_NAMES)
     public CertificationBodyDTO retire(final CertificationBodyDTO acb) throws EntityRetrievalException,
-        JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
+        JsonProcessingException, EntityCreationException, IllegalArgumentException {
         Date now = new Date();
         if (acb.getRetirementDate() == null || now.before(acb.getRetirementDate())) {
-            throw new UpdateCertifiedBodyException("Retirement date is required and must be before \"now\".");
+            throw new IllegalArgumentException("Retirement date is required and must be before \"now\".");
         }
         CertificationBodyDTO result = null;
         CertificationBodyDTO toUpdate = certificationBodyDAO.getById(acb.getId());
