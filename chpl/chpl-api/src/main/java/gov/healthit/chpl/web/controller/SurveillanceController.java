@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
@@ -23,8 +22,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,11 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.IdListContainer;
@@ -49,12 +42,9 @@ import gov.healthit.chpl.domain.Job;
 import gov.healthit.chpl.domain.SimpleExplainableAction;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformityDocument;
+import gov.healthit.chpl.domain.SurveillanceUploadResult;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
-import gov.healthit.chpl.domain.concept.JobTypeConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.dto.job.JobDTO;
-import gov.healthit.chpl.dto.job.JobTypeDTO;
 import gov.healthit.chpl.exception.CertificationBodyAccessException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -66,10 +56,8 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
-import gov.healthit.chpl.manager.CertifiedProductManager;
-import gov.healthit.chpl.manager.JobManager;
+import gov.healthit.chpl.manager.PendingSurveillanceManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
-import gov.healthit.chpl.manager.SurveillanceUploadManager;
 import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
@@ -83,8 +71,6 @@ import io.swagger.annotations.ApiOperation;
 public class SurveillanceController implements MessageSourceAware {
 
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceController.class);
-    private static final int SURV_THRESHOLD_DEFAULT = 50;
-    private final JobTypeConcept allowedJobType = JobTypeConcept.SURV_UPLOAD;
 
     @Autowired
     private Environment env;
@@ -93,15 +79,7 @@ public class SurveillanceController implements MessageSourceAware {
     @Autowired
     private MessageSource messageSource;
     @Autowired
-    private UserManager userManager;
-    @Autowired
-    private JobManager jobManager;
-    @Autowired
     private SurveillanceManager survManager;
-    @Autowired
-    private SurveillanceUploadManager survUploadManager;
-    @Autowired
-    private CertifiedProductManager cpManager;
     @Autowired
     private ActivityManager activityManager;
     @Autowired
@@ -110,26 +88,14 @@ public class SurveillanceController implements MessageSourceAware {
     private CertificationBodyManager acbManager;
     @Autowired
     private SurveillanceValidator survValidator;
+    @Autowired
+    private PendingSurveillanceManager pendingSurveillanceManager;
 
     @ApiOperation(value = "Get the listing of all pending surveillance items that this user has access to.")
     @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody SurveillanceResults getAllowedPendingSurveillance() throws AccessDeniedException {
+    public @ResponseBody SurveillanceResults getAllPendingSurveillance() throws AccessDeniedException {
 
-        List<CertificationBodyDTO> acbs = acbManager.getAllForUser();
-        List<Surveillance> pendingSurvs = new ArrayList<Surveillance>();
-
-        if (acbs != null) {
-            for (CertificationBodyDTO acb : acbs) {
-                try {
-                    List<Surveillance> survsOnAcb = survManager.getPendingByAcb(acb.getId());
-                    pendingSurvs.addAll(survsOnAcb);
-                } catch (final AccessDeniedException denied) {
-                    LOGGER.warn("Access denied to pending surveillance for acb " + acb.getName() + " and user "
-                            + Util.getUsername());
-                }
-            }
-        }
-
+        List<Surveillance> pendingSurvs = pendingSurveillanceManager.getAllPendingSurveillances();
         SurveillanceResults results = new SurveillanceResults();
         results.setPendingSurveillance(pendingSurvs);
         return results;
@@ -312,8 +278,8 @@ public class SurveillanceController implements MessageSourceAware {
     produces = "application/json; charset=utf-8")
     public synchronized ResponseEntity<Surveillance> updateSurveillance(
             @RequestBody(required = true) final Surveillance survToUpdate) throws
-                    InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
-                    JsonProcessingException, SurveillanceAuthorityAccessDeniedException {
+    InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
+    JsonProcessingException, SurveillanceAuthorityAccessDeniedException {
 
         return update(survToUpdate);
     }
@@ -373,18 +339,18 @@ public class SurveillanceController implements MessageSourceAware {
     public synchronized @ResponseBody ResponseEntity<String> deleteSurveillance(
             @PathVariable(value = "surveillanceId") final Long surveillanceId,
             @RequestBody(required = false) final SimpleExplainableAction requestBody) throws
-                    InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
-                    JsonProcessingException, AccessDeniedException, SurveillanceAuthorityAccessDeniedException,
-                    MissingReasonException {
+    InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
+    JsonProcessingException, AccessDeniedException, SurveillanceAuthorityAccessDeniedException,
+    MissingReasonException {
 
         return delete(surveillanceId, requestBody);
     }
 
     private synchronized ResponseEntity<String> delete(final Long surveillanceId,
             final SimpleExplainableAction requestBody) throws
-                    InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
-                    JsonProcessingException, AccessDeniedException, SurveillanceAuthorityAccessDeniedException,
-                    MissingReasonException {
+    InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
+    JsonProcessingException, AccessDeniedException, SurveillanceAuthorityAccessDeniedException,
+    MissingReasonException {
         Surveillance survToDelete = survManager.getById(surveillanceId);
 
         if (survToDelete == null) {
@@ -475,20 +441,15 @@ public class SurveillanceController implements MessageSourceAware {
     public @ResponseBody String rejectPendingSurveillance(@PathVariable("pendingSurvId") final Long id)
             throws EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException,
             JsonProcessingException, EntityRetrievalException, EntityCreationException {
-        return deletePendingSurveillance(id);
-    }
 
-    private @ResponseBody String deletePendingSurveillance(final Long id)
-            throws EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException,
-            JsonProcessingException, EntityRetrievalException, EntityCreationException {
-        List<CertificationBodyDTO> acbs = acbManager.getAllForUser();
-        survManager.deletePendingSurveillance(acbs, id, false);
+        pendingSurveillanceManager.rejectPendingSurveillance(id);
         return "{\"success\" : true}";
     }
 
     @ApiOperation(value = "Reject several pending surveillance.",
-            notes = "Marks a list of pending surveillance as deleted. ROLE_ACB "
-                    + " and administrative authority on the ACB for each pending surveillance is required.")
+            notes = "Marks a list of pending surveillance as deleted. "
+                    + "If ROLE_ACB, administrative authority on the ACB for each pending surveillance is required. "
+                    + "If ROLE_ADMIN or ROLE_ONC, authority for each pending surveillance is required.")
     @RequestMapping(value = "/pending", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public @ResponseBody String rejectPendingSurveillance(@RequestBody final IdListContainer idList)
@@ -508,7 +469,7 @@ public class SurveillanceController implements MessageSourceAware {
         List<CertificationBodyDTO> acbs = acbManager.getAllForUser();
         for (Long id : idList.getIds()) {
             try {
-                survManager.deletePendingSurveillance(acbs, id, false);
+                pendingSurveillanceManager.rejectPendingSurveillance(id);
             } catch (final ObjectMissingValidationException ex) {
                 possibleExceptions.getExceptions().add(ex);
             }
@@ -528,80 +489,24 @@ public class SurveillanceController implements MessageSourceAware {
                     + "activity will be marked as deleted and the surveillance in this request body will "
                     + "be inserted. The surveillance passed into this request will first be validated "
                     + " to check for errors and the related pending surveillance will be removed. "
-                    + "ROLE_ADMIN or ROLE_ACB "
-                    + " plus administrative authority on the ACB associated with the certified product is required.")
+                    + "If ROLE_ACB, administrative authority on the ACB for each pending surveillance is required. "
+                    + "If ROLE_ADMIN or ROLE_ONC, authority for each pending surveillance is required.")
     @RequestMapping(value = "/pending/confirm", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
     public synchronized ResponseEntity<Surveillance> confirmPendingSurveillance(
-            @RequestBody(required = true) final Surveillance survToInsert) throws ValidationException,
-    EntityRetrievalException, EntityCreationException, JsonProcessingException,
-    UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
-        if (survToInsert == null || survToInsert.getId() == null) {
-            throw new ValidationException("An id must be provided in the request body.");
-        }
-        HttpHeaders responseHeaders = new HttpHeaders();
-        CertifiedProductSearchDetails beforeCp = cpdetailsManager
-                .getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
-        CertificationBodyDTO owningAcb = null;
-        try {
-            owningAcb = acbManager.getIfPermissionById(Long.valueOf(beforeCp.getCertifyingBody().get("id").toString()));
-        } catch (Exception ex) {
-            LOGGER.error("Error looking up ACB associated with surveillance.", ex);
-            throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
-        }
+            @RequestBody(required = true) final Surveillance survToInsert)
+                    throws ValidationException, EntityRetrievalException, EntityCreationException,
+                    JsonProcessingException, UserPermissionRetrievalException,
+                    SurveillanceAuthorityAccessDeniedException {
 
-        Long pendingSurvToDelete = survToInsert.getId();
-        if (survManager.isPendingSurveillanceAvailableForUpdate(owningAcb.getId(), pendingSurvToDelete)) {
-            survToInsert.getErrorMessages().clear();
-
-            // validate first. this ensures we have all the info filled in
-            // that we need to continue
-            survManager.validate(survToInsert);
-            if (survToInsert.getErrorMessages() != null && survToInsert.getErrorMessages().size() > 0) {
-                throw new ValidationException(survToInsert.getErrorMessages(), null);
-            }
-
-            // insert or update the surveillance
-            Long insertedSurv = survManager.createSurveillance(owningAcb.getId(), survToInsert);
+        Surveillance newSurveillance = pendingSurveillanceManager.confirmPendingSurveillance(survToInsert);
+        if (newSurveillance != null) {
+            HttpHeaders responseHeaders = new HttpHeaders();
             responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
-            if (insertedSurv == null) {
-                throw new EntityCreationException("Error creating new surveillance.");
-            }
-
-            // delete the pending surveillance item if this one was successfully
-            // inserted
-            try {
-                survManager.deletePendingSurveillance(owningAcb.getId(), pendingSurvToDelete, true);
-            } catch (Exception ex) {
-                LOGGER.error("Error deleting pending surveillance with id " + pendingSurvToDelete, ex);
-            }
-
-            try {
-                // if a surveillance was getting replaced, delete it
-                if (!StringUtils.isEmpty(survToInsert.getSurveillanceIdToReplace())) {
-                    Surveillance survToReplace = survManager.getByFriendlyIdAndProduct(
-                            survToInsert.getCertifiedProduct().getId(), survToInsert.getSurveillanceIdToReplace());
-                    CertifiedProductDTO survToReplaceOwningCp = cpManager
-                            .getById(survToReplace.getCertifiedProduct().getId());
-                    survManager.deleteSurveillance(survToReplaceOwningCp.getCertificationBodyId(), survToReplace);
-                    responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
-                    responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
-                }
-            } catch (Exception ex) {
-                LOGGER.error("Deleting surveillance with id " + survToInsert.getSurveillanceIdToReplace()
-                + " as part of the replace operation failed", ex);
-            }
-
-            CertifiedProductSearchDetails afterCp = cpdetailsManager
-                    .getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
-            activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, afterCp.getId(),
-                    "Surveillance upload was confirmed for certified product " + afterCp.getChplProductNumber(),
-                    beforeCp, afterCp);
-            // query the inserted surveillance
-            Surveillance result = survManager.getById(insertedSurv);
-            return new ResponseEntity<Surveillance>(result, responseHeaders, HttpStatus.OK);
+            return new ResponseEntity<Surveillance>(newSurveillance, responseHeaders, HttpStatus.OK);
+        } else {
+            return null;
         }
-        return null;
     }
 
     @ApiOperation(value = "Download surveillance as CSV.",
@@ -656,110 +561,36 @@ public class SurveillanceController implements MessageSourceAware {
 
     @ApiOperation(value = "Upload a file with surveillance and nonconformities for certified products.",
             notes = "Accepts a CSV file with very specific fields to create pending surveillance items. "
-                    + " The user uploading the file must have ROLE_ACB "
-                    + " and administrative authority on the ACB(s) responsible for the product(s) in the file.")
+                    + "If ROLE_ACB, administrative authority on the ACB(s) responsible for the product(s) "
+                    + "in the file is required. "
+                    + "If ROLE_ADMIN or ROLE_ONC, no special authority is required.")
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody ResponseEntity<?> upload(@RequestParam("file") final MultipartFile file)
             throws ValidationException, MaxUploadSizeExceededException, EntityRetrievalException,
             EntityCreationException {
-        if (file.isEmpty()) {
-            throw new ValidationException("You cannot upload an empty file!");
-        }
+        SurveillanceUploadResult uploadResult = pendingSurveillanceManager.uploadPendingSurveillance(file);
 
-        if (!file.getContentType().equalsIgnoreCase("text/csv")
-                && !file.getContentType().equalsIgnoreCase("application/vnd.ms-excel")) {
-            throw new ValidationException("File must be a CSV document.");
-        }
-
-        String surveillanceThresholdToProcessAsJobStr = env.getProperty("surveillanceThresholdToProcessAsJob").trim();
-        Integer surveillanceThresholdToProcessAsJob = SURV_THRESHOLD_DEFAULT;
-        try {
-            surveillanceThresholdToProcessAsJob = Integer.parseInt(surveillanceThresholdToProcessAsJobStr);
-        } catch (final NumberFormatException ex) {
-            LOGGER.error(
-                    "Could not format " + surveillanceThresholdToProcessAsJobStr + " as an integer. Defaulting to"
-                            + " 50 instead.");
-        }
-
-        //first we need to count how many surveillance records are in the file
-        //to know if we handle it normally or as a background job
-        String data = fileUtils.readFileAsString(file);
-
-        int numSurveillance = survUploadManager.countSurveillanceRecords(data);
-        if (numSurveillance < surveillanceThresholdToProcessAsJob) {
-            //process as normal
-            List<Surveillance> uploadedSurveillance = new ArrayList<Surveillance>();
-            List<Surveillance> pendingSurvs = survUploadManager.parseUploadFile(file);
-            for (Surveillance surv : pendingSurvs) {
-                CertifiedProductDTO owningCp = null;
-                try {
-                    owningCp = cpManager.getById(surv.getCertifiedProduct().getId());
-                    survValidator.validate(surv);
-                    Long pendingId = survManager.createPendingSurveillance(owningCp.getCertificationBodyId(), surv);
-                    Surveillance uploaded = survManager.getPendingById(owningCp.getCertificationBodyId(), pendingId,
-                            false);
-                    uploadedSurveillance.add(uploaded);
-                } catch (final AccessDeniedException denied) {
-                    LOGGER.error(
-                            "User " + Util.getCurrentUser().getSubjectName()
-                            + " does not have access to add surveillance"
-                            + (owningCp != null
-                            ? " to ACB with ID '" + owningCp.getCertificationBodyId() + "'."
-                                    : "."));
-                } catch (Exception ex) {
-                    LOGGER.error(
-                            "Error adding a new pending surveillance. Please make sure all required fields are "
-                                    + "present.",
-                                    ex);
-                }
-            }
-
+        //Interpret the results...
+        if (uploadResult.getSurveillances() != null) {
             SurveillanceResults results = new SurveillanceResults();
-            results.getPendingSurveillance().addAll(uploadedSurveillance);
+            results.getPendingSurveillance().addAll(uploadResult.getSurveillances());
             return new ResponseEntity<SurveillanceResults>(results, HttpStatus.OK);
-        } else { //process as job
-            //figure out the user
-            UserDTO currentUser = null;
-            try {
-                currentUser = userManager.getById(Util.getCurrentUser().getId());
-            } catch (final UserRetrievalException ex) {
-                LOGGER.error("Error finding user with ID " + Util.getCurrentUser().getId() + ": " + ex.getMessage());
-                return new ResponseEntity<Job>(HttpStatus.UNAUTHORIZED);
+        } else {
+            HttpStatus status;
+            switch (uploadResult.getJobStatus()) {
+            case SurveillanceUploadResult.ERROR :
+                status = HttpStatus.INTERNAL_SERVER_ERROR;
+                break;
+            case SurveillanceUploadResult.NOT_STARTED :
+                status = HttpStatus.BAD_REQUEST;
+                break;
+            case SurveillanceUploadResult.UNAUTHORIZED :
+                status = HttpStatus.UNAUTHORIZED;
+                break;
+            default :
+                status = HttpStatus.OK;
             }
-            if (currentUser == null) {
-                LOGGER.error("No user with ID " + Util.getCurrentUser().getId() + " could be found in the system.");
-                return new ResponseEntity<Job>(HttpStatus.UNAUTHORIZED);
-            }
-
-            JobTypeDTO jobType = null;
-            List<JobTypeDTO> jobTypes = jobManager.getAllJobTypes();
-            for (JobTypeDTO jt : jobTypes) {
-                if (jt.getName().equalsIgnoreCase(allowedJobType.getName())) {
-                    jobType = jt;
-                }
-            }
-
-            JobDTO toCreate = new JobDTO();
-            toCreate.setData(data);
-            toCreate.setUser(currentUser);
-            toCreate.setJobType(jobType);
-            JobDTO insertedJob = jobManager.createJob(toCreate);
-            JobDTO createdJob = jobManager.getJobById(insertedJob.getId());
-
-            try {
-                boolean isStarted = jobManager.start(createdJob);
-                if (!isStarted) {
-                    return new ResponseEntity<Job>(new Job(createdJob), HttpStatus.BAD_REQUEST);
-                } else {
-                    createdJob = jobManager.getJobById(insertedJob.getId());
-                }
-            } catch (final EntityRetrievalException ex) {
-                LOGGER.error("Could not mark job " + createdJob.getId() + " as started.");
-                return new ResponseEntity<Job>(new Job(createdJob), HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-
-            // query the now running job
-            return new ResponseEntity<Job>(new Job(createdJob), HttpStatus.OK);
+            return new ResponseEntity<Job>(uploadResult.getJob(), status);
         }
     }
 

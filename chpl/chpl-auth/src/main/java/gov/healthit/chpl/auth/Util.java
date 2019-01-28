@@ -52,11 +52,11 @@ public class Util {
         return user;
     }
 
-    public static String fromInt(Integer toStr) {
+    public static String fromInt(final Integer toStr) {
         return toStr.toString();
     }
 
-    private static boolean doesUserHaveRole(String authority) {
+    private static boolean doesUserHaveRole(final String authority) {
         User user = getCurrentUser();
         if (user == null) {
             return false;
