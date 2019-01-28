@@ -3,23 +3,23 @@ package gov.healthit.chpl.entity;
 import org.springframework.util.StringUtils;
 
 public enum CertificationStatusType {
-    Active("Active"), 
-    Retired("Retired"), 
-    Pending("Pending"), 
-    WithdrawnByDeveloper("Withdrawn by Developer"), 
-    WithdrawnByDeveloperUnderReview("Withdrawn by Developer Under Surveillance/Review"), 
-    WithdrawnByAcb("Withdrawn by ONC-ACB"), 
-    SuspendedByAcb("Suspended by ONC-ACB"), 
-    SuspendedByOnc("Suspended by ONC"), 
+    Active("Active"),
+    Retired("Retired"),
+    Pending("Pending"),
+    WithdrawnByDeveloper("Withdrawn by Developer"),
+    WithdrawnByDeveloperUnderReview("Withdrawn by Developer Under Surveillance/Review"),
+    WithdrawnByAcb("Withdrawn by ONC-ACB"),
+    SuspendedByAcb("Suspended by ONC-ACB"),
+    SuspendedByOnc("Suspended by ONC"),
     TerminatedByOnc("Terminated by ONC");
 
     private String name;
 
-    private CertificationStatusType() {
+    CertificationStatusType() {
 
     }
 
-    private CertificationStatusType(String name) {
+    CertificationStatusType(String name) {
         this.name = name;
     }
 

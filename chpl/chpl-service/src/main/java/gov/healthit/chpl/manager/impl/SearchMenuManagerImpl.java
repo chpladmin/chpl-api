@@ -15,7 +15,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.AgeRangeDAO;
@@ -30,7 +29,6 @@ import gov.healthit.chpl.dao.EducationTypeDAO;
 import gov.healthit.chpl.dao.FuzzyChoicesDAO;
 import gov.healthit.chpl.dao.JobDAO;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
-import gov.healthit.chpl.dao.NotificationDAO;
 import gov.healthit.chpl.dao.PracticeTypeDAO;
 import gov.healthit.chpl.dao.ProductClassificationTypeDAO;
 import gov.healthit.chpl.dao.ProductDAO;
@@ -61,7 +59,6 @@ import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.TestTool;
 import gov.healthit.chpl.domain.UploadTemplateVersion;
 import gov.healthit.chpl.domain.concept.RequirementTypeEnum;
-import gov.healthit.chpl.domain.notification.NotificationType;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AgeRangeDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
@@ -87,7 +84,6 @@ import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.dto.UploadTemplateVersionDTO;
 import gov.healthit.chpl.dto.job.JobTypeDTO;
-import gov.healthit.chpl.dto.notification.NotificationTypeDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SearchMenuManager;
@@ -122,7 +118,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
     private TestToolDAO testToolsDao;
     @Autowired private TestProcedureDAO testProcedureDao;
     @Autowired private TestDataDAO testDataDao;
-    
+
     @Autowired
     private AccessibilityStandardDAO asDao;
     @Autowired
@@ -135,7 +131,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
     private DeveloperStatusDAO devStatusDao;
     @Autowired
     private SurveillanceDAO survDao;
-    @Autowired 
+    @Autowired
     private UploadTemplateVersionDAO uploadTemplateDao;
     @Autowired
     private ProductClassificationTypeDAO productClassificationTypeDAO;
@@ -157,20 +153,6 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
     @Autowired
     private MacraMeasureDAO macraDao;
-    @Autowired
-    private NotificationDAO notificationDao;
-
-    @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
-    public Set<NotificationType> getNotificationTypes() {
-        List<NotificationTypeDTO> notificationTypes = notificationDao
-                .getAllNotificationTypes(Util.getCurrentUser().getPermissions());
-        Set<NotificationType> results = new HashSet<NotificationType>();
-        for (NotificationTypeDTO dto : notificationTypes) {
-            results.add(new NotificationType(dto));
-        }
-        return results;
-    }
 
     @Transactional
     @Override
@@ -197,7 +179,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
     @Transactional
     @Override
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     public FuzzyChoices updateFuzzyChoices(FuzzyChoicesDTO fuzzyChoicesDTO)
         throws EntityRetrievalException, JsonProcessingException, EntityCreationException, IOException {
 
@@ -304,9 +286,9 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
     @Transactional
     @Override
     @Cacheable(CacheNames.CERT_BODY_NAMES)
-    public Set<KeyValueModel> getCertBodyNames(Boolean showDeleted) {
+    public Set<KeyValueModel> getCertBodyNames() {
 
-        List<CertificationBodyDTO> dtos = this.certificationBodyDAO.findAll(showDeleted);
+        List<CertificationBodyDTO> dtos = this.certificationBodyDAO.findAll();
         Set<KeyValueModel> acbNames = new HashSet<KeyValueModel>();
 
         for (CertificationBodyDTO dto : dtos) {
@@ -542,7 +524,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
         return templates;
     }
-    
+
     @Transactional
     @Override
     @Cacheable(CacheNames.MACRA_MEASURES)
@@ -571,7 +553,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
         }
         return testProcedures;
     }
-    
+
     @Transactional
     @Override
     @Cacheable(CacheNames.TEST_DATA)
@@ -586,7 +568,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
         }
         return testData;
     }
-    
+
     @Transactional
     @Override
     @Cacheable(CacheNames.CERTIFICATION_CRITERION_NUMBERS)

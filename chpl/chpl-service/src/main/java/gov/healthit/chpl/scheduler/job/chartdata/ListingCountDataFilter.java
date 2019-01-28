@@ -10,7 +10,7 @@ import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 
 /**
  * Filters Listings to those needed for Listing Count chart.
- * 
+ *
  * @author alarned
  *
  */
@@ -22,7 +22,7 @@ public class ListingCountDataFilter {
 
     /**
      * Filter listings down to those needed for charts.
-     * 
+     *
      * @param certifiedProducts
      *            initial set of listings
      * @return filtered list (2014 & 2015 edition and not Retired)

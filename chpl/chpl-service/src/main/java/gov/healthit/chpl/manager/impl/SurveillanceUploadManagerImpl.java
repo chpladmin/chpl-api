@@ -42,24 +42,23 @@ public class SurveillanceUploadManagerImpl implements SurveillanceUploadManager 
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceUploadManagerImpl.class);
 
     @Autowired private MessageSource messageSource;
-    
+    @Autowired private FileUtils fileUtils;
     @Autowired private CertificationBodyManager acbManager;
     @Autowired private CertifiedProductDAO cpDao;
     @Autowired private SurveillanceUploadHandlerFactory uploadHandlerFactory;
 
-    
     @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     public int countSurveillanceRecords(MultipartFile file) throws ValidationException {
-        String data = FileUtils.readFileAsString(file);
+        String data = fileUtils.readFileAsString(file);
         return countSurveillanceRecords(data);
     }
-    
+
     @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     public int countSurveillanceRecords(String fileContents) throws ValidationException {
         int survCount = 0;
-        
+
         BufferedReader reader = null;
         CSVParser parser = null;
         try {
@@ -74,7 +73,7 @@ public class SurveillanceUploadManagerImpl implements SurveillanceUploadManager 
             CSVRecord heading = null;
             for (int i = 0; i < records.size(); i++) {
                 CSVRecord currRecord = records.get(i);
-    
+
                 if (heading == null && !StringUtils.isEmpty(currRecord.get(1))
                         && currRecord.get(0).equals(HEADING_CELL_INDICATOR)) {
                     // have to find the heading first
@@ -82,7 +81,7 @@ public class SurveillanceUploadManagerImpl implements SurveillanceUploadManager 
                 } else if (heading != null) {
                     if (!StringUtils.isEmpty(currRecord.get(0).trim())) {
                         String currRecordStatus = currRecord.get(0).trim();
-    
+
                         if (currRecordStatus.equalsIgnoreCase(NEW_SURVEILLANCE_BEGIN_INDICATOR)
                                 || currRecordStatus.equalsIgnoreCase(UPDATE_SURVEILLANCE_BEGIN_INDICATOR)) {
                             // we hit a new surveillance item
@@ -107,7 +106,7 @@ public class SurveillanceUploadManagerImpl implements SurveillanceUploadManager 
         }
         return survCount;
     }
-    
+
     @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     public List<Surveillance> parseUploadFile(MultipartFile file) throws ValidationException {
@@ -126,8 +125,8 @@ public class SurveillanceUploadManagerImpl implements SurveillanceUploadManager 
             }
 
             Set<String> handlerErrors = new HashSet<String>();
-            
-            //parse the entire file into groups of records, 
+
+            //parse the entire file into groups of records,
             //one group per surveillance item
             CSVRecord heading = null;
             List<CSVRecord> rows = new ArrayList<CSVRecord>();
@@ -151,7 +150,7 @@ public class SurveillanceUploadManagerImpl implements SurveillanceUploadManager 
                                     SurveillanceUploadHandler handler = uploadHandlerFactory.getHandler(heading, rows);
                                     Surveillance pendingSurv = handler.handle();
                                     List<String> errors = checkUploadedSurveillanceOwnership(pendingSurv);
-                                    for(String error : errors) {
+                                    for (String error : errors) {
                                         pendingSurv.getErrorMessages().add(error);
                                     }
                                     pendingSurvs.add(pendingSurv);
@@ -173,7 +172,7 @@ public class SurveillanceUploadManagerImpl implements SurveillanceUploadManager 
                         SurveillanceUploadHandler handler = uploadHandlerFactory.getHandler(heading, rows);
                         Surveillance pendingSurv = handler.handle();
                         List<String> errors = checkUploadedSurveillanceOwnership(pendingSurv);
-                        for(String error : errors) {
+                        for (String error : errors) {
                             pendingSurv.getErrorMessages().add(error);
                         }
                         pendingSurvs.add(pendingSurv);
@@ -219,7 +218,7 @@ public class SurveillanceUploadManagerImpl implements SurveillanceUploadManager 
         }
         return pendingSurvs;
     }
-    
+
     @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     public List<String> checkUploadedSurveillanceOwnership(Surveillance pendingSurv) {
@@ -245,7 +244,7 @@ public class SurveillanceUploadManagerImpl implements SurveillanceUploadManager 
 
             if (surveilledProduct != null) {
                 try {
-                    acbManager.getById(surveilledProduct.getCertificationBodyId());
+                    acbManager.getIfPermissionById(surveilledProduct.getCertificationBodyId());
                 } catch (final EntityRetrievalException ex) {
                     String msg = String.format(messageSource.getMessage(
                             new DefaultMessageSourceResolvable(

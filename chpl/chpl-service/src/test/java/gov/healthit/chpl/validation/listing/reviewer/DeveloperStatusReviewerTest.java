@@ -30,21 +30,21 @@ import gov.healthit.chpl.listing.ListingMockUtil;
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
 public class DeveloperStatusReviewerTest {
     private static final String DEV_NAME = "Test Developer";
-    private static final String NO_DEV_STATUS_ERROR = 
-            "The current status of the developer " + DEV_NAME + " cannot be determined. " +
-                    "A developer must be listed as Active in order to update certified products belongong to it.";
-    private static final String DEV_SUSPENDED_ERROR = 
+    private static final String NO_DEV_STATUS_ERROR =
+            "The current status of the developer " + DEV_NAME + " cannot be determined. "
+                    + "A developer must be listed as Active in order to update certified products belongong to it.";
+    private static final String DEV_SUSPENDED_ERROR =
             "The developer " + DEV_NAME + " has a status of "
-                    + DeveloperStatusType.SuspendedByOnc.toString() 
+                    + DeveloperStatusType.SuspendedByOnc.toString()
                     + ". Certified products belonging to this developer cannot be updated until "
                     + "its status returns to Active.";
-    private static final String DEV_BANNED_ERROR = 
+    private static final String DEV_BANNED_ERROR =
             "The developer " + DEV_NAME + " has a status of "
-                    + DeveloperStatusType.UnderCertificationBanByOnc.toString() 
+                    + DeveloperStatusType.UnderCertificationBanByOnc.toString()
                     + ". Certified products belonging to this developer cannot be updated until "
                     + "its status returns to Active.";
     private static final String NO_DEV_FOUND_ERROR = "Could not find developer with id 1";
-    
+
     @Autowired private ListingMockUtil mockUtil;
 
     @Spy
@@ -63,8 +63,8 @@ public class DeveloperStatusReviewerTest {
         try {
             Mockito.when(devDao.getById(ArgumentMatchers.anyLong()))
         .thenReturn(createDeveloperDTO(DeveloperStatusType.Active));
-        } catch(EntityRetrievalException ex) {}
-        
+        } catch (EntityRetrievalException ex) { }
+
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         devStatusReviewer.review(listing);
         assertFalse(listing.getErrorMessages().contains(NO_DEV_STATUS_ERROR));
@@ -72,14 +72,14 @@ public class DeveloperStatusReviewerTest {
         assertFalse(listing.getErrorMessages().contains(DEV_BANNED_ERROR));
         assertFalse(listing.getErrorMessages().contains(NO_DEV_FOUND_ERROR));
     }
-    
+
     @Test
     public void testSuspendedDeveloper_HasError() {
         try {
             Mockito.when(devDao.getById(ArgumentMatchers.anyLong()))
         .thenReturn(createDeveloperDTO(DeveloperStatusType.SuspendedByOnc));
-        } catch(EntityRetrievalException ex) {}
-        
+        } catch (EntityRetrievalException ex) { }
+
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         devStatusReviewer.review(listing);
         assertFalse(listing.getErrorMessages().contains(NO_DEV_STATUS_ERROR));
@@ -93,7 +93,7 @@ public class DeveloperStatusReviewerTest {
         try {
             Mockito.when(devDao.getById(ArgumentMatchers.anyLong()))
         .thenReturn(createDeveloperDTO(DeveloperStatusType.UnderCertificationBanByOnc));
-        } catch(EntityRetrievalException ex) {}
+        } catch (EntityRetrievalException ex) { }
 
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         devStatusReviewer.review(listing);
@@ -108,8 +108,8 @@ public class DeveloperStatusReviewerTest {
         try {
             Mockito.when(devDao.getById(ArgumentMatchers.anyLong()))
         .thenReturn(null);
-        } catch(EntityRetrievalException ex) {}
-        
+        } catch (EntityRetrievalException ex) { }
+
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         devStatusReviewer.review(listing);
         assertFalse(listing.getErrorMessages().contains(NO_DEV_STATUS_ERROR));

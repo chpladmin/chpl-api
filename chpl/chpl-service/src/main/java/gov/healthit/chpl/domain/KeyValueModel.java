@@ -40,11 +40,13 @@ public class KeyValueModel implements Serializable {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof DescriptiveModel))
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof DescriptiveModel)) {
             return false;
-        if (obj == this)
+        }
+        if (obj == this) {
             return true;
+        }
 
         DescriptiveModel rhs = (DescriptiveModel) obj;
 

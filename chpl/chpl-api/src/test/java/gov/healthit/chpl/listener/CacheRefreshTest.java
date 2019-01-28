@@ -1,9 +1,5 @@
 package gov.healthit.chpl.listener;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -34,9 +30,9 @@ import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
-import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProduct;
@@ -55,7 +51,6 @@ import gov.healthit.chpl.domain.UpdateDevelopersRequest;
 import gov.healthit.chpl.domain.UpdateProductsRequest;
 import gov.healthit.chpl.domain.UpdateVersionsRequest;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -73,7 +68,7 @@ import gov.healthit.chpl.web.controller.SurveillanceController;
 import junit.framework.TestCase;
 
 /**
- * Test that certain updates refresh the listing cache as expected
+ * Test that certain updates refresh the listing cache as expected.
  * @author kekey
  *
  */
@@ -141,8 +136,8 @@ public class CacheRefreshTest extends TestCase {
 
         //get the cache before this update, should pull the listings and cache them
         List<CertifiedProductFlatSearchResult> allListingsBeforeUpdate = searchManager.search();
-        for(CertifiedProductFlatSearchResult listing : allListingsBeforeUpdate) {
-            if(listing.getDeveloper().equals("Test Developer 1")) {
+        for (CertifiedProductFlatSearchResult listing : allListingsBeforeUpdate) {
+            if (listing.getDeveloper().equals("Test Developer 1")) {
                 listingsFromDeveloper.add(listing);
             }
         }
@@ -162,54 +157,9 @@ public class CacheRefreshTest extends TestCase {
         //get the cached listings now, should have been updated in the aspect and have
         //the latest developer stuff
         List<CertifiedProductFlatSearchResult> allListingsAfterUpdate = searchManager.search();
-        for(CertifiedProductFlatSearchResult listing : allListingsAfterUpdate) {
-            for(CertifiedProductFlatSearchResult listingFromDeveloper : listingsFromDeveloper) {
-                if(listing.getId().longValue() == listingFromDeveloper.getId().longValue()) {
-                    assertEquals(devToUpdate.getName(), listing.getDeveloper());
-                }
-            }
-        }
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
-
-    @Test
-    @Transactional
-    @Rollback
-    public void testUpdateDeveloperNameDeprecatedRefreshesCache() throws
-    EntityCreationException, EntityRetrievalException,
-    ValidationException, InvalidArgumentsException, JsonProcessingException,
-    MissingReasonException, IOException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-        List<CertifiedProductFlatSearchResult> listingsFromDeveloper =
-                new ArrayList<CertifiedProductFlatSearchResult>();
-
-        //get the cache before this update, should pull the listings and cache them
-        List<CertifiedProductFlatSearchResult> allListingsBeforeUpdate = searchManager.search();
-        for(CertifiedProductFlatSearchResult listing : allListingsBeforeUpdate) {
-            if(listing.getDeveloper().equals("Test Developer 1")) {
-                listingsFromDeveloper.add(listing);
-            }
-        }
-        assertTrue(listingsFromDeveloper.size() > 0);
-
-        //update the developer
-        //should trigger the cache refresh
-        Developer devToUpdate = developerController.getDeveloperById(-1L);
-        UpdateDevelopersRequest req = new UpdateDevelopersRequest();
-        devToUpdate.setName("Updated Name");
-        req.setDeveloper(devToUpdate);
-        List<Long> idsToUpdate = new ArrayList<Long>();
-        idsToUpdate.add(-1L);
-        req.setDeveloperIds(idsToUpdate);
-        developerController.updateDeveloperDeprecated(req);
-
-        //get the cached listings now, should have been updated in the aspect and have
-        //the latest developer stuff
-        List<CertifiedProductFlatSearchResult> allListingsAfterUpdate = searchManager.search();
-        for(CertifiedProductFlatSearchResult listing : allListingsAfterUpdate) {
-            for(CertifiedProductFlatSearchResult listingFromDeveloper : listingsFromDeveloper) {
-                if(listing.getId().longValue() == listingFromDeveloper.getId().longValue()) {
+        for (CertifiedProductFlatSearchResult listing : allListingsAfterUpdate) {
+            for (CertifiedProductFlatSearchResult listingFromDeveloper : listingsFromDeveloper) {
+                if (listing.getId().longValue() == listingFromDeveloper.getId().longValue()) {
                     assertEquals(devToUpdate.getName(), listing.getDeveloper());
                 }
             }
@@ -231,8 +181,8 @@ public class CacheRefreshTest extends TestCase {
 
         //get the cache before this update, should pull the listings and cache them
         List<CertifiedProductFlatSearchResult> allListingsBeforeUpdate = searchManager.search();
-        for(CertifiedProductFlatSearchResult listing : allListingsBeforeUpdate) {
-            if(listing.getProduct().equals("Test Product 1")) {
+        for (CertifiedProductFlatSearchResult listing : allListingsBeforeUpdate) {
+            if (listing.getProduct().equals("Test Product 1")) {
                 listingsFromProduct.add(listing);
             }
         }
@@ -252,54 +202,9 @@ public class CacheRefreshTest extends TestCase {
         //get the cached listings now, should have been updated in the aspect and have
         //the latest product name
         List<CertifiedProductFlatSearchResult> allListingsAfterUpdate = searchManager.search();
-        for(CertifiedProductFlatSearchResult listing : allListingsAfterUpdate) {
-            for(CertifiedProductFlatSearchResult listingFromProduct : listingsFromProduct) {
-                if(listing.getId().longValue() == listingFromProduct.getId().longValue()) {
-                    assertEquals(productToUpdate.getName(), listing.getProduct());
-                }
-            }
-        }
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
-
-    @Test
-    @Transactional
-    @Rollback
-    public void testUpdateProductNameDeprecatedRefreshesCache() throws
-    EntityCreationException, EntityRetrievalException,
-    ValidationException, InvalidArgumentsException, JsonProcessingException,
-    MissingReasonException, IOException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-        List<CertifiedProductFlatSearchResult> listingsFromProduct =
-                new ArrayList<CertifiedProductFlatSearchResult>();
-
-        //get the cache before this update, should pull the listings and cache them
-        List<CertifiedProductFlatSearchResult> allListingsBeforeUpdate = searchManager.search();
-        for(CertifiedProductFlatSearchResult listing : allListingsBeforeUpdate) {
-            if(listing.getProduct().equals("Test Product 1")) {
-                listingsFromProduct.add(listing);
-            }
-        }
-        assertTrue(listingsFromProduct.size() > 0);
-
-        //update the product
-        //should trigger the cache refresh
-        Product productToUpdate = productController.getProductById(-1L);
-        UpdateProductsRequest req = new UpdateProductsRequest();
-        productToUpdate.setName("Updated Name");
-        req.setProduct(productToUpdate);
-        List<Long> idsToUpdate = new ArrayList<Long>();
-        idsToUpdate.add(-1L);
-        req.setProductIds(idsToUpdate);
-        productController.updateProductDeprecated(req);
-
-        //get the cached listings now, should have been updated in the aspect and have
-        //the latest product name
-        List<CertifiedProductFlatSearchResult> allListingsAfterUpdate = searchManager.search();
-        for(CertifiedProductFlatSearchResult listing : allListingsAfterUpdate) {
-            for(CertifiedProductFlatSearchResult listingFromProduct : listingsFromProduct) {
-                if(listing.getId().longValue() == listingFromProduct.getId().longValue()) {
+        for (CertifiedProductFlatSearchResult listing : allListingsAfterUpdate) {
+            for (CertifiedProductFlatSearchResult listingFromProduct : listingsFromProduct) {
+                if (listing.getId().longValue() == listingFromProduct.getId().longValue()) {
                     assertEquals(productToUpdate.getName(), listing.getProduct());
                 }
             }
@@ -321,8 +226,8 @@ public class CacheRefreshTest extends TestCase {
 
         //get the cache before this update, should pull the listings and cache them
         List<CertifiedProductFlatSearchResult> allListingsBeforeUpdate = searchManager.search();
-        for(CertifiedProductFlatSearchResult listing : allListingsBeforeUpdate) {
-            if(listing.getVersion().equals("2.0")) {
+        for (CertifiedProductFlatSearchResult listing : allListingsBeforeUpdate) {
+            if (listing.getVersion().equals("2.0")) {
                 listingsFromVersion.add(listing);
             }
         }
@@ -342,54 +247,9 @@ public class CacheRefreshTest extends TestCase {
         //get the cached listings now, should have been updated in the aspect and have
         //the latest version name
         List<CertifiedProductFlatSearchResult> allListingsAfterUpdate = searchManager.search();
-        for(CertifiedProductFlatSearchResult listing : allListingsAfterUpdate) {
-            for(CertifiedProductFlatSearchResult listingFromVersion : listingsFromVersion) {
-                if(listing.getId().longValue() == listingFromVersion.getId().longValue()) {
-                    assertEquals(versionToUpdate.getVersion(), listing.getVersion());
-                }
-            }
-        }
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
-
-    @Test
-    @Transactional
-    @Rollback
-    public void testUpdateVersionDeprecatedRefreshesCache() throws
-    EntityCreationException, EntityRetrievalException,
-    ValidationException, InvalidArgumentsException, JsonProcessingException,
-    MissingReasonException, IOException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-        List<CertifiedProductFlatSearchResult> listingsFromVersion =
-                new ArrayList<CertifiedProductFlatSearchResult>();
-
-        //get the cache before this update, should pull the listings and cache them
-        List<CertifiedProductFlatSearchResult> allListingsBeforeUpdate = searchManager.search();
-        for(CertifiedProductFlatSearchResult listing : allListingsBeforeUpdate) {
-            if(listing.getVersion().equals("2.0")) {
-                listingsFromVersion.add(listing);
-            }
-        }
-        assertTrue(listingsFromVersion.size() > 0);
-
-        //update the version
-        //should trigger the cache refresh
-        ProductVersion versionToUpdate = versionController.getProductVersionById(3L);
-        UpdateVersionsRequest req = new UpdateVersionsRequest();
-        versionToUpdate.setVersion("2.0.Updated");
-        req.setVersion(versionToUpdate);
-        List<Long> idsToUpdate = new ArrayList<Long>();
-        idsToUpdate.add(3L);
-        req.setVersionIds(idsToUpdate);
-        versionController.updateVersionDeprecated(req);
-
-        //get the cached listings now, should have been updated in the aspect and have
-        //the latest version name
-        List<CertifiedProductFlatSearchResult> allListingsAfterUpdate = searchManager.search();
-        for(CertifiedProductFlatSearchResult listing : allListingsAfterUpdate) {
-            for(CertifiedProductFlatSearchResult listingFromVersion : listingsFromVersion) {
-                if(listing.getId().longValue() == listingFromVersion.getId().longValue()) {
+        for (CertifiedProductFlatSearchResult listing : allListingsAfterUpdate) {
+            for (CertifiedProductFlatSearchResult listingFromVersion : listingsFromVersion) {
+                if (listing.getId().longValue() == listingFromVersion.getId().longValue()) {
                     assertEquals(versionToUpdate.getVersion(), listing.getVersion());
                 }
             }
@@ -421,8 +281,8 @@ public class CacheRefreshTest extends TestCase {
 
         //get the cache before this update, should pull the listings and cache them
         List<CertifiedProductFlatSearchResult> allListingsBeforeUpdate = searchManager.search();
-        for(CertifiedProductFlatSearchResult listing : allListingsBeforeUpdate) {
-            if(listing.getAcb().equals("InfoGard")) {
+        for (CertifiedProductFlatSearchResult listing : allListingsBeforeUpdate) {
+            if (listing.getAcb().equals("InfoGard")) {
                 listingsFromAcb.add(listing);
             }
         }
@@ -439,60 +299,10 @@ public class CacheRefreshTest extends TestCase {
         //get the cached listings now, should have been updated in the aspect and have
         //the latest acb name
         List<CertifiedProductFlatSearchResult> allListingsAfterUpdate = searchManager.search();
-        for(CertifiedProductFlatSearchResult updatedListing : allListingsAfterUpdate) {
-            for(CertifiedProductFlatSearchResult listingFromAcb : listingsFromAcb) {
-                if(updatedListing.getId().longValue() == listingFromAcb.getId().longValue()) {
+        for (CertifiedProductFlatSearchResult updatedListing : allListingsAfterUpdate) {
+            for (CertifiedProductFlatSearchResult listingFromAcb : listingsFromAcb) {
+                if (updatedListing.getId().longValue() == listingFromAcb.getId().longValue()) {
                     assertEquals(updatedAcb.getName(), updatedListing.getAcb());
-                }
-            }
-        }
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
-
-    /**
-     * Not sure why this test is failing. It appears to work with integration testing
-     * of the whole app and renaming an ACB. I think it's okay to mark it ignored
-     * for now since it's an extremely rare action but this should be revisited.
-     * @throws UpdateCertifiedBodyException
-     * @throws EntityRetrievalException
-     * @throws EntityCreationException
-     * @throws JsonProcessingException
-     * @throws InvalidArgumentsException
-     */
-    @Test
-    @Transactional
-    @Rollback
-    @Ignore
-    public void testUpdateAcbNameDeprecatedRefreshesCache() throws
-    UpdateCertifiedBodyException, EntityRetrievalException, EntityCreationException,
-    JsonProcessingException, InvalidArgumentsException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-        List<CertifiedProductFlatSearchResult> listingsFromAcb =
-                new ArrayList<CertifiedProductFlatSearchResult>();
-
-        //get the cache before this update, should pull the listings and cache them
-        List<CertifiedProductFlatSearchResult> allListingsBeforeUpdate = searchManager.search();
-        for(CertifiedProductFlatSearchResult listing : allListingsBeforeUpdate) {
-            if(listing.getAcb().equals("InfoGard")) {
-                listingsFromAcb.add(listing);
-            }
-        }
-        assertTrue(listingsFromAcb.size() > 0);
-
-        //update the acb name
-        //should trigger the cache refresh
-        CertificationBody acbToUpdate = acbController.getAcbById(-1L);
-        acbToUpdate.setName("InfoGard Updated");
-        acbController.updateAcbDeprecated(acbToUpdate);
-
-        //get the cached listings now, should have been updated in the aspect and have
-        //the latest acb name
-        List<CertifiedProductFlatSearchResult> allListingsAfterUpdate = searchManager.search();
-        for(CertifiedProductFlatSearchResult updatedListing : allListingsAfterUpdate) {
-            for(CertifiedProductFlatSearchResult listingFromAcb : listingsFromAcb) {
-                if(updatedListing.getId().longValue() == listingFromAcb.getId().longValue()) {
-                    assertEquals(acbToUpdate.getName(), updatedListing.getAcb());
                 }
             }
         }
@@ -503,17 +313,20 @@ public class CacheRefreshTest extends TestCase {
     @Transactional
     @Rollback
     public void testUpdateListingStatusRefreshesCache() throws EntityRetrievalException, EntityCreationException,
-    JsonProcessingException, InvalidArgumentsException, MissingReasonException,
-    ValidationException, IOException {
+    JsonProcessingException, InvalidArgumentsException, MissingReasonException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         CertifiedProductSearchDetails listingToUpdate = cpdManager.getCertifiedProductDetails(1L);
+        for(CertificationResult result : listingToUpdate.getCertificationResults()) {
+            result.setSed(Boolean.FALSE);
+            result.setGap(Boolean.FALSE);
+        }
 
         //get the cache before this update, should pull the listings and cache them
         List<CertifiedProductFlatSearchResult> allListingsBeforeUpdate = searchManager.search();
         boolean foundListing = false;
-        for(CertifiedProductFlatSearchResult listing : allListingsBeforeUpdate) {
-            if(listing.getId().longValue() == listingToUpdate.getId().longValue()) {
+        for (CertifiedProductFlatSearchResult listing : allListingsBeforeUpdate) {
+            if (listing.getId().longValue() == listingToUpdate.getId().longValue()) {
                 foundListing = true;
                 assertEquals("Active", listing.getCertificationStatus());
             }
@@ -525,9 +338,9 @@ public class CacheRefreshTest extends TestCase {
         CertificationStatusEvent currentStatus = listingToUpdate.getCurrentStatus();
         int currStatusIndex = 0;
         List<CertificationStatusEvent> events = listingToUpdate.getCertificationEvents();
-        for(int i = 0; i < events.size(); i++) {
+        for (int i = 0; i < events.size(); i++) {
             CertificationStatusEvent currEvent = events.get(i);
-            if(currEvent.getId().longValue() == currentStatus.getId().longValue()) {
+            if (currEvent.getId().longValue() == currentStatus.getId().longValue()) {
                 currStatusIndex = i;
             }
         }
@@ -546,65 +359,8 @@ public class CacheRefreshTest extends TestCase {
         //the latest status value
         List<CertifiedProductFlatSearchResult> allListingsAfterUpdate = searchManager.search();
         foundListing = false;
-        for(CertifiedProductFlatSearchResult updatedListing : allListingsAfterUpdate) {
-            if(updatedListing.getId().longValue() == listingToUpdate.getId().longValue()) {
-                foundListing = true;
-                assertEquals("Retired", updatedListing.getCertificationStatus());
-            }
-        }
-        assertTrue(foundListing);
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
-
-    @Test
-    @Transactional
-    @Rollback
-    public void testUpdateListingStatusDeprecatedRefreshesCache() throws EntityRetrievalException, EntityCreationException,
-    JsonProcessingException, InvalidArgumentsException, MissingReasonException,
-    ValidationException, IOException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-        CertifiedProductSearchDetails listingToUpdate = cpdManager.getCertifiedProductDetails(1L);
-
-        //get the cache before this update, should pull the listings and cache them
-        List<CertifiedProductFlatSearchResult> allListingsBeforeUpdate = searchManager.search();
-        boolean foundListing = false;
-        for(CertifiedProductFlatSearchResult listing : allListingsBeforeUpdate) {
-            if(listing.getId().longValue() == listingToUpdate.getId().longValue()) {
-                foundListing = true;
-                assertEquals("Active", listing.getCertificationStatus());
-            }
-        }
-        assertTrue(foundListing);
-
-        //update the listing status to retired
-        //should trigger the cache refresh
-        CertificationStatusEvent currentStatus = listingToUpdate.getCurrentStatus();
-        int currStatusIndex = 0;
-        List<CertificationStatusEvent> events = listingToUpdate.getCertificationEvents();
-        for(int i = 0; i < events.size(); i++) {
-            CertificationStatusEvent currEvent = events.get(i);
-            if(currEvent.getId().longValue() == currentStatus.getId().longValue()) {
-                currStatusIndex = i;
-            }
-        }
-        CertificationStatus status = new CertificationStatus();
-        status.setId(2L);
-        status.setName("Retired");
-        currentStatus.setStatus(status);
-        events.set(currStatusIndex, currentStatus);
-        listingToUpdate.setCertificationEvents(events);
-
-        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setListing(listingToUpdate);
-        cpController.updateCertifiedProductDeprecated(updateRequest);
-
-        //get the cached listings now, should have been updated in the aspect and have
-        //the latest status value
-        List<CertifiedProductFlatSearchResult> allListingsAfterUpdate = searchManager.search();
-        foundListing = false;
-        for(CertifiedProductFlatSearchResult updatedListing : allListingsAfterUpdate) {
-            if(updatedListing.getId().longValue() == listingToUpdate.getId().longValue()) {
+        for (CertifiedProductFlatSearchResult updatedListing : allListingsAfterUpdate) {
+            if (updatedListing.getId().longValue() == listingToUpdate.getId().longValue()) {
                 foundListing = true;
                 assertEquals("Retired", updatedListing.getCertificationStatus());
             }
@@ -626,8 +382,8 @@ public class CacheRefreshTest extends TestCase {
         //get the cache before this update, should pull the listings and cache them
         List<CertifiedProductFlatSearchResult> allListingsBeforeUpdate = searchManager.search();
         boolean foundListing = false;
-        for(CertifiedProductFlatSearchResult listing : allListingsBeforeUpdate) {
-            if(listing.getId().longValue() == listingToUpdate.getId().longValue()) {
+        for (CertifiedProductFlatSearchResult listing : allListingsBeforeUpdate) {
+            if (listing.getId().longValue() == listingToUpdate.getId().longValue()) {
                 foundListing = true;
                 assertEquals(0, listing.getSurveillanceCount().longValue());
             }
@@ -642,7 +398,7 @@ public class CacheRefreshTest extends TestCase {
             ResponseEntity<Surveillance> response = survController.createSurveillance(surv);
             insertedSurv = response.getBody();
             assertNotNull(insertedSurv);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             fail("Could not insert listing " + ex.getMessage());
         }
@@ -651,56 +407,8 @@ public class CacheRefreshTest extends TestCase {
         //a surveillance now
         List<CertifiedProductFlatSearchResult> allListingsAfterUpdate = searchManager.search();
         foundListing = false;
-        for(CertifiedProductFlatSearchResult updatedListing : allListingsAfterUpdate) {
-            if(updatedListing.getId().longValue() == listingToUpdate.getId().longValue()) {
-                foundListing = true;
-                assertEquals(1, updatedListing.getSurveillanceCount().longValue());
-            }
-        }
-        assertTrue(foundListing);
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
-
-    @Test
-    @Transactional
-    @Rollback
-    public void testCreateSurveillanceDeprecatedRefreshesCache() throws EntityRetrievalException, EntityCreationException,
-    JsonProcessingException, InvalidArgumentsException, MissingReasonException,
-    ValidationException, IOException {
-        SecurityContextHolder.getContext().setAuthentication(oncAdmin);
-
-        CertifiedProductSearchDetails listingToUpdate = cpdManager.getCertifiedProductDetails(1L);
-
-        //get the cache before this update, should pull the listings and cache them
-        List<CertifiedProductFlatSearchResult> allListingsBeforeUpdate = searchManager.search();
-        boolean foundListing = false;
-        for(CertifiedProductFlatSearchResult listing : allListingsBeforeUpdate) {
-            if(listing.getId().longValue() == listingToUpdate.getId().longValue()) {
-                foundListing = true;
-                assertEquals(0, listing.getSurveillanceCount().longValue());
-            }
-        }
-        assertTrue(foundListing);
-
-        //create a surveillance for the listing
-        //should trigger the cache refresh
-        Surveillance surv = createSurveillanceObject(listingToUpdate.getId());
-        Surveillance insertedSurv;
-        try {
-            ResponseEntity<Surveillance> response = survController.createSurveillanceDeprecated(surv);
-            insertedSurv = response.getBody();
-            assertNotNull(insertedSurv);
-        } catch(Exception ex) {
-            ex.printStackTrace();
-            fail("Could not insert listing " + ex.getMessage());
-        }
-
-        //get the cached listings now, should have been updated in the aspect and have
-        //a surveillance now
-        List<CertifiedProductFlatSearchResult> allListingsAfterUpdate = searchManager.search();
-        foundListing = false;
-        for(CertifiedProductFlatSearchResult updatedListing : allListingsAfterUpdate) {
-            if(updatedListing.getId().longValue() == listingToUpdate.getId().longValue()) {
+        for (CertifiedProductFlatSearchResult updatedListing : allListingsAfterUpdate) {
+            if (updatedListing.getId().longValue() == listingToUpdate.getId().longValue()) {
                 foundListing = true;
                 assertEquals(1, updatedListing.getSurveillanceCount().longValue());
             }
@@ -722,8 +430,8 @@ public class CacheRefreshTest extends TestCase {
         //get the cache before this update, should pull the listings and cache them
         List<CertifiedProductFlatSearchResult> allListingsBeforeUpdate = searchManager.search();
         boolean foundListing = false;
-        for(CertifiedProductFlatSearchResult listing : allListingsBeforeUpdate) {
-            if(listing.getId().longValue() == listingToUpdate.getId().longValue()) {
+        for (CertifiedProductFlatSearchResult listing : allListingsBeforeUpdate) {
+            if (listing.getId().longValue() == listingToUpdate.getId().longValue()) {
                 foundListing = true;
                 assertEquals(0, listing.getSurveillanceCount().longValue());
             }
@@ -737,7 +445,7 @@ public class CacheRefreshTest extends TestCase {
             ResponseEntity<Surveillance> response = survController.createSurveillance(surv);
             insertedSurv = response.getBody();
             assertNotNull(insertedSurv);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             fail("Could not insert listing " + ex.getMessage());
         }
@@ -745,14 +453,14 @@ public class CacheRefreshTest extends TestCase {
         //now delete the surveillance
         //should trigger a cache refresh
         String result = null;
-        try{
+        try {
             SimpleExplainableAction requestBody = new SimpleExplainableAction();
             requestBody.setReason("unit test");
             ResponseEntity<String> response = survController
                     .deleteSurveillance(insertedSurv.getId(), requestBody);
             result = response.getBody();
             assertTrue(result.contains("true"));
-        } catch(Exception e){
+        } catch (Exception e) {
             fail(e.getMessage());
             e.printStackTrace();
         }
@@ -761,8 +469,8 @@ public class CacheRefreshTest extends TestCase {
         //0 surveillance again.
         List<CertifiedProductFlatSearchResult> allListingsAfterUpdate = searchManager.search();
         foundListing = false;
-        for(CertifiedProductFlatSearchResult updatedListing : allListingsAfterUpdate) {
-            if(updatedListing.getId().longValue() == listingToUpdate.getId().longValue()) {
+        for (CertifiedProductFlatSearchResult updatedListing : allListingsAfterUpdate) {
+            if (updatedListing.getId().longValue() == listingToUpdate.getId().longValue()) {
                 foundListing = true;
                 assertEquals(0, updatedListing.getSurveillanceCount().longValue());
             }
@@ -771,69 +479,7 @@ public class CacheRefreshTest extends TestCase {
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
-    @Test
-    @Transactional
-    @Rollback
-    public void testDeleteSurveillanceDeprecatedRefreshesCache() throws EntityRetrievalException, EntityCreationException,
-    JsonProcessingException, InvalidArgumentsException, MissingReasonException,
-    ValidationException, IOException {
-        SecurityContextHolder.getContext().setAuthentication(oncAdmin);
-
-        CertifiedProductSearchDetails listingToUpdate = cpdManager.getCertifiedProductDetails(1L);
-
-        //get the cache before this update, should pull the listings and cache them
-        List<CertifiedProductFlatSearchResult> allListingsBeforeUpdate = searchManager.search();
-        boolean foundListing = false;
-        for(CertifiedProductFlatSearchResult listing : allListingsBeforeUpdate) {
-            if(listing.getId().longValue() == listingToUpdate.getId().longValue()) {
-                foundListing = true;
-                assertEquals(0, listing.getSurveillanceCount().longValue());
-            }
-        }
-        assertTrue(foundListing);
-
-        //create a surveillance for the listing
-        Surveillance surv = createSurveillanceObject(listingToUpdate.getId());
-        Surveillance insertedSurv = null;
-        try {
-            ResponseEntity<Surveillance> response = survController.createSurveillance(surv);
-            insertedSurv = response.getBody();
-            assertNotNull(insertedSurv);
-        } catch(Exception ex) {
-            ex.printStackTrace();
-            fail("Could not insert listing " + ex.getMessage());
-        }
-
-        //now delete the surveillance
-        //should trigger a cache refresh
-        String result = null;
-        try{
-            SimpleExplainableAction requestBody = new SimpleExplainableAction();
-            requestBody.setReason("unit test");
-            ResponseEntity<String> response = survController
-                    .deleteSurveillanceDeprecated(insertedSurv.getId(), requestBody);
-            result = response.getBody();
-            assertTrue(result.contains("true"));
-        } catch(Exception e){
-            fail(e.getMessage());
-            e.printStackTrace();
-        }
-
-        //get the cached listings now, should have been updated in the aspect and have
-        //0 surveillance again.
-        List<CertifiedProductFlatSearchResult> allListingsAfterUpdate = searchManager.search();
-        foundListing = false;
-        for(CertifiedProductFlatSearchResult updatedListing : allListingsAfterUpdate) {
-            if(updatedListing.getId().longValue() == listingToUpdate.getId().longValue()) {
-                foundListing = true;
-                assertEquals(0, updatedListing.getSurveillanceCount().longValue());
-            }
-        }
-        assertTrue(foundListing);
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
-
-    private Surveillance createSurveillanceObject(Long listingId) {
+    private Surveillance createSurveillanceObject(final Long listingId) {
         Surveillance surv = new Surveillance();
         CertifiedProduct cp = new CertifiedProduct();
         cp.setId(listingId);

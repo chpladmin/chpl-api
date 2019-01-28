@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import java.util.List;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,11 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dao.UserResetTokenDAO;
-import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserResetTokenDTO;
-import gov.healthit.chpl.auth.entity.UserResetTokenEntity;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 
@@ -41,12 +36,13 @@ public class UserResetTokenDaoTest {
     private UserResetTokenDAO userTokenResetDao;
     private static JWTAuthenticatedUser authUser;
     private static final String RESET_PASSWORD_TOKEN = "zlhf8n4bfh87kfq";
+    private static final long ADMIN_ID = -2L;
 
     @BeforeClass
     public static void setUpUser() throws Exception {
         authUser = new JWTAuthenticatedUser();
         authUser.setFullName("Administrator");
-        authUser.setId(-2L);
+        authUser.setId(ADMIN_ID);
         authUser.setFriendlyName("Administrator");
         authUser.setSubjectName("admin");
         authUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
@@ -56,22 +52,22 @@ public class UserResetTokenDaoTest {
     @Test
     @Transactional
     public void testCreatePasswordResetToken() {
-        UserResetTokenDTO userResetToken = userTokenResetDao.create(RESET_PASSWORD_TOKEN, -2L);
+        UserResetTokenDTO userResetToken = userTokenResetDao.create(RESET_PASSWORD_TOKEN, ADMIN_ID);
         assertNotNull(userResetToken.getId());
         assertEquals(userResetToken.getUserResetToken(), RESET_PASSWORD_TOKEN);
     }
-    
+
     @Test
     public void testFindByAuthToken() {
         UserResetTokenDTO found = userTokenResetDao.findByAuthToken(RESET_PASSWORD_TOKEN);
         assertNotNull(found);
         assertEquals(RESET_PASSWORD_TOKEN, found.getUserResetToken());
     }
-    
+
     @Test
     @Transactional
     public void testdeletePreviousUserTokens() {
-        userTokenResetDao.deletePreviousUserTokens(-2L);
+        userTokenResetDao.deletePreviousUserTokens(ADMIN_ID);
         UserResetTokenDTO found = userTokenResetDao.findByAuthToken(RESET_PASSWORD_TOKEN);
         assertNull(found);
     }

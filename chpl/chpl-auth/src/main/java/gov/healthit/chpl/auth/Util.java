@@ -10,96 +10,63 @@ import gov.healthit.chpl.auth.user.User;
 
 public class Util {
 
-	public static String getUsername() {
+    public static String getUsername() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth.getPrincipal() instanceof UserDetails) {
+            return ((UserDetails) auth.getPrincipal()).getUsername();
+        } else {
+            return auth.getPrincipal().toString();
+        }
+    }
 
-		if (auth.getPrincipal() instanceof UserDetails) {
-			return ((UserDetails) auth.getPrincipal()).getUsername();
-		} else {
-			return auth.getPrincipal().toString();
-		}
-	}
+    public static boolean isUserRoleAdmin() {
+        return doesUserHaveRole(Authority.ROLE_ADMIN);
+    }
 
-	public static boolean isUserRoleAdmin() {
-		User user = getCurrentUser();
-		if (user == null) {
-			return false;
-		}
-		for (GrantedPermission perm : user.getPermissions()) {
-			if (perm.getAuthority().equals(Authority.ROLE_ADMIN)) {
-				return true;
-			}
-		}
-		return false;
-	}
+    public static boolean isUserRoleOnc() {
+        return doesUserHaveRole(Authority.ROLE_ONC);
+    }
 
-	public static boolean isUserRoleOncStaff() {
-		User user = getCurrentUser();
-		if (user == null) {
-			return false;
-		}
-		for (GrantedPermission perm : user.getPermissions()) {
-			if (perm.getAuthority().equals(Authority.ROLE_ONC_STAFF)) {
-				return true;
-			}
-		}
-		return false;
-	}
+    public static boolean isUserRoleCmsStaff() {
+        return doesUserHaveRole(Authority.ROLE_CMS_STAFF);
+    }
 
-	public static boolean isUserRoleCmsStaff() {
-		User user = getCurrentUser();
-		if (user == null) {
-			return false;
-		}
-		for (GrantedPermission perm : user.getPermissions()) {
-			if (perm.getAuthority().equals(Authority.ROLE_CMS_STAFF)) {
-				return true;
-			}
-		}
-		return false;
-	}
+    public static boolean isUserRoleAcbAdmin() {
+        return doesUserHaveRole(Authority.ROLE_ACB);
+    }
 
-	public static boolean isUserRoleAcbAdmin() {
-		User user = getCurrentUser();
-		if (user == null) {
-			return false;
-		}
-		for (GrantedPermission perm : user.getPermissions()) {
-			if (perm.getAuthority().equals(Authority.ROLE_ACB)) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	public static boolean isUserRoleAtlAdmin() {
+    public static boolean isUserRoleAtlAdmin() {
+        return doesUserHaveRole(Authority.ROLE_ATL);
+    }
+
+    public static User getCurrentUser() {
+
+        User user = null;
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth instanceof User) {
+            user = (User) auth;
+        }
+        return user;
+    }
+
+    public static String fromInt(Integer toStr) {
+        return toStr.toString();
+    }
+
+    private static boolean doesUserHaveRole(String authority) {
         User user = getCurrentUser();
         if (user == null) {
             return false;
         }
         for (GrantedPermission perm : user.getPermissions()) {
-            if (perm.getAuthority().equals(Authority.ROLE_ATL)) {
+            if (perm.getAuthority().equals(authority)) {
                 return true;
             }
         }
         return false;
     }
-
-	public static User getCurrentUser() {
-
-		User user = null;
-
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-		if (auth instanceof User) {
-			user = (User) auth;
-		}
-		return user;
-	}
-
-	public static String fromInt(Integer toStr) {
-		return toStr.toString();
-	}
 
 }

@@ -250,12 +250,6 @@ pip-log.txt
 /chpl/chpl-etl/log_checksum-analysis-finallines.txt
 /openchpl-sql/openchpl-role.sql
 /chpl/chpl-api/src/main/resources/environment.properties
-/chpl/chpl-service/src/main/resources/environment.properties
-/chpl/chpl-service/src/main/resources/quartz.properties
-/chpl/chpl-service/src/main/resources/quartz.init.properties
-/chpl/chpl-service/src/main/resources-dev/environment.properties
-/chpl/chpl-service/src/main/resources-staging/environment.properties
-/chpl/chpl-service/src/main/resources-production/environment.properties
 /chpl/chpl-service/src/test/resources/environment.test.properties
 /chpl/chpl-resources/src/test/resources/environment.test.properties
 /chpl/chpl-resources/src/main/resources/environment.properties
@@ -265,6 +259,6 @@ pip-log.txt
 /chpl/chpl-service/logs/
 /chpl/deploy-webapp.sh
 /chpl/.recommenders/
-/chpl/chpl-api/src/main/webapp/WEB-INF/web.xml
 *-api.sh
 push-*.sh
+node_modules/

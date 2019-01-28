@@ -25,7 +25,6 @@ import gov.healthit.chpl.dto.job.JobTypeDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.JobManager;
 import gov.healthit.chpl.util.FileUtils;
 import io.swagger.annotations.Api;
@@ -38,19 +37,19 @@ public class MeaningfulUseController {
     private static final Logger LOGGER = LogManager.getLogger(MeaningfulUseController.class);
     private final JobTypeConcept allowedJobType = JobTypeConcept.MUU_UPLOAD;
     @Autowired
-    CertifiedProductManager cpManager;
+    private JobManager jobManager;
     @Autowired
-    JobManager jobManager;
+    private UserManager userManager;
     @Autowired
-    UserManager userManager;
+    private FileUtils fileUtils;
 
     @ApiOperation(value = "Upload a file to update the number of meaningful use users for each CHPL Product Number",
             notes = "Accepts a CSV file with chpl_product_number and num_meaningful_use_users to update the number of meaningful use users for each CHPL Product Number."
-                    + " The user uploading the file must have ROLE_ADMIN or ROLE_ONC_STAFF ")
+                    + " The user uploading the file must have ROLE_ADMIN, ROLE_ONC. ")
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public synchronized ResponseEntity<Job> uploadMeaningfulUseUsers(
-            @RequestParam("file") MultipartFile file,
-            @RequestParam("accurate_as_of") Long date)
+            @RequestParam("file") final MultipartFile file,
+            @RequestParam("accurate_as_of") final Long date)
             throws EntityRetrievalException, EntityCreationException, ValidationException,
             MaxUploadSizeExceededException {
 
@@ -89,7 +88,7 @@ public class MeaningfulUseController {
             }
         }
 
-        String data = FileUtils.readFileAsString(file);
+        String data = fileUtils.readFileAsString(file);
         JobDTO toCreate = new JobDTO();
         toCreate.setData(date.toString() + ";" + data);
         toCreate.setUser(currentUser);

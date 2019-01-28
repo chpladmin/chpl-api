@@ -12,7 +12,7 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 
 /**
- * The version of the test data being used for a given certification criteria
+ * The version of the test data being used for a given certification criteria.
  *
  */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
@@ -32,7 +32,7 @@ public class CertificationResultTestData implements Serializable {
      */
     @XmlElement(required = true)
     private TestData testData;
-    
+
     /**
      * This variable explains the version of the test data being used for a
      * given certification criteria. It is applicable for 2014 and 2015 Edition
@@ -58,7 +58,7 @@ public class CertificationResultTestData implements Serializable {
     public CertificationResultTestData(CertificationResultTestDataDTO dto) {
         this.id = dto.getId();
         TestData td = new TestData();
-        if(dto.getTestData() == null) {
+        if (dto.getTestData() == null) {
             td.setId(dto.getTestDataId());
         } else {
             td.setId(dto.getTestData().getId());
@@ -69,12 +69,12 @@ public class CertificationResultTestData implements Serializable {
         this.alteration = dto.getAlteration();
     }
 
-    public boolean matches(CertificationResultTestData anotherTestData) {
+    public boolean matches(final CertificationResultTestData anotherTestData) {
         boolean result = false;
-        if (this.getTestData() != null && anotherTestData.getTestData() != null &&
-                this.getTestData().getId() != null && anotherTestData.getTestData().getId() != null && 
-                this.getTestData().getId().longValue() == anotherTestData.getTestData().getId().longValue() && 
-                !StringUtils.isEmpty(this.getVersion()) && !StringUtils.isEmpty(anotherTestData.getVersion())
+        if (this.getTestData() != null && anotherTestData.getTestData() != null
+                && this.getTestData().getId() != null && anotherTestData.getTestData().getId() != null
+                && this.getTestData().getId().longValue() == anotherTestData.getTestData().getId().longValue()
+                && !StringUtils.isEmpty(this.getVersion()) && !StringUtils.isEmpty(anotherTestData.getVersion())
                 && this.getVersion().equals(anotherTestData.getVersion())
                 && ((StringUtils.isEmpty(this.getAlteration()) && StringUtils.isEmpty(anotherTestData.getAlteration()))
                         || this.getAlteration().equals(anotherTestData.getAlteration()))) {

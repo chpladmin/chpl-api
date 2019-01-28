@@ -6,29 +6,29 @@ import gov.healthit.chpl.auth.entity.UserEntity;
 
 public interface QuestionableActivityEntity {
 
-    public Long getId();
-    public void setId(final Long id);
-    public Long getTriggerId();
-    public void setTriggerId(Long triggerId);
-    public QuestionableActivityTriggerEntity getTrigger();
-    public void setTrigger(QuestionableActivityTriggerEntity trigger);
-    public String getBefore();
-    public void setBefore(String before);
-    public String getAfter();
-    public void setAfter(String after);
-    public Date getActivityDate();
-    public void setActivityDate(Date activityDate);
-    public Long getUserId();
-    public void setUserId(Long userId);
-    public UserEntity getUser();
-    public void setUser(UserEntity user);
-    public Boolean getDeleted();
-    public void setDeleted(Boolean deleted);
-    public Long getLastModifiedUser();
-    public void setLastModifiedUser(Long lastModifiedUser);
-    public Date getCreationDate();
-    public void setCreationDate(Date creationDate);
-    public Date getLastModifiedDate();
-    public void setLastModifiedDate(Date lastModifiedDate);
+    Long getId();
+    void setId(Long id);
+    Long getTriggerId();
+    void setTriggerId(Long triggerId);
+    QuestionableActivityTriggerEntity getTrigger();
+    void setTrigger(QuestionableActivityTriggerEntity trigger);
+    String getBefore();
+    void setBefore(String before);
+    String getAfter();
+    void setAfter(String after);
+    Date getActivityDate();
+    void setActivityDate(Date activityDate);
+    Long getUserId();
+    void setUserId(Long userId);
+    UserEntity getUser();
+    void setUser(UserEntity user);
+    Boolean getDeleted();
+    void setDeleted(Boolean deleted);
+    Long getLastModifiedUser();
+    void setLastModifiedUser(Long lastModifiedUser);
+    Date getCreationDate();
+    void setCreationDate(Date creationDate);
+    Date getLastModifiedDate();
+    void setLastModifiedDate(Date lastModifiedDate);
 }
 

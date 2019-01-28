@@ -17,7 +17,7 @@ public class CertificationResultTestFunctionalityXmlGenerator extends XmlGenerat
             sw.writeEndElement();
         }
     }
-    
+
     public static void add(CertificationResultTestFunctionality test, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (test != null) {
             sw.writeStartElement(rootNodeName);

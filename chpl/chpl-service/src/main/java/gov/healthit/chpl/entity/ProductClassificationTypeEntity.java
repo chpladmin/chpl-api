@@ -12,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import gov.healthit.chpl.util.Util;
+
 /**
  * Object mapping for hibernate-handled table: product_classification_type.
  *
@@ -65,7 +67,7 @@ public class ProductClassificationTypeEntity implements Serializable {
 
     /**
      * Constructor taking a given ID.
-     * 
+     *
      * @param id
      *            to set
      */
@@ -75,7 +77,7 @@ public class ProductClassificationTypeEntity implements Serializable {
 
     /**
      * Return the type of this class. Useful for when dealing with proxies.
-     * 
+     *
      * @return Defining class.
      */
     @Transient
@@ -83,29 +85,17 @@ public class ProductClassificationTypeEntity implements Serializable {
         return ProductClassificationTypeEntity.class;
     }
 
-    /**
-     * Return the value associated with the column: creationDate.
-     * 
-     * @return A Date object (this.creationDate)
-     */
     public Date getCreationDate() {
-        return this.creationDate;
-
+        return Util.getNewDate(creationDate);
     }
 
-    /**
-     * Set the value related to the column: creationDate.
-     * 
-     * @param creationDate
-     *            the creationDate value you wish to set
-     */
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     /**
      * Return the value associated with the column: deleted.
-     * 
+     *
      * @return A Boolean object (this.deleted)
      */
     public Boolean isDeleted() {
@@ -115,7 +105,7 @@ public class ProductClassificationTypeEntity implements Serializable {
 
     /**
      * Set the value related to the column: deleted.
-     * 
+     *
      * @param deleted
      *            the deleted value you wish to set
      */
@@ -125,7 +115,7 @@ public class ProductClassificationTypeEntity implements Serializable {
 
     /**
      * Return the value associated with the column: description.
-     * 
+     *
      * @return A String object (this.description)
      */
     public String getDescription() {
@@ -135,7 +125,7 @@ public class ProductClassificationTypeEntity implements Serializable {
 
     /**
      * Set the value related to the column: description.
-     * 
+     *
      * @param description
      *            the description value you wish to set
      */
@@ -145,7 +135,7 @@ public class ProductClassificationTypeEntity implements Serializable {
 
     /**
      * Return the value associated with the column: id.
-     * 
+     *
      * @return A Long object (this.id)
      */
     public Long getId() {
@@ -155,7 +145,7 @@ public class ProductClassificationTypeEntity implements Serializable {
 
     /**
      * Set the value related to the column: id.
-     * 
+     *
      * @param id
      *            the id value you wish to set
      */
@@ -163,29 +153,17 @@ public class ProductClassificationTypeEntity implements Serializable {
         this.id = id;
     }
 
-    /**
-     * Return the value associated with the column: lastModifiedDate.
-     * 
-     * @return A Date object (this.lastModifiedDate)
-     */
     public Date getLastModifiedDate() {
-        return this.lastModifiedDate;
-
+        return Util.getNewDate(lastModifiedDate);
     }
 
-    /**
-     * Set the value related to the column: lastModifiedDate.
-     * 
-     * @param lastModifiedDate
-     *            the lastModifiedDate value you wish to set
-     */
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     /**
      * Return the value associated with the column: lastModifiedUser.
-     * 
+     *
      * @return A Long object (this.lastModifiedUser)
      */
     public Long getLastModifiedUser() {
@@ -195,7 +173,7 @@ public class ProductClassificationTypeEntity implements Serializable {
 
     /**
      * Set the value related to the column: lastModifiedUser.
-     * 
+     *
      * @param lastModifiedUser
      *            the lastModifiedUser value you wish to set
      */
@@ -205,7 +183,7 @@ public class ProductClassificationTypeEntity implements Serializable {
 
     /**
      * Return the value associated with the column: name.
-     * 
+     *
      * @return A String object (this.name)
      */
     public String getName() {
@@ -215,7 +193,7 @@ public class ProductClassificationTypeEntity implements Serializable {
 
     /**
      * Set the value related to the column: name.
-     * 
+     *
      * @param name
      *            the name value you wish to set
      */
@@ -225,7 +203,7 @@ public class ProductClassificationTypeEntity implements Serializable {
 
     /**
      * Provides toString implementation.
-     * 
+     *
      * @see java.lang.Object#toString()
      * @return String representation of this class.
      */

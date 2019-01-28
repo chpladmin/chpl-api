@@ -23,7 +23,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 /**
  * Populates the participant_experience_statistics table with summarized count
  * information.
- * 
+ *
  * @author TYoung
  *
  */
@@ -41,7 +41,7 @@ public class ParticipantExperienceStatisticsCalculator {
     /**
      * This method calculates the participant experience counts and saves them
      * to the participant_experience_statistics table.
-     * 
+     *
      * @param certifiedProductSearchDetails
      *            List of CertifiedProductSearchDetails objects
      * @param experienceTypeId

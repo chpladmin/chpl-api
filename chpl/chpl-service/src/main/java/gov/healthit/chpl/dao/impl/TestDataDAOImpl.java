@@ -47,19 +47,18 @@ public class TestDataDAOImpl extends BaseDAOImpl implements TestDataDAO {
         return new TestDataDTO(entity);
     }
 
-    
     @Override
     public List<TestDataCriteriaMapDTO> findAllWithMappedCriteria() {
 
-        List<TestDataCriteriaMapEntity> entities = 
+        List<TestDataCriteriaMapEntity> entities =
                 entityManager.createQuery("SELECT tdMap "
                         + "FROM TestDataCriteriaMapEntity tdMap "
                         + "JOIN FETCH tdMap.testData td "
                         + "JOIN FETCH tdMap.certificationCriterion cce "
                         + "JOIN FETCH cce.certificationEdition "
                         + "WHERE tdMap.deleted <> true "
-                        + "AND td.deleted <> true "
-                        , TestDataCriteriaMapEntity.class).getResultList();
+                        + "AND td.deleted <> true ",
+                        TestDataCriteriaMapEntity.class).getResultList();
         List<TestDataCriteriaMapDTO> dtos = new ArrayList<TestDataCriteriaMapDTO>();
 
         for (TestDataCriteriaMapEntity entity : entities) {
@@ -68,8 +67,8 @@ public class TestDataDAOImpl extends BaseDAOImpl implements TestDataDAO {
         }
         return dtos;
     }
-    
-    private Set<TestDataEntity> getTestDataByCertificationCriteria(String criteriaNumber) {
+
+    private Set<TestDataEntity> getTestDataByCertificationCriteria(final String criteriaNumber) {
         Query query = entityManager.createQuery("SELECT tdMap "
                 + "FROM TestDataCriteriaMapEntity tdMap "
                 + "JOIN FETCH tdMap.testData td "
@@ -77,18 +76,18 @@ public class TestDataDAOImpl extends BaseDAOImpl implements TestDataDAO {
                 + "JOIN FETCH cce.certificationEdition "
                 + "WHERE tdMap.deleted <> true "
                 + "AND td.deleted <> true "
-                + "AND (UPPER(cce.number) = :criteriaNumber)"
-                , TestDataCriteriaMapEntity.class);
+                + "AND (UPPER(cce.number) = :criteriaNumber)",
+                TestDataCriteriaMapEntity.class);
         query.setParameter("criteriaNumber", criteriaNumber.trim().toUpperCase());
         List<TestDataCriteriaMapEntity> results = query.getResultList();
         Set<TestDataEntity> tds = new HashSet<TestDataEntity>();
-        for(TestDataCriteriaMapEntity result : results) {
+        for (TestDataCriteriaMapEntity result : results) {
             tds.add(result.getTestData());
         }
         return tds;
     }
 
-    private TestDataEntity getTestDataByCertificationCriteriaAndValue(String criteriaNumber, String value) {
+    private TestDataEntity getTestDataByCertificationCriteriaAndValue(final String criteriaNumber, final String value) {
         Query query = entityManager.createQuery("SELECT tdMap "
                 + "FROM TestDataCriteriaMapEntity tdMap "
                 + "JOIN FETCH tdMap.testData td "
@@ -97,17 +96,17 @@ public class TestDataDAOImpl extends BaseDAOImpl implements TestDataDAO {
                 + "WHERE tdMap.deleted <> true "
                 + "AND td.deleted <> true "
                 + "AND (UPPER(cce.number) = :criteriaNumber) "
-                + "AND (UPPER(td.name) = :value)"
-                , TestDataCriteriaMapEntity.class);
+                + "AND (UPPER(td.name) = :value)",
+                TestDataCriteriaMapEntity.class);
         query.setParameter("criteriaNumber", criteriaNumber.trim().toUpperCase());
         query.setParameter("value", value.trim().toUpperCase());
-        
+
         List<TestDataCriteriaMapEntity> results = query.getResultList();
         if (results == null || results.size() == 0) {
             return null;
         }
         List<TestDataEntity> tds = new ArrayList<TestDataEntity>();
-        for(TestDataCriteriaMapEntity result : results) {
+        for (TestDataCriteriaMapEntity result : results) {
             tds.add(result.getTestData());
         }
         return tds.get(0);

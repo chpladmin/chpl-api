@@ -18,24 +18,26 @@ import gov.healthit.chpl.caching.UnitTestRules;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class})
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
+@TestExecutionListeners({
+        DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class
+})
 public class ErrorPropertiesTest extends TestCase {
-	@Autowired MessageSource messageSource;
-	
-	@Rule
+    @Autowired
+    MessageSource messageSource;
+
+    @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
-	
-	@Test
-	public void testFormatErrorMessage() {
-		String result = String.format(messageSource.getMessage(
-				new DefaultMessageSourceResolvable(
-						"pendingSurveillance.addSurveillancePermissionDenied"), 
-						LocaleContextHolder.getLocale()), 
-				"CHP-12345");
-		assertEquals("User does not have permission to add surveillance to 'CHP-12345'.", result);
-	}
+
+    @Test
+    public void testFormatErrorMessage() {
+        String result = String.format(messageSource.getMessage(
+                new DefaultMessageSourceResolvable("pendingSurveillance.addSurveillancePermissionDenied"),
+                LocaleContextHolder.getLocale()), "CHP-12345");
+        assertEquals("User does not have permission to add surveillance to 'CHP-12345'.", result);
+    }
 }

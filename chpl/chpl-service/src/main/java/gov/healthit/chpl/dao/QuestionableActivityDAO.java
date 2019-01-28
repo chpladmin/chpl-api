@@ -11,13 +11,18 @@ import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityProductDTO
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityTriggerDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityVersionDTO;
 
+/**
+ * Interface for database access to questionable activity.
+ * @author kekey
+ *
+ */
 public interface QuestionableActivityDAO {
-    public QuestionableActivityDTO create(QuestionableActivityDTO activity);
-    public List<QuestionableActivityVersionDTO> findVersionActivityBetweenDates(Date start, Date end);
-    public List<QuestionableActivityProductDTO> findProductActivityBetweenDates(Date start, Date end);
-    public List<QuestionableActivityDeveloperDTO> findDeveloperActivityBetweenDates(Date start, Date end);
-    public List<QuestionableActivityListingDTO> findListingActivityBetweenDates(Date start, Date end);
-    public List<QuestionableActivityCertificationResultDTO> findCertificationResultActivityBetweenDates(Date start, Date end);
-    public List<QuestionableActivityTriggerDTO> getAllTriggers();
+    QuestionableActivityDTO create(QuestionableActivityDTO activity);
+    List<QuestionableActivityVersionDTO> findVersionActivityBetweenDates(Date start, Date end);
+    List<QuestionableActivityProductDTO> findProductActivityBetweenDates(Date start, Date end);
+    List<QuestionableActivityDeveloperDTO> findDeveloperActivityBetweenDates(Date start, Date end);
+    List<QuestionableActivityListingDTO> findListingActivityBetweenDates(Date start, Date end);
+    List<QuestionableActivityCertificationResultDTO> findCertificationResultActivityBetweenDates(Date start, Date end);
+    List<QuestionableActivityTriggerDTO> getAllTriggers();
 
 }

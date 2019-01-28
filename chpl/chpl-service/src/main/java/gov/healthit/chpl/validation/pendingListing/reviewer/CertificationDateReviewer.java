@@ -16,7 +16,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 @Component("pendingCertificationDateReviewer")
 public class CertificationDateReviewer implements Reviewer {
     @Autowired private ErrorMessageUtil msgUtil;
-    
+
     @Override
     public void review(PendingCertifiedProductDTO listing) {
         if (listing.getCertificationDate().getTime() > new Date().getTime()) {

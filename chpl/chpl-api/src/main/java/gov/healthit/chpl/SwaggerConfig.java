@@ -5,8 +5,6 @@ import static springfox.documentation.builders.PathSelectors.regex;
 
 import javax.servlet.ServletContext;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
@@ -24,12 +22,15 @@ import springfox.documentation.spring.web.paths.RelativePathProvider;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+/**
+ * Configuration class for swagger documentation.
+ * @author kekey
+ *
+ */
 @Configuration
 @PropertySource("classpath:environment.properties")
 @EnableSwagger2
 public class SwaggerConfig implements EnvironmentAware {
-
-    private static final Logger LOGGER = LogManager.getLogger(SwaggerConfig.class);
 
     @Autowired
     private ServletContext context;
@@ -53,7 +54,7 @@ public class SwaggerConfig implements EnvironmentAware {
                 + "select the \"Certified Health IT Products List (CHPL)\" category.",
                 "https://www.healthit.gov/form/healthit-feedback-form",
                 "");
-        return new ApiInfo("CHPL", "Certified Health IT Product Listing", "19.2.0", "",
+        return new ApiInfo("CHPL", "Certified Health IT Product Listing", "20.2.0", "",
                 contact, "License Text", "https://github.com/chpladmin/chpl-api/blob/staging/LICENSE");
     }
 
@@ -66,7 +67,7 @@ public class SwaggerConfig implements EnvironmentAware {
         return or(regex("/acbs.*"), regex("/activity.*"), regex("/announcements.*"), regex("/atls.*"), regex("/auth.*"),
                 regex("/certification_ids.*"), regex("/certified_products.*"), regex("/certified_product_details.*"),
                 regex("/collections.*"), regex("/data/.*"), regex("/download.*"), regex("/files.*"), regex("/jobs.*"),
-                regex("/key.*"), regex("/meaningful_use"), regex("/notifications.*"), regex("/products.*"),
+                regex("/key.*"), regex("/meaningful_use.*"), regex("/products.*"),
                 regex("/search.*"), regex("/surveillance.*"), regex("/status"), regex("/cache_status"),
                 regex("/users.*"), regex("/developers.*"), regex("/versions.*"), regex("/decertifications/.*"),
                 regex("/schedules.*"));

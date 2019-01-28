@@ -23,7 +23,8 @@ public interface ActivityManager {
             Object newData) throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
 
     void addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
-            Object newData, String reason) throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
+            Object newData, String reason)
+                    throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
 
     void addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
             Object newData, Long asUser)
@@ -42,44 +43,42 @@ public interface ActivityManager {
     List<ActivityEvent> getPublicAnnouncementActivity(Date startDate,
             Date endDate) throws JsonParseException, IOException;
 
-    public List<ActivityEvent> getPublicAnnouncementActivity(Long id,Date startDate,
+    List<ActivityEvent> getPublicAnnouncementActivity(Long id, Date startDate,
             Date endDate) throws JsonParseException, IOException;
 
-    List<ActivityEvent> getAllAcbActivity(boolean showDeleted, Date startDate,
+    List<ActivityEvent> getAllAcbActivity(Date startDate,
             Date endDate) throws JsonParseException, IOException;
 
-    public List<ActivityEvent> getAcbActivity(List<CertificationBodyDTO> acbs, 
+    List<ActivityEvent> getAcbActivity(List<CertificationBodyDTO> acbs,
             Date startDate, Date endDate) throws JsonParseException, IOException;
 
-    public List<ActivityEvent> getAllAtlActivity(boolean showDeleted, Date startDate,
+    List<ActivityEvent> getAllAtlActivity(Date startDate,
             Date endDate) throws JsonParseException, IOException;
 
-    public List<ActivityEvent> getAtlActivity(List<TestingLabDTO> atls, Date startDate,
+    List<ActivityEvent> getAtlActivity(List<TestingLabDTO> atls, Date startDate,
             Date endDate) throws JsonParseException, IOException;
 
-    public List<ActivityEvent> getAllPendingListingActivity(Date startDate,
+    List<ActivityEvent> getAllPendingListingActivity(Date startDate,
             Date endDate) throws JsonParseException, IOException;
 
-    public List<ActivityEvent> getPendingListingActivityByAcb(List<CertificationBodyDTO> acbs,
+    List<ActivityEvent> getPendingListingActivityByAcb(List<CertificationBodyDTO> acbs,
             Date startDate, Date endDate) throws JsonParseException, IOException;
 
-    public List<ActivityEvent> getPendingListingActivity(Long pendingListingId, 
+    List<ActivityEvent> getPendingListingActivity(Long pendingListingId,
             Date startDate, Date endDate) throws JsonParseException, IOException, EntityRetrievalException;
 
     List<ActivityEvent> getAllUserActivity(Date startDate, Date endDate)
             throws JsonParseException, IOException;
 
-    List<ActivityEvent> getUserActivity(Set<Long> userIds, 
+    List<ActivityEvent> getUserActivity(Set<Long> userIds,
             Date startDate, Date endDate) throws JsonParseException, IOException;
 
     List<ActivityEvent> getApiKeyActivity(Date startDate,
             Date endDate) throws JsonParseException, IOException;
 
-    void deleteActivity(Long toDelete) throws EntityRetrievalException;
-
     List<UserActivity> getActivityByUserInDateRange(Date startDate, Date endDate)
             throws JsonParseException, IOException, UserRetrievalException;
-    
+
     List<ActivityEvent> getActivityForUserInDateRange(Long userId, Date startDate, Date endDate)
             throws JsonParseException, IOException;
 

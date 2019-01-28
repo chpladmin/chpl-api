@@ -28,45 +28,48 @@ import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
+@TestExecutionListeners({
+        DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
+})
 @DatabaseSetup("classpath:data/testData.xml")
 public class ListingStatisticsDAOTest extends TestCase {
-	
-	@Autowired 
-	private ListingStatisticsDAO listingStatisticsDAO;
-	
-	@Rule
+
+    @Autowired
+    private ListingStatisticsDAO listingStatisticsDAO;
+
+    @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
-	
-	private static JWTAuthenticatedUser authUser;
 
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-		authUser = new JWTAuthenticatedUser();
-		authUser.setFullName("Admin");
-		authUser.setId(-2L);
-		authUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
-	}
+    private static JWTAuthenticatedUser authUser;
 
-	@Test
-	@Transactional
-	public void getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus() {
-		DateRange dr = new DateRange(new Date(0), new Date());
-		List<CertifiedBodyStatistics> results = listingStatisticsDAO.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(dr);
-		assertNotNull(results);
-	}
-	
-	@Test
-	@Transactional
-	public void getTotalCPListingsEachYearByCertifiedBody() {
-		DateRange dr = new DateRange(new Date(0), new Date());
-		List<CertifiedBodyStatistics> results = listingStatisticsDAO.getTotalCPListingsEachYearByCertifiedBody(dr);
-		assertNotNull(results);
-	}
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        authUser = new JWTAuthenticatedUser();
+        authUser.setFullName("Admin");
+        authUser.setId(-2L);
+        authUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+    }
+
+    @Test
+    @Transactional
+    public void getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus() {
+        DateRange dr = new DateRange(new Date(0), new Date());
+        List<CertifiedBodyStatistics> results = listingStatisticsDAO
+                .getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(dr);
+        assertNotNull(results);
+    }
+
+    @Test
+    @Transactional
+    public void getTotalCPListingsEachYearByCertifiedBody() {
+        DateRange dr = new DateRange(new Date(0), new Date());
+        List<CertifiedBodyStatistics> results = listingStatisticsDAO.getTotalCPListingsEachYearByCertifiedBody(dr);
+        assertNotNull(results);
+    }
 
 }

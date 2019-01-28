@@ -17,7 +17,7 @@ public class CertifiedProductQmsStandardXmlGenerator extends XmlGenerator {
             sw.writeEndElement();
         }
     }
-    
+
 public static void add(CertifiedProductQmsStandard standard, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (standard != null) {
             sw.writeStartElement(rootNodeName);

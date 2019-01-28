@@ -2,7 +2,6 @@ package gov.healthit.chpl.dao.statistics;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
-import gov.healthit.chpl.entity.ParticipantExperienceStatisticsEntity;
 import gov.healthit.chpl.entity.surveillance.NonconformityTypeStatisticsEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
@@ -33,7 +32,7 @@ public class NonconformityTypeStatisticsDAOImpl extends BaseDAOImpl implements N
 
         return dtos;
     }
-    
+
     @Override
     @Transactional
     public void create(NonconformityTypeStatisticsDTO dto) {
@@ -60,7 +59,7 @@ public class NonconformityTypeStatisticsDAOImpl extends BaseDAOImpl implements N
         entityManager.persist(entity);
         entityManager.flush();
     }
-    
+
     @Override
     @Transactional
     public void deleteAllOldNonConformityStatistics() throws EntityRetrievalException {

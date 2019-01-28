@@ -8,6 +8,8 @@ import javax.persistence.Id;
 
 import org.hibernate.annotations.Immutable;
 
+import gov.healthit.chpl.util.Util;
+
 /**
  * Represents one row of one listing's search result data.
  * Will need to be combined with multiple other rows to make a complete listing.
@@ -165,11 +167,11 @@ public class CertifiedProductListingSearchResultEntity {
     }
 
     public Date getCertificationDate() {
-        return certificationDate;
+        return Util.getNewDate(certificationDate);
     }
 
     public void setCertificationDate(final Date certificationDate) {
-        this.certificationDate = certificationDate;
+        this.certificationDate = Util.getNewDate(certificationDate);
     }
 
     public String getCertificationStatus() {
@@ -181,11 +183,11 @@ public class CertifiedProductListingSearchResultEntity {
     }
 
     public Date getDecertificationDate() {
-        return decertificationDate;
+        return Util.getNewDate(decertificationDate);
     }
 
     public void setDecertificationDate(final Date decertificationDate) {
-        this.decertificationDate = decertificationDate;
+        this.decertificationDate = Util.getNewDate(decertificationDate);
     }
 
     public Long getMeaningfulUseUserCount() {
@@ -253,10 +255,10 @@ public class CertifiedProductListingSearchResultEntity {
     }
 
     public Date getMeaningfulUseUsersDate() {
-        return meaningfulUseUsersDate;
+        return Util.getNewDate(meaningfulUseUsersDate);
     }
 
     public void setMeaningfulUseUsersDate(Date meaningfulUseUsersDate) {
-        this.meaningfulUseUsersDate = meaningfulUseUsersDate;
+        this.meaningfulUseUsersDate = Util.getNewDate(meaningfulUseUsersDate);
     }
 }

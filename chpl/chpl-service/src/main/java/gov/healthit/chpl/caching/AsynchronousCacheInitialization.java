@@ -39,7 +39,7 @@ public class AsynchronousCacheInitialization {
     @Transactional
     public Future<Boolean> initializeSearchOptions() throws EntityRetrievalException {
         LOGGER.info("Starting cache initialization for SearchViewController.getPopulateSearchData()");
-        searchMenuManager.getCertBodyNames(true);
+        searchMenuManager.getCertBodyNames();
         searchMenuManager.getEditionNames(false);
         searchMenuManager.getEditionNames(true);
         searchMenuManager.getCertificationStatuses();
@@ -88,7 +88,7 @@ public class AsynchronousCacheInitialization {
     @Transactional
     public Future<Boolean> initializeFindByAcbId() throws IOException, EntityRetrievalException, InterruptedException {
         LOGGER.info("Starting cache initialization for PendingCertifiedProductDAO.findByAcbId()");
-        List<CertificationBodyDTO> cbs = certificationBodyDAO.findAll(false);
+        List<CertificationBodyDTO> cbs = certificationBodyDAO.findAllActive();
         for (CertificationBodyDTO dto : cbs) {
             pendingCertifiedProductDAO.findByAcbId(dto.getId());
         }

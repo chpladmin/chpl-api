@@ -22,7 +22,7 @@ public interface DeveloperManager {
     List<DeveloperTransparency> getDeveloperCollection();
 
     DeveloperDTO update(DeveloperDTO developer)
-            throws EntityRetrievalException, JsonProcessingException, 
+            throws EntityRetrievalException, JsonProcessingException,
             EntityCreationException, MissingReasonException;
 
     DeveloperDTO create(DeveloperDTO dto)

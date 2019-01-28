@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -53,11 +54,14 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap;
 import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap2015Version1;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("certifiedProductHandler2015Version1")
 public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler {
 
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductHandler2015Version1.class);
+    @Autowired
+    private ErrorMessageUtil msgUtil;
     private TemplateColumnIndexMap templateColumnIndexMap;
     private String[] criteriaNames = {
             "170.315 (a)(1)", "170.315 (a)(2)", "170.315 (a)(3)", "170.315 (a)(4)", "170.315 (a)(5)",
@@ -377,10 +381,14 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
 
         PendingTestTaskEntity task = new PendingTestTaskEntity();
         task.setUniqueId(record.get(colIndex++).trim());
+        if (task.getUniqueId().length() > msgUtil.getMaxLength("maxLength.taskIdentifier")) {
+            pendingCertifiedProductEntity.getErrorMessages().add(msgUtil.getMessage("listing.taskIdentifier.maxlength",
+                    String.valueOf(msgUtil.getMaxLength("maxLength.taskIdentifier")), task.getUniqueId()));
+        }
         task.setDescription(record.get(colIndex++).trim());
         String successAvgStr = record.get(colIndex++).trim();
         try {
-            Float successAvg = new Float(successAvgStr);
+            Float successAvg = Float.valueOf(successAvgStr);
             task.setTaskSuccessAverage(successAvg);
         } catch (Exception ex) {
             LOGGER.error("Cannot convert " + successAvgStr + " to a Float.");
@@ -409,7 +417,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
         String taskTimeAvgStr = record.get(colIndex++).trim();
         try {
             Integer taskTimeAvg = Math.round(new Float(taskTimeAvgStr));
-            task.setTaskTimeAvg(new Long(taskTimeAvg));
+            task.setTaskTimeAvg(Long.valueOf(taskTimeAvg));
         } catch (Exception ex) {
             LOGGER.error("Cannot convert " + taskTimeAvgStr + " to a Integer.");
         }
@@ -478,7 +486,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
         List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion(pendingCertifiedProduct, cqmName, cqmVersions,
                 cqmCriteria);
         for (PendingCqmCriterionEntity entity : criterion) {
-            if (entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
+            if (entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria()) {
                 pendingCertifiedProduct.getCqmCriterion().add(entity);
             }
         }
@@ -654,7 +662,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                 && cert.getAdditionalSoftware().size() == 0) {
             product.getErrorMessages().add("Certification " + cert.getMappedCriterion().getNumber() + " for product "
                     + product.getUniqueId() + " indicates additional software should be present but none was found.");
-        } else if ((cert.getHasAdditionalSoftware() == null || cert.getHasAdditionalSoftware().booleanValue() == false)
+        } else if ((cert.getHasAdditionalSoftware() == null || !cert.getHasAdditionalSoftware().booleanValue())
                 && cert.getAdditionalSoftware().size() > 0) {
             product.getErrorMessages()
             .add("Certification " + cert.getMappedCriterion().getNumber() + " for product "
@@ -814,6 +822,10 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                     for (int i = 0; i < participantUniqueIds.length; i++) {
                         PendingTestParticipantEntity participantEntity = null;
                         for (PendingTestParticipantEntity participant : this.participants) {
+                            if (participant.getUniqueId().length() > msgUtil.getMaxLength("maxLength.participantIdentifier")) {
+                                product.getErrorMessages().add(msgUtil.getMessage("listing.participantIdentifier.maxlength",
+                                        String.valueOf(msgUtil.getMaxLength("maxLength.participantIdentifier")), participant.getUniqueId()));
+                            }
                             if (participant.getUniqueId().equals(participantUniqueIds[i].trim())) {
                                 participantEntity = participant;
                             }

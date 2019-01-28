@@ -18,7 +18,6 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
@@ -34,7 +33,6 @@ import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
@@ -82,32 +80,31 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 
     @Override
     @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB')")
-    public PendingCertifiedProductDetails getById(final List<CertificationBodyDTO> userAcbs,
-            final Long id) throws EntityRetrievalException, AccessDeniedException {
-            return getById(userAcbs, id, false);
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
+    public PendingCertifiedProductDetails getById(final Long id)
+            throws EntityRetrievalException, AccessDeniedException {
+            return getById(id, false);
+    }
+
+    /**
+     * ROLE_ONC is allowed to see pending listings only for activity
+     * and no other times.
+     */
+    @Override
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
+    public PendingCertifiedProductDetails getByIdForActivity(final Long id)
+            throws EntityRetrievalException, AccessDeniedException {
+            return getById(id, true);
     }
 
     @Override
     @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB')")
-    public PendingCertifiedProductDetails getById(final List<CertificationBodyDTO> userAcbs,
-            final Long id, final boolean includeDeleted)
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
+    public PendingCertifiedProductDetails getById(final Long id, final boolean includeRetired)
             throws EntityRetrievalException, AccessDeniedException {
 
-        PendingCertifiedProductDTO pendingCp = pcpDao.findById(id, includeDeleted);
-        boolean userHasAcbPermissions = false;
-        for (CertificationBodyDTO acb : userAcbs) {
-            if (acb.getId() != null && pendingCp.getCertificationBodyId() != null
-                    && acb.getId().longValue() == pendingCp.getCertificationBodyId().longValue()) {
-                userHasAcbPermissions = true;
-            }
-        }
-
-        if (!userHasAcbPermissions) {
-            throw new AccessDeniedException("Permission denied on ACB " + pendingCp.getCertificationBodyId()
-                    + " for user " + Util.getCurrentUser().getSubjectName());
-        }
+        PendingCertifiedProductDTO pendingCp = pcpDao.findById(id, includeRetired);
 
         // the user has permission so continue getting the pending cp
         updateCertResults(pendingCp);
@@ -116,15 +113,25 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
         PendingCertifiedProductDetails pcpDetails = new PendingCertifiedProductDetails(pendingCp);
         addAllVersionsToCmsCriterion(pcpDetails);
         addAllMeasuresToCertificationCriteria(pcpDetails);
-
         return pcpDetails;
     }
 
     @Override
     @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('ROLE_ADMIN') or " + "hasRole('ROLE_ACB') and "
-            + "hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-    public List<PendingCertifiedProductDTO> getPendingCertifiedProductsByAcb(final Long acbId) {
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public List<PendingCertifiedProductDTO> getAllPendingCertifiedProducts() {
+        List<PendingCertifiedProductDTO> products = pcpDao.findAll();
+        updateCertResults(products);
+        validate(products);
+
+        return products;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') and "
+            + "hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+    public List<PendingCertifiedProductDTO> getPendingCertifiedProducts(final Long acbId) {
         List<PendingCertifiedProductDTO> products = pcpDao.findByAcbId(acbId);
         updateCertResults(products);
         validate(products);
@@ -139,8 +146,8 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
     @CacheEvict(value = {
             CacheNames.FIND_BY_ACB_ID
     }, allEntries = true)
-    @PreAuthorize("hasRole('ROLE_ACB') "
-            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or (hasRole('ROLE_ACB') "
+            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     public PendingCertifiedProductDTO createOrReplace(final Long acbId, final PendingCertifiedProductEntity toCreate)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
         Long existingId = pcpDao.findIdByOncId(toCreate.getUniqueId());
@@ -157,7 +164,8 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
         } catch(Exception ex) {
             //something unexpected happened on upload
             //make sure the user gets an appropriate error message
-            EntityCreationException toThrow = new EntityCreationException("An unexpected error occurred. Please review the information in your upload file. The CHPL team has been notified.");
+            EntityCreationException toThrow =
+                    new EntityCreationException("An unexpected error occurred. Please review the information in your upload file. The CHPL team has been notified.");
             toThrow.setStackTrace(ex.getStackTrace());
             throw toThrow;
         }
@@ -174,25 +182,15 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
     @CacheEvict(value = {
             CacheNames.FIND_BY_ACB_ID
     }, allEntries = true)
-    @PreAuthorize("hasRole('ROLE_ACB')")
-    public void deletePendingCertifiedProduct(final List<CertificationBodyDTO> userAcbs, final Long pendingProductId)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or "
+            + "(hasRole('ROLE_ACB') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+    public void deletePendingCertifiedProduct(final Long acbId, final Long pendingProductId)
             throws EntityRetrievalException, EntityNotFoundException, EntityCreationException, AccessDeniedException,
             JsonProcessingException, ObjectMissingValidationException {
 
         PendingCertifiedProductDTO pendingCp = pcpDao.findById(pendingProductId, true);
         if (pendingCp == null) {
             throw new EntityNotFoundException("Could not find pending certified product with id " + pendingProductId);
-        }
-        boolean userHasAcbPermissions = false;
-        for (CertificationBodyDTO acb : userAcbs) {
-            if (acb.getId() != null && pendingCp.getCertificationBodyId() != null
-                    && acb.getId().longValue() == pendingCp.getCertificationBodyId().longValue()) {
-                userHasAcbPermissions = true;
-            }
-        }
-        if (!userHasAcbPermissions) {
-            throw new AccessDeniedException("Permission denied on ACB " + pendingCp.getCertificationBodyId()
-                    + " for user " + Util.getCurrentUser().getSubjectName());
         }
 
         if (isPendingListingAvailableForUpdate(pendingCp.getCertificationBodyId(), pendingCp)) {
@@ -208,8 +206,8 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
     @CacheEvict(value = {
             CacheNames.FIND_BY_ACB_ID
     }, allEntries = true)
-    @PreAuthorize("hasRole('ROLE_ACB') "
-            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') "
+            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     public void confirm(final Long acbId, final Long pendingProductId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         PendingCertifiedProductDTO pendingCp = pcpDao.findById(pendingProductId, true);
@@ -223,8 +221,8 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ACB') "
-            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') "
+            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     public boolean isPendingListingAvailableForUpdate(final Long acbId, final Long pendingProductId)
             throws EntityRetrievalException, ObjectMissingValidationException {
         PendingCertifiedProductDTO pendingCp = pcpDao.findById(pendingProductId, true);
@@ -233,8 +231,8 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ACB') "
-            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') "
+            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     public boolean isPendingListingAvailableForUpdate(final Long acbId, final PendingCertifiedProductDTO pendingCp)
             throws EntityRetrievalException, ObjectMissingValidationException {
         if (pendingCp.getDeleted().booleanValue()) {
@@ -261,8 +259,10 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
             }
 
             throw alreadyDeletedEx;
+        } else {
+            //If pendingCP were null, we would have gotten an NPE by this point
+            return true;
         }
-        return pendingCp != null;
     }
 
     private void updateCertResults(final PendingCertifiedProductDTO dto) {

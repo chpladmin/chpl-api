@@ -11,17 +11,18 @@ import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
+/**
+ * Interface for database access to activity tables.
+ * @author kekey
+ *
+ */
 public interface ActivityDAO {
 
     ActivityDTO create(ActivityDTO dto) throws EntityCreationException, EntityRetrievalException;
 
-    ActivityDTO update(ActivityDTO dto) throws EntityRetrievalException;
-
-    void delete(Long id) throws EntityRetrievalException;
-
     ActivityDTO getById(Long id) throws EntityRetrievalException;
 
-    List<ActivityDTO> findByObjectId(boolean showDeleted, Long objectId, ActivityConcept concept, Date startDate,
+    List<ActivityDTO> findByObjectId(Long objectId, ActivityConcept concept, Date startDate,
             Date endDate);
 
     List<ActivityDTO> findPublicAnnouncementActivity(Date startDate, Date endDate);
@@ -29,18 +30,18 @@ public interface ActivityDAO {
     List<ActivityDTO> findPublicAnnouncementActivityById(Long announcementId, Date startDate, Date endDate);
 
     List<ActivityDTO> findAcbActivity(List<CertificationBodyDTO> acbs, Date startDate, Date endDate);
-    
+
     List<ActivityDTO> findAtlActivity(List<TestingLabDTO> atls, Date startDate, Date endDate);
-    
-    List<ActivityDTO> findPendingListingActivity(List<CertificationBodyDTO> pendingListingAcbs, 
+
+    List<ActivityDTO> findPendingListingActivity(List<CertificationBodyDTO> pendingListingAcbs,
             Date startDate, Date endDate);
 
-    List<ActivityDTO> findPendingListingActivity(Long pendingListingId, 
+    List<ActivityDTO> findPendingListingActivity(Long pendingListingId,
             Date startDate, Date endDate);
-    
-    public List<ActivityDTO> findUserActivity(List<Long> userIds, Date startDate, Date endDate);
-    
-    List<ActivityDTO> findByConcept(boolean showDeleted, ActivityConcept concept, Date startDate, Date endDate);
+
+    List<ActivityDTO> findUserActivity(List<Long> userIds, Date startDate, Date endDate);
+
+    List<ActivityDTO> findByConcept(ActivityConcept concept, Date startDate, Date endDate);
 
     List<ActivityDTO> findByUserId(Long userId, Date startDate, Date endDate);
 

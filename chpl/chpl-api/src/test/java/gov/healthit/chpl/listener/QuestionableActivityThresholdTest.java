@@ -91,7 +91,7 @@ public class QuestionableActivityThresholdTest extends TestCase {
 
         listing = cpdManager.getCertifiedProductDetails(1L);
         //set creation date to now so we don't trigger questionable activity
-        Query updateCreationDateQuery = 
+        Query updateCreationDateQuery =
                 entityManager.createNativeQuery("UPDATE openchpl.certified_product "
                         + "SET creation_date = NOW() "
                         + "WHERE certified_product_id = " + listing.getId());
@@ -103,8 +103,8 @@ public class QuestionableActivityThresholdTest extends TestCase {
     @Transactional
     @Rollback
     public void testUpdateGapInsideActivityThreshold_DoesNotRecordActivity()
-            throws EntityCreationException, EntityRetrievalException, ValidationException, InvalidArgumentsException,
-            JsonProcessingException, MissingReasonException, IOException {
+            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
+            JsonProcessingException, MissingReasonException, IOException, ValidationException {
 
         // perform an update that would generate questionable activity outside
         // of the threshold but make sure that no questionable activity was
@@ -134,9 +134,8 @@ public class QuestionableActivityThresholdTest extends TestCase {
     @Transactional
     @Rollback
     public void testAddCqmInsideActivityThreshold_DoesNotRecordActivity() throws
-    EntityCreationException, EntityRetrievalException,
-    ValidationException, InvalidArgumentsException, JsonProcessingException,
-    MissingReasonException, IOException {
+    EntityCreationException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException,
+    MissingReasonException, IOException, ValidationException {
 
         //perform an update that would generate questionable activity outside
         //of the threshold but make sure that no questionable activity was entered.

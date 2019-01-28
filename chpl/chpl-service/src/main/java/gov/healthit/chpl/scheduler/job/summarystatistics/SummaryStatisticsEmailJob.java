@@ -80,7 +80,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
             LOGGER.info("********* Starting the Summary Statistics Email job. *********");
             LOGGER.info("Sending email to: " + jobContext.getMergedJobDataMap().getString("email"));
 
-            activeAcbs = certificationBodyDAO.findAll(false);
+            activeAcbs = certificationBodyDAO.findAllActive();
 
             SummaryStatisticsEntity summaryStatistics = summaryStatisticsDAO.getMostRecent();
             Statistics stats = getStatistics(summaryStatistics);
@@ -112,7 +112,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
     private List<File> getSummaryStatisticsFile() {
         List<File> files = new ArrayList<File>();
         File file = new File(
-                        props.getProperty("downloadFolderPath") + File.separator
+                        System.getenv("downloadFolderPath") + File.separator
                         + props.getProperty("summaryEmailName", "summaryStatistics.csv"));
         files.add(file);
         return files;
@@ -503,7 +503,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         return acbStats;
     }
 
-    //Parameter intentionally not 'final'.  This way we don;t have to copy the values passed in to a 
+    //Parameter intentionally not 'final'.  This way we don;t have to copy the values passed in to a
     //new list.
     private void addMissingAcbStatistics(List<CertifiedBodyStatistics> acbStats, final Integer edition) {
         //Add statistics for missing active ACBs

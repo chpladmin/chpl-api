@@ -1,5 +1,4 @@
 #chpl-service properties
-downloadFolderPath=C:\\Users\\kekey\\downloadFiles
 jndiName=java:comp/env/jdbc/openchpl
 persistenceUnitName=openchpl
 springfox.documentation.swagger.v2.path=/api-docs
@@ -15,8 +14,21 @@ jobThresholdDays=7
 #how many surveillances should be in a file before it's turned into a job?
 surveillanceThresholdToProcessAsJob=50
 
+#
+# fuzzy matching properties
+#
+fuzzyChoiceThreshold=80
+fuzzyChoiceLimit=1
+
+#####
+# Filenames for report files that are created within the system.
+#####
 #file name that daily SED details will be written to
-SEDDownloadName=chpl-sed-all-details.csv
+SEDDownloadName=chpl-sed-all-details
+#surveillance reports
+surveillanceAllReportName=surveillance-all
+surveillanceBasicReportName=surveillance-basic-report
+surveillanceNonconformitiesReportName=surveillance-with-nonconformities
 
 # number of tokens per API Key per time unit below
 rateTokenLimit=5
@@ -24,16 +36,17 @@ rateTokenLimit=5
 # values are: second, minute, hour
 rateLimitTimeUnit=minute
 
-fuzzyChoiceThreshold=80
-fuzzyChoiceLimit=1
-
-#cache properties
+#caching properties
 enableCacheInitialization=true
 cacheClearTimeoutSecs=15
 cacheInitializeTimeoutSecs=300
+#how long to wait before first loading the prefetched listing cache
+listingCacheRefreshInitialDelayMillis=300000
+#how to long to wait after prefetched listing cache has loaded before starting to load it again
+listingCacheRefreshDelayMillis=900000
 
 #chpl/app/statistics/SummaryStatistics properties
-summaryEmailSubject=CHPL - Weekly Summary Statistics Report (Local)
+summaryEmailSubject=CHPL - Weekly Summary Statistics Report
 summaryEmailName=summaryStatistics.csv
 summaryEmailPeriodInDays=7
 
@@ -43,6 +56,9 @@ questionableActivityEmailSubject=Questionable Activity Report
 questionableActivityHasDataEmailBody=<p>A summary of questionable activity found between %s and %s is attached.</p>"
 questionableActivityNoDataEmailBody=<p>No questionable activity was found between %s and %s.</p>
 
+#chpl-service download jar properties
+dataSourceName=java:/comp/env/jdbc/openchpl
+
 #oversight email properties
 suspendedDaysAllowed=30
 capApprovalDaysAllowed=75
@@ -50,49 +66,41 @@ capStartDaysAllowed=10
 ncOpenCapClosedDaysAllowed=45
 
 #oversight daily email properties
-oversightEmailDailySubject=Daily Surveillance Broken Rules Alert(LOCAL)
+oversightEmailDailySubject=Daily Surveillance Broken Rules Alert
 oversightEmailDailyHtmlMessage=<h3>ONC Daily Surveillance Report</h3>
 oversightEmailDailyFileName=surveillance-oversight-daily-report.csv
 oversightEmailDailyNoContent=<p>No surveillance oversight rules were newly broken in the last day</p>
 oversightEmailAcbDailyHtmlMessage=<h3>ONC-ACB Daily Surveillance Report</h3>
 
 #oversight weekly email properties
-oversightEmailWeeklySubject=Weekly Surveillance Broken Rules Alert(LOCAL)
+oversightEmailWeeklySubject=Weekly Surveillance Broken Rules Alert
 oversightEmailWeeklyHtmlMessage=<h3>ONC Weekly Surveillance Report</h3>
 oversightEmailWeeklyFileName=surveillance-oversight-weekly-report.csv
 oversightEmailWeeklyNoContent=<p>No surveillance oversight rules are broken</p>
 oversightEmailAcbWeeklyHtmlMessage=<h3>ONC-ACB Weekly Surveillance Report</h3>
 
 #inheritance report weekly email properties
-inheritanceReportEmailWeeklySubject=Weekly ICS Validation Report (LOCAL)
+inheritanceReportEmailWeeklySubject=Weekly ICS Validation Report
 inheritanceReportEmailWeeklyHtmlMessage=<h3>ONC Weekly ICS Validation Report</h3>
 inheritanceReportEmailWeeklyFileName=inheritance-validation-weekly-report.csv
 inheritanceReportEmailWeeklyNoContent=<p>No listings were found that do not meet ICS requirements.</p>
 inheritanceReportEmailAcbWeeklyHtmlMessage=<h3>ONC-ACB Weekly ICS Validation Report</h3>
 
 #listing upload error email properties
-uploadErrorEmailRecipients=test@ainq.com,test2@ainq.com
-uploadErrorEmailSubject=CHPL Listing Upload Error (LOCAL)
+uploadErrorEmailSubject=CHPL Listing Upload Error
 
 #schema download file properties
 schemaXmlName=listingSchema.xsd
 schemaCsv2014Name=listing2014Schema.csv
 schemaCsv2015Name=listing2015Schema.csv
 schemaSurveillanceName=surveillanceSchema.csv
-
-#chpl-service download jar properties
-dbDriverClass=org.postgresql.Driver
-dataSourceName=java:/comp/env/jdbc/openchpl
-dataSourceConnection=jdbc:postgresql://localhost/openchpl
-dataSourceUsername=openchpl
-dataSourcePassword=
+schemaBasicSurveillanceName=Surveillance (basic) CSV Data Dictionary.csv
 
 #chpl-auth properties
 authJndiName=java:comp/env/jdbc/openchpl
 authPersistenceUnitName=openchpl
 authAclCacheName=aclCache
 authMaximumLoginAttempts=5
-keyLocation=C:\\CHPL\\keys\\JSONRsaJoseJWebKey.txt
 jwtAllowedClockSkew=30
 jwtIssuer=ONCCHPL
 jwtAudience=ONCCHPL
@@ -100,31 +108,16 @@ jwtExpirationTimeMinutesInTheFuture=30
 jwtNotBeforeMinutesInThePast=4
 resetLinkExpirationTimeInHours=24
 
-smtpHost=dev
-smtpPort=25
-smtpFrom=CHPLadmin@ainq.com
-smtpUsername=intranet/chpladmin
-smtpPassword=
-
-chplUrlBegin=http://localhost:8000/app
-
-#Asynchronous properties
-#leave listing details false for now
-asyncListingDetailsEnabled=false
-#cache refresh should be true except for unit testing
-asyncCacheRefreshEnabled=true
-
 ####### Email Builder Settings #######
 #Do we want to 'check' emails before sending them?
-#emailBuilder.config.productionEnvironment=false
-#Let emails being sent to this list of domains go through
-#emailBuilder.config.whitelistedDomains=ainq.com,onc.gov
-#Emails should be sent to this address
-#emailBuilder.config.forwardAddress=example@ainq.com
-#######################################
 emailBuilder.config.productionEnvironment=false
+
+#Let emails being sent to this list of domains go through
 emailBuilder.config.whitelistedDomains=ainq.com
-emailBuilder.config.forwardAddress=example@ainq.com
+
+#Value is appended to the end of the subject line and is used to indicate what environment sent the email
+emailBuilder.config.emailSubjectSuffix=[Local]
+######################################
 
 #DeleteAPIKeyWarningEmail
 job.apiKeyWarningEmailJob.config.apiKeyLastUsedDaysAgo=7
@@ -135,3 +128,11 @@ job.apiKeyWarningEmailJob.config.subject=[LOCAL] ONC-CHPL: Your API key will be 
 #ApiKeyDeleteJob
 job.apiKeyDeleteJob.config.message=Name/Organization: %s<br/><br/>A warning was previously sent as your key, %s, was last used on %s.  As per the warning and ONC's policy, your key has been removed.<br/><br/>If you would like to resume using the CHPL's public API, you may register for a new key at <a href='%s'>%s</a>.<br/><br/>Thank you
 job.apiKeyDeleteJob.config.subject=[LOCAL] ONC-CHPL: Your API key has been deleted
+
+chplUrlBegin=http://localhost:8000/app
+
+#Asynchronous properties
+#leave listing details false for now
+asyncListingDetailsEnabled=false
+#cache refresh should be true except for unit testing
+asyncCacheRefreshEnabled=true

@@ -36,10 +36,10 @@ public class CacheStatusAgeJob implements Job {
     private static final Logger LOGGER = LogManager.getLogger("cacheStatusAgeJobLogger");
     private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
     private Properties properties = null;
-    
+
     @Autowired
     private Environment env;
-    
+
     /**
      * Default constructor.
      * @throws IOException if unable to load properties
@@ -119,10 +119,10 @@ public class CacheStatusAgeJob implements Job {
         String subject = properties.getProperty("cacheStatusMaxAgeSubject");
         String htmlMessage = createHtmlEmailBody();
         LOGGER.info("Message to be sent: " + htmlMessage);
-        
+
         List<String> addresses = new ArrayList<String>();
         addresses.add(recipient);
-        
+
         EmailBuilder emailBuilder = new EmailBuilder(env);
         emailBuilder.recipients(addresses)
                         .subject(subject)

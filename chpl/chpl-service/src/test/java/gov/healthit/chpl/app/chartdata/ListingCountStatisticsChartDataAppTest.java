@@ -13,7 +13,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.web.context.ContextLoader;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
@@ -40,8 +39,8 @@ import junit.framework.TestCase;
         gov.healthit.chpl.CHPLTestConfig.class
 })
 @TestExecutionListeners({
-        DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
-        TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
+    DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
 })
 @DatabaseSetup("classpath:data/testData.xml")
 public class ListingCountStatisticsChartDataAppTest extends TestCase {
@@ -62,6 +61,7 @@ public class ListingCountStatisticsChartDataAppTest extends TestCase {
     @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
+
 
     /**
      * create an application context that the statistics calculator requires

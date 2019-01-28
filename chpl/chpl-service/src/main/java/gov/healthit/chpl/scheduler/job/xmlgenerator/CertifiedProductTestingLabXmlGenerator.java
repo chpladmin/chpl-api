@@ -28,5 +28,4 @@ public class CertifiedProductTestingLabXmlGenerator extends XmlGenerator {
             sw.writeEndElement();
         }
     }
-    
 }

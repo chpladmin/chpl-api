@@ -16,6 +16,7 @@
       <property name="severity" value="warning"/>
       <property name="scope" value="public"/>
       <property name="allowMissingPropertyJavadoc" value="true"/>
+      <property name="minLineCount" value="10" />
     </module>
     <module name="JavadocType">
       <property name="severity" value="warning"/>
@@ -45,7 +46,7 @@
       <property name="processJavadoc" value="false"/>
     </module>
     <module name="LineLength">
-      <property name="max" value="120"/>
+      <property name="max" value="130"/>
     </module>
     <module name="MethodLength"/>
     <module name="ParameterNumber"/>
@@ -88,6 +89,8 @@
     <module name="FinalParameters"/>
     <module name="TodoComment"/>
     <module name="UpperEll"/>
+    <module name="SuppressWarnings"/>
+    <module name="SuppressWarningsHolder"/>
   </module>
   <module name="JavadocPackage"/>
   <module name="NewlineAtEndOfFile">

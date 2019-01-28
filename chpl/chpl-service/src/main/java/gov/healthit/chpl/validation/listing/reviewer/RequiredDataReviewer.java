@@ -40,15 +40,15 @@ public class RequiredDataReviewer implements Reviewer {
         if (listing.getVersion() == null || StringUtils.isEmpty(listing.getVersion().getVersion())) {
             listing.getErrorMessages().add("A product version is required.");
         }
-        if(listing.getOldestStatus() == null) {
+        if (listing.getOldestStatus() == null) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.noStatusProvided"));
         }
-        
+
         for (CertificationResult cert : listing.getCertificationResults()) {
             if (cert.isSuccess() != null && cert.isSuccess().booleanValue()) {
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP) && cert.isGap() == null) {
                     listing.getErrorMessages().add(
-                            msgUtil.getMessage("listing.criteria.missingGap", cert.getNumber())); 
+                            msgUtil.getMessage("listing.criteria.missingGap", cert.getNumber()));
                 }
             }
         }

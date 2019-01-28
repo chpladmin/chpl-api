@@ -36,7 +36,7 @@ public class QuestionableActivityListener implements EnvironmentAware {
 
     private long listingActivityThresholdMillis = -1;
     private static final long MILLIS_PER_DAY = 24 * 60 * 60 * 1000;
-    
+
     /**
      * Autowired constructor for dependency injection.
      * @param env - Environment

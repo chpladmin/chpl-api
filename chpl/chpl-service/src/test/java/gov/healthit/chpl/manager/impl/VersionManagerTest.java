@@ -39,106 +39,110 @@ import gov.healthit.chpl.manager.ProductVersionManager;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
+@TestExecutionListeners({
+        DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
+})
 @DatabaseSetup("classpath:data/testData.xml")
 public class VersionManagerTest extends TestCase {
-	
-	@Autowired private ProductVersionManager versionManager;
-	@Autowired private DeveloperManager developerManager;
-	@Autowired private DeveloperStatusDAO devStatusDao;
-	
-	@Rule
+
+    @Autowired
+    private ProductVersionManager versionManager;
+    @Autowired
+    private DeveloperManager developerManager;
+    @Autowired
+    private DeveloperStatusDAO devStatusDao;
+
+    @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
-	
-	private static JWTAuthenticatedUser adminUser;
-	
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-		adminUser = new JWTAuthenticatedUser();
-		adminUser.setFullName("Administrator");
-		adminUser.setId(-2L);
-		adminUser.setFriendlyName("Administrator");
-		adminUser.setSubjectName("admin");
-		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
-	}
-	
-	//i had this method in here to test for updates being allowed
-	//when then developer is Active, but it fails because it triggers
-	//a suspicious activity event and tries to send email. 
-	//we're missing the email properties but i don't think we want to 
-	//have one sent anyway.. so excluding that test.
-	@Test
-	@Transactional
-	@Rollback
-	@Ignore
-	public void testAllowedToUpdateVersionWithActiveDeveloper() 
-			throws EntityRetrievalException, JsonProcessingException {
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		ProductVersionDTO version = versionManager.getById(1L);
-		assertNotNull(version);
-		version.setVersion("new version name");
-		boolean failed = false;
-		try {
-			version = versionManager.update(version);
-		} catch(EntityCreationException ex) {
-			System.out.println(ex.getMessage());
-			failed = true;
-		}
-		assertFalse(failed);
-		assertEquals("new version name", version.getVersion());
-		SecurityContextHolder.getContext().setAuthentication(null);
-	}
-	
-	@Test
-	@Transactional
-	@Rollback
-	public void testNotAllowedToUpdateVersionWithInactiveDeveloper() 
-			throws EntityRetrievalException, JsonProcessingException,
-	        MissingReasonException {
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		
-		//change dev to suspended
-		DeveloperDTO developer = developerManager.getById(-1L);
-		assertNotNull(developer);
-		DeveloperStatusDTO newStatus = devStatusDao.getById(2L);
-		DeveloperStatusEventDTO newStatusHistory = new DeveloperStatusEventDTO();
-		newStatusHistory.setDeveloperId(developer.getId());
-		newStatusHistory.setStatus(newStatus);
-		newStatusHistory.setStatusDate(new Date());
-		developer.getStatusEvents().add(newStatusHistory);
-		
-		boolean failed = false;
-		try {
-			developer = developerManager.update(developer);
-		} catch(EntityCreationException ex) {
-			System.out.println(ex.getMessage());
-			failed = true;
-		}
-		assertFalse(failed);
-		DeveloperStatusEventDTO status = developer.getStatus();
-		assertNotNull(status);
-		assertNotNull(status.getId());
-		assertNotNull(status.getStatus());
-		assertNotNull(status.getStatus().getStatusName());
-		assertEquals(DeveloperStatusType.SuspendedByOnc.toString(), status.getStatus().getStatusName());
-		
-		//try to update version
-		ProductVersionDTO version = versionManager.getById(1L);
-		assertNotNull(version);
-		version.setVersion("new version name");
-		failed = false;
-		try {
-			version = versionManager.update(version);
-		} catch(EntityCreationException ex) {
-			System.out.println(ex.getMessage());
-			failed = true;
-		}
-		assertTrue(failed);
-		SecurityContextHolder.getContext().setAuthentication(null);
-	}
+
+    private static JWTAuthenticatedUser adminUser;
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        adminUser = new JWTAuthenticatedUser();
+        adminUser.setFullName("Administrator");
+        adminUser.setId(-2L);
+        adminUser.setFriendlyName("Administrator");
+        adminUser.setSubjectName("admin");
+        adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+    }
+
+    // i had this method in here to test for updates being allowed
+    // when then developer is Active, but it fails because it triggers
+    // a suspicious activity event and tries to send email.
+    // we're missing the email properties but i don't think we want to
+    // have one sent anyway.. so excluding that test.
+    @Test
+    @Transactional
+    @Rollback
+    @Ignore
+    public void testAllowedToUpdateVersionWithActiveDeveloper()
+            throws EntityRetrievalException, JsonProcessingException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        ProductVersionDTO version = versionManager.getById(1L);
+        assertNotNull(version);
+        version.setVersion("new version name");
+        boolean failed = false;
+        try {
+            version = versionManager.update(version);
+        } catch (EntityCreationException ex) {
+            System.out.println(ex.getMessage());
+            failed = true;
+        }
+        assertFalse(failed);
+        assertEquals("new version name", version.getVersion());
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void testNotAllowedToUpdateVersionWithInactiveDeveloper()
+            throws EntityRetrievalException, JsonProcessingException, MissingReasonException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+        // change dev to suspended
+        DeveloperDTO developer = developerManager.getById(-1L);
+        assertNotNull(developer);
+        DeveloperStatusDTO newStatus = devStatusDao.getById(2L);
+        DeveloperStatusEventDTO newStatusHistory = new DeveloperStatusEventDTO();
+        newStatusHistory.setDeveloperId(developer.getId());
+        newStatusHistory.setStatus(newStatus);
+        newStatusHistory.setStatusDate(new Date());
+        developer.getStatusEvents().add(newStatusHistory);
+
+        boolean failed = false;
+        try {
+            developer = developerManager.update(developer);
+        } catch (EntityCreationException ex) {
+            System.out.println(ex.getMessage());
+            failed = true;
+        }
+        assertFalse(failed);
+        DeveloperStatusEventDTO status = developer.getStatus();
+        assertNotNull(status);
+        assertNotNull(status.getId());
+        assertNotNull(status.getStatus());
+        assertNotNull(status.getStatus().getStatusName());
+        assertEquals(DeveloperStatusType.SuspendedByOnc.toString(), status.getStatus().getStatusName());
+
+        // try to update version
+        ProductVersionDTO version = versionManager.getById(1L);
+        assertNotNull(version);
+        version.setVersion("new version name");
+        failed = false;
+        try {
+            version = versionManager.update(version);
+        } catch (EntityCreationException ex) {
+            System.out.println(ex.getMessage());
+            failed = true;
+        }
+        assertTrue(failed);
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
 }

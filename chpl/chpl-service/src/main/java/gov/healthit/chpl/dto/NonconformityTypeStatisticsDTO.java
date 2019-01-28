@@ -3,9 +3,10 @@ package gov.healthit.chpl.dto;
 import java.util.Date;
 
 import gov.healthit.chpl.entity.surveillance.NonconformityTypeStatisticsEntity;
+import gov.healthit.chpl.util.Util;
 
 public class NonconformityTypeStatisticsDTO {
-	
+
     private Long id;
     private Long nonconformityCount;
     private String nonconformityType;
@@ -13,74 +14,74 @@ public class NonconformityTypeStatisticsDTO {
     private Boolean deleted;
     private Date lastModifiedDate;
     private Long lastModifiedUser;
-    
-    public NonconformityTypeStatisticsDTO(NonconformityTypeStatisticsEntity entity){
-    	this.nonconformityCount = entity.getNonconformityCount();
-    	this.nonconformityType = entity.getNonconformityType();
-    	this.id = entity.getId();
-    	this.setCreationDate(entity.getCreationDate());
-    	this.setDeleted(entity.getDeleted());
-    	this.setLastModifiedUser(entity.getLastModifiedUser());
-    	this.setLastModifiedDate(entity.getLastModifiedDate());
-    }
-    
-    public NonconformityTypeStatisticsDTO(){
-    	
+
+    public NonconformityTypeStatisticsDTO(NonconformityTypeStatisticsEntity entity) {
+        this.nonconformityCount = entity.getNonconformityCount();
+        this.nonconformityType = entity.getNonconformityType();
+        this.id = entity.getId();
+        this.setCreationDate(entity.getCreationDate());
+        this.setDeleted(entity.getDeleted());
+        this.setLastModifiedUser(entity.getLastModifiedUser());
+        this.setLastModifiedDate(entity.getLastModifiedDate());
     }
 
-	public Long getId() {
-		return id;
-	}
+    public NonconformityTypeStatisticsDTO() {
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    }
 
-	public Long getNonconformityCount() {
-		return nonconformityCount;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setNonconformityCount(Long nonconformityCount) {
-		this.nonconformityCount = nonconformityCount;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public String getNonconformityType() {
-		return nonconformityType;
-	}
+    public Long getNonconformityCount() {
+        return nonconformityCount;
+    }
 
-	public void setNonconformityType(String nonconformityType) {
-		this.nonconformityType = nonconformityType;
-	}
+    public void setNonconformityCount(Long nonconformityCount) {
+        this.nonconformityCount = nonconformityCount;
+    }
 
-	public Date getCreationDate() {
-		return creationDate;
-	}
+    public String getNonconformityType() {
+        return nonconformityType;
+    }
 
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
+    public void setNonconformityType(String nonconformityType) {
+        this.nonconformityType = nonconformityType;
+    }
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    public Date getCreationDate() {
+        return Util.getNewDate(creationDate);
+    }
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = Util.getNewDate(creationDate);
+    }
 
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
+    public Boolean getDeleted() {
+        return deleted;
+    }
 
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
+    }
 
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
+    public Date getLastModifiedDate() {
+        return Util.getNewDate(lastModifiedDate);
+    }
 
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
+    }
+    
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
+
+    public void setLastModifiedUser(Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
 }

@@ -19,14 +19,14 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2014.AmbulatoryRequi
 @Component("ambulatoryModular2014ListingValidator")
 public class AmbulatoryModular2014ListingValidator extends Edition2014ListingValidator {
 
-    @Autowired 
+    @Autowired
     @Qualifier("ambulatoryG1G2RequiredData2014Reviewer")
     private AmbulatoryG1G2RequiredData2014Reviewer g1g2Reviewer;
-    
+
     //TODO: do we want this check here for new-style format 2014 listings?
-    //it wasn't in the old validator but i wonder if that was just because of 
+    //it wasn't in the old validator but i wonder if that was just because of
     //legacy listings.
-    @Autowired 
+    @Autowired
     @Qualifier("ambulatoryRequiredTestToolReviewer")
     private AmbulatoryRequiredTestToolReviewer ttReviewer;
 
@@ -34,7 +34,7 @@ public class AmbulatoryModular2014ListingValidator extends Edition2014ListingVal
 
     @Override
     public List<Reviewer> getReviewers() {
-        if(reviewers == null) {
+        if (reviewers == null) {
             reviewers = super.getReviewers();
             reviewers.add(g1g2Reviewer);
             reviewers.add(ttReviewer);

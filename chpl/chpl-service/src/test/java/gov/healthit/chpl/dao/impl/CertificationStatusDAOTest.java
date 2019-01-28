@@ -27,58 +27,62 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
+@TestExecutionListeners({
+        DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
+})
 @DatabaseSetup("classpath:data/testData.xml")
 public class CertificationStatusDAOTest extends TestCase {
-	@Rule
+    @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
-	
-	@Autowired private CertificationStatusDAO certStatusDao;
-	
-	private static JWTAuthenticatedUser adminUser;
-	
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-		adminUser = new JWTAuthenticatedUser();
-		adminUser.setFullName("Administrator");
-		adminUser.setId(-2L);
-		adminUser.setFriendlyName("Administrator");
-		adminUser.setSubjectName("admin");
-		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
-	}
-	
-	/**
-	 * Tests that getByStatusName() completes without error for each status name
-	 * @throws EntityRetrievalException
-	 * @throws EntityCreationException
-	 */
-	@Test
-	@Transactional
-	public void testgetByStatusName_Active() throws EntityRetrievalException, EntityCreationException {
-		System.out.println("Running testgetByStatusName() test");
-		CertificationStatusDTO dto = certStatusDao.getByStatusName(CertificationStatusType.Active.getName());
-		assertNotNull(dto);
-		dto = certStatusDao.getByStatusName(CertificationStatusType.Retired.getName());
-		assertNotNull(dto);
-		dto = certStatusDao.getByStatusName(CertificationStatusType.Pending.getName());
-		assertNotNull(dto);
-		dto = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByDeveloper.getName());
-		assertNotNull(dto);
-		dto = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByDeveloperUnderReview.getName());
-		assertNotNull(dto);
-		dto = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByAcb.getName());
-		assertNotNull(dto);
-		dto = certStatusDao.getByStatusName(CertificationStatusType.SuspendedByAcb.getName());
-		assertNotNull(dto);
-		dto = certStatusDao.getByStatusName(CertificationStatusType.SuspendedByOnc.getName());
-		assertNotNull(dto);
-		dto = certStatusDao.getByStatusName(CertificationStatusType.TerminatedByOnc.getName());
-		assertNotNull(dto);
-	}
-	
+
+    @Autowired
+    private CertificationStatusDAO certStatusDao;
+
+    private static JWTAuthenticatedUser adminUser;
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        adminUser = new JWTAuthenticatedUser();
+        adminUser.setFullName("Administrator");
+        adminUser.setId(-2L);
+        adminUser.setFriendlyName("Administrator");
+        adminUser.setSubjectName("admin");
+        adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+    }
+
+    /**
+     * Tests that getByStatusName() completes without error for each status name.
+     *
+     * @throws EntityRetrievalException
+     * @throws EntityCreationException
+     */
+    @Test
+    @Transactional
+    public void testgetByStatusName_Active() throws EntityRetrievalException, EntityCreationException {
+        System.out.println("Running testgetByStatusName() test");
+        CertificationStatusDTO dto = certStatusDao.getByStatusName(CertificationStatusType.Active.getName());
+        assertNotNull(dto);
+        dto = certStatusDao.getByStatusName(CertificationStatusType.Retired.getName());
+        assertNotNull(dto);
+        dto = certStatusDao.getByStatusName(CertificationStatusType.Pending.getName());
+        assertNotNull(dto);
+        dto = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByDeveloper.getName());
+        assertNotNull(dto);
+        dto = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByDeveloperUnderReview.getName());
+        assertNotNull(dto);
+        dto = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByAcb.getName());
+        assertNotNull(dto);
+        dto = certStatusDao.getByStatusName(CertificationStatusType.SuspendedByAcb.getName());
+        assertNotNull(dto);
+        dto = certStatusDao.getByStatusName(CertificationStatusType.SuspendedByOnc.getName());
+        assertNotNull(dto);
+        dto = certStatusDao.getByStatusName(CertificationStatusType.TerminatedByOnc.getName());
+        assertNotNull(dto);
+    }
+
 }

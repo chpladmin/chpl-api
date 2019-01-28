@@ -1,7 +1,6 @@
 package gov.healthit.chpl.dao.impl;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -22,6 +21,11 @@ import gov.healthit.chpl.entity.CertificationBodyEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
+/**
+ * Data access methods for certification bodies (ACBs).
+ * @author kekey
+ *
+ */
 @Repository(value = "certificationBodyDAO")
 public class CertificationBodyDAOImpl extends BaseDAOImpl implements CertificationBodyDAO {
 
@@ -29,13 +33,16 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
     @Autowired
     AddressDAO addressDao;
 
+    /**
+     * Create an ACB.
+     */
     @Transactional
-    public CertificationBodyDTO create(CertificationBodyDTO dto)
+    public CertificationBodyDTO create(final CertificationBodyDTO dto)
             throws EntityRetrievalException, EntityCreationException {
         CertificationBodyEntity entity = null;
         try {
             if (dto.getId() != null) {
-                entity = this.getEntityById(dto.getId(), false);
+                entity = this.getEntityById(dto.getId());
             }
         } catch (final EntityRetrievalException e) {
             throw new EntityCreationException(e);
@@ -53,40 +60,20 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
             entity.setName(dto.getName());
             entity.setWebsite(dto.getWebsite());
             entity.setAcbCode(dto.getAcbCode());
-
-            if (dto.getDeleted() != null) {
-                entity.setDeleted(dto.getDeleted());
-            } else {
-                entity.setDeleted(false);
-            }
-
-            if (dto.getLastModifiedUser() != null) {
-                entity.setLastModifiedUser(dto.getLastModifiedUser());
-            } else {
-                entity.setLastModifiedUser(Util.getCurrentUser().getId());
-            }
-
-            if (dto.getLastModifiedDate() != null) {
-                entity.setLastModifiedDate(dto.getLastModifiedDate());
-            } else {
-                entity.setLastModifiedDate(new Date());
-            }
-
-            if (dto.getCreationDate() != null) {
-                entity.setCreationDate(dto.getCreationDate());
-            } else {
-                entity.setCreationDate(new Date());
-            }
-
+            entity.setRetired(Boolean.FALSE);
+            entity.setLastModifiedUser(Util.getCurrentUser().getId());
             create(entity);
             return new CertificationBodyDTO(entity);
         }
     }
 
+    /**
+     * Update an ACB.
+     */
     @Transactional
-    public CertificationBodyDTO update(CertificationBodyDTO dto) throws EntityRetrievalException {
+    public CertificationBodyDTO update(final CertificationBodyDTO dto) throws EntityRetrievalException {
 
-        CertificationBodyEntity entity = getEntityById(dto.getId(), true);
+        CertificationBodyEntity entity = getEntityById(dto.getId());
         if (entity == null) {
             throw new EntityRetrievalException(
                     "Cannot update entity with id " + dto.getId() + ". Entity does not exist.");
@@ -104,6 +91,8 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
         }
 
         entity.setWebsite(dto.getWebsite());
+        entity.setRetired(dto.isRetired());
+
         if (dto.getName() != null) {
             entity.setName(dto.getName());
         }
@@ -112,51 +101,16 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
             entity.setAcbCode(dto.getAcbCode());
         }
 
-        if (dto.getDeleted() != null) {
-            if (!dto.getDeleted()) {
-                Query query2 = entityManager
-                        .createQuery("UPDATE ActivityEntity SET deleted = false WHERE activity_object_id = :acbid");
-                query2.setParameter("acbid", dto.getId());
-                query2.executeUpdate();
-            }
-            entity.setDeleted(dto.getDeleted());
-        }
-        if (dto.getLastModifiedUser() != null) {
-            entity.setLastModifiedUser(dto.getLastModifiedUser());
-        } else {
-            entity.setLastModifiedUser(Util.getCurrentUser().getId());
-        }
-
-        if (dto.getLastModifiedDate() != null) {
-            entity.setLastModifiedDate(dto.getLastModifiedDate());
-        } else {
-            entity.setLastModifiedDate(new Date());
-        }
-
+        entity.setLastModifiedUser(Util.getCurrentUser().getId());
         update(entity);
         return new CertificationBodyDTO(entity);
     }
 
-    @Transactional
-    public void delete(Long acbId) {
-
-        // TODO: How to delete this without leaving orphans
-
-        Query query = entityManager
-                .createQuery("UPDATE CertificationBodyEntity SET deleted = true WHERE certification_body_id = :acbid");
-        query.setParameter("acbid", acbId);
-        query.executeUpdate();
-
-        Query query2 = entityManager.createQuery(
-                "UPDATE ActivityEntity SET deleted = true WHERE activity_object_id = :acbid AND description NOT LIKE '%Deleted acb%' AND description NOT LIKE '%no longer marked as deleted%'");
-        query2.setParameter("acbid", acbId);
-        query2.executeUpdate();
-
-    }
-
-    public List<CertificationBodyDTO> findAll(boolean showDeleted) {
-
-        List<CertificationBodyEntity> entities = getAllEntities(showDeleted);
+    /**
+     * Get all ACBs.
+     */
+    public List<CertificationBodyDTO> findAll() {
+        List<CertificationBodyEntity> entities = getAllEntities();
         List<CertificationBodyDTO> acbs = new ArrayList<>();
 
         for (CertificationBodyEntity entity : entities) {
@@ -167,29 +121,46 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 
     }
 
-    public CertificationBodyDTO getById(Long acbId) throws EntityRetrievalException {
-        CertificationBodyEntity entity = getEntityById(acbId, false);
+    /**
+     * Get all ACBs not marked retired.
+     */
+    public List<CertificationBodyDTO> findAllActive() {
+        List<CertificationBodyEntity> entities = entityManager.createQuery(
+                        "SELECT acb from CertificationBodyEntity acb "
+                        + "LEFT OUTER JOIN FETCH acb.address "
+                        + "WHERE acb.retired = false AND acb.deleted = false",
+                        CertificationBodyEntity.class).getResultList();
+        List<CertificationBodyDTO> acbs = new ArrayList<>();
+
+        for (CertificationBodyEntity entity : entities) {
+            CertificationBodyDTO acb = new CertificationBodyDTO(entity);
+            acbs.add(acb);
+        }
+        return acbs;
+
+    }
+
+    /**
+     * Finds an ACB by ID.
+     * @param acbId
+     * @return the ACB
+     */
+    public CertificationBodyDTO getById(final Long acbId) throws EntityRetrievalException {
+        CertificationBodyEntity entity = getEntityById(acbId);
 
         CertificationBodyDTO dto = null;
         if (entity != null) {
             dto = new CertificationBodyDTO(entity);
         }
         return dto;
-
     }
 
-    public CertificationBodyDTO getById(Long acbId, boolean includeDeleted) throws EntityRetrievalException {
-        CertificationBodyEntity entity = getEntityById(acbId, includeDeleted);
-
-        CertificationBodyDTO dto = null;
-        if (entity != null) {
-            dto = new CertificationBodyDTO(entity);
-        }
-        return dto;
-
-    }
-
-    public CertificationBodyDTO getByName(String name) {
+    /**
+     * Find an ACB by name.
+     * @param name
+     * @return the ACB
+     */
+    public CertificationBodyDTO getByName(final String name) {
         CertificationBodyEntity entity = getEntityByName(name);
 
         CertificationBodyDTO dto = null;
@@ -199,6 +170,9 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
         return dto;
     }
 
+    /**
+     * Get the largest ACB code currently in the database.
+     */
     public String getMaxCode() {
         String maxCode = null;
         Query query = entityManager.createQuery(
@@ -212,46 +186,44 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
         return maxCode;
     }
 
-    private void create(CertificationBodyEntity acb) {
-
+    private void create(final CertificationBodyEntity acb) {
         entityManager.persist(acb);
         entityManager.flush();
     }
 
-    private void update(CertificationBodyEntity acb) {
-
+    private void update(final CertificationBodyEntity acb) {
         entityManager.merge(acb);
         entityManager.flush();
 
     }
 
-    private List<CertificationBodyEntity> getAllEntities(boolean showDeleted) {
-
-        List<CertificationBodyEntity> result;
-
-        if (showDeleted) {
-            result = entityManager
-                    .createQuery("SELECT acb from CertificationBodyEntity acb LEFT OUTER JOIN FETCH acb.address",
-                            CertificationBodyEntity.class)
-                    .getResultList();
-        } else {
-            result = entityManager.createQuery(
-                    "SELECT acb from CertificationBodyEntity acb LEFT OUTER JOIN FETCH acb.address where (NOT acb.deleted = true)",
+    /**
+     * Get all ACBs.
+     * @return
+     */
+    private List<CertificationBodyEntity> getAllEntities() {
+        return entityManager.createQuery(
+                    "SELECT acb from CertificationBodyEntity acb "
+                    + "LEFT OUTER JOIN FETCH acb.address "
+                    + "WHERE (acb.deleted = false)",
                     CertificationBodyEntity.class).getResultList();
-        }
-        return result;
     }
 
-    private CertificationBodyEntity getEntityById(Long entityId, boolean includeDeleted)
+    /**
+     * Find an ACB by ID.
+     * @param entityId
+     * @return
+     * @throws EntityRetrievalException
+     */
+    private CertificationBodyEntity getEntityById(final Long entityId)
             throws EntityRetrievalException {
-
         CertificationBodyEntity entity = null;
 
-        String queryStr = "SELECT acb from CertificationBodyEntity acb " + "LEFT OUTER JOIN FETCH acb.address where "
-                + "(certification_body_id = :entityid)";
-        if (!includeDeleted) {
-            queryStr += " AND (NOT acb.deleted = true)";
-        }
+        String queryStr = "SELECT acb from CertificationBodyEntity acb "
+                        + "LEFT OUTER JOIN FETCH acb.address "
+                        + "WHERE (acb.id = :entityid)"
+                        + " AND (acb.deleted = false)";
+
         Query query = entityManager.createQuery(queryStr, CertificationBodyEntity.class);
         query.setParameter("entityid", entityId);
         List<CertificationBodyEntity> result = query.getResultList();
@@ -269,14 +241,21 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
         return entity;
     }
 
-    private CertificationBodyEntity getEntityByName(String name) {
-
+    /**
+     * Find an ACB by name.
+     * @param name
+     * @return
+     */
+    private CertificationBodyEntity getEntityByName(final String name) {
         CertificationBodyEntity entity = null;
 
         Query query = entityManager.createQuery(
-                "SELECT acb from CertificationBodyEntity acb LEFT OUTER JOIN FETCH acb.address where (NOT acb.deleted = true) AND (name = :name) ",
+                "SELECT acb from CertificationBodyEntity acb "
+                + "LEFT OUTER JOIN FETCH acb.address "
+                + "WHERE (acb.deleted = false) "
+                + "AND (UPPER(acb.name) = :name) ",
                 CertificationBodyEntity.class);
-        query.setParameter("name", name);
+        query.setParameter("name", name.toUpperCase());
         List<CertificationBodyEntity> result = query.getResultList();
 
         if (result != null && result.size() > 0) {

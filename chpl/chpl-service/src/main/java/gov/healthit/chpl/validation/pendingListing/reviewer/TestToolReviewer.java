@@ -41,7 +41,7 @@ public class TestToolReviewer implements Reviewer {
         Integer icsCodeInteger = productNumUtil.getIcsCode(listing.getUniqueId());
 
         for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
-            if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria() == Boolean.TRUE) {
+            if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria()) {
                 if (cert.getTestTools() != null && cert.getTestTools().size() > 0) {
                     Iterator<PendingCertificationResultTestToolDTO> testToolIter = cert.getTestTools().iterator();
                     while (testToolIter.hasNext()) {
@@ -63,7 +63,7 @@ public class TestToolReviewer implements Reviewer {
                                 if (foundTestTool.isRetired() && icsCodeInteger != null
                                         && icsCodeInteger.intValue() == 0) {
                                     if (productNumUtil.hasIcsConflict(listing.getUniqueId(), listing.getIcs())) {
-                                        listing.getWarningMessages().add(
+                                        listing.getErrorMessages().add(
                                                 msgUtil.getMessage("listing.criteria.retiredTestToolNotAllowed",
                                                         testTool.getName(), cert.getNumber()));
                                     } else {

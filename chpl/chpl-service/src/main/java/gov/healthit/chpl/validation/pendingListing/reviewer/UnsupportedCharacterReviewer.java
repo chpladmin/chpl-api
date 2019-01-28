@@ -23,9 +23,9 @@ import gov.healthit.chpl.util.ValidationUtils;
 
 @Component("pendingUnsupportedCharacterReviewer")
 public class UnsupportedCharacterReviewer implements Reviewer {
-    
+
     @Autowired ErrorMessageUtil msgUtil;
-    
+
     public void review(PendingCertifiedProductDTO listing) {
       //check all string fields at the listing level
         addListingWarningIfNotValid(listing, listing.getAcbCertificationId(),
@@ -193,7 +193,7 @@ public class UnsupportedCharacterReviewer implements Reviewer {
             }
         }
     }
-    
+
     private void addListingWarningIfNotValid(final PendingCertifiedProductDTO listing,
             final String input, final String fieldName) {
         if (!ValidationUtils.isValidUtf8(input)) {

@@ -23,50 +23,53 @@ import gov.healthit.chpl.dto.TestDataDTO;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
+@TestExecutionListeners({
+        DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
+})
 @DatabaseSetup("classpath:data/testData.xml")
 public class TestDataDAOTest extends TestCase {
 
-	@Autowired private TestDataDAO tdDao;
-	
-	@Rule
+    @Autowired
+    private TestDataDAO tdDao;
+
+    @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
-		
-	@Test
-	@Transactional
-	public void findTestDataByCriteria() {
-	    String criteria = "170.314 (a)(1)";
-	    try {
-	        List<TestDataDTO> testData = tdDao.getByCriteriaNumber(criteria);
-    	    assertNotNull(testData);
-    	    assertEquals(1, testData.size());
-    	    assertEquals("ONC Test Method", testData.get(0).getName());
-	    } catch(Exception ex) {
-	        ex.printStackTrace();
-	        fail();
-	    }
-	}
-	
-	   @Test
-	    @Transactional
-	    public void findMultipleTestDataByCriteria() {
-	        String criteria = "170.315 (c)(2)";
-	        try {
-	            List<TestDataDTO> testData = tdDao.getByCriteriaNumber(criteria);
-	            assertNotNull(testData);
-	            assertEquals(2, testData.size());
-	        } catch(Exception ex) {
-	            ex.printStackTrace();
-	            fail();
-	        }
-	    }
-	   
-	@Test
+
+    @Test
+    @Transactional
+    public void findTestDataByCriteria() {
+        String criteria = "170.314 (a)(1)";
+        try {
+            List<TestDataDTO> testData = tdDao.getByCriteriaNumber(criteria);
+            assertNotNull(testData);
+            assertEquals(1, testData.size());
+            assertEquals("ONC Test Method", testData.get(0).getName());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            fail();
+        }
+    }
+
+    @Test
+    @Transactional
+    public void findMultipleTestDataByCriteria() {
+        String criteria = "170.315 (c)(2)";
+        try {
+            List<TestDataDTO> testData = tdDao.getByCriteriaNumber(criteria);
+            assertNotNull(testData);
+            assertEquals(2, testData.size());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            fail();
+        }
+    }
+
+    @Test
     @Transactional
     public void findTestDataByCriteriaAndName() {
         String criteria = "170.314 (a)(1)";
@@ -75,21 +78,21 @@ public class TestDataDAOTest extends TestCase {
             TestDataDTO testData = tdDao.getByCriteriaNumberAndValue(criteria, tdName);
             assertNotNull(testData);
             assertEquals(tdName, testData.getName());
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             fail();
         }
     }
-	
-	@Test
-	@Transactional
-	public void findNoTestDataByCriteria() {
-		String criteria = "BOGUS";
+
+    @Test
+    @Transactional
+    public void findNoTestDataByCriteria() {
+        String criteria = "BOGUS";
         List<TestDataDTO> testData = tdDao.getByCriteriaNumber(criteria);
-		assertTrue(testData == null || testData.size() == 0);
-	}
-	
-	@Test
+        assertTrue(testData == null || testData.size() == 0);
+    }
+
+    @Test
     @Transactional
     public void findNoTestDataByCriteriaAndName() {
         String criteria = "170.314 (a)(1)";
@@ -97,5 +100,5 @@ public class TestDataDAOTest extends TestCase {
         TestDataDTO testData = tdDao.getByCriteriaNumberAndValue(criteria, tdName);
         assertNull(testData);
     }
-	
+
 }

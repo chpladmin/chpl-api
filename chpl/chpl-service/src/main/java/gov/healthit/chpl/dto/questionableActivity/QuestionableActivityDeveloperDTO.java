@@ -7,20 +7,20 @@ public class QuestionableActivityDeveloperDTO extends QuestionableActivityDTO {
     private Long developerId;
     private DeveloperDTO developer;
     private String reason;
-    
+
     public QuestionableActivityDeveloperDTO() {
         super();
     }
-    
+
     public QuestionableActivityDeveloperDTO(QuestionableActivityDeveloperEntity entity) {
         super(entity);
         this.developerId = entity.getDeveloperId();
         this.reason = entity.getReason();
-        if(entity.getDeveloper() != null) {
+        if (entity.getDeveloper() != null) {
             this.developer = new DeveloperDTO(entity.getDeveloper());
         }
     }
-    
+
     public Class<?> getActivityObjectClass() {
         return DeveloperDTO.class;
     }

@@ -3,6 +3,8 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.util.Date;
 
+import gov.healthit.chpl.util.Util;
+
 public class ModificationItem implements Serializable {
     private static final long serialVersionUID = 3049027227760878239L;
     private String subject;
@@ -26,11 +28,11 @@ public class ModificationItem implements Serializable {
     }
 
     public Date getDate() {
-        return date;
+        return Util.getNewDate(date);
     }
 
     public void setDate(final Date date) {
-        this.date = date;
+        this.date = Util.getNewDate(date);
     }
 
 }

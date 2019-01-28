@@ -88,11 +88,9 @@ public class CertifiedProductXmlPresenter implements CertifiedProductPresenter, 
 
         if (streamWriter != null) {
             streamWriter.close();
-            streamWriter = null;
         }
         if (writer != null) {
             writer.close();
-            writer = null;
         }
     }
 

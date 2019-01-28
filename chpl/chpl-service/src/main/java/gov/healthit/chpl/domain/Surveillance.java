@@ -13,6 +13,8 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import gov.healthit.chpl.util.Util;
+
 /**
  * Domain object for Surveillance.
  */
@@ -135,19 +137,19 @@ public class Surveillance implements Serializable {
     }
 
     public Date getStartDate() {
-        return startDate;
+        return Util.getNewDate(startDate);
     }
 
     public void setStartDate(final Date startDate) {
-        this.startDate = startDate;
+        this.startDate = Util.getNewDate(startDate);
     }
 
     public Date getEndDate() {
-        return endDate;
+        return Util.getNewDate(endDate);
     }
 
     public void setEndDate(final Date endDate) {
-        this.endDate = endDate;
+        this.endDate = Util.getNewDate(endDate);
     }
 
     public SurveillanceType getType() {
@@ -199,10 +201,10 @@ public class Surveillance implements Serializable {
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 }

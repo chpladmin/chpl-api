@@ -48,17 +48,17 @@ import gov.healthit.chpl.validation.listing.Validator;
  */
 
 // This test class has a modified configuration to get the tests to work.  The method
-// CertificationResultsManagerImpl.getCertifiedProductHasAdditionalSoftware() does not 
-// work in the test environment, so we are overriding that method.  Since we are not 
-// testing that particular method with these tests, this should be OK.  To do this, we 
+// CertificationResultsManagerImpl.getCertifiedProductHasAdditionalSoftware() does not
+// work in the test environment, so we are overriding that method.  Since we are not
+// testing that particular method with these tests, this should be OK.  To do this, we
 // did the following:
-//   1. Create a new class (MyCertificationResultManager) that extends 
-//       CertificationResultManagerImpl and override the 
-//       getCertifiedProductHasAdditionalSoftware method with a constant value 
+//   1. Create a new class (MyCertificationResultManager) that extends
+//       CertificationResultManagerImpl and override the
+//       getCertifiedProductHasAdditionalSoftware method with a constant value
 //       of 'false'
-//   2. Created a new Spring configuration class CertifiedProductSedMismatchValidationTestConfig, 
+//   2. Created a new Spring configuration class CertifiedProductSedMismatchValidationTestConfig,
 //       based on the CHPLTestConfig class
-//   3. In the new config class, specify that the CertificationResultManager bean should 
+//   3. In the new config class, specify that the CertificationResultManager bean should
 //       use an instance of MyCertificationResultManager.
 //   4. Modify this test class to use the new spring configuration that was just created:
 //       @ContextConfiguration(classes = { CertifiedProductSedMismatchValidationTestConfig.class })
@@ -341,7 +341,7 @@ public class CertifiedProductSedMismatchValidationTest {
         assertFalse(listing.getErrorMessages().contains(SED_FOUND_WITHOUT_SED_CRITERIA_ERROR));
         assertFalse(listing.getErrorMessages().contains(SED_NOT_FOUND_WITH_SED_CRITERIA_ERROR));
     }
-    
+
     /**
      * OCD-1778: SED business rule.
      * Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
@@ -407,7 +407,7 @@ public class CertifiedProductSedMismatchValidationTest {
         }
         assertFalse(listing.getErrorMessages().contains(SED_FOUND_WITHOUT_SED_CRITERIA_ERROR));
     }
-    
+
     /**
      * OCD-1778: SED business rule.
      * Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
@@ -430,7 +430,7 @@ public class CertifiedProductSedMismatchValidationTest {
         }
         assertTrue(listing.getErrorMessages().contains(SED_NOT_FOUND_WITH_SED_CRITERIA_ERROR));
     }
-    
+
     /**
      * OCD-2358: SED business rule does not apply for legacy CHPL listings
      * Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
@@ -453,7 +453,7 @@ public class CertifiedProductSedMismatchValidationTest {
         }
         assertFalse(listing.getErrorMessages().contains(SED_NOT_FOUND_WITH_SED_CRITERIA_ERROR));
     }
-    
+
     /**
      * OCD-1778: SED business rule.
      * Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.

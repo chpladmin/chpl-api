@@ -19,6 +19,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
+import gov.healthit.chpl.util.Util;
 
 @Entity
 @Table(name = "product")
@@ -89,28 +90,17 @@ public class ProductEntity implements Serializable {
     @Column(name = "product_id", nullable = false)
     private Set<ProductActiveOwnerEntity> ownerHistory = new HashSet<ProductActiveOwnerEntity>();
 
-    /**
-     * Return the value associated with the column: creationDate.
-     * 
-     * @return A Date object (this.creationDate)
-     */
     public Date getCreationDate() {
-        return this.creationDate;
+        return Util.getNewDate(creationDate);
     }
 
-    /**
-     * Set the value related to the column: creationDate.
-     * 
-     * @param creationDate
-     *            the creationDate value you wish to set
-     */
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     /**
      * Return the value associated with the column: deleted.
-     * 
+     *
      * @return A Boolean object (this.deleted)
      */
     public Boolean isDeleted() {
@@ -119,7 +109,7 @@ public class ProductEntity implements Serializable {
 
     /**
      * Set the value related to the column: deleted.
-     * 
+     *
      * @param deleted
      *            the deleted value you wish to set
      */
@@ -129,7 +119,7 @@ public class ProductEntity implements Serializable {
 
     /**
      * Return the value associated with the column: id.
-     * 
+     *
      * @return A Long object (this.id)
      */
     public Long getId() {
@@ -138,7 +128,7 @@ public class ProductEntity implements Serializable {
 
     /**
      * Set the value related to the column: id.
-     * 
+     *
      * @param id
      *            the id value you wish to set
      */
@@ -146,28 +136,17 @@ public class ProductEntity implements Serializable {
         this.id = id;
     }
 
-    /**
-     * Return the value associated with the column: lastModifiedDate.
-     * 
-     * @return A Date object (this.lastModifiedDate)
-     */
     public Date getLastModifiedDate() {
-        return this.lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
-    /**
-     * Set the value related to the column: lastModifiedDate.
-     * 
-     * @param lastModifiedDate
-     *            the lastModifiedDate value you wish to set
-     */
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     /**
      * Return the value associated with the column: lastModifiedUser.
-     * 
+     *
      * @return A Long object (this.lastModifiedUser)
      */
     public Long getLastModifiedUser() {
@@ -177,7 +156,7 @@ public class ProductEntity implements Serializable {
 
     /**
      * Set the value related to the column: lastModifiedUser.
-     * 
+     *
      * @param lastModifiedUser
      *            the lastModifiedUser value you wish to set
      */
@@ -187,7 +166,7 @@ public class ProductEntity implements Serializable {
 
     /**
      * Return the value associated with the column: name.
-     * 
+     *
      * @return A String object (this.name)
      */
     public String getName() {
@@ -197,7 +176,7 @@ public class ProductEntity implements Serializable {
 
     /**
      * Set the value related to the column: name.
-     * 
+     *
      * @param name
      *            the name value you wish to set
      */
@@ -207,7 +186,7 @@ public class ProductEntity implements Serializable {
 
     /**
      * Return the value associated with the column: productVersion.
-     * 
+     *
      * @return A Set&lt;ProductVersion&gt; object (this.productVersion)
      */
     public Set<ProductVersionEntity> getProductVersions() {
@@ -217,7 +196,7 @@ public class ProductEntity implements Serializable {
 
     /**
      * Set the value related to the column: productVersion.
-     * 
+     *
      * @param productVersion
      *            the productVersion value you wish to set
      */
@@ -227,7 +206,7 @@ public class ProductEntity implements Serializable {
 
     /**
      * Return the value associated with the column: reportFileLocation.
-     * 
+     *
      * @return A String object (this.reportFileLocation)
      */
     public String getReportFileLocation() {
@@ -237,7 +216,7 @@ public class ProductEntity implements Serializable {
 
     /**
      * Set the value related to the column: reportFileLocation.
-     * 
+     *
      * @param reportFileLocation
      *            the reportFileLocation value you wish to set
      */
@@ -247,7 +226,7 @@ public class ProductEntity implements Serializable {
 
     /**
      * Return the value associated with the column: developer.
-     * 
+     *
      * @return A Developer object (this.developer)
      */
     public Long getDeveloperId() {
@@ -257,9 +236,7 @@ public class ProductEntity implements Serializable {
 
     /**
      * Set the value related to the column: developer.
-     * 
-     * @param developer
-     *            the developer value you wish to set
+     * @param developerId the developer value you wish to set
      */
     public void setDeveloperId(final Long developerId) {
         this.developerId = developerId;
@@ -267,7 +244,6 @@ public class ProductEntity implements Serializable {
 
     /**
      * Return the value associated with the column: statuses.
-     * 
      * @return A ProductCertificationStatuses object
      *         (this.productCertificationStatuses)
      */
@@ -277,10 +253,8 @@ public class ProductEntity implements Serializable {
 
     /**
      * Set the value related to the column: statuses.
-     * 
-     * @param productCertificationStatuses
-     *            the set of aggregate counts for this product's certification
-     *            statuses
+     * @param productCertificationStatusesEntity the set of aggregate counts
+     * for this product's certification statuses
      */
     public void setProductCertificationStatuses(final ProductCertificationStatusesEntity productCertificationStatusesEntity) {
         this.productCertificationStatuses = productCertificationStatusesEntity;

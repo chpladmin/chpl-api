@@ -20,7 +20,7 @@ import javax.persistence.Transient;
  */
 @Entity
 @Table(name = "product_certification_statuses")
-public class ProductCertificationStatusesEntity implements Cloneable, Serializable {
+public class ProductCertificationStatusesEntity implements Serializable {
     /** Serial Version UID. */
     private static final long serialVersionUID = -1396979001199564864L;
 
@@ -57,7 +57,7 @@ public class ProductCertificationStatusesEntity implements Cloneable, Serializab
 
     /**
      * Constructor taking a given ID.
-     * 
+     *
      * @param id
      *            to set
      */
@@ -67,7 +67,6 @@ public class ProductCertificationStatusesEntity implements Cloneable, Serializab
 
     /**
      * Return the type of this class. Useful for when dealing with proxies.
-     * 
      * @return Defining class.
      */
     @Transient
@@ -76,21 +75,16 @@ public class ProductCertificationStatusesEntity implements Cloneable, Serializab
     }
 
     /**
-     * Constructor taking a given ID.
-     * 
-     * @param creationDate
-     *            Date object;
-     * @param deleted
-     *            Boolean object;
-     * @param id
-     *            Long object;
-     * @param lastModifiedDate
-     *            Date object;
-     * @param lastModifiedUser
-     *            Long object;
+     * Constructor that takes all fields.
+     * @param id id of the record
+     * @param active number of active
+     * @param retired number of retired
+     * @param withdrawnByDeveloper number of withdrawn by developer
+     * @param withdrawnByAcb number with withdrawn by acb
+     * @param suspendedByAcb number of suspended by acb
      */
-    public ProductCertificationStatusesEntity(Long id, Integer active, Integer retired, Integer withdrawnByDeveloper,
-            Integer withdrawnByAcb, Integer suspendedByAcb) {
+    public ProductCertificationStatusesEntity(final Long id, final Integer active, final Integer retired,
+            final Integer withdrawnByDeveloper, final Integer withdrawnByAcb, final Integer suspendedByAcb) {
         this.id = id;
         this.active = active;
         this.retired = retired;
@@ -101,7 +95,6 @@ public class ProductCertificationStatusesEntity implements Cloneable, Serializab
 
     /**
      * Return the value associated with the column: id.
-     * 
      * @return A Long object (this.id)
      */
     public Long getId() {
@@ -110,7 +103,7 @@ public class ProductCertificationStatusesEntity implements Cloneable, Serializab
 
     /**
      * Set the value related to the column: id.
-     * 
+     *
      * @param id
      *            the id value you wish to set
      */
@@ -120,7 +113,7 @@ public class ProductCertificationStatusesEntity implements Cloneable, Serializab
 
     /**
      * Return the value associated with the column: active.
-     * 
+     *
      * @return A Integer object (this.active)
      */
     public Integer getActive() {
@@ -129,7 +122,7 @@ public class ProductCertificationStatusesEntity implements Cloneable, Serializab
 
     /**
      * Set the value related to the column: active.
-     * 
+     *
      * @param active
      *            - the aggregate count of active certification_statuses
      */
@@ -139,7 +132,7 @@ public class ProductCertificationStatusesEntity implements Cloneable, Serializab
 
     /**
      * Return the value associated with the column: retired.
-     * 
+     *
      * @return A Integer object (this.retired)
      */
     public Integer getRetired() {
@@ -148,7 +141,7 @@ public class ProductCertificationStatusesEntity implements Cloneable, Serializab
 
     /**
      * Set the value related to the column: retired.
-     * 
+     *
      * @param retired
      *            - the aggregate count of retired certification_statuses
      */
@@ -158,7 +151,7 @@ public class ProductCertificationStatusesEntity implements Cloneable, Serializab
 
     /**
      * Return the value associated with the column: withdrawnByDeveloper.
-     * 
+     *
      * @return A Integer object (this.withdrawnByDeveloper)
      */
     public Integer getWithdrawnByDeveloper() {
@@ -167,7 +160,7 @@ public class ProductCertificationStatusesEntity implements Cloneable, Serializab
 
     /**
      * Set the value related to the column: withdrawnByDeveloper.
-     * 
+     *
      * @param withdrawnByDeveloper
      *            - the aggregate count of withdrawnByDeveloper
      *            certification_statuses
@@ -178,7 +171,7 @@ public class ProductCertificationStatusesEntity implements Cloneable, Serializab
 
     /**
      * Return the value associated with the column: withdrawnByAcb.
-     * 
+     *
      * @return A Integer object (this.withdrawnByAcb)
      */
     public Integer getWithdrawnByAcb() {
@@ -187,7 +180,7 @@ public class ProductCertificationStatusesEntity implements Cloneable, Serializab
 
     /**
      * Set the value related to the column: withdrawnByAcb.
-     * 
+     *
      * @param withdrawnByAcb
      *            - the aggregate count of withdrawnByAcb certification_statuses
      */
@@ -197,7 +190,7 @@ public class ProductCertificationStatusesEntity implements Cloneable, Serializab
 
     /**
      * Return the value associated with the column: suspendedByAcb.
-     * 
+     *
      * @return A Integer object (this.suspendedByAcb)
      */
     public Integer getSuspendedByAcb() {
@@ -206,7 +199,7 @@ public class ProductCertificationStatusesEntity implements Cloneable, Serializab
 
     /**
      * Set the value related to the column: suspendedByAcb.
-     * 
+     *
      * @param suspendedByAcb
      *            - the aggregate count of suspendedByAcb certification_statuses
      */
@@ -216,7 +209,7 @@ public class ProductCertificationStatusesEntity implements Cloneable, Serializab
 
     /**
      * Provides toString implementation.
-     * 
+     *
      * @see java.lang.Object#toString()
      * @return String representation of this class.
      */

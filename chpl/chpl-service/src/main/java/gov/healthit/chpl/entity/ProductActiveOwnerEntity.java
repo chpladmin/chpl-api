@@ -15,6 +15,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
+import gov.healthit.chpl.util.Util;
 
 @Entity
 @Table(name = "product_active_owner_history_map")
@@ -78,19 +79,19 @@ public class ProductActiveOwnerEntity implements ProductOwnerEntity, Serializabl
     }
 
     public Date getTransferDate() {
-        return transferDate;
+        return Util.getNewDate(transferDate);
     }
 
     public void setTransferDate(final Date transferDate) {
-        this.transferDate = transferDate;
+        this.transferDate = Util.getNewDate(transferDate);
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Boolean getDeleted() {
@@ -102,11 +103,11 @@ public class ProductActiveOwnerEntity implements ProductOwnerEntity, Serializabl
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public Long getLastModifiedUser() {

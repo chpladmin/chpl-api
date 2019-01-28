@@ -10,19 +10,19 @@ import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 
 public interface CertifiedProductUploadHandler {
-    public PendingCertifiedProductEntity handle() throws InvalidArgumentsException;
+    PendingCertifiedProductEntity handle() throws InvalidArgumentsException;
 
-    public List<CQMCriterion> getApplicableCqmCriterion(List<CQMCriterion> allCqms);
+    List<CQMCriterion> getApplicableCqmCriterion(List<CQMCriterion> allCqms);
 
-    public List<CSVRecord> getRecord();
+    List<CSVRecord> getRecord();
 
-    public void setRecord(final List<CSVRecord> record);
+    void setRecord(List<CSVRecord> record);
 
-    public CSVRecord getHeading();
+    CSVRecord getHeading();
 
-    public void setHeading(final CSVRecord heading);
-    
-    public UploadTemplateVersionDTO getUploadTemplateVersion();
-    
-    public void setUploadTemplateVersion(UploadTemplateVersionDTO template);
+    void setHeading(CSVRecord heading);
+
+    UploadTemplateVersionDTO getUploadTemplateVersion();
+
+    void setUploadTemplateVersion(UploadTemplateVersionDTO template);
 }

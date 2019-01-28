@@ -58,12 +58,12 @@ public class CertificationResultTestProcedure implements Serializable {
         this.testProcedureVersion = dto.getVersion();
     }
 
-    public boolean matches(CertificationResultTestProcedure anotherProc) {
+    public boolean matches(final CertificationResultTestProcedure anotherProc) {
         boolean result = false;
-        if (this.getTestProcedure() != null && anotherProc.getTestProcedure() != null && 
-                this.getTestProcedure().getId() != null && anotherProc.getTestProcedure().getId() != null && 
-                this.getTestProcedure().getId().longValue() == anotherProc.getTestProcedure().getId().longValue() && 
-                !StringUtils.isEmpty(this.getTestProcedureVersion())
+        if (this.getTestProcedure() != null && anotherProc.getTestProcedure() != null
+                && this.getTestProcedure().getId() != null && anotherProc.getTestProcedure().getId() != null
+                && this.getTestProcedure().getId().longValue() == anotherProc.getTestProcedure().getId().longValue()
+                && !StringUtils.isEmpty(this.getTestProcedureVersion())
                 && !StringUtils.isEmpty(anotherProc.getTestProcedureVersion())
                 && this.getTestProcedureVersion().equalsIgnoreCase(anotherProc.getTestProcedureVersion())) {
             result = true;
@@ -78,7 +78,7 @@ public class CertificationResultTestProcedure implements Serializable {
     public void setId(final Long id) {
         this.id = id;
     }
-    
+
     public String getTestProcedureVersion() {
         return testProcedureVersion;
     }

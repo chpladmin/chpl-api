@@ -1,8 +1,6 @@
 package gov.healthit.chpl.domain;
 
-import java.io.Serializable;
-
-public class DescriptiveModel extends KeyValueModel implements Serializable {
+public class DescriptiveModel extends KeyValueModel {
     private static final long serialVersionUID = 1402909764642483654L;
     private String title;
 
@@ -27,4 +25,15 @@ public class DescriptiveModel extends KeyValueModel implements Serializable {
     public void setTitle(final String title) {
         this.title = title;
     }
+
+    @Override
+    public boolean equals(final Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
 }

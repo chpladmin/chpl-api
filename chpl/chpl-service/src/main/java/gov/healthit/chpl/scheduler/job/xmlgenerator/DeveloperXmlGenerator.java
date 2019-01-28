@@ -5,7 +5,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import gov.healthit.chpl.domain.Developer;
 
-public class DeveloperXmlGenerator extends XmlGenerator{
+public class DeveloperXmlGenerator extends XmlGenerator {
     public static void addDeveloper(Developer dev, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         sw.writeStartElement(rootNodeName);
         AddressXmlGenerator.addAddress(dev.getAddress(), "address", sw);

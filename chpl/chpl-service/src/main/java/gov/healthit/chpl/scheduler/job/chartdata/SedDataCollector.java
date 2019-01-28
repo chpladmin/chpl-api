@@ -21,7 +21,7 @@ import gov.healthit.chpl.scheduler.SchedulerCertifiedProductSearchDetailsAsync;
  * Retrieves all of the 2015 SED Products and their details. Details are
  * retrieved asynchronously according to the chartDataExecutor defined in
  * AppConfig.
- * 
+ *
  * @author TYoung
  *
  */
@@ -42,7 +42,7 @@ public class SedDataCollector {
     /**
      * This method runs the data retrieval process for the 2015 SED products and
      * their details.
-     * 
+     *
      * @param listings
      *            initial set of Listings
      * @return List of CertifiedProductSearchDetails

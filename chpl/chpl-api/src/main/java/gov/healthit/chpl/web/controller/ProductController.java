@@ -112,7 +112,7 @@ public class ProductController {
 
     @ApiOperation(value = "Get all listings owned by the specified product.", notes = "")
     @RequestMapping(value = "/{productId}/listings", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody List<CertifiedProduct> getListingsForProduct(@PathVariable("productId") final Long productId)
             throws EntityRetrievalException {
         List<CertifiedProductDetailsDTO> listings = cpManager.getByProduct(productId);
@@ -123,25 +123,6 @@ public class ProductController {
         return results;
     }
 
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED.  Update a product or merge products.",
-            notes = "This method serves two purposes: to update a single product's information and to merge two "
-                    + "products into one.  A user of this service should pass in a single productId to update just "
-                    + "that product. If multiple product IDs are passed in, the service performs a merge meaning "
-                    + "that a new product is created with all of the information provided and all of the versions "
-                    + "previously assigned to the productIds specified are reassigned to the newly created product. "
-                    + "The old products are then deleted. "
-                    + "The logged in user must have ROLE_ADMIN or ROLE_ACB. ")
-    @RequestMapping(value = "/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
-    public ResponseEntity<Product> updateProductDeprecated(
-            @RequestBody(required = true) final UpdateProductsRequest productInfo)
-            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
-            JsonProcessingException, ValidationException {
-
-        return update(productInfo);
-    }
-
     @ApiOperation(value = "Update a product or merge products.",
             notes = "This method serves two purposes: to update a single product's information and to merge two "
                     + "products into one. A user of this service should pass in a single productId to update just "
@@ -149,13 +130,14 @@ public class ProductController {
                     + "that a new product is created with all of the information provided and all of the versions "
                     + " previously assigned to the productIds specified are reassigned to the newly created product. "
                     + "The old products are then deleted. "
-                    + " The logged in user must have ROLE_ADMIN or ROLE_ACB. ")
+                    + " The logged in user must have ROLE_ADMIN, ROLE_ONC, or ROLE_ACB. "
+                    + "Users with ROLE_ACB are not able to perform a merge. ")
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public ResponseEntity<Product> updateProduct(
             @RequestBody(required = true) final UpdateProductsRequest productInfo)
-            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
-            JsonProcessingException, ValidationException {
+                    throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
+                    JsonProcessingException, ValidationException {
 
         return update(productInfo);
     }
@@ -215,11 +197,11 @@ public class ProductController {
                 result = productManager.merge(productInfo.getProductIds(), newProduct);
                 responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
             } else if (productInfo.getProductIds().size() == 1) {
-                if(productInfo.getNewDeveloperId() != null) {
+                if (productInfo.getNewDeveloperId() != null) {
                     List<DuplicateChplProdNumber> duplicateChplProdNbrs =
                             getDuplcateChplProdNumbersCasuedByDeveloperChange(
                                     productInfo.getProductIds().get(0), productInfo.getNewDeveloperId());
-    
+
                     if (duplicateChplProdNbrs.size() != 0) {
                         throw new ValidationException(
                                 getDuplicateChplProductNumberErrorMessages(duplicateChplProdNbrs), null);
@@ -276,7 +258,7 @@ public class ProductController {
 
     private Set<String> getDuplicateChplProductNumberErrorMessages(
             final List<DuplicateChplProdNumber> duplicateChplProdNumbers) {
-        
+
         Set<String> messages = new HashSet<String>();
 
         for (DuplicateChplProdNumber dup : duplicateChplProdNumbers) {
@@ -307,7 +289,7 @@ public class ProductController {
             if (cpDTO.getChplProductNumber().startsWith("CHP")) {
                 newChplProductNumber = cpDTO.getChplProductNumber();
             } else {
-              //Calculate the new CHPL Prod Nbr
+                //Calculate the new CHPL Prod Nbr
                 newChplProductNumber = chplProductNumberUtil.getChplProductNumber(
                         cpDTO.getYear(),
                         getTestingLabCode(cpDTO.getChplProductNumber()),
@@ -328,7 +310,8 @@ public class ProductController {
                 //Add it to the list of duplicates
                 if (!cpDTO.getChplProductNumber().equals(filterCp.getChplProductNumber())) {
                     duplicateChplProductNumbers.add(new DuplicateChplProdNumber(
-                        cpDTO.getChplProductNumber(), filterCp.getChplProductNumber(), filterCp.getChplProductNumber()));
+                            cpDTO.getChplProductNumber(), filterCp.getChplProductNumber(),
+                            filterCp.getChplProductNumber()));
                 }
             }
         }
@@ -356,9 +339,9 @@ public class ProductController {
     @ApiOperation(
             value = "Split a product - some versions stay with the existing product and some versions are moved "
                     + "to a new product.",
-            notes = "The logged in user must have ROLE_ADMIN or ROLE_ACB. ")
+                    notes = "The logged in user must have ROLE_ADMIN, ROLE_ONC, or ROLE_ACB. ")
     @RequestMapping(value = "/{productId}/split", method = RequestMethod.POST,
-            consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+    consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public ResponseEntity<SplitProductResponse> splitProduct(@PathVariable("productId") final Long productId,
             @RequestBody(required = true) final SplitProductsRequest splitRequest)
                     throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
@@ -438,7 +421,7 @@ public class ProductController {
         private String origChplProductNumberB;
         private String newChplProductNumber;
 
-        public DuplicateChplProdNumber(final String origChplProductNumberA, final String origChplProductNumberB,
+        DuplicateChplProdNumber(final String origChplProductNumberA, final String origChplProductNumberB,
                 final String newChplProductNumber) {
             this.origChplProductNumberA = origChplProductNumberA;
             this.origChplProductNumberB = origChplProductNumberB;
@@ -474,10 +457,9 @@ public class ProductController {
             return String.format(
                     messageSource.getMessage(
                             new DefaultMessageSourceResolvable("developer.merge.dupChplProdNbrs.duplicate"),
-                                LocaleContextHolder.getLocale()),
+                            LocaleContextHolder.getLocale()),
                     origChplProductNumberA,
                     origChplProductNumberB);
         }
     }
-
 }

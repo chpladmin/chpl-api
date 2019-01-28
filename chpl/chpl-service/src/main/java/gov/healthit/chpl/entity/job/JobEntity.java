@@ -19,6 +19,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.auth.entity.UserEntity;
+import gov.healthit.chpl.util.Util;
 
 @Entity
 @Table(name = "job")
@@ -103,19 +104,19 @@ public class JobEntity {
     }
 
     public Date getStartTime() {
-        return startTime;
+        return Util.getNewDate(startTime);
     }
 
     public void setStartTime(final Date startTime) {
-        this.startTime = startTime;
+        this.startTime = Util.getNewDate(startTime);
     }
 
     public Date getEndTime() {
-        return endTime;
+        return Util.getNewDate(endTime);
     }
 
     public void setEndTime(final Date endTime) {
-        this.endTime = endTime;
+        this.endTime = Util.getNewDate(endTime);
     }
 
     public String getData() {
@@ -127,11 +128,11 @@ public class JobEntity {
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Boolean getDeleted() {
@@ -143,11 +144,11 @@ public class JobEntity {
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public Long getLastModifiedUser() {

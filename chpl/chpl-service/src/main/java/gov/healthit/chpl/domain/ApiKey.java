@@ -3,6 +3,8 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.util.Date;
 
+import gov.healthit.chpl.util.Util;
+
 public class ApiKey implements Serializable {
     private static final long serialVersionUID = -3412202704187626073L;
     private String name;
@@ -36,18 +38,18 @@ public class ApiKey implements Serializable {
     }
 
     public Date getLastUsedDate() {
-        return lastUsedDate;
+        return Util.getNewDate(lastUsedDate);
     }
-    
+
     public void setLastUsedDate(final Date lastUsedDate) {
-        this.lastUsedDate = lastUsedDate;
+        this.lastUsedDate = Util.getNewDate(lastUsedDate);
     }
 
     public Date getDeleteWarningSentDate() {
-        return deleteWarningSentDate;
+        return Util.getNewDate(deleteWarningSentDate);
     }
 
     public void setDeleteWarningSentDate(Date deleteWarningSentDate) {
-        this.deleteWarningSentDate = deleteWarningSentDate;
+        this.deleteWarningSentDate = Util.getNewDate(deleteWarningSentDate);
     }
 }

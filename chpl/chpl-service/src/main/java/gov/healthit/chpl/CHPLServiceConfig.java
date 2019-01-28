@@ -79,7 +79,7 @@ public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements Enviro
     @Bean
     public org.springframework.orm.jpa.LocalEntityManagerFactoryBean entityManagerFactory() {
         LOGGER.info("get LocalEntityManagerFactoryBean");
-        org.springframework.orm.jpa.LocalEntityManagerFactoryBean bean = 
+        org.springframework.orm.jpa.LocalEntityManagerFactoryBean bean =
                 new org.springframework.orm.jpa.LocalEntityManagerFactoryBean();
         bean.setPersistenceUnitName(env.getRequiredProperty("persistenceUnitName"));
         return bean;
@@ -88,7 +88,7 @@ public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements Enviro
     @Bean
     public org.springframework.orm.jpa.JpaTransactionManager transactionManager() {
         LOGGER.info("get JpaTransactionManager");
-        org.springframework.orm.jpa.JpaTransactionManager bean = 
+        org.springframework.orm.jpa.JpaTransactionManager bean =
                 new org.springframework.orm.jpa.JpaTransactionManager();
         bean.setEntityManagerFactory(entityManagerFactory().getObject());
         return bean;
@@ -126,7 +126,7 @@ public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements Enviro
         LOGGER.info("get Marshaller");
         return new CastorMarshaller();
     }
-    
+
     @Bean
     public CacheManager cacheManager() {
         LOGGER.info("get CacheManager");

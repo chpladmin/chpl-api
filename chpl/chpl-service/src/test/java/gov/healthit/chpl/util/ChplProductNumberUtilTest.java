@@ -34,7 +34,7 @@ public class ChplProductNumberUtilTest extends TestCase {
         String chplProductNumber = "CHP-000001";
         assertTrue(util.isLegacy(chplProductNumber));
     }
-    
+
     @Test
     public void testIsNewChplProductNumberLegacy() {
         String chplProductNumber = "15.02.02.3007.A056.01.00.0.180214";

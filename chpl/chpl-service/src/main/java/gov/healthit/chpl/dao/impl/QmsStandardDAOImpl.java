@@ -139,7 +139,7 @@ public class QmsStandardDAOImpl extends BaseDAOImpl implements QmsStandardDAO {
             return new QmsStandardDTO(entity);
         }
     }
-    
+
     private List<QmsStandardEntity> getAllEntities() {
         return entityManager.createQuery("from QmsStandardEntity where (NOT deleted = true) ", QmsStandardEntity.class)
                 .getResultList();

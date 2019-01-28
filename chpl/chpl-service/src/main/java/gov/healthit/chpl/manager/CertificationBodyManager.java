@@ -31,20 +31,19 @@ public interface CertificationBodyManager {
     CertificationBodyDTO update(CertificationBodyDTO acb) throws EntityRetrievalException,
             JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException;
 
-    void undelete(CertificationBodyDTO acb)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException;
+    CertificationBodyDTO retire(Long acbId) throws EntityRetrievalException,
+        JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException;
 
-    void delete(CertificationBodyDTO acb)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException;
+    CertificationBodyDTO unretire(Long acbId) throws EntityRetrievalException,
+    JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException;
 
-    List<CertificationBodyDTO> getAllForUser(boolean showDeleted);
+    List<CertificationBodyDTO> getAllForUser();
 
-    List<CertificationBodyDTO> getAll(boolean showDeleted);
+    List<CertificationBodyDTO> getAll();
+    List<CertificationBodyDTO> getAllActive();
 
     CertificationBodyDTO getById(Long id) throws EntityRetrievalException;
-
-    CertificationBodyDTO getById(Long id, boolean includeDeleted) throws EntityRetrievalException;
-
+    CertificationBodyDTO getIfPermissionById(final Long id) throws EntityRetrievalException;
     List<UserDTO> getAllUsersOnAcb(CertificationBodyDTO acb);
 
     List<Permission> getPermissionsForUser(CertificationBodyDTO acb, Sid recipient);

@@ -17,7 +17,7 @@ public class CqmResultCertificationXmlGenerator extends XmlGenerator {
             sw.writeEndElement();
         }
     }
-    
+
     public static void add(CQMResultCertification cert, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (cert != null) {
             sw.writeStartElement(rootNodeName);

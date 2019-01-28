@@ -33,11 +33,11 @@ public class RequiredData2014Reviewer extends RequiredDataReviewer {
         super.review(listing);
         if (listing.getPracticeTypeId() == null) {
             listing.getErrorMessages().add("Practice setting is required but was not found.");
-        } 
-//        else {
-//            listing.getErrorMessages().addAll(
-//                    certifiedtProductTestFunctionalityValidator.getTestFunctionalityValidationErrors(product));
-//        }
+        }
+        //        else {
+        //            listing.getErrorMessages().addAll(
+        //                    certifiedtProductTestFunctionalityValidator.getTestFunctionalityValidationErrors(product));
+        //        }
         if (listing.getProductClassificationId() == null) {
             listing.getErrorMessages().add("Product classification is required but was not found.");
         }
@@ -51,7 +51,7 @@ public class RequiredData2014Reviewer extends RequiredDataReviewer {
         if (listing.getHasQms() != null && !listing.getHasQms() && !listing.getQmsStandards().isEmpty()) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.missingQMSBoolean"));
         }
-        
+
         boolean isCqmRequired = false;
         for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
             if (cert.getMeetsCriteria()) {
@@ -67,7 +67,7 @@ public class RequiredData2014Reviewer extends RequiredDataReviewer {
                 }
                 boolean gapEligibleAndTrue = false;
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP)
-                        && cert.getGap() == Boolean.TRUE) {
+                        && cert.getGap() != null && cert.getGap()) {
                     gapEligibleAndTrue = true;
                 }
 
@@ -78,7 +78,7 @@ public class RequiredData2014Reviewer extends RequiredDataReviewer {
                     } else if (cert.getSed() != null && cert.getSed().booleanValue()
                             && (cert.getUcdProcesses() == null || cert.getUcdProcesses().size() == 0)) {
                         if (listing.getIcs() != null && listing.getIcs().booleanValue()) {
-                            listing.getWarningMessages().add(
+                            listing.getErrorMessages().add(
                                     msgUtil.getMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
                         } else {
                             listing.getErrorMessages().add(

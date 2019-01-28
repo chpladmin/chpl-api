@@ -35,88 +35,93 @@ import gov.healthit.chpl.manager.TestingLabManager;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
+@TestExecutionListeners({
+        DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
+})
 @DatabaseSetup("classpath:data/testData.xml")
 public class TestingLabManagerTest extends TestCase {
-	
-	@Autowired private TestingLabManager atlManager;
-	@Autowired private TestingLabDAO atlDao;
-	@Autowired private UserDAO userDao;
-	
-	@Rule
+
+    @Autowired
+    private TestingLabManager atlManager;
+    @Autowired
+    private TestingLabDAO atlDao;
+    @Autowired
+    private UserDAO userDao;
+
+    @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
-	
-	private static JWTAuthenticatedUser adminUser;
-	
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-		adminUser = new JWTAuthenticatedUser();
-		adminUser.setFullName("Administrator");
-		adminUser.setId(-2L);
-		adminUser.setFriendlyName("Administrator");
-		adminUser.setSubjectName("admin");
-		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
-	}
-	
-	@Test
-	@Transactional
-	public void testGetUsersOnAtl() throws EntityRetrievalException {
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		TestingLabDTO atl = atlDao.getById(-1L);
-		List<UserDTO> users = atlManager.getAllUsersOnAtl(atl);
-		
-		assertEquals(2, users.size());
-		SecurityContextHolder.getContext().setAuthentication(null);
-	}
-	
-	@Test
-	@Transactional
-	@Rollback
-	public void testAddReadUserToAtl() throws UserRetrievalException, EntityRetrievalException {
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-		//add to the atl
-		TestingLabDTO atl = atlDao.getById(-1L);
-		Long userId = 2L;
-		atlManager.addPermission(atl, userId, BasePermission.READ);
-		
-		//confirm one user is in the acb
-		List<UserDTO> users = atlManager.getAllUsersOnAtl(atl);
-		boolean userIsOnAtl = false;
-		for(UserDTO foundUser : users) {
-			if(foundUser.getId() == userId) {
-				userIsOnAtl = true;
-			}
-		}
-		assertTrue(userIsOnAtl);
-		SecurityContextHolder.getContext().setAuthentication(null);
-	}
-	
-	@Test
-	@Transactional
-	@Rollback
-	public void testDeleteUserFromAtl() throws UserRetrievalException, EntityRetrievalException {
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
+    private static JWTAuthenticatedUser adminUser;
 
-		//add to the atl
-		TestingLabDTO atl = atlDao.getById(-1L);
-		UserDTO user = userDao.getById(4L);
-		atlManager.deletePermission(atl, new PrincipalSid(user.getSubjectName()), BasePermission.ADMINISTRATION);
-		
-		//confirm one user is in the atl
-		List<UserDTO> users = atlManager.getAllUsersOnAtl(atl);
-		boolean userIsOnAtl = false;
-		for(UserDTO foundUser : users) {
-			if(foundUser.getId().longValue() == user.getId().longValue()) {
-				userIsOnAtl = true;
-			}
-		}
-		assertFalse(userIsOnAtl);
-		SecurityContextHolder.getContext().setAuthentication(null);
-	}
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        adminUser = new JWTAuthenticatedUser();
+        adminUser.setFullName("Administrator");
+        adminUser.setId(-2L);
+        adminUser.setFriendlyName("Administrator");
+        adminUser.setSubjectName("admin");
+        adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+    }
+
+    @Test
+    @Transactional
+    public void testGetUsersOnAtl() throws EntityRetrievalException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        TestingLabDTO atl = atlDao.getById(-1L);
+        List<UserDTO> users = atlManager.getAllUsersOnAtl(atl);
+
+        assertEquals(2, users.size());
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void testAddReadUserToAtl() throws UserRetrievalException, EntityRetrievalException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+        // add to the atl
+        TestingLabDTO atl = atlDao.getById(-1L);
+        Long userId = 2L;
+        atlManager.addPermission(atl, userId, BasePermission.READ);
+
+        // confirm one user is in the acb
+        List<UserDTO> users = atlManager.getAllUsersOnAtl(atl);
+        boolean userIsOnAtl = false;
+        for (UserDTO foundUser : users) {
+            if (foundUser.getId().equals(userId)) {
+                userIsOnAtl = true;
+            }
+        }
+        assertTrue(userIsOnAtl);
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void testDeleteUserFromAtl() throws UserRetrievalException, EntityRetrievalException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+        // add to the atl
+        TestingLabDTO atl = atlDao.getById(-1L);
+        UserDTO user = userDao.getById(4L);
+        atlManager.deletePermission(atl, new PrincipalSid(user.getSubjectName()), BasePermission.ADMINISTRATION);
+
+        // confirm one user is in the atl
+        List<UserDTO> users = atlManager.getAllUsersOnAtl(atl);
+        boolean userIsOnAtl = false;
+        for (UserDTO foundUser : users) {
+            if (foundUser.getId().longValue() == user.getId().longValue()) {
+                userIsOnAtl = true;
+            }
+        }
+        assertFalse(userIsOnAtl);
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
 }

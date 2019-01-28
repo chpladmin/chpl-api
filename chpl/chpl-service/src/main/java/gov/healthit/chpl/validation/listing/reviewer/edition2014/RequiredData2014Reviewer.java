@@ -27,7 +27,7 @@ public class RequiredData2014Reviewer extends RequiredDataReviewer {
     private static final String[] CQM_REQUIRED_CERTS = {
             "170.314 (c)(1)", "170.314 (c)(2)", "170.314 (c)(3)"
     };
-    
+
     @Autowired
     public RequiredData2014Reviewer(CertificationResultRules certRules, ErrorMessageUtil msgUtil) {
         super(certRules, msgUtil);
@@ -45,7 +45,7 @@ public class RequiredData2014Reviewer extends RequiredDataReviewer {
         if (StringUtils.isEmpty(listing.getReportFileLocation())) {
             listing.getErrorMessages().add("Test Report URL is required but was not found.");
         }
-        
+
         boolean isCqmRequired = false;
         for (CertificationResult cert : listing.getCertificationResults()) {
             for (int i = 0; i < CQM_REQUIRED_CERTS.length; i++) {
@@ -53,7 +53,7 @@ public class RequiredData2014Reviewer extends RequiredDataReviewer {
                     isCqmRequired = true;
                 }
             }
-            if (cert.isSuccess() != null && cert.isSuccess() == Boolean.TRUE) {
+            if (cert.isSuccess() != null && cert.isSuccess()) {
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.SED)) {
                     if (cert.isSed() == null) {
                         listing.getErrorMessages().add(
@@ -62,7 +62,7 @@ public class RequiredData2014Reviewer extends RequiredDataReviewer {
                             && !certHasUcdProcess(cert, listing.getSed().getUcdProcesses())) {
                         if (listing.getIcs() != null && listing.getIcs().getInherits() != null
                                 && listing.getIcs().getInherits().booleanValue()) {
-                            listing.getWarningMessages().add(
+                            listing.getErrorMessages().add(
                                     msgUtil.getMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
                         } else {
                             listing.getErrorMessages().add(
@@ -122,7 +122,7 @@ public class RequiredData2014Reviewer extends RequiredDataReviewer {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingComplementG3"));
         }
     }
-    
+
     private boolean certHasUcdProcess(final CertificationResult cert, final List<UcdProcess> ucdProcesses) {
         boolean hasUcd = false;
         for (UcdProcess ucdProcess : ucdProcesses) {

@@ -30,19 +30,19 @@ public interface TestingLabManager {
     TestingLabDTO update(TestingLabDTO atl) throws EntityRetrievalException, JsonProcessingException,
             EntityCreationException, UpdateTestingLabException;
 
-    void undelete(TestingLabDTO atl)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException;
+    TestingLabDTO retire(Long atlId) throws EntityRetrievalException,
+        JsonProcessingException, EntityCreationException, UpdateTestingLabException;
 
-    void delete(TestingLabDTO atl)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException;
+    TestingLabDTO unretire(Long atlId) throws EntityRetrievalException,
+        JsonProcessingException, EntityCreationException, UpdateTestingLabException;
 
-    List<TestingLabDTO> getAllForUser(boolean showDeleted);
+    List<TestingLabDTO> getAllForUser();
 
-    List<TestingLabDTO> getAll(boolean showDeleted);
+    List<TestingLabDTO> getAll();
 
     TestingLabDTO getById(Long id) throws EntityRetrievalException;
 
-    TestingLabDTO getById(Long id, boolean includeDeleted) throws EntityRetrievalException;
+    TestingLabDTO getIfPermissionById(final Long id) throws EntityRetrievalException;
 
     List<UserDTO> getAllUsersOnAtl(TestingLabDTO atl);
 

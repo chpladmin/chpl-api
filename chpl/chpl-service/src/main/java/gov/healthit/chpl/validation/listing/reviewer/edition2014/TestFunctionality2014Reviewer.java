@@ -38,8 +38,8 @@ public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListe
     private TestingFunctionalityManager testFunctionalityManager;
     private ErrorMessageUtil msgUtil;
     private CertificationEditionDAO editionDAO;
-    private List<CertificationEditionDTO> editionDTOs; 
-    
+    private List<CertificationEditionDTO> editionDTOs;
+
     @Autowired
     public TestFunctionality2014Reviewer(TestFunctionalityDAO testFunctionalityDAO,
             TestingFunctionalityManager testFunctionalityManager, CertificationEditionDAO editionDAO,
@@ -76,7 +76,7 @@ public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListe
 
         CertificationEditionDTO edition = getEditionDTO(getEditionFromListing(listing));
         TestFunctionalityDTO tf = getTestFunctionality(crtf.getName(), edition.getId());
-        
+
         Long practiceTypeId = Long.valueOf(listing.getPracticeType().get("id").toString());
         if (!isTestFunctionalityPracticeTypeValid(practiceTypeId, tf)) {
             errors.add(getTestFunctionalityPracticeTypeErrorMessage(crtf, cr, listing));
@@ -94,7 +94,7 @@ public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListe
 
         List<TestFunctionalityDTO> validTestFunctionalityForCriteria =
                 testFunctionalityManager.getTestFunctionalityCriteriaMap2014().get(criteriaNumber);
-        
+
         //Is the TestFunctionalityDTO in the valid list (relies on the TestFunctionalityDTO.equals()
         if (validTestFunctionalityForCriteria == null) {
             return false;
@@ -134,7 +134,7 @@ public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListe
     }
 
     private String getTestFunctionalityCriterionErrorMessage(final CertificationResultTestFunctionality crtf,
-            final CertificationResult cr, final CertifiedProductSearchDetails cp, 
+            final CertificationResult cr, final CertifiedProductSearchDetails cp,
             final CertificationEditionDTO edition) {
 
         TestFunctionalityDTO tf = getTestFunctionality(crtf.getName(), edition.getId());
@@ -151,7 +151,7 @@ public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListe
         return msgUtil.getMessage("listing.criteria.testFunctionalityCriterionMismatch",
                 criteriaNumber, testFunctionalityNumber, listOfValidCriteria, currentCriterion);
     }
-    
+
     private CertificationEditionDTO getEditionDTO(final String year) {
         for (CertificationEditionDTO dto : editionDTOs) {
             if (dto.getYear().equals(year)) {
@@ -160,15 +160,15 @@ public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListe
         }
         return null;
     }
-    
+
     private String getEditionFromListing(final CertifiedProductSearchDetails listing) {
         String edition = "";
         if (listing.getCertificationEdition().containsKey("name")) {
-            edition = listing.getCertificationEdition().get("name").toString(); 
+            edition = listing.getCertificationEdition().get("name").toString();
         }
         return edition;
     }
-    
+
     private TestFunctionalityDTO getTestFunctionality(final String number, final Long editionId) {
         return testFunctionalityDAO.getByNumberAndEdition(number, editionId);
     }
@@ -176,24 +176,25 @@ public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListe
     private String getDelimitedListOfValidCriteriaNumbers(final TestFunctionalityDTO tfDTO,
             final CertificationEditionDTO edition) {
 
-        String criteria = "";
+        StringBuilder criteria = new StringBuilder();
         List<CertificationCriterionDTO> certDTOs = new ArrayList<CertificationCriterionDTO>();
-        
+
         List<TestFunctionalityCriteriaMapDTO> maps = testFunctionalityDAO.getTestFunctionalityCritieriaMaps();
         for (TestFunctionalityCriteriaMapDTO map : maps) {
             if (map.getCriteria().getCertificationEdition().equals(edition.getYear())) {
-                if (tfDTO.getId().equals(map.getTestFunctionality().getId()))
+                if (tfDTO.getId().equals(map.getTestFunctionality().getId())) {
                     certDTOs.add(map.getCriteria());
+                }
             }
         }
-        
+
         Iterator<CertificationCriterionDTO> iter = certDTOs.iterator();
-        while(iter.hasNext()) {
-            criteria += iter.next().getNumber();
+        while (iter.hasNext()) {
+            criteria.append(iter.next().getNumber());
             if (iter.hasNext()) {
-                criteria += ", ";
+                criteria.append(", ");
             }
         }
-        return criteria;
+        return criteria.toString();
     }
 }

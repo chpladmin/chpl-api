@@ -109,7 +109,7 @@ public class CollectionsControllerTest extends TestCase {
             assertNotNull(result.getSurveillanceCount());
             assertNotNull(result.getOpenNonconformityCount());
             assertNotNull(result.getClosedNonconformityCount());
-            
+
             if(LISTINGS_WITH_PRACTICE_TYPES.contains(result.getId())) {
                 assertNotNull(result.getPracticeType());
             }

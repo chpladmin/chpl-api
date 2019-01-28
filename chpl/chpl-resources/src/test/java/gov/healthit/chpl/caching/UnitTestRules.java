@@ -14,10 +14,15 @@ import org.springframework.stereotype.Service;
 
 import net.sf.ehcache.CacheManager;
 
+/**
+ * Class that encapsulates caching actions every unit test may need.
+ * @author kekey
+ *
+ */
 @Service
 public class UnitTestRules extends ExternalResource {
     private static final Logger LOGGER = LogManager.getLogger(UnitTestRules.class);
-    
+
     @Autowired
     private EntityManagerFactory emf;
     @Autowired private CacheManager cacheManager;
@@ -28,7 +33,7 @@ public class UnitTestRules extends ExternalResource {
         cacheManager.clearAll();
         LOGGER.info("Setting security context authentication to null before running @Test");
         SecurityContextHolder.getContext().setAuthentication(null);
-        
+
         LOGGER.info("Setting sequence values to work with dbunit data before running @Test");
         EntityManager entityManager = emf.createEntityManager();
         EntityTransaction tx = entityManager.getTransaction();

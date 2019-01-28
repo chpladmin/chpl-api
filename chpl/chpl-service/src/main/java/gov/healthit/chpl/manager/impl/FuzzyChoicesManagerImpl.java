@@ -25,32 +25,36 @@ public class FuzzyChoicesManagerImpl extends ApplicationObjectSupport implements
 
     @Autowired
     private FuzzyChoicesDAO fuzzyChoicesDao;
-    @Autowired 
+    @Autowired
     private Environment env;
-    
-    public String getTopFuzzyChoice(String query, FuzzyType type){
-    	int limit = Integer.parseInt(env.getProperty("fuzzyChoiceLimit"));
+
+    public String getTopFuzzyChoice(String query, FuzzyType type) {
+        int limit = Integer.parseInt(env.getProperty("fuzzyChoiceLimit"));
         int cutoff = Integer.parseInt(env.getProperty("fuzzyChoiceThreshold"));
-    	List<ExtractedResult> results = null;
-		try {
-			results = FuzzySearch.extractTop(query, getFuzzyChoicesByType(type), limit, cutoff);
-		} catch (EntityRetrievalException | IOException e) {
-			e.printStackTrace();
-		}
-		String result = null;
-    	for(ExtractedResult er : results){
-    		result = er.getString();
-    	}
-    	return result;
+        List<ExtractedResult> results = null;
+        try {
+            results = FuzzySearch.extractTop(query, getFuzzyChoicesByType(type), limit, cutoff);
+        } catch (EntityRetrievalException | IOException e) {
+            e.printStackTrace();
+        }
+        String result = null;
+        if (results != null) {
+            for (ExtractedResult er : results) {
+                result = er.getString();
+            }
+        }
+        return result;
     }
-    
-    public List<String> getFuzzyChoicesByType(FuzzyType type) throws JsonParseException, JsonMappingException, EntityRetrievalException, IOException{
-    	FuzzyChoicesDTO choices = getByType(type);
-    	return choices.getChoices();
+
+    public List<String> getFuzzyChoicesByType(FuzzyType type)
+            throws JsonParseException, JsonMappingException, EntityRetrievalException, IOException {
+        FuzzyChoicesDTO choices = getByType(type);
+        return choices.getChoices();
     }
 
     @Transactional(readOnly = true)
-    public FuzzyChoicesDTO getByType(FuzzyType type) throws EntityRetrievalException, JsonParseException, JsonMappingException, IOException {
+    public FuzzyChoicesDTO getByType(FuzzyType type)
+            throws EntityRetrievalException, JsonParseException, JsonMappingException, IOException {
         return fuzzyChoicesDao.getByType(type);
     }
 

@@ -27,11 +27,11 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
 public class ValidDataReviewerTest {
     private static final String D_1 = "170.315 (d)(1)";
-    private static final String BAD_PRIVACY_SECURITY_ERROR = 
+    private static final String BAD_PRIVACY_SECURITY_ERROR =
             "Certification " + D_1
-            + " contains Privacy and Security Framework value 'Approach 12' which must match one of " 
+            + " contains Privacy and Security Framework value 'Approach 12' which must match one of "
             + PrivacyAndSecurityFrameworkConcept.getFormattedValues();
-    private static final String BAD_ADDL_SOFTWARE_ERROR = 
+    private static final String BAD_ADDL_SOFTWARE_ERROR =
             "No CHPL product was found matching additional software CHP-12345 for " + D_1;
 
     @Spy private CertifiedProductManager cpManager;
@@ -62,8 +62,8 @@ public class ValidDataReviewerTest {
     @Test
     public void testValidListing_ValidFields_DoesNotHaveErrors() {
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
-        for(CertificationResult certResult : listing.getCertificationResults()) {
-            if(certResult.getNumber().equals(D_1)) {
+        for (CertificationResult certResult : listing.getCertificationResults()) {
+            if (certResult.getNumber().equals(D_1)) {
                 certResult.setPrivacySecurityFramework("Approach 1");
                 CertificationResultAdditionalSoftware addSoft = new CertificationResultAdditionalSoftware();
                 addSoft.setCertifiedProductId(2L);
@@ -75,7 +75,7 @@ public class ValidDataReviewerTest {
         try {
             Mockito.when(cpManager.chplIdExists(ArgumentMatchers.anyString()))
         .thenReturn(true);
-        } catch(EntityRetrievalException ex) {}
+        } catch (EntityRetrievalException ex) { }
         validDataReivewer.review(listing);
         assertFalse(listing.getErrorMessages().contains(BAD_PRIVACY_SECURITY_ERROR));
         assertFalse(listing.getErrorMessages().contains(BAD_ADDL_SOFTWARE_ERROR));
@@ -84,15 +84,15 @@ public class ValidDataReviewerTest {
     @Test
     public void testBadPrivacySecurity_HasError() {
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
-        for(CertificationResult certResult : listing.getCertificationResults()) {
-            if(certResult.getNumber().equals(D_1)) {
+        for (CertificationResult certResult : listing.getCertificationResults()) {
+            if (certResult.getNumber().equals(D_1)) {
                 certResult.setPrivacySecurityFramework("Approach 12");
             }
         }
         try {
             Mockito.when(cpManager.chplIdExists(ArgumentMatchers.anyString()))
         .thenReturn(true);
-        } catch(EntityRetrievalException ex) {}
+        } catch (EntityRetrievalException ex) { }
         validDataReivewer.review(listing);
         assertTrue(listing.getErrorMessages().contains(BAD_PRIVACY_SECURITY_ERROR));
         assertFalse(listing.getErrorMessages().contains(BAD_ADDL_SOFTWARE_ERROR));
@@ -101,8 +101,8 @@ public class ValidDataReviewerTest {
     @Test
     public void testBadAdditionalSoftware_HasErrors() {
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
-        for(CertificationResult certResult : listing.getCertificationResults()) {
-            if(certResult.getNumber().equals(D_1)) {
+        for (CertificationResult certResult : listing.getCertificationResults()) {
+            if (certResult.getNumber().equals(D_1)) {
                 CertificationResultAdditionalSoftware addSoft = new CertificationResultAdditionalSoftware();
                 addSoft.setCertifiedProductNumber("CHP-12345");
                 addSoft.setCertificationResultId(certResult.getId());
@@ -112,7 +112,7 @@ public class ValidDataReviewerTest {
         try {
             Mockito.when(cpManager.chplIdExists(ArgumentMatchers.anyString()))
         .thenReturn(false);
-        } catch(EntityRetrievalException ex) {}
+        } catch (EntityRetrievalException ex) { }
         validDataReivewer.review(listing);
         assertFalse(listing.getErrorMessages().contains(BAD_PRIVACY_SECURITY_ERROR));
         assertTrue(listing.getErrorMessages().contains(BAD_ADDL_SOFTWARE_ERROR));

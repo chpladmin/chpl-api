@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import gov.healthit.chpl.auth.json.User;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.util.Util;
 
 public class ActivityEvent implements Serializable {
     private static final long serialVersionUID = -8220712127605295980L;
@@ -39,11 +40,11 @@ public class ActivityEvent implements Serializable {
     }
 
     public Date getActivityDate() {
-        return activityDate;
+        return Util.getNewDate(activityDate);
     }
 
     public void setActivityDate(final Date activityDate) {
-        this.activityDate = activityDate;
+        this.activityDate = Util.getNewDate(activityDate);
     }
 
     public Long getActivityObjectId() {

@@ -1,8 +1,12 @@
 package gov.healthit.chpl.auth.json;
 
+import java.io.Serializable;
+
 import gov.healthit.chpl.auth.dto.UserDTO;
 
-public class User {
+public class User implements Serializable {
+    private static final long serialVersionUID = 8408154701107113148L;
+
     private Long userId;
     private String subjectName;
     private String fullName;

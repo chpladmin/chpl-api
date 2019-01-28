@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 public class ErrorMessageUtil {
 
     private MessageSource messageSource;
-    
-    @Autowired 
+
+    @Autowired
     public ErrorMessageUtil(final MessageSource messageSource) {
         this.messageSource = messageSource;
     }
@@ -37,5 +37,10 @@ public class ErrorMessageUtil {
                             LocaleContextHolder.getLocale()), inputs);
         }
         return result;
+    }
+    
+    public int getMaxLength(final String field) {
+        return Integer.parseInt(String.format(
+                messageSource.getMessage(new DefaultMessageSourceResolvable(field), LocaleContextHolder.getLocale())));
     }
 }

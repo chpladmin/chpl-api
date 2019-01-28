@@ -54,9 +54,8 @@ public class CertificationResultRules {
         dbf.setExpandEntityReferences(true);
         dbf.setIgnoringComments(true);
         dbf.setIgnoringElementContentWhitespace(true);
-        
+
         ClassPathResource cpr = new ClassPathResource("certificationResultRules.xml");
-        
         try (InputStream xmlInput = cpr.getInputStream()) {
             // use the factory to take an instance of the document builder
             DocumentBuilder db = dbf.newDocumentBuilder();
@@ -78,13 +77,13 @@ public class CertificationResultRules {
                             Element propertyElement = (Element) propertyNode;
                             String propName = propertyElement.getNodeName();
                             String propValue = propertyElement.getTextContent();
-                            boolean canHaveProperty = new Boolean(propValue).booleanValue();
+                            boolean canHaveProperty = Boolean.valueOf(propValue);
                             CertificationResultOption option = new CertificationResultOption();
                             option.setOptionName(propName);
-                            if(propName.equals("gap")){
-                            	option.setCanHaveOption(true);
-                            }else{
-                            	option.setCanHaveOption(canHaveProperty);
+                            if (propName.equals("gap")) {
+                                option.setCanHaveOption(true);
+                            } else {
+                                option.setCanHaveOption(canHaveProperty);
                             }
                             if (rules.get(certNumber) == null) {
                                 List<CertificationResultOption> options = new ArrayList<CertificationResultOption>();

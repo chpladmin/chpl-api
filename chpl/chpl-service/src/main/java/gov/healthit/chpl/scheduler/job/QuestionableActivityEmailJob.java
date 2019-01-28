@@ -42,7 +42,7 @@ import gov.healthit.chpl.util.Util;
 
 /**
  * The QuestionableActivityEmailJob implements a Quartz job and is available to ROLE_ADMIN. When
- * invoked it emails relevant individuals with the questionable activity that has occurred within 
+ * invoked it emails relevant individuals with the questionable activity that has occurred within
  * the last week.
  * @author kekey
  *
@@ -57,7 +57,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
 
     @Autowired
     private Environment env;
-    
+
     private static final int NUM_REPORT_COLS = 13;
     private static final int ACB_COL = 0;
     private static final int DEVELOPER_COL = 1;
@@ -96,8 +96,8 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         String subject = props.getProperty("questionableActivityEmailSubject");
         String htmlMessage = null;
         List<File> files = null;
-        if(csvRows != null && csvRows.size() > 0) {
-            htmlMessage = String.format(props.getProperty("questionableActivityHasDataEmailBody"), 
+        if (csvRows != null && csvRows.size() > 0) {
+            htmlMessage = String.format(props.getProperty("questionableActivityHasDataEmailBody"),
                     Util.getDateFormatter().format(start.getTime()),
                     Util.getDateFormatter().format(end.getTime()));
             String filename = props.getProperty("questionableActivityReportFilename");
@@ -108,32 +108,32 @@ public class QuestionableActivityEmailJob extends QuartzJob {
                 files.add(output);
             }
         } else {
-            htmlMessage = String.format(props.getProperty("questionableActivityNoDataEmailBody"), 
+            htmlMessage = String.format(props.getProperty("questionableActivityNoDataEmailBody"),
                     Util.getDateFormatter().format(start.getTime()),
                     Util.getDateFormatter().format(end.getTime()));
         }
 
         LOGGER.info("Sending email to {} with contents {} and a total of {} questionable activities",
                 to, htmlMessage, csvRows.size());
-        
+
         try {
             List<String> recipients = new ArrayList<String>();
             recipients.add(to);
-            
+
             EmailBuilder emailBuilder = new EmailBuilder(env);
             emailBuilder.recipients(recipients)
-                        .subject(subject)
-                        .htmlMessage(htmlMessage)
-                        .fileAttachments(files)
-                        .sendEmail();
-            
+            .subject(subject)
+            .htmlMessage(htmlMessage)
+            .fileAttachments(files)
+            .sendEmail();
+
         } catch (MessagingException e) {
             LOGGER.error(e);
-        } 
+        }
         LOGGER.info("********* Completed the Questionable Activity Email job. *********");
     }
 
-    private List<List<String>> getAppropriateActivities(final JobExecutionContext jobContext, 
+    private List<List<String>> getAppropriateActivities(final JobExecutionContext jobContext,
             final Date start, final Date end) {
         List<List<String>> activities = new ArrayList<List<String>>();
         activities.addAll(createListingActivityRows(start, end));
@@ -149,7 +149,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         try {
             temp = File.createTempFile(reportFilename, ".csv");
             temp.deleteOnExit();
-            
+
             try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(temp), Charset.forName("UTF-8").newEncoder());
                     CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
                 csvPrinter.printRecord(getHeaderRow());
@@ -212,7 +212,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         Set<ActivityDateTriggerGroup> activityGroups = activityByGroup.keySet();
         for (ActivityDateTriggerGroup activityGroup : activityGroups) {
             List<String> currRow = createEmptyRow();
-            currRow.set(ACTIVITY_DATE_COL, Util.timestampFormatter.format(activityGroup.getActivityDate()));
+            currRow.set(ACTIVITY_DATE_COL, Util.getTimestampFormatter().format(activityGroup.getActivityDate()));
             currRow.set(ACTIVITY_TYPE_COL, activityGroup.getTrigger().getName());
 
             List<QuestionableActivityCertificationResultDTO> activitiesForGroup =
@@ -255,7 +255,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         Set<ActivityDateTriggerGroup> activityGroups = activityByGroup.keySet();
         for (ActivityDateTriggerGroup activityGroup : activityGroups) {
             List<String> currRow = createEmptyRow();
-            currRow.set(ACTIVITY_DATE_COL, Util.timestampFormatter.format(activityGroup.getActivityDate()));
+            currRow.set(ACTIVITY_DATE_COL, Util.getTimestampFormatter().format(activityGroup.getActivityDate()));
             currRow.set(ACTIVITY_TYPE_COL, activityGroup.getTrigger().getName());
 
             List<QuestionableActivityListingDTO> activitiesForGroup =
@@ -298,7 +298,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         Set<ActivityDateTriggerGroup> activityGroups = activityByGroup.keySet();
         for (ActivityDateTriggerGroup activityGroup : activityGroups) {
             List<String> currRow = createEmptyRow();
-            currRow.set(ACTIVITY_DATE_COL, Util.timestampFormatter.format(activityGroup.getActivityDate()));
+            currRow.set(ACTIVITY_DATE_COL, Util.getTimestampFormatter().format(activityGroup.getActivityDate()));
             currRow.set(ACTIVITY_TYPE_COL, activityGroup.getTrigger().getName());
 
             List<QuestionableActivityDeveloperDTO> activitiesForGroup =
@@ -341,7 +341,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         Set<ActivityDateTriggerGroup> activityGroups = activityByGroup.keySet();
         for (ActivityDateTriggerGroup activityGroup : activityGroups) {
             List<String> currRow = createEmptyRow();
-            currRow.set(ACTIVITY_DATE_COL, Util.timestampFormatter.format(activityGroup.getActivityDate()));
+            currRow.set(ACTIVITY_DATE_COL, Util.getTimestampFormatter().format(activityGroup.getActivityDate()));
             currRow.set(ACTIVITY_TYPE_COL, activityGroup.getTrigger().getName());
 
             List<QuestionableActivityProductDTO> activitiesForGroup =
@@ -384,7 +384,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         Set<ActivityDateTriggerGroup> activityGroups = activityByGroup.keySet();
         for (ActivityDateTriggerGroup activityGroup : activityGroups) {
             List<String> currRow = createEmptyRow();
-            currRow.set(ACTIVITY_DATE_COL, Util.timestampFormatter.format(activityGroup.getActivityDate()));
+            currRow.set(ACTIVITY_DATE_COL, Util.getTimestampFormatter().format(activityGroup.getActivityDate()));
             currRow.set(ACTIVITY_TYPE_COL, activityGroup.getTrigger().getName());
 
             List<QuestionableActivityVersionDTO> activitiesForGroup =
@@ -684,11 +684,11 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         this.questionableActivityDao = questionableActivityDao;
     }
 
-    private class ActivityDateTriggerGroup {
+    private static class ActivityDateTriggerGroup {
         private Date activityDate;
         private QuestionableActivityTriggerDTO trigger;
 
-        public ActivityDateTriggerGroup(Date activityDate, QuestionableActivityTriggerDTO trigger) {
+        ActivityDateTriggerGroup(final Date activityDate, final QuestionableActivityTriggerDTO trigger) {
             this.activityDate = activityDate;
             this.trigger = trigger;
         }

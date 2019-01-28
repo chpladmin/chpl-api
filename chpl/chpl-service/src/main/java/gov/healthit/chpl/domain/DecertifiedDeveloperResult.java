@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.util.Util;
 
 public class DecertifiedDeveloperResult implements Serializable {
     private static final long serialVersionUID = 7463932788024776464L;
@@ -65,11 +66,11 @@ public class DecertifiedDeveloperResult implements Serializable {
     }
 
     public Date getDecertificationDate() {
-        return decertificationDate;
+        return Util.getNewDate(decertificationDate);
     }
 
     public void setDecertificationDate(final Date decertificationDate) {
-        this.decertificationDate = decertificationDate;
+        this.decertificationDate = Util.getNewDate(decertificationDate);
     }
 
     public Long getEarliestMeaningfulUseDate() {

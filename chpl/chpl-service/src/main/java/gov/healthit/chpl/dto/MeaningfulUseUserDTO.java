@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import gov.healthit.chpl.entity.MeaningfulUseUserEntity;
+import gov.healthit.chpl.util.Util;
 
 /**
  * Business-layer DTO object for meaningful use users.
@@ -52,11 +53,11 @@ public class MeaningfulUseUserDTO implements Serializable {
     }
 
     public Date getMuuDate() {
-        return muuDate;
+        return Util.getNewDate(muuDate);
     }
 
     public void setMuuDate(final Date muuDate) {
-        this.muuDate = muuDate;
+        this.muuDate = Util.getNewDate(muuDate);
     }
 
     public Long getCertifiedProductId() {

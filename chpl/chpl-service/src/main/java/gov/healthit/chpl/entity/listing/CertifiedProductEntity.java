@@ -1,5 +1,6 @@
 package gov.healthit.chpl.entity.listing;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -16,6 +17,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import gov.healthit.chpl.util.Util;
+
 /**
  * Object mapping for hibernate-handled table: certified_product. A product that
  * has been Certified
@@ -25,10 +28,9 @@ import javax.persistence.Transient;
 
 @Entity
 @Table(name = "certified_product")
-public class CertifiedProductEntity {
+public class CertifiedProductEntity implements Serializable {
+    private static final long serialVersionUID = -2437147151682759808L;
 
-    /** Serial Version UID. */
-    private static final long serialVersionUID = -2928065796550377879L;
     private static final int OTHER_ACB_LENGTH = 64;
     private static final int CHPL_ID_LENGTH = 250;
     private static final int REPORT_FILE_LOCATION_LENGTH = 255;
@@ -336,11 +338,11 @@ public class CertifiedProductEntity {
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Boolean getDeleted() {
@@ -352,11 +354,11 @@ public class CertifiedProductEntity {
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public Long getLastModifiedUser() {
@@ -392,11 +394,11 @@ public class CertifiedProductEntity {
     }
 
     public Date getSedTestingEnd() {
-        return sedTestingEnd;
+        return Util.getNewDate(sedTestingEnd);
     }
 
     public void setSedTestingEnd(final Date sedTestingEnd) {
-        this.sedTestingEnd = sedTestingEnd;
+        this.sedTestingEnd = Util.getNewDate(sedTestingEnd);
     }
 
     public CertifiedProductEntity getCertifiedProduct() {

@@ -6,19 +6,21 @@ import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
+/**
+ * Interface to database access for testing labs.
+ * @author kekey
+ *
+ */
 public interface TestingLabDAO {
 
     TestingLabDTO create(TestingLabDTO dto) throws EntityCreationException, EntityRetrievalException;
 
     TestingLabDTO update(TestingLabDTO dto) throws EntityRetrievalException;
 
-    void delete(Long id) throws EntityRetrievalException;
-
-    List<TestingLabDTO> findAll(boolean showDeleted);
+    List<TestingLabDTO> findAll();
+    List<TestingLabDTO> findAllActive();
 
     TestingLabDTO getById(Long id) throws EntityRetrievalException;
-
-    TestingLabDTO getById(Long id, boolean includeDeleted) throws EntityRetrievalException;
 
     TestingLabDTO getByName(String name);
 

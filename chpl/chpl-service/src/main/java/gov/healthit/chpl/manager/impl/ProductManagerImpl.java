@@ -89,7 +89,7 @@ public class ProductManagerImpl implements ProductManager {
 
     @Override
     @Transactional(readOnly = false)
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
     @CacheEvict(value = {
             CacheNames.PRODUCT_NAMES
     }, allEntries = true)
@@ -126,7 +126,7 @@ public class ProductManagerImpl implements ProductManager {
 
     @Override
     @Transactional(readOnly = false)
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
     @CacheEvict(value = {
             CacheNames.PRODUCT_NAMES
     }, allEntries = true)
@@ -172,7 +172,7 @@ public class ProductManagerImpl implements ProductManager {
 
     @Override
     @Transactional(readOnly = false)
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     @CacheEvict(value = {
             CacheNames.PRODUCT_NAMES
     }, allEntries = true)
@@ -229,7 +229,7 @@ public class ProductManagerImpl implements ProductManager {
             EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class,
             AccessDeniedException.class
     })
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
     @CacheEvict(value = {
             CacheNames.PRODUCT_NAMES
     }, allEntries = true)
@@ -237,7 +237,7 @@ public class ProductManagerImpl implements ProductManager {
             List<ProductVersionDTO> newProductVersions)
             throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
         // what ACB does the user have??
-        List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser(true);
+        List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser();
 
         // create the new product and log activity
         // this method checks that the related developer is Active and will

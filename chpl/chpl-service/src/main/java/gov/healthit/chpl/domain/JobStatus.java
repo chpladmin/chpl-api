@@ -1,8 +1,12 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
+
 import gov.healthit.chpl.dto.job.JobStatusDTO;
 
-public class JobStatus {
+public class JobStatus implements Serializable {
+    private static final long serialVersionUID = 5418948955268613278L;
+
     private String status;
     private Integer percentComplete;
 

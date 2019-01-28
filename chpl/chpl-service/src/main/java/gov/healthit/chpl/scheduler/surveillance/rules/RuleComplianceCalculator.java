@@ -76,10 +76,10 @@ public class RuleComplianceCalculator {
 
     public void setProps(final Properties props) {
         this.props = props;
-        lsc.setNumDaysAllowed(Integer.valueOf(props.getProperty("suspendedDaysAllowed")));
-        capApproval.setNumDaysAllowed(Integer.valueOf(props.getProperty("capApprovalDaysAllowed")));
-        capStarted.setNumDaysAllowed(Integer.valueOf(props.getProperty("capStartDaysAllowed")));
-        ncOpenCapClosed.setNumDaysAllowed(Integer.valueOf(props.getProperty("ncOpenCapClosedDaysAllowed")));
+        lsc.setNumDaysAllowed(Integer.parseInt(props.getProperty("suspendedDaysAllowed")));
+        capApproval.setNumDaysAllowed(Integer.parseInt(props.getProperty("capApprovalDaysAllowed")));
+        capStarted.setNumDaysAllowed(Integer.parseInt(props.getProperty("capStartDaysAllowed")));
+        ncOpenCapClosed.setNumDaysAllowed(Integer.parseInt(props.getProperty("ncOpenCapClosedDaysAllowed")));
     }
 
     public LongSuspensionComplianceChecker getLsc() {

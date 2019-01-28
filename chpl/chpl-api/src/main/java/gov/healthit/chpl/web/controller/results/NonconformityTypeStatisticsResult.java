@@ -7,7 +7,7 @@ import java.util.List;
 
 public class NonconformityTypeStatisticsResult {
 
-	private List<NonconformityTypeStatistics> nonconformityStatisticsResult;
+    private List<NonconformityTypeStatistics> nonconformityStatisticsResult;
 
     /**
      * Default constructor.

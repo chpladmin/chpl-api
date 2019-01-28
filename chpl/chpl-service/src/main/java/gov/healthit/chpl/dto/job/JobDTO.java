@@ -6,9 +6,9 @@ import java.util.Date;
 import java.util.List;
 
 import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.entity.job.JobEntity;
 import gov.healthit.chpl.entity.job.JobMessageEntity;
+import gov.healthit.chpl.util.Util;
 
 public class JobDTO implements Serializable {
     private static final long serialVersionUID = -7841496230766066264L;
@@ -74,19 +74,19 @@ public class JobDTO implements Serializable {
     }
 
     public Date getStartTime() {
-        return startTime;
+        return Util.getNewDate(startTime);
     }
 
     public void setStartTime(final Date startTime) {
-        this.startTime = startTime;
+        this.startTime = Util.getNewDate(startTime);
     }
 
     public Date getEndTime() {
-        return endTime;
+        return Util.getNewDate(endTime);
     }
 
     public void setEndTime(final Date endTime) {
-        this.endTime = endTime;
+        this.endTime = Util.getNewDate(endTime);
     }
 
     public String getData() {

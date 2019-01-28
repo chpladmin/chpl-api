@@ -9,7 +9,7 @@ public class CertificationIdVerificationBody {
     public CertificationIdVerificationBody() {
     }
 
-    public CertificationIdVerificationBody(List<String> ids) {
+    public CertificationIdVerificationBody(final List<String> ids) {
         this.ids = ids;
     }
 

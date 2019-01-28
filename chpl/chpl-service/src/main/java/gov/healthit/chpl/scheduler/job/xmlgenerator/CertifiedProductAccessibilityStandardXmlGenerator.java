@@ -17,7 +17,7 @@ public class CertifiedProductAccessibilityStandardXmlGenerator extends XmlGenera
             sw.writeEndElement();
         }
     }
-    
+
     public static void addAccessibilityStandard(CertifiedProductAccessibilityStandard cpas, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (cpas != null) {
            sw.writeStartElement(rootNodeName);

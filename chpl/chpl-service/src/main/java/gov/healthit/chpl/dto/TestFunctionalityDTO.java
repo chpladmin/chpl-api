@@ -75,13 +75,16 @@ public class TestFunctionalityDTO implements Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o)
+    public boolean equals(final Object o) {
+        if (this == o) {
             return true;
-        if (o == null)
+        }
+        if (o == null) {
             return false;
-        if (getClass() != o.getClass())
+        }
+        if (getClass() != o.getClass()) {
             return false;
+        }
         TestFunctionalityDTO dto = (TestFunctionalityDTO) o;
         // field comparison
         return Objects.equals(id, dto.getId());

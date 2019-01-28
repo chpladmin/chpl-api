@@ -17,7 +17,7 @@ public class TransparencyAttestationMapXmlGenerator extends XmlGenerator {
             sw.writeEndElement();
         }
     }
-    
+
     public static void add(TransparencyAttestationMap map, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (map != null) {
             sw.writeStartElement(rootNodeName);

@@ -68,9 +68,11 @@ public class ActivityConceptDAOImpl extends BaseDAOImpl implements ActivityConce
         update(entity);
 
         ActivityConceptDTO result = null;
-        if (entity != null) {
-            result = new ActivityConceptDTO(entity);
-        }
+        
+        //Findbugs says this cannot be null since it used above - an NPE would have been thrown
+        //if (entity != null) {
+        result = new ActivityConceptDTO(entity);
+        //}
         return result;
 
     }

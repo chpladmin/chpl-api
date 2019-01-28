@@ -21,38 +21,41 @@ import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
+@TestExecutionListeners({
+        DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
+})
 @DatabaseSetup("classpath:data/testData.xml")
 public class TestFunctionalityDAOTest extends TestCase {
 
-	@Autowired private TestFunctionalityDAO tfDao;
-	
-	@Rule
+    @Autowired
+    private TestFunctionalityDAO tfDao;
+
+    @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
-		
-	@Test
-	@Transactional
-	public void findTestFunctionalityByNumberAndEdition() {
-		String number = "(a)(4)(iii)";
-		Long editionId = 2L;
-		TestFunctionalityDTO foundTf = tfDao.getByNumberAndEdition(number, editionId);
-		assertNotNull(foundTf);
-		assertEquals(number, foundTf.getNumber());
-		assertEquals("2014", foundTf.getYear());
-	}
-	
-	@Test
-	@Transactional
-	public void findNoTestFunctionalityByNumberAndEdition() {
-		String number = "BOGUS";
-		Long editionId = 2L;
-		TestFunctionalityDTO foundTf = tfDao.getByNumberAndEdition(number, editionId);
-		assertNull(foundTf);
-	}
-	
+
+    @Test
+    @Transactional
+    public void findTestFunctionalityByNumberAndEdition() {
+        String number = "(a)(4)(iii)";
+        Long editionId = 2L;
+        TestFunctionalityDTO foundTf = tfDao.getByNumberAndEdition(number, editionId);
+        assertNotNull(foundTf);
+        assertEquals(number, foundTf.getNumber());
+        assertEquals("2014", foundTf.getYear());
+    }
+
+    @Test
+    @Transactional
+    public void findNoTestFunctionalityByNumberAndEdition() {
+        String number = "BOGUS";
+        Long editionId = 2L;
+        TestFunctionalityDTO foundTf = tfDao.getByNumberAndEdition(number, editionId);
+        assertNull(foundTf);
+    }
+
 }

@@ -353,20 +353,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CertifiedProductDetailsDTO> getAllWithEditPermission() {
-        List<CertificationBodyDTO> userAcbs = acbManager.getAllForUser(false);
-        if (userAcbs == null || userAcbs.size() == 0) {
-            return new ArrayList<CertifiedProductDetailsDTO>();
-        }
-        List<Long> acbIdList = new ArrayList<Long>(userAcbs.size());
-        for (CertificationBodyDTO dto : userAcbs) {
-            acbIdList.add(dto.getId());
-        }
-        return cpDao.getDetailsByAcbIds(acbIdList);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public List<CertifiedProductDetailsDTO> getByVersion(final Long versionId) throws EntityRetrievalException {
         versionManager.getById(versionId); // throws 404 if bad id
         return cpDao.getDetailsByVersionId(versionId);
@@ -384,7 +370,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     public List<CertifiedProductDetailsDTO> getByVersionWithEditPermission(final Long versionId)
             throws EntityRetrievalException {
         versionManager.getById(versionId); // throws 404 if bad id
-        List<CertificationBodyDTO> userAcbs = acbManager.getAllForUser(false);
+        List<CertificationBodyDTO> userAcbs = acbManager.getAllForUser();
         if (userAcbs == null || userAcbs.size() == 0) {
             return new ArrayList<CertifiedProductDetailsDTO>();
         }
@@ -450,8 +436,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     }
 
     @Override
-    @PreAuthorize("hasRole('ROLE_ACB') "
-            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') "
+            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
@@ -936,9 +922,11 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                             }
                             // add mapping from cert result to test task
                             CertificationResultTestTaskDTO taskDto = new CertificationResultTestTaskDTO();
-                            taskDto.setTestTaskId(existingTt.getId());
-                            taskDto.setCertificationResultId(createdCert.getId());
-                            taskDto.setTestTask(existingTt);
+                            if (existingTt != null) {
+                                taskDto.setTestTaskId(existingTt.getId());
+                                taskDto.setCertificationResultId(createdCert.getId());
+                                taskDto.setTestTask(existingTt);
+                            }
 
                             if (certTask.getTaskParticipants() != null) {
                                 for (PendingCertificationResultTestTaskParticipantDTO certTaskPart : certTask
@@ -1084,7 +1072,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     }
 
     @Override
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     @Transactional(readOnly = false)
     @ClearAllCaches
     public CertifiedProductDTO changeOwnership(final Long certifiedProductId, final Long acbId)
@@ -1095,8 +1083,9 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     }
 
     @Override
-    @PreAuthorize("hasRole('ROLE_ADMIN') or " + "hasRole('ROLE_ACB')"
-            + "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or "
+            + "(hasRole('ROLE_ACB')"
+            + " and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     @Transactional(readOnly = false)
     public void sanitizeUpdatedListingData(final Long acbId, final CertifiedProductSearchDetails listing)
             throws EntityNotFoundException {
@@ -1140,7 +1129,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     }
 
     @Override
-    @PreAuthorize("hasRole('ROLE_ADMIN') or " + "(hasRole('ROLE_ACB')"
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or " + "(hasRole('ROLE_ACB')"
             + "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     @Transactional(rollbackFor = {
             EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class,
@@ -1156,7 +1145,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
         CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
         Long listingId = updatedListing.getId();
-        Long productVersionId = new Long(updatedListing.getVersion().getVersionId());
+        Long productVersionId = updatedListing.getVersion().getVersionId();
         CertificationStatus updatedStatus = updatedListing.getCurrentStatus().getStatus();
         CertificationStatus existingStatus = existingListing.getCurrentStatus().getStatus();
         //if listing status has changed that may trigger other changes
@@ -1175,7 +1164,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             case SuspendedByOnc:
             case TerminatedByOnc:
                 // only onc admin can do this and it always triggers developer ban
-                if (Util.isUserRoleAdmin()) {
+                if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
                     // find the new developer status
                     if (updatedStatusDto.getStatus().equals(CertificationStatusType.SuspendedByOnc.toString())) {
                         newDevStatusDto = devStatusDao.getByName(DeveloperStatusType.SuspendedByOnc.toString());
@@ -1183,7 +1172,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                             .equals(CertificationStatusType.TerminatedByOnc.toString())) {
                         newDevStatusDto = devStatusDao.getByName(DeveloperStatusType.UnderCertificationBanByOnc.toString());
                     }
-                } else if (!Util.isUserRoleAdmin()) {
+                } else if (!Util.isUserRoleAdmin() && !Util.isUserRoleOnc()) {
                     LOGGER.error("User " + Util.getUsername()
                     + " does not have ROLE_ADMIN and cannot change the status of developer for certified product with id "
                     + listingId);
@@ -1194,15 +1183,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             case WithdrawnByAcb:
             case WithdrawnByDeveloperUnderReview:
                 // initiate TriggerDeveloperBan job, telling ONC that they might need to ban a Developer
-                if ((Util.isUserRoleAdmin() || Util.isUserRoleAcbAdmin())) {
-                    triggerDeveloperBan(updatedListing);
-                } else if (!Util.isUserRoleAdmin() && !Util.isUserRoleAcbAdmin()) {
-                    LOGGER.error("User " + Util.getUsername()
-                    + " does not have ROLE_ADMIN or ROLE_ACB and cannot change the status of "
-                    + "developer for certified product with id " + listingId);
-                    throw new AccessDeniedException(
-                            "User does not have admin permission to change " + cpDeveloper.getName() + " status.");
-                }
+                triggerDeveloperBan(updatedListing, updateRequest.getReason());
                 break;
             default:
                 LOGGER.info("New listing status is " + updatedStatusDto.getStatus()
@@ -1226,25 +1207,27 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
         CertifiedProductDTO dtoToUpdate = new CertifiedProductDTO(updatedListing);
         CertifiedProductDTO result = cpDao.update(dtoToUpdate);
-        if (updatedListing != null) {
-            updateTestingLabs(listingId, existingListing.getTestingLabs(), updatedListing.getTestingLabs());
-            updateIcsChildren(listingId, existingListing.getIcs(), updatedListing.getIcs());
-            updateIcsParents(listingId, existingListing.getIcs(), updatedListing.getIcs());
-            updateQmsStandards(listingId, existingListing.getQmsStandards(), updatedListing.getQmsStandards());
-            updateTargetedUsers(listingId, existingListing.getTargetedUsers(), updatedListing.getTargetedUsers());
-            updateAccessibilityStandards(listingId, existingListing.getAccessibilityStandards(),
-                    updatedListing.getAccessibilityStandards());
-            updateCertificationDate(listingId, new Date(existingListing.getCertificationDate()),
-                    new Date(updatedListing.getCertificationDate()));
 
-            updateCertificationStatusEvents(listingId, existingListing.getCertificationEvents(),
-                    updatedListing.getCertificationEvents());
-            updateMeaningfulUseUserHistory(listingId, existingListing.getMeaningfulUseUserHistory(),
-                    updatedListing.getMeaningfulUseUserHistory());
-            updateCertifications(result.getCertificationBodyId(), existingListing, updatedListing,
-                    existingListing.getCertificationResults(), updatedListing.getCertificationResults());
-            updateCqms(result, existingListing.getCqmResults(), updatedListing.getCqmResults());
-        }
+        //Findbugs says this cannot be null since it used above - an NPE would have been thrown
+        //if (updatedListing != null) {
+        updateTestingLabs(listingId, existingListing.getTestingLabs(), updatedListing.getTestingLabs());
+        updateIcsChildren(listingId, existingListing.getIcs(), updatedListing.getIcs());
+        updateIcsParents(listingId, existingListing.getIcs(), updatedListing.getIcs());
+        updateQmsStandards(listingId, existingListing.getQmsStandards(), updatedListing.getQmsStandards());
+        updateTargetedUsers(listingId, existingListing.getTargetedUsers(), updatedListing.getTargetedUsers());
+        updateAccessibilityStandards(listingId, existingListing.getAccessibilityStandards(),
+                updatedListing.getAccessibilityStandards());
+        updateCertificationDate(listingId, new Date(existingListing.getCertificationDate()),
+                new Date(updatedListing.getCertificationDate()));
+
+        updateCertificationStatusEvents(listingId, existingListing.getCertificationEvents(),
+                updatedListing.getCertificationEvents());
+        updateMeaningfulUseUserHistory(listingId, existingListing.getMeaningfulUseUserHistory(),
+                updatedListing.getMeaningfulUseUserHistory());
+        updateCertifications(result.getCertificationBodyId(), existingListing, updatedListing,
+                existingListing.getCertificationResults(), updatedListing.getCertificationResults());
+        updateCqms(result, existingListing.getCqmResults(), updatedListing.getCqmResults());
+        //}
         return result;
     }
 
@@ -1806,8 +1789,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             } else if (toAdd.getStatus().getId() != null) {
                 CertificationStatusDTO statusDto = certStatusDao.getById(toAdd.getStatus().getId());
                 if (statusDto == null) {
-                    String msg = msgUtil.getMessage("listing.badCertificationStatusId", 
-                            toAdd.getStatus().getId()); 
+                    String msg = msgUtil.getMessage("listing.badCertificationStatusId",
+                            toAdd.getStatus().getId());
                     throw new EntityRetrievalException(msg);
                 }
                 statusEventDto.setStatus(statusDto);
@@ -1815,7 +1798,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                 CertificationStatusDTO statusDto = certStatusDao.getByStatusName(toAdd.getStatus().getName());
                 if (statusDto == null) {
                     String msg = msgUtil.getMessage("listing.badCertificationStatusName",
-                            toAdd.getStatus().getName()); 
+                            toAdd.getStatus().getName());
                     throw new EntityRetrievalException(msg);
                 }
                 statusEventDto.setStatus(statusDto);
@@ -1844,13 +1827,13 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                 statusEventDto.setEventDate(new Date(cseToUpdate.getEventDate()));
                 statusEventDto.setReason(cseToUpdate.getReason());
                 if (cseToUpdate.getStatus() == null) {
-                    String msg = msgUtil.getMessage("listing.missingCertificationStatus"); 
+                    String msg = msgUtil.getMessage("listing.missingCertificationStatus");
                     throw new EntityRetrievalException(msg);
                 } else if (cseToUpdate.getStatus().getId() != null) {
                     CertificationStatusDTO statusDto = certStatusDao.getById(cseToUpdate.getStatus().getId());
                     if (statusDto == null) {
                         String msg = msgUtil.getMessage("listing.badCertificationStatusId",
-                                cseToUpdate.getStatus().getId()); 
+                                cseToUpdate.getStatus().getId());
                         throw new EntityRetrievalException(msg);
                     }
                     statusEventDto.setStatus(statusDto);
@@ -2248,7 +2231,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         }
         return dtos.get(0);
     }
-    private void triggerDeveloperBan(final CertifiedProductSearchDetails updatedListing) {
+    private void triggerDeveloperBan(final CertifiedProductSearchDetails updatedListing, final String reason) {
         Scheduler scheduler;
         try {
             scheduler = getScheduler();
@@ -2270,6 +2253,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                     .usingJobData("effectiveDate", updatedListing.getCurrentStatus().getEventDate())
                     .usingJobData("openNcs", updatedListing.getCountOpenNonconformities())
                     .usingJobData("closedNcs", updatedListing.getCountClosedNonconformities())
+                    .usingJobData("reason", updatedListing.getCurrentStatus().getReason())
+                    .usingJobData("reasonForChange", reason)
                     .build();
             scheduler.scheduleJob(qzTrigger);
         } catch (SchedulerException e) {
@@ -2284,7 +2269,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         return scheduler;
     }
 
-    private class CertificationStatusEventPair {
+    private static class CertificationStatusEventPair {
         private CertificationStatusEvent orig;
         private CertificationStatusEvent updated;
 
@@ -2315,7 +2300,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
     }
 
-    private class MeaningfulUseUserPair {
+    private static class MeaningfulUseUserPair {
         private MeaningfulUseUser orig;
         private MeaningfulUseUser updated;
 
@@ -2346,7 +2331,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
     }
 
-    private class QmsStandardPair {
+    private static class QmsStandardPair {
         private CertifiedProductQmsStandard orig;
         private CertifiedProductQmsStandard updated;
 
@@ -2375,7 +2360,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
     }
 
-    private class CQMResultDetailsPair {
+    private static class CQMResultDetailsPair {
         private CQMResultDetailsDTO orig;
         private CQMResultDetailsDTO updated;
 

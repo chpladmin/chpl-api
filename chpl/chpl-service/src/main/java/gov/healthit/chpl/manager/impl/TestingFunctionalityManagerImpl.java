@@ -22,18 +22,18 @@ import gov.healthit.chpl.manager.TestingFunctionalityManager;
 public class TestingFunctionalityManagerImpl implements TestingFunctionalityManager, ApplicationListener<ContextRefreshedEvent> {
 
     private TestFunctionalityDAO testFunctionalityDAO;
-    
-    private Map<String, List<TestFunctionalityDTO>> testFunctionalityByCriteria2015 = 
+
+    private Map<String, List<TestFunctionalityDTO>> testFunctionalityByCriteria2015 =
             new HashMap<String, List<TestFunctionalityDTO>>();
 
-    private Map<String, List<TestFunctionalityDTO>> testFunctionalityByCriteria2014 = 
+    private Map<String, List<TestFunctionalityDTO>> testFunctionalityByCriteria2014 =
             new HashMap<String, List<TestFunctionalityDTO>>();
-    
+
     @Autowired
     public TestingFunctionalityManagerImpl(TestFunctionalityDAO testFunctionalityDAO) {
         this.testFunctionalityDAO = testFunctionalityDAO;
     }
-    
+
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         List<TestFunctionalityCriteriaMapDTO> allMaps = testFunctionalityDAO.getTestFunctionalityCritieriaMaps();
@@ -94,7 +94,7 @@ public class TestingFunctionalityManagerImpl implements TestingFunctionalityMana
 
     private Map<String, List<TestFunctionalityDTO>> getTestFunctionalityByCriteriaAndEdition(List<TestFunctionalityCriteriaMapDTO> maps, String edition) {
         Map<String, List<TestFunctionalityDTO>> mapping = new HashMap<String, List<TestFunctionalityDTO>>();
-        
+
         for (TestFunctionalityCriteriaMapDTO map : maps) {
             if (map.getCriteria().getCertificationEdition().equals(edition)) {
                 if (!mapping.containsKey(map.getCriteria().getNumber())) {

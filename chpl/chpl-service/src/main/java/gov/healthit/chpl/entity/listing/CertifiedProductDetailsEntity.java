@@ -15,6 +15,7 @@ import org.hibernate.annotations.Type;
 
 import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.entity.ProductEntity;
+import gov.healthit.chpl.util.Util;
 
 /**
  * Entity containing entirety of a Certified Product.
@@ -420,12 +421,12 @@ public class CertifiedProductDetailsEntity {
         this.developerName = developerName;
     }
 
-    public Date getCertificationDate() {
-        return certificationDate;
+    public Date getCreationDate() {
+        return Util.getNewDate(creationDate);
     }
 
-    public void setCertificationDate(final Date certificationDate) {
-        this.certificationDate = certificationDate;
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Integer getCountCertifications() {
@@ -444,20 +445,12 @@ public class CertifiedProductDetailsEntity {
         this.countCqms = countCqms;
     }
 
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
-    }
-
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public String getCertificationStatusName() {
@@ -613,11 +606,11 @@ public class CertifiedProductDetailsEntity {
     }
 
     public Date getSedTestingEnd() {
-        return sedTestingEnd;
+        return Util.getNewDate(sedTestingEnd);
     }
 
     public void setSedTestingEnd(final Date sedTestingEnd) {
-        this.sedTestingEnd = sedTestingEnd;
+        this.sedTestingEnd = Util.getNewDate(sedTestingEnd);
     }
 
     public Long getAddressId() {
@@ -781,27 +774,35 @@ public class CertifiedProductDetailsEntity {
     }
 
     public Date getCertificationStatusDate() {
-        return certificationStatusDate;
+        return Util.getNewDate(certificationStatusDate);
     }
 
     public void setCertificationStatusDate(final Date certificationStatusDate) {
-        this.certificationStatusDate = certificationStatusDate;
+        this.certificationStatusDate = Util.getNewDate(certificationStatusDate);
     }
 
     public Date getDecertificationDate() {
-        return decertificationDate;
+        return Util.getNewDate(decertificationDate);
     }
 
     public void setDecertificationDate(final Date decertificationDate) {
-        this.decertificationDate = decertificationDate;
+        this.decertificationDate = Util.getNewDate(decertificationDate);
+    }
+
+    public Date getCertificationDate() {
+        return Util.getNewDate(certificationDate);
+    }
+
+    public void setCertificationDate(final Date certificationDate) {
+        this.certificationDate = Util.getNewDate(certificationDate);
     }
 
     public Date getDeveloperStatusDate() {
-        return developerStatusDate;
+        return Util.getNewDate(developerStatusDate);
     }
 
     public void setDeveloperStatusDate(final Date developerStatusDate) {
-        this.developerStatusDate = developerStatusDate;
+        this.developerStatusDate = Util.getNewDate(developerStatusDate);
     }
 
     public Boolean getDeleted() {
@@ -813,10 +814,10 @@ public class CertifiedProductDetailsEntity {
     }
 
     public Date getMeaningfulUseUsersDate() {
-        return meaningfulUseUsersDate;
+        return Util.getNewDate(meaningfulUseUsersDate);
     }
 
     public void setMeaningfulUseUsersDate(Date meaningfulUseUsersDate) {
-        this.meaningfulUseUsersDate = meaningfulUseUsersDate;
+        this.meaningfulUseUsersDate = Util.getNewDate(meaningfulUseUsersDate);
     }
 }

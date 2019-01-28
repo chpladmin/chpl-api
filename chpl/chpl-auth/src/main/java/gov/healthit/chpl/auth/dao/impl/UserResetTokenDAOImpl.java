@@ -5,8 +5,6 @@ import java.util.List;
 
 import javax.persistence.Query;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.BaseDAOImpl;
@@ -17,9 +15,7 @@ import gov.healthit.chpl.auth.entity.UserResetTokenEntity;
 
 @Repository(value = "userResetTokenDAO")
 public class UserResetTokenDAOImpl extends BaseDAOImpl implements UserResetTokenDAO {
-    private static final Logger logger = LogManager.getLogger(UserResetTokenDAOImpl.class);
-
-    public UserResetTokenDTO create(String resetToken, Long userId) {
+    public UserResetTokenDTO create(final String resetToken, final Long userId) {
         UserResetTokenEntity entity = new UserResetTokenEntity();
         entity.setUserResetToken(resetToken);
         entity.setUserId(userId);
@@ -34,7 +30,7 @@ public class UserResetTokenDAOImpl extends BaseDAOImpl implements UserResetToken
         return new UserResetTokenDTO(entity);
     }
 
-    public void deletePreviousUserTokens(Long userId) {
+    public void deletePreviousUserTokens(final Long userId) {
         List<UserResetTokenEntity> entities = getAllEntitiesByUserId(userId);
 
         for (UserResetTokenEntity entity : entities) {
@@ -43,7 +39,7 @@ public class UserResetTokenDAOImpl extends BaseDAOImpl implements UserResetToken
         }
     }
 
-    public UserResetTokenDTO findByAuthToken(String authToken) {
+    public UserResetTokenDTO findByAuthToken(final String authToken) {
         UserResetTokenDTO userResetToken = null;
         String userQuery = "from UserResetTokenEntity urt" + " where (NOT urt.deleted = true) "
                 + " AND (urt.userResetToken = :userResetToken) ";
@@ -58,7 +54,7 @@ public class UserResetTokenDAOImpl extends BaseDAOImpl implements UserResetToken
         return userResetToken;
     }
 
-    private List<UserResetTokenEntity> getAllEntitiesByUserId(Long id) {
+    private List<UserResetTokenEntity> getAllEntitiesByUserId(final Long id) {
         String userQuery = "from UserResetTokenEntity urt" + " where (NOT urt.deleted = true) "
                 + " AND (urt.userId = :userId) ";
 

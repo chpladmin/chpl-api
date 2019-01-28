@@ -48,7 +48,7 @@ public class PendingListingTestFunctionalityReviewerTest {
     private static final Long EDITION_2014_ID = 2L;
     private static final String INVALID_TEST_FUNC_ERROR =
             "Criteria 170.314 (a)(6) contains an invalid test functionality"
-            + " 'Bad test functionality name'. It has been removed from the pending listing.";
+                    + " 'Bad test functionality name'. It has been removed from the pending listing.";
 
     @Autowired
     private MessageSource messageSource;
@@ -67,7 +67,7 @@ public class PendingListingTestFunctionalityReviewerTest {
 
     @Spy
     private CertificationEditionDAO certificationEditionDAO;
-    
+
     @Spy
     private TestingFunctionalityManager testFunctionalityManager;
 
@@ -82,20 +82,20 @@ public class PendingListingTestFunctionalityReviewerTest {
 
         Mockito.doReturn("In Criteria 170.314 (a)(6), Test Functionality (a)(6)(11) is for "
                 + "Criteria other and is not valid for Criteria 170.314 (a)(6).")
-            .when(msgUtil).getMessage(
+        .when(msgUtil).getMessage(
                 ArgumentMatchers.eq("listing.criteria.testFunctionalityCriterionMismatch"),
-                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), 
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
-        
+
         Mockito.doReturn("In Criteria 170.314 (a)(6), Test Functionality (a)(6)(11) is for "
                 + "other Settings and is not valid for Practice Type Ambulatory.")
-            .when(msgUtil).getMessage(
+        .when(msgUtil).getMessage(
                 ArgumentMatchers.eq("listing.criteria.testFunctionalityPracticeTypeMismatch"),
-                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), 
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
 
         Mockito.doReturn(INVALID_TEST_FUNC_ERROR)
-            .when(msgUtil).getMessage(
+        .when(msgUtil).getMessage(
                 ArgumentMatchers.eq("listing.criteria.testFunctionalityNotFoundAndRemoved"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
 
@@ -109,15 +109,14 @@ public class PendingListingTestFunctionalityReviewerTest {
     public void validatePendingCertifiedProductTestFunctionality() {
         Mockito.when(testFunctionalityDAO.getByNumberAndEdition(ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyLong()))
-                .thenReturn(getTestFunctionalityId_7());
+        .thenReturn(getTestFunctionalityId_7());
         Mockito.when(certificationCriterionDAO.getByNameAndYear(ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyString()))
-                .thenReturn(getCertificationCriterion_a6());
+        .thenReturn(getCertificationCriterion_a6());
         Mockito.when(practiceTypeDAO.getByName(ArgumentMatchers.anyString()))
-                .thenReturn(getPracticeType_Ambulatory());
+        .thenReturn(getPracticeType_Ambulatory());
 
         PendingCertifiedProductDTO listing = createPendingListing("2014");
-        List<PendingCertificationResultDTO> certResults = new ArrayList<PendingCertificationResultDTO>();
         PendingCertificationResultDTO certResult = createPendingCertResult("170.314 (a)(6)");
         PendingCertificationResultTestFunctionalityDTO crtf = new PendingCertificationResultTestFunctionalityDTO();
         crtf.setId(1L);
@@ -125,14 +124,13 @@ public class PendingListingTestFunctionalityReviewerTest {
         crtf.setTestFunctionalityId(7L);
         certResult.setTestFunctionality(new ArrayList<PendingCertificationResultTestFunctionalityDTO>());
         certResult.getTestFunctionality().add(crtf);
-        certResults.add(certResult);
         listing.getCertificationCriterion().add(certResult);
 
         pendingTfReviewer.onApplicationEvent(null);
         pendingTfReviewer.review(listing);
 
         assertFalse(doesTestFunctionalityPracticeTypeErrorMessageExist(listing.getErrorMessages()));
-        assertFalse(doesTestFunctionalityCriterionErrorMessageExist(listing.getErrorMessages()));
+        assertFalse(doesTestFunctionalityCriterionMessageExist(listing.getWarningMessages()));
     }
 
     //Case 2: An invalid test functionality based on practice type
@@ -140,15 +138,14 @@ public class PendingListingTestFunctionalityReviewerTest {
     public void validatePendingCertifiedProductTestFunctionalityPracticeTypeMismatch() {
         Mockito.when(testFunctionalityDAO.getByNumberAndEdition(ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyLong()))
-                .thenReturn(getTestFunctionalityId_18());
+        .thenReturn(getTestFunctionalityId_18());
         Mockito.when(certificationCriterionDAO.getByNameAndYear(ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyString()))
-                .thenReturn(getCertificationCriterion_a6());
+        .thenReturn(getCertificationCriterion_a6());
         Mockito.when(practiceTypeDAO.getByName(ArgumentMatchers.anyString()))
-                .thenReturn(getPracticeType_Ambulatory());
+        .thenReturn(getPracticeType_Ambulatory());
 
         PendingCertifiedProductDTO listing = createPendingListing("2014");
-        List<PendingCertificationResultDTO> certResults = new ArrayList<PendingCertificationResultDTO>();
         PendingCertificationResultDTO certResult = createPendingCertResult("170.314 (a)(6)");
         PendingCertificationResultTestFunctionalityDTO crtf = new PendingCertificationResultTestFunctionalityDTO();
         crtf.setId(1L);
@@ -156,7 +153,6 @@ public class PendingListingTestFunctionalityReviewerTest {
         crtf.setTestFunctionalityId(18L);
         certResult.setTestFunctionality(new ArrayList<PendingCertificationResultTestFunctionalityDTO>());
         certResult.getTestFunctionality().add(crtf);
-        certResults.add(certResult);
         listing.getCertificationCriterion().add(certResult);
 
         pendingTfReviewer.onApplicationEvent(null);
@@ -171,15 +167,14 @@ public class PendingListingTestFunctionalityReviewerTest {
     public void validatePendingCertifiedProductTestFunctionalityCertificationCriterionMismatch() {
         Mockito.when(testFunctionalityDAO.getByNumberAndEdition(ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyLong()))
-                .thenReturn(getTestFunctionalityId_27());
+        .thenReturn(getTestFunctionalityId_27());
         Mockito.when(certificationCriterionDAO.getByNameAndYear(ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyString()))
-                .thenReturn(getCertificationCriterion_a7());
+        .thenReturn(getCertificationCriterion_a7());
         Mockito.when(practiceTypeDAO.getByName(ArgumentMatchers.anyString()))
-                .thenReturn(getPracticeType_Ambulatory());
+        .thenReturn(getPracticeType_Ambulatory());
 
         PendingCertifiedProductDTO listing = createPendingListing("2014");
-        List<PendingCertificationResultDTO> certResults = new ArrayList<PendingCertificationResultDTO>();
         PendingCertificationResultDTO certResult = createPendingCertResult("170.314 (a)(6)");
         PendingCertificationResultTestFunctionalityDTO crtf = new PendingCertificationResultTestFunctionalityDTO();
         crtf.setId(1L);
@@ -187,13 +182,12 @@ public class PendingListingTestFunctionalityReviewerTest {
         crtf.setTestFunctionalityId(27L);
         certResult.setTestFunctionality(new ArrayList<PendingCertificationResultTestFunctionalityDTO>());
         certResult.getTestFunctionality().add(crtf);
-        certResults.add(certResult);
         listing.getCertificationCriterion().add(certResult);
 
         pendingTfReviewer.onApplicationEvent(null);
         pendingTfReviewer.review(listing);
 
-        assertTrue(doesTestFunctionalityCriterionErrorMessageExist(listing.getErrorMessages()));
+        assertTrue(doesTestFunctionalityCriterionMessageExist(listing.getWarningMessages()));
     }
 
     //A test functionality name that does not exist
@@ -202,15 +196,14 @@ public class PendingListingTestFunctionalityReviewerTest {
         String invalidTestFuncName = "Bad test functionality name";
         Mockito.when(testFunctionalityDAO.getByNumberAndEdition(ArgumentMatchers.eq(invalidTestFuncName),
                 ArgumentMatchers.anyLong()))
-                .thenReturn(null);
+        .thenReturn(null);
         Mockito.when(certificationCriterionDAO.getByNameAndYear(ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyString()))
-                .thenReturn(getCertificationCriterion_a6());
+        .thenReturn(getCertificationCriterion_a6());
         Mockito.when(practiceTypeDAO.getByName(ArgumentMatchers.anyString()))
-                .thenReturn(getPracticeType_Ambulatory());
+        .thenReturn(getPracticeType_Ambulatory());
 
         PendingCertifiedProductDTO listing = createPendingListing("2014");
-        List<PendingCertificationResultDTO> certResults = new ArrayList<PendingCertificationResultDTO>();
         PendingCertificationResultDTO certResult = createPendingCertResult("170.314 (a)(6)");
         PendingCertificationResultTestFunctionalityDTO crtf = new PendingCertificationResultTestFunctionalityDTO();
         crtf.setId(1L);
@@ -218,7 +211,6 @@ public class PendingListingTestFunctionalityReviewerTest {
         crtf.setTestFunctionalityId(null);
         certResult.setTestFunctionality(new ArrayList<PendingCertificationResultTestFunctionalityDTO>());
         certResult.getTestFunctionality().add(crtf);
-        certResults.add(certResult);
         listing.getCertificationCriterion().add(certResult);
 
         pendingTfReviewer.onApplicationEvent(null);
@@ -239,8 +231,8 @@ public class PendingListingTestFunctionalityReviewerTest {
         return false;
     }
 
-    private Boolean doesTestFunctionalityCriterionErrorMessageExist(final Set<String> errorMessages) {
-        for (String error : errorMessages) {
+    private Boolean doesTestFunctionalityCriterionMessageExist(final Set<String> messages) {
+        for (String error : messages) {
             if (error.contains("In Criteria")
                     && error.contains("Test Functionality")
                     && error.contains("is for Criteria")
@@ -282,7 +274,7 @@ public class PendingListingTestFunctionalityReviewerTest {
             pendingListing.setPracticeType("Ambulatory");
             pendingListing.setProductClassificationName("Modular EHR");
         }
-        pendingListing.setPracticeTypeId(1l);;
+        pendingListing.setPracticeTypeId(1L);
         return pendingListing;
     }
 
@@ -347,11 +339,6 @@ public class PendingListingTestFunctionalityReviewerTest {
         pt.setName("Inpatient");
         pt.setDescription("Inpatient");
 
-        CertificationCriterionDTO cc = new CertificationCriterionDTO();
-        cc.setDeleted(false);
-        cc.setId(66L);
-        cc.setNumber("170.314 (a)(6)");
-
         tf.setPracticeType(pt);
 
         return tf;
@@ -368,11 +355,6 @@ public class PendingListingTestFunctionalityReviewerTest {
         pt.setId(1L);
         pt.setName("Ambulatory");
         pt.setDescription("Ambulatory");
-
-        CertificationCriterionDTO cc = new CertificationCriterionDTO();
-        cc.setDeleted(false);
-        cc.setId(66L);
-        cc.setNumber("170.314 (a)(6)");
 
         tf.setPracticeType(pt);
 
@@ -391,11 +373,6 @@ public class PendingListingTestFunctionalityReviewerTest {
         pt.setName("Ambulatory");
         pt.setDescription("Ambulatory");
 
-        CertificationCriterionDTO cc = new CertificationCriterionDTO();
-        cc.setDeleted(false);
-        cc.setId(66L);
-        cc.setNumber("170.314 (f)(3)");
-
         tf.setPracticeType(pt);
 
         return tf;
@@ -412,22 +389,22 @@ public class PendingListingTestFunctionalityReviewerTest {
     private List<CertificationEditionDTO> getEditions() {
         List<CertificationEditionDTO> editions = new ArrayList<CertificationEditionDTO>();
         CertificationEditionDTO edition2011 = new CertificationEditionDTO();
-        edition2011.setId(1l);
+        edition2011.setId(1L);
         edition2011.setYear("2011");
         editions.add(edition2011);
 
         CertificationEditionDTO edition2014 = new CertificationEditionDTO();
-        edition2014.setId(2l);
+        edition2014.setId(2L);
         edition2014.setYear("2014");
         editions.add(edition2014);
 
         CertificationEditionDTO edition2015 = new CertificationEditionDTO();
-        edition2015.setId(3l);
+        edition2015.setId(3L);
         edition2015.setYear("2015");
         editions.add(edition2015);
 
         return editions;
-     }
+    }
 
     private Map<String, List<TestFunctionalityDTO>> getTestFunctionalityCriteriaMap2014() {
         Map<String, List<TestFunctionalityDTO>> map = new HashMap<String, List<TestFunctionalityDTO>>();

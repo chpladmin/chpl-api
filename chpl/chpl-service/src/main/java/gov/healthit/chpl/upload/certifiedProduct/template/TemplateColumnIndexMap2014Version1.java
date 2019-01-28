@@ -11,12 +11,12 @@ public class TemplateColumnIndexMap2014Version1 extends TemplateColumnIndexMap {
     public int getRecordStatusIndex() {
         return 1;
     }
-    
+
     @Override
     public int getPracticeTypeIndex() {
         return 2;
     }
-    
+
     @Override
     public int getDeveloperIndex() {
         return 3;
@@ -56,7 +56,7 @@ public class TemplateColumnIndexMap2014Version1 extends TemplateColumnIndexMap {
     public int getProductClassificationIndex() {
         return 10;
     }
-    
+
     @Override
     public int getCertificationDateIndex() {
         return 11;
@@ -161,29 +161,29 @@ public class TemplateColumnIndexMap2014Version1 extends TemplateColumnIndexMap {
     public int getTestTaskEndIndex() {
         return -1;
     }
-    
+
     @Override
     public int getCriteriaStartIndex() {
         return 30;
     }
-    
+
     @Override
     public int getCriteriaEndIndex() {
         return 711;
     }
-   
+
     public String getPrivacySecurityFrameworkColumnLabel() {
         return null;
     }
-    
+
     public int getPrivacySecurityFrameworkColumnCount() {
         return 0;
     }
-    
+
     public String getApiDocumentationColumnLabel() {
         return null;
     }
-    
+
     public int getApiDocumentationColumnCount() {
         return 0;
     }
@@ -195,15 +195,15 @@ public class TemplateColumnIndexMap2014Version1 extends TemplateColumnIndexMap {
     public String getUcdColumnLabel() {
         return "SED";
     }
-    
+
     public int getUcdColumnCount() {
         return 3;
     }
-    
+
     public String getTestTasksColumnLabel() {
         return null;
     }
-    
+
     public int getTestTasksColumnCount() {
         return 0;
     }

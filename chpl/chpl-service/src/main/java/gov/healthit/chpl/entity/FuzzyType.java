@@ -3,21 +3,19 @@ package gov.healthit.chpl.entity;
 import org.springframework.util.StringUtils;
 
 public enum FuzzyType {
-	UCD_PROCESS("UCD Process"),
-	QMS_STANDARD("QMS Standard"),
-	ACCESSIBILITY_STANDARD("Accessibility Standard");
-	
-	private String fuzzyType;
-	
-	FuzzyType(String type){
-		this.fuzzyType = type;
-	}
-	
-	public String fuzzyType(){
-		return fuzzyType;
-	}
-	
-	@Override
+    UCD_PROCESS("UCD Process"), QMS_STANDARD("QMS Standard"), ACCESSIBILITY_STANDARD("Accessibility Standard");
+
+    private String fuzzyType;
+
+    FuzzyType(String type) {
+        this.fuzzyType = type;
+    }
+
+    public String fuzzyType() {
+        return fuzzyType;
+    }
+
+    @Override
     public String toString() {
         if (!StringUtils.isEmpty(this.fuzzyType)) {
             return this.fuzzyType;

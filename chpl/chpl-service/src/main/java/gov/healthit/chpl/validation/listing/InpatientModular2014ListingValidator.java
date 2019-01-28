@@ -12,11 +12,11 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2014.InpatientRequir
 
 @Component("inpatientModular2014ListingValidator")
 public class InpatientModular2014ListingValidator extends Edition2014ListingValidator {
-    @Autowired 
+    @Autowired
     @Qualifier("inpatientG1G2RequiredData2014Reviewer")
     private InpatientG1G2RequiredData2014Reviewer g1g2Reviewer;
-    
-    @Autowired 
+
+    @Autowired
     @Qualifier("inpatientRequiredTestToolReviewer")
     private InpatientRequiredTestToolReviewer ttReviewer;
 
@@ -24,7 +24,7 @@ public class InpatientModular2014ListingValidator extends Edition2014ListingVali
 
     @Override
     public List<Reviewer> getReviewers() {
-        if(reviewers == null) {
+        if (reviewers == null) {
             reviewers = super.getReviewers();
             reviewers.add(g1g2Reviewer);
             reviewers.add(ttReviewer);

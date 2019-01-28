@@ -17,7 +17,7 @@ public class DeveloperStatusEventXmlGenerator extends XmlGenerator {
             sw.writeEndElement();
         }
     }
-    
+
     public static void add(DeveloperStatusEvent event, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (event != null) {
             sw.writeStartElement(rootNodeName);

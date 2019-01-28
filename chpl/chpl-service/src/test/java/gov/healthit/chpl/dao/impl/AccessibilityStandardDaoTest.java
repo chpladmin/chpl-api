@@ -1,6 +1,5 @@
 package gov.healthit.chpl.dao.impl;
 
-
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,52 +27,51 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import junit.framework.TestCase;
 
-
-
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
+@TestExecutionListeners({
+        DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
+})
 @DatabaseSetup("classpath:data/testData.xml")
 public class AccessibilityStandardDaoTest extends TestCase {
-	
-	@Autowired
-	private AccessibilityStandardDAO asDao;
-	private static JWTAuthenticatedUser adminUser;
-	
-	@Rule
+
+    @Autowired
+    private AccessibilityStandardDAO asDao;
+    private static JWTAuthenticatedUser adminUser;
+
+    @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
-	
-	
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-		adminUser = new JWTAuthenticatedUser();
-		adminUser.setFullName("Administrator");
-		adminUser.setId(-2L);
-		adminUser.setFriendlyName("Administrator");
-		adminUser.setSubjectName("admin");
-		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
-	}
-	
-	@Test
-	@Transactional
-	@Rollback
-	public void testCreateAccessibilityStandard() throws EntityCreationException, EntityRetrievalException{
-		
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		
-		AccessibilityStandardDTO dto = new AccessibilityStandardDTO();
-		dto.setName("Pediatric Something");
-		
-		AccessibilityStandardDTO created = asDao.create(dto);
-		AccessibilityStandardDTO check = asDao.getById(created.getId());
-		
-		assertEquals(check.getName(), dto.getName());
-		assertEquals(created.getId(), check.getId());
-		
-		SecurityContextHolder.getContext().setAuthentication(null);
-	}
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        adminUser = new JWTAuthenticatedUser();
+        adminUser.setFullName("Administrator");
+        adminUser.setId(-2L);
+        adminUser.setFriendlyName("Administrator");
+        adminUser.setSubjectName("admin");
+        adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void testCreateAccessibilityStandard() throws EntityCreationException, EntityRetrievalException {
+
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+        AccessibilityStandardDTO dto = new AccessibilityStandardDTO();
+        dto.setName("Pediatric Something");
+
+        AccessibilityStandardDTO created = asDao.create(dto);
+        AccessibilityStandardDTO check = asDao.getById(created.getId());
+
+        assertEquals(check.getName(), dto.getName());
+        assertEquals(created.getId(), check.getId());
+
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
 }

@@ -3,6 +3,7 @@ package gov.healthit.chpl.dto;
 import java.util.Date;
 
 import gov.healthit.chpl.entity.FileTypeEntity;
+import gov.healthit.chpl.util.Util;
 
 public class FileTypeDTO {
     private Long id;
@@ -34,19 +35,19 @@ public class FileTypeDTO {
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public Long getLastModifiedUser() {

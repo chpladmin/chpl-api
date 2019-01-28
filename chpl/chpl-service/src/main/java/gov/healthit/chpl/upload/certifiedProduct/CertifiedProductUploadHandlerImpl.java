@@ -100,7 +100,7 @@ public abstract class CertifiedProductUploadHandlerImpl implements CertifiedProd
     private List<CSVRecord> record;
     private CSVRecord heading;
     private UploadTemplateVersionDTO uplodTemplateVersion;
-    
+
     public CertifiedProductUploadHandlerImpl() {
         dateFormatter = new SimpleDateFormat(CERTIFICATION_DATE_FORMAT);
     }
@@ -130,12 +130,12 @@ public abstract class CertifiedProductUploadHandlerImpl implements CertifiedProd
     public void setHeading(final CSVRecord heading) {
         this.heading = heading;
     }
-    
+
     @Override
     public UploadTemplateVersionDTO getUploadTemplateVersion() {
         return uplodTemplateVersion;
     }
-    
+
     @Override
     public void setUploadTemplateVersion(final UploadTemplateVersionDTO template) {
         this.uplodTemplateVersion = template;

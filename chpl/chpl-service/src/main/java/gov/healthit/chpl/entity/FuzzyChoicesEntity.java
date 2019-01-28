@@ -12,7 +12,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
 
-import gov.healthit.chpl.entity.FuzzyType;
+import gov.healthit.chpl.util.Util;
 
 @Entity
 @Table(name = "fuzzy_choices")
@@ -59,19 +59,19 @@ public class FuzzyChoicesEntity {
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public Long getLastModifiedUser() {

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import gov.healthit.chpl.util.Util;
+
 public class DecertifiedDeveloperDTO implements Serializable {
     private static final long serialVersionUID = 5686501038412355764L;
     private Long developerId;
@@ -77,27 +79,27 @@ public class DecertifiedDeveloperDTO implements Serializable {
     }
 
     public Date getDecertificationDate() {
-        return decertificationDate;
+        return Util.getNewDate(decertificationDate);
     }
 
     public void setDecertificationDate(final Date decertificationDate) {
-        this.decertificationDate = decertificationDate;
+        this.decertificationDate = Util.getNewDate(decertificationDate);
     }
 
     public Date getEarliestNumMeaningfulUseDate() {
-        return earliestNumMeaningfulUseDate;
+        return Util.getNewDate(earliestNumMeaningfulUseDate);
     }
 
     public void setEarliestNumMeaningfulUseDate(Date earliestNumMeaningfulUseDate) {
-        this.earliestNumMeaningfulUseDate = earliestNumMeaningfulUseDate;
+        this.earliestNumMeaningfulUseDate = Util.getNewDate(earliestNumMeaningfulUseDate);
     }
 
     public Date getLatestNumMeaningfulUseDate() {
-        return latestNumMeaningfulUseDate;
+        return Util.getNewDate(latestNumMeaningfulUseDate);
     }
 
     public void setLatestNumMeaningfulUseDate(Date latestNumMeaningfulUseDate) {
-        this.latestNumMeaningfulUseDate = latestNumMeaningfulUseDate;
+        this.latestNumMeaningfulUseDate = Util.getNewDate(latestNumMeaningfulUseDate);
     }
 
 }

@@ -12,9 +12,14 @@ import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public interface FuzzyChoicesManager {
-	public String getTopFuzzyChoice(String query, FuzzyType type);
-	public List<String> getFuzzyChoicesByType(FuzzyType type) throws JsonParseException, JsonMappingException, EntityRetrievalException, IOException;
-	public FuzzyChoicesDTO getByType(FuzzyType type) throws EntityRetrievalException, JsonParseException, JsonMappingException, IOException;
-	public void setFuzzyChoicesDAO(final FuzzyChoicesDAO FuzzyChoicesDAO);
+    String getTopFuzzyChoice(String query, FuzzyType type);
+
+    List<String> getFuzzyChoicesByType(FuzzyType type)
+            throws JsonParseException, JsonMappingException, EntityRetrievalException, IOException;
+
+    FuzzyChoicesDTO getByType(FuzzyType type)
+            throws EntityRetrievalException, JsonParseException, JsonMappingException, IOException;
+
+    void setFuzzyChoicesDAO(FuzzyChoicesDAO fuzzyChoicesDAO);
 
 }

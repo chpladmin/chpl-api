@@ -35,87 +35,92 @@ import gov.healthit.chpl.manager.CertificationBodyManager;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
+@TestExecutionListeners({
+        DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
+})
 @DatabaseSetup("classpath:data/testData.xml")
 public class CertificationBodyManagerTest extends TestCase {
-	
-	@Autowired private CertificationBodyManager acbManager;
-	@Autowired private CertificationBodyDAO acbDao;
-	@Autowired private UserDAO userDao;
-	@Rule
+
+    @Autowired
+    private CertificationBodyManager acbManager;
+    @Autowired
+    private CertificationBodyDAO acbDao;
+    @Autowired
+    private UserDAO userDao;
+    @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
-	
-	private static JWTAuthenticatedUser adminUser;
-	
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-		adminUser = new JWTAuthenticatedUser();
-		adminUser.setFullName("Administrator");
-		adminUser.setId(-2L);
-		adminUser.setFriendlyName("Administrator");
-		adminUser.setSubjectName("admin");
-		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
-	}
-	
-	@Test
-	@Transactional
-	public void testGetUsersOnAcb() throws EntityRetrievalException {
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		CertificationBodyDTO acb = acbDao.getById(-3L);
-		List<UserDTO> users = acbManager.getAllUsersOnAcb(acb);
-		
-		assertEquals(2, users.size());
-		SecurityContextHolder.getContext().setAuthentication(null);
-	}
-	
-	@Test
-	@Transactional
-	@Rollback
-	public void testAddReadUserToAcb() throws UserRetrievalException, EntityRetrievalException {
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-		//add to the acb
-		CertificationBodyDTO acb = acbDao.getById(-3L);
-		Long userId = 2L;
-		acbManager.addPermission(acb, userId, BasePermission.READ);
-		
-		//confirm one user is in the acb
-		List<UserDTO> users = acbManager.getAllUsersOnAcb(acb);
-		boolean userIsOnAcb = false;
-		for(UserDTO foundUser : users) {
-			if(foundUser.getId() == userId) {
-				userIsOnAcb = true;
-			}
-		}
-		assertTrue(userIsOnAcb);
-		SecurityContextHolder.getContext().setAuthentication(null);
-	}
-	
-	@Test
-	@Transactional
-	@Rollback
-	public void testDeleteUserFromAcb() throws UserRetrievalException, EntityRetrievalException {
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
+    private static JWTAuthenticatedUser adminUser;
 
-		//add to the acb
-		CertificationBodyDTO acb = acbDao.getById(-3L);
-		UserDTO user = userDao.getById(1L);
-		acbManager.deletePermission(acb, new PrincipalSid(user.getSubjectName()), BasePermission.ADMINISTRATION);
-		
-		//confirm one user is in the acb
-		List<UserDTO> users = acbManager.getAllUsersOnAcb(acb);
-		boolean userIsOnAcb = false;
-		for(UserDTO foundUser : users) {
-			if(foundUser.getId() == user.getId()) {
-				userIsOnAcb = true;
-			}
-		}
-		assertFalse(userIsOnAcb);
-		SecurityContextHolder.getContext().setAuthentication(null);
-	}
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        adminUser = new JWTAuthenticatedUser();
+        adminUser.setFullName("Administrator");
+        adminUser.setId(-2L);
+        adminUser.setFriendlyName("Administrator");
+        adminUser.setSubjectName("admin");
+        adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+    }
+
+    @Test
+    @Transactional
+    public void testGetUsersOnAcb() throws EntityRetrievalException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        CertificationBodyDTO acb = acbDao.getById(-3L);
+        List<UserDTO> users = acbManager.getAllUsersOnAcb(acb);
+
+        assertEquals(2, users.size());
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void testAddReadUserToAcb() throws UserRetrievalException, EntityRetrievalException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+        // add to the acb
+        CertificationBodyDTO acb = acbDao.getById(-3L);
+        Long userId = 2L;
+        acbManager.addPermission(acb, userId, BasePermission.READ);
+
+        // confirm one user is in the acb
+        List<UserDTO> users = acbManager.getAllUsersOnAcb(acb);
+        boolean userIsOnAcb = false;
+        for (UserDTO foundUser : users) {
+            if (foundUser.getId().equals(userId)) {
+                userIsOnAcb = true;
+            }
+        }
+        assertTrue(userIsOnAcb);
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void testDeleteUserFromAcb() throws UserRetrievalException, EntityRetrievalException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+        // add to the acb
+        CertificationBodyDTO acb = acbDao.getById(-3L);
+        UserDTO user = userDao.getById(1L);
+        acbManager.deletePermission(acb, new PrincipalSid(user.getSubjectName()), BasePermission.ADMINISTRATION);
+
+        // confirm one user is in the acb
+        List<UserDTO> users = acbManager.getAllUsersOnAcb(acb);
+        boolean userIsOnAcb = false;
+        for (UserDTO foundUser : users) {
+            if (foundUser.getId().equals(user.getId())) {
+                userIsOnAcb = true;
+            }
+        }
+        assertFalse(userIsOnAcb);
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
 }

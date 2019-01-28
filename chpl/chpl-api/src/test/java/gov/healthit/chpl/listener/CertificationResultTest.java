@@ -77,12 +77,15 @@ public class CertificationResultTest extends TestCase {
     @Test
     @Transactional
     @Rollback
-    public void testUpdateGap() throws EntityCreationException, EntityRetrievalException, ValidationException,
-    InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException {
+    public void testUpdateGap() throws EntityCreationException, EntityRetrievalException,
+    InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date();
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
+        for(CertificationResult result : listing.getCertificationResults()) {
+            result.setSed(Boolean.FALSE);
+        }
         for (CertificationResult certResult : listing.getCertificationResults()) {
             if (certResult.getId().longValue() == 1) {
                 certResult.setGap(Boolean.FALSE);
@@ -96,7 +99,7 @@ public class CertificationResultTest extends TestCase {
         List<QuestionableActivityCertificationResultDTO> activities = qaDao
                 .findCertificationResultActivityBetweenDates(beforeActivity, afterActivity);
         assertNotNull(activities);
-        assertEquals(1, activities.size());
+        assertEquals(2, activities.size());
         QuestionableActivityCertificationResultDTO activity = activities.get(0);
         assertEquals(1, activity.getCertResultId().longValue());
         assertNotNull(activity.getCertResult());
@@ -112,13 +115,12 @@ public class CertificationResultTest extends TestCase {
     @Test
     @Transactional
     @Rollback
-    public void testUpdateG1Success() throws 
-    EntityCreationException, EntityRetrievalException, 
-    ValidationException, InvalidArgumentsException, JsonProcessingException,
-    MissingReasonException, IOException {
+    public void testUpdateG1Success() throws
+        EntityCreationException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException,
+        MissingReasonException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Date beforeActivity = new Date(); 
+        Date beforeActivity = new Date();
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
         for(CertificationResult certResult : listing.getCertificationResults()) {
             if(certResult.getId().longValue() == 1) {
@@ -130,7 +132,7 @@ public class CertificationResultTest extends TestCase {
         cpController.updateCertifiedProduct(updateRequest);
         Date afterActivity = new Date();
 
-        List<QuestionableActivityCertificationResultDTO> activities = 
+        List<QuestionableActivityCertificationResultDTO> activities =
                 qaDao.findCertificationResultActivityBetweenDates(beforeActivity, afterActivity);
         assertNotNull(activities);
         assertEquals(1, activities.size());
@@ -149,8 +151,8 @@ public class CertificationResultTest extends TestCase {
     @Test
     @Transactional
     @Rollback
-    public void testUpdateG2Success() throws EntityCreationException, EntityRetrievalException, ValidationException,
-    InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException {
+    public void testUpdateG2Success() throws EntityCreationException, EntityRetrievalException,
+    InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date();
@@ -182,6 +184,6 @@ public class CertificationResultTest extends TestCase {
     }
 
     //TODO: add test for g1 and g2 macra measures added/removed.
-    //Need a 2015 listing that passes validation that also certifies to 
+    //Need a 2015 listing that passes validation that also certifies to
     //a criteria that can have g1 and g2 macra measures
 }

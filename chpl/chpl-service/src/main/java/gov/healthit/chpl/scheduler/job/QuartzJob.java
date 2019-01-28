@@ -18,7 +18,7 @@ public abstract class QuartzJob implements Job {
     private Properties properties;
 
     protected File getDownloadFolder() throws IOException {
-        String downloadFolderPath = getProperties().getProperty("downloadFolderPath");
+        String downloadFolderPath = System.getenv("downloadFolderPath");
         File downloadFolder = new File(downloadFolderPath);
         if (!downloadFolder.exists()) {
             if (!downloadFolder.mkdirs()) {

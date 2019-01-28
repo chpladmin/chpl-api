@@ -186,7 +186,7 @@ public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler
         List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion(pendingCertifiedProduct, cqmName,
                 cqmVersions);
         for (PendingCqmCriterionEntity entity : criterion) {
-            if (entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
+            if (entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria()) {
                 pendingCertifiedProduct.getCqmCriterion().add(entity);
             }
         }
@@ -213,10 +213,18 @@ public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler
                         parseTestFunctionality(pendingCertifiedProduct, cert, currIndex);
                         currIndex += getColumnIndexMap().getTestFunctionalityColumnCount();
                     } else if (colTitle.equalsIgnoreCase(getColumnIndexMap().getG1MeasureColumnLabel())) {
-                        cert.setG1Success(asBooleanEmpty(firstRow.get(currIndex).trim()));
+                        if (firstRow.get(currIndex) == null && StringUtils.isEmpty(firstRow.get(currIndex).trim())) {
+                            cert.setG1Success(null);
+                        }  else {
+                            cert.setG1Success(asBoolean(firstRow.get(currIndex).trim()));
+                        }
                         currIndex += getColumnIndexMap().getG1MeasureColumnCount();
                     } else if (colTitle.equalsIgnoreCase(getColumnIndexMap().getG2MeasureColumnLabel())) {
-                        cert.setG2Success(asBooleanEmpty(firstRow.get(currIndex).trim()));
+                        if (firstRow.get(currIndex) == null && StringUtils.isEmpty(firstRow.get(currIndex).trim())) {
+                            cert.setG2Success(null);
+                        }  else {
+                            cert.setG2Success(asBoolean(firstRow.get(currIndex).trim()));
+                        }
                         currIndex += getColumnIndexMap().getG2MeasureColumnCount();
                     } else if (colTitle.equalsIgnoreCase(getColumnIndexMap().getAdditionalSoftwareColumnLabel())) {
                         Boolean hasAdditionalSoftware = asBoolean(firstRow.get(currIndex).trim());
@@ -340,7 +348,7 @@ public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler
                 && cert.getAdditionalSoftware().size() == 0) {
             product.getErrorMessages().add("Certification " + cert.getMappedCriterion().getNumber() + " for product "
                     + product.getUniqueId() + " indicates additional software should be present but none was found.");
-        } else if ((cert.getHasAdditionalSoftware() == null || cert.getHasAdditionalSoftware().booleanValue() == false)
+        } else if ((cert.getHasAdditionalSoftware() == null || !cert.getHasAdditionalSoftware().booleanValue())
                 && cert.getAdditionalSoftware().size() > 0) {
             product.getErrorMessages()
             .add("Certification " + cert.getMappedCriterion().getNumber() + " for product "

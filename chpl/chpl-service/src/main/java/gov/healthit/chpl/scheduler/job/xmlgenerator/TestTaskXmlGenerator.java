@@ -20,7 +20,7 @@ public class TestTaskXmlGenerator extends XmlGenerator {
             sw.writeEndElement();
         }
     }
-    
+
     public static void add(TestTask task, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (task != null) {
             sw.writeStartElement(rootNodeName);

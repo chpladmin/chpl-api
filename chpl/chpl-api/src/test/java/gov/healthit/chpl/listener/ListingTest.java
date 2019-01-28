@@ -1,6 +1,7 @@
 package gov.healthit.chpl.listener;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -31,11 +32,17 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.QuestionableActivityDAO;
 import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
+import gov.healthit.chpl.domain.CertificationResultTestData;
+import gov.healthit.chpl.domain.CertificationResultTestProcedure;
+import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
+import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.domain.concept.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -155,55 +162,26 @@ public class ListingTest extends TestCase {
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
-    @Test(expected = MissingReasonException.class)
-    @Transactional
-    @Rollback
-    public void testUpdate2011ListingDeprecatedWithoutReason() throws
-    EntityCreationException, EntityRetrievalException,
-    ValidationException, InvalidArgumentsException, JsonProcessingException,
-    MissingReasonException, IOException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-        final long cpId = 3L;
-        final long expectedId = 3L;
-        Date beforeActivity = new Date();
-        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(cpId);
-        listing.setAcbCertificationId("NEWACBCERTIFICATIONID");
-        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setListing(listing);
-        cpController.updateCertifiedProductDeprecated(updateRequest);
-        Date afterActivity = new Date();
-
-        List<QuestionableActivityListingDTO> activities =
-                qaDao.findListingActivityBetweenDates(beforeActivity, afterActivity);
-        assertNotNull(activities);
-        assertEquals(1, activities.size());
-        QuestionableActivityListingDTO activity = activities.get(0);
-        assertEquals(expectedId, activity.getListingId().longValue());
-        assertNull(activity.getBefore());
-        assertNull(activity.getAfter());
-        assertEquals(QuestionableActivityTriggerConcept.EDITION_2011_EDITED.getName(), activity.getTrigger().getName());
-
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
-
     @Test
     @Transactional
     @Rollback
     public void testUpdateCertificationStatusIncludesReason() throws
-    EntityCreationException, EntityRetrievalException,
-    ValidationException, InvalidArgumentsException, JsonProcessingException,
-    MissingReasonException, IOException {
+    EntityCreationException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException,
+    MissingReasonException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date();
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
+        for(CertificationResult result : listing.getCertificationResults()) {
+            result.setSed(Boolean.FALSE);
+            result.setGap(Boolean.FALSE);
+        }
         CertificationStatusEvent currentStatus = listing.getCurrentStatus();
         int currStatusIndex = 0;
         List<CertificationStatusEvent> events = listing.getCertificationEvents();
-        for(int i = 0; i < events.size(); i++) {
+        for (int i = 0; i < events.size(); i++) {
             CertificationStatusEvent currEvent = events.get(i);
-            if(currEvent.getId().longValue() == currentStatus.getId().longValue()) {
+            if (currEvent.getId().longValue() == currentStatus.getId().longValue()) {
                 currStatusIndex = i;
             }
         }
@@ -240,19 +218,22 @@ public class ListingTest extends TestCase {
     @Transactional
     @Rollback
     public void testUpdateCertificationStatus() throws
-    EntityCreationException, EntityRetrievalException,
-    ValidationException, InvalidArgumentsException, JsonProcessingException,
-    MissingReasonException, IOException {
+    EntityCreationException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException,
+    MissingReasonException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date();
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
+        for(CertificationResult result : listing.getCertificationResults()) {
+            result.setSed(Boolean.FALSE);
+            result.setGap(Boolean.FALSE);
+        }
         CertificationStatusEvent currentStatus = listing.getCurrentStatus();
         int currStatusIndex = 0;
         List<CertificationStatusEvent> events = listing.getCertificationEvents();
-        for(int i = 0; i < events.size(); i++) {
+        for (int i = 0; i < events.size(); i++) {
             CertificationStatusEvent currEvent = events.get(i);
-            if(currEvent.getId().longValue() == currentStatus.getId().longValue()) {
+            if (currEvent.getId().longValue() == currentStatus.getId().longValue()) {
                 currStatusIndex = i;
             }
         }
@@ -287,20 +268,23 @@ public class ListingTest extends TestCase {
     @Transactional
     @Rollback
     public void testUpdateCertificationStatusDate() throws
-    EntityCreationException, EntityRetrievalException,
-    ValidationException, InvalidArgumentsException, JsonProcessingException,
-    MissingReasonException, IOException {
+    EntityCreationException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException,
+    MissingReasonException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date();
         Date eventDate = new Date("2/14/2018");
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
+        for(CertificationResult result : listing.getCertificationResults()) {
+            result.setSed(Boolean.FALSE);
+            result.setGap(Boolean.FALSE);
+        }
         CertificationStatusEvent currentStatus = listing.getCurrentStatus();
         int currStatusIndex = 0;
         List<CertificationStatusEvent> events = listing.getCertificationEvents();
-        for(int i = 0; i < events.size(); i++) {
+        for (int i = 0; i < events.size(); i++) {
             CertificationStatusEvent currEvent = events.get(i);
-            if(currEvent.getId().longValue() == currentStatus.getId().longValue()) {
+            if (currEvent.getId().longValue() == currentStatus.getId().longValue()) {
                 currStatusIndex = i;
             }
         }
@@ -334,19 +318,23 @@ public class ListingTest extends TestCase {
     @Transactional
     @Rollback
     public void testUpdateCertificationStatusHistoryDate() throws
-    EntityCreationException, EntityRetrievalException,
-    ValidationException, InvalidArgumentsException, JsonProcessingException,
-    MissingReasonException, IOException {
+    EntityCreationException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException,
+    MissingReasonException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final long dateDifference = 1000L;
         Date beforeActivity = new Date();
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
+        for(CertificationResult result : listing.getCertificationResults()) {
+            result.setSed(Boolean.FALSE);
+            result.setGap(Boolean.FALSE);
+        }
+        
         List<CertificationStatusEvent> events = listing.getCertificationEvents();
         int statusEventIndex = 0;
-        for(int i = 0; i < events.size(); i++) {
+        for (int i = 0; i < events.size(); i++) {
             CertificationStatusEvent currEvent = events.get(i);
-            if(currEvent.getStatus().getName().equals("Withdrawn by Developer")) {
+            if (currEvent.getStatus().getName().equals("Withdrawn by Developer")) {
                 statusEventIndex = i;
             }
         }
@@ -382,19 +370,22 @@ public class ListingTest extends TestCase {
     @Transactional
     @Rollback
     public void testUpdateCertificationStatusHistoryStatus() throws
-    EntityCreationException, EntityRetrievalException,
-    ValidationException, InvalidArgumentsException, JsonProcessingException,
-    MissingReasonException, IOException {
+    EntityCreationException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException,
+    MissingReasonException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final long statusId = 4L;
         Date beforeActivity = new Date();
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
+        for(CertificationResult result : listing.getCertificationResults()) {
+            result.setSed(Boolean.FALSE);
+            result.setGap(Boolean.FALSE);
+        }
         List<CertificationStatusEvent> events = listing.getCertificationEvents();
         int statusEventIndex = 0;
-        for(int i = 0; i < events.size(); i++) {
+        for (int i = 0; i < events.size(); i++) {
             CertificationStatusEvent currEvent = events.get(i);
-            if(currEvent.getStatus().getName().equals("Withdrawn by Developer")) {
+            if (currEvent.getStatus().getName().equals("Withdrawn by Developer")) {
                 statusEventIndex = i;
             }
         }
@@ -432,14 +423,17 @@ public class ListingTest extends TestCase {
     @Transactional
     @Rollback
     public void testAddCqm() throws
-    EntityCreationException, EntityRetrievalException,
-    ValidationException, InvalidArgumentsException, JsonProcessingException,
-    MissingReasonException, IOException {
+    EntityCreationException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException,
+    MissingReasonException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final long cms82Id = 60L;
         Date beforeActivity = new Date();
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
+        for(CertificationResult result : listing.getCertificationResults()) {
+            result.setSed(Boolean.FALSE);
+            result.setGap(Boolean.FALSE);
+        }
         CQMResultDetails addedCqm = new CQMResultDetails();
         addedCqm.setId(cms82Id);
         addedCqm.setCmsId("CMS82");
@@ -471,13 +465,16 @@ public class ListingTest extends TestCase {
     @Transactional
     @Rollback
     public void testRemoveCqmIncludesReason() throws
-    EntityCreationException, EntityRetrievalException,
-    ValidationException, InvalidArgumentsException, JsonProcessingException,
-    MissingReasonException, IOException {
+    EntityCreationException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException,
+    MissingReasonException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date();
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
+        for(CertificationResult result : listing.getCertificationResults()) {
+            result.setSed(Boolean.FALSE);
+            result.setGap(Boolean.FALSE);
+        }
         for (CQMResultDetails cqm : listing.getCqmResults()) {
             if (cqm.getCmsId() != null && cqm.getCmsId().equals("CMS146")) {
                 cqm.setSuccess(Boolean.FALSE);
@@ -545,13 +542,17 @@ public class ListingTest extends TestCase {
     @Test
     @Transactional
     @Rollback
-    public void testAddCriteria() throws EntityCreationException, EntityRetrievalException, ValidationException,
-    InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException {
+    public void testAddCriteria() throws EntityCreationException, EntityRetrievalException,
+    InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final int critId = 4;
         Date beforeActivity = new Date();
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
+        for(CertificationResult result : listing.getCertificationResults()) {
+            result.setSed(Boolean.FALSE);
+            result.setGap(Boolean.FALSE);
+        }
         for (CertificationResult cert : listing.getCertificationResults()) {
             if (cert.getId().longValue() == critId) {
                 cert.setSuccess(Boolean.TRUE);
@@ -581,7 +582,7 @@ public class ListingTest extends TestCase {
     @Rollback
     public void testRemoveCriteriaIncludesReason() throws EntityCreationException,
     EntityRetrievalException, ValidationException,
-    InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException {
+    InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date();
@@ -589,6 +590,27 @@ public class ListingTest extends TestCase {
         for (CertificationResult cert : listing.getCertificationResults()) {
             if (cert.getId().longValue() == 1) {
                 cert.setSuccess(Boolean.FALSE);
+                UcdProcess ucdToRemove = null;
+                if (listing.getSed() != null && listing.getSed().getUcdProcesses() != null
+                        && listing.getSed().getUcdProcesses().size() > 0) {
+                    for (UcdProcess ucd : listing.getSed().getUcdProcesses()) {
+                        for (CertificationCriterion ucdCriteria : ucd.getCriteria()) {
+                            if (ucdCriteria.getNumber() != null && ucdCriteria.getNumber().equals("170.314 (a)(1)")) {
+                                ucdToRemove = ucd;
+                            }
+                        }
+                    }
+                }
+                listing.getSed().getUcdProcesses().remove(ucdToRemove);
+                cert.setGap(Boolean.FALSE);
+                cert.setSed(Boolean.FALSE);
+                cert.setTestStandards(new ArrayList<CertificationResultTestStandard>());
+                cert.setAdditionalSoftware(new ArrayList<CertificationResultAdditionalSoftware>());
+                cert.setTestProcedures(new ArrayList<CertificationResultTestProcedure>());
+                cert.setTestDataUsed(new ArrayList<CertificationResultTestData>());
+            }
+            if (cert.getId().longValue() == 2) {
+                cert.setSed(Boolean.FALSE);
             }
         }
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
@@ -625,6 +647,7 @@ public class ListingTest extends TestCase {
         for (CertificationResult cert : listing.getCertificationResults()) {
             if (cert.getId().longValue() == 1) {
                 cert.setSuccess(Boolean.FALSE);
+                cert.setSed(Boolean.FALSE);
             }
         }
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();

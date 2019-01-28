@@ -5,7 +5,6 @@ import org.apache.logging.log4j.Logger;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.caching.ListingsCollectionCacheUpdater;
@@ -38,12 +37,11 @@ public class MeaningfulUseUploadListingCollectionCacheRefreshListener {
         }
     }
 
-    @Async
     private void refreshCacheAsync() {
-        cacheUpdater.refreshCache();
+        cacheUpdater.refreshCacheAsync();
     }
 
     private void refreshCache() {
-        cacheUpdater.refreshCache();
+        cacheUpdater.refreshCacheSync();
     }
 }

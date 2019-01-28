@@ -2,8 +2,6 @@ package gov.healthit.chpl.dao;
 
 import java.util.List;
 
-import javax.persistence.EntityNotFoundException;
-
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformityDocument;

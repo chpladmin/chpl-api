@@ -100,16 +100,17 @@ public class CertificationResultManagerImpl implements CertificationResultManage
     private MacraMeasureDAO mmDao;
     @Autowired
     private FuzzyChoicesDAO fuzzyChoicesDao;
-    
+
     @Override
-    @PreAuthorize("(hasRole('ROLE_ADMIN') or " + "(hasRole('ROLE_ACB'))"
+    @PreAuthorize("(hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or " 
+            + "(hasRole('ROLE_ACB'))"
             + "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     @Transactional(rollbackFor = {
             EntityRetrievalException.class, EntityCreationException.class
     })
     public int update(Long acbId, CertifiedProductSearchDetails existingListing,
             CertifiedProductSearchDetails updatedListing, CertificationResult orig, CertificationResult updated)
-            throws EntityCreationException, EntityRetrievalException, IOException {
+                    throws EntityCreationException, EntityRetrievalException, IOException {
         int numChanges = 0;
         // does the cert result need updated?
         boolean hasChanged = false;
@@ -135,13 +136,13 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             }
             toUpdate.setSuccessful(updated.isSuccess());
 
-            
-            if (toUpdate.getSuccessful() != null && toUpdate.getSuccessful().booleanValue() == false 
-                    && (!ObjectUtils.equals(orig.isG1Success(), updated.isG1Success()) 
+
+            if (toUpdate.getSuccessful() != null && !toUpdate.getSuccessful().booleanValue()
+                    && (!ObjectUtils.equals(orig.isG1Success(), updated.isG1Success())
                             || !ObjectUtils.equals(orig.isG2Success(), updated.isG2Success()))) {
                 toUpdate.setG1Success(updated.isG1Success());
                 toUpdate.setG2Success(updated.isG2Success());
-            } else if (toUpdate.getSuccessful() != null && toUpdate.getSuccessful().booleanValue() == true) {
+            } else if (toUpdate.getSuccessful() != null && toUpdate.getSuccessful().booleanValue()) {
                 toUpdate.setApiDocumentation(updated.getApiDocumentation());
                 toUpdate.setPrivacySecurityFramework(updated.getPrivacySecurityFramework());
                 toUpdate.setG1Success(updated.isG1Success());
@@ -159,14 +160,14 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             numChanges++;
         }
 
-        if (!updated.isSuccess() && 
-                (haveMacraMeasuresChanged(orig.getG1MacraMeasures(), updated.getG1MacraMeasures()) || 
-                        haveMacraMeasuresChanged(orig.getG2MacraMeasures(), updated.getG2MacraMeasures()))) {
+        if (!updated.isSuccess()
+                && (haveMacraMeasuresChanged(orig.getG1MacraMeasures(), updated.getG1MacraMeasures())
+                        || haveMacraMeasuresChanged(orig.getG2MacraMeasures(), updated.getG2MacraMeasures()))) {
             numChanges += updateMacraMeasures(updated, orig.getG1MacraMeasures(), updated.getG1MacraMeasures(), G1_MEASURE);
             numChanges += updateMacraMeasures(updated, orig.getG2MacraMeasures(), updated.getG2MacraMeasures(), G2_MEASURE);
         }
-        
-        if (updated.isSuccess() == null || updated.isSuccess() == Boolean.FALSE) {
+
+        if (updated.isSuccess() == null || !updated.isSuccess()) {
             // similar to delete - remove all related items
             numChanges += updateAdditionalSoftware(updated, orig.getAdditionalSoftware(), null);
             numChanges += updateTestStandards(updatedListing, updated, orig.getTestStandards(), null);
@@ -325,23 +326,23 @@ public class CertificationResultManagerImpl implements CertificationResultManage
 
         return numChanges;
     }
-    
+
     private Boolean haveMacraMeasuresChanged(List<MacraMeasure> orig, List<MacraMeasure> updated) {
-        if (orig == null && updated == null)  {
-            return false;
+        if (orig != null && updated != null) {
+            return !orig.equals(updated);
         } else if (orig != null && updated == null) {
             return true;
         } else if (orig == null && updated != null) {
             return true;
-        } else {
-            return !orig.equals(updated);
+        } else { //Both are null
+            return false;
         }
     }
-    
+
     private int updateAdditionalSoftware(CertificationResult certResult,
             List<CertificationResultAdditionalSoftware> existingAdditionalSoftware,
             List<CertificationResultAdditionalSoftware> updatedAdditionalSoftware)
-            throws EntityCreationException, EntityRetrievalException {
+                    throws EntityCreationException, EntityRetrievalException {
         int numChanges = 0;
         List<CertificationResultAdditionalSoftware> additionalSoftwareToAdd = new ArrayList<CertificationResultAdditionalSoftware>();
         List<CertificationResultAdditionalSoftwarePair> additionalSoftwareToUpdate = new ArrayList<CertificationResultAdditionalSoftwarePair>();
@@ -372,7 +373,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
                         if (updatedItem.matches(existingItem)) {
                             inExistingListing = true;
                             additionalSoftwareToUpdate
-                                    .add(new CertificationResultAdditionalSoftwarePair(existingItem, updatedItem));
+                            .add(new CertificationResultAdditionalSoftwarePair(existingItem, updatedItem));
                         }
                     }
 
@@ -524,7 +525,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
 
     private int updateUcdProcesses(CertificationResult certResult, List<UcdProcess> existingUcdProcesses,
             List<UcdProcess> updatedUcdProcesses) throws EntityCreationException, EntityRetrievalException,
-            IOException {
+    IOException {
         int numChanges = 0;
         List<UcdProcess> ucdToAdd = new ArrayList<UcdProcess>();
         List<CertificationResultUcdProcessPair> ucdToUpdate = new ArrayList<CertificationResultUcdProcessPair>();
@@ -583,17 +584,17 @@ public class CertificationResultManagerImpl implements CertificationResultManage
         }
 
         numChanges = ucdToAdd.size() + idsToRemove.size();
-        
+
         List<String> fuzzyQmsChoices = fuzzyChoicesDao.getByType(FuzzyType.UCD_PROCESS).getChoices();
         for (UcdProcess toAdd : ucdToAdd) {
-            if(!fuzzyQmsChoices.contains(toAdd.getName())){
+            if(!fuzzyQmsChoices.contains(toAdd.getName())) {
                 fuzzyQmsChoices.add(toAdd.getName());
                 FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
                 dto.setFuzzyType(FuzzyType.UCD_PROCESS);
                 dto.setChoices(fuzzyQmsChoices);
                 fuzzyChoicesDao.update(dto);
             }
-            
+
             CertificationResultUcdProcessDTO toAddDto = new CertificationResultUcdProcessDTO();
             toAddDto.setCertificationResultId(certResult.getId());
             toAddDto.setUcdProcessId(toAdd.getId());
@@ -637,12 +638,12 @@ public class CertificationResultManagerImpl implements CertificationResultManage
                 if (updatedItem.getTestStandardId() == null
                         && !StringUtils.isEmpty(updatedItem.getTestStandardName())) {
                     TestStandardDTO foundStd = testStandardDAO.getByNumberAndEdition(updatedItem.getTestStandardName(),
-                            new Long(editionIdString));
+                            Long.valueOf(editionIdString));
                     if (foundStd == null) {
                         TestStandardDTO stdToCreate = new TestStandardDTO();
                         stdToCreate.setName(updatedItem.getTestStandardName());
                         stdToCreate.setDescription(updatedItem.getTestStandardDescription());
-                        stdToCreate.setCertificationEditionId(new Long(editionIdString));
+                        stdToCreate.setCertificationEditionId(Long.valueOf(editionIdString));
                         TestStandardDTO created = testStandardDAO.create(stdToCreate);
                         updatedItem.setTestStandardId(created.getId());
                     } else {
@@ -723,8 +724,8 @@ public class CertificationResultManagerImpl implements CertificationResultManage
                     TestToolDTO foundTool = testToolDAO.getByName(updatedItem.getTestToolName());
                     if (foundTool == null) {
                         LOGGER.error("Could not find test tool " + updatedItem.getTestToolName()
-                                + "; will not be adding this as a test tool to certification result id "
-                                + certResult.getId() + ", criteria " + certResult.getNumber());
+                        + "; will not be adding this as a test tool to certification result id "
+                        + certResult.getId() + ", criteria " + certResult.getNumber());
                     } else {
                         updatedItem.setTestToolId(foundTool.getId());
                         updatedItem.setTestToolVersion(updatedItem.getTestToolVersion());
@@ -798,7 +799,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
 
     private int updateTestData(CertificationResult certResult, List<CertificationResultTestData> existingTestData,
             List<CertificationResultTestData> updatedTestData)
-            throws EntityCreationException, EntityRetrievalException {
+                    throws EntityCreationException, EntityRetrievalException {
         int numChanges = 0;
         List<CertificationResultTestData> testDataToAdd = new ArrayList<CertificationResultTestData>();
         List<CertificationResultTestDataPair> testDataToUpdate = new ArrayList<CertificationResultTestDataPair>();
@@ -969,12 +970,12 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             for (CertificationResultTestFunctionality updatedItem : updatedTestFunctionality) {
                 if (updatedItem.getTestFunctionalityId() == null && !StringUtils.isEmpty(updatedItem.getName())) {
                     TestFunctionalityDTO foundFunc = testFunctionalityDAO.getByNumberAndEdition(updatedItem.getName(),
-                            new Long(editionIdString));
+                            Long.valueOf(editionIdString));
                     if (foundFunc == null) {
                         LOGGER.error("Could not find test functionality " + updatedItem.getName()
-                                + " for certifiation edition id " + editionIdString
-                                + "; will not be adding this as a test functionality to listing id " + listing.getId()
-                                + ", criteria " + certResult.getNumber());
+                        + " for certifiation edition id " + editionIdString
+                        + "; will not be adding this as a test functionality to listing id " + listing.getId()
+                        + ", criteria " + certResult.getNumber());
                     } else {
                         updatedItem.setTestFunctionalityId(foundFunc.getId());
                     }
@@ -1360,7 +1361,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             Long certificationResultId) {
         return certResultDAO.getAdditionalSoftwareForCertificationResult(certificationResultId);
     }
-    
+
     @Override
     public boolean getCertifiedProductHasAdditionalSoftware(Long certifiedProductId) {
         return certResultDAO.getCertifiedProductHasAdditionalSoftware(certifiedProductId);
@@ -1415,15 +1416,12 @@ public class CertificationResultManagerImpl implements CertificationResultManage
         return certResultDAO.getTestTasksForCertificationResult(certificationResultId);
     }
 
-    private class CertificationResultAdditionalSoftwarePair {
+    private static class CertificationResultAdditionalSoftwarePair {
         private CertificationResultAdditionalSoftware orig;
         private CertificationResultAdditionalSoftware updated;
 
-        public CertificationResultAdditionalSoftwarePair() {
-        }
-
-        public CertificationResultAdditionalSoftwarePair(CertificationResultAdditionalSoftware orig,
-                CertificationResultAdditionalSoftware updated) {
+        CertificationResultAdditionalSoftwarePair(final CertificationResultAdditionalSoftware orig,
+                final CertificationResultAdditionalSoftware updated) {
             this.orig = orig;
             this.updated = updated;
         }
@@ -1445,14 +1443,11 @@ public class CertificationResultManagerImpl implements CertificationResultManage
         }
     }
 
-    private class CertificationResultUcdProcessPair {
+    private static class CertificationResultUcdProcessPair {
         private UcdProcess orig;
         private UcdProcess updated;
 
-        public CertificationResultUcdProcessPair() {
-        }
-
-        public CertificationResultUcdProcessPair(UcdProcess orig, UcdProcess updated) {
+        CertificationResultUcdProcessPair(final UcdProcess orig, final UcdProcess updated) {
             this.orig = orig;
             this.updated = updated;
         }
@@ -1474,14 +1469,11 @@ public class CertificationResultManagerImpl implements CertificationResultManage
         }
     }
 
-    private class CertificationResultTestDataPair {
+    private static class CertificationResultTestDataPair {
         private CertificationResultTestData orig;
         private CertificationResultTestData updated;
 
-        public CertificationResultTestDataPair() {
-        }
-
-        public CertificationResultTestDataPair(CertificationResultTestData orig, CertificationResultTestData updated) {
+        CertificationResultTestDataPair(final CertificationResultTestData orig, final CertificationResultTestData updated) {
             this.orig = orig;
             this.updated = updated;
         }
@@ -1503,14 +1495,11 @@ public class CertificationResultManagerImpl implements CertificationResultManage
         }
     }
 
-    private class TestTaskPair {
+    private static class TestTaskPair {
         private TestTask orig;
         private TestTask updated;
 
-        public TestTaskPair() {
-        }
-
-        public TestTaskPair(TestTask orig, TestTask updated) {
+        TestTaskPair(final TestTask orig, final TestTask updated) {
             this.orig = orig;
             this.updated = updated;
         }
@@ -1532,14 +1521,11 @@ public class CertificationResultManagerImpl implements CertificationResultManage
         }
     }
 
-    private class TestParticipantPair {
+    private static class TestParticipantPair {
         private TestParticipant orig;
         private TestParticipant updated;
 
-        public TestParticipantPair() {
-        }
-
-        public TestParticipantPair(TestParticipant orig, TestParticipant updated) {
+        TestParticipantPair(final TestParticipant orig, final TestParticipant updated) {
             this.orig = orig;
             this.updated = updated;
         }

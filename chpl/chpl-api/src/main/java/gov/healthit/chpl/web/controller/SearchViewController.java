@@ -1,9 +1,7 @@
 package gov.healthit.chpl.web.controller;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashSet;
@@ -47,7 +45,6 @@ import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.UploadTemplateVersion;
-import gov.healthit.chpl.domain.notification.NotificationType;
 import gov.healthit.chpl.domain.search.NonconformitySearchOptions;
 import gov.healthit.chpl.domain.search.SearchRequest;
 import gov.healthit.chpl.domain.search.SearchResponse;
@@ -60,16 +57,23 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.SearchMenuManager;
+import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
+/**
+ * Contains endpoints for searching the CHPL data as well as various
+ * finite lists of items that may be needed to choose from for filtering
+ * and searching options.
+ * @author kekey
+ *
+ */
 @Api
 @RestController
 public class SearchViewController {
-    private static final int BUFFER_SIZE = 1024;
     private static final int MAX_PAGE_SIZE = 100;
 
     @Autowired
@@ -87,8 +91,22 @@ public class SearchViewController {
     @Autowired
     private DeveloperManager developerManager;
 
+    @Autowired private FileUtils fileUtils;
+
     private static final Logger LOGGER = LogManager.getLogger(SearchViewController.class);
 
+    /**
+     * Streams a file back to the end user for the specified edition (2011,2014,2015,etc)
+     * in the specified format (xml or csv). Optionally will send back the definition
+     * files instead. The file that is sent back is generated via a quartz job on a
+     * regular basis.
+     * @param editionInput 2011, 2014, or 2015
+     * @param formatInput csv or xml
+     * @param isDefinition whether to send back the data file or definition file
+     * @param request http request
+     * @param response http response, used to stream back the file
+     * @throws IOException if the file cannot be read
+     */
     @ApiOperation(value = "Download the entire CHPL as XML.",
             notes = "Once per day, the entire certified product listing is "
                     + "written out to XML files on the CHPL servers, one for each "
@@ -102,121 +120,92 @@ public class SearchViewController {
             @RequestParam(value = "format", defaultValue = "xml", required = false) final String formatInput,
             @RequestParam(value = "definition", defaultValue = "false", required = false) final Boolean isDefinition,
             final HttpServletRequest request, final HttpServletResponse response) throws IOException {
-        String downloadFileLocation = env.getProperty("downloadFolderPath");
-        File downloadFile = new File(downloadFileLocation);
-        if (!downloadFile.exists() || !downloadFile.canRead()) {
-            response.getWriter()
-            .write(String.format(
-                    messageSource.getMessage(new DefaultMessageSourceResolvable("resources.noReadPermission"),
-                            LocaleContextHolder.getLocale()),
-                    downloadFileLocation));
-            return;
+        //parse inputs
+        String edition = editionInput;
+        String format = formatInput;
+        String responseType = "text/csv";
+
+        if (!StringUtils.isEmpty(edition)) {
+            // make sure it's a 4 character year
+            edition = edition.trim();
+            if (!edition.startsWith("20")) {
+                edition = "20" + edition;
+            }
+        } else {
+            edition = "all";
         }
 
-        if (downloadFile.isDirectory()) {
-            // find the most recent file in the directory and use that
-            File[] children = downloadFile.listFiles();
-            if (children == null || children.length == 0) {
+        if (!StringUtils.isEmpty(format) && format.equalsIgnoreCase("csv")) {
+            format = "csv";
+        } else {
+            format = "xml";
+            responseType = "application/xml";
+        }
+
+        File toDownload = null;
+        //if the user wants a definition file, find it
+        if (isDefinition != null && isDefinition.booleanValue()) {
+            if (format.equals("xml")) {
+                toDownload = fileUtils.getDownloadFile(env.getProperty("schemaXmlName"));
+            } else if (edition.equals("2014")) {
+                toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2014Name"));
+            } else if (edition.equals("2015")) {
+                toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2015Name"));
+            }
+
+            if (!toDownload.exists()) {
                 response.getWriter()
-                .write(String.format(
-                        messageSource.getMessage(new DefaultMessageSourceResolvable("resources.noFilesExist"),
-                                LocaleContextHolder.getLocale()),
-                        downloadFileLocation));
+                .write(String.format(messageSource.getMessage(
+                        new DefaultMessageSourceResolvable("resources.schemaFileNotFound"),
+                        LocaleContextHolder.getLocale()), toDownload.getAbsolutePath()));
                 return;
+            }
+        } else {
+            File newestFileWithFormat = fileUtils.getNewestFileMatchingName("^chpl-" + edition + "-.+\\." + format + "$");
+            if (newestFileWithFormat != null) {
+                toDownload = newestFileWithFormat;
             } else {
-                String edition = editionInput;
-                String format = formatInput;
-                if (!StringUtils.isEmpty(edition)) {
-                    // make sure it's a 4 character year
-                    edition = edition.trim();
-                    if (!edition.startsWith("20")) {
-                        edition = "20" + edition;
-                    }
-                } else {
-                    edition = "all";
-                }
-
-                if (!StringUtils.isEmpty(format) && format.equalsIgnoreCase("csv")) {
-                    format = "csv";
-                } else {
-                    format = "xml";
-                }
-
-                if (isDefinition != null && isDefinition.booleanValue()) {
-                    String absolutePath = null;
-                    if (format.equals("xml")) {
-                        String schemaFilename = env.getProperty("schemaXmlName");
-                        absolutePath = downloadFile.getAbsolutePath() + File.separator + schemaFilename;
-                    } else if (edition.equals("2014")) {
-                        String schemaFilename = env.getProperty("schemaCsv2014Name");
-                        absolutePath = downloadFile.getAbsolutePath() + File.separator + schemaFilename;
-                    } else if (edition.equals("2015")) {
-                        String schemaFilename = env.getProperty("schemaCsv2015Name");
-                        absolutePath = downloadFile.getAbsolutePath() + File.separator + schemaFilename;
-                    }
-
-                    if (!StringUtils.isEmpty(absolutePath)) {
-                        downloadFile = new File(absolutePath);
-                        if (!downloadFile.exists()) {
-                            response.getWriter()
-                            .write(String.format(messageSource.getMessage(
-                                    new DefaultMessageSourceResolvable("resources.schemaFileNotFound"),
-                                    LocaleContextHolder.getLocale()), absolutePath));
-                            return;
-                        }
-                    }
-                } else {
-                    File newestFileWithFormat = null;
-                    for (int i = 0; i < children.length; i++) {
-
-                        if (children[i].getName().matches("^chpl-" + edition + "-.+\\." + format + "$")) {
-                            if (newestFileWithFormat == null) {
-                                newestFileWithFormat = children[i];
-                            } else {
-                                if (children[i].lastModified() > newestFileWithFormat.lastModified()) {
-                                    newestFileWithFormat = children[i];
-                                }
-                            }
-                        }
-                    }
-                    if (newestFileWithFormat != null) {
-                        downloadFile = newestFileWithFormat;
-                    } else {
-                        response.getWriter()
-                        .write(String.format(messageSource.getMessage(
-                                new DefaultMessageSourceResolvable(
-                                        "resources.fileWithEditionAndFormatNotFound"),
-                                LocaleContextHolder.getLocale()), edition, format));
-                        return;
-                    }
-                }
+                response.getWriter()
+                .write(String.format(messageSource.getMessage(
+                        new DefaultMessageSourceResolvable(
+                                "resources.fileWithEditionAndFormatNotFound"),
+                        LocaleContextHolder.getLocale()), edition, format));
+                return;
             }
         }
 
-        LOGGER.info("Downloading " + downloadFile.getName());
-
-        try (FileInputStream inputStream = new FileInputStream(downloadFile);
-                OutputStream outStream = response.getOutputStream()) {
-
-            // set content attributes for the response
-            response.setContentType("application/xml");
-            response.setContentLength((int) downloadFile.length());
-
-            // set headers for the response
-            String headerKey = "Content-Disposition";
-            String headerValue = String.format("attachment; filename=\"%s\"", downloadFile.getName());
-            response.setHeader(headerKey, headerValue);
-
-            byte[] buffer = new byte[BUFFER_SIZE];
-            int bytesRead = -1;
-
-            // write bytes read from the input stream into the output stream
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outStream.write(buffer, 0, bytesRead);
-            }
-        }
+        LOGGER.info("Downloading " + toDownload.getName());
+        fileUtils.streamFileAsResponse(toDownload, responseType, response);
     }
 
+    /**
+     * Search listings on the CHPL with a generic search term and/or filters.
+     * @param searchTerm CHPL ID, Developer (or previous developer) Name, Product Name, ONC-ACB Certification ID
+     * @param certificationStatusesDelimited statuses to filter by
+     * @param certificationEditionsDelimited editions to filter by
+     * @param certificationCriteriaDelimited criteria to filter by
+     * @param certificationCriteriaOperatorStr and vs or for criteria filter
+     * @param cqmsDelimited cqms to filter by
+     * @param cqmsOperatorStr and vs or for cqm filter
+     * @param certificationBodiesDelimited acbs to filter by
+     * @param hasHadSurveillanceStr filter by whether listings have had surveillance
+     * @param nonconformityOptionsDelimited filter by whether listings have open/closed/no nonconformities
+     * @param nonconformityOptionsOperator and vs or for nonconformity filter
+     * @param developer filter by developer name
+     * @param product filter by product name
+     * @param version filter by version name
+     * @param practiceType filter by practice type name
+     * @param certificationDateStart filter by when listing was certified to the CHPL
+     * @param certificationDateEnd filter by when listing was certified to the CHPL
+     * @param pageNumber which page of data to return
+     * @param pageSize how many records to return per page
+     * @param orderBy field to order data by
+     * @param sortDescending sort order
+     * @return listings matching the given parameters
+     * @throws InvalidArgumentsException if one or more parameters is not specified properly or has an invalid value
+     * @throws EntityRetrievalException if there was an error retrieving a listing
+     */
+    @SuppressWarnings({"checkstyle:methodlength","checkstyle:parameternumber"})
     @ApiOperation(value = "Search the CHPL",
             notes = "If paging parameters are not specified, the first 20 records are returned by default. "
                     + "All parameters are optional. "
@@ -310,38 +299,38 @@ public class SearchViewController {
             "application/json; charset=utf-8", "application/xml"
     })
     public @ResponseBody SearchResponse searchGet(
-            @RequestParam(value = "searchTerm", required = false, defaultValue = "") String searchTerm,
+            @RequestParam(value = "searchTerm", required = false, defaultValue = "") final String searchTerm,
             @RequestParam(value = "certificationStatuses", required = false,
-            defaultValue = "") String certificationStatusesDelimited,
+            defaultValue = "") final String certificationStatusesDelimited,
             @RequestParam(value = "certificationEditions", required = false,
-            defaultValue = "") String certificationEditionsDelimited,
+            defaultValue = "") final String certificationEditionsDelimited,
             @RequestParam(value = "certificationCriteria", required = false,
-            defaultValue = "") String certificationCriteriaDelimited,
+            defaultValue = "") final String certificationCriteriaDelimited,
             @RequestParam(value = "certificationCriteriaOperator", required = false,
-            defaultValue = "OR") String certificationCriteriaOperatorStr,
-            @RequestParam(value = "cqms", required = false, defaultValue = "") String cqmsDelimited,
+            defaultValue = "OR") final String certificationCriteriaOperatorStr,
+            @RequestParam(value = "cqms", required = false, defaultValue = "") final String cqmsDelimited,
             @RequestParam(value = "cqmsOperator", required = false,
-            defaultValue = "OR") String cqmsOperatorStr,
+            defaultValue = "OR") final String cqmsOperatorStr,
             @RequestParam(value = "certificationBodies", required = false,
-            defaultValue = "") String certificationBodiesDelimited,
+            defaultValue = "") final String certificationBodiesDelimited,
             @RequestParam(value = "hasHadSurveillance", required = false,
-            defaultValue = "") String hasHadSurveillanceStr,
+            defaultValue = "") final String hasHadSurveillanceStr,
             @RequestParam(value = "nonconformityOptions", required = false,
-            defaultValue = "") String nonconformityOptionsDelimited,
+            defaultValue = "") final String nonconformityOptionsDelimited,
             @RequestParam(value = "nonconformityOptionsOperator", required = false,
-            defaultValue = "OR") String nonconformityOptionsOperator,
-            @RequestParam(value = "developer", required = false, defaultValue = "") String developer,
-            @RequestParam(value = "product", required = false, defaultValue = "") String product,
-            @RequestParam(value = "version", required = false, defaultValue = "") String version,
-            @RequestParam(value = "practiceType", required = false, defaultValue = "") String practiceType,
+            defaultValue = "OR") final String nonconformityOptionsOperator,
+            @RequestParam(value = "developer", required = false, defaultValue = "") final String developer,
+            @RequestParam(value = "product", required = false, defaultValue = "") final String product,
+            @RequestParam(value = "version", required = false, defaultValue = "") final String version,
+            @RequestParam(value = "practiceType", required = false, defaultValue = "") final String practiceType,
             @RequestParam(value = "certificationDateStart", required = false,
-            defaultValue = "") String certificationDateStart,
+            defaultValue = "") final String certificationDateStart,
             @RequestParam(value = "certificationDateEnd", required = false,
-            defaultValue = "") String certificationDateEnd,
-            @RequestParam(value = "pageNumber", required = false, defaultValue = "0") Integer pageNumber,
-            @RequestParam(value = "pageSize", required = false, defaultValue = "20") Integer pageSize,
-            @RequestParam(value = "orderBy", required = false, defaultValue = "product") String orderBy,
-            @RequestParam(value = "sortDescending", required = false, defaultValue = "false") Boolean sortDescending)
+            defaultValue = "") final String certificationDateEnd,
+            @RequestParam(value = "pageNumber", required = false, defaultValue = "0") final Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false, defaultValue = "20") final Integer pageSize,
+            @RequestParam(value = "orderBy", required = false, defaultValue = "product") final String orderBy,
+            @RequestParam(value = "sortDescending", required = false, defaultValue = "false") final Boolean sortDescending)
                     throws InvalidArgumentsException, EntityRetrievalException {
 
         SearchRequest searchRequest = new SearchRequest();
@@ -350,9 +339,9 @@ public class SearchViewController {
         }
 
         if (certificationStatusesDelimited != null) {
-            certificationStatusesDelimited = certificationStatusesDelimited.trim();
-            if (!StringUtils.isEmpty(certificationStatusesDelimited)) {
-                String[] certificationStatusArr = certificationStatusesDelimited.split(",");
+            String certificationStatusesDelimitedTrimmed = certificationStatusesDelimited.trim();
+            if (!StringUtils.isEmpty(certificationStatusesDelimitedTrimmed)) {
+                String[] certificationStatusArr = certificationStatusesDelimitedTrimmed.split(",");
                 if (certificationStatusArr.length > 0) {
                     Set<String> certificationStatuses = new HashSet<String>();
                     Set<KeyValueModel> availableCertificationStatuses = searchMenuManager.getCertificationStatuses();
@@ -368,9 +357,9 @@ public class SearchViewController {
         }
 
         if (certificationEditionsDelimited != null) {
-            certificationEditionsDelimited = certificationEditionsDelimited.trim();
-            if (!StringUtils.isEmpty(certificationEditionsDelimited)) {
-                String[] certificationEditionsArr = certificationEditionsDelimited.split(",");
+            String certificationEditionsDelimitedTrimmed = certificationEditionsDelimited.trim();
+            if (!StringUtils.isEmpty(certificationEditionsDelimitedTrimmed)) {
+                String[] certificationEditionsArr = certificationEditionsDelimitedTrimmed.split(",");
                 if (certificationEditionsArr.length > 0) {
                     Set<String> certificationEditions = new HashSet<String>();
                     Set<KeyValueModel> availableCertificationEditions = searchMenuManager.getEditionNames(false);
@@ -387,9 +376,9 @@ public class SearchViewController {
         }
 
         if (certificationCriteriaDelimited != null) {
-            certificationCriteriaDelimited = certificationCriteriaDelimited.trim();
-            if (!StringUtils.isEmpty(certificationCriteriaDelimited)) {
-                String[] certificationCriteriaArr = certificationCriteriaDelimited.split(",");
+            String certificationCriteriaDelimitedTrimmed = certificationCriteriaDelimited.trim();
+            if (!StringUtils.isEmpty(certificationCriteriaDelimitedTrimmed)) {
+                String[] certificationCriteriaArr = certificationCriteriaDelimitedTrimmed.split(",");
                 if (certificationCriteriaArr.length > 0) {
                     Set<String> certificationCriterion = new HashSet<String>();
                     Set<DescriptiveModel> availableCriterion = searchMenuManager
@@ -402,9 +391,9 @@ public class SearchViewController {
                     }
                     searchRequest.setCertificationCriteria(certificationCriterion);
                     if (!StringUtils.isEmpty(certificationCriteriaOperatorStr)) {
-                        certificationCriteriaOperatorStr = certificationCriteriaOperatorStr.trim();
+                        String certificationCriteriaOperatorStrTrimmed = certificationCriteriaOperatorStr.trim();
                         SearchSetOperator certificationCriteriaOperator =
-                                validateSearchSetOperator(certificationCriteriaOperatorStr);
+                                validateSearchSetOperator(certificationCriteriaOperatorStrTrimmed);
                         searchRequest.setCertificationCriteriaOperator(certificationCriteriaOperator);
                     }
                 }
@@ -412,9 +401,9 @@ public class SearchViewController {
         }
 
         if (cqmsDelimited != null) {
-            cqmsDelimited = cqmsDelimited.trim();
-            if (!StringUtils.isEmpty(cqmsDelimited)) {
-                String[] cqmsArr = cqmsDelimited.split(",");
+            String cqmsDelimitedTrimmed = cqmsDelimited.trim();
+            if (!StringUtils.isEmpty(cqmsDelimitedTrimmed)) {
+                String[] cqmsArr = cqmsDelimitedTrimmed.split(",");
                 if (cqmsArr.length > 0) {
                     Set<String> cqms = new HashSet<String>();
                     Set<DescriptiveModel> availableCqms = searchMenuManager.getCQMCriterionNumbers(false);
@@ -427,8 +416,8 @@ public class SearchViewController {
                     searchRequest.setCqms(cqms);
 
                     if (!StringUtils.isEmpty(cqmsOperatorStr)) {
-                        cqmsOperatorStr = cqmsOperatorStr.trim();
-                        SearchSetOperator cqmOperator = validateSearchSetOperator(cqmsOperatorStr);
+                        String cqmsOperatorStrTrimmed = cqmsOperatorStr.trim();
+                        SearchSetOperator cqmOperator = validateSearchSetOperator(cqmsOperatorStrTrimmed);
                         searchRequest.setCqmsOperator(cqmOperator);
                     }
                 }
@@ -436,12 +425,12 @@ public class SearchViewController {
         }
 
         if (certificationBodiesDelimited != null) {
-            certificationBodiesDelimited = certificationBodiesDelimited.trim();
-            if (!StringUtils.isEmpty(certificationBodiesDelimited)) {
-                String[] certificationBodiesArr = certificationBodiesDelimited.split(",");
+            String certificationBodiesDelimitedTrimmed = certificationBodiesDelimited.trim();
+            if (!StringUtils.isEmpty(certificationBodiesDelimitedTrimmed)) {
+                String[] certificationBodiesArr = certificationBodiesDelimitedTrimmed.split(",");
                 if (certificationBodiesArr.length > 0) {
                     Set<String> certBodies = new HashSet<String>();
-                    Set<KeyValueModel> availableCertBodies = searchMenuManager.getCertBodyNames(true);
+                    Set<KeyValueModel> availableCertBodies = searchMenuManager.getCertBodyNames();
 
                     for (int i = 0; i < certificationBodiesArr.length; i++) {
                         String certBodyParam = certificationBodiesArr[i].trim();
@@ -467,8 +456,8 @@ public class SearchViewController {
         }
 
         if (!StringUtils.isEmpty(nonconformityOptionsDelimited)) {
-            nonconformityOptionsDelimited = nonconformityOptionsDelimited.trim();
-            String[] nonconformityOptionsArr = nonconformityOptionsDelimited.split(",");
+            String nonconformityOptionsDelimitedTrimmed = nonconformityOptionsDelimited.trim();
+            String[] nonconformityOptionsArr = nonconformityOptionsDelimitedTrimmed.split(",");
             if (nonconformityOptionsArr.length > 0) {
                 Set<NonconformitySearchOptions> nonconformitySearchOptions = new HashSet<NonconformitySearchOptions>();
                 for (int i = 0; i < nonconformityOptionsArr.length; i++) {
@@ -499,64 +488,64 @@ public class SearchViewController {
                 searchRequest.getSurveillance().setNonconformityOptions(nonconformitySearchOptions);
 
                 if (!StringUtils.isEmpty(nonconformityOptionsOperator)) {
-                    nonconformityOptionsOperator = nonconformityOptionsOperator.trim();
-                    SearchSetOperator ncOperator = validateSearchSetOperator(nonconformityOptionsOperator);
+                    String nonconformityOptionsOperatorTrimmed = nonconformityOptionsOperator.trim();
+                    SearchSetOperator ncOperator = validateSearchSetOperator(nonconformityOptionsOperatorTrimmed);
                     searchRequest.getSurveillance().setNonconformityOptionsOperator(ncOperator);
                 }
             }
         }
 
         if (developer != null) {
-            developer = developer.trim();
-            if (!StringUtils.isEmpty(developer)) {
-                searchRequest.setDeveloper(developer.trim());
+            String developerTrimmed = developer.trim();
+            if (!StringUtils.isEmpty(developerTrimmed)) {
+                searchRequest.setDeveloper(developerTrimmed);
             }
         }
 
         if (product != null) {
-            product = product.trim();
-            if (!StringUtils.isEmpty(product)) {
-                searchRequest.setProduct(product.trim());
+            String productTrimmed = product.trim();
+            if (!StringUtils.isEmpty(productTrimmed)) {
+                searchRequest.setProduct(productTrimmed);
             }
         }
 
         if (version != null) {
-            version = version.trim();
-            if (!StringUtils.isEmpty(version)) {
-                searchRequest.setVersion(version.trim());
+            String versionTrimmed = version.trim();
+            if (!StringUtils.isEmpty(versionTrimmed)) {
+                searchRequest.setVersion(versionTrimmed);
             }
         }
 
         if (practiceType != null) {
-            practiceType = practiceType.trim();
-            if (!StringUtils.isEmpty(practiceType)) {
-                validatePracticeTypeParameter(practiceType);
-                searchRequest.setPracticeType(practiceType);
+            String practiceTypeTrimmed = practiceType.trim();
+            if (!StringUtils.isEmpty(practiceTypeTrimmed)) {
+                validatePracticeTypeParameter(practiceTypeTrimmed);
+                searchRequest.setPracticeType(practiceTypeTrimmed);
             }
         }
 
         if (!StringUtils.isEmpty(certificationDateStart)) {
-            certificationDateStart = certificationDateStart.trim();
-            if (!StringUtils.isEmpty(certificationDateStart)) {
-                validateCertificationDateParameter(certificationDateStart);
-                searchRequest.setCertificationDateStart(certificationDateStart);
+            String certificationDateStartTrimmed = certificationDateStart.trim();
+            if (!StringUtils.isEmpty(certificationDateStartTrimmed)) {
+                validateCertificationDateParameter(certificationDateStartTrimmed);
+                searchRequest.setCertificationDateStart(certificationDateStartTrimmed);
             }
         }
 
         if (!StringUtils.isEmpty(certificationDateEnd)) {
-            certificationDateEnd = certificationDateEnd.trim();
-            if (!StringUtils.isEmpty(certificationDateEnd)) {
-                validateCertificationDateParameter(certificationDateEnd);
-                searchRequest.setCertificationDateEnd(certificationDateEnd);
+            String certificationDateEndTrimmed = certificationDateEnd.trim();
+            if (!StringUtils.isEmpty(certificationDateEndTrimmed)) {
+                validateCertificationDateParameter(certificationDateEndTrimmed);
+                searchRequest.setCertificationDateEnd(certificationDateEndTrimmed);
             }
         }
         validatePageSize(pageSize);
-        orderBy = orderBy.trim();
-        validateOrderBy(orderBy);
+        String orderByTrimmed = orderBy.trim();
+        validateOrderBy(orderByTrimmed);
 
         searchRequest.setPageNumber(pageNumber);
         searchRequest.setPageSize(pageSize);
-        searchRequest.setOrderBy(orderBy);
+        searchRequest.setOrderBy(orderByTrimmed);
         searchRequest.setSortDescending(sortDescending);
 
         //trim everything
@@ -565,6 +554,13 @@ public class SearchViewController {
 
     }
 
+    /**
+     * Search listings in the CHPL based on a set of filters.
+     * @param searchRequest object containing all possible search parameters; not all are required.
+     * @return listings matching the passed in search parameters
+     * @throws InvalidArgumentsException if a search parameter has an invalid value
+     * @throws EntityRetrievalException if there is an error retrieving a listing
+     */
     @ApiOperation(value = "Search the CHPL with an HTTP POST Request.",
             notes = "Search the CHPL by specifycing multiple fields of the data to search. "
                     + "If paging fields are not specified, the first 20 records are returned by default.")
@@ -605,7 +601,7 @@ public class SearchViewController {
         }
 
         if (searchRequest.getCertificationBodies() != null && searchRequest.getCertificationBodies().size() > 0) {
-            Set<KeyValueModel> availableCertBodies = searchMenuManager.getCertBodyNames(true);
+            Set<KeyValueModel> availableCertBodies = searchMenuManager.getCertBodyNames();
             for (String certBody : searchRequest.getCertificationBodies()) {
                 validateCertificationBody(certBody, availableCertBodies);
             }
@@ -812,16 +808,6 @@ public class SearchViewController {
     }
 
     @Secured({
-        Authority.ROLE_ADMIN, Authority.ROLE_ACB
-    })
-    @ApiOperation(value = "Get all possible types of notifications that a user can sign up for.")
-    @RequestMapping(value = "/data/notification_types", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
-    public @ResponseBody Set<NotificationType> getNotificationTypes() {
-        return searchMenuManager.getNotificationTypes();
-    }
-
-    @Secured({
         Authority.ROLE_ADMIN
     })
     @ApiOperation(value = "Get all fuzzy matching choices for the items that be fuzzy matched.")
@@ -832,21 +818,8 @@ public class SearchViewController {
         return searchMenuManager.getFuzzyChoices();
     }
 
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED.  Change existing fuzzy matching choices.",
-    notes = "Only CHPL users with ROLE_ADMIN are able to update fuzzy matching choices.")
-    @RequestMapping(value = "/data/fuzzy_choices/update", method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
-    public FuzzyChoices updateFuzzyChoicesDeprecated(@RequestBody final FuzzyChoices fuzzyChoices)
-            throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
-            EntityCreationException, IOException {
-
-        return updateFuzzyChoices(fuzzyChoices);
-    }
-
     @ApiOperation(value = "Change existing fuzzy matching choices.",
-            notes = "Only CHPL users with ROLE_ADMIN are able to update fuzzy matching choices.")
+            notes = "Only CHPL users with ROLE_ADMIN or ROLE_ONC are able to update fuzzy matching choices.")
     @RequestMapping(value = "/data/fuzzy_choices/{fuzzyChoiceId}", method = RequestMethod.PUT,
     consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public FuzzyChoices updateFuzzyChoicesForSearching(@RequestBody final FuzzyChoices fuzzyChoices)
@@ -923,7 +896,7 @@ public class SearchViewController {
     @RequestMapping(value = "/data/certification_bodies", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody Set<KeyValueModel> getCertBodyNames() {
-        return searchMenuManager.getCertBodyNames(false);
+        return searchMenuManager.getCertBodyNames();
     }
 
     @ApiOperation(value = "Get all possible education types in the CHPL",
@@ -1155,17 +1128,23 @@ public class SearchViewController {
         return result;
     }
 
+    /**
+     * Returns all of the fields that have a finite set of values and may be used
+     * as filers when searching for listings.
+     * @param simple whether to include data relevant to 2011 listings (2011 edition and NQF numbers)
+     * @return a map of all filterable values
+     * @throws EntityRetrievalException if an item cannot be retrieved from the db
+     */
     @ApiOperation(value = "Get all search options in the CHPL",
             notes = "This returns all of the other /data/{something} results in one single response.")
     @RequestMapping(value = "/data/search_options", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody PopulateSearchOptions getPopulateSearchData(
-            @RequestParam(value = "simple", required = false, defaultValue = "false") final Boolean simple,
-            @RequestParam(value = "showDeleted", required = false, defaultValue = "false") final Boolean showDeleted)
+            @RequestParam(value = "simple", required = false, defaultValue = "false") final Boolean simple)
                     throws EntityRetrievalException {
 
         PopulateSearchOptions searchOptions = new PopulateSearchOptions();
-        searchOptions.setCertBodyNames(searchMenuManager.getCertBodyNames(showDeleted));
+        searchOptions.setCertBodyNames(searchMenuManager.getCertBodyNames());
         searchOptions.setEditions(searchMenuManager.getEditionNames(simple));
         searchOptions.setCertificationStatuses(searchMenuManager.getCertificationStatuses());
         searchOptions.setPracticeTypeNames(searchMenuManager.getPracticeTypeNames());

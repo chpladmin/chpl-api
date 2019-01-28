@@ -27,45 +27,48 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
+@TestExecutionListeners({
+        DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
+})
 @DatabaseSetup("classpath:data/testData.xml")
 public class UploadTemplateVersionDAOTest extends TestCase {
-	private static JWTAuthenticatedUser adminUser;
+    private static JWTAuthenticatedUser adminUser;
 
-	@Autowired private UploadTemplateVersionDAO templateDao;;
+    @Autowired
+    private UploadTemplateVersionDAO templateDao;;
 
-	@Rule
+    @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
 
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-		adminUser = new JWTAuthenticatedUser();
-		adminUser.setFullName("Administrator");
-		adminUser.setId(-2L);
-		adminUser.setFriendlyName("Administrator");
-		adminUser.setSubjectName("admin");
-		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
-	}
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        adminUser = new JWTAuthenticatedUser();
+        adminUser.setFullName("Administrator");
+        adminUser.setId(-2L);
+        adminUser.setFriendlyName("Administrator");
+        adminUser.setSubjectName("admin");
+        adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+    }
 
-	@Test
-	@Transactional
-	public void canFindAll() {
-		List<UploadTemplateVersionDTO> allTemplates = templateDao.findAll();
-		assertNotNull(allTemplates);
-		assertTrue(allTemplates.size() >= 2);
-	}
+    @Test
+    @Transactional
+    public void canFindAll() {
+        List<UploadTemplateVersionDTO> allTemplates = templateDao.findAll();
+        assertNotNull(allTemplates);
+        assertTrue(allTemplates.size() >= 2);
+    }
 
-	@Test
-	@Transactional
-	public void findById() throws EntityRetrievalException {
-		Long id = 5L;
-		UploadTemplateVersionDTO template = templateDao.getById(id);
-		assertNotNull(template);
-		assertEquals(id.longValue(), template.getId().longValue());
-	}
+    @Test
+    @Transactional
+    public void findById() throws EntityRetrievalException {
+        Long id = 5L;
+        UploadTemplateVersionDTO template = templateDao.getById(id);
+        assertNotNull(template);
+        assertEquals(id.longValue(), template.getId().longValue());
+    }
 }

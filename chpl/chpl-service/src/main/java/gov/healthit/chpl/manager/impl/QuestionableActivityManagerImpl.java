@@ -377,7 +377,7 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
             final Date activityDate, final Long activityUser, final QuestionableActivityTriggerConcept trigger) {
         createDeveloperActivity(activity, developerId, activityDate, activityUser, trigger, null);
     }
-    
+
     private void createProductActivity(final QuestionableActivityProductDTO activity, final Long productId,
             final Date activityDate, final Long activityUser, final QuestionableActivityTriggerConcept trigger) {
         activity.setProductId(productId);

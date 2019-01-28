@@ -24,7 +24,7 @@ public class TestProcedureDAOImpl extends BaseDAOImpl implements TestProcedureDA
     private static final Logger LOGGER = LogManager.getLogger(TestProcedureDAOImpl.class);
     @Autowired
     MessageSource messageSource;
-    
+
     @Override
     public List<TestProcedureDTO> getByCriteriaNumber(String criteriaNumber) {
         Set<TestProcedureEntity> entities = getTestProcedureByCertificationCriteria(criteriaNumber);
@@ -50,15 +50,15 @@ public class TestProcedureDAOImpl extends BaseDAOImpl implements TestProcedureDA
     @Override
     public List<TestProcedureCriteriaMapDTO> findAllWithMappedCriteria() {
 
-        List<TestProcedureCriteriaMapEntity> entities = 
+        List<TestProcedureCriteriaMapEntity> entities =
                 entityManager.createQuery("SELECT tpMap "
                         + "FROM TestProcedureCriteriaMapEntity tpMap "
                         + "LEFT JOIN FETCH tpMap.testProcedure tp "
                         + "LEFT JOIN FETCH tpMap.certificationCriterion cce "
                         + "LEFT JOIN FETCH cce.certificationEdition "
                         + "WHERE tpMap.deleted <> true "
-                        + "AND tp.deleted <> true "
-                        , TestProcedureCriteriaMapEntity.class).getResultList();
+                        + "AND tp.deleted <> true ",
+                        TestProcedureCriteriaMapEntity.class).getResultList();
         List<TestProcedureCriteriaMapDTO> dtos = new ArrayList<TestProcedureCriteriaMapDTO>();
 
         for (TestProcedureCriteriaMapEntity entity : entities) {
@@ -67,7 +67,7 @@ public class TestProcedureDAOImpl extends BaseDAOImpl implements TestProcedureDA
         }
         return dtos;
     }
-    private Set<TestProcedureEntity> getTestProcedureByCertificationCriteria(String criteriaNumber) {
+    private Set<TestProcedureEntity> getTestProcedureByCertificationCriteria(final String criteriaNumber) {
         Query query = entityManager.createQuery("SELECT tpMap "
                 + "FROM TestProcedureCriteriaMapEntity tpMap "
                 + "JOIN FETCH tpMap.testProcedure tp "
@@ -75,19 +75,20 @@ public class TestProcedureDAOImpl extends BaseDAOImpl implements TestProcedureDA
                 + "JOIN FETCH cce.certificationEdition "
                 + "WHERE tpMap.deleted <> true "
                 + "AND tp.deleted <> true "
-                + "AND (UPPER(cce.number) = :criteriaNumber)"
-                , TestProcedureCriteriaMapEntity.class);
+                + "AND (UPPER(cce.number) = :criteriaNumber)",
+                TestProcedureCriteriaMapEntity.class);
         query.setParameter("criteriaNumber", criteriaNumber.trim().toUpperCase());
         List<TestProcedureCriteriaMapEntity> results = query.getResultList();
-        
+
         Set<TestProcedureEntity> tps = new HashSet<TestProcedureEntity>();
-        for(TestProcedureCriteriaMapEntity result : results) {
+        for (TestProcedureCriteriaMapEntity result : results) {
             tps.add(result.getTestProcedure());
         }
         return tps;
     }
 
-    private TestProcedureEntity getTestProcedureByCertificationCriteriaAndValue(String criteriaNumber, String value) {
+    private TestProcedureEntity getTestProcedureByCertificationCriteriaAndValue(final String criteriaNumber,
+            final String value) {
         Query query = entityManager.createQuery("SELECT tpMap "
                 + "FROM TestProcedureCriteriaMapEntity tpMap "
                 + "JOIN FETCH tpMap.testProcedure tp "
@@ -96,17 +97,17 @@ public class TestProcedureDAOImpl extends BaseDAOImpl implements TestProcedureDA
                 + "WHERE tpMap.deleted <> true "
                 + "AND tp.deleted <> true "
                 + "AND (UPPER(cce.number) = :criteriaNumber) "
-                + "AND (UPPER(tp.name) = :value)"
-                , TestProcedureCriteriaMapEntity.class);
+                + "AND (UPPER(tp.name) = :value)",
+                TestProcedureCriteriaMapEntity.class);
         query.setParameter("criteriaNumber", criteriaNumber.trim().toUpperCase());
         query.setParameter("value", value.trim().toUpperCase());
-        
+
         List<TestProcedureCriteriaMapEntity> results = query.getResultList();
-        if(results == null || results.size() == 0) {
+        if (results == null || results.size() == 0) {
             return null;
         }
         List<TestProcedureEntity> tps = new ArrayList<TestProcedureEntity>();
-        for(TestProcedureCriteriaMapEntity result : results) {
+        for (TestProcedureCriteriaMapEntity result : results) {
             tps.add(result.getTestProcedure());
         }
         return tps.get(0);

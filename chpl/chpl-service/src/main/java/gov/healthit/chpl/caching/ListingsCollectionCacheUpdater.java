@@ -1,20 +1,12 @@
 package gov.healthit.chpl.caching;
 
-import java.util.Date;
-import java.util.List;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
-import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
 
 @Component
 public class ListingsCollectionCacheUpdater {
@@ -22,6 +14,15 @@ public class ListingsCollectionCacheUpdater {
 
     @Autowired
     private PreFetchedCaches prefetchedCaches;
+
+    @Async
+    public synchronized void refreshCacheAsync() {
+        refreshCache();
+    }
+
+    public synchronized void refreshCacheSync() {
+        refreshCache();
+    }
 
     /**
      * Load the listings collection cache into a pre-fetched cache.
@@ -31,7 +32,7 @@ public class ListingsCollectionCacheUpdater {
      * of the actions and always have the most recently updated data.
      * I'm not 100% sure this is necessary?
      */
-    public synchronized void refreshCache() {
+    private void refreshCache() {
         CacheManager manager = CacheManager.getInstance();
         prefetchedCaches.loadPreFetchedBasicSearch();
         LOGGER.debug("Replacing live listings collection cache with pre-fetched data.");

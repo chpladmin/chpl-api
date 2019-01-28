@@ -7,11 +7,11 @@ public enum JobStatusType {
 
     private String name;
 
-    private JobStatusType() {
+    JobStatusType() {
 
     }
 
-    private JobStatusType(String name) {
+    JobStatusType(String name) {
         this.name = name;
     }
 

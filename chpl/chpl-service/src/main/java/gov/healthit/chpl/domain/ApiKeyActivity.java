@@ -3,6 +3,8 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.util.Date;
 
+import gov.healthit.chpl.util.Util;
+
 public class ApiKeyActivity implements Serializable {
     private static final long serialVersionUID = 7717599216397121980L;
     private Long id;
@@ -41,11 +43,11 @@ public class ApiKeyActivity implements Serializable {
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public String getApiKey() {

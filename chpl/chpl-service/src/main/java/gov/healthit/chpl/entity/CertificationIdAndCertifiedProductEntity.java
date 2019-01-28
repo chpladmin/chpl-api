@@ -9,6 +9,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.util.Util;
+
 @Entity
 @Table(name = "ehr_certification_ids_and_products")
 public class CertificationIdAndCertifiedProductEntity implements Serializable {
@@ -68,12 +70,11 @@ public class CertificationIdAndCertifiedProductEntity implements Serializable {
     }
 
     public Date getCreationDate() {
-        return this.creationDate;
-
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Long getId() {

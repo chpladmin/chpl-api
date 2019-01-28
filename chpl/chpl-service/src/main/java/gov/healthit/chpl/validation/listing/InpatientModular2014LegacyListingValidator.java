@@ -11,7 +11,7 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2014.InpatientG1G2Re
 
 @Component("inpatientModular2014LegacyListingValidator")
 public class InpatientModular2014LegacyListingValidator extends Edition2014LegacyListingValidator {
-    @Autowired 
+    @Autowired
     @Qualifier("inpatientG1G2RequiredData2014Reviewer")
     private InpatientG1G2RequiredData2014Reviewer g1g2Reviewer;
 
@@ -19,7 +19,7 @@ public class InpatientModular2014LegacyListingValidator extends Edition2014Legac
 
     @Override
     public List<Reviewer> getReviewers() {
-        if(reviewers == null) {
+        if (reviewers == null) {
             reviewers = super.getReviewers();
             reviewers.add(g1g2Reviewer);
         }

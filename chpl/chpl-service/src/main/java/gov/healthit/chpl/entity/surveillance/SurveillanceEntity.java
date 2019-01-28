@@ -19,6 +19,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
+import gov.healthit.chpl.util.Util;
 
 @Entity
 @Table(name = "surveillance")
@@ -85,19 +86,19 @@ public class SurveillanceEntity {
     }
 
     public Date getStartDate() {
-        return startDate;
+        return Util.getNewDate(startDate);
     }
 
     public void setStartDate(final Date startDate) {
-        this.startDate = startDate;
+        this.startDate = Util.getNewDate(startDate);
     }
 
     public Date getEndDate() {
-        return endDate;
+        return Util.getNewDate(endDate);
     }
 
     public void setEndDate(final Date endDate) {
-        this.endDate = endDate;
+        this.endDate = Util.getNewDate(endDate);
     }
 
     public Integer getNumRandomizedSites() {
@@ -109,11 +110,11 @@ public class SurveillanceEntity {
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Boolean getDeleted() {
@@ -125,11 +126,11 @@ public class SurveillanceEntity {
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public Long getLastModifiedUser() {

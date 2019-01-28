@@ -6,6 +6,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 
+import gov.healthit.chpl.util.Util;
+
 public class OversightRuleResult {
     private SurveillanceOversightRule rule;
     private Date dateBroken;
@@ -16,7 +18,7 @@ public class OversightRuleResult {
 
     public OversightRuleResult(SurveillanceOversightRule rule, Date dateBroken, long numDaysBroken) {
         this.rule = rule;
-        this.dateBroken = dateBroken;
+        this.dateBroken = Util.getNewDate(dateBroken);
         this.numDaysBroken = numDaysBroken;
     }
 
@@ -29,11 +31,11 @@ public class OversightRuleResult {
     }
 
     public Date getDateBroken() {
-        return dateBroken;
+        return Util.getNewDate(dateBroken);
     }
 
     public void setDateBroken(final Date dateBroken) {
-        this.dateBroken = dateBroken;
+        this.dateBroken = Util.getNewDate(dateBroken);
     }
 
     public long getNumDaysBroken() {

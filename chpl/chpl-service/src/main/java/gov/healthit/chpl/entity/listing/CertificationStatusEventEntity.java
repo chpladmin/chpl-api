@@ -14,10 +14,11 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.CertificationStatusEntity;
+import gov.healthit.chpl.util.Util;
 
 @Entity
 @Table(name = "certification_status_event")
-public class CertificationStatusEventEntity implements Cloneable, Serializable {
+public class CertificationStatusEventEntity implements Serializable {
 
     /** Serial Version UID. */
     private static final long serialVersionUID = 4174889617079658144L;
@@ -42,7 +43,7 @@ public class CertificationStatusEventEntity implements Cloneable, Serializable {
 
     @Column(name = "reason")
     private String reason;
-    
+
     @Column(name = "deleted")
     private Boolean deleted;
 
@@ -72,11 +73,11 @@ public class CertificationStatusEventEntity implements Cloneable, Serializable {
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Boolean getDeleted() {
@@ -88,19 +89,19 @@ public class CertificationStatusEventEntity implements Cloneable, Serializable {
     }
 
     public Date getEventDate() {
-        return eventDate;
+        return Util.getNewDate(eventDate);
     }
 
     public void setEventDate(final Date eventDate) {
-        this.eventDate = eventDate;
+        this.eventDate = Util.getNewDate(eventDate);
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public Long getLastModifiedUser() {

@@ -20,13 +20,12 @@ public class CertificationStatus implements Serializable {
         this.id = dto.getId();
         this.name = dto.getStatus();
     }
-    
     /**
      * Internal ID
      */
     @XmlElement(required = true)
     private Long id;
-    
+
     /**
      * Certification status name.
      */
@@ -40,7 +39,7 @@ public class CertificationStatus implements Serializable {
     public void setId(Long id) {
         this.id = id;
     }
-    
+
     public String getName() {
         return name;
     }

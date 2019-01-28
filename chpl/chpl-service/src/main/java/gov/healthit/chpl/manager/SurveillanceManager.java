@@ -21,9 +21,9 @@ import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
 
 public interface SurveillanceManager {
-    File getDownloadFile(String filename) throws IOException;
-
-    File getProtectedDownloadFile(String filename) throws IOException;
+    File getAllSurveillanceDownloadFile() throws IOException;
+    File getSurveillanceWithNonconformitiesDownloadFile() throws IOException;
+    File getBasicReportDownloadFile() throws IOException;
 
     void validate(Surveillance surveillance);
 
@@ -55,7 +55,7 @@ public interface SurveillanceManager {
     Surveillance getPendingById(Long acbId, Long survId, boolean includeDeleted) throws EntityRetrievalException;
 
     Long createPendingSurveillance(Long acbId, Surveillance surv);
-    
+
     void deletePendingSurveillance(Long acbId, Long survId, boolean isConfirmed)
             throws ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException,
             EntityCreationException;

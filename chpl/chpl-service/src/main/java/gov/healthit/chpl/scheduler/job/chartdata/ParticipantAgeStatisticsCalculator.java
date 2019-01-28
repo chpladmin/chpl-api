@@ -23,7 +23,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 /**
  * Populates the participant_age_statistics table with summarized count
  * information.
- * 
+ *
  * @author TYoung
  *
  */
@@ -40,7 +40,7 @@ public class ParticipantAgeStatisticsCalculator {
     /**
      * This method calculates the participant counts and saves them to the
      * participant_age_statistics table.
-     * 
+     *
      * @param certifiedProductSearchDetails
      *            List of CertifiedProductSearchDetails objects
      */

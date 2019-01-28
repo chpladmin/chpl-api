@@ -6,19 +6,19 @@ import gov.healthit.chpl.entity.questionableActivity.QuestionableActivityVersion
 public class QuestionableActivityVersionDTO extends QuestionableActivityDTO {
     private Long versionId;
     private ProductVersionDTO version;
-    
+
     public QuestionableActivityVersionDTO() {
         super();
     }
-    
+
     public QuestionableActivityVersionDTO(QuestionableActivityVersionEntity entity) {
         super(entity);
         this.versionId = entity.getVersionId();
-        if(entity.getVersion() != null) {
+        if (entity.getVersion() != null) {
             this.version = new ProductVersionDTO(entity.getVersion());
         }
     }
-    
+
     public Class<?> getActivityObjectClass() {
         return ProductVersionDTO.class;
     }

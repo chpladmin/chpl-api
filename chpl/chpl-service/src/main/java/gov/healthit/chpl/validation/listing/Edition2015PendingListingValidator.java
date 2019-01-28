@@ -11,6 +11,7 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.CertificationDateRev
 import gov.healthit.chpl.validation.pendingListing.reviewer.ChplNumberReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.DeveloperStatusReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.FieldLengthReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.ForbiddenMacraMeasureReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.FuzzyMatchReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.InheritedCertificationStatusReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
@@ -19,7 +20,9 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.UnattestedCriteriaWi
 import gov.healthit.chpl.validation.pendingListing.reviewer.UnsupportedCharacterReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.UrlReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.ValidDataReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.DuplicateData2015Reviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.RequiredData2015Reviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.SedG32015Reviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.TestFunctionality2015Reviewer;
 
 /**
@@ -62,6 +65,10 @@ public class Edition2015PendingListingValidator extends PendingValidator {
     private FieldLengthReviewer fieldLengthReviewer;
 
     @Autowired
+    @Qualifier("pendingSedG32015Reviewer")
+    private SedG32015Reviewer sedG3Reviewer;
+
+    @Autowired
     @Qualifier("pendingRequiredData2015Reviewer")
     private RequiredData2015Reviewer requiredDataReviewer;
 
@@ -81,12 +88,21 @@ public class Edition2015PendingListingValidator extends PendingValidator {
     @Qualifier("pendingTestFunctionality2015Reviewer")
     private TestFunctionality2015Reviewer testFunctionalityReviewer;
 
+    @Autowired
+    @Qualifier("pendingForbiddenMacraMeasureReviewer")
+    private ForbiddenMacraMeasureReviewer forbiddenMacraMeasureReviewer;
+
+    @Autowired
+    @Qualifier("pendingDuplicateData2015Reviewer")
+    private DuplicateData2015Reviewer duplicateDataReviewer;
+
     private List<Reviewer> reviewers;
 
     @Override
     public List<Reviewer> getReviewers() {
         if (reviewers == null) {
             reviewers = new ArrayList<Reviewer>();
+            reviewers.add(duplicateDataReviewer);
             reviewers.add(chplNumberReviewer);
             reviewers.add(devStatusReviewer);
             reviewers.add(certDateReviewer);
@@ -96,10 +112,12 @@ public class Edition2015PendingListingValidator extends PendingValidator {
             reviewers.add(validDataReviewer);
             reviewers.add(fieldLengthReviewer);
             reviewers.add(requiredDataReviewer);
+            reviewers.add(sedG3Reviewer);
             reviewers.add(ttReviewer);
             reviewers.add(icsReviewer);
             reviewers.add(urlReviewer);
             reviewers.add(testFunctionalityReviewer);
+            reviewers.add(forbiddenMacraMeasureReviewer);
         }
         return reviewers;
     }

@@ -28,7 +28,7 @@ public class CertificationResultDetailsDAOImpl extends BaseDAOImpl implements Ce
         }
         return dtos;
     }
-    
+
     private List<CertificationResultDetailsEntity> getEntitiesByCertifiedProductId(Long productId)
             throws EntityRetrievalException {
 
@@ -42,7 +42,7 @@ public class CertificationResultDetailsDAOImpl extends BaseDAOImpl implements Ce
 
         return result;
     }
-    
+
     @Override
     public List<CertificationResultDetailsDTO> getCertificationResultDetailsByCertifiedProductIdSED(
             Long certifiedProductId) throws EntityRetrievalException {
@@ -54,7 +54,7 @@ public class CertificationResultDetailsDAOImpl extends BaseDAOImpl implements Ce
         }
         return dtos;
     }
-    
+
     private List<CertificationResultDetailsEntity> getEntitiesByCertifiedProductIdSED(Long productId)
             throws EntityRetrievalException {
 

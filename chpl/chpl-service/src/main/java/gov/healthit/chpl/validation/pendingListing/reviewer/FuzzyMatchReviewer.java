@@ -29,7 +29,7 @@ public class FuzzyMatchReviewer implements Reviewer {
     @Autowired private QmsStandardDAO qmsDao;
     @Autowired private AccessibilityStandardDAO accStdDao;
     @Autowired private ErrorMessageUtil msgUtil;
-    
+
     @Override
     public void review(PendingCertifiedProductDTO listing) {
         if (listing.getCertificationCriterion() != null && !listing.getCertificationCriterion().isEmpty()) {
@@ -50,7 +50,7 @@ public class FuzzyMatchReviewer implements Reviewer {
                             if (fuzzyMatchedUcd != null) {
                                 ucd.setUcdProcessId(fuzzyMatchedUcd.getId());
                                 ucd.setUcdProcessName(fuzzyMatchedUcd.getName());
-                                String warningMsg = msgUtil.getMessage("listing.criteria.fuzzyMatch", 
+                                String warningMsg = msgUtil.getMessage("listing.criteria.fuzzyMatch",
                                         FuzzyType.UCD_PROCESS.fuzzyType(),
                                         cert.getNumber(), origUcdProcessName, topChoice);
                                 listing.getWarningMessages().add(warningMsg);
@@ -61,7 +61,7 @@ public class FuzzyMatchReviewer implements Reviewer {
                 }
             }
         }
-        
+
         for (PendingCertifiedProductQmsStandardDTO qms : listing.getQmsStandards()) {
             String origQmsName = qms.getName();
             String topChoice = fuzzyChoicesManager.getTopFuzzyChoice(origQmsName, FuzzyType.QMS_STANDARD);
@@ -99,7 +99,7 @@ public class FuzzyMatchReviewer implements Reviewer {
                     access.setAccessibilityStandardId(fuzzyMatchedAccStd.getId());
                     access.setName(fuzzyMatchedAccStd.getName());
 
-                    String warningMsg = msgUtil.getMessage("listing.fuzzyMatch", 
+                    String warningMsg = msgUtil.getMessage("listing.fuzzyMatch",
                             FuzzyType.ACCESSIBILITY_STANDARD.fuzzyType(),
                             origAccStd, topChoice);
                     listing.getWarningMessages().add(warningMsg);

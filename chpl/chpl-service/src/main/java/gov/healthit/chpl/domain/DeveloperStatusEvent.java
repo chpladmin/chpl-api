@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
+import gov.healthit.chpl.util.Util;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -40,7 +41,7 @@ public class DeveloperStatusEvent implements Serializable {
     private Date statusDate;
 
     /**
-     * The reason for this status change. 
+     * The reason for this status change.
      * It is required of the status changed to 'Under Certification Ban by ONC'
      */
     @XmlElement(required = false)
@@ -82,11 +83,11 @@ public class DeveloperStatusEvent implements Serializable {
     }
 
     public Date getStatusDate() {
-        return statusDate;
+        return Util.getNewDate(statusDate);
     }
 
     public void setStatusDate(final Date statusDate) {
-        this.statusDate = statusDate;
+        this.statusDate = Util.getNewDate(statusDate);
     }
 
     public String getReason() {

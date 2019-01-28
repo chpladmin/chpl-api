@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import gov.healthit.chpl.dto.AnnouncementDTO;
+import gov.healthit.chpl.util.Util;
 
 public class Announcement implements Serializable {
     private static final long serialVersionUID = -7647761708813529969L;
@@ -59,27 +60,27 @@ public class Announcement implements Serializable {
     }
 
     public Date getStartDate() {
-        return startDate;
+        return Util.getNewDate(startDate);
     }
 
     public void setStartDate(final Date startDate) {
-        this.startDate = startDate;
+        this.startDate = Util.getNewDate(startDate);
     }
 
     public Date getEndDate() {
-        return endDate;
+        return Util.getNewDate(endDate);
     }
 
     public void setEndDate(final Date endDate) {
-        this.endDate = endDate;
+        this.endDate = Util.getNewDate(endDate);
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Boolean getDeleted() {
@@ -91,11 +92,11 @@ public class Announcement implements Serializable {
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public Long getLastModifiedUser() {

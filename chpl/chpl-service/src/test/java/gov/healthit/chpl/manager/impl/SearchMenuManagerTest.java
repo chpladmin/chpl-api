@@ -7,12 +7,10 @@ import static org.junit.Assert.assertTrue;
 import java.util.Set;
 
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -39,7 +37,6 @@ import gov.healthit.chpl.domain.Statuses;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.UploadTemplateVersion;
-import gov.healthit.chpl.domain.notification.NotificationType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SearchMenuManager;
@@ -95,7 +92,7 @@ public class SearchMenuManagerTest {
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         final int maxDuration = 100;
         long startTime = System.currentTimeMillis();
-        Set<KeyValueModel> results = searchMenuManager.getCertBodyNames(true);
+        Set<KeyValueModel> results = searchMenuManager.getCertBodyNames();
         // certBodyNames should now be cached
         long endTime = System.currentTimeMillis();
         long timeLength = endTime - startTime;
@@ -108,7 +105,7 @@ public class SearchMenuManagerTest {
 
         // now compare cached time vs non-cached time
         startTime = System.currentTimeMillis();
-        results = searchMenuManager.getCertBodyNames(true);
+        results = searchMenuManager.getCertBodyNames();
         endTime = System.currentTimeMillis();
         timeLength = endTime - startTime;
         elapsedSecs = timeLength / MILLIS_TO_SECONDS;
@@ -592,47 +589,6 @@ public class SearchMenuManagerTest {
     }
 
     @Transactional
-    @Test
-    public void testGetNotificationTypesForAdminUser() {
-        final int expectedCount = 1;
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-        Set<NotificationType> results = searchMenuManager.getNotificationTypes();
-        assertNotNull(results);
-        assertEquals(expectedCount, results.size());
-        for (NotificationType nt : results) {
-            assertNotNull(nt.getId());
-            assertNotNull(nt.getName());
-            assertNotNull(nt.getDescription());
-            assertNotNull(nt.getRequiresAcb());
-        }
-    }
-
-    //Moving the jobs to Quartz makes this test invalid.
-    @Transactional
-    @Test
-    @Ignore
-    public void testGetNotificationTypesForAcbUser() {
-        SecurityContextHolder.getContext().setAuthentication(testUser3);
-        Set<NotificationType> results = searchMenuManager.getNotificationTypes();
-        assertNotNull(results);
-        assertEquals(3, results.size());
-        for (NotificationType nt : results) {
-            assertNotNull(nt.getId());
-            assertNotNull(nt.getName());
-            assertNotNull(nt.getDescription());
-            assertNotNull(nt.getRequiresAcb());
-            assertTrue(nt.getRequiresAcb().booleanValue());
-        }
-    }
-
-    @Transactional
-    @Test(expected = AuthenticationCredentialsNotFoundException.class)
-    public void testGetNotificationTypesAllowedForUnauthenticatedUser() {
-        SecurityContextHolder.getContext().setAuthentication(null);
-        searchMenuManager.getNotificationTypes();
-    }
-
-    @Transactional
     @Rollback(true)
     @Test
     public void getTestFunctionality_hasEditions() {
@@ -670,7 +626,7 @@ public class SearchMenuManagerTest {
             assertNotNull(td.getCriteria().getNumber());
             assertNotNull(td.getId());
             assertNotNull(td.getName());
-            assertTrue(td.getCriteria().getCertificationEdition().equals("2014") 
+            assertTrue(td.getCriteria().getCertificationEdition().equals("2014")
                     || td.getCriteria().getCertificationEdition().equals("2015"));
         }
     }
@@ -687,7 +643,7 @@ public class SearchMenuManagerTest {
             assertNotNull(tp.getCriteria().getNumber());
             assertNotNull(tp.getId());
             assertNotNull(tp.getName());
-            assertTrue(tp.getCriteria().getCertificationEdition().equals("2014") 
+            assertTrue(tp.getCriteria().getCertificationEdition().equals("2014")
                     || tp.getCriteria().getCertificationEdition().equals("2015"));
         }
     }

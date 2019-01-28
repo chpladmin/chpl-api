@@ -90,14 +90,11 @@ public class MeaningfulUseUploadJob extends RunnableJob {
         Set<MeaningfulUseUserRecord> muusToUpdate = new LinkedHashSet<MeaningfulUseUserRecord>();
         Set<String> uniqueMuusFromFile = new LinkedHashSet<String>();
         String muuDateMillis = muuDateCsvSplit[0];
-        Date muuDate = new Date(new Long(muuDateMillis));
+        Date muuDate = new Date(Long.parseLong(muuDateMillis));
         String muuCsv = muuDateCsvSplit[1];
 
-        BufferedReader reader = null;
-        CSVParser parser = null;
-        try {
-            reader = new BufferedReader(new StringReader(muuCsv));
-            parser = new CSVParser(reader, CSVFormat.EXCEL);
+        try (BufferedReader reader = new BufferedReader(new StringReader(muuCsv));
+                CSVParser parser = new CSVParser(reader, CSVFormat.EXCEL)) {
 
             List<CSVRecord> records = parser.getRecords();
             if (records.size() <= 1) {
@@ -182,14 +179,6 @@ public class MeaningfulUseUploadJob extends RunnableJob {
             LOGGER.error(msg);
             addJobMessage(msg);
             updateStatus(COMPLETE_PERCENT, JobStatusType.Error);
-            try {
-                parser.close();
-            } catch (Exception ignore) {
-            }
-            try {
-                reader.close();
-            } catch (Exception ignore) {
-            }
         }
 
         // now load everything that was parsed
@@ -201,8 +190,8 @@ public class MeaningfulUseUploadJob extends RunnableJob {
                         addJobMessage("Line " + muu.getCsvLineNumber()
                                 + ": Field \"chpl_product_number\" is missing.");
                     } else if (muu.getNumberOfUsers() == null) {
-                        addJobMessage("Line " + muu.getCsvLineNumber() +
-                                ": Field \"num_meaningful_users\" is missing.");
+                        addJobMessage("Line " + muu.getCsvLineNumber()
+                            + ": Field \"num_meaningful_users\" is missing.");
                     } else {
                         //make sure the listing is valid and get the details
                         //object so that it can be updated
@@ -231,7 +220,7 @@ public class MeaningfulUseUploadJob extends RunnableJob {
                                     cpdManager.getCertifiedProductDetails(existingListing.getId());
                             activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, existingListing.getId(),
                                     "Updated certified product " + updatedListing.getChplProductNumber() + ".", existingListing,
-                                    updatedListing, 
+                                    updatedListing,
                                     "User " + getUser().getUsername() + " updated MUU count via upload file.");
                         }
                     }

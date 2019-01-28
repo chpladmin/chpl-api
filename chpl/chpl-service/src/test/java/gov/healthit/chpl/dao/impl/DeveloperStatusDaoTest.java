@@ -24,42 +24,44 @@ import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
+@TestExecutionListeners({
+        DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
+})
 @DatabaseSetup("classpath:data/testData.xml")
 public class DeveloperStatusDaoTest extends TestCase {
 
-	@Autowired 
-	private DeveloperStatusDAO developerStatusDao;
-	
-	@Rule
+    @Autowired
+    private DeveloperStatusDAO developerStatusDao;
+
+    @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
 
-	@Test
-	@Transactional
-	public void getAllDeveloperStatuses() {
-		List<DeveloperStatusDTO> results = developerStatusDao.findAll();
-		assertNotNull(results);
-		assertEquals(3, results.size());
-	}
-	
-	@Test
-	@Transactional
-	public void getDeveloperStatusById() {
-		DeveloperStatusDTO result = developerStatusDao.getById(1L);
-		assertNotNull(result);
-		assertEquals(1, result.getId().longValue());
-	}
-	
-	@Test
-	@Transactional
-	public void getDeveloperStatusByName() {
-		DeveloperStatusDTO result = developerStatusDao.getByName(DeveloperStatusType.Active.toString());
-		assertNotNull(result);
-		assertEquals(DeveloperStatusType.Active.toString(), result.getStatusName());
-	}
+    @Test
+    @Transactional
+    public void getAllDeveloperStatuses() {
+        List<DeveloperStatusDTO> results = developerStatusDao.findAll();
+        assertNotNull(results);
+        assertEquals(3, results.size());
+    }
+
+    @Test
+    @Transactional
+    public void getDeveloperStatusById() {
+        DeveloperStatusDTO result = developerStatusDao.getById(1L);
+        assertNotNull(result);
+        assertEquals(1, result.getId().longValue());
+    }
+
+    @Test
+    @Transactional
+    public void getDeveloperStatusByName() {
+        DeveloperStatusDTO result = developerStatusDao.getByName(DeveloperStatusType.Active.toString());
+        assertNotNull(result);
+        assertEquals(DeveloperStatusType.Active.toString(), result.getStatusName());
+    }
 }

@@ -23,6 +23,12 @@ import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.questionableactivity.ListingQuestionableActivityProvider;
 
+/**
+ * Listens for a questionable activity action that requires a user-supplied
+ * reason and handles the event that the reason is missing.
+ * @author kekey
+ *
+ */
 @Component
 @Aspect
 public class MissingReasonListener {
@@ -48,22 +54,10 @@ public class MissingReasonListener {
     }
 
     /**
-     * @param updateRequest - ListingUpdateRequest
-     * @throws EntityRetrievalException
-     * @throws MissingReasonException
-     */
-    @Before("execution(* "
-            + "gov.healthit.chpl.web.controller.CertifiedProductController.updateCertifiedProductDeprecated(..)) && "
-            + "args(updateRequest,..)")
-    public void checkReasonProvidedIfRequiredOnListingUpdateDeprecated(final ListingUpdateRequest updateRequest)
-            throws EntityRetrievalException, MissingReasonException {
-        checkReasonProvidedIfRequiredOnListingUpdate(updateRequest);
-    }
-
-    /**
-     * @param updateRequest
-     * @throws EntityRetrievalException
-     * @throws MissingReasonException
+     * Looks for reason for listing update if required.
+     * @param updateRequest the listing update object
+     * @throws EntityRetrievalException if the listing cannot be found
+     * @throws MissingReasonException if a reason was required but is not found
      */
     @Before("execution(* gov.healthit.chpl.web.controller.CertifiedProductController.updateCertifiedProduct(..)) && "
             + "args(updateRequest,..)")
@@ -108,13 +102,14 @@ public class MissingReasonListener {
     }
 
     /**
-     * @param surveillanceId
-     * @param requestBody
-     * @throws MissingReasonException
+     * Checks a surveillance delete request to make sure a reason is provided if required.
+     * @param surveillanceId surveillance to delete
+     * @param requestBody object containing the reason
+     * @throws MissingReasonException if the reason is required but not found
      */
     @Before("execution(* gov.healthit.chpl.web.controller.SurveillanceController.deleteSurveillance(..)) && "
             + "args(surveillanceId,requestBody,..)")
-    public void checkReasonProvidedIfRequiredOnSurveillanceUpdate(final Long surveillanceId,
+    public void checkReasonProvidedIfRequiredOnSurveillanceDelete(final Long surveillanceId,
             final SimpleExplainableAction requestBody)
                     throws MissingReasonException {
         if (surveillanceId != null && (requestBody == null

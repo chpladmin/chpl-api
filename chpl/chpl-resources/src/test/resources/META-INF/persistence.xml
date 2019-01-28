@@ -123,11 +123,6 @@
         <class>gov.healthit.chpl.entity.listing.pending.PendingTestParticipantEntity</class>
         <class>gov.healthit.chpl.entity.listing.pending.PendingTestTaskEntity</class>
         <class>gov.healthit.chpl.entity.listing.pending.UploadTemplateVersionEntity</class>
-        <class>gov.healthit.chpl.entity.notification.NotificationPermissionEntity</class>
-        <class>gov.healthit.chpl.entity.notification.NotificationRecipientEntity</class>
-        <class>gov.healthit.chpl.entity.notification.NotificationTypeEntity</class>
-        <class>gov.healthit.chpl.entity.notification.NotificationTypeRecipientMapEntity</class>
-        <class>gov.healthit.chpl.entity.notification.RecipientWithSubscriptionsEntity</class>
         <class>gov.healthit.chpl.entity.questionableActivity.QuestionableActivityCertificationResultEntity</class>
         <class>gov.healthit.chpl.entity.questionableActivity.QuestionableActivityDeveloperEntity</class>
         <class>gov.healthit.chpl.entity.questionableActivity.QuestionableActivityListingEntity</class>

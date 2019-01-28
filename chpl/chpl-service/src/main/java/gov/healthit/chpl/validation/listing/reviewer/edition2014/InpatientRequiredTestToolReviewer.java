@@ -22,10 +22,10 @@ public class InpatientRequiredTestToolReviewer implements Reviewer {
     @Override
     public void review(final CertifiedProductSearchDetails listing) {
         for (CertificationResult cert : listing.getCertificationResults()) {
-            if (cert.isSuccess() != null && cert.isSuccess() == Boolean.TRUE) {
+            if (cert.isSuccess() != null && cert.isSuccess()) {
                 boolean gapEligibleAndTrue = false;
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP)
-                        && cert.isGap() == Boolean.TRUE) {
+                        && cert.isGap()) {
                     gapEligibleAndTrue = true;
                 }
 

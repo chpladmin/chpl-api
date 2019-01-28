@@ -118,7 +118,7 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
         } catch (EntityCreationException | EntityRetrievalException e) {
             LOGGER.error("Unable to save Inheritance Errors Report {} with error message {}",
                     items.toString(), e.getLocalizedMessage());
-        } 
+        }
     }
 
     private Properties loadProperties() throws IOException {

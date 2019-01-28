@@ -22,7 +22,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 /**
  * Populates the listing_count_statistics table with summarized count
  * information.
- * 
+ *
  * @author alarned
  *
  */
@@ -48,7 +48,7 @@ public class ListingCountStatisticsCalculator {
      *
      * Then, loop through each item in the sets and add counts as necessary to
      * the Statistics DTOs.
-     * 
+     *
      * @param listings
      *            incoming listings
      * @return list of listingCountStatisticsDTOs
@@ -101,7 +101,7 @@ public class ListingCountStatisticsCalculator {
 
     /**
      * Log counts of statistics.
-     * 
+     *
      * @param dtos
      *            statistic objects
      */
@@ -113,7 +113,7 @@ public class ListingCountStatisticsCalculator {
 
     /**
      * Save statistics to table.
-     * 
+     *
      * @param dtos
      *            statistics objects
      */

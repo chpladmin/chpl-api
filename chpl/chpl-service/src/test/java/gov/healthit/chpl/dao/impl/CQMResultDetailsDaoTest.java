@@ -24,37 +24,35 @@ import gov.healthit.chpl.dao.CQMResultDetailsDAO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
-
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
+@TestExecutionListeners({
+        DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
+})
 @DatabaseSetup("classpath:data/testData.xml")
 public class CQMResultDetailsDaoTest {
-	
-	@Autowired
-	CQMResultDetailsDAO cqmResultDetailsDAO;
-	
-	@Rule
+
+    @Autowired
+    CQMResultDetailsDAO cqmResultDetailsDAO;
+
+    @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
-	
-	@Test
-	@Transactional
-	public void testGetCQMResultDetailsByCertifiedProductId() throws EntityRetrievalException{
-		
-		List<CQMResultDetailsDTO> dtos = cqmResultDetailsDAO.getCQMResultDetailsByCertifiedProductId(1L);
-		
-		assertEquals(4, dtos.size());
-		assertEquals("0001", dtos.get(0).getNqfNumber());
-		assertEquals(dtos.get(0).getSuccess(), false);
-		assertEquals(dtos.get(0).getVersion(), null);
-		
-	}
-	
-	
-	
+
+    @Test
+    @Transactional
+    public void testGetCQMResultDetailsByCertifiedProductId() throws EntityRetrievalException {
+
+        List<CQMResultDetailsDTO> dtos = cqmResultDetailsDAO.getCQMResultDetailsByCertifiedProductId(1L);
+
+        assertEquals(4, dtos.size());
+        assertEquals("0001", dtos.get(0).getNqfNumber());
+        assertEquals(dtos.get(0).getSuccess(), false);
+        assertEquals(dtos.get(0).getVersion(), null);
+
+    }
 
 }

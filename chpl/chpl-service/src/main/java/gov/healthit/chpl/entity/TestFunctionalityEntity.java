@@ -1,5 +1,6 @@
 package gov.healthit.chpl.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -13,9 +14,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.util.Util;
+
 @Entity
 @Table(name = "test_functionality")
-public class TestFunctionalityEntity {
+public class TestFunctionalityEntity implements Serializable {
+    private static final long serialVersionUID = 2662883108826795645L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,7 +39,7 @@ public class TestFunctionalityEntity {
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "certification_edition_id", insertable = false, updatable = false)
     private CertificationEditionEntity certificationEdition;
-    
+
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "practice_type_id", insertable = false, updatable = false)
     private  PracticeTypeEntity practiceType;
@@ -73,11 +77,11 @@ public class TestFunctionalityEntity {
     protected Long lastModifiedUser;
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Boolean getDeleted() {
@@ -89,11 +93,11 @@ public class TestFunctionalityEntity {
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public Long getLastModifiedUser() {

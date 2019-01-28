@@ -7,21 +7,21 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 /**
- * Interface for MUU dao.
+ * Interface for database access to meaningful use user counts.
  * @author kekey
  *
  */
 public interface MeaningfulUseUserDAO {
 
-    MeaningfulUseUserDTO create(final MeaningfulUseUserDTO dto)
+    MeaningfulUseUserDTO create(MeaningfulUseUserDTO dto)
             throws EntityCreationException, EntityRetrievalException;
 
-    MeaningfulUseUserDTO update(final MeaningfulUseUserDTO dto) throws EntityRetrievalException;
+    MeaningfulUseUserDTO update(MeaningfulUseUserDTO dto) throws EntityRetrievalException;
 
-    void delete(final Long id) throws EntityRetrievalException;
+    void delete(Long id) throws EntityRetrievalException;
 
-    MeaningfulUseUserDTO getById(final Long id) throws EntityRetrievalException;
+    MeaningfulUseUserDTO getById(Long id) throws EntityRetrievalException;
 
-    List<MeaningfulUseUserDTO> findByCertifiedProductId(final Long certifiedProductId);
+    List<MeaningfulUseUserDTO> findByCertifiedProductId(Long certifiedProductId);
 
 }

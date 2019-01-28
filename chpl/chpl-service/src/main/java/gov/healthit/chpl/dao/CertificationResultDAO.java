@@ -18,8 +18,8 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public interface CertificationResultDAO {
-	
-	List<Long> getCpIdsByCriterionId(Long criterionId) throws EntityRetrievalException;
+
+    List<Long> getCpIdsByCriterionId(Long criterionId) throws EntityRetrievalException;
 
     CertificationResultDTO create(CertificationResultDTO result) throws EntityCreationException;
 
@@ -36,14 +36,14 @@ public interface CertificationResultDAO {
     List<CertificationResultAdditionalSoftwareDTO> getAdditionalSoftwareForCertificationResult(
             Long certificationResultId);
 
-    CertificationResultAdditionalSoftwareDTO addAdditionalSoftwareMapping(
-            CertificationResultAdditionalSoftwareDTO dto) throws EntityCreationException;
+    CertificationResultAdditionalSoftwareDTO addAdditionalSoftwareMapping(CertificationResultAdditionalSoftwareDTO dto)
+            throws EntityCreationException;
 
     void deleteAdditionalSoftwareMapping(Long mappingId);
 
     CertificationResultAdditionalSoftwareDTO updateAdditionalSoftwareMapping(
             CertificationResultAdditionalSoftwareDTO toUpdate) throws EntityRetrievalException;
-    
+
     boolean getCertifiedProductHasAdditionalSoftware(Long certifiedProductId);
 
     List<CertificationResultTestStandardDTO> getTestStandardsForCertificationResult(Long certificationResultId);
@@ -51,8 +51,7 @@ public interface CertificationResultDAO {
     CertificationResultTestStandardDTO addTestStandardMapping(CertificationResultTestStandardDTO dto)
             throws EntityCreationException;
 
-    CertificationResultTestStandardDTO lookupTestStandardMapping(Long certificationResultId,
-            Long testStandardId);
+    CertificationResultTestStandardDTO lookupTestStandardMapping(Long certificationResultId, Long testStandardId);
 
     void deleteTestStandardMapping(Long mappingId);
 
@@ -63,11 +62,9 @@ public interface CertificationResultDAO {
 
     void deleteTestToolMapping(Long mappingId);
 
-    List<CertificationResultMacraMeasureDTO> getG1MacraMeasuresForCertificationResult(
-            Long certificationResultId);
+    List<CertificationResultMacraMeasureDTO> getG1MacraMeasuresForCertificationResult(Long certificationResultId);
 
-    List<CertificationResultMacraMeasureDTO> getG2MacraMeasuresForCertificationResult(
-            Long certificationResultId);
+    List<CertificationResultMacraMeasureDTO> getG2MacraMeasuresForCertificationResult(Long certificationResultId);
 
     CertificationResultMacraMeasureDTO addG1MacraMeasureMapping(CertificationResultMacraMeasureDTO dto)
             throws EntityCreationException;
@@ -88,8 +85,7 @@ public interface CertificationResultDAO {
 
     void updateTestDataMapping(CertificationResultTestDataDTO dto) throws EntityRetrievalException;
 
-    List<CertificationResultTestProcedureDTO> getTestProceduresForCertificationResult(
-            Long certificationResultId);
+    List<CertificationResultTestProcedureDTO> getTestProceduresForCertificationResult(Long certificationResultId);
 
     CertificationResultTestProcedureDTO addTestProcedureMapping(CertificationResultTestProcedureDTO dto)
             throws EntityCreationException;
@@ -99,8 +95,8 @@ public interface CertificationResultDAO {
     List<CertificationResultTestFunctionalityDTO> getTestFunctionalityForCertificationResult(
             Long certificationResultId);
 
-    CertificationResultTestFunctionalityDTO addTestFunctionalityMapping(
-            CertificationResultTestFunctionalityDTO dto) throws EntityCreationException;
+    CertificationResultTestFunctionalityDTO addTestFunctionalityMapping(CertificationResultTestFunctionalityDTO dto)
+            throws EntityCreationException;
 
     void deleteTestFunctionalityMapping(Long mappingId);
 

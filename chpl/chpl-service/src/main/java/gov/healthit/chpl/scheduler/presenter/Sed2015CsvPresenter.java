@@ -82,27 +82,27 @@ public class Sed2015CsvPresenter {
     }
 
     protected List<List<String>> generateRows(final CertifiedProductSearchDetails listing) {
-        if(!hasTestTasks(listing)) {
+        if (!hasTestTasks(listing)) {
             return null;
         }
 
         //each row corresponds to one participant of one test task
         //and can result in many rows for a single listing
         List<List<String>> result = new ArrayList<List<String>>();
-        for(TestTask testTask : listing.getSed().getTestTasks()) {
-            if(testTask.getTestParticipants() == null || testTask.getTestParticipants().size() == 0) {
-                LOGGER.warn("No participants were found for listing " + listing.getChplProductNumber() + 
-                        " test task ID " + testTask.getId());
+        for (TestTask testTask : listing.getSed().getTestTasks()) {
+            if (testTask.getTestParticipants() == null || testTask.getTestParticipants().size() == 0) {
+                LOGGER.warn("No participants were found for listing " + listing.getChplProductNumber()
+                    + " test task ID " + testTask.getId());
             } else {
-                for(TestParticipant participant : testTask.getTestParticipants()) {
+                for (TestParticipant participant : testTask.getTestParticipants()) {
                     List<String> row = new ArrayList<String>();
                     row.add(listing.getChplProductNumber());
                     row.add(listing.getDeveloper().getName());
                     row.add(listing.getProduct().getName());
                     row.add(listing.getVersion().getVersion());
                     StringBuffer assocCriteriaStr = new StringBuffer();
-                    for(CertificationCriterion criteria : testTask.getCriteria()) {
-                        if(assocCriteriaStr.length() > 0) {
+                    for (CertificationCriterion criteria : testTask.getCriteria()) {
+                        if (assocCriteriaStr.length() > 0) {
                             assocCriteriaStr.append(";");
                         }
                         assocCriteriaStr.append(criteria.getNumber());
@@ -137,10 +137,10 @@ public class Sed2015CsvPresenter {
         return result;
     }
 
-    private boolean hasTestTasks(CertifiedProductSearchDetails listing) {
+    private boolean hasTestTasks(final CertifiedProductSearchDetails listing) {
         boolean result = false;
-        if(listing.getSed() != null && listing.getSed().getTestTasks() != null && 
-                listing.getSed().getTestTasks().size() > 0) {
+        if (listing.getSed() != null && listing.getSed().getTestTasks() != null
+                && listing.getSed().getTestTasks().size() > 0) {
             return true;
         }
         return result;

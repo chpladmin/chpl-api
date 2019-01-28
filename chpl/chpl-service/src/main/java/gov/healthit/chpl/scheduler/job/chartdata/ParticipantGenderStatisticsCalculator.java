@@ -22,7 +22,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 /**
  * Populates the participant_gender_statistics table with summarized count
  * information.
- * 
+ *
  * @author TYoung
  *
  */
@@ -39,7 +39,7 @@ public class ParticipantGenderStatisticsCalculator {
     /**
      * This method calculates the participant gender counts and saves them to
      * the participant_education_statistics table.
-     * 
+     *
      * @param certifiedProductSearchDetails
      *            List of CertifiedProductSearchDetails objects
      */

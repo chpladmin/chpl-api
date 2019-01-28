@@ -111,24 +111,31 @@ public class RunnableJob implements Runnable {
                 this.job.getUser().getEmail()
         };
         String subject = this.job.getJobType().getSuccessMessage();
-        String htmlMessage = "<h3>Job Details:</h3>" + "<ul>" + "<li>Started: " + this.job.getStartTime() + "</li>"
-                + "<li>Ended: " + this.job.getEndTime() + "</li>" + "<li>Status: "
-                + this.job.getStatus().getStatus().toString() + "</li>" + "</ul>";
+        StringBuilder htmlMessage = new StringBuilder();
+        htmlMessage.append("<h3>Job Details:</h3><ul><li>Started: ") 
+        .append(this.job.getStartTime())
+        .append("</li><li>Ended: ")
+        .append(this.job.getEndTime())
+        .append("</li><li>Status: ")
+        .append(this.job.getStatus().getStatus().toString())
+        .append("</li></ul>");
         if (this.job.getMessages() != null && this.job.getMessages().size() > 0) {
-            htmlMessage += "<h4>The following messages were generated: </h4>" + "<ul>";
+            htmlMessage.append("<h4>The following messages were generated: </h4><ul>");
             for (JobMessageDTO message : this.job.getMessages()) {
-                htmlMessage += "<li>" + message.getMessage() + "</li>";
+                htmlMessage.append("<li>")
+                .append(message.getMessage())
+                .append("</li>");
             }
-            htmlMessage += "</ul>";
+            htmlMessage.append("</ul>");
         } else {
-            htmlMessage += "<p>No messages were generated.</p>";
+            htmlMessage.append("<p>No messages were generated.</p>");
         }
 
         try {
             EmailBuilder emailBuilder = new EmailBuilder(env);
             emailBuilder.recipients(new ArrayList<String>(Arrays.asList(to)))
                             .subject(subject)
-                            .htmlMessage(htmlMessage)
+                            .htmlMessage(htmlMessage.toString())
                             .sendEmail();
         } catch (final MessagingException ex) {
             LOGGER.error("Error sending email " + ex.getMessage(), ex);

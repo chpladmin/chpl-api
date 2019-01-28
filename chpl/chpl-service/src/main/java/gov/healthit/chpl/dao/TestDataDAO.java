@@ -5,9 +5,14 @@ import java.util.List;
 import gov.healthit.chpl.dto.TestDataCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestDataDTO;
 
+/**
+ * Interface for database access to test data.
+ * @author kekey
+ *
+ */
 public interface TestDataDAO {
 
-    public List<TestDataCriteriaMapDTO> findAllWithMappedCriteria();
-    public TestDataDTO getByCriteriaNumberAndValue(String criteriaNumber, String value);
-    public List<TestDataDTO> getByCriteriaNumber(String criteriaNumber);
+    List<TestDataCriteriaMapDTO> findAllWithMappedCriteria();
+    TestDataDTO getByCriteriaNumberAndValue(String criteriaNumber, String value);
+    List<TestDataDTO> getByCriteriaNumber(String criteriaNumber);
 }

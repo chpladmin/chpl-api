@@ -12,18 +12,18 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.edition2014.Ambulato
 
 /**
  * Validation interface for a 2014 Edition Ambulatory Modular EHR listing
- * in pending state on the CHPL
+ * in pending state on the CHPL.
  * @author kekey
  *
  */
 @Component("ambulatoryModular2014PendingListingValidator")
 public class AmbulatoryModular2014PendingListingValidator extends Edition2014PendingListingValidator {
 
-    @Autowired 
+    @Autowired
     @Qualifier("pendingAmbulatoryG1G2RequiredData2014Reviewer")
     private AmbulatoryG1G2RequiredData2014Reviewer g1g2Reviewer;
 
-    @Autowired 
+    @Autowired
     @Qualifier("pendingAmbulatoryRequiredTestToolReviewer")
     private AmbulatoryRequiredTestToolReviewer ttReviewer;
 
@@ -31,7 +31,7 @@ public class AmbulatoryModular2014PendingListingValidator extends Edition2014Pen
 
     @Override
     public List<Reviewer> getReviewers() {
-        if(reviewers == null) {
+        if (reviewers == null) {
             reviewers = super.getReviewers();
             reviewers.add(g1g2Reviewer);
             reviewers.add(ttReviewer);

@@ -531,7 +531,7 @@ public class AsynchronousSummaryStatistics {
         Long total = surveillanceStatisticsDAO.getTotalClosedNonconformities(dateRange);
         return new AsyncResult<Long>(total);
     }
-    
+
     /**
      * Open NCs by ACB.
      * @param surveillanceStatisticsDAO DAO that provides access to surveillance statistics
@@ -540,12 +540,13 @@ public class AsynchronousSummaryStatistics {
      */
     @Async("jobAsyncDataExecutor")
     @Transactional
-    public Future<List<CertifiedBodyStatistics>> getTotalOpenNonconformitiesByAcb(final SurveillanceStatisticsDAO surveillanceStatisticsDAO,
-            final DateRange dateRange) {
+    public Future<List<CertifiedBodyStatistics>>
+        getTotalOpenNonconformitiesByAcb(final SurveillanceStatisticsDAO surveillanceStatisticsDAO,
+                final DateRange dateRange) {
         List<CertifiedBodyStatistics> totals = surveillanceStatisticsDAO.getTotalOpenNonconformitiesByAcb(dateRange);
         return new AsyncResult<List<CertifiedBodyStatistics>>(totals);
     }
-    
+
     /**
      * Open NCs by ACB.
      * @param surveillanceStatisticsDAO DAO that provides access to surveillance statistics
@@ -554,16 +555,17 @@ public class AsynchronousSummaryStatistics {
      */
     @Async("jobAsyncDataExecutor")
     @Transactional
-    public Future<List<CertifiedBodyStatistics>> getTotalOpenSurveillancesByAcb(final SurveillanceStatisticsDAO surveillanceStatisticsDAO,
+    public Future<List<CertifiedBodyStatistics>>
+        getTotalOpenSurveillancesByAcb(final SurveillanceStatisticsDAO surveillanceStatisticsDAO,
             final DateRange dateRange) {
         List<CertifiedBodyStatistics> totals = surveillanceStatisticsDAO.getTotalOpenSurveillanceActivitiesByAcb(dateRange);
         return new AsyncResult<List<CertifiedBodyStatistics>>(totals);
     }
-    
-    public void setLogger(Logger logger) {
+
+    public void setLogger(final Logger logger) {
         this.logger = logger;
     }
-    
+
     public Logger getLogger() {
         if (logger == null) {
             logger = LogManager.getLogger(AsynchronousSummaryStatistics.class);

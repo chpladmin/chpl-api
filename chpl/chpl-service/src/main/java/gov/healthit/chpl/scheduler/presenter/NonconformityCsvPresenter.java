@@ -37,7 +37,7 @@ public class NonconformityCsvPresenter extends SurveillanceCsvPresenter {
     public void presentAsFile(final File file, final List<CertifiedProductSearchDetails> cpList) {
         try (FileWriter writer = new FileWriter(file);
                 CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
-            
+
             csvPrinter.printRecord(generateHeaderValues());
 
             for (CertifiedProductSearchDetails cp : cpList) {

@@ -25,7 +25,6 @@ import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
-import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 import io.swagger.annotations.Api;
@@ -37,19 +36,18 @@ import io.swagger.annotations.ApiOperation;
 public class ProductVersionController {
 
     @Autowired
-    ProductVersionManager pvManager;
+    private ProductVersionManager pvManager;
     @Autowired
-    ProductManager productManager;
-    @Autowired
-    CertifiedProductManager cpManager;
+    private ProductManager productManager;
 
-    @ApiOperation(value = "List all versions for a specific product.", notes = "List all versions associated with a specific product.")
+    @ApiOperation(value = "List all versions for a specific product.",
+            notes = "List all versions associated with a specific product.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<ProductVersion> getVersionsByProduct(@RequestParam(required = true) Long productId) 
-        throws EntityRetrievalException {
+    public @ResponseBody List<ProductVersion> getVersionsByProduct(@RequestParam(required = true) final Long productId)
+            throws EntityRetrievalException {
         //make sure the product exists
         productManager.getById(productId);
-        
+
         //get the versions
         List<ProductVersionDTO> versionList = null;
         if (productId != null && productId > 0) {
@@ -70,7 +68,7 @@ public class ProductVersionController {
 
     @ApiOperation(value = "Get information about a specific version.", notes = "")
     @RequestMapping(value = "/{versionId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody ProductVersion getProductVersionById(@PathVariable("versionId") Long versionId)
+    public @ResponseBody ProductVersion getProductVersionById(@PathVariable("versionId") final Long versionId)
             throws EntityRetrievalException {
         ProductVersionDTO version = pvManager.getById(versionId);
 
@@ -81,25 +79,6 @@ public class ProductVersionController {
         return result;
     }
 
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED.  Update a version or merge versions.",
-            notes = "This method serves two purposes: to update a single version's information and to merge two "
-                    + "versions into one.  A user of this service should pass in a single versionId to update just "
-                    + "that version.  If multiple version IDs are passed in, the service performs a merge meaning "
-                    + "that a new version is created with all of the information provided and all of the certified "
-                    + "products previously assigned to the old versionIds are reassigned to the newly created version."
-                    + "  The old versions are then deleted. "
-                    + " The logged in user must have ROLE_ADMIN or ROLE_ACB. ")
-    @RequestMapping(value = "/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
-    public ResponseEntity<ProductVersion> updateVersionDeprecated(
-            @RequestBody(required = true) final UpdateVersionsRequest versionInfo)
-            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
-            JsonProcessingException {
-
-        return update(versionInfo);
-    }
-
     @ApiOperation(value = "Update a version or merge versions.",
             notes = "This method serves two purposes: to update a single version's information and to merge two "
                     + "versions into one.  A user of this service should pass in a single versionId to update just "
@@ -107,13 +86,14 @@ public class ProductVersionController {
                     + "that a new version is created with all of the information provided and all of the certified "
                     + "products previously assigned to the old versionIds are reassigned to the newly created version."
                     + "  The old versions are then deleted. "
-                    + " The logged in user must have ROLE_ADMIN or ROLE_ACB. ")
+                    + " The logged in user must have ROLE_ADMIN, ROLE_ONC, or ROLE_ACB. "
+                    + "Users with ROLE_ACB are not able to perform a merge. ")
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public ResponseEntity<ProductVersion> updateVersion(
             @RequestBody(required = true) final UpdateVersionsRequest versionInfo)
-            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
-            JsonProcessingException {
+                    throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
+                    JsonProcessingException {
 
         return update(versionInfo);
     }

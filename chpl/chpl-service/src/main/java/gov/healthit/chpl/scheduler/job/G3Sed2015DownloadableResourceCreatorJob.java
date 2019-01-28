@@ -12,13 +12,11 @@ import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.scheduler.SchedulerCertifiedProductSearchDetailsAsync;
 import gov.healthit.chpl.scheduler.presenter.Sed2015CsvPresenter;
 
 /**
@@ -33,9 +31,6 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
     private static final String EDITION = "2015";
     private static final int MILLIS_PER_SECOND = 1000;
     private static final int SECONDS_PER_MINUTE = 60;
-
-    @Autowired
-    private SchedulerCertifiedProductSearchDetailsAsync schedulerCertifiedProductSearchDetailsAsync;
 
     /**
      * Default constructor.
@@ -89,7 +84,9 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
             throws IOException {
         String csvFilename = downloadFolder.getAbsolutePath()
                 + File.separator
-                + "chpl-sed-all-details.csv";
+                + "chpl-sed-all-details-"
+                + getFilenameTimestampFormat().format(new Date())
+                + ".csv";
         File csvFile = getFile(csvFilename);
         Sed2015CsvPresenter csvPresenter = new Sed2015CsvPresenter();
         csvPresenter.presentAsFile(csvFile, results);

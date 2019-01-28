@@ -14,7 +14,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 public class DeveloperStatusReviewer implements Reviewer {
 
     @Autowired private DeveloperDAO developerDao;
-    
+
     public void review(CertifiedProductSearchDetails listing) {
         try {
             if (listing.getDeveloper() != null && listing.getDeveloper().getDeveloperId() != null) {

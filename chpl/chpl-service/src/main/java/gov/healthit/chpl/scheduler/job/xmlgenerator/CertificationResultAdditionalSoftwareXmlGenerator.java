@@ -17,7 +17,7 @@ public class CertificationResultAdditionalSoftwareXmlGenerator extends XmlGenera
             sw.writeEndElement();
         }
     }
-    
+
     public static void add(CertificationResultAdditionalSoftware software, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (software != null) {
             sw.writeStartElement(rootNodeName);

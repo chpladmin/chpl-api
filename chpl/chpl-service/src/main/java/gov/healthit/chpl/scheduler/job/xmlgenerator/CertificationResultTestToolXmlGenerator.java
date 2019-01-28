@@ -17,7 +17,7 @@ public class CertificationResultTestToolXmlGenerator extends XmlGenerator {
             sw.writeEndElement();
         }
     }
-    
+
     public static void add(CertificationResultTestTool tool, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (tool != null) {
             sw.writeStartElement(rootNodeName);

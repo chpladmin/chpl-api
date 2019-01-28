@@ -34,6 +34,11 @@ import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException
 import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
 
+/**
+ * Catch thrown exceptions to return the proper response code and message back to the client.
+ * @author kekey
+ *
+ */
 @ControllerAdvice
 public class ApiExceptionControllerAdvice {
     private static final Logger LOGGER = LogManager.getLogger(ApiExceptionControllerAdvice.class);
@@ -70,7 +75,7 @@ public class ApiExceptionControllerAdvice {
         return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()),
                 HttpStatus.BAD_REQUEST);
     }
-    
+
     @ExceptionHandler(TypeMismatchException.class)
     public ResponseEntity<ErrorJSONObject> typeMismatchException(final TypeMismatchException e) {
         LOGGER.error(e.getMessage(), e);
@@ -117,6 +122,11 @@ public class ApiExceptionControllerAdvice {
         return new ResponseEntity<ValidationErrorJSONObject>(error, HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * Return bad request for thrown ObjectsMissingValidationException including contact information.
+     * @param e the thrown exception
+     * @return an http response with appropriate error code.
+     */
     @ExceptionHandler(ObjectsMissingValidationException.class)
     public ResponseEntity<ObjectsMissingValidationErrorJSONObject> exception(
             final ObjectsMissingValidationException e) {
@@ -157,24 +167,24 @@ public class ApiExceptionControllerAdvice {
     public ResponseEntity<ErrorJSONObject> exception(final MissingReasonException e) {
         LOGGER.error("Caught missing reason exception.", e);
         return new ResponseEntity<ErrorJSONObject>(
-                new ErrorJSONObject(e.getMessage() != null ? e.getMessage() : 
-                    "A reason is required to perform this action."),
+                new ErrorJSONObject(e.getMessage() != null ? e.getMessage()
+                        : "A reason is required to perform this action."),
                 HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(IOException.class)
     @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
-    public ResponseEntity<ErrorJSONObject> exceptionHandler(IOException e, HttpServletRequest request) {
+    public ResponseEntity<ErrorJSONObject> exceptionHandler(final IOException e, final HttpServletRequest request) {
         if (StringUtils.containsIgnoreCase(ExceptionUtils.getRootCauseMessage(e), "Broken pipe")) {
             LOGGER.info("Broke Pipe IOException occurred: " + request.getMethod() + " " + request.getRequestURL());
-            LOGGER.error(e.getMessage(),e);
-            return null; //socket is closed, cannot return any response    
+            LOGGER.error(e.getMessage(), e);
+            return null; //socket is closed, cannot return any response
         } else {
             return new ResponseEntity<ErrorJSONObject>(
                     new ErrorJSONObject(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
-    
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorJSONObject> exception(final Exception e) {
         LOGGER.error("Caught exception.", e);

@@ -11,6 +11,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 
+import gov.healthit.chpl.util.Util;
+
 /**
  * Domain object for Nonconformities related to surveillance.
  */
@@ -143,43 +145,43 @@ public class SurveillanceNonconformity implements Serializable {
     }
 
     public Date getDateOfDetermination() {
-        return dateOfDetermination;
+        return Util.getNewDate(dateOfDetermination);
     }
 
     public void setDateOfDetermination(final Date dateOfDetermination) {
-        this.dateOfDetermination = dateOfDetermination;
+        this.dateOfDetermination = Util.getNewDate(dateOfDetermination);
     }
 
     public Date getCapApprovalDate() {
-        return capApprovalDate;
+        return Util.getNewDate(capApprovalDate);
     }
 
     public void setCapApprovalDate(final Date capApprovalDate) {
-        this.capApprovalDate = capApprovalDate;
+        this.capApprovalDate = Util.getNewDate(capApprovalDate);
     }
 
     public Date getCapStartDate() {
-        return capStartDate;
+        return Util.getNewDate(capStartDate);
     }
 
     public void setCapStartDate(final Date capStartDate) {
-        this.capStartDate = capStartDate;
+        this.capStartDate = Util.getNewDate(capStartDate);
     }
 
     public Date getCapEndDate() {
-        return capEndDate;
+        return Util.getNewDate(capEndDate);
     }
 
     public void setCapEndDate(final Date capEndDate) {
-        this.capEndDate = capEndDate;
+        this.capEndDate = Util.getNewDate(capEndDate);
     }
 
     public Date getCapMustCompleteDate() {
-        return capMustCompleteDate;
+        return Util.getNewDate(capMustCompleteDate);
     }
 
     public void setCapMustCompleteDate(final Date capMustCompleteDate) {
-        this.capMustCompleteDate = capMustCompleteDate;
+        this.capMustCompleteDate = Util.getNewDate(capMustCompleteDate);
     }
 
     public String getSummary() {
@@ -239,10 +241,10 @@ public class SurveillanceNonconformity implements Serializable {
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 }

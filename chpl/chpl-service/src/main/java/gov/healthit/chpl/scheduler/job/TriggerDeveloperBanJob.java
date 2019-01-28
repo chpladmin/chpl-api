@@ -19,6 +19,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.auth.EmailBuilder;
@@ -36,7 +37,7 @@ public class TriggerDeveloperBanJob implements Job {
 
     @Autowired
     private Environment env;
-    
+
     /**
      * Default constructor.
      * @throws IOException if unable to load properties
@@ -62,11 +63,11 @@ public class TriggerDeveloperBanJob implements Job {
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        
+
         LOGGER.info("********* Starting the Trigger Developer Ban job. *********");
-        
+
         String[] recipients = jobContext.getMergedJobDataMap().getString("email").split("\u263A");
-        
+
         try {
             sendEmail(jobContext, recipients);
         } catch (IOException | MessagingException e) {
@@ -81,29 +82,45 @@ public class TriggerDeveloperBanJob implements Job {
         String subject = "NEED TO REVIEW: Certification Status of listing set to \""
                 + jobContext.getMergedJobDataMap().getString("status") + "\"";
         String htmlMessage = createHtmlEmailBody(jobContext);
-        
+
         LOGGER.info("Sending email to: " + jobContext.getMergedJobDataMap().getString("email"));
         LOGGER.info("Message to be sent: " + htmlMessage);
-        
-        List<String> addresses = Arrays.asList(recipients); 
-        
+
+        List<String> addresses = Arrays.asList(recipients);
+
         EmailBuilder emailBuilder = new EmailBuilder(env);
         emailBuilder.recipients(addresses)
-                        .subject(subject)
-                        .htmlMessage(htmlMessage)
-                        .sendEmail();
+        .subject(subject)
+        .htmlMessage(htmlMessage)
+        .sendEmail();
     }
 
     private String createHtmlEmailBody(final JobExecutionContext jobContext) {
         JobDataMap jdm = jobContext.getMergedJobDataMap();
+        String reasonForStatusChange = jdm.getString("reason");
+        if (StringUtils.isEmpty(reasonForStatusChange)) {
+            reasonForStatusChange = "<strong>ONC-ACB provided reason for status change:</strong> This field is blank";
+        } else {
+            reasonForStatusChange = "<strong>ONC-ACB provided reason for status change:</strong> \""
+                    + reasonForStatusChange + "\"";
+        }
+        String reasonForListingChange = jdm.getString("reasonForChange");
+        if (StringUtils.isEmpty(reasonForListingChange)) {
+            reasonForListingChange = "<strong>ONC-ACB provided reason for listing change:</strong> This field is blank";
+        } else {
+            reasonForListingChange = "<strong>ONC-ACB provided reason for listing change:</strong> \""
+                    + reasonForListingChange + "\"";
+        }
         int openNcs = jdm.getInt("openNcs");
         int closedNcs = jdm.getInt("closedNcs");
         String htmlMessage = String.format("<p>The CHPL Listing <a href=\"%s/#/product/%d\">%s</a>, owned by \"%s\" "
                 + "and certified by \"%s\" has been set on \"%s\" by \"%s\" to a Certification Status of \"%s\" with "
-                + "an effective date of\"%s\".</p>"
+                + "an effective date of \"%s\".</p>"
+                + "<p>%s</p>"
+                + "<p>%s</p>"
                 + "<p>There %s %d Open Nonconformit%s and %d Closed Nonconformit%s.</p>"
-                + "<p>ONC should review the activity and all details of the listing to determine if it warrants a ban "
-                + "on the Developer.</p>",
+                + "<p>ONC should review the activity and all details of the listing to determine if "
+                + "this action warrants a ban on the Developer.</p>",
                 properties.getProperty("chplUrlBegin"),                                 // root of URL
                 jdm.getLong("dbId"),                                                    // for URL to product page
                 jdm.getString("chplId"),                                                // visible link
@@ -113,8 +130,10 @@ public class TriggerDeveloperBanJob implements Job {
                 jdm.getString("fullName"),                                              // user making change
                 jdm.getString("status"),                                                // target status
                 Util.getDateFormatter().format(new Date(jdm.getLong("effectiveDate"))), // effective date of change
+                reasonForStatusChange,                                                  // reason for change
+                reasonForListingChange,                                                 // reason for change
                 (openNcs != 1 ? "were" : "was"), openNcs, (openNcs != 1 ? "ies" : "y"), // formatted counts of open
                 closedNcs, (closedNcs != 1 ? "ies" : "y"));    // and closed nonconformities, with English word endings
-                return htmlMessage;
+        return htmlMessage;
     }
 }

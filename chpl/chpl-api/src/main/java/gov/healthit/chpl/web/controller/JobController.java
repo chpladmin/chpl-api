@@ -30,14 +30,14 @@ public class JobController {
     private static final Logger LOGGER = LogManager.getLogger(JobController.class);
     @Autowired
     private JobManager jobManager;
-    
+
     @ApiOperation(value = "Get the list of all jobs currently running in the system and those"
             + "that have completed within a configurable amount of time (usually a short window like the last 7 days).")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @PreAuthorize("isAuthenticated()")
     public @ResponseBody JobResults getAllJobs() throws EntityRetrievalException {
         List<JobDTO> jobDtos = null;
-        if (Util.isUserRoleAdmin()) {
+        if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
             jobDtos = jobManager.getAllJobs();
         } else {
             UserDTO currentUser = new UserDTO();

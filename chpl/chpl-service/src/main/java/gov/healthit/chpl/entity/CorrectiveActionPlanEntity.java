@@ -11,6 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import gov.healthit.chpl.util.Util;
+
 @Entity
 @Table(name = "corrective_action_plan")
 public class CorrectiveActionPlanEntity {
@@ -96,35 +98,35 @@ public class CorrectiveActionPlanEntity {
     }
 
     public Date getApprovalDate() {
-        return approvalDate;
+        return Util.getNewDate(approvalDate);
     }
 
     public void setApprovalDate(final Date approvalDate) {
-        this.approvalDate = approvalDate;
+        this.approvalDate = Util.getNewDate(approvalDate);
     }
 
     public Date getActualCompletionDate() {
-        return actualCompletionDate;
+        return Util.getNewDate(actualCompletionDate);
     }
 
     public void setActualCompletionDate(final Date actualCompletionDate) {
-        this.actualCompletionDate = actualCompletionDate;
+        this.actualCompletionDate = Util.getNewDate(actualCompletionDate);
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public Long getLastModifiedUser() {
@@ -144,19 +146,19 @@ public class CorrectiveActionPlanEntity {
     }
 
     public Date getSurveillanceStartDate() {
-        return surveillanceStartDate;
+        return Util.getNewDate(surveillanceStartDate);
     }
 
     public void setSurveillanceStartDate(final Date surveillanceStartDate) {
-        this.surveillanceStartDate = surveillanceStartDate;
+        this.surveillanceStartDate = Util.getNewDate(surveillanceStartDate);
     }
 
     public Date getSurveillanceEndDate() {
-        return surveillanceEndDate;
+        return Util.getNewDate(surveillanceEndDate);
     }
 
     public void setSurveillanceEndDate(final Date surveillanceEndDate) {
-        this.surveillanceEndDate = surveillanceEndDate;
+        this.surveillanceEndDate = Util.getNewDate(surveillanceEndDate);
     }
 
     public Boolean getSurveillanceResult() {
@@ -168,27 +170,27 @@ public class CorrectiveActionPlanEntity {
     }
 
     public Date getNonComplianceDeterminationDate() {
-        return nonComplianceDeterminationDate;
+        return Util.getNewDate(nonComplianceDeterminationDate);
     }
 
     public void setNonComplianceDeterminationDate(final Date nonComplianceDeterminationDate) {
-        this.nonComplianceDeterminationDate = nonComplianceDeterminationDate;
+        this.nonComplianceDeterminationDate = Util.getNewDate(nonComplianceDeterminationDate);
     }
 
     public Date getStartDate() {
-        return startDate;
+        return Util.getNewDate(startDate);
     }
 
     public void setStartDate(final Date startDate) {
-        this.startDate = startDate;
+        this.startDate = Util.getNewDate(startDate);
     }
 
     public Date getRequiredCompletionDate() {
-        return requiredCompletionDate;
+        return Util.getNewDate(requiredCompletionDate);
     }
 
     public void setRequiredCompletionDate(final Date requiredCompletionDate) {
-        this.requiredCompletionDate = requiredCompletionDate;
+        this.requiredCompletionDate = Util.getNewDate(requiredCompletionDate);
     }
 
     public String getSummary() {

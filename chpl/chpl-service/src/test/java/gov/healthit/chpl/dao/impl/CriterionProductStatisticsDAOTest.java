@@ -55,7 +55,7 @@ public class CriterionProductStatisticsDAOTest extends TestCase {
         List<CriterionProductStatisticsDTO> results = cpsDao.findAll();
         assertNotNull(results);
         assertEquals(STAT_LENGTH, results.size());
-        
+
         //Sort so test works consistently
         Collections.sort(results, new Comparator<CriterionProductStatisticsDTO>() {
             @Override
@@ -63,7 +63,6 @@ public class CriterionProductStatisticsDAOTest extends TestCase {
                 return one.getCertificationCriterionId().compareTo(other.getCertificationCriterionId());
             }
         });
-        
         assertEquals("170.315 (d)(10)", results.get(0).getCriteria().getNumber());
         assertEquals("2015", results.get(0).getCriteria().getCertificationEdition());
     }

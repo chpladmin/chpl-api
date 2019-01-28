@@ -3,8 +3,6 @@ package gov.healthit.chpl.dao.impl;
 
 import javax.persistence.Query;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.ChplProductNumberDAO;

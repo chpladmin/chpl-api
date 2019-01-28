@@ -18,10 +18,11 @@ import org.hibernate.annotations.Type;
 
 import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.entity.CertificationBodyEntity;
+import gov.healthit.chpl.util.Util;
 
 @Entity
 @Table(name = "acb_vendor_map")
-public class DeveloperACBMapEntity implements Cloneable, Serializable {
+public class DeveloperACBMapEntity implements Serializable {
 
     private static final long serialVersionUID = 555395798107190947L;
 
@@ -106,11 +107,11 @@ public class DeveloperACBMapEntity implements Cloneable, Serializable {
     protected Long lastModifiedUser;
 
     public Date getCreationDate() {
-        return creationDate;
+        return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = Util.getNewDate(creationDate);
     }
 
     public Boolean getDeleted() {
@@ -122,11 +123,11 @@ public class DeveloperACBMapEntity implements Cloneable, Serializable {
     }
 
     public Date getLastModifiedDate() {
-        return lastModifiedDate;
+        return Util.getNewDate(lastModifiedDate);
     }
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public Long getLastModifiedUser() {

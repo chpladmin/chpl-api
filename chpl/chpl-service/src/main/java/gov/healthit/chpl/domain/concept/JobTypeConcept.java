@@ -6,7 +6,7 @@ public enum JobTypeConcept {
 
     private String name;
 
-    private JobTypeConcept(String name) {
+    JobTypeConcept(String name) {
         this.name = name;
     }
 

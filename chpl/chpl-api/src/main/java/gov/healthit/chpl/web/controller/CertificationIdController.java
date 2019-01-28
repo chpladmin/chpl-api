@@ -57,14 +57,14 @@ public class CertificationIdController {
     //
     // Retrieves all CMS Certification IDs and their date of creation.
     // **********************************************************************************************************
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CMS_STAFF', 'ROLE_ONC_STAFF')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_CMS_STAFF')")
     @ApiOperation(value = "Retrieves a list of all CMS EHR Certification IDs along with the date they were created.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = {
             MediaType.APPLICATION_JSON_VALUE
     })
     public List<SimpleCertificationId> getAll() throws IOException {
         List<SimpleCertificationId> results = null;
-        if (Util.isUserRoleAdmin() || Util.isUserRoleOncStaff()) {
+        if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
             results = certificationIdManager.getAllWithProducts();
         } else {
             results = certificationIdManager.getAll();
@@ -92,32 +92,6 @@ public class CertificationIdController {
             @RequestParam(required = false) final List<Long> ids) throws InvalidArgumentsException,
     CertificationIdException {
         return this.findCertificationByProductIds(ids, false);
-    }
-
-    // **********************************************************************************************************
-    // createCertificationId
-    //
-    // Mapping: /create
-    // Params: List ids
-    //
-    // Creates a new CMS EHR Certification ID for a collection of products if
-    // one does not already exist.
-    // **********************************************************************************************************
-    @Deprecated
-    @ApiOperation(
-            value = "DEPRECATED.  Creates a new CMS EHR Certification ID for a collection of products if one does "
-                    + "not already exist.",
-                    notes = "Retrieves a CMS EHR Certification ID for a collection of products or creates a new one "
-                            + "if one does not already exist. Returns a list of basic product information, Criteria "
-                            + "and CQM calculations, and the associated CMS EHR Certification ID if one exists.")
-    @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = {
-            MediaType.APPLICATION_JSON_VALUE
-    })
-    public @ResponseBody CertificationIdResults createCertificationIdDeprecated(
-            @RequestParam(required = true) final List<Long> ids) throws InvalidArgumentsException,
-    CertificationIdException {
-        return create(ids);
     }
 
     @ApiOperation(

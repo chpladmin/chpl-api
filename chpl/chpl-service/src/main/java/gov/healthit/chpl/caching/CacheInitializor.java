@@ -26,8 +26,8 @@ import net.sf.ehcache.CacheManager;
 public class CacheInitializor {
     private static final Logger LOGGER = LogManager.getLogger(CacheInitializor.class);
     private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
-    private static Integer initializeTimeoutSecs;
-    private static Integer clearAllCachesTimeoutSecs;
+    private Integer initializeTimeoutSecs;
+    private Integer clearAllCachesTimeoutSecs;
     private Long tInitStart;
     private Long tInitEnd;
     private Double tInitElapsedSecs;
@@ -81,7 +81,7 @@ public class CacheInitializor {
                 in.close();
             }
 
-            enableCacheInitializationValue = props.getProperty("enableCacheInitialization").toString();
+            enableCacheInitializationValue = props.getProperty("enableCacheInitialization");
             initializeTimeoutSecs = Integer.parseInt(props.getProperty("cacheInitializeTimeoutSecs").toString());
             clearAllCachesTimeoutSecs = Integer.parseInt(props.getProperty("cacheClearTimeoutSecs").toString());
         }

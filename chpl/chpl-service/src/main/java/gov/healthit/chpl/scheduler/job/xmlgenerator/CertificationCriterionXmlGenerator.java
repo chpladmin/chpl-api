@@ -17,7 +17,7 @@ public class CertificationCriterionXmlGenerator extends XmlGenerator {
             sw.writeEndElement();
         }
     }
-    
+
     public static void add(CertificationCriterion criterion, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (criterion != null) {
             sw.writeStartElement(rootNodeName);

@@ -101,7 +101,7 @@ public class TestingLabDaoTest extends TestCase {
     public void testGetAllAtls() {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        List<TestingLabDTO> atls = atlDao.findAll(false);
+        List<TestingLabDTO> atls = atlDao.findAll();
         assertNotNull(atls);
         assertEquals(EXPECTED_ATL_COUNT, atls.size());
         SecurityContextHolder.getContext().setAuthentication(null);
@@ -120,10 +120,6 @@ public class TestingLabDaoTest extends TestCase {
         TestingLabDTO atl = new TestingLabDTO();
         atl.setName("ATL TEST");
         atl.setWebsite("http://www.google.com");
-        atl.setCreationDate(new Date());
-        atl.setDeleted(false);
-        atl.setLastModifiedDate(new Date());
-        atl.setLastModifiedUser(Util.getCurrentUser().getId());
 
         atl = atlDao.create(atl);
 
@@ -148,10 +144,6 @@ public class TestingLabDaoTest extends TestCase {
         TestingLabDTO atl = new TestingLabDTO();
         atl.setName("ATL TEST 2");
         atl.setWebsite("http://www.google.com");
-        atl.setCreationDate(new Date());
-        atl.setDeleted(false);
-        atl.setLastModifiedDate(new Date());
-        atl.setLastModifiedUser(Util.getCurrentUser().getId());
         AddressDTO address = new AddressDTO();
         address.setStreetLineOne("Some Street");
         address.setCity("Baltimore");
@@ -180,7 +172,9 @@ public class TestingLabDaoTest extends TestCase {
     @Transactional
     @Rollback
     public void testUpdateAtl() {
-        TestingLabDTO toUpdate = atlDao.findAll(false).get(0);
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+        TestingLabDTO toUpdate = atlDao.findAll().get(0);
         toUpdate.setName("UPDATED NAME");
 
         TestingLabDTO result = null;
@@ -188,7 +182,7 @@ public class TestingLabDaoTest extends TestCase {
             result = atlDao.update(toUpdate);
         } catch (Exception ex) {
             fail("could not update atl!");
-            System.out.println(ex.getStackTrace());
+            ex.printStackTrace();
         }
         assertNotNull(result);
 
@@ -197,24 +191,37 @@ public class TestingLabDaoTest extends TestCase {
             assertEquals("UPDATED NAME", updatedAtl.getName());
         } catch (Exception ex) {
             fail("could not find atl!");
-            System.out.println(ex.getStackTrace());
+            ex.printStackTrace();
         }
+        SecurityContextHolder.getContext().setAuthentication(null);
     }
 
-    /**
-     * Ensure we can delete an ATL.
-     * @throws EntityRetrievalException if retrieval fails
-     */
-    @Test(expected = EntityRetrievalException.class)
+    @Test
     @Transactional
     @Rollback
-    public void testDeleteAtl() throws EntityRetrievalException {
+    public void testRetireAtl() {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        Long deleteId = -1L;
-        atlDao.delete(deleteId);
-        SecurityContextHolder.getContext().setAuthentication(null);
 
-        atlDao.getById(deleteId);
+        TestingLabDTO toUpdate = atlDao.findAll().get(0);
+        toUpdate.setRetired(true);
+
+        TestingLabDTO result = null;
+        try {
+            result = atlDao.update(toUpdate);
+        } catch (Exception ex) {
+            fail("could not update atl!");
+            ex.printStackTrace();
+        }
+        assertNotNull(result);
+
+        try {
+            TestingLabDTO updatedAtl = atlDao.getById(toUpdate.getId());
+            assertTrue(updatedAtl.isRetired());
+        } catch (Exception ex) {
+            fail("could not find atl!");
+            ex.printStackTrace();
+        }
+        SecurityContextHolder.getContext().setAuthentication(null);
     }
 
     /**

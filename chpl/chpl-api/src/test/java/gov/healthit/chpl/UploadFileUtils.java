@@ -11,13 +11,16 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
-public class UploadFileUtils {
+public final class UploadFileUtils {
     private static final Logger LOGGER = LogManager.getLogger(UploadFileUtils.class);
 
     private static final String UPLOAD_2014 = "2014_V11_hasGAP.csv";
     private static final String UPLOAD_2015_V12 = "2015_Test_ICSA.csv";
+    private static final String UPLOAD_2015_V12_TOO_LONG = "2015_Test_ICSA-Participant_TestTask_Too_Long.csv";
 
-    public static MultipartFile getUploadFile(final String edition, final String version){
+    private UploadFileUtils() {}
+
+    public static MultipartFile getUploadFile(final String edition, final String version, final String id) {
         ClassLoader classLoader = UploadFileUtils.class.getClassLoader();
         File file = null;
         Path filePath = null;
@@ -28,8 +31,14 @@ public class UploadFileUtils {
             filePath = Paths.get(file.getPath());
             name = UPLOAD_2014;
             originalFileName = UPLOAD_2014;
-        } else {
+        } else if (id == null){
             String resource = UPLOAD_2015_V12;
+            file = new File(classLoader.getResource(resource).getFile());
+            filePath = Paths.get(file.getPath());
+            name = resource;
+            originalFileName = resource;
+        } else if (id.equals("upLoadCertifiedProduct2015LongTestParticipant")){
+            String resource = UPLOAD_2015_V12_TOO_LONG;
             file = new File(classLoader.getResource(resource).getFile());
             filePath = Paths.get(file.getPath());
             name = resource;

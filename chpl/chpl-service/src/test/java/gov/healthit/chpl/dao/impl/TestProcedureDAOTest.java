@@ -23,36 +23,39 @@ import gov.healthit.chpl.dto.TestProcedureDTO;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
+@TestExecutionListeners({
+        DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
+})
 @DatabaseSetup("classpath:data/testData.xml")
 public class TestProcedureDAOTest extends TestCase {
 
-	@Autowired private TestProcedureDAO tpDao;
-	
-	@Rule
+    @Autowired
+    private TestProcedureDAO tpDao;
+
+    @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
-		
-	@Test
-	@Transactional
-	public void findTestProcedureByCriteria() {
-	    String criteria = "170.314 (a)(1)";
-	    try {
-	        List<TestProcedureDTO> testProcedures = tpDao.getByCriteriaNumber(criteria);
-    	    assertNotNull(testProcedures);
-    	    assertEquals(1, testProcedures.size());
-    	    assertEquals("ONC Test Method", testProcedures.get(0).getName());
-	    } catch(Exception ex) {
-	        ex.printStackTrace();
-	        fail();
-	    }
-	}
-	
-	@Test
+
+    @Test
+    @Transactional
+    public void findTestProcedureByCriteria() {
+        String criteria = "170.314 (a)(1)";
+        try {
+            List<TestProcedureDTO> testProcedures = tpDao.getByCriteriaNumber(criteria);
+            assertNotNull(testProcedures);
+            assertEquals(1, testProcedures.size());
+            assertEquals("ONC Test Method", testProcedures.get(0).getName());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            fail();
+        }
+    }
+
+    @Test
     @Transactional
     public void findMultipleTestProceduresByCriteria() {
         String criteria = "170.315 (c)(2)";
@@ -60,13 +63,13 @@ public class TestProcedureDAOTest extends TestCase {
             List<TestProcedureDTO> testProcedures = tpDao.getByCriteriaNumber(criteria);
             assertNotNull(testProcedures);
             assertEquals(2, testProcedures.size());
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             fail();
         }
     }
-	
-	@Test
+
+    @Test
     @Transactional
     public void findTestProcedureByCriteriaAndName() {
         String criteria = "170.314 (a)(1)";
@@ -75,21 +78,21 @@ public class TestProcedureDAOTest extends TestCase {
             TestProcedureDTO testProcedure = tpDao.getByCriteriaNumberAndValue(criteria, tpName);
             assertNotNull(testProcedure);
             assertEquals(tpName, testProcedure.getName());
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             fail();
         }
     }
-	
-	@Test
-	@Transactional
-	public void findNoTestProcedureByCriteria() {
-		String criteria = "BOGUS";
+
+    @Test
+    @Transactional
+    public void findNoTestProcedureByCriteria() {
+        String criteria = "BOGUS";
         List<TestProcedureDTO> testProcedures = tpDao.getByCriteriaNumber(criteria);
-		assertTrue(testProcedures == null || testProcedures.size() == 0);
-	}
-	
-	@Test
+        assertTrue(testProcedures == null || testProcedures.size() == 0);
+    }
+
+    @Test
     @Transactional
     public void findNoTestProcedureByCriteriaAndName() {
         String criteria = "170.314 (a)(1)";
@@ -97,5 +100,5 @@ public class TestProcedureDAOTest extends TestCase {
         TestProcedureDTO testProcedure = tpDao.getByCriteriaNumberAndValue(criteria, tpName);
         assertNull(testProcedure);
     }
-	
+
 }

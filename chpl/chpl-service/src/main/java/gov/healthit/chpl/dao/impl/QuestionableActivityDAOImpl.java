@@ -31,42 +31,43 @@ import gov.healthit.chpl.entity.questionableActivity.QuestionableActivityVersion
 @Repository("questionableActivityDao")
 public class QuestionableActivityDAOImpl extends BaseDAOImpl implements QuestionableActivityDAO {
     private static final Logger LOGGER = LogManager.getLogger(QuestionableActivityDAOImpl.class);
-    
+
     @Override
     @Transactional
     public QuestionableActivityDTO create(QuestionableActivityDTO dto) {
         QuestionableActivityDTO created = null;
         QuestionableActivityEntity toCreate = null;
-        if(dto instanceof QuestionableActivityVersionDTO) {
+        if (dto instanceof QuestionableActivityVersionDTO) {
             toCreate = new QuestionableActivityVersionEntity();
-            QuestionableActivityVersionEntity versionActivity = (QuestionableActivityVersionEntity)toCreate;
-            versionActivity.setVersionId(((QuestionableActivityVersionDTO)dto).getVersionId());
-        } else if(dto instanceof QuestionableActivityProductDTO) {
+            QuestionableActivityVersionEntity versionActivity = (QuestionableActivityVersionEntity) toCreate;
+            versionActivity.setVersionId(((QuestionableActivityVersionDTO) dto).getVersionId());
+        } else if (dto instanceof QuestionableActivityProductDTO) {
             toCreate = new QuestionableActivityProductEntity();
-            QuestionableActivityProductEntity productActivity = (QuestionableActivityProductEntity)toCreate;
-            productActivity.setProductId(((QuestionableActivityProductDTO)dto).getProductId());
-        } else if(dto instanceof QuestionableActivityDeveloperDTO) {
+            QuestionableActivityProductEntity productActivity = (QuestionableActivityProductEntity) toCreate;
+            productActivity.setProductId(((QuestionableActivityProductDTO) dto).getProductId());
+        } else if (dto instanceof QuestionableActivityDeveloperDTO) {
             toCreate = new QuestionableActivityDeveloperEntity();
-            QuestionableActivityDeveloperEntity developerActivity = (QuestionableActivityDeveloperEntity)toCreate;
-            developerActivity.setDeveloperId(((QuestionableActivityDeveloperDTO)dto).getDeveloperId());
-            developerActivity.setReason(((QuestionableActivityDeveloperDTO)dto).getReason());
-        } else if(dto instanceof QuestionableActivityListingDTO) {
+            QuestionableActivityDeveloperEntity developerActivity = (QuestionableActivityDeveloperEntity) toCreate;
+            developerActivity.setDeveloperId(((QuestionableActivityDeveloperDTO) dto).getDeveloperId());
+            developerActivity.setReason(((QuestionableActivityDeveloperDTO) dto).getReason());
+        } else if (dto instanceof QuestionableActivityListingDTO) {
             toCreate = new QuestionableActivityListingEntity();
-            QuestionableActivityListingEntity listingActivity = (QuestionableActivityListingEntity)toCreate;
-            listingActivity.setListingId(((QuestionableActivityListingDTO)dto).getListingId());
+            QuestionableActivityListingEntity listingActivity = (QuestionableActivityListingEntity) toCreate;
+            listingActivity.setListingId(((QuestionableActivityListingDTO) dto).getListingId());
             listingActivity.setCertificationStatusChangeReason(
-                    ((QuestionableActivityListingDTO)dto).getCertificationStatusChangeReason());
+                    ((QuestionableActivityListingDTO) dto).getCertificationStatusChangeReason());
             listingActivity.setReason(((QuestionableActivityListingDTO) dto).getReason());
-        } else if(dto instanceof QuestionableActivityCertificationResultDTO) {
+        } else if (dto instanceof QuestionableActivityCertificationResultDTO) {
             toCreate = new QuestionableActivityCertificationResultEntity();
-            QuestionableActivityCertificationResultEntity certResultActivity = (QuestionableActivityCertificationResultEntity)toCreate;
-            certResultActivity.setCertResultId(((QuestionableActivityCertificationResultDTO)dto).getCertResultId());
+            QuestionableActivityCertificationResultEntity certResultActivity =
+                    (QuestionableActivityCertificationResultEntity) toCreate;
+            certResultActivity.setCertResultId(((QuestionableActivityCertificationResultDTO) dto).getCertResultId());
             certResultActivity.setReason(((QuestionableActivityCertificationResultDTO) dto).getReason());
         } else {
             LOGGER.error("Unknown class of questionable activity passed in: " + dto.getClass().getName());
             return null;
         }
-        
+
         toCreate.setActivityDate(dto.getActivityDate());
         toCreate.setBefore(dto.getBefore());
         toCreate.setAfter(dto.getAfter());
@@ -77,17 +78,17 @@ public class QuestionableActivityDAOImpl extends BaseDAOImpl implements Question
         entityManager.persist(toCreate);
         entityManager.flush();
         entityManager.clear();
-        
-        if(toCreate instanceof QuestionableActivityVersionEntity) {
-            created = new QuestionableActivityVersionDTO((QuestionableActivityVersionEntity)toCreate);
-        } else if(toCreate instanceof QuestionableActivityProductEntity) {
-            created = new QuestionableActivityProductDTO((QuestionableActivityProductEntity)toCreate);
-        } else if(toCreate instanceof QuestionableActivityDeveloperEntity) {
-            created = new QuestionableActivityDeveloperDTO((QuestionableActivityDeveloperEntity)toCreate);
-        } else if(toCreate instanceof QuestionableActivityListingEntity) {
-            created = new QuestionableActivityListingDTO((QuestionableActivityListingEntity)toCreate);
-        } else if(toCreate instanceof QuestionableActivityCertificationResultEntity) {
-            created = new QuestionableActivityCertificationResultDTO((QuestionableActivityCertificationResultEntity)toCreate);
+
+        if (toCreate instanceof QuestionableActivityVersionEntity) {
+            created = new QuestionableActivityVersionDTO((QuestionableActivityVersionEntity) toCreate);
+        } else if (toCreate instanceof QuestionableActivityProductEntity) {
+            created = new QuestionableActivityProductDTO((QuestionableActivityProductEntity) toCreate);
+        } else if (toCreate instanceof QuestionableActivityDeveloperEntity) {
+            created = new QuestionableActivityDeveloperDTO((QuestionableActivityDeveloperEntity) toCreate);
+        } else if (toCreate instanceof QuestionableActivityListingEntity) {
+            created = new QuestionableActivityListingDTO((QuestionableActivityListingEntity) toCreate);
+        } else if (toCreate instanceof QuestionableActivityCertificationResultEntity) {
+            created = new QuestionableActivityCertificationResultDTO((QuestionableActivityCertificationResultEntity) toCreate);
         }
         return created;
     }
@@ -95,14 +96,13 @@ public class QuestionableActivityDAOImpl extends BaseDAOImpl implements Question
     @Override
     @Transactional
     public List<QuestionableActivityTriggerDTO> getAllTriggers() {
-        Query query = entityManager.createQuery(
-                "SELECT trigger " + 
-                "FROM QuestionableActivityTriggerEntity trigger " +
-                "WHERE trigger.deleted <> true",
+        Query query = entityManager.createQuery("SELECT trigger "
+                + "FROM QuestionableActivityTriggerEntity trigger "
+                + "WHERE trigger.deleted <> true",
                 QuestionableActivityTriggerEntity.class);
         List<QuestionableActivityTriggerEntity> queryResults = query.getResultList();
         List<QuestionableActivityTriggerDTO> results = new ArrayList<QuestionableActivityTriggerDTO>(queryResults.size());
-        for(QuestionableActivityTriggerEntity queryResult : queryResults) {
+        for (QuestionableActivityTriggerEntity queryResult : queryResults) {
             results.add(new QuestionableActivityTriggerDTO(queryResult));
         }
         return results;
@@ -110,17 +110,16 @@ public class QuestionableActivityDAOImpl extends BaseDAOImpl implements Question
 
     @Override
     @Transactional
-    public List<QuestionableActivityVersionDTO> findVersionActivityBetweenDates(Date start, Date end) {
-        Query query = entityManager.createQuery(
-                "SELECT activity " + 
-                "FROM QuestionableActivityVersionEntity activity " +
-                "LEFT OUTER JOIN FETCH activity.version " +
-                "LEFT OUTER JOIN FETCH activity.trigger " +
-                "LEFT OUTER JOIN FETCH activity.user activityUser " +
-                "LEFT OUTER JOIN FETCH activityUser.contact " +
-                "WHERE activity.deleted <> true " +
-                "AND activity.activityDate >= :startDate " + 
-                "AND activity.activityDate <= :endDate",
+    public List<QuestionableActivityVersionDTO> findVersionActivityBetweenDates(final Date start, final Date end) {
+        Query query = entityManager.createQuery("SELECT activity "
+                + "FROM QuestionableActivityVersionEntity activity "
+                + "LEFT OUTER JOIN FETCH activity.version "
+                + "LEFT OUTER JOIN FETCH activity.trigger "
+                + "LEFT OUTER JOIN FETCH activity.user activityUser "
+                + "LEFT OUTER JOIN FETCH activityUser.contact "
+                + "WHERE activity.deleted <> true "
+                + "AND activity.activityDate >= :startDate "
+                + "AND activity.activityDate <= :endDate",
                 QuestionableActivityVersionEntity.class);
         query.setParameter("startDate", start);
         query.setParameter("endDate", end);
@@ -131,100 +130,97 @@ public class QuestionableActivityDAOImpl extends BaseDAOImpl implements Question
         }
         return results;
     }
-    
+
     @Override
     @Transactional
-    public List<QuestionableActivityProductDTO> findProductActivityBetweenDates(Date start, Date end) {
-        Query query = entityManager.createQuery(
-                "SELECT activity " + 
-                "FROM QuestionableActivityProductEntity activity " +
-                "LEFT OUTER JOIN FETCH activity.product " +
-                "LEFT OUTER JOIN FETCH activity.trigger " +
-                "LEFT OUTER JOIN FETCH activity.user activityUser " +
-                "LEFT OUTER JOIN FETCH activityUser.contact " +
-                "WHERE activity.deleted <> true " +
-                "AND activity.activityDate >= :startDate " + 
-                "AND activity.activityDate <= :endDate",
+    public List<QuestionableActivityProductDTO> findProductActivityBetweenDates(final Date start, final Date end) {
+        Query query = entityManager.createQuery("SELECT activity "
+                + "FROM QuestionableActivityProductEntity activity "
+                + "LEFT OUTER JOIN FETCH activity.product "
+                + "LEFT OUTER JOIN FETCH activity.trigger "
+                + "LEFT OUTER JOIN FETCH activity.user activityUser "
+                + "LEFT OUTER JOIN FETCH activityUser.contact "
+                + "WHERE activity.deleted <> true "
+                + "AND activity.activityDate >= :startDate "
+                + "AND activity.activityDate <= :endDate",
                 QuestionableActivityProductEntity.class);
         query.setParameter("startDate", start);
         query.setParameter("endDate", end);
         List<QuestionableActivityProductEntity> queryResults = query.getResultList();
         List<QuestionableActivityProductDTO> results = new ArrayList<QuestionableActivityProductDTO>(queryResults.size());
-        for(QuestionableActivityProductEntity queryResult : queryResults) {
+        for (QuestionableActivityProductEntity queryResult : queryResults) {
             results.add(new QuestionableActivityProductDTO(queryResult));
         }
         return results;
     }
-    
+
     @Override
     @Transactional
-    public List<QuestionableActivityDeveloperDTO> findDeveloperActivityBetweenDates(Date start, Date end) {
-        Query query = entityManager.createQuery(
-                "SELECT activity " + 
-                "FROM QuestionableActivityDeveloperEntity activity " +
-                "LEFT OUTER JOIN FETCH activity.developer " +
-                "LEFT OUTER JOIN FETCH activity.trigger " +
-                "LEFT OUTER JOIN FETCH activity.user activityUser " +
-                "LEFT OUTER JOIN FETCH activityUser.contact " +
-                "WHERE activity.deleted <> true " +
-                "AND activity.activityDate >= :startDate " + 
-                "AND activity.activityDate <= :endDate",
+    public List<QuestionableActivityDeveloperDTO> findDeveloperActivityBetweenDates(final Date start, final Date end) {
+        Query query = entityManager.createQuery("SELECT activity "
+                + "FROM QuestionableActivityDeveloperEntity activity "
+                + "LEFT OUTER JOIN FETCH activity.developer "
+                + "LEFT OUTER JOIN FETCH activity.trigger "
+                + "LEFT OUTER JOIN FETCH activity.user activityUser "
+                + "LEFT OUTER JOIN FETCH activityUser.contact "
+                + "WHERE activity.deleted <> true "
+                + "AND activity.activityDate >= :startDate "
+                + "AND activity.activityDate <= :endDate",
                 QuestionableActivityDeveloperEntity.class);
         query.setParameter("startDate", start);
         query.setParameter("endDate", end);
         List<QuestionableActivityDeveloperEntity> queryResults = query.getResultList();
         List<QuestionableActivityDeveloperDTO> results = new ArrayList<QuestionableActivityDeveloperDTO>(queryResults.size());
-        for(QuestionableActivityDeveloperEntity queryResult : queryResults) {
+        for (QuestionableActivityDeveloperEntity queryResult : queryResults) {
             results.add(new QuestionableActivityDeveloperDTO(queryResult));
         }
         return results;
     }
-    
+
     @Override
     @Transactional
-    public List<QuestionableActivityListingDTO> findListingActivityBetweenDates(Date start, Date end) {
-        Query query = entityManager.createQuery(
-                "SELECT activity " + 
-                "FROM QuestionableActivityListingEntity activity " +
-                "LEFT OUTER JOIN FETCH activity.listing " +
-                "LEFT OUTER JOIN FETCH activity.trigger " +
-                "LEFT OUTER JOIN FETCH activity.user activityUser " +
-                "LEFT OUTER JOIN FETCH activityUser.contact " +
-                "WHERE activity.deleted <> true " +
-                "AND activity.activityDate >= :startDate " + 
-                "AND activity.activityDate <= :endDate",
+    public List<QuestionableActivityListingDTO> findListingActivityBetweenDates(final Date start, final Date end) {
+        Query query = entityManager.createQuery("SELECT activity "
+                + "FROM QuestionableActivityListingEntity activity "
+                + "LEFT OUTER JOIN FETCH activity.listing "
+                + "LEFT OUTER JOIN FETCH activity.trigger "
+                + "LEFT OUTER JOIN FETCH activity.user activityUser "
+                + "LEFT OUTER JOIN FETCH activityUser.contact "
+                + "WHERE activity.deleted <> true "
+                + "AND activity.activityDate >= :startDate "
+                + "AND activity.activityDate <= :endDate",
                 QuestionableActivityListingEntity.class);
         query.setParameter("startDate", start);
         query.setParameter("endDate", end);
         List<QuestionableActivityListingEntity> queryResults = query.getResultList();
         List<QuestionableActivityListingDTO> results = new ArrayList<QuestionableActivityListingDTO>(queryResults.size());
-        for(QuestionableActivityListingEntity queryResult : queryResults) {
+        for (QuestionableActivityListingEntity queryResult : queryResults) {
             results.add(new QuestionableActivityListingDTO(queryResult));
         }
         return results;
     }
-    
+
     @Override
     @Transactional
-    public List<QuestionableActivityCertificationResultDTO> findCertificationResultActivityBetweenDates(Date start, Date end) {
-        Query query = entityManager.createQuery(
-                "SELECT activity " + 
-                "FROM QuestionableActivityCertificationResultEntity activity " +
-                "LEFT OUTER JOIN FETCH activity.certResult certResult " +
-                "LEFT OUTER JOIN FETCH certResult.listing " +
-                "LEFT OUTER JOIN FETCH activity.trigger " +
-                "LEFT OUTER JOIN FETCH activity.user activityUser " +
-                "LEFT OUTER JOIN FETCH activityUser.contact " +
-                "WHERE activity.deleted <> true " +
-                "AND activity.activityDate >= :startDate " + 
-                "AND activity.activityDate <= :endDate",
+    public List<QuestionableActivityCertificationResultDTO> findCertificationResultActivityBetweenDates(
+            final Date start, final Date end) {
+        Query query = entityManager.createQuery("SELECT activity "
+                + "FROM QuestionableActivityCertificationResultEntity activity "
+                + "LEFT OUTER JOIN FETCH activity.certResult certResult "
+                + "LEFT OUTER JOIN FETCH certResult.listing "
+                + "LEFT OUTER JOIN FETCH activity.trigger "
+                + "LEFT OUTER JOIN FETCH activity.user activityUser "
+                + "LEFT OUTER JOIN FETCH activityUser.contact "
+                + "WHERE activity.deleted <> true "
+                + "AND activity.activityDate >= :startDate "
+                + "AND activity.activityDate <= :endDate",
                 QuestionableActivityCertificationResultEntity.class);
         query.setParameter("startDate", start);
         query.setParameter("endDate", end);
         List<QuestionableActivityCertificationResultEntity> queryResults = query.getResultList();
-        List<QuestionableActivityCertificationResultDTO> results = 
-                new ArrayList<QuestionableActivityCertificationResultDTO>(queryResults.size());
-        for(QuestionableActivityCertificationResultEntity queryResult : queryResults) {
+        List<QuestionableActivityCertificationResultDTO> results
+            = new ArrayList<QuestionableActivityCertificationResultDTO>(queryResults.size());
+        for (QuestionableActivityCertificationResultEntity queryResult : queryResults) {
             results.add(new QuestionableActivityCertificationResultDTO(queryResult));
         }
         return results;

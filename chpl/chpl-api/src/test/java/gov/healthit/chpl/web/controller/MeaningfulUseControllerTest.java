@@ -14,7 +14,6 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONException;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,6 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.UnitTestUtil;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
@@ -76,14 +76,14 @@ public class MeaningfulUseControllerTest extends TestCase {
     public static void setUpClass() throws Exception {
         adminUser = new JWTAuthenticatedUser();
         adminUser.setFullName("Administrator");
-        adminUser.setId(-2L);
+        adminUser.setId(UnitTestUtil.ADMIN_ID);
         adminUser.setFriendlyName("Administrator");
         adminUser.setSubjectName("admin");
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
     }
 
     /**
-     * Given that a user with ROLE_ONC_STAFF or ROLE_ADMIN has uploaded a CSV
+     * Given that a user with ROLE_ONC or ROLE_ADMIN has uploaded a CSV
      * with meaningfulUseUser counts (passed in as MultipartFile file) When the
      * UI calls the API at /uploadMeaningfulUse When the CSV contains
      * incorrectly named headers When the CSV contains some incorrect
@@ -98,8 +98,8 @@ public class MeaningfulUseControllerTest extends TestCase {
      * successfully updates meaningfulUseUsers for the CHPLProductNumber Then
      * the duplicate CHPL Product Number results in an error added to the
      * results errors array Then the certifiedProductId is updated for non-error
-     * results
-     * 
+     * results.
+     *
      * @throws IOException
      * @throws JSONException
      */
@@ -189,13 +189,13 @@ public class MeaningfulUseControllerTest extends TestCase {
     }
 
     /**
-     * Given that a user with ROLE_ONC_STAFF or ROLE_ADMIN has uploaded a CSV
+     * Given that a user with ROLE_ONC or ROLE_ADMIN has uploaded a CSV
      * with meaningfulUseUser counts (passed in as MultipartFile file) When the
      * UI calls the API at /uploadMeaningfulUse When the CSV contains no header
      * When the CSV contains a 2014 CHPL Product Number with a non-legacy format
      * Then the API continues with updating the CHPL Product Numbers with their
      * respective num_meaningful_users
-     * 
+     *
      * @throws IOException
      * @throws JSONException
      */

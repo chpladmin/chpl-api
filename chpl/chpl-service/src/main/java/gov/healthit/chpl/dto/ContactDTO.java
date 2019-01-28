@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import gov.healthit.chpl.entity.ContactEntity;
+import gov.healthit.chpl.util.Util;
 
 /**
  * Data transfer object for Contacts.
@@ -91,17 +92,17 @@ public class ContactDTO implements Serializable {
     }
 
     public Date getSignatureDate() {
-        return signatureDate;
+        return Util.getNewDate(signatureDate);
     }
 
     public void setSignatureDate(final Date signatureDate) {
-        this.signatureDate = signatureDate;
+        this.signatureDate = Util.getNewDate(signatureDate);
     }
 
     @Override
     public String toString() {
-        return String.format("[Contact DTO: [Id: {}] [Full Name: {}] [Friendly Name: {}] [Email: {}],"
-                + "[Phone Number: {}], [Title: {}]]", this.getId(), this.getFullName(), this.getFriendlyName(),
+        return String.format("[Contact DTO: [Id: %d] [Full Name: %s] [Friendly Name: %s] [Email: %s],"
+                + "[Phone Number: %s], [Title: %s]]", this.getId(), this.getFullName(), this.getFriendlyName(),
                 this.getEmail(), this.getPhoneNumber(), this.getTitle());
 
     }

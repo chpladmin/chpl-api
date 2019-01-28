@@ -47,7 +47,6 @@ public class UserDaoTest {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     private static final String ROLE_ACB = "ROLE_ACB";
-    private static final String ROLE_ONC_STAFF = "ROLE_ONC_STAFF";
     private static JWTAuthenticatedUser authUser;
 
     @BeforeClass
@@ -86,25 +85,6 @@ public class UserDaoTest {
         dao.delete(insertedUserId);
 
         dao.getById(insertedUserId);
-    }
-
-    @Test
-    public void testAddOncStaffPermission() throws UserRetrievalException, UserPermissionRetrievalException {
-        UserDTO toEdit = dao.getByName("TESTUSER");
-        assertNotNull(toEdit);
-
-        dao.removePermission(toEdit.getSubjectName(), ROLE_ONC_STAFF);
-        dao.addPermission(toEdit.getSubjectName(), ROLE_ONC_STAFF);
-
-        Set<UserPermissionDTO> permissions = permDao.findPermissionsForUser(toEdit.getId());
-        assertNotNull(permissions);
-        boolean hasOncStaffRole = false;
-        for (UserPermissionDTO perm : permissions) {
-            if (ROLE_ONC_STAFF.equals(perm.toString())) {
-                hasOncStaffRole = true;
-            }
-        }
-        assertTrue(hasOncStaffRole);
     }
 
     @Test

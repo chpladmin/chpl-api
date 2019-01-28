@@ -6,19 +6,19 @@ import gov.healthit.chpl.entity.questionableActivity.QuestionableActivityProduct
 public class QuestionableActivityProductDTO extends QuestionableActivityDTO {
     private Long productId;
     private ProductDTO product;
-    
+
     public QuestionableActivityProductDTO() {
         super();
     }
-    
+
     public QuestionableActivityProductDTO(QuestionableActivityProductEntity entity) {
         super(entity);
         this.productId = entity.getProductId();
-        if(entity.getProduct() != null) {
+        if (entity.getProduct() != null) {
             this.product = new ProductDTO(entity.getProduct());
         }
     }
-    
+
     public Class<?> getActivityObjectClass() {
         return ProductDTO.class;
     }

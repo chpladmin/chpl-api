@@ -37,26 +37,26 @@ public class ChplProductNumberUtil {
 
     @Autowired
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
-    
+
     @Autowired
     private ChplProductNumberDAO chplProductNumberDAO;
 
     private static final int CERTIFICATION_EDITION_BEGIN_INDEX = 2;
 
     private static final int CERTIFICATION_EDITION_END_INDEX = 4;
-    
+
     private static final int LEGACY_ID_LENGTH = 10;
     private static final String LEGACY_ID_BEGIN = "CHP-";
 
     /**
      * Gets the CHPL Product Number as calculated by the DB
      * @param certifiedProductId - Long
-     * @return - String 
+     * @return - String
      */
     public String generate(Long certifiedProductId) {
         return chplProductNumberDAO.getChplProductNumber(certifiedProductId);
     }
-    
+
     /**
      * Determines what the derived CHPL Product Number will be based on the values passed.
      * @param uniqueId - Unique ID from the product
@@ -115,7 +115,7 @@ public class ChplProductNumberUtil {
      * @param certDateCode
      * @return String
      */
-    public String getChplProductNumber( final String year, final String testingLab, final String certBody,
+    public String getChplProductNumber(final String year, final String testingLab, final String certBody,
             final String vendorCode, final String productCode, final String versionCode, final String icsCode,
             final String addlSoftwareCode, final String certDateCode) {
 
@@ -142,7 +142,7 @@ public class ChplProductNumberUtil {
     public String getChplProductNumber(final String chplPrefix, final String identifier) {
         StringBuffer chplProductNumber = new StringBuffer();
         chplProductNumber.append(chplPrefix)
-            .append("-").append(identifier);
+        .append("-").append(identifier);
 
         return chplProductNumber.toString();
     }
@@ -163,7 +163,7 @@ public class ChplProductNumberUtil {
 
         return parts;
     }
-    
+
     public boolean isLegacy(String chplProductNumber) {
         if(!StringUtils.isEmpty(chplProductNumber) && chplProductNumber.length() == LEGACY_ID_LENGTH
                 && chplProductNumber.startsWith(LEGACY_ID_BEGIN)) {
@@ -210,14 +210,14 @@ public class ChplProductNumberUtil {
     private String concatParts(final ChplProductNumberParts chplProductNumberParts) {
         StringBuilder chplProductNumber = new StringBuilder();
         chplProductNumber.append(formatEdition(chplProductNumberParts.editionCode)).append(".")
-            .append(chplProductNumberParts.atlCode).append(".")
-            .append(chplProductNumberParts.acbCode).append(".")
-            .append(chplProductNumberParts.developerCode).append(".")
-            .append(chplProductNumberParts.productCode).append(".")
-            .append(chplProductNumberParts.versionCode).append(".")
-            .append(chplProductNumberParts.icsCode).append(".")
-            .append(chplProductNumberParts.additionalSoftwareCode).append(".")
-            .append(chplProductNumberParts.certifiedDateCode);
+        .append(chplProductNumberParts.atlCode).append(".")
+        .append(chplProductNumberParts.acbCode).append(".")
+        .append(chplProductNumberParts.developerCode).append(".")
+        .append(chplProductNumberParts.productCode).append(".")
+        .append(chplProductNumberParts.versionCode).append(".")
+        .append(chplProductNumberParts.icsCode).append(".")
+        .append(chplProductNumberParts.additionalSoftwareCode).append(".")
+        .append(chplProductNumberParts.certifiedDateCode);
         return chplProductNumber.toString();
     }
 
@@ -270,7 +270,7 @@ public class ChplProductNumberUtil {
         }
     }
 
-    public class ChplProductNumberParts {
+    public static class ChplProductNumberParts {
         private String editionCode = null;
         private String atlCode = null;
         private String acbCode = null;

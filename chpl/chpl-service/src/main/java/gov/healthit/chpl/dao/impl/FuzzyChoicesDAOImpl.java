@@ -7,24 +7,20 @@ import java.util.List;
 
 import javax.persistence.Query;
 
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.dao.FuzzyChoicesDAO;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.FuzzyChoicesDTO;
-import gov.healthit.chpl.entity.CertificationBodyEntity;
-import gov.healthit.chpl.entity.FuzzyChoicesEntity;
-import gov.healthit.chpl.entity.FuzzyType;
-import gov.healthit.chpl.exception.EntityCreationException;
-import gov.healthit.chpl.exception.EntityRetrievalException;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.dao.FuzzyChoicesDAO;
+import gov.healthit.chpl.dto.FuzzyChoicesDTO;
+import gov.healthit.chpl.entity.FuzzyChoicesEntity;
+import gov.healthit.chpl.entity.FuzzyType;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository(value = "fuzzyChoicesDAO")
 public class FuzzyChoicesDAOImpl extends BaseDAOImpl implements FuzzyChoicesDAO {
@@ -95,7 +91,7 @@ public class FuzzyChoicesDAOImpl extends BaseDAOImpl implements FuzzyChoicesDAO 
             + "(fuzzy_choices_id = :entityId)";
 
         Query query = entityManager.createQuery(queryStr, FuzzyChoicesEntity.class);
-        query.setParameter("entityId", (type.ordinal()+1));
+        query.setParameter("entityId", (type.ordinal() + 1));
         List<FuzzyChoicesEntity> result = query.getResultList();
 
         if (result.size() == 1) {

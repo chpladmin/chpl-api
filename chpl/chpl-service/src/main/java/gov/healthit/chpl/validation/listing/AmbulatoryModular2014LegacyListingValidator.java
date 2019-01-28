@@ -18,7 +18,7 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2014.AmbulatoryG1G2R
 @Component("ambulatoryModular2014LegacyListingValidator")
 public class AmbulatoryModular2014LegacyListingValidator extends Edition2014LegacyListingValidator {
 
-    @Autowired 
+    @Autowired
     @Qualifier("ambulatoryG1G2RequiredData2014Reviewer")
     AmbulatoryG1G2RequiredData2014Reviewer g1g2Reviewer;
 
@@ -26,7 +26,7 @@ public class AmbulatoryModular2014LegacyListingValidator extends Edition2014Lega
 
     @Override
     public List<Reviewer> getReviewers() {
-        if(reviewers == null) {
+        if (reviewers == null) {
             reviewers = super.getReviewers();
             reviewers.add(g1g2Reviewer);
         }

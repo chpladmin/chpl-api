@@ -52,7 +52,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
     private CertificationBodyManager acbManager;
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ACB')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
     public ChplTrigger createTrigger(final ChplTrigger trigger) throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
 
@@ -93,7 +93,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ACB')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ONC', 'ROLE_ACB')")
     public void deleteTrigger(final String triggerGroup, final String triggerName)
             throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
@@ -107,7 +107,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ACB')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ONC', 'ROLE_ACB')")
     public List<ChplTrigger> getAllTriggers() throws SchedulerException {
         ArrayList<ChplTrigger> triggers = new ArrayList<ChplTrigger>();
         Scheduler scheduler = getScheduler();
@@ -127,7 +127,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ACB')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
     public ChplTrigger updateTrigger(final ChplTrigger trigger) throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
         Trigger oldTrigger = scheduler.getTrigger(triggerKey(trigger.getName(), trigger.getGroup()));
@@ -166,7 +166,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
      * will need to be added to the list.
      */
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ACB')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ONC', 'ROLE_ACB')")
     public List<ChplJob> getAllJobs() throws SchedulerException {
         List<ChplJob> jobs = new ArrayList<ChplJob>();
         Scheduler scheduler = getScheduler();
@@ -184,7 +184,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ACB')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ONC', 'ROLE_ACB')")
     public ChplJob updateJob(final ChplJob job) throws SchedulerException {
         Scheduler scheduler = getScheduler();
         JobKey jobId = jobKey(job.getName(), job.getGroup());
@@ -246,7 +246,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
         if (doesUserHavePermissionToJob(getScheduler().getJobDetail(trigger.getJobKey()))) {
             if (!StringUtils.isEmpty(trigger.getJobDataMap().getString("acb"))) {
                 // get acbs user has access to
-                List<CertificationBodyDTO> validAcbs = acbManager.getAllForUser(false);
+                List<CertificationBodyDTO> validAcbs = acbManager.getAllForUser();
                 for (String acb : trigger.getJobDataMap().getString("acb").split("\u263A")) {
                     boolean found = false;
                     for (CertificationBodyDTO validAcb : validAcbs) {

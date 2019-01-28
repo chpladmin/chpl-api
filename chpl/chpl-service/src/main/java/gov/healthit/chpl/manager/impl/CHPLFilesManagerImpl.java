@@ -16,7 +16,7 @@ import gov.healthit.chpl.manager.CHPLFileManager;
 
 @Service
 public class CHPLFilesManagerImpl implements CHPLFileManager {
-    private static Long API_DOCUMENTATION_FILE_TYPE = 1l;
+    private static Long API_DOCUMENTATION_FILE_TYPE = 1L;
     private CHPLFileDAO chplFileDAO;
 
     @Autowired

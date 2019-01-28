@@ -37,6 +37,6 @@ public interface ApiKeyManager {
 
     List<ApiKeyActivity> getApiKeyActivity(String keyString, Integer pageNumber, Integer pageSize)
             throws EntityRetrievalException;
-    
+
     ApiKeyDTO updateApiKey(ApiKeyDTO dto) throws EntityRetrievalException;
 }

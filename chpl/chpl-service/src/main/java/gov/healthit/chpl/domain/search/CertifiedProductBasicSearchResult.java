@@ -1,8 +1,6 @@
 package gov.healthit.chpl.domain.search;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonView;
