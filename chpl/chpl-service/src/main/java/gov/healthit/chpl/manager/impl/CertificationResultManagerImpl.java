@@ -103,7 +103,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
 
     @Override
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_RESULTS, "
-            + "T(gov.healthit.chpl.permissions.domains.CertificationResultsDomainPermissions).UPDATE)")
+            + "T(gov.healthit.chpl.permissions.domains.CertificationResultsDomainPermissions).UPDATE, #acbId)")
     @Transactional(rollbackFor = {
             EntityRetrievalException.class, EntityCreationException.class
     })

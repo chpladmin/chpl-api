@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.permissions.domains.CertificationResultsDomainPermissions;
+import gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions;
 import gov.healthit.chpl.permissions.domains.DomainPermissions;
 import gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions;
 
@@ -14,14 +15,17 @@ import gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermission
 public class Permissions {
     public static final String PENDING_SURVEILLANCE = "PENDING_SURVEILLANCE";
     public static final String CERTIFICATION_RESULTS = "CERTIFICATION_RESULTS";
+    public static final String CERTIFIED_PRODUCT = "CERTIFIED_PRODUCT";
 
     private Map<String, DomainPermissions> domainPermissions = new HashMap<String, DomainPermissions>();
 
     @Autowired
     public Permissions(final PendingSurveillanceDomainPermissions pendingSurveillanceDomainPermissions,
-            final CertificationResultsDomainPermissions certificationResultsDomainPermissions) {
+            final CertificationResultsDomainPermissions certificationResultsDomainPermissions,
+            final CertifiedProductDomainPermissions certifiedProductDomainPermissions) {
         domainPermissions.put(PENDING_SURVEILLANCE, pendingSurveillanceDomainPermissions);
         domainPermissions.put(CERTIFICATION_RESULTS, certificationResultsDomainPermissions);
+        domainPermissions.put(CERTIFIED_PRODUCT, certifiedProductDomainPermissions);
     }
 
     public boolean hasAccess(final String domain, final String action) {
