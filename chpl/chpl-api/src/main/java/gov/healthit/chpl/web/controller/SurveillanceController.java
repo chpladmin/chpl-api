@@ -213,7 +213,7 @@ public class SurveillanceController implements MessageSourceAware {
 
     @ApiOperation(value = "Add documentation to an existing nonconformity.",
             notes = "Upload a file of any kind (current size limit 5MB) as supporting "
-                    + " documentation to an existing nonconformity. Security Restrictions: ROLE_ADMIN, ROLE_ONC_ADMIN, or "
+                    + " documentation to an existing nonconformity. Security Restrictions: ROLE_ADMIN, ROLE_ONC, or "
                     + "ROLE_ACB and administrative authority on the associated ACB.")
     @RequestMapping(value = "/{surveillanceId}/nonconformity/{nonconformityId}/document",
     method = RequestMethod.POST, produces = "application/json; charset=utf-8")
@@ -272,7 +272,7 @@ public class SurveillanceController implements MessageSourceAware {
     @ApiOperation(value = "Update a surveillance activity for a certified product.",
             notes = "Updates an existing surveillance activity, surveilled requirements, and any applicable "
                     + "non-conformities in the system. The surveillance passed into this request will first be "
-                    + "validated to check for errors. Security Restrictions: ROLE_ADMIN, ROLE_ONC_ADMIN, or ROLE_ACB "
+                    + "validated to check for errors. Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB "
                     + "and associated with the certified product is required.")
     @RequestMapping(value = "/{surveillanceId}", method = RequestMethod.PUT,
     produces = "application/json; charset=utf-8")
@@ -389,7 +389,7 @@ public class SurveillanceController implements MessageSourceAware {
     }
 
     @ApiOperation(value = "Remove documentation from a nonconformity.",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC_ADMIN, or ROLE_ACB and administrative authority "
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative authority "
                     + "on the associated ACB.")
     @RequestMapping(value = "/{surveillanceId}/document/{docId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
@@ -561,7 +561,7 @@ public class SurveillanceController implements MessageSourceAware {
 
     @ApiOperation(value = "Upload a file with surveillance and nonconformities for certified products.",
             notes = "Accepts a CSV file with very specific fields to create pending surveillance items. "
-                    + "Security Restrictions: ROLE_ADMIN, ROLE_ONC_ADMIN, or ROLE_ACB and administrative authority "
+                    + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative authority "
                     + "on the ACB(s) responsible for the product(s) in the file.")
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody ResponseEntity<?> upload(@RequestParam("file") final MultipartFile file)

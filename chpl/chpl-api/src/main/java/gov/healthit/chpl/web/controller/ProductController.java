@@ -339,7 +339,7 @@ public class ProductController {
     @ApiOperation(
             value = "Split a product - some versions stay with the existing product and some versions are moved "
                     + "to a new product.",
-                    notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC_ADMIN, or ROLE_ACB")
+                    notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB")
     @RequestMapping(value = "/{productId}/split", method = RequestMethod.POST,
     consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public ResponseEntity<SplitProductResponse> splitProduct(@PathVariable("productId") final Long productId,

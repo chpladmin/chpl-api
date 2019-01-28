@@ -56,9 +56,8 @@ public class TestingLabController {
 
     @ApiOperation(value = "List all testing labs (ATLs).",
             notes = "Setting the 'editable' parameter to true will return all ATLs that the logged in user has edit "
-                    + "permissions on.  Setting 'showDeleted' to true will include even those ATLs that have been "
-                    + "deleted. Security Restrictions: ROLE_ADMIN or ROLE_ONC_ADMIN to see deleted ATLs (if 'showDeleted' "
-                    + "to true).")
+                    + "permissions on.  Security Restrictions: ROLE_ADMIN or ROLE_ONC can see all ATLs.  ROLE_ATL "
+                    + "can see their own ATL.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody TestingLabResults getAtls(
             @RequestParam(required = false, defaultValue = "false") final boolean editable) {
@@ -79,7 +78,7 @@ public class TestingLabController {
     }
 
     @ApiOperation(value = "Get details about a specific testing lab (ATL).",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC_ADMIN or have either read or administrative authority "
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC or have either read or administrative authority "
                     + "on the testing lab with the ID specified.")
     @RequestMapping(value = "/{atlId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody TestingLab getAtlById(@PathVariable("atlId") final Long atlId)
@@ -90,7 +89,7 @@ public class TestingLabController {
     }
 
     @ApiOperation(value = "Create a new testing lab.",
-            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC_ADMIN to create a new testing lab.")
+            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC to create a new testing lab.")
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public TestingLab createAtl(@RequestBody final TestingLab atlInfo)
@@ -128,7 +127,7 @@ public class TestingLabController {
     }
 
     @ApiOperation(value = "Update an existing ATL.",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC_ADMIN, or ROLE_ATL and have administrative "
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ATL and have administrative "
                     + "authority on the testing lab whose data is being updated.")
     @RequestMapping(value = "/{atlId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
@@ -191,7 +190,7 @@ public class TestingLabController {
     @ApiOperation(value = "Remove user permissions from an ATL.",
             notes = "The user specified in the request will have all authorities "
                     + "removed that are associated with the specified ATL.  Security Restrictions: ROLE_ADMIN, "
-                    + "ROLE_ONC_ADMIN, or ROLE_ATL and have administrative authority on the specified ATL.")
+                    + "ROLE_ONC, or ROLE_ATL and have administrative authority on the specified ATL.")
     @RequestMapping(value = "{atlId}/users/{userId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public String deleteUserFromAtl(@PathVariable final Long atlId, @PathVariable final Long userId)
@@ -217,7 +216,7 @@ public class TestingLabController {
     }
 
     @ApiOperation(value = "List users with permissions on a specified ATL.",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC_ADMIN, ROLE_ONC_STAFF, or have administrative "
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or have administrative "
                     + "or read authority on the specified ATL.")
     @RequestMapping(value = "/{atlId}/users", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")

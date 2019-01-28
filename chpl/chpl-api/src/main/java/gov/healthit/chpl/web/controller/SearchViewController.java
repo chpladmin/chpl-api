@@ -819,7 +819,7 @@ public class SearchViewController {
     }
 
     @ApiOperation(value = "Change existing fuzzy matching choices.",
-            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC_ADMIN")
+            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/data/fuzzy_choices/{fuzzyChoiceId}", method = RequestMethod.PUT,
     consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public FuzzyChoices updateFuzzyChoicesForSearching(@RequestBody final FuzzyChoices fuzzyChoices)

@@ -74,7 +74,7 @@ public class SchedulerController {
      */
     @ApiOperation(value = "Get the list of all triggers and their associated scheduled jobs "
             + "that are applicable to the currently logged in user",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC_ADMIN, or ROLE_ACB and have administrative "
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and have administrative "
                     + "authority on the specified ACB.")
     @RequestMapping(value = "/triggers", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ScheduleTriggersResults getAllTriggers() throws SchedulerException {
@@ -109,7 +109,7 @@ public class SchedulerController {
      * @throws SchedulerException if exception is thrown
      */
     @ApiOperation(value = "Get the list of all jobs that are applicable to the currently logged in user",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC_ADMIN, or ROLE_ACB and have administrative authority on the specified ACB")
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and have administrative authority on the specified ACB")
     @RequestMapping(value = "/jobs", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ChplJobsResults getAllJobs() throws SchedulerException {
         List<ChplJob> jobs = schedulerManager.getAllJobs();

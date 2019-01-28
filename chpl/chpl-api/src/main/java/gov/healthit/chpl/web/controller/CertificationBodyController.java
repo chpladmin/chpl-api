@@ -52,8 +52,7 @@ public class CertificationBodyController {
 
     @ApiOperation(value = "List all certification bodies (ACBs).",
             notes = "Setting the 'editable' parameter to true will return all ACBs that the logged in user has "
-                    + "edit permissions on. Security Restrictions:  Everyone can see all active.  ROLE_ADMIN and "
-                    + "ROLE_ONC_ADMIN can see deleted.")
+                    + "edit permissions on. Security Restrictions:  All users can see all active ACBs.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody CertificationBodyResults getAcbs(
             @RequestParam(required = false, defaultValue = "false") final boolean editable) {
@@ -75,7 +74,7 @@ public class CertificationBodyController {
     }
 
     @ApiOperation(value = "Get details about a specific certification body (ACB).",
-            notes = "Security Restriction:  ROLE_ADMIN, ROLE_ONC_ADMIN, or ROLE_ACB for the ACB with the provided ID")
+            notes = "Security Restriction:  ROLE_ADMIN, ROLE_ONC, or ROLE_ACB for the ACB with the provided ID")
     @RequestMapping(value = "/{acbId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody CertificationBody getAcbById(@PathVariable("acbId") final Long acbId)
             throws EntityRetrievalException {
@@ -85,7 +84,7 @@ public class CertificationBodyController {
     }
 
     @ApiOperation(value = "Create a new ACB.",
-            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC_ADMIN")
+            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public CertificationBody createAcb(@RequestBody final CertificationBody acbInfo)
@@ -125,7 +124,7 @@ public class CertificationBodyController {
 
 
     @ApiOperation(value = "Update an existing ACB.",
-            notes = "Security Restriction:  ROLE_ADMIN, ROLE_ONC_ADMIN, or ROLE_ACB with administrative authority")
+            notes = "Security Restriction:  ROLE_ADMIN, ROLE_ONC, or ROLE_ACB with administrative authority")
     @RequestMapping(value = "/{acbId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public CertificationBody updateAcb(@RequestBody final CertificationBody acbInfo) throws InvalidArgumentsException,
@@ -207,7 +206,7 @@ public class CertificationBodyController {
     }
 
     @ApiOperation(value = "List users with permissions on a specified ACB.",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC_ADMIN, ROLE_ONC_STAFF or have administrative "
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF or have administrative "
                     + "or read authority on the specified ACB")
     @RequestMapping(value = "/{acbId}/users", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")

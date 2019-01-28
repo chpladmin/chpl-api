@@ -59,7 +59,7 @@ public class CertificationIdController {
     // **********************************************************************************************************
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_CMS_STAFF', 'ROLE_ONC_STAFF')")
     @ApiOperation(value = "Retrieves a list of all CMS EHR Certification IDs along with the date they were created.",
-    notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC_ADMIN, ROLE_ONC_STAFF, or ROLE_CMS_STAFF")
+    notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_CMS_STAFF")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = {
             MediaType.APPLICATION_JSON_VALUE
     })

@@ -233,7 +233,7 @@ public class UserManagementController {
             notes = "Adds all permissions from the invitation identified by the user key "
                     + "to the appropriate existing user account." + "The correct order to call invitation requests is "
                     + "the following: 1) /invite 2) /create or /authorize 3) /confirm.  Security Restrictions: ROLE_ADMIN "
-                    + "or ROLE_ONC_ADMIN.")
+                    + "or ROLE_ONC.")
     @RequestMapping(value = "/{userId}/authorize", method = RequestMethod.POST,
     consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
@@ -291,7 +291,7 @@ public class UserManagementController {
                     + "if they have one. Said another way, an invitation can be used to create or "
                     + "modify CHPL user accounts." + "The correct order to call invitation requests is "
                     + "the following: 1) /invite 2) /create or /authorize 3) /confirm. "
-                    + "Security Restrictions: ROLE_ADMIN and ROLE_ONC_ADMIN can invite users to any organization.  "
+                    + "Security Restrictions: ROLE_ADMIN and ROLE_ONC can invite users to any organization.  "
                     + "ROLE_ACB and ROLE_ATL can add users to their own organization.")
     @RequestMapping(value = "/invite", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
@@ -422,7 +422,7 @@ public class UserManagementController {
     @ApiOperation(value = "Give additional roles to a user.",
             notes = "Users may be given ROLE_ADMIN, ROLE_ONC, ROLE_ACB, "
                     + "ROLE_ATL, or ROLE_ONC_STAFF roles within the system.  Security Restrictions: ROLE_ADMIN or "
-                    + "ROLE_ONC_ADMIN.")
+                    + "ROLE_ONC.")
     @RequestMapping(value = "/{userName}/roles/{roleName}", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
     public String grantUserRole(@PathVariable("userName") final String userName,
@@ -531,7 +531,7 @@ public class UserManagementController {
     }
 
     @ApiOperation(value = "View users of the system.",
-            notes = "Security Restrictions: ROLE_ADMIN and ROLE_ONC_ADMIN can see all users.  ROLE_ACB, ROLE_ATL, "
+            notes = "Security Restrictions: ROLE_ADMIN and ROLE_ONC can see all users.  ROLE_ACB, ROLE_ATL, "
                     + "ROLE_CMS_STAFF, and ROLE_ONC_STAFF can see their self.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @PreAuthorize("isAuthenticated()")
