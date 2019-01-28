@@ -10,6 +10,7 @@ import gov.healthit.chpl.permissions.domains.CertificationResultsDomainPermissio
 import gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CorrectiveActionPlanDomainPermissions;
 import gov.healthit.chpl.permissions.domains.DomainPermissions;
+import gov.healthit.chpl.permissions.domains.InvitationDomainPermissions;
 import gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions;
 
 @Component
@@ -18,6 +19,7 @@ public class Permissions {
     public static final String CERTIFICATION_RESULTS = "CERTIFICATION_RESULTS";
     public static final String CERTIFIED_PRODUCT = "CERTIFIED_PRODUCT";
     public static final String CORRECTIVE_ACTION_PLAN = "CORRECTIVE_ACTION_PLAN";
+    public static final String INVITATION = "INVITATION";
 
     private Map<String, DomainPermissions> domainPermissions = new HashMap<String, DomainPermissions>();
 
@@ -25,11 +27,13 @@ public class Permissions {
     public Permissions(final PendingSurveillanceDomainPermissions pendingSurveillanceDomainPermissions,
             final CertificationResultsDomainPermissions certificationResultsDomainPermissions,
             final CertifiedProductDomainPermissions certifiedProductDomainPermissions,
-            final CorrectiveActionPlanDomainPermissions correctiveActionPlanDomainPermissions) {
+            final CorrectiveActionPlanDomainPermissions correctiveActionPlanDomainPermissions,
+            final InvitationDomainPermissions invitationDomainPermissions) {
         domainPermissions.put(PENDING_SURVEILLANCE, pendingSurveillanceDomainPermissions);
         domainPermissions.put(CERTIFICATION_RESULTS, certificationResultsDomainPermissions);
         domainPermissions.put(CERTIFIED_PRODUCT, certifiedProductDomainPermissions);
         domainPermissions.put(CORRECTIVE_ACTION_PLAN, correctiveActionPlanDomainPermissions);
+        domainPermissions.put(INVITATION, invitationDomainPermissions);
     }
 
     public boolean hasAccess(final String domain, final String action) {

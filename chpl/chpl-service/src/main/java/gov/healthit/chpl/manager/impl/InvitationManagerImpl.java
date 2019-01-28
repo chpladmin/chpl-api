@@ -72,7 +72,8 @@ public class InvitationManagerImpl implements InvitationManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
+            + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_ADMIN)")
     public InvitationDTO inviteAdmin(final String emailAddress, final List<String> permissions)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
         InvitationDTO dto = new InvitationDTO();
@@ -85,7 +86,8 @@ public class InvitationManagerImpl implements InvitationManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
+            + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_ONC)")
     public InvitationDTO inviteOnc(final String emailAddress, final List<String> permissions)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
         InvitationDTO dto = new InvitationDTO();
@@ -98,7 +100,8 @@ public class InvitationManagerImpl implements InvitationManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
+            + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_ROLE_NO_ACCESS)")
     public InvitationDTO inviteWithRolesOnly(final String emailAddress, final List<String> permissions)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
         InvitationDTO dto = new InvitationDTO();
@@ -111,11 +114,11 @@ public class InvitationManagerImpl implements InvitationManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or "
-            + "(hasRole('ROLE_ACB') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
+            + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_ACB, #acbId)")
     public InvitationDTO inviteWithAcbAccess(final String emailAddress, final Long acbId,
             final List<String> permissions)
-                    throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
+            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
         InvitationDTO dto = new InvitationDTO();
         dto.setEmail(emailAddress);
         dto.setAcbId(acbId);
@@ -133,7 +136,7 @@ public class InvitationManagerImpl implements InvitationManager {
             + "(hasRole('ROLE_ATL') and hasPermission(#atlId, 'gov.healthit.chpl.dto.TestingLabDTO', admin))")
     public InvitationDTO inviteWithAtlAccess(final String emailAddress, final Long atlId,
             final List<String> permissions)
-                    throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
+            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
         InvitationDTO dto = new InvitationDTO();
         dto.setEmail(emailAddress);
         dto.setTestingLabId(atlId);
@@ -147,15 +150,12 @@ public class InvitationManagerImpl implements InvitationManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') "
-            + "or "
-            + "(hasRole('ROLE_ACB') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin) "
-            + " and "
-            + "hasRole('ROLE_ATL') and hasPermission(#atlId, 'gov.healthit.chpl.dto.TestingLabDTO', admin)"
-            + ")")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
+            + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_ACB_ATL, #acbId) and "
+            + "hasRole('ROLE_ATL') and hasPermission(#atlId, 'gov.healthit.chpl.dto.TestingLabDTO', admin)")
     public InvitationDTO inviteWithAcbAndAtlAccess(final String emailAddress, final Long acbId, final Long atlId,
             final List<String> permissions)
-                    throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
+            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
         InvitationDTO dto = new InvitationDTO();
         dto.setEmail(emailAddress);
         dto.setTestingLabId(atlId);
@@ -351,11 +351,13 @@ public class InvitationManagerImpl implements InvitationManager {
                         userManager.grantRole(user.getUsername(), userPermission.getAuthority());
                     }
                 } catch (final UserPermissionRetrievalException ex) {
-                    LOGGER.error("Could not add role " + userPermission.getAuthority()
-                    + " for user " + user.getUsername(), ex);
+                    LOGGER.error(
+                            "Could not add role " + userPermission.getAuthority() + " for user " + user.getUsername(),
+                            ex);
                 } catch (final UserManagementException mex) {
-                    LOGGER.error("Could not add role " + userPermission.getAuthority()
-                    + " for user " + user.getUsername(), mex);
+                    LOGGER.error(
+                            "Could not add role " + userPermission.getAuthority() + " for user " + user.getUsername(),
+                            mex);
                 }
             }
         }
