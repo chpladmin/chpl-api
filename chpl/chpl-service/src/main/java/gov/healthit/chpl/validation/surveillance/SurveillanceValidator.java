@@ -57,8 +57,9 @@ public class SurveillanceValidator  {
     /**
      * Validate a surveillance.
      * @param surv the surveillance to validate
+     * @param checkAuthority indicates if the authority should be checked during the validation
      */
-    public void validate(final Surveillance surv) {
+    public void validate(final Surveillance surv, final Boolean checkAuthority) {
         CertifiedProductDetailsDTO cpDetails = null;
 
         // make sure chpl id is valid
@@ -181,7 +182,9 @@ public class SurveillanceValidator  {
             addSurveillanceWarningIfNotValid(surv, surv.getType().getName(), "Surveillance Type");
         }
 
-        validateSurveillanceAuthority(surv);
+        if (checkAuthority) {
+            validateSurveillanceAuthority(surv);
+        }
         validateSurveillanceRequirements(surv, certResults);
         validateSurveillanceNonconformities(surv, certResults);
     }
@@ -222,7 +225,7 @@ public class SurveillanceValidator  {
                             .findSurveillanceRequirementType(req.getType().getId());
                     if (reqType == null) {
                         surv.getErrorMessages().add(msgUtil.getMessage("surveillance.typeIdMissingForRequirement",
-                                        req.getType().getId(), req.getRequirement()));
+                                req.getType().getId(), req.getRequirement()));
                     } else {
                         req.setType(reqType);
                     }
@@ -285,7 +288,7 @@ public class SurveillanceValidator  {
                     SurveillanceResultType resType = survDao.findSurveillanceResultType(req.getResult().getName());
                     if (resType == null) {
                         surv.getErrorMessages().add(msgUtil.getMessage("surveillance.resultWithNameNotFound",
-                                        req.getResult().getName(), req.getRequirement()));
+                                req.getResult().getName(), req.getRequirement()));
                     } else {
                         req.setResult(resType);
                     }
@@ -406,7 +409,7 @@ public class SurveillanceValidator  {
 
                         if (!StringUtils.isEmpty(nc.getCapEndDate()) && StringUtils.isEmpty(nc.getCapStartDate())) {
                             surv.getErrorMessages().add(msgUtil.getMessage("surveillance.dateCAPStartIsRequired",
-                                            req.getRequirement(), nc.getNonconformityType()));
+                                    req.getRequirement(), nc.getNonconformityType()));
                         }
 
                         if (!StringUtils.isEmpty(nc.getCapEndDate()) && StringUtils.isEmpty(nc.getCapApprovalDate())) {
@@ -430,12 +433,12 @@ public class SurveillanceValidator  {
 
                         if (StringUtils.isEmpty(nc.getSummary())) {
                             surv.getErrorMessages().add(msgUtil.getMessage("surveillance.summaryIsRequired",
-                                            req.getRequirement(), nc.getNonconformityType()));
+                                    req.getRequirement(), nc.getNonconformityType()));
                         }
 
                         if (StringUtils.isEmpty(nc.getFindings())) {
                             surv.getErrorMessages().add(msgUtil.getMessage("surveillance.findingsAreRequired",
-                                            req.getRequirement(), nc.getNonconformityType()));
+                                    req.getRequirement(), nc.getNonconformityType()));
                         }
 
                         // site counts are required for completed randomized

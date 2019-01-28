@@ -14,14 +14,17 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.Surveillance;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.entity.job.JobStatusType;
@@ -31,35 +34,50 @@ import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.manager.SurveillanceUploadManager;
 import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandler;
 import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandlerFactory;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 
 @Component
 @Scope("prototype") // tells spring to make a new instance of this class every
-                    // time it is needed
+// time it is needed
 public class SurveillanceUploadJob extends RunnableJob {
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceUploadJob.class);
 
-    @Autowired
-    MessageSource messageSource;
-    @Autowired
+    private ErrorMessageUtil errorMessageUtil;
     private CertifiedProductManager cpManager;
-    @Autowired
     private SurveillanceManager survManager;
-    @Autowired private SurveillanceUploadManager survUploadManager;
-    @Autowired
+    private SurveillanceUploadManager survUploadManager;
     private SurveillanceValidator survValidator;
-    @Autowired
     private SurveillanceUploadHandlerFactory uploadHandlerFactory;
+    private SurveillanceDAO surveillanceDAO;
+    private CertificationBodyDAO acbDAO;
+
+    @Autowired
+    public SurveillanceUploadJob(final ErrorMessageUtil errorMessageUtil, final CertifiedProductManager cpManager,
+            final SurveillanceManager survManager, final SurveillanceUploadManager survUploadManager,
+            final SurveillanceValidator survValidator, final SurveillanceUploadHandlerFactory uploadHandlerFactory,
+            final SurveillanceDAO surveillanceDAO, CertificationBodyDAO acbDAO) {
+        this.errorMessageUtil = errorMessageUtil;
+        this.cpManager = cpManager;
+        this.survManager = survManager;
+        this.survUploadManager = survUploadManager;
+        this.survValidator = survValidator;
+        this.uploadHandlerFactory = uploadHandlerFactory;
+        this.surveillanceDAO = surveillanceDAO;
+        this.acbDAO = acbDAO;
+    }
 
     public SurveillanceUploadJob() {
         LOGGER.debug("Created new Surveillance Upload Job");
     }
 
-    public SurveillanceUploadJob(JobDTO job) {
+    public SurveillanceUploadJob(final JobDTO job) {
         LOGGER.debug("Created new Surveillance Upload Job");
         this.job = job;
     }
 
+    @Override
+    @Transactional
     public void run() {
         super.run();
 
@@ -71,7 +89,8 @@ public class SurveillanceUploadJob extends RunnableJob {
 
             List<CSVRecord> records = parser.getRecords();
             if (records.size() <= 1) {
-                String msg = "The file appears to have a header line with no other information. Please make sure there are at least two rows in the CSV file.";
+                String msg = "The file appears to have a header line with no other information. "
+                        + "Please make sure there are at least two rows in the CSV file.";
                 LOGGER.error(msg);
                 addJobMessage(msg);
                 updateStatus(100, JobStatusType.Error);
@@ -112,7 +131,8 @@ public class SurveillanceUploadJob extends RunnableJob {
                                 String currRecordStatus = currRecord.get(0).trim();
 
                                 if (currRecordStatus.equalsIgnoreCase(SurveillanceUploadManager.NEW_SURVEILLANCE_BEGIN_INDICATOR)
-                                        || currRecordStatus.equalsIgnoreCase(SurveillanceUploadManager.UPDATE_SURVEILLANCE_BEGIN_INDICATOR)) {
+                                        || currRecordStatus.equalsIgnoreCase(
+                                                SurveillanceUploadManager.UPDATE_SURVEILLANCE_BEGIN_INDICATOR)) {
                                     // parse the previous recordset because we hit a new surveillance item
                                     // if this is the last recordset, we'll handle that later
                                     if (rows.size() > 0) {
@@ -127,7 +147,7 @@ public class SurveillanceUploadJob extends RunnableJob {
                                             pendingSurvs.add(pendingSurv);
 
                                             //Add some percent complete between 2 and 50
-                                            jobPercentComplete += 48.0 / (double) survCount;
+                                            jobPercentComplete += 48.0 / survCount;
                                             updateStatus(jobPercentComplete, JobStatusType.In_Progress);
                                         } catch (final InvalidArgumentsException ex) {
                                             LOGGER.error(ex.getMessage());
@@ -148,7 +168,7 @@ public class SurveillanceUploadJob extends RunnableJob {
                                 SurveillanceUploadHandler handler = uploadHandlerFactory.getHandler(heading, rows);
                                 Surveillance pendingSurv = handler.handle();
                                 List<String> errors = survUploadManager.checkUploadedSurveillanceOwnership(pendingSurv);
-                                for(String error : errors) {
+                                for (String error : errors) {
                                     parserErrors.add(error);
                                 }
                                 pendingSurvs.add(pendingSurv);
@@ -170,7 +190,7 @@ public class SurveillanceUploadJob extends RunnableJob {
                 }
             }
         } catch (final IOException ioEx) {
-            String msg = "Could not get input stream for job data string for job with ID " + job.getId();
+            String msg = errorMessageUtil.getMessage("surveillance.inputStream");
             LOGGER.error(msg);
             addJobMessage(msg);
             updateStatus(100, JobStatusType.Error);
@@ -181,22 +201,31 @@ public class SurveillanceUploadJob extends RunnableJob {
             CertifiedProductDTO owningCp = null;
             try {
                 owningCp = cpManager.getById(surv.getCertifiedProduct().getId());
-                survValidator.validate(surv);
-                survManager.createPendingSurveillance(owningCp.getCertificationBodyId(), surv);
+                survValidator.validate(surv, false);
+                surveillanceDAO.insertPendingSurveillance(surv);
 
-                jobPercentComplete += 50.0 / (double) pendingSurvs.size();
+                jobPercentComplete += 50.0 / pendingSurvs.size();
                 updateStatus(jobPercentComplete, JobStatusType.In_Progress);
             } catch (final AccessDeniedException denied) {
-                String msg = "User " + Util.getCurrentUser().getSubjectName()
-                                + " does not have access to add surveillance"
-                                + (owningCp != null
-                                        ? " to ACB with ID '" + owningCp.getCertificationBodyId() + "'."
-                                        : ".");
+                String msg = "";
+                if (owningCp != null && owningCp.getCertificationBodyId() != null) {
+                    try {
+                        CertificationBodyDTO acbDTO = acbDAO.getById(owningCp.getCertificationBodyId());
+                        msg = errorMessageUtil.getMessage("surveillance.permissionErrorWithAcb",
+                                Util.getCurrentUser().getSubjectName(), owningCp.getChplProductNumber(), acbDTO.getName());
+                    } catch (Exception e) {
+                        msg = errorMessageUtil.getMessage("surveillance.permissionError",
+                                Util.getCurrentUser().getSubjectName());
+                    }
+                } else {
+                    msg = errorMessageUtil.getMessage("surveillance.permissionError",
+                            Util.getCurrentUser().getSubjectName());
+                }
+
                 LOGGER.error(msg);
                 addJobMessage(msg);
             } catch (Exception ex) {
-                String msg =
-                        "Error adding a new pending surveillance. Please make sure all required fields are present.";
+                String msg = errorMessageUtil.getMessage("surveillance.errorAdding");
                 LOGGER.error(msg);
                 addJobMessage(msg);
             }
@@ -208,7 +237,7 @@ public class SurveillanceUploadJob extends RunnableJob {
         return survManager;
     }
 
-    public void setSurvManager(SurveillanceManager survManager) {
+    public void setSurvManager(final SurveillanceManager survManager) {
         this.survManager = survManager;
     }
 
@@ -216,7 +245,7 @@ public class SurveillanceUploadJob extends RunnableJob {
         return survValidator;
     }
 
-    public void setSurvValidator(SurveillanceValidator survValidator) {
+    public void setSurvValidator(final SurveillanceValidator survValidator) {
         this.survValidator = survValidator;
     }
 
@@ -224,23 +253,15 @@ public class SurveillanceUploadJob extends RunnableJob {
         return uploadHandlerFactory;
     }
 
-    public void setUploadHandlerFactory(SurveillanceUploadHandlerFactory uploadHandlerFactory) {
+    public void setUploadHandlerFactory(final SurveillanceUploadHandlerFactory uploadHandlerFactory) {
         this.uploadHandlerFactory = uploadHandlerFactory;
-    }
-
-    public MessageSource getMessageSource() {
-        return messageSource;
-    }
-
-    public void setMessageSource(MessageSource messageSource) {
-        this.messageSource = messageSource;
     }
 
     public CertifiedProductManager getCpManager() {
         return cpManager;
     }
 
-    public void setCpManager(CertifiedProductManager cpManager) {
+    public void setCpManager(final CertifiedProductManager cpManager) {
         this.cpManager = cpManager;
     }
 }
