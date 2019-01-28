@@ -555,11 +555,11 @@ public class CertifiedProductController {
     }
 
     @ApiOperation(value = "Update an existing certified product.",
-            notes = "Updates the certified product after first validating the request. The logged in"
-                    + " user must have ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and have administrative "
-                    + " authority on the ACB that certified the product. If a different ACB is passed in"
-                    + " as part of the request, an ownership change will take place and the logged in "
-                    + " user must have ROLE_ADMIN or ROLE_ONC.")
+            notes = "Updates the certified product after first validating the request. If a different "
+                    + "ACB is passed in as part of the request, an ownership change will take place and "
+                    + "the logged in user must have ROLE_ADMIN or ROLE_ONC.  Security Restrictions: ROLE_ADMIN, "
+                    + "ROLE_ONC_ADMIN, or ROLE_ACB and have administrative authority on the ACB that certified "
+                    + "the product.")
     @RequestMapping(value = "/{certifiedProductId}", method = RequestMethod.PUT,
     produces = "application/json; charset=utf-8")
     public ResponseEntity<CertifiedProductSearchDetails> updateCertifiedProduct(
@@ -674,7 +674,8 @@ public class CertifiedProductController {
      */
     @ApiOperation(value = "List pending certified products.",
             notes = "Pending certified products are created via CSV file upload and are left in the 'pending' state "
-                    + " until validated and approved by an appropriate administrator.")
+                    + " until validated and approved.  Security Restrictions: ROLE_ADMIN, ROLE_ACB and have "
+                    + "administrative authority on the ACB that uploaded the product.")
     @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody PendingCertifiedProductResults getPendingCertifiedProducts()
             throws EntityRetrievalException, AccessDeniedException {
@@ -713,7 +714,9 @@ public class CertifiedProductController {
      * @throws AccessDeniedException if user does not have access to listing
      * @throws ObjectMissingValidationException if validation is missing
      */
-    @ApiOperation(value = "List a specific pending certified product.", notes = "")
+    @ApiOperation(value = "List a specific pending certified product.",
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ACB and administrative authority "
+                    + "on the ACB for each pending certified product is required.")
     @RequestMapping(value = "/pending/{pcpId}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody PendingCertifiedProductDetails getPendingCertifiedProductById(
@@ -732,8 +735,8 @@ public class CertifiedProductController {
     }
 
     @ApiOperation(value = "Reject a pending certified product.",
-            notes = "Essentially deletes a pending certified product. ROLE_ADMIN or ROLE_ACB "
-                    + " and administrative authority on the ACB is required.")
+            notes = "Essentially deletes a pending certified product. Security Restrictions: ROLE_ADMIN or have ROLE_ACB "
+                    + "and administrative authority on the ACB for each pending certified product is required.")
     @RequestMapping(value = "/pending/{pcpId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public @ResponseBody String rejectPendingCertifiedProduct(@PathVariable("pcpId") final Long pcpId)
@@ -795,11 +798,11 @@ public class CertifiedProductController {
     //should be re-evaluated
     @ApiOperation(value = "Confirm a pending certified product.",
             notes = "Creates a new certified product in the system based on all of the information "
-                    + " passed in on the request. This information may differ from what was previously "
-                    + " entered for the pending certified product during upload. It will first be validated "
-                    + " to check for errors, then a new certified product is created, and the old pending certified"
-                    + " product will be removed. ROLE_ADMIN or ROLE_ACB "
-                    + " and administrative authority on the ACB is required.")
+                    + "passed in on the request. This information may differ from what was previously "
+                    + "entered for the pending certified product during upload. It will first be validated "
+                    + "to check for errors, then a new certified product is created, and the old pending certified"
+                    + "product will be removed. Security Restrictions:  ROLE_ADMIN or have ROLE_ACB and "
+                    + "administrative authority on the ACB for each pending certified product is required.")
     @RequestMapping(value = "/pending/{pcpId}/confirm", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
     public synchronized ResponseEntity<CertifiedProductSearchDetails> confirmPendingCertifiedProduct(
@@ -853,8 +856,8 @@ public class CertifiedProductController {
      */
     @ApiOperation(value = "Upload a file with certified products",
             notes = "Accepts a CSV file with very specific fields to create pending certified products. "
-                    + " The user uploading the file must have ROLE_ADMIN, ROLE_ONC, or ROLE_ACB "
-                    + " and administrative authority on the ACB(s) specified in the file.")
+                    + "Security Restrictions: ROLE_ADMIN or user uploading the file must have ROLE_ACB "
+                    + "and administrative authority on the ACB(s) specified in the file.")
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public ResponseEntity<PendingCertifiedProductResults> upload(@RequestParam("file") final MultipartFile file)
             throws ValidationException, MaxUploadSizeExceededException {

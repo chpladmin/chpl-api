@@ -81,7 +81,8 @@ public class ApiKeyController {
         return "{\"keyRegistered\" : \"" + apiKey + "\"}";
     }
 
-    @ApiOperation(value = "Remove an API key.", notes = "This service is only available to CHPL users with ROLE_ADMIN.")
+    @ApiOperation(value = "Remove an API key.",
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC_ADMIN")
     @RequestMapping(value = "/{key}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public String revoke(@PathVariable("key") final String key,
@@ -103,7 +104,7 @@ public class ApiKeyController {
     }
 
     @ApiOperation(value = "List all API keys that have been created.",
-            notes = "This service is only available to CHPL users with ROLE_ADMIN or ROLE_ONC.")
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC_ADMIN, or ROLE_ONC_STAFF")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ApiKey> listKeys() {
 
@@ -124,7 +125,7 @@ public class ApiKeyController {
     }
 
     @ApiOperation(value = "View the calls made per API key.",
-            notes = "This service is only available to CHPL users with ROLE_ADMIN, or ROLE_ONC.")
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC_ADMIN, or ROLE_ONC_STAFF")
     @RequestMapping(value = "/activity", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ApiKeyActivity> listActivity(
             @RequestParam(value = "pageNumber", required = false) final Integer pageNumber,
@@ -159,7 +160,7 @@ public class ApiKeyController {
     }
 
     @ApiOperation(value = "View the calls made by a specific API key.",
-            notes = "This service is only available to CHPL users with ROLE_ADMIN, or ROLE_ONC.")
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC_ADMIN, or ROLE_ONC_STAFF")
     @RequestMapping(value = "/activity/{apiKey}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ApiKeyActivity> listActivityByKey(@PathVariable("apiKey") final String apiKey,

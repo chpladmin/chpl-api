@@ -31,7 +31,6 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.ChplPermission;
 import gov.healthit.chpl.domain.PermittedUser;
 import gov.healthit.chpl.domain.TestingLab;
-import gov.healthit.chpl.domain.UpdateUserAndAtlRequest;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -58,8 +57,8 @@ public class TestingLabController {
     @ApiOperation(value = "List all testing labs (ATLs).",
             notes = "Setting the 'editable' parameter to true will return all ATLs that the logged in user has edit "
                     + "permissions on.  Setting 'showDeleted' to true will include even those ATLs that have been "
-                    + "deleted. The logged in user must have ROLE_ADMIN to see deleted ATLs. The default behavior of "
-                    + "this service is to list all of the ATLs in the system that are not deleted.")
+                    + "deleted. Security Restrictions: ROLE_ADMIN or ROLE_ONC_ADMIN to see deleted ATLs (if 'showDeleted' "
+                    + "to true).")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody TestingLabResults getAtls(
             @RequestParam(required = false, defaultValue = "false") final boolean editable) {
@@ -80,8 +79,8 @@ public class TestingLabController {
     }
 
     @ApiOperation(value = "Get details about a specific testing lab (ATL).",
-            notes = "The logged in user must have ROLE_ADMIN or have either read or"
-                    + "administrative authority on the testing lab with the ID specified.")
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC_ADMIN or have either read or administrative authority "
+                    + "on the testing lab with the ID specified.")
     @RequestMapping(value = "/{atlId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody TestingLab getAtlById(@PathVariable("atlId") final Long atlId)
             throws EntityRetrievalException {
@@ -91,7 +90,7 @@ public class TestingLabController {
     }
 
     @ApiOperation(value = "Create a new testing lab.",
-            notes = "The logged in user must have ROLE_ADMIN to create a new testing lab.")
+            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC_ADMIN to create a new testing lab.")
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public TestingLab createAtl(@RequestBody final TestingLab atlInfo)
@@ -129,7 +128,7 @@ public class TestingLabController {
     }
 
     @ApiOperation(value = "Update an existing ATL.",
-            notes = "The logged in user must either have ROLE_ADMIN or have administrative "
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC_ADMIN, or ROLE_ATL and have administrative "
                     + "authority on the testing lab whose data is being updated.")
     @RequestMapping(value = "/{atlId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
@@ -190,10 +189,10 @@ public class TestingLabController {
     }
 
     @ApiOperation(value = "Remove user permissions from an ATL.",
-            notes = "The logged in user must have ROLE_ADMIN or ROLE_ATL and have administrative authority on the "
-                    + " specified ATL. The user specified in the request will have all authorities "
-                    + " removed that are associated with the specified ATL.")
-    @RequestMapping(value = "{atlId}/users/{userId}", method = RequestMethod.DELETE, 
+            notes = "The user specified in the request will have all authorities "
+                    + "removed that are associated with the specified ATL.  Security Restrictions: ROLE_ADMIN, "
+                    + "ROLE_ONC_ADMIN, or ROLE_ATL and have administrative authority on the specified ATL.")
+    @RequestMapping(value = "{atlId}/users/{userId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public String deleteUserFromAtl(@PathVariable final Long atlId, @PathVariable final Long userId)
             throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
@@ -218,8 +217,8 @@ public class TestingLabController {
     }
 
     @ApiOperation(value = "List users with permissions on a specified ATL.",
-            notes = "The logged in user must have ROLE_ADMIN or have administrative or read authority on the "
-                    + " specified ATL.")
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC_ADMIN, ROLE_ONC_STAFF, or have administrative "
+                    + "or read authority on the specified ATL.")
     @RequestMapping(value = "/{atlId}/users", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody PermittedUserResults getUsers(@PathVariable("atlId") final Long atlId)
