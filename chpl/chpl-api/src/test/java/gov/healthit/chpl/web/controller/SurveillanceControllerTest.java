@@ -2022,7 +2022,7 @@ public class SurveillanceControllerTest {
         SecurityContextHolder.getContext().setAuthentication(oncAndAcb);
         Long id = -3L;
         // verify id exists
-        PendingSurveillanceEntity survResult = survDao.getPendingSurveillanceById(-3L, false);
+        PendingSurveillanceEntity survResult = survDao.getPendingSurveillanceById(-3L);
         assertTrue(survResult.getId() == id);
 
         // delete pending surveillance
@@ -2031,7 +2031,7 @@ public class SurveillanceControllerTest {
         assertTrue(result.contains("true"));
 
         // verify newly deleted surveillances are deleted
-        survResult = survDao.getPendingSurveillanceById(-3L, false);
+        survResult = survDao.getPendingSurveillanceById(-3L);
         assertNull(survResult);
 
         // try to delete already deleted pending surveillance
