@@ -28,6 +28,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
@@ -93,7 +94,7 @@ public class SearchMenuManagerTest {
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         final int maxDuration = 100;
         long startTime = System.currentTimeMillis();
-        Set<KeyValueModelBody> results = searchMenuManager.getCertBodyNames();
+        Set<CertificationBody> results = searchMenuManager.getCertBodyNames();
         // certBodyNames should now be cached
         long endTime = System.currentTimeMillis();
         long timeLength = endTime - startTime;

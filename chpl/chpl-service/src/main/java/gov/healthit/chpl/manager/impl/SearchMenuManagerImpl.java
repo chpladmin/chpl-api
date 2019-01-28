@@ -42,6 +42,7 @@ import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.UcdProcessDAO;
 import gov.healthit.chpl.dao.UploadTemplateVersionDAO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
@@ -288,13 +289,13 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
     @Transactional
     @Override
     @Cacheable(CacheNames.CERT_BODY_NAMES)
-    public Set<KeyValueModelBody> getCertBodyNames() {
+    public Set<CertificationBody> getCertBodyNames() {
 
         List<CertificationBodyDTO> dtos = this.certificationBodyDAO.findAll();
-        Set<KeyValueModelBody> acbNames = new HashSet<KeyValueModelBody>();
+        Set<CertificationBody> acbNames = new HashSet<CertificationBody>();
 
         for (CertificationBodyDTO dto : dtos) {
-            acbNames.add(new KeyValueModelBody(dto.getId(), dto.getName(), dto.getRetirementDate()));
+            acbNames.add(new CertificationBody(dto));
         }
 
         return acbNames;

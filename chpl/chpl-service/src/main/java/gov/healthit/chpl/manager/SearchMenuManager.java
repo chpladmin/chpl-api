@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.dto.FuzzyChoicesDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
@@ -43,7 +44,7 @@ public interface SearchMenuManager {
 
     Set<KeyValueModelStatuses> getDeveloperNames();
 
-    Set<KeyValueModelBody> getCertBodyNames();
+    Set<CertificationBody> getCertBodyNames();
 
     Set<KeyValueModel> getAccessibilityStandards();
 

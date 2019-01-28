@@ -33,6 +33,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import gov.healthit.chpl.auth.domain.Authority;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.DescriptiveModel;
@@ -431,7 +432,7 @@ public class SearchViewController {
                 String[] certificationBodiesArr = certificationBodiesDelimitedTrimmed.split(",");
                 if (certificationBodiesArr.length > 0) {
                     Set<String> certBodies = new HashSet<String>();
-                    Set<KeyValueModelBody> availableCertBodies = searchMenuManager.getCertBodyNames();
+                    Set<CertificationBody> availableCertBodies = searchMenuManager.getCertBodyNames();
 
                     for (int i = 0; i < certificationBodiesArr.length; i++) {
                         String certBodyParam = certificationBodiesArr[i].trim();
@@ -602,7 +603,7 @@ public class SearchViewController {
         }
 
         if (searchRequest.getCertificationBodies() != null && searchRequest.getCertificationBodies().size() > 0) {
-            Set<KeyValueModelBody> availableCertBodies = searchMenuManager.getCertBodyNames();
+            Set<CertificationBody> availableCertBodies = searchMenuManager.getCertBodyNames();
             for (String certBody : searchRequest.getCertificationBodies()) {
                 validateCertificationBody(certBody, availableCertBodies);
             }
@@ -617,9 +618,9 @@ public class SearchViewController {
     }
 
     private void validateCertificationBody(final String certBodyParam,
-            final Set<KeyValueModelBody> availableCertBodies) throws InvalidArgumentsException {
+            final Set<CertificationBody> availableCertBodies) throws InvalidArgumentsException {
         boolean found = false;
-        for (KeyValueModelBody currAvailableCertBody : availableCertBodies) {
+        for (CertificationBody currAvailableCertBody : availableCertBodies) {
             if (currAvailableCertBody.getName().equalsIgnoreCase(certBodyParam)) {
                 found = true;
             }
@@ -896,7 +897,7 @@ public class SearchViewController {
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/certification_bodies", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
-    public @ResponseBody Set<KeyValueModelBody> getCertBodyNames() {
+    public @ResponseBody Set<CertificationBody> getCertBodyNames() {
         return searchMenuManager.getCertBodyNames();
     }
 
