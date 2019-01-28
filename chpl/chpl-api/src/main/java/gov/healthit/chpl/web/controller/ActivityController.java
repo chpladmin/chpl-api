@@ -215,7 +215,6 @@ public class ActivityController {
 
     @ApiOperation(value = "Get auditable data for testing labs.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "
-                    + "The default behavior is to show activity for non-deleted ATLs.  "
                     + "Security Restrictions: ROLE_ADMIN AND ROLE_ONC may see activity for all testing labs.  "
                     + "ROLE_ATL can see their own information.")
     @RequestMapping(value = "/atls", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
