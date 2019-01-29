@@ -67,6 +67,7 @@ import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertificationResultManager;
+import gov.healthit.chpl.permissions.Permissions;
 
 @Service
 public class CertificationResultManagerImpl implements CertificationResultManager {
@@ -100,6 +101,8 @@ public class CertificationResultManagerImpl implements CertificationResultManage
     private MacraMeasureDAO mmDao;
     @Autowired
     private FuzzyChoicesDAO fuzzyChoicesDao;
+    @Autowired
+    private Permissions permissions;
 
     @Override
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_RESULTS, "

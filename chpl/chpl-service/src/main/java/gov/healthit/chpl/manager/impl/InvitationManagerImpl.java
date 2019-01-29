@@ -42,6 +42,7 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.InvitationManager;
 import gov.healthit.chpl.manager.TestingLabManager;
+import gov.healthit.chpl.permissions.Permissions;
 import gov.healthit.chpl.util.Util;
 
 @Service
@@ -67,6 +68,9 @@ public class InvitationManagerImpl implements InvitationManager {
     private CertificationBodyManager acbManager;
     @Autowired
     private TestingLabManager atlManager;
+
+    @Autowired
+    private Permissions permissions;
 
     private static final Logger LOGGER = LogManager.getLogger(InvitationManagerImpl.class);
 

@@ -22,6 +22,7 @@ import gov.healthit.chpl.dto.CorrectiveActionPlanDocumentationDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CorrectiveActionPlanManager;
+import gov.healthit.chpl.permissions.Permissions;
 
 @Service
 public class CorrectiveActionPlanManagerImpl implements CorrectiveActionPlanManager {
@@ -34,6 +35,8 @@ public class CorrectiveActionPlanManagerImpl implements CorrectiveActionPlanMana
     CorrectiveActionPlanCertificationResultDAO capCertDao;
     @Autowired
     CorrectiveActionPlanDocumentationDAO capDocDao;
+    @Autowired
+    private Permissions permissions;
 
     @Override
     @Transactional

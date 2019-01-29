@@ -40,6 +40,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
+import gov.healthit.chpl.permissions.Permissions;
 
 /**
  * Business logic for accessing and updating ACBs.
@@ -59,6 +60,9 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     private MutableAclService mutableAclService;
     @Autowired
     private ActivityManager activityManager;
+
+    @Autowired
+    private Permissions permissions;
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "

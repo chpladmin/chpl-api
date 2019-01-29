@@ -162,6 +162,7 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
+import gov.healthit.chpl.permissions.Permissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Service("certifiedProductManager")
@@ -275,6 +276,9 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
     @Autowired
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
+
+    @Autowired
+    private Permissions permissions;
 
     private static final int PROD_CODE_LOC = 4;
     private static final int VER_CODE_LOC = 5;
