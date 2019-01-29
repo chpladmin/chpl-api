@@ -36,7 +36,7 @@ import gov.healthit.chpl.util.ValidationUtils;
  * Validate surveillance.
  */
 @Component("surveillanceValidator")
-public class SurveillanceValidator  {
+public class SurveillanceValidator {
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceValidator.class);
 
     private static final String CRITERION_REQUIREMENT_TYPE = "Certified Capability";
@@ -56,20 +56,22 @@ public class SurveillanceValidator  {
 
     /**
      * Validate a surveillance.
-     * @param surv the surveillance to validate
-     * @param checkAuthority indicates if the authority should be checked during the validation
+     * 
+     * @param surv
+     *            the surveillance to validate
+     * @param checkAuthority
+     *            indicates if the authority should be checked during the
+     *            validation
      */
     public void validate(final Surveillance surv, final Boolean checkAuthority) {
         CertifiedProductDetailsDTO cpDetails = null;
 
         // make sure chpl id is valid
         if (surv.getCertifiedProduct() == null) {
-            surv.getErrorMessages()
-            .add(msgUtil.getMessage("surveillance.nullCertifiedProduct"));
+            surv.getErrorMessages().add(msgUtil.getMessage("surveillance.nullCertifiedProduct"));
         } else if (surv.getCertifiedProduct().getId() == null
                 && surv.getCertifiedProduct().getChplProductNumber() == null) {
-            surv.getErrorMessages()
-            .add(msgUtil.getMessage("surveillance.nullCertifiedProductAndChplNumber"));
+            surv.getErrorMessages().add(msgUtil.getMessage("surveillance.nullCertifiedProductAndChplNumber"));
         } else if (surv.getCertifiedProduct().getId() == null || surv.getCertifiedProduct().getId().longValue() <= 0) {
             // the id is null, try to lookup by unique chpl number
             String chplId = surv.getCertifiedProduct().getChplProductNumber();
@@ -85,12 +87,11 @@ public class SurveillanceValidator  {
                                     chplId, chplProduct.getId()));
                         }
                     } else {
-                        surv.getErrorMessages()
-                        .add(msgUtil.getMessage("surveillance.productIdNotFound", chplId));
+                        surv.getErrorMessages().add(msgUtil.getMessage("surveillance.productIdNotFound", chplId));
                     }
                 } catch (final EntityRetrievalException ex) {
                     surv.getErrorMessages()
-                    .add(msgUtil.getMessage("surveillance.productDetailsRetrievalException", chplId));
+                            .add(msgUtil.getMessage("surveillance.productDetailsRetrievalException", chplId));
                 }
             } else {
                 try {
@@ -98,12 +99,11 @@ public class SurveillanceValidator  {
                     if (cpDetails != null) {
                         surv.setCertifiedProduct(new CertifiedProduct(cpDetails));
                     } else {
-                        surv.getErrorMessages()
-                        .add(msgUtil.getMessage("surveillance.productUniqueIdNotFound", chplId));
+                        surv.getErrorMessages().add(msgUtil.getMessage("surveillance.productUniqueIdNotFound", chplId));
                     }
                 } catch (final EntityRetrievalException ex) {
                     surv.getErrorMessages()
-                    .add(msgUtil.getMessage("surveillance.productDetailsRetrievalException", chplId));
+                            .add(msgUtil.getMessage("surveillance.productDetailsRetrievalException", chplId));
                 }
             }
         } else if (surv.getCertifiedProduct().getId() != null) {
@@ -111,8 +111,7 @@ public class SurveillanceValidator  {
                 cpDetails = cpDao.getDetailsById(surv.getCertifiedProduct().getId());
                 surv.setCertifiedProduct(new CertifiedProduct(cpDetails));
             } catch (final EntityRetrievalException ex) {
-                surv.getErrorMessages()
-                .add(msgUtil.getMessage("surveillance.detailsNotFoundForCertifiedProduct",
+                surv.getErrorMessages().add(msgUtil.getMessage("surveillance.detailsNotFoundForCertifiedProduct",
                         surv.getCertifiedProduct().getId()));
             }
         }
@@ -121,14 +120,13 @@ public class SurveillanceValidator  {
             SurveillanceEntity existing = survDao.getSurveillanceByCertifiedProductAndFriendlyId(
                     surv.getCertifiedProduct().getId(), surv.getSurveillanceIdToReplace());
             if (existing == null) {
-                surv.getErrorMessages()
-                .add(msgUtil.getMessage("surveillance.surveillanceIdNotFound", surv.getSurveillanceIdToReplace()));
+                surv.getErrorMessages().add(
+                        msgUtil.getMessage("surveillance.surveillanceIdNotFound", surv.getSurveillanceIdToReplace()));
             }
         }
 
         if (surv.getStartDate() == null) {
-            surv.getErrorMessages()
-            .add(msgUtil.getMessage("surveillance.startDateRequired"));
+            surv.getErrorMessages().add(msgUtil.getMessage("surveillance.startDateRequired"));
         }
 
         if (surv.getType() == null) {
@@ -136,16 +134,14 @@ public class SurveillanceValidator  {
         } else if (surv.getType().getId() == null || surv.getType().getId().longValue() <= 0) {
             SurveillanceType survType = survDao.findSurveillanceType(surv.getType().getName());
             if (survType == null) {
-                surv.getErrorMessages()
-                .add(msgUtil.getMessage("surveillance.typeMismatch", surv.getType().getName()));
+                surv.getErrorMessages().add(msgUtil.getMessage("surveillance.typeMismatch", surv.getType().getName()));
             } else {
                 surv.setType(survType);
             }
         } else {
             SurveillanceType survType = survDao.findSurveillanceType(surv.getType().getId());
             if (survType == null) {
-                surv.getErrorMessages()
-                .add(msgUtil.getMessage("surveillance.typeNotFound", surv.getType().getId()));
+                surv.getErrorMessages().add(msgUtil.getMessage("surveillance.typeNotFound", surv.getType().getId()));
             } else {
                 surv.setType(survType);
             }
@@ -156,14 +152,13 @@ public class SurveillanceValidator  {
         if (surv.getType() != null && surv.getType().getName() != null
                 && surv.getType().getName().equalsIgnoreCase("Randomized")) {
             if (surv.getRandomizedSitesUsed() == null || surv.getRandomizedSitesUsed().intValue() < 0) {
-                surv.getErrorMessages()
-                .add(msgUtil.getMessage("surveillance.randomizedNonzeroValue"));
+                surv.getErrorMessages().add(msgUtil.getMessage("surveillance.randomizedNonzeroValue"));
             }
         } else if (surv.getType() != null && surv.getType().getName() != null
                 && !surv.getType().getName().equalsIgnoreCase("Randomized")) {
             if (surv.getRandomizedSitesUsed() != null && surv.getRandomizedSitesUsed().intValue() >= 0) {
                 surv.getErrorMessages()
-                .add(msgUtil.getMessage("surveillance.randomizedSitesNotApplicable", surv.getType().getName()));
+                        .add(msgUtil.getMessage("surveillance.randomizedSitesNotApplicable", surv.getType().getName()));
             }
         }
 
@@ -191,31 +186,31 @@ public class SurveillanceValidator  {
 
     /**
      * Validate the requirements in a surveillance.
-     * @param surv the surveillance
-     * @param certResults certification results of the relevant certified product
+     * 
+     * @param surv
+     *            the surveillance
+     * @param certResults
+     *            certification results of the relevant certified product
      */
     public void validateSurveillanceRequirements(final Surveillance surv,
             final List<CertificationResultDetailsDTO> certResults) {
         if (surv.getRequirements() == null || surv.getRequirements().size() == 0) {
-            surv.getErrorMessages()
-            .add(msgUtil.getMessage("surveillance.requirementIsRequiredForProduct",
+            surv.getErrorMessages().add(msgUtil.getMessage("surveillance.requirementIsRequiredForProduct",
                     surv.getCertifiedProduct().getChplProductNumber()));
         } else {
             for (SurveillanceRequirement req : surv.getRequirements()) {
                 if (StringUtils.isEmpty(req.getRequirement())) {
-                    surv.getErrorMessages()
-                    .add(msgUtil.getMessage("surveillance.requirementIsRequired"));
+                    surv.getErrorMessages().add(msgUtil.getMessage("surveillance.requirementIsRequired"));
                 }
 
                 if (req.getType() == null) {
                     surv.getErrorMessages()
-                    .add(msgUtil.getMessage("surveillance.typeMissingForRequirement", req.getRequirement()));
+                            .add(msgUtil.getMessage("surveillance.typeMissingForRequirement", req.getRequirement()));
                 } else if (req.getType().getId() == null || req.getType().getId().longValue() <= 0) {
                     SurveillanceRequirementType reqType = survDao
                             .findSurveillanceRequirementType(req.getType().getName());
                     if (reqType == null) {
-                        surv.getErrorMessages()
-                        .add(msgUtil.getMessage("surveillance.typeNameMissingForRequirement",
+                        surv.getErrorMessages().add(msgUtil.getMessage("surveillance.typeNameMissingForRequirement",
                                 req.getType().getName(), req.getRequirement()));
                     } else {
                         req.setType(reqType);
@@ -237,14 +232,14 @@ public class SurveillanceValidator  {
                     if (req.getType().getName().equalsIgnoreCase(CRITERION_REQUIREMENT_TYPE)
                             && surv.getCertifiedProduct() != null && surv.getCertifiedProduct().getId() != null) {
 
-                        req.setRequirement(gov.healthit.chpl.util.Util
-                                .coerceToCriterionNumberFormat(req.getRequirement()));
+                        req.setRequirement(
+                                gov.healthit.chpl.util.Util.coerceToCriterionNumberFormat(req.getRequirement()));
                         CertificationCriterionDTO criterion = null;
                         // see if the nonconformity type is a criterion that the
                         // product has attested to
                         // List<CertificationResultDetailsDTO> certResults =
                         // certResultDetailsDao.getCertificationResultDetailsByCertifiedProductId(
-                        //surv.getCertifiedProduct().getId());
+                        // surv.getCertifiedProduct().getId());
                         if (certResults != null && certResults.size() > 0) {
                             for (CertificationResultDetailsDTO certResult : certResults) {
                                 if (!StringUtils.isEmpty(certResult.getNumber()) && certResult.getSuccess() != null
@@ -256,30 +251,30 @@ public class SurveillanceValidator  {
                         }
                         if (criterion == null) {
                             surv.getErrorMessages()
-                            .add(msgUtil.getMessage("surveillance.requirementInvalidForRequirementType",
-                                    req.getRequirement(), req.getType().getName()));
+                                    .add(msgUtil.getMessage("surveillance.requirementInvalidForRequirementType",
+                                            req.getRequirement(), req.getType().getName()));
                         }
                     } else if (req.getType().getName().equals(TRANSPARENCY_REQUIREMENT_TYPE)) {
                         // requirement has to be one of 170.523 (k)(1) or (k)(2)
-                        req.setRequirement(gov.healthit.chpl.util.Util
-                                .coerceToCriterionNumberFormat(req.getRequirement()));
+                        req.setRequirement(
+                                gov.healthit.chpl.util.Util.coerceToCriterionNumberFormat(req.getRequirement()));
                         if (!RequirementTypeEnum.K1.getName().equals(req.getRequirement())
                                 && !RequirementTypeEnum.K2.getName().equals(req.getRequirement())) {
                             surv.getErrorMessages()
-                            .add(msgUtil.getMessage("surveillance.requirementInvalidForTransparencyType",
-                                    req.getRequirement(), req.getType().getName(),
-                                    RequirementTypeEnum.K1.getName(), RequirementTypeEnum.K2.getName()));
+                                    .add(msgUtil.getMessage("surveillance.requirementInvalidForTransparencyType",
+                                            req.getRequirement(), req.getType().getName(),
+                                            RequirementTypeEnum.K1.getName(), RequirementTypeEnum.K2.getName()));
                         }
                     }
                 } else {
                     surv.getErrorMessages()
-                    .add(msgUtil.getMessage("surveillance.requirementMustHaveValue", req.getRequirement()));
+                            .add(msgUtil.getMessage("surveillance.requirementMustHaveValue", req.getRequirement()));
                 }
 
                 if (surv.getEndDate() != null) {
                     if (req.getResult() == null) {
                         surv.getErrorMessages()
-                        .add(msgUtil.getMessage("surveillance.resultNotFound", req.getRequirement()));
+                                .add(msgUtil.getMessage("surveillance.resultNotFound", req.getRequirement()));
                     }
                 }
 
@@ -295,8 +290,7 @@ public class SurveillanceValidator  {
                 } else if (req.getResult() != null) {
                     SurveillanceResultType resType = survDao.findSurveillanceResultType(req.getResult().getId());
                     if (resType == null) {
-                        surv.getErrorMessages()
-                        .add(msgUtil.getMessage("surveillance.resultWithIdNotFound",
+                        surv.getErrorMessages().add(msgUtil.getMessage("surveillance.resultWithIdNotFound",
                                 req.getResult().getId(), req.getRequirement()));
                     } else {
                         req.setResult(resType);
@@ -311,8 +305,11 @@ public class SurveillanceValidator  {
 
     /**
      * Validate nonconformities related to the surveillance.
-     * @param surv the surveillance
-     * @param certResults certification results of the relevant certified product
+     * 
+     * @param surv
+     *            the surveillance
+     * @param certResults
+     *            certification results of the relevant certified product
      */
     public void validateSurveillanceNonconformities(final Surveillance surv,
             final List<CertificationResultDetailsDTO> certResults) {
@@ -327,12 +324,12 @@ public class SurveillanceValidator  {
                 // there should be nonconformities
                 if (req.getNonconformities() == null || req.getNonconformities().size() == 0) {
                     surv.getErrorMessages()
-                    .add(msgUtil.getMessage("surveillance.nonConformityNotFound", req.getRequirement()));
+                            .add(msgUtil.getMessage("surveillance.nonConformityNotFound", req.getRequirement()));
                 } else {
                     for (SurveillanceNonconformity nc : req.getNonconformities()) {
                         if (StringUtils.isEmpty(nc.getNonconformityType())) {
-                            surv.getErrorMessages()
-                            .add(msgUtil.getMessage("surveillance.nonConformityTypeRequired", req.getRequirement()));
+                            surv.getErrorMessages().add(
+                                    msgUtil.getMessage("surveillance.nonConformityTypeRequired", req.getRequirement()));
                         } else {
                             // non-conformity type is not empty. is a
                             // certification criteria or just a string?
@@ -345,8 +342,7 @@ public class SurveillanceValidator  {
                                 if (certResults != null && certResults.size() > 0) {
                                     for (CertificationResultDetailsDTO certResult : certResults) {
                                         if (!StringUtils.isEmpty(certResult.getNumber())
-                                                && certResult.getSuccess() != null
-                                                && certResult.getSuccess()
+                                                && certResult.getSuccess() != null && certResult.getSuccess()
                                                 && certResult.getNumber().equals(nc.getNonconformityType())) {
                                             criterion = criterionDao.getByName(nc.getNonconformityType());
                                         }
@@ -364,26 +360,25 @@ public class SurveillanceValidator  {
                                         && !NonconformityType.L.getName().equals(nc.getNonconformityType())
                                         && !NonconformityType.OTHER.getName().equals(nc.getNonconformityType())) {
                                     surv.getErrorMessages()
-                                    .add(msgUtil.getMessage("surveillance.nonConformityTypeMatchException",
-                                            nc.getNonconformityType(), NonconformityType.K1.getName(),
-                                            NonconformityType.K2.getName(), NonconformityType.L.getName(),
-                                            NonconformityType.OTHER.getName()));
+                                            .add(msgUtil.getMessage("surveillance.nonConformityTypeMatchException",
+                                                    nc.getNonconformityType(), NonconformityType.K1.getName(),
+                                                    NonconformityType.K2.getName(), NonconformityType.L.getName(),
+                                                    NonconformityType.OTHER.getName()));
                                 }
                             }
                         }
 
                         if (nc.getStatus() == null) {
-                            surv.getErrorMessages()
-                            .add(msgUtil.getMessage("surveillance.nonConformityStatusNotFound",
+                            surv.getErrorMessages().add(msgUtil.getMessage("surveillance.nonConformityStatusNotFound",
                                     req.getRequirement(), nc.getNonconformityType()));
                         } else if (nc.getStatus().getId() == null || nc.getStatus().getId().longValue() <= 0) {
                             SurveillanceNonconformityStatus ncStatus = survDao
                                     .findSurveillanceNonconformityStatusType(nc.getStatus().getName());
                             if (ncStatus == null) {
                                 surv.getErrorMessages()
-                                .add(msgUtil.getMessage("surveillance.nonConformityStatusWithNameNotFound",
-                                        nc.getStatus().getName(), req.getRequirement(),
-                                        nc.getNonconformityType()));
+                                        .add(msgUtil.getMessage("surveillance.nonConformityStatusWithNameNotFound",
+                                                nc.getStatus().getName(), req.getRequirement(),
+                                                nc.getNonconformityType()));
                             } else {
                                 nc.setStatus(ncStatus);
                             }
@@ -392,9 +387,9 @@ public class SurveillanceValidator  {
                                     .findSurveillanceNonconformityStatusType(nc.getStatus().getId());
                             if (ncStatus == null) {
                                 surv.getErrorMessages()
-                                .add(msgUtil.getMessage("surveillance.nonConformityStatusWithIdNotFound",
-                                        nc.getStatus().getId(), req.getRequirement(),
-                                        nc.getNonconformityType()));
+                                        .add(msgUtil.getMessage("surveillance.nonConformityStatusWithIdNotFound",
+                                                nc.getStatus().getId(), req.getRequirement(),
+                                                nc.getNonconformityType()));
                             } else {
                                 nc.setStatus(ncStatus);
                             }
@@ -402,8 +397,7 @@ public class SurveillanceValidator  {
 
                         if (!StringUtils.isEmpty(nc.getCapApprovalDate())
                                 && StringUtils.isEmpty(nc.getCapMustCompleteDate())) {
-                            surv.getErrorMessages()
-                            .add(msgUtil.getMessage("surveillance.dateCAPMustCompleteIsRequired",
+                            surv.getErrorMessages().add(msgUtil.getMessage("surveillance.dateCAPMustCompleteIsRequired",
                                     req.getRequirement(), nc.getNonconformityType()));
                         }
 
@@ -413,21 +407,19 @@ public class SurveillanceValidator  {
                         }
 
                         if (!StringUtils.isEmpty(nc.getCapEndDate()) && StringUtils.isEmpty(nc.getCapApprovalDate())) {
-                            surv.getErrorMessages()
-                            .add(msgUtil.getMessage("surveillance.dateCAPApprovalIsRequired",
+                            surv.getErrorMessages().add(msgUtil.getMessage("surveillance.dateCAPApprovalIsRequired",
                                     req.getRequirement(), nc.getNonconformityType()));
                         }
 
                         if (!StringUtils.isEmpty(nc.getCapEndDate()) && !StringUtils.isEmpty(nc.getCapStartDate())
                                 && nc.getCapEndDate().compareTo(nc.getCapStartDate()) < 0) {
                             surv.getErrorMessages()
-                            .add(msgUtil.getMessage("surveillance.dateCAPEndNotGreaterThanDateCAPStart",
-                                    req.getRequirement(), nc.getNonconformityType()));
+                                    .add(msgUtil.getMessage("surveillance.dateCAPEndNotGreaterThanDateCAPStart",
+                                            req.getRequirement(), nc.getNonconformityType()));
                         }
 
                         if (nc.getDateOfDetermination() == null) {
-                            surv.getErrorMessages()
-                            .add(msgUtil.getMessage("surveillance.dateOfDeterminationIsRequired",
+                            surv.getErrorMessages().add(msgUtil.getMessage("surveillance.dateOfDeterminationIsRequired",
                                     req.getRequirement(), nc.getNonconformityType()));
                         }
 
@@ -448,39 +440,37 @@ public class SurveillanceValidator  {
                                 && surv.getType().getName().equalsIgnoreCase("Randomized")) {
                             if (nc.getSitesPassed() == null || nc.getSitesPassed().intValue() < 0) {
                                 surv.getErrorMessages()
-                                .add(msgUtil.getMessage("surveillance.numberOfSitesPassedIsRequired",
-                                        req.getRequirement(), nc.getNonconformityType()));
+                                        .add(msgUtil.getMessage("surveillance.numberOfSitesPassedIsRequired",
+                                                req.getRequirement(), nc.getNonconformityType()));
                             }
 
                             if (nc.getTotalSites() == null || nc.getTotalSites().intValue() < 0) {
                                 surv.getErrorMessages()
-                                .add(msgUtil.getMessage("surveillance.totalNumberOfSitesIsRequired",
-                                        req.getRequirement(), nc.getNonconformityType()));
+                                        .add(msgUtil.getMessage("surveillance.totalNumberOfSitesIsRequired",
+                                                req.getRequirement(), nc.getNonconformityType()));
                             }
 
                             if (nc.getSitesPassed() > nc.getTotalSites()) {
-                                surv.getErrorMessages()
-                                .add(msgUtil.getMessage("surveillance.tooManySitesPassed",
+                                surv.getErrorMessages().add(msgUtil.getMessage("surveillance.tooManySitesPassed",
                                         req.getRequirement(), nc.getNonconformityType()));
                             }
 
                             if (nc.getTotalSites() > surv.getRandomizedSitesUsed()) {
-                                surv.getErrorMessages()
-                                .add(msgUtil.getMessage("surveillance.tooManyTotalSites",
+                                surv.getErrorMessages().add(msgUtil.getMessage("surveillance.tooManyTotalSites",
                                         req.getRequirement(), nc.getNonconformityType()));
                             }
                         } else if (surv.getType() != null && surv.getType().getName() != null
                                 && !surv.getType().getName().equalsIgnoreCase("Randomized")) {
                             if (nc.getSitesPassed() != null && nc.getSitesPassed().intValue() >= 0) {
                                 surv.getErrorMessages()
-                                .add(msgUtil.getMessage("surveillance.numberOfSitesPassedNotApplicable",
-                                        req.getRequirement(), nc.getNonconformityType()));
+                                        .add(msgUtil.getMessage("surveillance.numberOfSitesPassedNotApplicable",
+                                                req.getRequirement(), nc.getNonconformityType()));
                             }
 
                             if (nc.getTotalSites() != null && nc.getTotalSites().intValue() >= 0) {
                                 surv.getErrorMessages()
-                                .add(msgUtil.getMessage("surveillance.totalNumberOfSitesNotApplicable",
-                                        req.getRequirement(), nc.getNonconformityType()));
+                                        .add(msgUtil.getMessage("surveillance.totalNumberOfSitesNotApplicable",
+                                                req.getRequirement(), nc.getNonconformityType()));
                             }
                         }
 
@@ -488,54 +478,54 @@ public class SurveillanceValidator  {
                                 && nc.getStatus().getName().equalsIgnoreCase("Closed")) {
                             if (StringUtils.isEmpty(nc.getResolution())) {
                                 surv.getErrorMessages()
-                                .add(msgUtil.getMessage("surveillance.resolutionDescriptionIsRequired",
-                                        req.getRequirement(), nc.getNonconformityType()));
+                                        .add(msgUtil.getMessage("surveillance.resolutionDescriptionIsRequired",
+                                                req.getRequirement(), nc.getNonconformityType()));
                             }
                         } else if (nc.getStatus() != null && nc.getStatus().getName() != null
                                 && nc.getStatus().getName().equalsIgnoreCase("Open")) {
                             if (!StringUtils.isEmpty(nc.getResolution())) {
                                 surv.getErrorMessages()
-                                .add(msgUtil.getMessage("surveillance.resolutionDescriptionNotApplicable",
-                                        req.getRequirement(), nc.getNonconformityType()));
+                                        .add(msgUtil.getMessage("surveillance.resolutionDescriptionNotApplicable",
+                                                req.getRequirement(), nc.getNonconformityType()));
                             }
                             requiresCloseDate = false;
                         }
 
                         addSurveillanceWarningIfNotValid(surv, nc.getDeveloperExplanation(),
                                 "Developer Explanation '" + nc.getDeveloperExplanation() + "'");
-                        addSurveillanceWarningIfNotValid(surv, nc.getFindings(),
-                                "Findings '" + nc.getFindings() + "'");
+                        addSurveillanceWarningIfNotValid(surv, nc.getFindings(), "Findings '" + nc.getFindings() + "'");
                         addSurveillanceWarningIfNotValid(surv, nc.getNonconformityType(),
                                 "Nonconformity Type '" + nc.getNonconformityType() + "'");
                         addSurveillanceWarningIfNotValid(surv, nc.getResolution(),
                                 "Resolution '" + nc.getResolution() + "'");
-                        addSurveillanceWarningIfNotValid(surv, nc.getSummary(),
-                                "Summary '" + nc.getSummary() + "'");
+                        addSurveillanceWarningIfNotValid(surv, nc.getSummary(), "Summary '" + nc.getSummary() + "'");
                     }
                 }
             } else {
                 if (req.getNonconformities() != null && req.getNonconformities().size() > 0) {
-                    surv.getErrorMessages()
-                    .add(msgUtil.getMessage("surveillance.requirementNonConformityMismatch", req.getRequirement()));
+                    surv.getErrorMessages().add(
+                            msgUtil.getMessage("surveillance.requirementNonConformityMismatch", req.getRequirement()));
                 }
             }
         }
         if (requiresCloseDate && surv.getEndDate() == null) {
-            surv.getErrorMessages()
-            .add(msgUtil.getMessage("surveillance.endDateRequiredNoOpenNonConformities"));
+            surv.getErrorMessages().add(msgUtil.getMessage("surveillance.endDateRequiredNoOpenNonConformities"));
         }
     }
 
     /**
      * Validate that user has correct authority on surveillance.
-     * @param surv the relevant surveillance
+     * 
+     * @param surv
+     *            the relevant surveillance
      */
     public void validateSurveillanceAuthority(final Surveillance surv) {
         // non-null surveillance must be ROLE_ADMIN, ROLE_ACB
         if (!StringUtils.isEmpty(surv.getAuthority())) {
             if (!surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ADMIN)
+                    && !surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ONC)
                     && !surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB)) {
-                surv.getErrorMessages().add(msgUtil.getMessage("surveillance.authorityRequired",
+                surv.getErrorMessages().add(msgUtil.getMessage("surveillance.authorityRequired", Authority.ROLE_ADMIN,
                         Authority.ROLE_ADMIN, Authority.ROLE_ACB));
             }
         }
