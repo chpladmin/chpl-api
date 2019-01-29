@@ -61,7 +61,8 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     private ActivityManager activityManager;
 
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
+            + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).CREATE)")
     @ClearAllCaches
     public CertificationBodyDTO create(final CertificationBodyDTO acb)
             throws UserRetrievalException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
@@ -100,7 +101,8 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     }
 
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or (hasRole('ROLE_ACB') and hasPermission(#acb, admin))")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
+            + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).UPDATE, #acb)")
     @ClearAllCaches
     public CertificationBodyDTO update(final CertificationBodyDTO acb) throws EntityRetrievalException,
             JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
@@ -116,7 +118,8 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     }
 
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
+            + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).RETIRE)")
     @CacheEvict(CacheNames.CERT_BODY_NAMES)
     public CertificationBodyDTO retire(final Long acbId) throws EntityRetrievalException, JsonProcessingException,
             EntityCreationException, UpdateCertifiedBodyException {
@@ -132,7 +135,8 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     }
 
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
+            + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).UNRETIRE)")
     @CacheEvict(CacheNames.CERT_BODY_NAMES)
     public CertificationBodyDTO unretire(final Long acbId) throws EntityRetrievalException, JsonProcessingException,
             EntityCreationException, UpdateCertifiedBodyException {
@@ -148,8 +152,8 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     }
 
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or "
-            + "(hasRole('ROLE_ACB') and (hasPermission(#acb, admin) or hasPermission(#acb, read)))")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
+            + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).USERS_BY_ACB, #acb)")
     public List<UserDTO> getAllUsersOnAcb(final CertificationBodyDTO acb) {
         ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
         MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -175,8 +179,8 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
         return users;
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or "
-            + "(hasRole('ROLE_ACB') and (hasPermission(#acb, read) or hasPermission(#acb, admin)))")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
+            + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).PERMISSIONS_BY_USER, #acb)")
     public List<Permission> getPermissionsForUser(final CertificationBodyDTO acb, final Sid recipient) {
         ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
         MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -193,8 +197,8 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     }
 
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_INVITED_USER_CREATOR') or "
-            + "(hasRole('ROLE_ACB') and hasPermission(#acb, admin))")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
+            + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).ADD_PERMISSION, #acb)")
     public void addPermission(final CertificationBodyDTO acb, final Long userId, final Permission permission)
             throws UserRetrievalException {
         MutableAcl acl;
@@ -222,7 +226,8 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     }
 
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or (hasRole('ROLE_ACB') and hasPermission(#acb, admin))")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
+            + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).DELETE_PERMISSION, #acb)")
     public void deletePermission(final CertificationBodyDTO acb, final Sid recipient, final Permission permission) {
         ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
         MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -247,7 +252,8 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     }
 
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or (hasRole('ROLE_ACB') and hasPermission(#acb, admin))")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
+            + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).DELETE_ALL_ACB_PERMISSIONS_FOR_USER, #acb)")
     public void deleteAllPermissionsOnAcb(final CertificationBodyDTO acb, final Sid recipient) {
         ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
         MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -271,7 +277,8 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
         LOGGER.debug("Deleted all acb " + acb + " ACL permissions for recipient " + recipient);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
+            + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).DELETE_ALL_PERMISSIONS_FOR_USER)")
     public void deletePermissionsForUser(final UserDTO userDto) throws UserRetrievalException {
         UserDTO foundUser = userDto;
         if (foundUser.getSubjectName() == null) {

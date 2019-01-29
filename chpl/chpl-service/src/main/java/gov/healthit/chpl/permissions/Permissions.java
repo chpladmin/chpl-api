@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CertificationResultsDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CorrectiveActionPlanDomainPermissions;
@@ -24,6 +25,7 @@ public class Permissions {
     public static final String INVITATION = "INVITATION";
     public static final String PENDING_CERTIFIED_PRODUCTS = "PENDING_CERTIFIED_PRODUCTS";
     public static final String SURVEILLANCE = "SURVEILLANCE";
+    public static final String CERTIFICATION_BODY = "CERTIFICATION_BODY";
 
     private Map<String, DomainPermissions> domainPermissions = new HashMap<String, DomainPermissions>();
 
@@ -34,7 +36,8 @@ public class Permissions {
             final CorrectiveActionPlanDomainPermissions correctiveActionPlanDomainPermissions,
             final InvitationDomainPermissions invitationDomainPermissions,
             final PendingCertifiedProductDomainPermissions pendingCertifiedProductDomainPermissions,
-            final SurveillanceDomainPermissions surveillanceDomainPermissions) {
+            final SurveillanceDomainPermissions surveillanceDomainPermissions,
+            final CertificationBodyDomainPermissions certificationBodyDomainPermissions) {
 
         domainPermissions.put(PENDING_SURVEILLANCE, pendingSurveillanceDomainPermissions);
         domainPermissions.put(CERTIFICATION_RESULTS, certificationResultsDomainPermissions);
@@ -43,6 +46,7 @@ public class Permissions {
         domainPermissions.put(INVITATION, invitationDomainPermissions);
         domainPermissions.put(PENDING_CERTIFIED_PRODUCTS, pendingCertifiedProductDomainPermissions);
         domainPermissions.put(SURVEILLANCE, surveillanceDomainPermissions);
+        domainPermissions.put(CERTIFICATION_BODY, certificationBodyDomainPermissions);
     }
 
     public boolean hasAccess(final String domain, final String action) {

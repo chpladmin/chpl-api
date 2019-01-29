@@ -39,7 +39,12 @@ public class Util {
     public static boolean isUserRoleAtlAdmin() {
         return doesUserHaveRole(Authority.ROLE_ATL);
     }
+    
+    public static boolean isUserRoleUserCreator() {
+        return doesUserHaveRole(Authority.ROLE_USER_CREATOR);
+    }
 
+    
     public static User getCurrentUser() {
 
         User user = null;
