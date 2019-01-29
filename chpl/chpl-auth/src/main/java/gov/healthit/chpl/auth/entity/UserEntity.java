@@ -76,11 +76,6 @@ public class UserEntity {
     @JoinColumn(name = "contact_id", unique = true, nullable = false)
     private UserContactEntity contact;
     
-    @ManyToMany
-    @JoinTable(name = "user_certification_body_map",
-            joinColumns = { @JoinColumn(name = "user_id") })
-    private Set<Certifi>
-
     /** Default constructor. */
     public UserEntity() {
         this.subjectName = null;
