@@ -526,7 +526,7 @@ public class SurveillanceValidator {
                     && !surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ONC)
                     && !surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB)) {
                 surv.getErrorMessages().add(msgUtil.getMessage("surveillance.authorityRequired", Authority.ROLE_ADMIN,
-                        Authority.ROLE_ADMIN, Authority.ROLE_ACB));
+                        Authority.ROLE_ONC, Authority.ROLE_ACB));
             }
         }
     }
