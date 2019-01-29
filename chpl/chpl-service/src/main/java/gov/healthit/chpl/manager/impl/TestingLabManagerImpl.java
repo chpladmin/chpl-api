@@ -29,6 +29,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
@@ -74,8 +75,8 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
         // Create the atl itself
         TestingLabDTO result = testingLabDAO.create(atl);
 
-        // Grant the current principal administrative permission to the ATL
-        addPermission(result, Util.getCurrentUser().getId(), BasePermission.ADMINISTRATION);
+        // Grant the admin user administrative permission to the ATL
+        addPermission(result, User.ADMIN_USER_ID, BasePermission.ADMINISTRATION);
 
         LOGGER.debug("Created testing lab " + result + " and granted admin permission to recipient "
                 + gov.healthit.chpl.auth.Util.getUsername());

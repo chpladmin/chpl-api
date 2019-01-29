@@ -30,6 +30,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ClearAllCaches;
@@ -84,8 +85,12 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
         // Create the ACB itself
         CertificationBodyDTO result = certificationBodyDAO.create(acb);
 
-        // Grant the current principal administrative permission to the ACB
-        addPermission(result, Util.getCurrentUser().getId(), BasePermission.ADMINISTRATION);
+        // Grant the admin user administrative permission to the ACB.
+        // I think this is required because the invitation manager impersonates the admin
+        // user when a new/unauthenticated user is signing up for this ACB and if the
+        // admin user doesn't have an ACE for this ACB no users can be added.
+        // See getInvitedUserAuthenticator in InvitationManagerImpl.
+        addPermission(result, User.ADMIN_USER_ID, BasePermission.ADMINISTRATION);
 
         LOGGER.debug("Created acb " + result + " and granted admin permission to recipient "
                 + gov.healthit.chpl.auth.Util.getUsername());

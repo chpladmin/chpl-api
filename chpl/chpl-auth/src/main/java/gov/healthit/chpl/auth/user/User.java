@@ -11,6 +11,9 @@ import gov.healthit.chpl.auth.permission.GrantedPermission;
 
 public interface User extends UserDetails , Authentication {
 
+    public static final Long ADMIN_USER_ID = -2L;
+    public static final Long SYSTEM_USER_ID = -3L;
+
     Long getId();
     String getSubjectName();
     void setSubjectName(String subject);
