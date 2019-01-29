@@ -9,6 +9,7 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.CHPLFileDAO;
 import gov.healthit.chpl.dto.CHPLFileDTO;
 import gov.healthit.chpl.dto.FileTypeDTO;
@@ -36,7 +37,7 @@ public class CHPLFileDAOImpl extends BaseDAOImpl implements CHPLFileDAO {
         if (dto.getLastModifiedUser() != null) {
             insert.setLastModifiedUser(dto.getLastModifiedUser());
         } else {
-            insert.setLastModifiedUser(getUserId(SYSTEM_USER_ID));
+            insert.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
         }
         insert.setFileType(type);
 
@@ -54,7 +55,7 @@ public class CHPLFileDAOImpl extends BaseDAOImpl implements CHPLFileDAO {
             if (Util.getCurrentUser() != null) {
                 toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
             } else {
-                toDelete.setLastModifiedUser(getUserId(SYSTEM_USER_ID));
+                toDelete.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
             }
             entityManager.merge(toDelete);
         }
