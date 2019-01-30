@@ -375,7 +375,7 @@ public class InvitationManagerImpl implements InvitationManager {
 
             @Override
             public Long getId() {
-                return id == null ? Long.valueOf(-2L) : id;
+                return id == null ? Long.valueOf(User.ADMIN_USER_ID) : id;
             }
 
             @Override

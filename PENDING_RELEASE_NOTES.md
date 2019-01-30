@@ -1,5 +1,5 @@
 
-## Version 20.2.0
+## Version 20.3.0
 _Date TBD_
 
 ### New Features
@@ -7,6 +7,9 @@ _Date TBD_
 * Removed references to ROLE_ONC_STAFF.
 * Allow ROLE_ADMIN and ROLE_ONC to manage pending surveillances
 * Add upload errors for test task id and participant id being too long
+* Allow ROLE_ADMIN and ROLE_ONC to manage pending surveillances
+
+### Bug Fixes
+* Allow newly added ACBs and ATLs to have users added to them.
 
 ---
-
