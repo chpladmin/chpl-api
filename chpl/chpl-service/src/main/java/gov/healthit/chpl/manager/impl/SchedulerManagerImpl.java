@@ -33,7 +33,7 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
-import gov.healthit.chpl.domain.schedule.ChplTrigger;
+import gov.healthit.chpl.domain.schedule.ChplRepeatableTrigger;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertificationBodyManager;
@@ -66,7 +66,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
 
     @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
-    public ChplTrigger createTrigger(final ChplTrigger trigger) throws SchedulerException, ValidationException {
+    public ChplRepeatableTrigger createTrigger(final ChplRepeatableTrigger trigger) throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
 
         TriggerKey triggerId = triggerKey(createTriggerName(trigger), createTriggerGroup(trigger.getJob()));
@@ -89,7 +89,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
                 throw new AccessDeniedException("Can not create this trigger");
             }
 
-            ChplTrigger newTrigger = new ChplTrigger((CronTrigger) scheduler.getTrigger(triggerId));
+            ChplRepeatableTrigger newTrigger = new ChplRepeatableTrigger((CronTrigger) scheduler.getTrigger(triggerId));
             return newTrigger;
         } else {
             throw new AccessDeniedException("Can not create this trigger");
@@ -129,8 +129,8 @@ public class SchedulerManagerImpl implements SchedulerManager {
 
     @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ONC', 'ROLE_ACB')")
-    public List<ChplTrigger> getAllTriggers() throws SchedulerException {
-        ArrayList<ChplTrigger> triggers = new ArrayList<ChplTrigger>();
+    public List<ChplRepeatableTrigger> getAllTriggers() throws SchedulerException {
+        ArrayList<ChplRepeatableTrigger> triggers = new ArrayList<ChplRepeatableTrigger>();
         Scheduler scheduler = getScheduler();
         for (String group : scheduler.getTriggerGroupNames()) {
             // enumerate each trigger in group
@@ -138,7 +138,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
                 if (scheduler.getTrigger(triggerKey).getJobKey().getGroup().equalsIgnoreCase("chplJobs")) {
                     if (doesUserHavePermissionToTrigger(scheduler.getTrigger(triggerKey))
                             && getScheduler().getTrigger(triggerKey) instanceof CronTrigger) {
-                        ChplTrigger newTrigger = getChplTrigger(triggerKey);
+                        ChplRepeatableTrigger newTrigger = getChplTrigger(triggerKey);
                         triggers.add(newTrigger);
                     }
                 }
@@ -149,7 +149,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
 
     @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
-    public ChplTrigger updateTrigger(final ChplTrigger trigger) throws SchedulerException, ValidationException {
+    public ChplRepeatableTrigger updateTrigger(final ChplRepeatableTrigger trigger) throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
         Trigger oldTrigger = scheduler.getTrigger(triggerKey(trigger.getName(), trigger.getGroup()));
         Trigger qzTrigger = null;
@@ -165,7 +165,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
             }
             scheduler.rescheduleJob(oldTrigger.getKey(), qzTrigger);
 
-            ChplTrigger newTrigger = getChplTrigger(qzTrigger.getKey());
+            ChplRepeatableTrigger newTrigger = getChplTrigger(qzTrigger.getKey());
             return newTrigger;
         } else {
             throw new AccessDeniedException("Can not update this trigger");
@@ -222,8 +222,8 @@ public class SchedulerManagerImpl implements SchedulerManager {
         return chplScheduler.getScheduler();
     }
 
-    private ChplTrigger getChplTrigger(final TriggerKey triggerKey) throws SchedulerException {
-        ChplTrigger chplTrigger = new ChplTrigger((CronTrigger) getScheduler().getTrigger(triggerKey));
+    private ChplRepeatableTrigger getChplTrigger(final TriggerKey triggerKey) throws SchedulerException {
+        ChplRepeatableTrigger chplTrigger = new ChplRepeatableTrigger((CronTrigger) getScheduler().getTrigger(triggerKey));
 
         JobDetail jobDetail = getScheduler().getJobDetail(getScheduler().getTrigger(triggerKey).getJobKey());
         ChplJob chplJob = new ChplJob(jobDetail);
@@ -289,7 +289,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
         return group;
     }
 
-    private String createTriggerName(final ChplTrigger trigger) {
+    private String createTriggerName(final ChplRepeatableTrigger trigger) {
         String name = trigger.getEmail().replaceAll("\\.", "_");
         if (!StringUtils.isEmpty(trigger.getAcb())) {
             name += trigger.getAcb();

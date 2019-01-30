@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
-import gov.healthit.chpl.domain.schedule.ChplTrigger;
+import gov.healthit.chpl.domain.schedule.ChplRepeatableTrigger;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.web.controller.results.ChplJobsResults;
@@ -45,8 +45,8 @@ public class SchedulerController {
     @ApiOperation(value = "Create a new trigger and return it")
     @RequestMapping(value = "/triggers", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody ScheduleTriggersResults createTrigger(@RequestBody(required = true)
-    final ChplTrigger trigger) throws SchedulerException, ValidationException {
-        ChplTrigger result = schedulerManager.createTrigger(trigger);
+    final ChplRepeatableTrigger trigger) throws SchedulerException, ValidationException {
+        ChplRepeatableTrigger result = schedulerManager.createTrigger(trigger);
         ScheduleTriggersResults results = new ScheduleTriggersResults();
         results.getResults().add(result);
         return results;
@@ -94,7 +94,7 @@ public class SchedulerController {
             + "that are applicable to the currently logged in user")
     @RequestMapping(value = "/triggers", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ScheduleTriggersResults getAllTriggers() throws SchedulerException {
-        List<ChplTrigger> triggers = schedulerManager.getAllTriggers();
+        List<ChplRepeatableTrigger> triggers = schedulerManager.getAllTriggers();
         ScheduleTriggersResults results = new ScheduleTriggersResults();
         results.setResults(triggers);
         return results;
@@ -109,9 +109,9 @@ public class SchedulerController {
      */
     @ApiOperation(value = "Update an existing trigger and return it")
     @RequestMapping(value = "/triggers", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
-    public @ResponseBody ScheduleTriggersResults updateTrigger(@RequestBody(required = true) final ChplTrigger trigger)
+    public @ResponseBody ScheduleTriggersResults updateTrigger(@RequestBody(required = true) final ChplRepeatableTrigger trigger)
             throws SchedulerException, ValidationException {
-        ChplTrigger result = schedulerManager.updateTrigger(trigger);
+        ChplRepeatableTrigger result = schedulerManager.updateTrigger(trigger);
         ScheduleTriggersResults results = new ScheduleTriggersResults();
         results.getResults().add(result);
         return results;
