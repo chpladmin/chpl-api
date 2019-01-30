@@ -11,7 +11,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -25,6 +24,7 @@ import org.quartz.Trigger;
 import org.quartz.TriggerKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -39,11 +39,11 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.permissions.Permissions;
-import gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions;
 import gov.healthit.chpl.scheduler.ChplSchedulerReference;
 
 /**
  * Implementation of Scheduler Manager.
+ * 
  * @author alarned
  *
  */
@@ -57,8 +57,8 @@ public class SchedulerManagerImpl implements SchedulerManager {
     private Permissions permissions;
 
     @Autowired
-    public SchedulerManagerImpl(final ChplSchedulerReference chplScheduler,
-            final CertificationBodyManager acbManager, final Permissions permissions) {
+    public SchedulerManagerImpl(final ChplSchedulerReference chplScheduler, final CertificationBodyManager acbManager,
+            final Permissions permissions) {
         this.chplScheduler = chplScheduler;
         this.acbManager = acbManager;
         this.permissions = permissions;
@@ -74,21 +74,12 @@ public class SchedulerManagerImpl implements SchedulerManager {
         if (doesUserHavePermissionToJob(scheduler.getJobDetail(jobId))) {
             Trigger qzTrigger = null;
             if (trigger.getJob().getJobDataMap().getBooleanValue("acbSpecific")) {
-                qzTrigger = newTrigger()
-                        .withIdentity(triggerId)
-                        .startNow()
-                        .forJob(jobId)
-                        .usingJobData("email", trigger.getEmail())
-                        .usingJobData("acb", trigger.getAcb())
-                        .withSchedule(cronSchedule(trigger.getCronSchedule()))
-                        .build();
+                qzTrigger = newTrigger().withIdentity(triggerId).startNow().forJob(jobId)
+                        .usingJobData("email", trigger.getEmail()).usingJobData("acb", trigger.getAcb())
+                        .withSchedule(cronSchedule(trigger.getCronSchedule())).build();
             } else {
-                qzTrigger = newTrigger()
-                        .withIdentity(triggerId)
-                        .startNow()
-                        .forJob(jobId)
-                        .usingJobData("email", trigger.getEmail())
-                        .withSchedule(cronSchedule(trigger.getCronSchedule()))
+                qzTrigger = newTrigger().withIdentity(triggerId).startNow().forJob(jobId)
+                        .usingJobData("email", trigger.getEmail()).withSchedule(cronSchedule(trigger.getCronSchedule()))
                         .build();
             }
 
@@ -115,8 +106,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
         SimpleTrigger trigger = (SimpleTrigger) newTrigger()
                 .withIdentity(createTriggerName(chplTrigger), createTriggerGroup(chplTrigger.getJob()))
                 .startAt(new Date(chplTrigger.getRunDateMillis()))
-                .forJob(chplTrigger.getJob().getName(), chplTrigger.getJob().getGroup())
-                .build();
+                .forJob(chplTrigger.getJob().getName(), chplTrigger.getJob().getGroup()).build();
 
         scheduler.scheduleJob(trigger);
 
@@ -142,7 +132,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
     public List<ChplTrigger> getAllTriggers() throws SchedulerException {
         ArrayList<ChplTrigger> triggers = new ArrayList<ChplTrigger>();
         Scheduler scheduler = getScheduler();
-        for (String group: scheduler.getTriggerGroupNames()) {
+        for (String group : scheduler.getTriggerGroupNames()) {
             // enumerate each trigger in group
             for (TriggerKey triggerKey : scheduler.getTriggerKeys(groupEquals(group))) {
                 if (scheduler.getTrigger(triggerKey).getJobKey().getGroup().equalsIgnoreCase("chplJobs")) {
@@ -165,21 +155,12 @@ public class SchedulerManagerImpl implements SchedulerManager {
         Trigger qzTrigger = null;
         if (doesUserHavePermissionToTrigger(oldTrigger)) {
             if (trigger.getJob().getJobDataMap().getBooleanValue("acbSpecific")) {
-                qzTrigger = newTrigger()
-                        .withIdentity(oldTrigger.getKey())
-                        .startNow()
-                        .forJob(oldTrigger.getJobKey())
-                        .usingJobData(oldTrigger.getJobDataMap())
-                        .usingJobData("acb", trigger.getAcb())
-                        .withSchedule(cronSchedule(trigger.getCronSchedule()))
-                        .build();
+                qzTrigger = newTrigger().withIdentity(oldTrigger.getKey()).startNow().forJob(oldTrigger.getJobKey())
+                        .usingJobData(oldTrigger.getJobDataMap()).usingJobData("acb", trigger.getAcb())
+                        .withSchedule(cronSchedule(trigger.getCronSchedule())).build();
             } else {
-                qzTrigger = newTrigger()
-                        .withIdentity(oldTrigger.getKey())
-                        .startNow()
-                        .forJob(oldTrigger.getJobKey())
-                        .usingJobData(oldTrigger.getJobDataMap())
-                        .withSchedule(cronSchedule(trigger.getCronSchedule()))
+                qzTrigger = newTrigger().withIdentity(oldTrigger.getKey()).startNow().forJob(oldTrigger.getJobKey())
+                        .usingJobData(oldTrigger.getJobDataMap()).withSchedule(cronSchedule(trigger.getCronSchedule()))
                         .build();
             }
             scheduler.rescheduleJob(oldTrigger.getKey(), qzTrigger);
@@ -191,37 +172,27 @@ public class SchedulerManagerImpl implements SchedulerManager {
         }
     }
 
-    /* (non-Javadoc)
-     * @see gov.healthit.chpl.manager.SchedulerManager#getAllJobs()
-     * As new jobs are added that have authorities other than ROLE_ADMIN, those authorities
+    /*
+     * (non-Javadoc)
+     * 
+     * @see gov.healthit.chpl.manager.SchedulerManager#getAllJobs() As new jobs
+     * are added that have authorities other than ROLE_ADMIN, those authorities
      * will need to be added to the list.
      */
     @Override
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
             + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).GET_ALL)")
-    //@PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
-    //        + "T(gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions).GET_ALL, filterObject)")
+    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
+            + "T(gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions).GET_ALL, filterObject)")
     public List<ChplJob> getAllJobs() throws SchedulerException {
         List<ChplJob> jobs = new ArrayList<ChplJob>();
         Scheduler scheduler = getScheduler();
 
-        //Get all the jobs (no security)
+        // Get all the jobs (no security - it is handled with @PostFilter)
         for (String group : scheduler.getJobGroupNames()) {
             for (JobKey jobKey : scheduler.getJobKeys(groupEquals(group))) {
                 JobDetail jobDetail = scheduler.getJobDetail(jobKey);
                 jobs.add(new ChplJob(jobDetail));
-            }
-        }
-
-        //TODO: There is a problem using @PostFilter - some sort of ACL issue
-        //Until that is figured out...
-        Iterator<ChplJob> iterator = jobs.iterator();
-        while (iterator.hasNext()) {
-            if (!permissions.hasAccess(
-                    Permissions.SCHEDULER,
-                    SchedulerDomainPermissions.GET_ALL,
-                    iterator.next())) {
-                iterator.remove();
             }
         }
 
@@ -235,13 +206,9 @@ public class SchedulerManagerImpl implements SchedulerManager {
         JobKey jobId = jobKey(job.getName(), job.getGroup());
         JobDetail oldJob = scheduler.getJobDetail(jobId);
         if (doesUserHavePermissionToJob(oldJob)) {
-            JobDetail newJob = newJob(oldJob.getJobClass())
-                    .withIdentity(jobId)
-                    .withDescription(oldJob.getDescription())
-                    .usingJobData(job.getJobDataMap())
-                    .storeDurably(oldJob.isDurable())
-                    .requestRecovery(oldJob.requestsRecovery())
-                    .build();
+            JobDetail newJob = newJob(oldJob.getJobClass()).withIdentity(jobId).withDescription(oldJob.getDescription())
+                    .usingJobData(job.getJobDataMap()).storeDurably(oldJob.isDurable())
+                    .requestRecovery(oldJob.requestsRecovery()).build();
 
             scheduler.addJob(newJob, true);
             ChplJob newChplJob = new ChplJob(newJob);
@@ -265,7 +232,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
     }
 
     private Boolean doesUserHavePermissionToJob(final JobDetail jobDetail) {
-        //Get the authorities from the job
+        // Get the authorities from the job
         if (jobDetail.getJobDataMap().containsKey("authorities")) {
             List<String> authorities = new ArrayList<String>(
                     Arrays.asList(jobDetail.getJobDataMap().get("authorities").toString().split(AUTHORITY_DELIMITER)));
@@ -278,11 +245,13 @@ public class SchedulerManagerImpl implements SchedulerManager {
                 }
             }
         } else {
-            //If no authorities are present, we assume there are no permissions on the job
-            //and everyone has access
+            // If no authorities are present, we assume there are no permissions
+            // on the job
+            // and everyone has access
             return true;
         }
-        //At this point we have fallen through all of the logic, and the user does not have the appropriate rights
+        // At this point we have fallen through all of the logic, and the user
+        // does not have the appropriate rights
         return false;
     }
 
@@ -321,7 +290,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
     }
 
     private String createTriggerName(final ChplTrigger trigger) {
-        String name = trigger.getEmail().replaceAll("\\.",  "_");
+        String name = trigger.getEmail().replaceAll("\\.", "_");
         if (!StringUtils.isEmpty(trigger.getAcb())) {
             name += trigger.getAcb();
         }
