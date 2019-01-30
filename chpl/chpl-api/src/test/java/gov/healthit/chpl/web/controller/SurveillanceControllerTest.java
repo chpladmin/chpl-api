@@ -127,14 +127,14 @@ public class SurveillanceControllerTest {
         oncAdmin.setId(3L);
         oncAdmin.setFriendlyName("User");
         oncAdmin.setSubjectName("oncAdminUser");
-        oncAdmin.getPermissions().add(new GrantedPermission(Authority.ROLE_ADMIN));
+        oncAdmin.getPermissions().add(new GrantedPermission(Authority.ROLE_ONC));
 
         oncAndAcb = new JWTAuthenticatedUser();
         oncAndAcb.setFullName("oncAndAcb");
         oncAndAcb.setId(1L);
         oncAndAcb.setFriendlyName("User");
         oncAndAcb.setSubjectName("oncAndAcbUser");
-        oncAndAcb.getPermissions().add(new GrantedPermission(Authority.ROLE_ADMIN));
+        oncAndAcb.getPermissions().add(new GrantedPermission(Authority.ROLE_ONC));
         oncAndAcb.getPermissions().add(new GrantedPermission(Authority.ROLE_ACB));
     }
 
@@ -1951,7 +1951,9 @@ public class SurveillanceControllerTest {
     @Test(expected = ObjectsMissingValidationException.class)
     public void test_deletePendingSurveillance_bulk_alreadyRejected()
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
-            InvalidArgumentsException, ValidationException, CertificationBodyAccessException, UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException, EntityNotFoundException, AccessDeniedException, ObjectsMissingValidationException {
+            InvalidArgumentsException, ValidationException, CertificationBodyAccessException,
+            UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException, EntityNotFoundException,
+            AccessDeniedException, ObjectsMissingValidationException {
         SecurityContextHolder.getContext().setAuthentication(oncAndAcb);
         List<Long> ids = new ArrayList<Long>(Arrays.asList(-3L, -4L, -5L, -6L, -7L, -8L, -9L, -20L, -21L, -22L));
         IdListContainer idList = new IdListContainer();
