@@ -1,6 +1,7 @@
 package gov.healthit.chpl.dto;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import gov.healthit.chpl.entity.CertificationBodyEntity;
 
@@ -17,6 +18,7 @@ public class CertificationBodyDTO implements Serializable {
     private String website;
     private AddressDTO address;
     private boolean retired;
+    private Date retirementDate;
 
     /**
      * No-args constructor.
@@ -24,16 +26,13 @@ public class CertificationBodyDTO implements Serializable {
     public CertificationBodyDTO() {
     }
 
-    /**
-     * Construct a DTO from an Entity.
-     * @param entity
-     */
-    public CertificationBodyDTO(CertificationBodyEntity entity) {
+    public CertificationBodyDTO(final CertificationBodyEntity entity) {
         this.id = entity.getId();
         this.acbCode = entity.getAcbCode();
         this.name = entity.getName();
         this.website = entity.getWebsite();
         this.retired = entity.getRetired();
+        this.retirementDate = entity.getRetirementDate();
         if (entity.getAddress() != null) {
             this.address = new AddressDTO(entity.getAddress());
         }
@@ -85,6 +84,20 @@ public class CertificationBodyDTO implements Serializable {
 
     public void setRetired(final boolean retired) {
         this.retired = retired;
+    }
+
+    public Date getRetirementDate() {
+        return retirementDate;
+    }
+
+    public void setRetirementDate(final Date retirementDate) {
+        this.retirementDate = retirementDate;
+    }
+
+    @Override
+    public String toString() {
+        return "CertificationBodyDTO [id=" + id + ", acbCode=" + acbCode + ", name=" + name + ", website=" + website
+                + ", address=" + address + ", retired=" + retired + ", retirementDate=" + retirementDate + "]";
     }
 
 }
