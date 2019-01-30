@@ -33,7 +33,6 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
-import gov.healthit.chpl.domain.KeyValueModelBody;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.Statuses;
 import gov.healthit.chpl.domain.TestFunctionality;
