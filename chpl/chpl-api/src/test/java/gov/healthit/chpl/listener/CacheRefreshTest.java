@@ -10,6 +10,7 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -266,6 +267,8 @@ public class CacheRefreshTest extends TestCase {
      * @throws EntityCreationException
      * @throws JsonProcessingException
      * @throws InvalidArgumentsException
+     * @throws ValidationException
+     * @throws SchedulerException
      */
     @Test
     @Transactional
@@ -273,7 +276,7 @@ public class CacheRefreshTest extends TestCase {
     @Ignore
     public void testUpdateAcbNameRefreshesCache() throws
     UpdateCertifiedBodyException, EntityRetrievalException, EntityCreationException,
-    JsonProcessingException, InvalidArgumentsException {
+    JsonProcessingException, InvalidArgumentsException, SchedulerException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         List<CertifiedProductFlatSearchResult> listingsFromAcb =
