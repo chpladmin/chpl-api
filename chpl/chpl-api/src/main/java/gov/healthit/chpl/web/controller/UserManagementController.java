@@ -383,7 +383,7 @@ public class UserManagementController {
 
     @ApiOperation(value = "Delete a user.",
             notes = "Deletes a user account and all associated authorities on ACBs and ATLs. "
-                    + "Security Restrictions: ROLE_ADMIN or ROLE_ONC_ADMIN")
+                    + "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/{userId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public String deleteUser(@PathVariable("userId") final Long userId)

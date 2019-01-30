@@ -74,7 +74,7 @@ public class CertificationBodyController {
     }
 
     @ApiOperation(value = "Get details about a specific certification body (ACB).",
-            notes = "Security Restriction:  ROLE_ADMIN, ROLE_ONC, or ROLE_ACB for the ACB with the provided ID")
+            notes = "")
     @RequestMapping(value = "/{acbId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody CertificationBody getAcbById(@PathVariable("acbId") final Long acbId)
             throws EntityRetrievalException {

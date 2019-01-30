@@ -36,7 +36,7 @@ public class AnnouncementController {
     private AnnouncementManager announcementManager;
 
     @ApiOperation(value = "Get all announcements.",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC can retrieve future scheduled announcements "
+            notes = "Security Restrictions: ROLE_ADMIN and ROLE_ONC can retrieve future scheduled announcements "
                     + "and private announcements.  ROLE_ACB, ROLE_ATL, and ROLE_CMS_STAFF can retrieve private "
                     + "announcements.  All users can retrieve public announcements.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
@@ -58,7 +58,7 @@ public class AnnouncementController {
     }
 
     @ApiOperation(value = "Get a specific announcement.",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC can retrieve future scheduled "
+            notes = "Security Restrictions: ROLE_ADMIN and ROLE_ONC can retrieve future scheduled "
                     + "announcements and private announcements.  ROLE_ACB, ROLE_ATL, and ROLE_CMS_STAFF "
                     + "can retrieve private announcements.  All users can retrieve public announcements.")
     @RequestMapping(value = "/{announcementId}", method = RequestMethod.GET,
@@ -106,7 +106,7 @@ public class AnnouncementController {
     }
 
     @ApiOperation(value = "Change an existing announcement.",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC")
+            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/{announcementId}", method = RequestMethod.PUT,
     consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
@@ -132,7 +132,7 @@ public class AnnouncementController {
     }
 
     @ApiOperation(value = "Delete an existing announcement.",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC")
+            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/{announcementId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public String deleteAnnouncement(@PathVariable("announcementId") final Long announcementId)
