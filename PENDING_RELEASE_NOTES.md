@@ -8,6 +8,7 @@ _Date TBD_
 * Allow ROLE_ADMIN and ROLE_ONC to manage pending surveillances
 * Add upload errors for test task id and participant id being too long
 * Allow ROLE_ADMIN and ROLE_ONC to manage pending surveillances
+* Allow ROLE_ADMIN to run Quartz system jobs
 
 ### Bug Fixes
 * Allow newly added ACBs and ATLs to have users added to them.
