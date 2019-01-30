@@ -18,7 +18,6 @@ import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.model.AccessControlEntry;
 import org.springframework.security.acls.model.MutableAcl;
 import org.springframework.security.acls.model.MutableAclService;
-import org.springframework.security.acls.model.NotFoundException;
 import org.springframework.security.acls.model.ObjectIdentity;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.acls.model.Sid;
@@ -200,34 +199,42 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
         return permissions;
     }
 
-    @Transactional
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
-            + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).ADD_PERMISSION, #acb)")
-    public void addPermission(final CertificationBodyDTO acb, final Long userId, final Permission permission)
-            throws UserRetrievalException {
-        MutableAcl acl;
-        ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
-
-        try {
-            acl = (MutableAcl) mutableAclService.readAclById(oid);
-        } catch (final NotFoundException nfe) {
-            acl = mutableAclService.createAcl(oid);
-        }
-
-        UserDTO user = userDAO.getById(userId);
-        if (user == null || user.getSubjectName() == null) {
-            throw new UserRetrievalException("Could not find user with id " + userId);
-        }
-
-        Sid recipient = new PrincipalSid(user.getSubjectName());
-        if (permissionExists(acl, recipient, permission)) {
-            LOGGER.debug("User " + recipient + " already has permission on the ACB " + acb.getName());
-        } else {
-            acl.insertAce(acl.getEntries().size(), permission, recipient, true);
-            mutableAclService.updateAcl(acl);
-            LOGGER.debug("Added permission " + permission + " for Sid " + recipient + " acb " + acb);
-        }
-    }
+    // @Transactional
+    // @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY,
+    // "
+    // +
+    // "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).ADD_PERMISSION,
+    // #acb)")
+    // public void addPermission(final CertificationBodyDTO acb, final Long
+    // userId, final Permission permission)
+    // throws UserRetrievalException {
+    // MutableAcl acl;
+    // ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class,
+    // acb.getId());
+    //
+    // try {
+    // acl = (MutableAcl) mutableAclService.readAclById(oid);
+    // } catch (final NotFoundException nfe) {
+    // acl = mutableAclService.createAcl(oid);
+    // }
+    //
+    // UserDTO user = userDAO.getById(userId);
+    // if (user == null || user.getSubjectName() == null) {
+    // throw new UserRetrievalException("Could not find user with id " +
+    // userId);
+    // }
+    //
+    // Sid recipient = new PrincipalSid(user.getSubjectName());
+    // if (permissionExists(acl, recipient, permission)) {
+    // LOGGER.debug("User " + recipient + " already has permission on the ACB "
+    // + acb.getName());
+    // } else {
+    // acl.insertAce(acl.getEntries().size(), permission, recipient, true);
+    // mutableAclService.updateAcl(acl);
+    // LOGGER.debug("Added permission " + permission + " for Sid " + recipient +
+    // " acb " + acb);
+    // }
+    // }
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
