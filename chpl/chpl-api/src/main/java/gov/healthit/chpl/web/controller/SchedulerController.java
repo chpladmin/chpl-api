@@ -41,7 +41,7 @@ public class SchedulerController {
      * @throws ValidationException if job values aren't correct
      */
     @ApiOperation(value = "Create a new trigger and return it",
-            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and have administrative authority on the specified ACB.")
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB.")
     @RequestMapping(value = "/triggers", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody ScheduleTriggersResults createTrigger(@RequestBody(required = true)
     final ChplTrigger trigger) throws SchedulerException, ValidationException {
@@ -125,7 +125,7 @@ public class SchedulerController {
      * @throws SchedulerException if scheduler has issues
      */
     @ApiOperation(value = "Update a given job",
-            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and have administrative authority on the specified ACB.")
+            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC.")
     @RequestMapping(value = "/jobs", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public @ResponseBody ChplJobsResults updateJob(@RequestBody(required = true)
     final ChplJob job) throws SchedulerException {

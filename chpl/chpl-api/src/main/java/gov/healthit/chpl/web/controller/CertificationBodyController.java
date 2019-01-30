@@ -206,7 +206,7 @@ public class CertificationBodyController {
     }
 
     @ApiOperation(value = "List users with permissions on a specified ACB.",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF or have administrative "
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or have administrative "
                     + "or read authority on the specified ACB")
     @RequestMapping(value = "/{acbId}/users", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")

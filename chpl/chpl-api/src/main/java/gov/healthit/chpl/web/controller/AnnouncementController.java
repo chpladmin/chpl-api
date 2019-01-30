@@ -59,7 +59,7 @@ public class AnnouncementController {
 
     @ApiOperation(value = "Get a specific announcement.",
             notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC can retrieve future scheduled "
-                    + "announcements and private announcements.  ROLE_ONC_STAFF, ROLE_ACB, ROLE_ATL, and ROLE_CMS_STAFF "
+                    + "announcements and private announcements.  ROLE_ACB, ROLE_ATL, and ROLE_CMS_STAFF "
                     + "can retrieve private announcements.  All users can retrieve public announcements.")
     @RequestMapping(value = "/{announcementId}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
@@ -71,7 +71,7 @@ public class AnnouncementController {
     }
 
     @ApiOperation(value = "Create a new announcement.",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ONC_STAFF")
+            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public Announcement create(@RequestBody final Announcement announcementInfo) throws InvalidArgumentsException,

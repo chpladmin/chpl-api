@@ -420,8 +420,8 @@ public class UserManagementController {
     }
 
     @ApiOperation(value = "Give additional roles to a user.",
-            notes = "Users may be given ROLE_ADMIN, ROLE_ONC, ROLE_ACB, "
-                    + "ROLE_ATL, or ROLE_ONC_STAFF roles within the system.  Security Restrictions: ROLE_ADMIN or "
+            notes = "Users may be given ROLE_ADMIN, ROLE_ONC, ROLE_ACB, or "
+                    + "ROLE_ATL roles within the system.  Security Restrictions: ROLE_ADMIN or "
                     + "ROLE_ONC.")
     @RequestMapping(value = "/{userName}/roles/{roleName}", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
@@ -468,9 +468,9 @@ public class UserManagementController {
     }
 
     @ApiOperation(value = "Remove roles previously granted to a user.",
-            notes = "Users may be given ROLE_ADMIN, ROLE_ACB, "
-                    + "ROLE_ATL, or ROLE_ONC_STAFF roles within the system.  Security Restrictions: ROLE_ADMIN and "
-                    + "ONC_ROLE_ADMIN.")
+            notes = "Users may be given ROLE_ADMIN, ROLE_ACB, or "
+                    + "ROLE_ATL roles within the system.  Security Restrictions: ROLE_ADMIN and "
+                    + "ROLE_ONC.")
     @RequestMapping(value = "/{userName}/roles/{roleName}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public String revokeUserRole(@PathVariable("userName") final String userName,
@@ -532,7 +532,7 @@ public class UserManagementController {
 
     @ApiOperation(value = "View users of the system.",
             notes = "Security Restrictions: ROLE_ADMIN and ROLE_ONC can see all users.  ROLE_ACB, ROLE_ATL, "
-                    + "ROLE_CMS_STAFF, and ROLE_ONC_STAFF can see their self.")
+                    + "and ROLE_CMS_STAFF can see their self.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @PreAuthorize("isAuthenticated()")
     public @ResponseBody UserListJSONObject getUsers() {

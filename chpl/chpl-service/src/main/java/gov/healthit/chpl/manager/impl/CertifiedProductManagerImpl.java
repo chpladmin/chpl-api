@@ -1168,8 +1168,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                     }
                 } else if (!Util.isUserRoleAdmin() && !Util.isUserRoleOnc()) {
                     LOGGER.error("User " + Util.getUsername()
-                            + " does not have ROLE_ADMIN and cannot change the status of developer for certified product with id "
-                            + listingId);
+                            + " does not have ROLE_ADMIN or ROLE_ONC and cannot change the status of developer for certified "
+                            + "product with id " + listingId);
                     throw new AccessDeniedException(
                             "User does not have admin permission to change " + cpDeveloper.getName() + " status.");
                 }

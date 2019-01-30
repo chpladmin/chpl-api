@@ -56,8 +56,8 @@ public class TestingLabController {
 
     @ApiOperation(value = "List all testing labs (ATLs).",
             notes = "Setting the 'editable' parameter to true will return all ATLs that the logged in user has edit "
-                    + "permissions on.  Security Restrictions: ROLE_ADMIN or ROLE_ONC can see all ATLs.  ROLE_ATL "
-                    + "can see their own ATL.")
+                    + "permissions on.  Security Restrictions: When 'editable' is 'true' ROLE_ADMIN or ROLE_ONC can see all ATLs.  ROLE_ATL "
+                    + "can see their own ATL.  When 'editable' is 'false' all users can see all ATLs.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody TestingLabResults getAtls(
             @RequestParam(required = false, defaultValue = "false") final boolean editable) {
@@ -78,8 +78,7 @@ public class TestingLabController {
     }
 
     @ApiOperation(value = "Get details about a specific testing lab (ATL).",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC or have either read or administrative authority "
-                    + "on the testing lab with the ID specified.")
+            notes = "")
     @RequestMapping(value = "/{atlId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody TestingLab getAtlById(@PathVariable("atlId") final Long atlId)
             throws EntityRetrievalException {
@@ -216,7 +215,7 @@ public class TestingLabController {
     }
 
     @ApiOperation(value = "List users with permissions on a specified ATL.",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or have administrative "
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or have administrative "
                     + "or read authority on the specified ATL.")
     @RequestMapping(value = "/{atlId}/users", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")

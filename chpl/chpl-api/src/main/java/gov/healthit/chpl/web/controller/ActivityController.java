@@ -578,7 +578,7 @@ public class ActivityController {
 
     @ApiOperation(value = "Get auditable data about all CHPL user accounts",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.  "
-                    + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF (of ROLE_ONC_STAFF), ROLE_CMS_STAFF "
+                    + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_CMS_STAFF "
                     + "(of ROLE_CMS_STAFF Users), ROLE_ACB (of their own), and ROLE_ATL (of their own).")
     @RequestMapping(value = "/users", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @PreAuthorize("isAuthenticated()")
@@ -596,7 +596,7 @@ public class ActivityController {
 
     @ApiOperation(value = "Get auditable data about a specific CHPL user account.",
             notes = "A start and end date may optionally be provided to limit activity results.  "
-                    + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF (of ROLE_ONC_STAFF), ROLE_CMS_STAFF "
+                    + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_CMS_STAFF "
                     + "(of ROLE_CMS_STAFF Users), ROLE_ACB (of their own), and ROLE_ATL (of their own).")
     @RequestMapping(value = "/users/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForUsers(@PathVariable("id") final Long id,
@@ -681,7 +681,7 @@ public class ActivityController {
 
     @ApiOperation(value = "Track the actions of all users in the system",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
-                    + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ONC_STAFF.")
+                    + "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/user_activities", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<UserActivity> activityByUser(@RequestParam final Long start,
@@ -695,7 +695,7 @@ public class ActivityController {
 
     @ApiOperation(value = "Track the actions of a specific user in the system",
             notes = "A start and end date may optionally be provided to limit activity results."
-                    + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ONC_STAFF.")
+                    + "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/user_activities/{id}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityByUser(@PathVariable("id") final Long id,

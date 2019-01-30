@@ -11,8 +11,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -75,11 +73,6 @@ public class UserEntity {
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "contact_id", unique = true, nullable = false)
     private UserContactEntity contact;
-    
-    @ManyToMany
-    @JoinTable(name = "user_certification_body_map",
-            joinColumns = { @JoinColumn(name = "user_id") })
-    private Set<Certifi>
 
     /** Default constructor. */
     public UserEntity() {

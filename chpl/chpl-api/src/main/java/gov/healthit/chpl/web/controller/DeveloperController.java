@@ -53,7 +53,7 @@ public class DeveloperController {
     private DeveloperManager developerManager;
 
     @ApiOperation(value = "List all developers in the system.",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, and ROLE_ACB can see deleted "
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, and ROLE_ACB can see deleted "
                     + "developers.  Everyone else can only see active developers.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody DeveloperResults getDevelopers(
