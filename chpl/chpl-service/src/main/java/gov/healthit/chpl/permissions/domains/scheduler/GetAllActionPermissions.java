@@ -30,7 +30,7 @@ public class GetAllActionPermissions extends ActionPermissions {
                 return false;
             } else if (Util.isUserRoleAcbAdmin() || Util.isUserRoleOnc()) {
                 ChplJob job = (ChplJob) obj;
-                return job.getGroup().equals("chplJobs") && doesUserHavePermissionToJob(job);
+                return doesUserHavePermissionToJob(job);
             } else {
                 return Util.isUserRoleAdmin();
             }
@@ -41,10 +41,11 @@ public class GetAllActionPermissions extends ActionPermissions {
     }
 
     private Boolean doesUserHavePermissionToJob(final ChplJob job) {
-        //Get the authorities from the job
+        // Get the authorities from the job
         if (job.getGroup() != null && job.getGroup().equals("chplJobs")) {
             if (job.getJobDataMap().containsKey("authorities")) {
-                List<String> authorities = Arrays.asList(job.getJobDataMap().get("authorities").toString().split(AUTHORITY_DELIMITER));
+                List<String> authorities = Arrays
+                        .asList(job.getJobDataMap().get("authorities").toString().split(AUTHORITY_DELIMITER));
                 if (authorities.size() > 0) {
                     Set<GrantedPermission> userRoles = Util.getCurrentUser().getPermissions();
                     for (GrantedPermission permission : userRoles) {
@@ -55,13 +56,15 @@ public class GetAllActionPermissions extends ActionPermissions {
                         }
                     }
                 } else {
-                    //If no authorities are present, we assume there are no permissions on the job
-                    //and everyone has access
+                    // If no authorities are present, we assume there are no
+                    // permissions on the job
+                    // and everyone has access
                     return true;
                 }
             }
         }
-        //At this point we have fallen through all of the logic, and the user does not have the appropriate rights
+        // At this point we have fallen through all of the logic, and the user
+        // does not have the appropriate rights
         return false;
     }
 
