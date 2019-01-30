@@ -31,10 +31,10 @@ public interface CertificationBodyManager {
             throws UserRetrievalException, EntityCreationException, EntityRetrievalException, JsonProcessingException;
 
     CertificationBodyDTO update(CertificationBodyDTO acb) throws EntityRetrievalException,
-            JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException;
+    JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException;
 
-    CertificationBodyDTO retire(Long acbId) throws EntityRetrievalException,
-        JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException, SchedulerException, ValidationException;
+    CertificationBodyDTO retire(CertificationBodyDTO acb) throws EntityRetrievalException, JsonProcessingException,
+    EntityCreationException, SchedulerException, UpdateCertifiedBodyException, ValidationException;
 
     CertificationBodyDTO unretire(Long acbId) throws EntityRetrievalException,
     JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException;

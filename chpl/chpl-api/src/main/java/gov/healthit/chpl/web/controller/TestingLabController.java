@@ -150,7 +150,10 @@ public class TestingLabController {
         TestingLabDTO existingAtl = atlManager.getIfPermissionById(updatedAtl.getId());
         if (existingAtl.isRetired() != updatedAtl.isRetired() && updatedAtl.isRetired()) {
             //we are retiring this ATL and no other changes can be made
-            atlManager.retire(updatedAtl.getId());
+            TestingLabDTO toRetire = new TestingLabDTO();
+            toRetire.setRetirementDate(updatedAtl.getRetirementDate());
+            toRetire.setId(updatedAtl.getId());
+            atlManager.retire(toRetire);
         } else {
             if (existingAtl.isRetired() != updatedAtl.isRetired() && !updatedAtl.isRetired()) {
                 //unretire the ATL
@@ -159,7 +162,8 @@ public class TestingLabController {
             TestingLabDTO toUpdate = new TestingLabDTO();
             toUpdate.setId(updatedAtl.getId());
             toUpdate.setTestingLabCode(updatedAtl.getAtlCode());
-            toUpdate.setRetired(updatedAtl.isRetired());
+            toUpdate.setRetired(false);
+            toUpdate.setRetirementDate(null);
             toUpdate.setAccredidationNumber(updatedAtl.getAccredidationNumber());
             if (StringUtils.isEmpty(updatedAtl.getName())) {
                 throw new InvalidArgumentsException("A name is required for a testing lab");

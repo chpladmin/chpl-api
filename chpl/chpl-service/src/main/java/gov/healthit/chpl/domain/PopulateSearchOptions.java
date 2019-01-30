@@ -11,7 +11,7 @@ public class PopulateSearchOptions implements Serializable {
     private Set<KeyValueModel> practiceTypeNames;
     private Set<KeyValueModelStatuses> productNames;
     private Set<KeyValueModelStatuses> developerNames;
-    private Set<KeyValueModel> certBodyNames;
+    private Set<CertificationBody> certBodyNames;
     private Set<DescriptiveModel> certificationCriterionNumbers;
     private Set<DescriptiveModel> cqmCriterionNumbers;
 
@@ -55,11 +55,11 @@ public class PopulateSearchOptions implements Serializable {
         this.developerNames = developerNames;
     }
 
-    public Set<KeyValueModel> getCertBodyNames() {
+    public Set<CertificationBody> getCertBodyNames() {
         return certBodyNames;
     }
 
-    public void setCertBodyNames(final Set<KeyValueModel> certBodyNames) {
+    public void setCertBodyNames(final Set<CertificationBody> certBodyNames) {
         this.certBodyNames = certBodyNames;
     }
 

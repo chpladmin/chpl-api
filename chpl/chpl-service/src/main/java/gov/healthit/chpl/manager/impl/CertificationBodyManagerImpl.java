@@ -1,6 +1,7 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,9 +30,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ClearAllCaches;
@@ -96,8 +97,12 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
         // Create the ACB itself
         CertificationBodyDTO result = certificationBodyDao.create(acb);
 
-        // Grant the current principal administrative permission to the ACB
-        addPermission(result, Util.getCurrentUser().getId(), BasePermission.ADMINISTRATION);
+        // Grant the admin user administrative permission to the ACB.
+        // I think this is required because the invitation manager impersonates the admin
+        // user when a new/unauthenticated user is signing up for this ACB and if the
+        // admin user doesn't have an ACE for this ACB no users can be added.
+        // See getInvitedUserAuthenticator in InvitationManagerImpl.
+        addPermission(result, User.ADMIN_USER_ID, BasePermission.ADMINISTRATION);
 
         LOGGER.debug("Created acb " + result + " and granted admin permission to recipient "
                 + gov.healthit.chpl.auth.Util.getUsername());
@@ -129,13 +134,17 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     @Transactional
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     @CacheEvict(CacheNames.CERT_BODY_NAMES)
-    public CertificationBodyDTO retire(final Long acbId) throws EntityRetrievalException,
-    JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException, SchedulerException, ValidationException {
+    public CertificationBodyDTO retire(final CertificationBodyDTO acb) throws EntityRetrievalException,
+        JsonProcessingException, EntityCreationException, IllegalArgumentException, SchedulerException, ValidationException {
+        Date now = new Date();
+        if (acb.getRetirementDate() == null || now.before(acb.getRetirementDate())) {
+            throw new IllegalArgumentException("Retirement date is required and must be before \"now\".");
+        }
         CertificationBodyDTO result = null;
-        CertificationBodyDTO toUpdate = certificationBodyDao.getById(acbId);
+        CertificationBodyDTO toUpdate = certificationBodyDao.getById(acb.getId());
         toUpdate.setRetired(true);
+        toUpdate.setRetirementDate(acb.getRetirementDate());
         result = certificationBodyDao.update(toUpdate);
-
         schedulerManager.retireAcb(toUpdate.getName());
 
         String activityMsg = "Retired acb " + toUpdate.getName();
@@ -152,6 +161,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
         CertificationBodyDTO result = null;
         CertificationBodyDTO toUpdate = certificationBodyDao.getById(acbId);
         toUpdate.setRetired(false);
+        toUpdate.setRetirementDate(null);
         result = certificationBodyDao.update(toUpdate);
 
         String activityMsg = "Unretired acb " + toUpdate.getName();
