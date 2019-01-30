@@ -4,5 +4,6 @@ _Date TBD_
 
 ### New Features
 * Allow ROLE_ADMIN and ROLE_ONC to manage pending surveillances
+* Update Swagger documentation regarding API security
 
 ---
