@@ -102,15 +102,14 @@ public class CertificationResultManagerImpl implements CertificationResultManage
     private FuzzyChoicesDAO fuzzyChoicesDao;
 
     @Override
-    @PreAuthorize("(hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or " 
-            + "(hasRole('ROLE_ACB'))"
-            + "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_RESULTS, "
+            + "T(gov.healthit.chpl.permissions.domains.CertificationResultsDomainPermissions).UPDATE, #acbId)")
     @Transactional(rollbackFor = {
             EntityRetrievalException.class, EntityCreationException.class
     })
     public int update(Long acbId, CertifiedProductSearchDetails existingListing,
             CertifiedProductSearchDetails updatedListing, CertificationResult orig, CertificationResult updated)
-                    throws EntityCreationException, EntityRetrievalException, IOException {
+            throws EntityCreationException, EntityRetrievalException, IOException {
         int numChanges = 0;
         // does the cert result need updated?
         boolean hasChanged = false;
@@ -136,7 +135,6 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             }
             toUpdate.setSuccessful(updated.isSuccess());
 
-
             if (toUpdate.getSuccessful() != null && !toUpdate.getSuccessful().booleanValue()
                     && (!ObjectUtils.equals(orig.isG1Success(), updated.isG1Success())
                             || !ObjectUtils.equals(orig.isG2Success(), updated.isG2Success()))) {
@@ -160,11 +158,12 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             numChanges++;
         }
 
-        if (!updated.isSuccess()
-                && (haveMacraMeasuresChanged(orig.getG1MacraMeasures(), updated.getG1MacraMeasures())
-                        || haveMacraMeasuresChanged(orig.getG2MacraMeasures(), updated.getG2MacraMeasures()))) {
-            numChanges += updateMacraMeasures(updated, orig.getG1MacraMeasures(), updated.getG1MacraMeasures(), G1_MEASURE);
-            numChanges += updateMacraMeasures(updated, orig.getG2MacraMeasures(), updated.getG2MacraMeasures(), G2_MEASURE);
+        if (!updated.isSuccess() && (haveMacraMeasuresChanged(orig.getG1MacraMeasures(), updated.getG1MacraMeasures())
+                || haveMacraMeasuresChanged(orig.getG2MacraMeasures(), updated.getG2MacraMeasures()))) {
+            numChanges += updateMacraMeasures(updated, orig.getG1MacraMeasures(), updated.getG1MacraMeasures(),
+                    G1_MEASURE);
+            numChanges += updateMacraMeasures(updated, orig.getG2MacraMeasures(), updated.getG2MacraMeasures(),
+                    G2_MEASURE);
         }
 
         if (updated.isSuccess() == null || !updated.isSuccess()) {
@@ -334,7 +333,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             return true;
         } else if (orig == null && updated != null) {
             return true;
-        } else { //Both are null
+        } else { // Both are null
             return false;
         }
     }
@@ -342,7 +341,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
     private int updateAdditionalSoftware(CertificationResult certResult,
             List<CertificationResultAdditionalSoftware> existingAdditionalSoftware,
             List<CertificationResultAdditionalSoftware> updatedAdditionalSoftware)
-                    throws EntityCreationException, EntityRetrievalException {
+            throws EntityCreationException, EntityRetrievalException {
         int numChanges = 0;
         List<CertificationResultAdditionalSoftware> additionalSoftwareToAdd = new ArrayList<CertificationResultAdditionalSoftware>();
         List<CertificationResultAdditionalSoftwarePair> additionalSoftwareToUpdate = new ArrayList<CertificationResultAdditionalSoftwarePair>();
@@ -373,7 +372,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
                         if (updatedItem.matches(existingItem)) {
                             inExistingListing = true;
                             additionalSoftwareToUpdate
-                            .add(new CertificationResultAdditionalSoftwarePair(existingItem, updatedItem));
+                                    .add(new CertificationResultAdditionalSoftwarePair(existingItem, updatedItem));
                         }
                     }
 
@@ -524,8 +523,8 @@ public class CertificationResultManagerImpl implements CertificationResultManage
     }
 
     private int updateUcdProcesses(CertificationResult certResult, List<UcdProcess> existingUcdProcesses,
-            List<UcdProcess> updatedUcdProcesses) throws EntityCreationException, EntityRetrievalException,
-    IOException {
+            List<UcdProcess> updatedUcdProcesses)
+            throws EntityCreationException, EntityRetrievalException, IOException {
         int numChanges = 0;
         List<UcdProcess> ucdToAdd = new ArrayList<UcdProcess>();
         List<CertificationResultUcdProcessPair> ucdToUpdate = new ArrayList<CertificationResultUcdProcessPair>();
@@ -587,7 +586,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
 
         List<String> fuzzyQmsChoices = fuzzyChoicesDao.getByType(FuzzyType.UCD_PROCESS).getChoices();
         for (UcdProcess toAdd : ucdToAdd) {
-            if(!fuzzyQmsChoices.contains(toAdd.getName())) {
+            if (!fuzzyQmsChoices.contains(toAdd.getName())) {
                 fuzzyQmsChoices.add(toAdd.getName());
                 FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
                 dto.setFuzzyType(FuzzyType.UCD_PROCESS);
@@ -724,8 +723,8 @@ public class CertificationResultManagerImpl implements CertificationResultManage
                     TestToolDTO foundTool = testToolDAO.getByName(updatedItem.getTestToolName());
                     if (foundTool == null) {
                         LOGGER.error("Could not find test tool " + updatedItem.getTestToolName()
-                        + "; will not be adding this as a test tool to certification result id "
-                        + certResult.getId() + ", criteria " + certResult.getNumber());
+                                + "; will not be adding this as a test tool to certification result id "
+                                + certResult.getId() + ", criteria " + certResult.getNumber());
                     } else {
                         updatedItem.setTestToolId(foundTool.getId());
                         updatedItem.setTestToolVersion(updatedItem.getTestToolVersion());
@@ -799,7 +798,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
 
     private int updateTestData(CertificationResult certResult, List<CertificationResultTestData> existingTestData,
             List<CertificationResultTestData> updatedTestData)
-                    throws EntityCreationException, EntityRetrievalException {
+            throws EntityCreationException, EntityRetrievalException {
         int numChanges = 0;
         List<CertificationResultTestData> testDataToAdd = new ArrayList<CertificationResultTestData>();
         List<CertificationResultTestDataPair> testDataToUpdate = new ArrayList<CertificationResultTestDataPair>();
@@ -863,7 +862,8 @@ public class CertificationResultManagerImpl implements CertificationResultManage
 
         for (CertificationResultTestDataPair toUpdate : testDataToUpdate) {
             boolean hasChanged = false;
-            if (!ObjectUtils.equals(toUpdate.getOrig().getTestData().getId(), toUpdate.getUpdated().getTestData().getId())
+            if (!ObjectUtils.equals(toUpdate.getOrig().getTestData().getId(),
+                    toUpdate.getUpdated().getTestData().getId())
                     || !ObjectUtils.equals(toUpdate.getOrig().getAlteration(), toUpdate.getUpdated().getAlteration())
                     || !ObjectUtils.equals(toUpdate.getOrig().getVersion(), toUpdate.getUpdated().getVersion())) {
                 hasChanged = true;
@@ -973,9 +973,9 @@ public class CertificationResultManagerImpl implements CertificationResultManage
                             Long.valueOf(editionIdString));
                     if (foundFunc == null) {
                         LOGGER.error("Could not find test functionality " + updatedItem.getName()
-                        + " for certifiation edition id " + editionIdString
-                        + "; will not be adding this as a test functionality to listing id " + listing.getId()
-                        + ", criteria " + certResult.getNumber());
+                                + " for certifiation edition id " + editionIdString
+                                + "; will not be adding this as a test functionality to listing id " + listing.getId()
+                                + ", criteria " + certResult.getNumber());
                     } else {
                         updatedItem.setTestFunctionalityId(foundFunc.getId());
                     }
@@ -1473,7 +1473,8 @@ public class CertificationResultManagerImpl implements CertificationResultManage
         private CertificationResultTestData orig;
         private CertificationResultTestData updated;
 
-        CertificationResultTestDataPair(final CertificationResultTestData orig, final CertificationResultTestData updated) {
+        CertificationResultTestDataPair(final CertificationResultTestData orig,
+                final CertificationResultTestData updated) {
             this.orig = orig;
             this.updated = updated;
         }
