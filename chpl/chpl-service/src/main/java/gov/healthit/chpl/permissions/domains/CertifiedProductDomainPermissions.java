@@ -1,5 +1,6 @@
 package gov.healthit.chpl.permissions.domains;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,7 @@ public class CertifiedProductDomainPermissions extends DomainPermissions {
     public static final String CLEAN_DATA = "CLEAN_DATA";
     public static final String UPDATE = "UPDATE";
 
+    @Autowired
     public CertifiedProductDomainPermissions(
             @Qualifier("certifiedProductCreateFromPendingActionPermissions") CreateFromPendingActionPermissions createFromPendingActionPermissions,
             @Qualifier("certifiedProductCleanDataActionPermissions") CleanDataActionPermissions cleanDataActionPermissions,

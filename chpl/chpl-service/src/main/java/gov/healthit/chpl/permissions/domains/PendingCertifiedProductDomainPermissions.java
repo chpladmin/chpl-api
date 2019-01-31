@@ -1,5 +1,6 @@
 package gov.healthit.chpl.permissions.domains;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.permissions.domains.pendingcertifiedproduct.ConfirmActionPermissions;
@@ -22,6 +23,7 @@ public class PendingCertifiedProductDomainPermissions extends DomainPermissions 
     public static final String GET_DETAILS_BY_ID = "GET_DETAILS_BY_ID";
     public static final String GET_DETAILS_BY_ID_FOR_ACTIVITY = "GET_DETAILS_BY_ID_FOR_ACTIVITY";
 
+    @Autowired
     public PendingCertifiedProductDomainPermissions(final UpdateableActionPermissions updateableActionPermissions,
             final ConfirmActionPermissions confirmActionPermissions,
             final DeleteActionPermissions deleteActionPermissions,

@@ -6,7 +6,7 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
-@Component("userPermissionsDeletePermissionActionPermissions")
+@Component("userPermissionsDeleteActionPermissions")
 public class DeleteActionPermissions extends ActionPermissions {
     @Override
     public boolean hasAccess() {

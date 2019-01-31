@@ -1,5 +1,6 @@
 package gov.healthit.chpl.permissions.domains;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +20,7 @@ public class SurveillanceDomainPermissions extends DomainPermissions {
     public static final String DELETE_DOCUMENT = "DELETE_DOCUMENT";
     public static final String BASIC_REPORT = "BASIC_REPORT";
 
+    @Autowired
     public SurveillanceDomainPermissions(
             @Qualifier("surveillanceCreateActionPermissions") CreateActionPermissions createActionPermissions,
             @Qualifier("surveillanceUpdateActionPermissions") UpdateActionPermissions updateActionPermissions,

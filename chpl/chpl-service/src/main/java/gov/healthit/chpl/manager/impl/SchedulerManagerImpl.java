@@ -31,12 +31,13 @@ import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplTrigger;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.SchedulerManager;
+import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.scheduler.ChplSchedulerReference;
 
 /**
  * Implementation of Scheduler Manager.
+ * 
  * @author alarned
  *
  */
@@ -49,7 +50,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
     private ChplSchedulerReference chplScheduler;
 
     @Autowired
-    private CertificationBodyManager acbManager;
+    private UserPermissionsManager userPermissionsManager;
 
     @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
@@ -61,21 +62,12 @@ public class SchedulerManagerImpl implements SchedulerManager {
         if (doesUserHavePermissionToJob(scheduler.getJobDetail(jobId))) {
             Trigger qzTrigger = null;
             if (trigger.getJob().getJobDataMap().getBooleanValue("acbSpecific")) {
-                qzTrigger = newTrigger()
-                        .withIdentity(triggerId)
-                        .startNow()
-                        .forJob(jobId)
-                        .usingJobData("email", trigger.getEmail())
-                        .usingJobData("acb", trigger.getAcb())
-                        .withSchedule(cronSchedule(trigger.getCronSchedule()))
-                        .build();
+                qzTrigger = newTrigger().withIdentity(triggerId).startNow().forJob(jobId)
+                        .usingJobData("email", trigger.getEmail()).usingJobData("acb", trigger.getAcb())
+                        .withSchedule(cronSchedule(trigger.getCronSchedule())).build();
             } else {
-                qzTrigger = newTrigger()
-                        .withIdentity(triggerId)
-                        .startNow()
-                        .forJob(jobId)
-                        .usingJobData("email", trigger.getEmail())
-                        .withSchedule(cronSchedule(trigger.getCronSchedule()))
+                qzTrigger = newTrigger().withIdentity(triggerId).startNow().forJob(jobId)
+                        .usingJobData("email", trigger.getEmail()).withSchedule(cronSchedule(trigger.getCronSchedule()))
                         .build();
             }
 
@@ -111,7 +103,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
     public List<ChplTrigger> getAllTriggers() throws SchedulerException {
         ArrayList<ChplTrigger> triggers = new ArrayList<ChplTrigger>();
         Scheduler scheduler = getScheduler();
-        for (String group: scheduler.getTriggerGroupNames()) {
+        for (String group : scheduler.getTriggerGroupNames()) {
             // enumerate each trigger in group
             for (TriggerKey triggerKey : scheduler.getTriggerKeys(groupEquals(group))) {
                 if (scheduler.getTrigger(triggerKey).getJobKey().getGroup().equalsIgnoreCase("chplJobs")) {
@@ -134,21 +126,12 @@ public class SchedulerManagerImpl implements SchedulerManager {
         Trigger qzTrigger = null;
         if (doesUserHavePermissionToTrigger(oldTrigger)) {
             if (trigger.getJob().getJobDataMap().getBooleanValue("acbSpecific")) {
-                qzTrigger = newTrigger()
-                        .withIdentity(oldTrigger.getKey())
-                        .startNow()
-                        .forJob(oldTrigger.getJobKey())
-                        .usingJobData(oldTrigger.getJobDataMap())
-                        .usingJobData("acb", trigger.getAcb())
-                        .withSchedule(cronSchedule(trigger.getCronSchedule()))
-                        .build();
+                qzTrigger = newTrigger().withIdentity(oldTrigger.getKey()).startNow().forJob(oldTrigger.getJobKey())
+                        .usingJobData(oldTrigger.getJobDataMap()).usingJobData("acb", trigger.getAcb())
+                        .withSchedule(cronSchedule(trigger.getCronSchedule())).build();
             } else {
-                qzTrigger = newTrigger()
-                        .withIdentity(oldTrigger.getKey())
-                        .startNow()
-                        .forJob(oldTrigger.getJobKey())
-                        .usingJobData(oldTrigger.getJobDataMap())
-                        .withSchedule(cronSchedule(trigger.getCronSchedule()))
+                qzTrigger = newTrigger().withIdentity(oldTrigger.getKey()).startNow().forJob(oldTrigger.getJobKey())
+                        .usingJobData(oldTrigger.getJobDataMap()).withSchedule(cronSchedule(trigger.getCronSchedule()))
                         .build();
             }
             scheduler.rescheduleJob(oldTrigger.getKey(), qzTrigger);
@@ -160,9 +143,11 @@ public class SchedulerManagerImpl implements SchedulerManager {
         }
     }
 
-    /* (non-Javadoc)
-     * @see gov.healthit.chpl.manager.SchedulerManager#getAllJobs()
-     * As new jobs are added that have authorities other than ROLE_ADMIN, those authorities
+    /*
+     * (non-Javadoc)
+     * 
+     * @see gov.healthit.chpl.manager.SchedulerManager#getAllJobs() As new jobs
+     * are added that have authorities other than ROLE_ADMIN, those authorities
      * will need to be added to the list.
      */
     @Override
@@ -190,13 +175,9 @@ public class SchedulerManagerImpl implements SchedulerManager {
         JobKey jobId = jobKey(job.getName(), job.getGroup());
         JobDetail oldJob = scheduler.getJobDetail(jobId);
         if (doesUserHavePermissionToJob(oldJob)) {
-            JobDetail newJob = newJob(oldJob.getJobClass())
-                    .withIdentity(jobId)
-                    .withDescription(oldJob.getDescription())
-                    .usingJobData(job.getJobDataMap())
-                    .storeDurably(oldJob.isDurable())
-                    .requestRecovery(oldJob.requestsRecovery())
-                    .build();
+            JobDetail newJob = newJob(oldJob.getJobClass()).withIdentity(jobId).withDescription(oldJob.getDescription())
+                    .usingJobData(job.getJobDataMap()).storeDurably(oldJob.isDurable())
+                    .requestRecovery(oldJob.requestsRecovery()).build();
 
             scheduler.addJob(newJob, true);
             ChplJob newChplJob = new ChplJob(newJob);
@@ -220,7 +201,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
     }
 
     private Boolean doesUserHavePermissionToJob(final JobDetail jobDetail) {
-        //Get the authorities from the job
+        // Get the authorities from the job
         if (jobDetail.getJobDataMap().containsKey("authorities")) {
             List<String> authorities = new ArrayList<String>(
                     Arrays.asList(jobDetail.getJobDataMap().get("authorities").toString().split(AUTHORITY_DELIMITER)));
@@ -233,11 +214,13 @@ public class SchedulerManagerImpl implements SchedulerManager {
                 }
             }
         } else {
-            //If no authorities are present, we assume there are no permissions on the job
-            //and everyone has access
+            // If no authorities are present, we assume there are no permissions
+            // on the job
+            // and everyone has access
             return true;
         }
-        //At this point we have fallen through all of the logic, and the user does not have the appropriate rights
+        // At this point we have fallen through all of the logic, and the user
+        // does not have the appropriate rights
         return false;
     }
 
@@ -246,7 +229,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
         if (doesUserHavePermissionToJob(getScheduler().getJobDetail(trigger.getJobKey()))) {
             if (!StringUtils.isEmpty(trigger.getJobDataMap().getString("acb"))) {
                 // get acbs user has access to
-                List<CertificationBodyDTO> validAcbs = acbManager.getAllForUser();
+                List<CertificationBodyDTO> validAcbs = userPermissionsManager.getAllAcbsForCurrentUser();
                 for (String acb : trigger.getJobDataMap().getString("acb").split("\u263A")) {
                     boolean found = false;
                     for (CertificationBodyDTO validAcb : validAcbs) {
@@ -272,7 +255,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
     }
 
     private String createTriggerName(final ChplTrigger trigger) {
-        String name = trigger.getEmail().replaceAll("\\.",  "_");
+        String name = trigger.getEmail().replaceAll("\\.", "_");
         if (!StringUtils.isEmpty(trigger.getAcb())) {
             name += trigger.getAcb();
         }

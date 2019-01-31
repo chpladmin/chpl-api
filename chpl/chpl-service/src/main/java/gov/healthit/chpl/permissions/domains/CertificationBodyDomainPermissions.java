@@ -1,5 +1,6 @@
 package gov.healthit.chpl.permissions.domains;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +26,7 @@ public class CertificationBodyDomainPermissions extends DomainPermissions {
     public static final String DELETE_ALL_ACB_PERMISSIONS_FOR_USER = "DELETE_ALL_ACB_PERMISSIONS_FOR_USER";
     public static final String DELETE_ALL_PERMISSIONS_FOR_USER = "DELETE_ALL_PERMISSIONS_FOR_USER";
 
+    @Autowired
     public CertificationBodyDomainPermissions(
             @Qualifier("certificationBodyCreateActionPermissions") CreateActionPermissions createActionPermissions,
             @Qualifier("certificationBodyUpdateActionPermissions") UpdateActionPermissions updateActionPermissions,

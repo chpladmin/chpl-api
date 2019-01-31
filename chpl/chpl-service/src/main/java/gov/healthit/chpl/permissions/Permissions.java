@@ -15,7 +15,6 @@ import gov.healthit.chpl.permissions.domains.InvitationDomainPermissions;
 import gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions;
 import gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions;
-import gov.healthit.chpl.permissions.domains.UserPermissionDomainPermissions;
 
 @Component
 public class Permissions {
@@ -39,8 +38,9 @@ public class Permissions {
             final InvitationDomainPermissions invitationDomainPermissions,
             final PendingCertifiedProductDomainPermissions pendingCertifiedProductDomainPermissions,
             final SurveillanceDomainPermissions surveillanceDomainPermissions,
-            final CertificationBodyDomainPermissions certificationBodyDomainPermissions,
-            final UserPermissionDomainPermissions userPermissionDomainPermissions) {
+            final CertificationBodyDomainPermissions certificationBodyDomainPermissions) {
+        // final UserPermissionDomainPermissions
+        // userPermissionDomainPermissions) {
 
         domainPermissions.put(PENDING_SURVEILLANCE, pendingSurveillanceDomainPermissions);
         domainPermissions.put(CERTIFICATION_RESULTS, certificationResultsDomainPermissions);
@@ -50,7 +50,8 @@ public class Permissions {
         domainPermissions.put(PENDING_CERTIFIED_PRODUCTS, pendingCertifiedProductDomainPermissions);
         domainPermissions.put(SURVEILLANCE, surveillanceDomainPermissions);
         domainPermissions.put(CERTIFICATION_BODY, certificationBodyDomainPermissions);
-        domainPermissions.put(USER_PERMISSIONS, userPermissionDomainPermissions);
+        // domainPermissions.put(USER_PERMISSIONS,
+        // userPermissionDomainPermissions);
     }
 
     public boolean hasAccess(final String domain, final String action) {

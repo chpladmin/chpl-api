@@ -42,6 +42,7 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.InvitationManager;
 import gov.healthit.chpl.manager.TestingLabManager;
+import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.permissions.Permissions;
 import gov.healthit.chpl.util.Util;
 
@@ -68,6 +69,9 @@ public class InvitationManagerImpl implements InvitationManager {
     private CertificationBodyManager acbManager;
     @Autowired
     private TestingLabManager atlManager;
+
+    @Autowired
+    private UserPermissionsManager userPermissionsManager;
 
     @Autowired
     private Permissions permissions;
@@ -368,7 +372,7 @@ public class InvitationManagerImpl implements InvitationManager {
 
         // give them access to the invited acb
         if (userAcb != null) {
-            acbManager.addPermission(userAcb, user.getId(), BasePermission.ADMINISTRATION);
+            userPermissionsManager.addPermission(userAcb, user.getId());
         }
         // give them access to the invited atl
         if (userAtl != null) {

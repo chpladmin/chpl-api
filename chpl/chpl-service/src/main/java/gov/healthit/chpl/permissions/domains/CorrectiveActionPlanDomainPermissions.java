@@ -1,6 +1,8 @@
 package gov.healthit.chpl.permissions.domains;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.permissions.domains.correctiveactionplans.AddCertificationsActionPermissions;
 import gov.healthit.chpl.permissions.domains.correctiveactionplans.AddDocumentationActionPermissions;
@@ -11,6 +13,7 @@ import gov.healthit.chpl.permissions.domains.correctiveactionplans.RemoveDocumen
 import gov.healthit.chpl.permissions.domains.correctiveactionplans.UpdateActionPermissions;
 import gov.healthit.chpl.permissions.domains.correctiveactionplans.UpdateCertificationActionPermissions;
 
+@Component
 public class CorrectiveActionPlanDomainPermissions extends DomainPermissions {
     public static final String ADD_CERTIFICATIONS = "ADD_CERTIFICATIONS";
     public static final String ADD_DOCUMENTATION = "ADD_DOCUMENTATION";
@@ -21,6 +24,7 @@ public class CorrectiveActionPlanDomainPermissions extends DomainPermissions {
     public static final String UPDATE = "UPDATE";
     public static final String UPDATE_CERTIFICATION = "UPDATE_CERTIFICATION";
 
+    @Autowired
     public CorrectiveActionPlanDomainPermissions(
             @Qualifier("correctiveActionPlansAddCertificationsActionPermissions") AddCertificationsActionPermissions addCertificationsActionPermissions,
             @Qualifier("correctiveActionPlansAddDocumentationActionPermissions") AddDocumentationActionPermissions addDocumentationActionPermissions,

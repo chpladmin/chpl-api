@@ -1,5 +1,6 @@
 package gov.healthit.chpl.permissions.domains;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +18,7 @@ public class InvitationDomainPermissions extends DomainPermissions {
     public static final String INVITE_ACB = "INVITE_ACB";
     public static final String INVITE_ACB_ATL = "INVITE_ACB_ATL";
 
+    @Autowired
     public InvitationDomainPermissions(
             @Qualifier("invitationInviteAdminActionPermissions") InviteAdminActionPermissions inviteAdminActionPermissions,
             @Qualifier("invitationInviteOncActionPermissions") InviteOncActionPermissions inviteOncActionPermissions,

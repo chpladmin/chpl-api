@@ -16,8 +16,6 @@ import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 
 public interface CertificationBodyManager {
 
-    void deletePermission(CertificationBodyDTO acb, Sid recipient, Permission permission);
-
     void deleteAllPermissionsOnAcb(CertificationBodyDTO acb, Sid recipient);
 
     void deletePermissionsForUser(UserDTO userDto) throws UserRetrievalException;
@@ -33,8 +31,6 @@ public interface CertificationBodyManager {
 
     CertificationBodyDTO unretire(Long acbId) throws EntityRetrievalException, JsonProcessingException,
             EntityCreationException, UpdateCertifiedBodyException;
-
-    List<CertificationBodyDTO> getAllForUser();
 
     List<CertificationBodyDTO> getAll();
 

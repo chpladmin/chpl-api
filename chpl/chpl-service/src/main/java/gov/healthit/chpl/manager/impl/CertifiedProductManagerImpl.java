@@ -156,12 +156,12 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.MissingReasonException;
-import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
+import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.permissions.Permissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -272,7 +272,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     private FuzzyChoicesDAO fuzzyChoicesDao;
 
     @Autowired
-    private CertificationBodyManager acbManager;
+    private UserPermissionsManager userPermissionsManager;
 
     @Autowired
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
@@ -375,7 +375,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     public List<CertifiedProductDetailsDTO> getByVersionWithEditPermission(final Long versionId)
             throws EntityRetrievalException {
         versionManager.getById(versionId); // throws 404 if bad id
-        List<CertificationBodyDTO> userAcbs = acbManager.getAllForUser();
+        List<CertificationBodyDTO> userAcbs = userPermissionsManager.getAllAcbsForCurrentUser();
         if (userAcbs == null || userAcbs.size() == 0) {
             return new ArrayList<CertifiedProductDetailsDTO>();
         }

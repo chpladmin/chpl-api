@@ -10,7 +10,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.support.ApplicationObjectSupport;
-import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
 import org.springframework.security.acls.domain.PrincipalSid;
@@ -260,13 +259,6 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     @Transactional(readOnly = true)
     public List<CertificationBodyDTO> getAllActive() {
         return certificationBodyDAO.findAllActive();
-    }
-
-    @Transactional(readOnly = true)
-    @PostFilter("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or "
-            + "hasPermission(filterObject, 'read') or hasPermission(filterObject, admin)")
-    public List<CertificationBodyDTO> getAllForUser() {
-        return certificationBodyDAO.findAll();
     }
 
     @Transactional(readOnly = true)

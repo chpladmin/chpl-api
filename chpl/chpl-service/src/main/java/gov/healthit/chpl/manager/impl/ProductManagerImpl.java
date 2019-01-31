@@ -34,9 +34,9 @@ import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
-import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.ProductManager;
+import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.validation.listing.reviewer.ChplNumberReviewer;
 
 @Service
@@ -56,7 +56,7 @@ public class ProductManagerImpl implements ProductManager {
     @Autowired
     CertifiedProductDetailsManager cpdManager;
     @Autowired
-    CertificationBodyManager acbManager;
+    UserPermissionsManager userPermissionsManager;
     @Autowired
     ChplNumberReviewer chplNumberReviewer;
 
@@ -237,7 +237,7 @@ public class ProductManagerImpl implements ProductManager {
             List<ProductVersionDTO> newProductVersions)
             throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
         // what ACB does the user have??
-        List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser();
+        List<CertificationBodyDTO> allowedAcbs = userPermissionsManager.getAllAcbsForCurrentUser();
 
         // create the new product and log activity
         // this method checks that the related developer is Active and will
@@ -293,12 +293,10 @@ public class ProductManagerImpl implements ProductManager {
                             + potentialChplNumber + " because a certified product with that CHPL ID already exists.");
                 }
                 if (!chplNumberReviewer.validateProductCodeCharacters(potentialChplNumber)) {
-                    throw new EntityCreationException(
-                            String.format(
-                                    messageSource.getMessage(
-                                            new DefaultMessageSourceResolvable("listing.badProductCodeChars"),
-                                            LocaleContextHolder.getLocale()),
-                                    CertifiedProductDTO.PRODUCT_CODE_LENGTH));
+                    throw new EntityCreationException(String.format(
+                            messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badProductCodeChars"),
+                                    LocaleContextHolder.getLocale()),
+                            CertifiedProductDTO.PRODUCT_CODE_LENGTH));
                 }
 
                 affectedCp.setProductCode(newProductCode);
