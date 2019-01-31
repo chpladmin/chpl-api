@@ -12,7 +12,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.model.AccessControlEntry;
@@ -39,6 +38,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
+import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.permissions.Permissions;
 
 /**
@@ -59,6 +59,9 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     private MutableAclService mutableAclService;
     @Autowired
     private ActivityManager activityManager;
+
+    @Autowired
+    private UserPermissionsManager userPermissionsManager;
 
     @Autowired
     private Permissions permissions;
@@ -90,7 +93,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
         CertificationBodyDTO result = certificationBodyDAO.create(acb);
 
         // Grant the current principal administrative permission to the ACB
-        addPermission(result, Util.getCurrentUser().getId(), BasePermission.ADMINISTRATION);
+        userPermissionsManager.addPermission(result, Util.getCurrentUser().getId());
 
         LOGGER.debug("Created acb " + result + " and granted admin permission to recipient "
                 + gov.healthit.chpl.auth.Util.getUsername());
@@ -199,69 +202,6 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
         return permissions;
     }
 
-    // @Transactional
-    // @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY,
-    // "
-    // +
-    // "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).ADD_PERMISSION,
-    // #acb)")
-    // public void addPermission(final CertificationBodyDTO acb, final Long
-    // userId, final Permission permission)
-    // throws UserRetrievalException {
-    // MutableAcl acl;
-    // ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class,
-    // acb.getId());
-    //
-    // try {
-    // acl = (MutableAcl) mutableAclService.readAclById(oid);
-    // } catch (final NotFoundException nfe) {
-    // acl = mutableAclService.createAcl(oid);
-    // }
-    //
-    // UserDTO user = userDAO.getById(userId);
-    // if (user == null || user.getSubjectName() == null) {
-    // throw new UserRetrievalException("Could not find user with id " +
-    // userId);
-    // }
-    //
-    // Sid recipient = new PrincipalSid(user.getSubjectName());
-    // if (permissionExists(acl, recipient, permission)) {
-    // LOGGER.debug("User " + recipient + " already has permission on the ACB "
-    // + acb.getName());
-    // } else {
-    // acl.insertAce(acl.getEntries().size(), permission, recipient, true);
-    // mutableAclService.updateAcl(acl);
-    // LOGGER.debug("Added permission " + permission + " for Sid " + recipient +
-    // " acb " + acb);
-    // }
-    // }
-
-    @Transactional
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
-            + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).DELETE_PERMISSION, #acb)")
-    public void deletePermission(final CertificationBodyDTO acb, final Sid recipient, final Permission permission) {
-        ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
-        MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
-
-        List<AccessControlEntry> entries = acl.getEntries();
-
-        // if the current size is only 1 we shouldn't be able to delete the last
-        // one right??
-        // then nobody would be able to ever add or delete or read from the acb
-        // again
-        // in fact the spring code will throw runtime errors if we try to access
-        // the ACLs for this ACB.
-        if (entries != null && entries.size() > 1) {
-            for (int i = 0; i < entries.size(); i++) {
-                if (entries.get(i).getSid().equals(recipient) && entries.get(i).getPermission().equals(permission)) {
-                    acl.deleteAce(i);
-                }
-            }
-            mutableAclService.updateAcl(acl);
-        }
-        LOGGER.debug("Deleted acb " + acb + " ACL permission " + permission + " for recipient " + recipient);
-    }
-
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
             + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).DELETE_ALL_ACB_PERMISSIONS_FOR_USER, #acb)")
@@ -310,19 +250,6 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
                 }
             }
         }
-    }
-
-    private boolean permissionExists(final MutableAcl acl, final Sid recipient, final Permission permission) {
-        boolean permissionExists = false;
-        List<AccessControlEntry> entries = acl.getEntries();
-
-        for (int i = 0; i < entries.size(); i++) {
-            AccessControlEntry currEntry = entries.get(i);
-            if (currEntry.getSid().equals(recipient) && currEntry.getPermission().equals(permission)) {
-                permissionExists = true;
-            }
-        }
-        return permissionExists;
     }
 
     @Transactional(readOnly = true)
