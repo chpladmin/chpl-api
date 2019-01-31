@@ -96,11 +96,13 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
     private CertifiedProductDAO cpDAO;
 
     @Autowired
-    public PendingSurveillanceManagerImpl(final Permissions permissions, final Environment env, final FileUtils fileUtils,
-            final SurveillanceUploadManager survUploadManager, final JobManager jobManager, final UserManager userManager,
-            final CertifiedProductManager cpManager, final SurveillanceValidator survValidator, final SurveillanceDAO survDao,
-            final UserDAO userDao, final ActivityManager activityManager, final CertifiedProductDetailsManager cpDetailsManager,
-            final SurveillanceValidator validator, final UserPermissionDAO userPermissionDAO, final CertifiedProductDAO cpDAO) {
+    public PendingSurveillanceManagerImpl(final Permissions permissions, final Environment env,
+            final FileUtils fileUtils, final SurveillanceUploadManager survUploadManager, final JobManager jobManager,
+            final UserManager userManager, final CertifiedProductManager cpManager,
+            final SurveillanceValidator survValidator, final SurveillanceDAO survDao, final UserDAO userDao,
+            final ActivityManager activityManager, final CertifiedProductDetailsManager cpDetailsManager,
+            final SurveillanceValidator validator, final UserPermissionDAO userPermissionDAO,
+            final CertifiedProductDAO cpDAO) {
         this.env = env;
         this.permissions = permissions;
         this.fileUtils = fileUtils;
@@ -135,17 +137,17 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
 
         Integer surveillanceThresholdToProcessAsJob = getSurveillanceRecordThreshold();
 
-        //first we need to count how many surveillance records are in the file
-        //to know if we handle it normally or as a background job
+        // first we need to count how many surveillance records are in the file
+        // to know if we handle it normally or as a background job
         String data = fileUtils.readFileAsString(file);
 
-        //This is a container used for 2 different result types...
+        // This is a container used for 2 different result types...
         SurveillanceUploadResult uploadResult = new SurveillanceUploadResult();
 
         int numSurveillance = survUploadHelper.countSurveillanceRecords(data);
         if (numSurveillance < surveillanceThresholdToProcessAsJob) {
             uploadResult = processAsFile(file);
-        } else { //process as job
+        } else { // process as job
             uploadResult = processUploadAsJob(data);
         }
         return uploadResult;
@@ -156,9 +158,14 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_SURVEILLANCE, "
             + "T(gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions).REJECT, "
             + "#pendingSurveillanceId)")
-    public void rejectPendingSurveillance(final Long pendingSurveillanceId)
-            throws ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException, EntityCreationException {
+    public void rejectPendingSurveillance(final Long pendingSurveillanceId) throws ObjectMissingValidationException,
+            JsonProcessingException, EntityRetrievalException, EntityCreationException {
 
+        // Check if
+        PendingSurveillanceEntity entity = survDao.getPendingSurveillanceById(pendingSurveillanceId, true);
+        if (entity.getDeleted()) {
+            throw createdObjectMissingValidationException(entity);
+        }
         deletePendingSurveillance(pendingSurveillanceId, false);
     }
 
@@ -194,8 +201,8 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
         }
 
         HttpHeaders responseHeaders = new HttpHeaders();
-        CertifiedProductSearchDetails beforeCp =
-                cpDetailsManager.getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
+        CertifiedProductSearchDetails beforeCp = cpDetailsManager
+                .getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
 
         Long pendingSurvToDelete = survToInsert.getId();
         if (!isPendingSurveillanceAvailableForUpdate(pendingSurvToDelete)) {
@@ -229,23 +236,21 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
         // if a surveillance was getting replaced, delete it
         try {
             if (!StringUtils.isEmpty(survToInsert.getSurveillanceIdToReplace())) {
-                Surveillance survToReplace =
-                        getByFriendlyIdAndProduct(
-                                survToInsert.getCertifiedProduct().getId(),
-                                survToInsert.getSurveillanceIdToReplace());
+                Surveillance survToReplace = getByFriendlyIdAndProduct(survToInsert.getCertifiedProduct().getId(),
+                        survToInsert.getSurveillanceIdToReplace());
                 deleteSurveillance(survToReplace);
             }
         } catch (Exception ex) {
             LOGGER.error("Deleting surveillance with id " + survToInsert.getSurveillanceIdToReplace()
-            + " as part of the replace operation failed", ex);
+                    + " as part of the replace operation failed", ex);
         }
 
-        CertifiedProductSearchDetails afterCp =
-                cpDetailsManager.getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
+        CertifiedProductSearchDetails afterCp = cpDetailsManager
+                .getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
 
         activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, afterCp.getId(),
-                "Surveillance upload was confirmed for certified product " + afterCp.getChplProductNumber(),
-                beforeCp, afterCp);
+                "Surveillance upload was confirmed for certified product " + afterCp.getChplProductNumber(), beforeCp,
+                afterCp);
 
         // query the inserted surveillance
         Surveillance result = getSurveillanceById(insertedSurv);
@@ -256,7 +261,7 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
             throws EntityCreationException, EntityRetrievalException {
         SurveillanceUploadResult result = new SurveillanceUploadResult();
 
-        //figure out the user
+        // figure out the user
         UserDTO currentUser = null;
         try {
             currentUser = userManager.getById(Util.getCurrentUser().getId());
@@ -323,17 +328,12 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
                 Surveillance uploaded = getPendingById(pendingId);
                 uploadedSurveillance.add(uploaded);
             } catch (final AccessDeniedException denied) {
-                LOGGER.error(
-                        "User " + Util.getCurrentUser().getSubjectName()
+                LOGGER.error("User " + Util.getCurrentUser().getSubjectName()
                         + " does not have access to add surveillance"
-                        + (owningCp != null
-                        ? " to ACB with ID '" + owningCp.getCertificationBodyId() + "'."
-                                : "."));
+                        + (owningCp != null ? " to ACB with ID '" + owningCp.getCertificationBodyId() + "'." : "."));
             } catch (Exception ex) {
-                LOGGER.error(
-                        "Error adding a new pending surveillance. Please make sure all required fields are "
-                                + "present.",
-                                ex);
+                LOGGER.error("Error adding a new pending surveillance. Please make sure all required fields are "
+                        + "present.", ex);
             }
         }
         result.setSurveillances(uploadedSurveillance);
@@ -350,8 +350,7 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
         return insertedId;
     }
 
-    private Surveillance getPendingById(final Long survId)
-            throws EntityRetrievalException {
+    private Surveillance getPendingById(final Long survId) throws EntityRetrievalException {
         PendingSurveillanceEntity pending = survDao.getPendingSurveillanceById(survId);
         Surveillance surv = convertToDomain(pending);
         return surv;
@@ -424,7 +423,8 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
     }
 
     private void deletePendingSurveillance(final Long pendingSurveillanceId, final boolean isConfirmed)
-            throws ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException, EntityCreationException {
+            throws ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException,
+            EntityCreationException {
 
         PendingSurveillanceEntity surv = survDao.getPendingSurveillanceById(pendingSurveillanceId);
         Surveillance toDelete = getPendingById(pendingSurveillanceId);
@@ -460,7 +460,7 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
         if (pendingSurv.getDeleted()) {
             ObjectMissingValidationException alreadyDeletedEx = new ObjectMissingValidationException();
             alreadyDeletedEx.getErrorMessages()
-            .add("This pending surveillance has already been confirmed or rejected by another user.");
+                    .add("This pending surveillance has already been confirmed or rejected by another user.");
             alreadyDeletedEx.setObjectId(pendingSurv.getId().toString());
             alreadyDeletedEx.setStartDate(pendingSurv.getStartDate());
             alreadyDeletedEx.setEndDate(pendingSurv.getEndDate());
@@ -483,8 +483,8 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
             }
             throw alreadyDeletedEx;
         }
-        //If pendingSurv were null, we would have gotten an NPE by this point
-        //return pendingSurv != null;
+        // If pendingSurv were null, we would have gotten an NPE by this point
+        // return pendingSurv != null;
         return true;
     }
 
@@ -494,9 +494,8 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
         try {
             surveillanceThresholdToProcessAsJob = Integer.parseInt(surveillanceThresholdToProcessAsJobStr);
         } catch (final NumberFormatException ex) {
-            LOGGER.error(
-                    "Could not format " + surveillanceThresholdToProcessAsJobStr + " as an integer. Defaulting to"
-                            + " 50 instead.");
+            LOGGER.error("Could not format " + surveillanceThresholdToProcessAsJobStr + " as an integer. Defaulting to"
+                    + " 50 instead.");
         }
         return surveillanceThresholdToProcessAsJob;
     }
@@ -664,5 +663,30 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
         validator.validate(result, false);
         return result;
     }
-}
 
+    private ObjectMissingValidationException createdObjectMissingValidationException(PendingSurveillanceEntity entity) {
+        ObjectMissingValidationException alreadyDeletedEx = new ObjectMissingValidationException();
+        alreadyDeletedEx.getErrorMessages()
+                .add("This pending surveillance has already been confirmed or rejected by another user.");
+        alreadyDeletedEx.setObjectId(entity.getId().toString());
+        alreadyDeletedEx.setStartDate(entity.getStartDate());
+        alreadyDeletedEx.setEndDate(entity.getEndDate());
+        try {
+            UserDTO lastModifiedUser = userDao.getById(entity.getLastModifiedUser());
+            if (lastModifiedUser != null) {
+                Contact contact = new Contact();
+                contact.setFullName(lastModifiedUser.getFullName());
+                contact.setFriendlyName(lastModifiedUser.getFriendlyName());
+                contact.setEmail(lastModifiedUser.getEmail());
+                contact.setPhoneNumber(lastModifiedUser.getPhoneNumber());
+                contact.setTitle(lastModifiedUser.getTitle());
+                alreadyDeletedEx.setContact(contact);
+            } else {
+                alreadyDeletedEx.setContact(null);
+            }
+        } catch (final UserRetrievalException ex) {
+            alreadyDeletedEx.setContact(null);
+        }
+        return alreadyDeletedEx;
+    }
+}

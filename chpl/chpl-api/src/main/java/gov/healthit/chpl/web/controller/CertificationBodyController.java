@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.acls.domain.PrincipalSid;
@@ -32,6 +33,7 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 import gov.healthit.chpl.web.controller.results.CertificationBodyResults;
@@ -128,13 +130,15 @@ public class CertificationBodyController {
     @RequestMapping(value = "/{acbId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public CertificationBody updateAcb(@RequestBody final CertificationBody acbInfo) throws InvalidArgumentsException,
-    EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
+            EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException,
+            SchedulerException, ValidationException {
 
         return update(acbInfo);
     }
 
     private CertificationBody update(final CertificationBody updatedAcb) throws InvalidArgumentsException,
-    EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
+            EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException,
+            SchedulerException, ValidationException {
         //Get the ACB as it is currently in the database to find out if
         //the retired flag was changed.
         //Retirement and un-retirement is done as a separate manager action because
@@ -143,7 +147,10 @@ public class CertificationBodyController {
         CertificationBodyDTO existingAcb = acbManager.getIfPermissionById(updatedAcb.getId());
         if (existingAcb.isRetired() != updatedAcb.isRetired() && updatedAcb.isRetired()) {
             //we are retiring this ACB - no other updates can happen
-            acbManager.retire(updatedAcb.getId());
+            CertificationBodyDTO toRetire = new CertificationBodyDTO();
+            toRetire.setRetirementDate(updatedAcb.getRetirementDate());
+            toRetire.setId(updatedAcb.getId());
+            acbManager.retire(toRetire);
         } else {
             if (existingAcb.isRetired() != updatedAcb.isRetired() && !updatedAcb.isRetired()) {
                 //unretire the ACB
@@ -153,7 +160,8 @@ public class CertificationBodyController {
             toUpdate.setId(updatedAcb.getId());
             toUpdate.setAcbCode(updatedAcb.getAcbCode());
             toUpdate.setName(updatedAcb.getName());
-            toUpdate.setRetired(updatedAcb.isRetired());
+            toUpdate.setRetired(false);
+            toUpdate.setRetirementDate(null);
             if (StringUtils.isEmpty(updatedAcb.getWebsite())) {
                 throw new InvalidArgumentsException("A website is required to update the certification body");
             }

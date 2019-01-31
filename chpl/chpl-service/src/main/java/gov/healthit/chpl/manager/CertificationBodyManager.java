@@ -31,7 +31,7 @@ public interface CertificationBodyManager {
     CertificationBodyDTO update(CertificationBodyDTO acb) throws EntityRetrievalException,
             JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException;
 
-    CertificationBodyDTO retire(Long acbId) throws EntityRetrievalException,
+    CertificationBodyDTO retire(CertificationBodyDTO acb) throws EntityRetrievalException,
         JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException;
 
     CertificationBodyDTO unretire(Long acbId) throws EntityRetrievalException,
