@@ -112,23 +112,25 @@ public class RequiredDataReviewer implements Reviewer {
                     listing.getErrorMessages()
                             .add(msgUtil.getMessage("listing.criteria.missingTestProcedure", cert.getNumber()));
                 }
+            }
 
-                if (cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 1) {
-                    List<String> g1Warnings =
-                            validateMacraMeasuresAreUniqueForCertificationResult(cert.getG1MacraMeasures(), cert.getNumber(), "listing.criteria.duplicateG1MacraMeasure");
-                    if (g1Warnings.size() > 0) {
-                        listing.getWarningMessages().addAll(g1Warnings);
-                        cert.setG1MacraMeasures(removeDuplicateMacraMeasures(cert.getG1MacraMeasures()));
-                    }
+            //macra measures are saved regardless of whether the criteria has been met
+            //so check for duplicates no matter what
+            if (cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 1) {
+                List<String> g1Warnings =
+                        validateMacraMeasuresAreUniqueForCertificationResult(cert.getG1MacraMeasures(), cert.getNumber(), "listing.criteria.duplicateG1MacraMeasure");
+                if (g1Warnings.size() > 0) {
+                    listing.getWarningMessages().addAll(g1Warnings);
+                    cert.setG1MacraMeasures(removeDuplicateMacraMeasures(cert.getG1MacraMeasures()));
                 }
+            }
 
-                if (cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 1) {
-                    List<String> g2Warnings =
-                            validateMacraMeasuresAreUniqueForCertificationResult(cert.getG2MacraMeasures(), cert.getNumber(), "listing.criteria.duplicateG2MacraMeasure");
-                    if (g2Warnings.size() > 0) {
-                        listing.getWarningMessages().addAll(g2Warnings);
-                        cert.setG2MacraMeasures(removeDuplicateMacraMeasures(cert.getG2MacraMeasures()));
-                    }
+            if (cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 1) {
+                List<String> g2Warnings =
+                        validateMacraMeasuresAreUniqueForCertificationResult(cert.getG2MacraMeasures(), cert.getNumber(), "listing.criteria.duplicateG2MacraMeasure");
+                if (g2Warnings.size() > 0) {
+                    listing.getWarningMessages().addAll(g2Warnings);
+                    cert.setG2MacraMeasures(removeDuplicateMacraMeasures(cert.getG2MacraMeasures()));
                 }
             }
         }
