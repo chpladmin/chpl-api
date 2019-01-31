@@ -70,6 +70,7 @@ import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
+import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandler;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandlerFactory;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
@@ -106,6 +107,9 @@ public class CertifiedProductController {
     @Autowired
     private CertificationBodyManager acbManager;
 
+    @Autowired 
+    private UserPermissionsManager userPermissionsManager;
+    
     @Autowired
     private PendingCertifiedProductManager pcpManager;
 
@@ -683,7 +687,7 @@ public class CertifiedProductController {
         if (Util.isUserRoleAdmin()) {
             pcps = pcpManager.getAllPendingCertifiedProducts();
         } else if (Util.isUserRoleAcbAdmin()) {
-            List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser();
+            List<CertificationBodyDTO> allowedAcbs = userPermissionsManager.getAllAcbsForCurrentUser();
             for (CertificationBodyDTO acb : allowedAcbs) {
                 pcps.addAll(pcpManager.getPendingCertifiedProducts(acb.getId()));
             }

@@ -61,6 +61,7 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.InvitationManager;
 import gov.healthit.chpl.manager.TestingLabManager;
+import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -94,6 +95,9 @@ public class UserManagementController {
     @Autowired
     private ErrorMessageUtil errorMessageUtil;
 
+    @Autowired
+    private UserPermissionsManager userPermissionsManager;
+    
     @Autowired private MessageSource messageSource;
 
     private static final Logger LOGGER = LogManager.getLogger(UserManagementController.class);
@@ -502,10 +506,9 @@ public class UserManagementController {
 
                 // if they were an acb admin then they need to have all ACB
                 // access removed
-                List<CertificationBodyDTO> acbs = acbManager.getAllForUser();
+                List<CertificationBodyDTO> acbs = userPermissionsManager.getAllAcbsForCurrentUser();
                 for (CertificationBodyDTO acb : acbs) {
-                    acbManager.deletePermission(acb, new PrincipalSid(user.getSubjectName()),
-                            BasePermission.ADMINISTRATION);
+                    userPermissionsManager.deletePermission(acb, user.getId());
                 }
             } catch (final AccessDeniedException adEx) {
                 LOGGER.error("User " + Util.getUsername() + " does not have access to revoke ROLE_ADMIN");

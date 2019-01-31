@@ -58,6 +58,7 @@ import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.PendingSurveillanceManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
+import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
@@ -90,6 +91,8 @@ public class SurveillanceController implements MessageSourceAware {
     private SurveillanceValidator survValidator;
     @Autowired
     private PendingSurveillanceManager pendingSurveillanceManager;
+    @Autowired
+    private UserPermissionsManager userPermissionsManager;
 
     @ApiOperation(value = "Get the listing of all pending surveillance items that this user has access to.")
     @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
@@ -466,7 +469,7 @@ public class SurveillanceController implements MessageSourceAware {
         }
 
         ObjectsMissingValidationException possibleExceptions = new ObjectsMissingValidationException();
-        List<CertificationBodyDTO> acbs = acbManager.getAllForUser();
+        List<CertificationBodyDTO> acbs = userPermissionsManager.getAllAcbsForCurrentUser();
         for (Long id : idList.getIds()) {
             try {
                 pendingSurveillanceManager.rejectPendingSurveillance(id);

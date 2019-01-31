@@ -52,6 +52,7 @@ import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.manager.TestingLabManager;
+import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import io.swagger.annotations.Api;
@@ -93,7 +94,9 @@ public class ActivityController {
     private ChplProductNumberUtil chplProductNumberUtil;
     @Autowired
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
-
+    @Autowired
+    private UserPermissionsManager userPermissionsManager;
+    
     @Autowired private MessageSource messageSource;
 
     @ApiOperation(value = "Get auditable data for certification bodies.",
@@ -109,7 +112,7 @@ public class ActivityController {
         if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
             return activityManager.getAllAcbActivity(startDate, endDate);
         }
-        List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser();
+        List<CertificationBodyDTO> allowedAcbs = userPermissionsManager.getAllAcbsForCurrentUser();
         return activityManager.getAcbActivity(allowedAcbs, startDate, endDate);
     }
 
@@ -145,7 +148,7 @@ public class ActivityController {
                     LocaleContextHolder.getLocale()));
         }
 
-        List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser();
+        List<CertificationBodyDTO> allowedAcbs = userPermissionsManager.getAllAcbsForCurrentUser();
         acb = null;
         for (CertificationBodyDTO allowedAcb : allowedAcbs) {
             if (allowedAcb.getId().longValue() == id.longValue()) {
@@ -432,7 +435,7 @@ public class ActivityController {
         if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
             return activityManager.getAllPendingListingActivity(startDate, endDate);
         }
-        List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser();
+        List<CertificationBodyDTO> allowedAcbs = userPermissionsManager.getAllAcbsForCurrentUser();
         return activityManager.getPendingListingActivityByAcb(allowedAcbs, startDate, endDate);
     }
 
@@ -716,7 +719,7 @@ public class ActivityController {
         //user can see activity for other users in the same acb
 
         if (Util.isUserRoleAcbAdmin()) {
-            List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser();
+            List<CertificationBodyDTO> allowedAcbs = userPermissionsManager.getAllAcbsForCurrentUser();
             for (CertificationBodyDTO acb : allowedAcbs) {
                 List<UserDTO> acbUsers = acbManager.getAllUsersOnAcb(acb);
                 for (UserDTO user : acbUsers) {

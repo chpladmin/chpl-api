@@ -34,6 +34,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.manager.CertificationBodyManager;
+import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 import gov.healthit.chpl.web.controller.results.CertificationBodyResults;
 import gov.healthit.chpl.web.controller.results.PermittedUserResults;
@@ -49,6 +50,9 @@ public class CertificationBodyController {
     private CertificationBodyManager acbManager;
 
     @Autowired
+    private UserPermissionsManager userPermissionsManager;
+    
+    @Autowired
     private UserManager userManager;
 
     @ApiOperation(value = "List all certification bodies (ACBs).",
@@ -62,7 +66,7 @@ public class CertificationBodyController {
         CertificationBodyResults results = new CertificationBodyResults();
             List<CertificationBodyDTO> acbs = null;
         if (editable) {
-            acbs = acbManager.getAllForUser();
+            acbs = userPermissionsManager.getAllAcbsForCurrentUser();
         } else {
             acbs = acbManager.getAll();
         }
