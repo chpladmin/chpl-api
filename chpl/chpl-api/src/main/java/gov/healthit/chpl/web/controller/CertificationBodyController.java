@@ -148,14 +148,14 @@ public class CertificationBodyController {
         //security is different from normal ACB updates - only admins are allowed
         //whereas an ACB admin can update other info
         CertificationBodyDTO existingAcb = acbManager.getIfPermissionById(updatedAcb.getId());
-        if (existingAcb.isRetired() != updatedAcb.isRetired() && updatedAcb.isRetired()) {
+        if (updatedAcb.isRetired()) {
             //we are retiring this ACB - no other updates can happen
             CertificationBodyDTO toRetire = new CertificationBodyDTO();
             toRetire.setRetirementDate(updatedAcb.getRetirementDate());
             toRetire.setId(updatedAcb.getId());
             acbManager.retire(toRetire);
         } else {
-            if (existingAcb.isRetired() != updatedAcb.isRetired() && !updatedAcb.isRetired()) {
+            if (existingAcb.isRetired()) {
                 //unretire the ACB
                 acbManager.unretire(updatedAcb.getId());
             }
