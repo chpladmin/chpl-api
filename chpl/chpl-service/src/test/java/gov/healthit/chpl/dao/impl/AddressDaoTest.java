@@ -100,27 +100,6 @@ public class AddressDaoTest extends TestCase {
     }
 
     @Test
-    @Ignore
-    @Transactional
-    @Rollback
-    // The AddressDAOImpl.update(AddressDTO) does not handle empty city string;
-    // thus, this test should always fail. Ignoring
-    public void updateAddressWithEmptyCity() throws EntityRetrievalException {
-        AddressDTO toUpdate = addressDao.getById(-1L);
-        toUpdate.setCity("");
-
-        try {
-            addressDao.update(toUpdate);
-            fail("did not catch empty string constraint!");
-        } catch (Exception ex) {
-        }
-
-        AddressDTO notUpdated = addressDao.getById(-1L);
-        assertNotNull(notUpdated);
-        assertEquals("Baltimore", notUpdated.getCity());
-    }
-
-    @Test
     @Transactional
     @Rollback
     public void createAddress() {

@@ -48,6 +48,7 @@ import gov.healthit.chpl.manager.SchedulerManager;
 
 /**
  * Business logic for accessing and updating ACBs.
+ * 
  * @author kekey
  *
  */
@@ -98,8 +99,10 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
         CertificationBodyDTO result = certificationBodyDao.create(acb);
 
         // Grant the admin user administrative permission to the ACB.
-        // I think this is required because the invitation manager impersonates the admin
-        // user when a new/unauthenticated user is signing up for this ACB and if the
+        // I think this is required because the invitation manager impersonates
+        // the admin
+        // user when a new/unauthenticated user is signing up for this ACB and
+        // if the
         // admin user doesn't have an ACE for this ACB no users can be added.
         // See getInvitedUserAuthenticator in InvitationManagerImpl.
         addPermission(result, User.ADMIN_USER_ID, BasePermission.ADMINISTRATION);
@@ -135,7 +138,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     @CacheEvict(CacheNames.CERT_BODY_NAMES)
     public CertificationBodyDTO retire(final CertificationBodyDTO acb) throws EntityRetrievalException,
-        JsonProcessingException, EntityCreationException, IllegalArgumentException, SchedulerException, ValidationException {
+    JsonProcessingException, EntityCreationException, IllegalArgumentException, SchedulerException, ValidationException {
         Date now = new Date();
         if (acb.getRetirementDate() == null || now.before(acb.getRetirementDate())) {
             throw new IllegalArgumentException("Retirement date is required and must be before \"now\".");
@@ -156,8 +159,8 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     @Transactional
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     @CacheEvict(CacheNames.CERT_BODY_NAMES)
-    public CertificationBodyDTO unretire(final Long acbId) throws EntityRetrievalException,
-    JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
+    public CertificationBodyDTO unretire(final Long acbId) throws EntityRetrievalException, JsonProcessingException,
+    EntityCreationException, UpdateCertifiedBodyException {
         CertificationBodyDTO result = null;
         CertificationBodyDTO toUpdate = certificationBodyDao.getById(acbId);
         toUpdate.setRetired(false);

@@ -130,8 +130,8 @@ public class ProductController {
                     + "that a new product is created with all of the information provided and all of the versions "
                     + " previously assigned to the productIds specified are reassigned to the newly created product. "
                     + "The old products are then deleted. "
-                    + " The logged in user must have ROLE_ADMIN, ROLE_ONC, or ROLE_ACB. "
-                    + "Users with ROLE_ACB are not able to perform a merge. ")
+                    + "Security Restrictions: ROLE_ADMIN to merge or ROLE_ACB and have administrative authority on "
+                    + "the specified ACB to do all actions except merge.")
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public ResponseEntity<Product> updateProduct(
@@ -339,7 +339,7 @@ public class ProductController {
     @ApiOperation(
             value = "Split a product - some versions stay with the existing product and some versions are moved "
                     + "to a new product.",
-                    notes = "The logged in user must have ROLE_ADMIN, ROLE_ONC, or ROLE_ACB. ")
+                    notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB")
     @RequestMapping(value = "/{productId}/split", method = RequestMethod.POST,
     consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public ResponseEntity<SplitProductResponse> splitProduct(@PathVariable("productId") final Long productId,

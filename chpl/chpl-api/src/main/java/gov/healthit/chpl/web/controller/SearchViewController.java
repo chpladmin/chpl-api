@@ -208,12 +208,12 @@ public class SearchViewController {
      */
     @SuppressWarnings({"checkstyle:methodlength","checkstyle:parameternumber"})
     @ApiOperation(value = "Search the CHPL",
-            notes = "If paging parameters are not specified, the first 20 records are returned by default. "
-                    + "All parameters are optional. "
-                    + "Any parameter that can accept multiple things (i.e. certificationStatuses) expects "
-                    + "a comma-delimited list of those things (i.e. certificationStatuses = Active,Suspended). "
-                    + "Date parameters are required to be in the format "
-                    + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT + ". ")
+    notes = "If paging parameters are not specified, the first 20 records are returned by default. "
+            + "All parameters are optional. "
+            + "Any parameter that can accept multiple things (i.e. certificationStatuses) expects "
+            + "a comma-delimited list of those things (i.e. certificationStatuses = Active,Suspended). "
+            + "Date parameters are required to be in the format "
+            + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT + ". ")
     @ApiImplicitParams({
         @ApiImplicitParam(name = "searchTerm",
                 value = "CHPL ID, Developer (or previous developer) Name, Product Name, ONC-ACB Certification ID",
@@ -255,7 +255,7 @@ public class SearchViewController {
                 required = false, dataType = "string", paramType = "query"),
         @ApiImplicitParam(name = "nonconformityOptionsOperator",
         value = "Either AND or OR. Defaults to OR."
-                 + "Indicates whether a listing must have met all nonconformityOptions "
+                + "Indicates whether a listing must have met all nonconformityOptions "
                 + "specified or may have met any one or more of the nonconformityOptions",
                 required = false, dataType = "string", paramType = "query"),
         @ApiImplicitParam(name = "hasHadSurveillance",
@@ -820,7 +820,7 @@ public class SearchViewController {
     }
 
     @ApiOperation(value = "Change existing fuzzy matching choices.",
-            notes = "Only CHPL users with ROLE_ADMIN or ROLE_ONC are able to update fuzzy matching choices.")
+            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/data/fuzzy_choices/{fuzzyChoiceId}", method = RequestMethod.PUT,
     consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public FuzzyChoices updateFuzzyChoicesForSearching(@RequestBody final FuzzyChoices fuzzyChoices)
