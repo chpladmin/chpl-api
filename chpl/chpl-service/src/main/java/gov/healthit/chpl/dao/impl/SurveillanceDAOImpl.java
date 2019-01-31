@@ -257,7 +257,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
         Query query = entityManager.createQuery(
                 "from SurveillanceEntity surv " + "where surv.friendlyId = :friendlyId "
                         + "and surv.certifiedProductId = :cpId " + "and surv.deleted <> true",
-                        SurveillanceEntity.class);
+                SurveillanceEntity.class);
         query.setParameter("friendlyId", survFriendlyId);
         query.setParameter("cpId", certifiedProductId);
         List<SurveillanceEntity> matches = query.getResultList();
@@ -433,7 +433,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 
     @Override
     public void deletePendingSurveillance(final Surveillance surv) throws EntityRetrievalException {
-        PendingSurveillanceEntity toDelete = fetchPendingSurveillanceById(surv.getId());
+        PendingSurveillanceEntity toDelete = fetchPendingSurveillanceById(surv.getId(), false);
 
         if (toDelete.getValidation() != null) {
             for (PendingSurveillanceValidationEntity val : toDelete.getValidation()) {
@@ -467,9 +467,15 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
     }
 
     @Override
-    public PendingSurveillanceEntity getPendingSurveillanceById(final Long id)
+    public PendingSurveillanceEntity getPendingSurveillanceById(final Long id) throws EntityRetrievalException {
+        PendingSurveillanceEntity entity = fetchPendingSurveillanceById(id, false);
+        return entity;
+    }
+
+    @Override
+    public PendingSurveillanceEntity getPendingSurveillanceById(final Long id, Boolean includeDeleted)
             throws EntityRetrievalException {
-        PendingSurveillanceEntity entity = fetchPendingSurveillanceById(id);
+        PendingSurveillanceEntity entity = fetchPendingSurveillanceById(id, includeDeleted);
         return entity;
     }
 
@@ -769,21 +775,23 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
                         + "LEFT JOIN FETCH cce2.certificationEdition "
                         + "LEFT OUTER JOIN FETCH ncs.nonconformityStatus " + "LEFT OUTER JOIN FETCH ncs.documents "
                         + "WHERE surv.deleted <> true " + "AND surv.certifiedProductId = :cpId",
-                        SurveillanceEntity.class);
+                SurveillanceEntity.class);
         query.setParameter("cpId", id);
 
         List<SurveillanceEntity> results = query.getResultList();
         return results;
     }
 
-    private PendingSurveillanceEntity fetchPendingSurveillanceById(final Long id)
+    private PendingSurveillanceEntity fetchPendingSurveillanceById(final Long id, Boolean includeDeleted)
             throws EntityRetrievalException {
         PendingSurveillanceEntity entity = null;
         String hql = "SELECT DISTINCT surv " + "FROM PendingSurveillanceEntity surv "
                 + "JOIN FETCH surv.certifiedProduct " + "LEFT OUTER JOIN FETCH surv.surveilledRequirements reqs "
                 + "LEFT OUTER JOIN FETCH reqs.nonconformities ncs " + "LEFT OUTER JOIN FETCH surv.validation "
-                + "WHERE surv.id = :entityid "
-                + "AND surv.deleted <> true ";
+                + "WHERE surv.id = :entityid ";
+        if (!includeDeleted) {
+            hql = hql + "AND surv.deleted <> true ";
+        }
 
         entityManager.clear();
         Query query = entityManager.createQuery(hql, PendingSurveillanceEntity.class);
