@@ -145,14 +145,14 @@ public class TestingLabController {
         //security is different from normal ATL updates - only admins are allowed
         //whereas an ATL admin can update other info
         TestingLabDTO existingAtl = atlManager.getIfPermissionById(updatedAtl.getId());
-        if (existingAtl.isRetired() != updatedAtl.isRetired() && updatedAtl.isRetired()) {
+        if (updatedAtl.isRetired()) {
             //we are retiring this ATL and no other changes can be made
             TestingLabDTO toRetire = new TestingLabDTO();
             toRetire.setRetirementDate(updatedAtl.getRetirementDate());
             toRetire.setId(updatedAtl.getId());
             atlManager.retire(toRetire);
         } else {
-            if (existingAtl.isRetired() != updatedAtl.isRetired() && !updatedAtl.isRetired()) {
+            if (existingAtl.isRetired()) {
                 //unretire the ATL
                 atlManager.unretire(updatedAtl.getId());
             }
