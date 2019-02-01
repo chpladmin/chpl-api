@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.permissions.domains.CertificationResultsDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions;
-import gov.healthit.chpl.permissions.domains.CorrectiveActionPlanDomainPermissions;
 import gov.healthit.chpl.permissions.domains.DomainPermissions;
 import gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions;
 
@@ -17,19 +16,16 @@ public class Permissions {
     public static final String PENDING_SURVEILLANCE = "PENDING_SURVEILLANCE";
     public static final String CERTIFICATION_RESULTS = "CERTIFICATION_RESULTS";
     public static final String CERTIFIED_PRODUCT = "CERTIFIED_PRODUCT";
-    public static final String CORRECTIVE_ACTION_PLAN = "CORRECTIVE_ACTION_PLAN";
 
     private Map<String, DomainPermissions> domainPermissions = new HashMap<String, DomainPermissions>();
 
     @Autowired
     public Permissions(final PendingSurveillanceDomainPermissions pendingSurveillanceDomainPermissions,
             final CertificationResultsDomainPermissions certificationResultsDomainPermissions,
-            final CertifiedProductDomainPermissions certifiedProductDomainPermissions,
-            final CorrectiveActionPlanDomainPermissions correctiveActionPlanDomainPermissions) {
+            final CertifiedProductDomainPermissions certifiedProductDomainPermissions) {
         domainPermissions.put(PENDING_SURVEILLANCE, pendingSurveillanceDomainPermissions);
         domainPermissions.put(CERTIFICATION_RESULTS, certificationResultsDomainPermissions);
         domainPermissions.put(CERTIFIED_PRODUCT, certifiedProductDomainPermissions);
-        domainPermissions.put(CORRECTIVE_ACTION_PLAN, correctiveActionPlanDomainPermissions);
     }
 
     public boolean hasAccess(final String domain, final String action) {
