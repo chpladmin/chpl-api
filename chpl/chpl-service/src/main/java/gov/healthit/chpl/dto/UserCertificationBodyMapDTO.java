@@ -2,20 +2,21 @@ package gov.healthit.chpl.dto;
 
 import java.io.Serializable;
 
+import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.entity.UserCertificationBodyMapEntity;
 
 public class UserCertificationBodyMapDTO implements Serializable {
     private static final long serialVersionUID = 1316069925338614100L;
 
     private Long id;
-    private UserDTO user;
+    private gov.healthit.chpl.auth.dto.UserDTO user;
     private CertificationBodyDTO certificationBody;
     private Boolean retired;
 
     public UserCertificationBodyMapDTO(UserCertificationBodyMapEntity entity) {
         this.id = entity.getId();
         this.certificationBody = new CertificationBodyDTO(entity.getCertificationBody());
-        this.user = new UserDTO(entity.getUser());
+        this.user = new gov.healthit.chpl.auth.dto.UserDTO(entity.getUser());
         this.retired = entity.getRetired();
     }
 

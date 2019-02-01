@@ -23,7 +23,7 @@ public class Permissions {
     public static final String CERTIFIED_PRODUCT = "CERTIFIED_PRODUCT";
     public static final String CORRECTIVE_ACTION_PLAN = "CORRECTIVE_ACTION_PLAN";
     public static final String INVITATION = "INVITATION";
-    public static final String PENDING_CERTIFIED_PRODUCTS = "PENDING_CERTIFIED_PRODUCTS";
+    public static final String PENDING_CERTIFIED_PRODUCT = "PENDING_CERTIFIED_PRODUCT";
     public static final String SURVEILLANCE = "SURVEILLANCE";
     public static final String CERTIFICATION_BODY = "CERTIFICATION_BODY";
     public static final String USER_PERMISSIONS = "USER_PERMISSIONS";
@@ -47,7 +47,7 @@ public class Permissions {
         domainPermissions.put(CERTIFIED_PRODUCT, certifiedProductDomainPermissions);
         domainPermissions.put(CORRECTIVE_ACTION_PLAN, correctiveActionPlanDomainPermissions);
         domainPermissions.put(INVITATION, invitationDomainPermissions);
-        domainPermissions.put(PENDING_CERTIFIED_PRODUCTS, pendingCertifiedProductDomainPermissions);
+        domainPermissions.put(PENDING_CERTIFIED_PRODUCT, pendingCertifiedProductDomainPermissions);
         domainPermissions.put(SURVEILLANCE, surveillanceDomainPermissions);
         domainPermissions.put(CERTIFICATION_BODY, certificationBodyDomainPermissions);
         // domainPermissions.put(USER_PERMISSIONS,

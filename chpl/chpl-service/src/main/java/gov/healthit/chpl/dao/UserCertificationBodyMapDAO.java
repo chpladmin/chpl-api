@@ -14,5 +14,7 @@ public interface UserCertificationBodyMapDAO {
 
     List<UserCertificationBodyMapDTO> getByUserId(Long userId);
 
+    List<UserCertificationBodyMapDTO> getByAcbId(Long acbId);
+
     UserCertificationBodyMapDTO getById(Long id);
 }

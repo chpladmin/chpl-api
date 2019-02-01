@@ -225,7 +225,7 @@ public class CertificationBodyController {
         }
 
         List<PermittedUser> acbUsers = new ArrayList<PermittedUser>();
-        List<UserDTO> users = acbManager.getAllUsersOnAcb(acb);
+        List<UserDTO> users = userPermissionsManager.getAllUsersOnAcb(acb);
         for (UserDTO user : users) {
 
             // only show users that have ROLE_ACB

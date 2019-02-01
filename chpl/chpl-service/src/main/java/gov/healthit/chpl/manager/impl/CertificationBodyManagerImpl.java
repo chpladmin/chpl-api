@@ -1,9 +1,7 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,7 +10,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
-import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.model.AccessControlEntry;
 import org.springframework.security.acls.model.MutableAcl;
 import org.springframework.security.acls.model.MutableAclService;
@@ -154,34 +151,6 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
         activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, result.getId(), activityMsg,
                 toUpdate, result);
         return result;
-    }
-
-    @Transactional
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
-            + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).USERS_BY_ACB, #acb)")
-    public List<UserDTO> getAllUsersOnAcb(final CertificationBodyDTO acb) {
-        ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
-        MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
-
-        Set<String> userNames = new HashSet<String>();
-        List<AccessControlEntry> entries = acl.getEntries();
-        for (int i = 0; i < entries.size(); i++) {
-            Sid sid = entries.get(i).getSid();
-            if (sid instanceof PrincipalSid) {
-                PrincipalSid psid = (PrincipalSid) sid;
-                userNames.add(psid.getPrincipal());
-            } else {
-                userNames.add(sid.toString());
-            }
-        }
-
-        // pull back the userdto for the sids
-        List<UserDTO> users = new ArrayList<UserDTO>();
-        if (userNames != null && userNames.size() > 0) {
-            List<String> usernameList = new ArrayList<String>(userNames);
-            users.addAll(userDAO.findByNames(usernameList));
-        }
-        return users;
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "

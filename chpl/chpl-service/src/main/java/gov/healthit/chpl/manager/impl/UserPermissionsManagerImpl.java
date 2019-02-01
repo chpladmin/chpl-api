@@ -12,11 +12,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.dao.UserDAO;
+import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.UserCertificationBodyMapDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
-import gov.healthit.chpl.dto.UserDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.UserPermissionsManager;
 
@@ -26,13 +28,15 @@ public class UserPermissionsManagerImpl implements UserPermissionsManager {
 
     // private Permissions permissions;
     private UserCertificationBodyMapDAO userCertificationBodyMapDAO;
+    private UserDAO userDAO;
 
     @Autowired
     public UserPermissionsManagerImpl(// final Permissions permissions,
-            final UserCertificationBodyMapDAO userCertificationBodyMapDAO) {
+            final UserCertificationBodyMapDAO userCertificationBodyMapDAO, final UserDAO userDAO) {
 
         // this.permissions = permissions;
         this.userCertificationBodyMapDAO = userCertificationBodyMapDAO;
+        this.userDAO = userDAO;
     }
 
     @Override
@@ -42,11 +46,11 @@ public class UserPermissionsManagerImpl implements UserPermissionsManager {
     // +
     // "T(gov.healthit.chpl.permissions.domains.UserPermissionDomainPermissions).ADD,
     // #acb)")
-    public void addPermission(CertificationBodyDTO acb, Long userId) throws EntityRetrievalException {
+    public void addPermission(CertificationBodyDTO acb, Long userId)
+            throws EntityRetrievalException, UserRetrievalException {
         UserCertificationBodyMapDTO dto = new UserCertificationBodyMapDTO();
         dto.setCertificationBody(acb);
-        UserDTO user = new UserDTO();
-        user.setUserId(userId);
+        UserDTO user = userDAO.getById(userId);
         dto.setUser(user);
 
         userCertificationBodyMapDAO.create(dto);
@@ -95,6 +99,23 @@ public class UserPermissionsManagerImpl implements UserPermissionsManager {
             acbs.add(dto.getCertificationBody());
         }
         return acbs;
+    }
+
+    @Transactional
+    // @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY,
+    // "
+    // +
+    // "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).USERS_BY_ACB,
+    // #acb)")
+    public List<UserDTO> getAllUsersOnAcb(final CertificationBodyDTO acb) {
+        List<UserDTO> userDtos = new ArrayList<UserDTO>();
+        List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByAcbId(acb.getId());
+
+        for (UserCertificationBodyMapDTO dto : dtos) {
+            userDtos.add(dto.getUser());
+        }
+
+        return userDtos;
     }
 
 }

@@ -721,7 +721,7 @@ public class ActivityController {
         if (Util.isUserRoleAcbAdmin()) {
             List<CertificationBodyDTO> allowedAcbs = userPermissionsManager.getAllAcbsForCurrentUser();
             for (CertificationBodyDTO acb : allowedAcbs) {
-                List<UserDTO> acbUsers = acbManager.getAllUsersOnAcb(acb);
+                List<UserDTO> acbUsers = userPermissionsManager.getAllUsersOnAcb(acb);
                 for (UserDTO user : acbUsers) {
                     allowedUserIds.add(user.getId());
                 }
