@@ -6,6 +6,7 @@ _Date TBD_
 * Remove ACB from scheduled jobs when ACB is retired
 * Save retirement dates for ACBs/ATLs
 * Allow ROLE_ADMIN and ROLE_ONC to manage pending surveillances
+* Allow ROLE_ADMIN to run Quartz system jobs
 * Update Swagger documentation regarding API security
 
 ### Bug Fixes

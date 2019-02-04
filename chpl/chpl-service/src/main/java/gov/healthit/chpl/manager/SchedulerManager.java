@@ -5,7 +5,8 @@ import java.util.List;
 import org.quartz.SchedulerException;
 
 import gov.healthit.chpl.domain.schedule.ChplJob;
-import gov.healthit.chpl.domain.schedule.ChplTrigger;
+import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
+import gov.healthit.chpl.domain.schedule.ChplRepeatableTrigger;
 import gov.healthit.chpl.exception.ValidationException;
 
 /**
@@ -21,8 +22,9 @@ public interface SchedulerManager {
      * @throws ValidationException if job values aren't correct
      * @return the new trigger
      */
-    ChplTrigger createTrigger(ChplTrigger trigger) throws SchedulerException, ValidationException;
+    ChplRepeatableTrigger createTrigger(ChplRepeatableTrigger trigger) throws SchedulerException, ValidationException;
 
+    ChplOneTimeTrigger createOneTimeTrigger(ChplOneTimeTrigger trigger)  throws SchedulerException, ValidationException;
     /**
      * Delete an existing Trigger.
      * @param triggerGroup group name of trigger
@@ -37,7 +39,7 @@ public interface SchedulerManager {
      * @throws SchedulerException if scheduler has an issue
      * @return the triggers
      */
-    List<ChplTrigger> getAllTriggers() throws SchedulerException;
+    List<ChplRepeatableTrigger> getAllTriggers() throws SchedulerException;
 
     /**
      * Update trigger with new data.
@@ -46,7 +48,7 @@ public interface SchedulerManager {
      * @throws SchedulerException if scheduler has issue
      * @throws ValidationException if job values aren't correct
      */
-    ChplTrigger updateTrigger(ChplTrigger trigger) throws SchedulerException, ValidationException;
+    ChplRepeatableTrigger updateTrigger(ChplRepeatableTrigger trigger) throws SchedulerException, ValidationException;
 
 
     /**
