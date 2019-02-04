@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+<<<<<<< HEAD
 import gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CertificationResultsDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions;
@@ -13,6 +14,9 @@ import gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CorrectiveActionPlanDomainPermissions;
 =======
 >>>>>>> parent of 7e9668ce4... Revert "feat: switch CertifiedProductManagerImpl to use new security"
+=======
+import gov.healthit.chpl.permissions.domains.CertificationResultsDomainPermissions;
+>>>>>>> parent of ab4f7247e... Revert "feat: switch CertificationResultManagerImpl to use new security"
 import gov.healthit.chpl.permissions.domains.DomainPermissions;
 import gov.healthit.chpl.permissions.domains.InvitationDomainPermissions;
 import gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions;
@@ -23,6 +27,7 @@ import gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions;
 public class Permissions {
     public static final String PENDING_SURVEILLANCE = "PENDING_SURVEILLANCE";
     public static final String CERTIFICATION_RESULTS = "CERTIFICATION_RESULTS";
+<<<<<<< HEAD
     public static final String CERTIFIED_PRODUCT = "CERTIFIED_PRODUCT";
 <<<<<<< HEAD
     public static final String CORRECTIVE_ACTION_PLAN = "CORRECTIVE_ACTION_PLAN";
@@ -34,11 +39,14 @@ public class Permissions {
     public static final String SCHEDULER = "SCHEDULER";
 =======
 >>>>>>> parent of 7e9668ce4... Revert "feat: switch CertifiedProductManagerImpl to use new security"
+=======
+>>>>>>> parent of ab4f7247e... Revert "feat: switch CertificationResultManagerImpl to use new security"
 
     private Map<String, DomainPermissions> domainPermissions = new HashMap<String, DomainPermissions>();
 
     @Autowired
     public Permissions(final PendingSurveillanceDomainPermissions pendingSurveillanceDomainPermissions,
+<<<<<<< HEAD
 <<<<<<< HEAD
 
             final CertificationResultsDomainPermissions certificationResultsDomainPermissions,
@@ -68,6 +76,11 @@ public class Permissions {
         domainPermissions.put(CERTIFICATION_RESULTS, certificationResultsDomainPermissions);
         domainPermissions.put(CERTIFIED_PRODUCT, certifiedProductDomainPermissions);
 >>>>>>> parent of 7e9668ce4... Revert "feat: switch CertifiedProductManagerImpl to use new security"
+=======
+            final CertificationResultsDomainPermissions certificationResultsDomainPermissions) {
+        domainPermissions.put(PENDING_SURVEILLANCE, pendingSurveillanceDomainPermissions);
+        domainPermissions.put(CERTIFICATION_RESULTS, certificationResultsDomainPermissions);
+>>>>>>> parent of ab4f7247e... Revert "feat: switch CertificationResultManagerImpl to use new security"
     }
 
     public boolean hasAccess(final String domain, final String action) {
