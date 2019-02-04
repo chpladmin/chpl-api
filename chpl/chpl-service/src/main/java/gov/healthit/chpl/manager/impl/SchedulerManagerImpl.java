@@ -67,7 +67,8 @@ public class SchedulerManagerImpl implements SchedulerManager {
 
     @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
-    public ChplRepeatableTrigger createTrigger(final ChplRepeatableTrigger trigger) throws SchedulerException, ValidationException {
+    public ChplRepeatableTrigger createTrigger(final ChplRepeatableTrigger trigger)
+            throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
 
         TriggerKey triggerId = triggerKey(createTriggerName(trigger), createTriggerGroup(trigger.getJob()));
@@ -150,7 +151,8 @@ public class SchedulerManagerImpl implements SchedulerManager {
 
     @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
-    public ChplRepeatableTrigger updateTrigger(final ChplRepeatableTrigger trigger) throws SchedulerException, ValidationException {
+    public ChplRepeatableTrigger updateTrigger(final ChplRepeatableTrigger trigger)
+            throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
         Trigger oldTrigger = scheduler.getTrigger(triggerKey(trigger.getName(), trigger.getGroup()));
         Trigger qzTrigger = null;
@@ -219,12 +221,11 @@ public class SchedulerManagerImpl implements SchedulerManager {
         }
     }
 
-
     @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     public void retireAcb(final String acb) throws SchedulerException, ValidationException {
-        List<ChplTrigger> allTriggers = getAllTriggers();
-        for (ChplTrigger trigger : allTriggers) {
+        List<ChplRepeatableTrigger> allTriggers = getAllTriggers();
+        for (ChplRepeatableTrigger trigger : allTriggers) {
             if (trigger.getAcb().indexOf(acb) > -1) {
                 ArrayList<String> acbs = new ArrayList<String>(Arrays.asList(trigger.getAcb().split(DATA_DELIMITER)));
                 acbs.remove(acb);
@@ -242,7 +243,8 @@ public class SchedulerManagerImpl implements SchedulerManager {
     }
 
     private ChplRepeatableTrigger getChplTrigger(final TriggerKey triggerKey) throws SchedulerException {
-        ChplRepeatableTrigger chplTrigger = new ChplRepeatableTrigger((CronTrigger) getScheduler().getTrigger(triggerKey));
+        ChplRepeatableTrigger chplTrigger = new ChplRepeatableTrigger(
+                (CronTrigger) getScheduler().getTrigger(triggerKey));
 
         JobDetail jobDetail = getScheduler().getJobDetail(getScheduler().getTrigger(triggerKey).getJobKey());
         ChplJob chplJob = new ChplJob(jobDetail);
