@@ -27,11 +27,13 @@ public class Permissions {
     public static final String SURVEILLANCE = "SURVEILLANCE";
     public static final String CERTIFICATION_BODY = "CERTIFICATION_BODY";
     public static final String USER_PERMISSIONS = "USER_PERMISSIONS";
+    public static final String SCHEDULER = "SCHEDULER";
 
     private Map<String, DomainPermissions> domainPermissions = new HashMap<String, DomainPermissions>();
 
     @Autowired
     public Permissions(final PendingSurveillanceDomainPermissions pendingSurveillanceDomainPermissions,
+
             final CertificationResultsDomainPermissions certificationResultsDomainPermissions,
             final CertifiedProductDomainPermissions certifiedProductDomainPermissions,
             final CorrectiveActionPlanDomainPermissions correctiveActionPlanDomainPermissions,

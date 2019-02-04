@@ -510,7 +510,7 @@ throws EntityCreationException {
     @Override
     public Long findAcbIdById(final Long pcpId)
             throws EntityRetrievalException {
-        PendingCertifiedProductEntity entity = getEntityById(pcpId, false);
+        PendingCertifiedProductEntity entity = getEntityById(pcpId, true);
         if (entity == null) {
             return null;
         }

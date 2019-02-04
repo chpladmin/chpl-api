@@ -72,15 +72,9 @@ public class VersionManagerTest extends TestCase {
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
     }
 
-    // i had this method in here to test for updates being allowed
-    // when then developer is Active, but it fails because it triggers
-    // a suspicious activity event and tries to send email.
-    // we're missing the email properties but i don't think we want to
-    // have one sent anyway.. so excluding that test.
     @Test
     @Transactional
     @Rollback
-    @Ignore
     public void testAllowedToUpdateVersionWithActiveDeveloper()
             throws EntityRetrievalException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);

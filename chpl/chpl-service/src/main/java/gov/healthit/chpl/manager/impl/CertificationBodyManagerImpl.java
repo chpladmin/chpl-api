@@ -1,13 +1,17 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.support.ApplicationObjectSupport;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
 import org.springframework.security.acls.model.AccessControlEntry;
@@ -32,8 +36,10 @@ import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
+import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.permissions.Permissions;
 
@@ -47,14 +53,22 @@ import gov.healthit.chpl.permissions.Permissions;
 public class CertificationBodyManagerImpl extends ApplicationObjectSupport implements CertificationBodyManager {
     private static final Logger LOGGER = LogManager.getLogger(CertificationBodyManagerImpl.class);
 
-    @Autowired
-    private CertificationBodyDAO certificationBodyDAO;
-    @Autowired
-    private UserDAO userDAO;
-    @Autowired
+    private CertificationBodyDAO certificationBodyDao;
+    private UserDAO userDao;
     private MutableAclService mutableAclService;
-    @Autowired
     private ActivityManager activityManager;
+    private SchedulerManager schedulerManager;
+
+    @Autowired
+    public CertificationBodyManagerImpl(final CertificationBodyDAO certificationBodyDao, final UserDAO userDao,
+            final MutableAclService mutableAclService, final ActivityManager activityManager,
+            @Lazy final SchedulerManager schedulerManager) {
+        this.certificationBodyDao = certificationBodyDao;
+        this.userDao = userDao;
+        this.mutableAclService = mutableAclService;
+        this.activityManager = activityManager;
+        this.schedulerManager = schedulerManager;
+    }
 
     @Autowired
     private UserPermissionsManager userPermissionsManager;
@@ -69,7 +83,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     public CertificationBodyDTO create(final CertificationBodyDTO acb)
             throws UserRetrievalException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
         // assign a code
-        String maxCode = certificationBodyDAO.getMaxCode();
+        String maxCode = certificationBodyDao.getMaxCode();
         int maxCodeValue = Integer.parseInt(maxCode);
         int nextCodeValue = maxCodeValue + 1;
 
@@ -86,7 +100,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
         acb.setRetired(false);
 
         // Create the ACB itself
-        CertificationBodyDTO result = certificationBodyDAO.create(acb);
+        CertificationBodyDTO result = certificationBodyDao.create(acb);
 
         // Grant the current principal administrative permission to the ACB
         userPermissionsManager.addPermission(result, Util.getCurrentUser().getId());
@@ -110,8 +124,8 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
             JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
 
         CertificationBodyDTO result = null;
-        CertificationBodyDTO toUpdate = certificationBodyDAO.getById(acb.getId());
-        result = certificationBodyDAO.update(acb);
+        CertificationBodyDTO toUpdate = certificationBodyDao.getById(acb.getId());
+        result = certificationBodyDao.update(acb);
 
         String activityMsg = "Updated acb " + acb.getName();
         activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, result.getId(), activityMsg,
@@ -123,12 +137,19 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
             + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).RETIRE)")
     @CacheEvict(CacheNames.CERT_BODY_NAMES)
-    public CertificationBodyDTO retire(final Long acbId) throws EntityRetrievalException, JsonProcessingException,
-            EntityCreationException, UpdateCertifiedBodyException {
+    public CertificationBodyDTO retire(final CertificationBodyDTO acb)
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, IllegalArgumentException,
+            SchedulerException, ValidationException {
+        Date now = new Date();
+        if (acb.getRetirementDate() == null || now.before(acb.getRetirementDate())) {
+            throw new IllegalArgumentException("Retirement date is required and must be before \"now\".");
+        }
         CertificationBodyDTO result = null;
-        CertificationBodyDTO toUpdate = certificationBodyDAO.getById(acbId);
+        CertificationBodyDTO toUpdate = certificationBodyDao.getById(acb.getId());
         toUpdate.setRetired(true);
-        result = certificationBodyDAO.update(toUpdate);
+        toUpdate.setRetirementDate(acb.getRetirementDate());
+        result = certificationBodyDao.update(toUpdate);
+        schedulerManager.retireAcb(toUpdate.getName());
 
         String activityMsg = "Retired acb " + toUpdate.getName();
         activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, result.getId(), activityMsg,
@@ -143,9 +164,10 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     public CertificationBodyDTO unretire(final Long acbId) throws EntityRetrievalException, JsonProcessingException,
             EntityCreationException, UpdateCertifiedBodyException {
         CertificationBodyDTO result = null;
-        CertificationBodyDTO toUpdate = certificationBodyDAO.getById(acbId);
+        CertificationBodyDTO toUpdate = certificationBodyDao.getById(acbId);
         toUpdate.setRetired(false);
-        result = certificationBodyDAO.update(toUpdate);
+        toUpdate.setRetirementDate(null);
+        result = certificationBodyDao.update(toUpdate);
 
         String activityMsg = "Unretired acb " + toUpdate.getName();
         activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, result.getId(), activityMsg,
@@ -201,10 +223,10 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     public void deletePermissionsForUser(final UserDTO userDto) throws UserRetrievalException {
         UserDTO foundUser = userDto;
         if (foundUser.getSubjectName() == null) {
-            foundUser = userDAO.getById(userDto.getId());
+            foundUser = userDao.getById(userDto.getId());
         }
 
-        List<CertificationBodyDTO> acbs = certificationBodyDAO.findAll();
+        List<CertificationBodyDTO> acbs = certificationBodyDao.findAll();
         for (CertificationBodyDTO acb : acbs) {
             ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
             MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -222,17 +244,24 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 
     @Transactional(readOnly = true)
     public List<CertificationBodyDTO> getAll() {
-        return certificationBodyDAO.findAll();
+        return certificationBodyDao.findAll();
     }
 
     @Transactional(readOnly = true)
     public List<CertificationBodyDTO> getAllActive() {
-        return certificationBodyDAO.findAllActive();
+        return certificationBodyDao.findAllActive();
+    }
+
+    @Transactional(readOnly = true)
+    @PostFilter("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or "
+            + "hasPermission(filterObject, 'read') or hasPermission(filterObject, admin)")
+    public List<CertificationBodyDTO> getAllForUser() {
+        return certificationBodyDao.findAll();
     }
 
     @Transactional(readOnly = true)
     public CertificationBodyDTO getById(final Long id) throws EntityRetrievalException {
-        return certificationBodyDAO.getById(id);
+        return certificationBodyDao.getById(id);
     }
 
     @Transactional(readOnly = true)
@@ -240,7 +269,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
             + "hasPermission(#id, 'gov.healthit.chpl.dto.CertificationBodyDTO', read) or "
             + "hasPermission(#id, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
     public CertificationBodyDTO getIfPermissionById(final Long id) throws EntityRetrievalException {
-        return certificationBodyDAO.getById(id);
+        return certificationBodyDao.getById(id);
     }
 
     public MutableAclService getMutableAclService() {
@@ -248,7 +277,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     }
 
     public void setCertificationBodyDAO(final CertificationBodyDAO acbDAO) {
-        this.certificationBodyDAO = acbDAO;
+        this.certificationBodyDao = acbDAO;
     }
 
     public void setMutableAclService(final MutableAclService mutableAclService) {

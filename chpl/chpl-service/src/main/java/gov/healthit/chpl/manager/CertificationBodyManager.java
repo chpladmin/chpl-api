@@ -2,6 +2,7 @@ package gov.healthit.chpl.manager;
 
 import java.util.List;
 
+import org.quartz.SchedulerException;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.acls.model.Sid;
 
@@ -12,6 +13,7 @@ import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 
 public interface CertificationBodyManager {
@@ -26,8 +28,8 @@ public interface CertificationBodyManager {
     CertificationBodyDTO update(CertificationBodyDTO acb) throws EntityRetrievalException, JsonProcessingException,
             EntityCreationException, UpdateCertifiedBodyException;
 
-    CertificationBodyDTO retire(Long acbId) throws EntityRetrievalException, JsonProcessingException,
-            EntityCreationException, UpdateCertifiedBodyException;
+    CertificationBodyDTO retire(CertificationBodyDTO acb) throws EntityRetrievalException, JsonProcessingException,
+            EntityCreationException, SchedulerException, UpdateCertifiedBodyException, ValidationException;
 
     CertificationBodyDTO unretire(Long acbId) throws EntityRetrievalException, JsonProcessingException,
             EntityCreationException, UpdateCertifiedBodyException;

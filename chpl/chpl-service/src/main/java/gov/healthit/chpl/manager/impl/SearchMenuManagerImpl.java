@@ -5,15 +5,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
@@ -42,6 +42,7 @@ import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.UcdProcessDAO;
 import gov.healthit.chpl.dao.UploadTemplateVersionDAO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
@@ -168,7 +169,8 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
     @Transactional
     @Override
-    public Set<FuzzyChoices> getFuzzyChoices() throws EntityRetrievalException, JsonParseException, JsonMappingException, IOException {
+    public Set<FuzzyChoices> getFuzzyChoices() throws EntityRetrievalException, JsonParseException,
+    JsonMappingException, IOException {
         List<FuzzyChoicesDTO> fuzzyChoices = fuzzyChoicesDAO.findAllTypes();
         Set<FuzzyChoices> results = new HashSet<FuzzyChoices>();
         for (FuzzyChoicesDTO dto : fuzzyChoices) {
@@ -180,7 +182,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
     @Transactional
     @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    public FuzzyChoices updateFuzzyChoices(FuzzyChoicesDTO fuzzyChoicesDTO)
+    public FuzzyChoices updateFuzzyChoices(final FuzzyChoicesDTO fuzzyChoicesDTO)
         throws EntityRetrievalException, JsonProcessingException, EntityCreationException, IOException {
 
         FuzzyChoices result = null;
@@ -206,7 +208,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
     @Transactional
     @Override
     @Cacheable(CacheNames.EDITION_NAMES)
-    public Set<KeyValueModel> getEditionNames(Boolean simple) {
+    public Set<KeyValueModel> getEditionNames(final Boolean simple) {
 
         List<CertificationEditionDTO> certificationEditions = certificationEditionDAO.findAll();
         Set<KeyValueModel> editionNames = new HashSet<KeyValueModel>();
@@ -286,13 +288,13 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
     @Transactional
     @Override
     @Cacheable(CacheNames.CERT_BODY_NAMES)
-    public Set<KeyValueModel> getCertBodyNames() {
+    public Set<CertificationBody> getCertBodyNames() {
 
         List<CertificationBodyDTO> dtos = this.certificationBodyDAO.findAll();
-        Set<KeyValueModel> acbNames = new HashSet<KeyValueModel>();
+        Set<CertificationBody> acbNames = new HashSet<CertificationBody>();
 
         for (CertificationBodyDTO dto : dtos) {
-            acbNames.add(new KeyValueModel(dto.getId(), dto.getName()));
+            acbNames.add(new CertificationBody(dto));
         }
 
         return acbNames;
@@ -572,7 +574,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
     @Transactional
     @Override
     @Cacheable(CacheNames.CERTIFICATION_CRITERION_NUMBERS)
-    public Set<DescriptiveModel> getCertificationCriterionNumbers(Boolean simple) throws EntityRetrievalException {
+    public Set<DescriptiveModel> getCertificationCriterionNumbers(final Boolean simple) throws EntityRetrievalException {
 
         List<CertificationCriterionDTO> dtos = this.certificationCriterionDAO.findAll();
         Set<DescriptiveModel> criterionNames = new HashSet<DescriptiveModel>();
@@ -604,7 +606,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
     @Transactional
     @Override
     @Cacheable(CacheNames.CQM_CRITERION_NUMBERS)
-    public Set<DescriptiveModel> getCQMCriterionNumbers(Boolean simple) {
+    public Set<DescriptiveModel> getCQMCriterionNumbers(final Boolean simple) {
 
         List<CQMCriterionDTO> dtos = this.cqmCriterionDAO.findAll();
         Set<DescriptiveModel> criterionNames = new HashSet<DescriptiveModel>();
