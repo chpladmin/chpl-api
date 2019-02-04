@@ -42,7 +42,8 @@ public class SchedulerController {
      * @throws SchedulerException if exception is thrown
      * @throws ValidationException if job values aren't correct
      */
-    @ApiOperation(value = "Create a new trigger and return it")
+    @ApiOperation(value = "Create a new trigger and return it",
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB.")
     @RequestMapping(value = "/triggers", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody ScheduleTriggersResults createTrigger(@RequestBody(required = true)
     final ChplRepeatableTrigger trigger) throws SchedulerException, ValidationException {
@@ -91,7 +92,9 @@ public class SchedulerController {
      * @throws SchedulerException if scheduler has an issue
      */
     @ApiOperation(value = "Get the list of all triggers and their associated scheduled jobs "
-            + "that are applicable to the currently logged in user")
+            + "that are applicable to the currently logged in user",
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and have administrative "
+                    + "authority on the specified ACB.")
     @RequestMapping(value = "/triggers", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ScheduleTriggersResults getAllTriggers() throws SchedulerException {
         List<ChplRepeatableTrigger> triggers = schedulerManager.getAllTriggers();
@@ -107,7 +110,9 @@ public class SchedulerController {
      * @throws SchedulerException if exception is thrown
      * @throws ValidationException if job values aren't correct
      */
-    @ApiOperation(value = "Update an existing trigger and return it")
+    @ApiOperation(value = "Update an existing trigger and return it",
+            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and have administrative authority on the specified "
+                    + "ACB.")
     @RequestMapping(value = "/triggers", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public @ResponseBody ScheduleTriggersResults updateTrigger(@RequestBody(required = true) final ChplRepeatableTrigger trigger)
             throws SchedulerException, ValidationException {
@@ -122,7 +127,8 @@ public class SchedulerController {
      * @return List of ChplJob objects
      * @throws SchedulerException if exception is thrown
      */
-    @ApiOperation(value = "Get the list of all jobs that are applicable to the currently logged in user")
+    @ApiOperation(value = "Get the list of all jobs that are applicable to the currently logged in user",
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and have administrative authority on the specified ACB")
     @RequestMapping(value = "/jobs", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ChplJobsResults getAllJobs() throws SchedulerException {
         List<ChplJob> jobs = schedulerManager.getAllJobs();
@@ -137,7 +143,8 @@ public class SchedulerController {
      * @return the updated job
      * @throws SchedulerException if scheduler has issues
      */
-    @ApiOperation(value = "Update a given job")
+    @ApiOperation(value = "Update a given job",
+            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC.")
     @RequestMapping(value = "/jobs", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public @ResponseBody ChplJobsResults updateJob(@RequestBody(required = true)
     final ChplJob job) throws SchedulerException {

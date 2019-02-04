@@ -65,4 +65,12 @@ public interface SchedulerManager {
      * @throws SchedulerException if scheduler has issues
      */
     ChplJob updateJob(ChplJob job) throws SchedulerException;
+
+    /**
+     * Remove ACB from any jobs that depend on it. Remove all jobs that only depend on provided ACB
+     * @param acb to remove
+     * @throws SchedulerException if scheduler has issues
+     * @throws ValidationException if job values aren't correct
+     */
+    void retireAcb(String acb) throws SchedulerException, ValidationException;
 }

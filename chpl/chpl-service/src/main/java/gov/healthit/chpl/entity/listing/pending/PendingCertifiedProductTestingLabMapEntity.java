@@ -132,4 +132,13 @@ public class PendingCertifiedProductTestingLabMapEntity {
     public void setTestingLabName(final String testingLabName) {
         this.testingLabName = testingLabName;
     }
+
+    @Override
+    public String toString() {
+        return "PendingCertifiedProductTestingLabMapEntity [id=" + id + ", mappedProduct=" + mappedProduct
+                + ", pendingCertifiedProductId=" + pendingCertifiedProductId + ", testingLabId=" + testingLabId
+                + ", testingLabName=" + testingLabName + ", lastModifiedDate=" + lastModifiedDate
+                + ", lastModifiedUser=" + lastModifiedUser + ", creationDate=" + creationDate + ", deleted=" + deleted
+                + "]";
+    }
 }

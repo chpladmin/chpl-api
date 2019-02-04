@@ -91,7 +91,9 @@ public class SurveillanceController implements MessageSourceAware {
     @Autowired
     private PendingSurveillanceManager pendingSurveillanceManager;
 
-    @ApiOperation(value = "Get the listing of all pending surveillance items that this user has access to.")
+    @ApiOperation(value = "Get the listing of all pending surveillance items that this user has access to.",
+            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority on the ACB associated "
+                    + "with the certified product is required.")
     @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody SurveillanceResults getAllPendingSurveillance() throws AccessDeniedException {
 
@@ -143,8 +145,8 @@ public class SurveillanceController implements MessageSourceAware {
                     + "in the system and associates them with the certified product indicated in the "
                     + "request body. The surveillance passed into this request will first be validated "
                     + " to check for errors. "
-                    + "ROLE_ADMIN, ROLE_ONC, or ROLE_ACB "
-                    + " along with administrative authority on the ACB associated with the certified product is required.")
+                    + "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority on the ACB associated with "
+                    + "the certified product is required.")
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public synchronized ResponseEntity<Surveillance> createSurveillance(
             @RequestBody(required = true) final Surveillance survToInsert) throws ValidationException,
@@ -211,9 +213,8 @@ public class SurveillanceController implements MessageSourceAware {
 
     @ApiOperation(value = "Add documentation to an existing nonconformity.",
             notes = "Upload a file of any kind (current size limit 5MB) as supporting "
-                    + " documentation to an existing nonconformity. The logged in user uploading the file "
-                    + " must have either ROLE_ADMIN or ROLE_ACB and administrative "
-                    + " authority on the associated ACB.")
+                    + " documentation to an existing nonconformity. Security Restrictions: ROLE_ADMIN, ROLE_ONC, or "
+                    + "ROLE_ACB and administrative authority on the associated ACB.")
     @RequestMapping(value = "/{surveillanceId}/nonconformity/{nonconformityId}/document",
     method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody String uploadNonconformityDocument(
@@ -271,9 +272,8 @@ public class SurveillanceController implements MessageSourceAware {
     @ApiOperation(value = "Update a surveillance activity for a certified product.",
             notes = "Updates an existing surveillance activity, surveilled requirements, and any applicable "
                     + "non-conformities in the system. The surveillance passed into this request will first be "
-                    + "validated to check for errors. ROLE_ADMIN, ROLE_ONC, or "
-                    + "ROLE_ACB and administrative authority on the ACB associated "
-                    + "with the certified product is required.")
+                    + "validated to check for errors. Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB "
+                    + "and associated with the certified product is required.")
     @RequestMapping(value = "/{surveillanceId}", method = RequestMethod.PUT,
     produces = "application/json; charset=utf-8")
     public synchronized ResponseEntity<Surveillance> updateSurveillance(
@@ -332,8 +332,8 @@ public class SurveillanceController implements MessageSourceAware {
 
     @ApiOperation(value = "Delete a surveillance activity for a certified product.",
             notes = "Deletes an existing surveillance activity, surveilled requirements, and any applicable "
-                    + "non-conformities in the system. ROLE_ACB and administrative authority on the ACB associated "
-                    + "with the certified product is required.")
+                    + "non-conformities in the system. Security Restrictions: ROLE_ADMIN or ROLE_ACB and have "
+                    + "administrative authority on the specified ACB for each pending surveillance is required.")
     @RequestMapping(value = "/{surveillanceId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public synchronized @ResponseBody ResponseEntity<String> deleteSurveillance(
@@ -389,8 +389,8 @@ public class SurveillanceController implements MessageSourceAware {
     }
 
     @ApiOperation(value = "Remove documentation from a nonconformity.",
-            notes = "The logged in user" + " must have either ROLE_ADMIN or ROLE_ACB and administrative "
-                    + " authority on the associated ACB.")
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative authority "
+                    + "on the associated ACB.")
     @RequestMapping(value = "/{surveillanceId}/document/{docId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public String deleteNonconformityDocumentFromSurveillance(
@@ -489,8 +489,8 @@ public class SurveillanceController implements MessageSourceAware {
                     + "activity will be marked as deleted and the surveillance in this request body will "
                     + "be inserted. The surveillance passed into this request will first be validated "
                     + " to check for errors and the related pending surveillance will be removed. "
-                    + "If ROLE_ACB, administrative authority on the ACB for each pending surveillance is required. "
-                    + "If ROLE_ADMIN or ROLE_ONC, authority for each pending surveillance is required.")
+                    + "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority on the ACB associated "
+                    + "with the certified product is required.")
     @RequestMapping(value = "/pending/confirm", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
     public synchronized ResponseEntity<Surveillance> confirmPendingSurveillance(
@@ -561,9 +561,8 @@ public class SurveillanceController implements MessageSourceAware {
 
     @ApiOperation(value = "Upload a file with surveillance and nonconformities for certified products.",
             notes = "Accepts a CSV file with very specific fields to create pending surveillance items. "
-                    + "If ROLE_ACB, administrative authority on the ACB(s) responsible for the product(s) "
-                    + "in the file is required. "
-                    + "If ROLE_ADMIN or ROLE_ONC, no special authority is required.")
+                    + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative authority "
+                    + "on the ACB(s) responsible for the product(s) in the file.")
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody ResponseEntity<?> upload(@RequestParam("file") final MultipartFile file)
             throws ValidationException, MaxUploadSizeExceededException, EntityRetrievalException,
