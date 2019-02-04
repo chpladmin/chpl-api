@@ -40,8 +40,8 @@ public class CorrectiveActionPlanManagerImpl implements CorrectiveActionPlanMana
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or "
-            + "(hasRole('ROLE_ACB') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CORRECTIVE_ACTION_PLAN, "
+            + "T(gov.healthit.chpl.permissions.domains.CorrectiveActionPlanDomainPermissions).CREATE, #acbId)")
     @ClearAllCaches
     public CorrectiveActionPlanDetails create(Long acbId, CorrectiveActionPlanDTO toCreate)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
@@ -54,8 +54,8 @@ public class CorrectiveActionPlanManagerImpl implements CorrectiveActionPlanMana
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or "
-            + "(hasRole('ROLE_ACB') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CORRECTIVE_ACTION_PLAN, "
+            + "T(gov.healthit.chpl.permissions.domains.CorrectiveActionPlanDomainPermissions).ADD_DOCUMENTATION, #acbId)")
     @ClearAllCaches
     public CorrectiveActionPlanDocumentationDTO addDocumentationToPlan(Long acbId,
             CorrectiveActionPlanDocumentationDTO doc)
@@ -66,8 +66,8 @@ public class CorrectiveActionPlanManagerImpl implements CorrectiveActionPlanMana
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or "
-            + "(hasRole('ROLE_ACB') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CORRECTIVE_ACTION_PLAN, "
+            + "T(gov.healthit.chpl.permissions.domains.CorrectiveActionPlanDomainPermissions).ADD_CERTIFICATIONS, #acbId)")
     @ClearAllCaches
     public CorrectiveActionPlanDetails addCertificationsToPlan(Long acbId, Long correctiveActionPlanId,
             List<CorrectiveActionPlanCertificationResultDTO> certs)
@@ -85,8 +85,8 @@ public class CorrectiveActionPlanManagerImpl implements CorrectiveActionPlanMana
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or "
-            + "(hasRole('ROLE_ACB') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CORRECTIVE_ACTION_PLAN, "
+            + "T(gov.healthit.chpl.permissions.domains.CorrectiveActionPlanDomainPermissions).REMOVE_CERTIFICATIONS, #acbId)")
     @ClearAllCaches
     public void removeCertificationsFromPlan(Long acbId, List<CorrectiveActionPlanCertificationResultDTO> certs)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
@@ -98,8 +98,8 @@ public class CorrectiveActionPlanManagerImpl implements CorrectiveActionPlanMana
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or "
-            + "(hasRole('ROLE_ACB') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CORRECTIVE_ACTION_PLAN, "
+            + "T(gov.healthit.chpl.permissions.domains.CorrectiveActionPlanDomainPermissions).UPDATE, #acbId)")
     @ClearAllCaches
     public CorrectiveActionPlanCertificationResultDTO updateCertification(Long acbId,
             CorrectiveActionPlanCertificationResultDTO cert)
@@ -110,8 +110,8 @@ public class CorrectiveActionPlanManagerImpl implements CorrectiveActionPlanMana
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or "
-            + "(hasRole('ROLE_ACB') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CORRECTIVE_ACTION_PLAN, "
+            + "T(gov.healthit.chpl.permissions.domains.CorrectiveActionPlanDomainPermissions).REMOVE_DOCUMENTATION, #acbId)")
     @ClearAllCaches
     public void removeDocumentation(Long acbId, CorrectiveActionPlanDocumentationDTO toRemove)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
@@ -172,8 +172,8 @@ public class CorrectiveActionPlanManagerImpl implements CorrectiveActionPlanMana
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or "
-            + "(hasRole('ROLE_ACB') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CORRECTIVE_ACTION_PLAN, "
+            + "T(gov.healthit.chpl.permissions.domains.CorrectiveActionPlanDomainPermissions).UPDATE, #acbId)")
     public CorrectiveActionPlanDTO update(Long acbId, CorrectiveActionPlanDTO toUpdate)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         CorrectiveActionPlanDTO updatedPlan = capDao.update(toUpdate);
@@ -182,8 +182,8 @@ public class CorrectiveActionPlanManagerImpl implements CorrectiveActionPlanMana
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or "
-            + "(hasRole('ROLE_ACB') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CORRECTIVE_ACTION_PLAN, "
+            + "T(gov.healthit.chpl.permissions.domains.CorrectiveActionPlanDomainPermissions).DELETE, #acbId)")
     public void delete(Long acbId, Long capId)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
         List<CorrectiveActionPlanCertificationResultDTO> planCerts = capCertDao.getAllForCorrectiveActionPlan(capId);
