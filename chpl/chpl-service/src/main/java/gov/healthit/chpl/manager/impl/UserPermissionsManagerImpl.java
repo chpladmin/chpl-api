@@ -48,12 +48,17 @@ public class UserPermissionsManagerImpl implements UserPermissionsManager {
     // #acb)")
     public void addPermission(CertificationBodyDTO acb, Long userId)
             throws EntityRetrievalException, UserRetrievalException {
-        UserCertificationBodyMapDTO dto = new UserCertificationBodyMapDTO();
-        dto.setCertificationBody(acb);
-        UserDTO user = userDAO.getById(userId);
-        dto.setUser(user);
 
-        userCertificationBodyMapDAO.create(dto);
+        if (doesUserCertificationBodyMapExist(acb.getId(), userId)) {
+            LOGGER.info("User (" + userId + ") already has permission to ACB (" + acb.getId() + ").");
+        } else {
+            UserCertificationBodyMapDTO dto = new UserCertificationBodyMapDTO();
+            dto.setCertificationBody(acb);
+            UserDTO user = userDAO.getById(userId);
+            dto.setUser(user);
+
+            userCertificationBodyMapDAO.create(dto);
+        }
     }
 
     @Transactional
@@ -74,7 +79,6 @@ public class UserPermissionsManagerImpl implements UserPermissionsManager {
         }
 
         CollectionUtils.filter(dtos, new Predicate() {
-
             @Override
             public boolean evaluate(Object object) {
                 return ((UserCertificationBodyMapDTO) object).getCertificationBody().getId().equals(acb.getId());
@@ -118,4 +122,24 @@ public class UserPermissionsManagerImpl implements UserPermissionsManager {
         return userDtos;
     }
 
+    private Boolean doesUserCertificationBodyMapExist(Long acbId, Long userId) {
+        List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByUserId(userId);
+
+        if (dtos == null || dtos.size() == 0) {
+            // TODO: throw an exception
+            // throw exception...
+            LOGGER.error(
+                    "Could not locate the UserCertificationBodyMap object for Userid: " + userId + ", ACB: " + acbId);
+        }
+
+        CollectionUtils.filter(dtos, new Predicate() {
+            @Override
+            public boolean evaluate(Object object) {
+                return ((UserCertificationBodyMapDTO) object).getCertificationBody().getId().equals(acbId)
+                        && ((UserCertificationBodyMapDTO) object).getUser().getId().equals(userId);
+            }
+        });
+
+        return dtos.size() > 0;
+    }
 }

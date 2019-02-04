@@ -107,6 +107,12 @@ public class UserCertificationBodyMapDAOImpl extends BaseDAOImpl implements User
 
     private UserCertificationBodyMapEntity create(UserCertificationBodyMapEntity entity) {
         entity.setLastModifiedUser(getUserId(SYSTEM_USER_ID));
+        if (entity.getRetired() == null) {
+            entity.setRetired(false);
+        }
+        if (entity.getDeleted() == null) {
+            entity.setDeleted(false);
+        }
         entityManager.persist(entity);
         return entity;
     }
