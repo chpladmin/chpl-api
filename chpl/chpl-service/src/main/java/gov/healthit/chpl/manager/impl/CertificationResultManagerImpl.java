@@ -105,9 +105,14 @@ public class CertificationResultManagerImpl implements CertificationResultManage
     private Permissions permissions;
 
     @Override
+<<<<<<< HEAD
     @PreAuthorize("(hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or " 
             + "(hasRole('ROLE_ACB'))"
             + "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+=======
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_RESULTS, "
+            + "T(gov.healthit.chpl.permissions.domains.CertificationResultsDomainPermissions).UPDATE, #acbId)")
+>>>>>>> parent of 7e9668ce4... Revert "feat: switch CertifiedProductManagerImpl to use new security"
     @Transactional(rollbackFor = {
             EntityRetrievalException.class, EntityCreationException.class
     })
