@@ -260,5 +260,6 @@ pip-log.txt
 /chpl/deploy-webapp.sh
 /chpl/.recommenders/
 *-api.sh
-push-*.sh
+push.sh
+promote.sh
 node_modules/

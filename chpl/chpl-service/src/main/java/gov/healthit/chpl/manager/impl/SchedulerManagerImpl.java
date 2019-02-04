@@ -44,6 +44,7 @@ import gov.healthit.chpl.scheduler.ChplSchedulerReference;
 public class SchedulerManagerImpl implements SchedulerManager {
 
     private static final String AUTHORITY_DELIMITER = ";";
+    private static final String DATA_DELIMITER = "\u263A";
 
     @Autowired
     private ChplSchedulerReference chplScheduler;
@@ -206,6 +207,24 @@ public class SchedulerManagerImpl implements SchedulerManager {
         }
     }
 
+
+    @Override
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
+    public void retireAcb(final String acb) throws SchedulerException, ValidationException {
+        List<ChplTrigger> allTriggers = getAllTriggers();
+        for (ChplTrigger trigger : allTriggers) {
+            if (trigger.getAcb().indexOf(acb) > -1) {
+                ArrayList<String> acbs = new ArrayList<String>(Arrays.asList(trigger.getAcb().split(DATA_DELIMITER)));
+                acbs.remove(acb);
+                if (acbs.size() > 0) {
+                    trigger.setAcb(String.join(DATA_DELIMITER, acbs));
+                    createTrigger(trigger);
+                }
+                deleteTrigger(trigger.getGroup(), trigger.getName());
+            }
+        }
+    }
+
     private Scheduler getScheduler() throws SchedulerException {
         return chplScheduler.getScheduler();
     }
@@ -247,7 +266,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
             if (!StringUtils.isEmpty(trigger.getJobDataMap().getString("acb"))) {
                 // get acbs user has access to
                 List<CertificationBodyDTO> validAcbs = acbManager.getAllForUser();
-                for (String acb : trigger.getJobDataMap().getString("acb").split("\u263A")) {
+                for (String acb : trigger.getJobDataMap().getString("acb").split(DATA_DELIMITER)) {
                     boolean found = false;
                     for (CertificationBodyDTO validAcb : validAcbs) {
                         if (acb.equalsIgnoreCase(validAcb.getName())) {
