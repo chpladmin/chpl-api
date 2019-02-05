@@ -21,7 +21,7 @@
                 <version>0.8.3</version>
                 <configuration>
                     <excludes>
-                        <exclude>org/apache/poi/xsf/eventusermodel/**/*</exclude>
+                        <exclude>org/apache/**/*</exclude>
                         <exclude>org/chpl/etl/**/*</exclude>
                         <exclude>**/*Test.*</exclude>
                     </excludes>
