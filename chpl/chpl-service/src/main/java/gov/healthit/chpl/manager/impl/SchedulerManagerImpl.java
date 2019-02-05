@@ -226,7 +226,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
     public void retireAcb(final String acb) throws SchedulerException, ValidationException {
         List<ChplRepeatableTrigger> allTriggers = getAllTriggers();
         for (ChplRepeatableTrigger trigger : allTriggers) {
-            if (trigger.getAcb().indexOf(acb) > -1) {
+            if (!StringUtils.isEmpty(trigger.getAcb()) && trigger.getAcb().indexOf(acb) > -1) {
                 ArrayList<String> acbs = new ArrayList<String>(Arrays.asList(trigger.getAcb().split(DATA_DELIMITER)));
                 acbs.remove(acb);
                 if (acbs.size() > 0) {
