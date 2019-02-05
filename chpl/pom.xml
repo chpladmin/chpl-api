@@ -20,9 +20,11 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.3</version>
                 <configuration>
-                    <exclude>org.apache.poi.xssf.eventusermodel.*</exclude>
-                    <exclude>org.chpl.etl.*</exclude>
-                    <exclude>**/*Test.*</exclude>
+                    <excludes>
+                        <exclude>org/apache/poi/xsf/eventusermodel/**/*</exclude>
+                        <exclude>org/chpl/etl/**/*</exclude>
+                        <exclude>**/*Test.*</exclude>
+                    </excludes>
                 </configuration>
                 <executions>
                     <execution>
