@@ -274,7 +274,7 @@ public class ListingMockUtil {
         listing.getCertificationEvents().add(createActiveCertificationEvent());
         listing.getCertifyingBody().put("id", "1");
         listing.getCertifyingBody().put("code", "02");
-        listing.getCertifyingBody().put("name", "InfoGard");
+        listing.getCertifyingBody().put("name", "UL LLC");
         listing.setChplProductNumber(CHPL_ID_2015);
         listing.setCountCerts(8);
         listing.setCountClosedNonconformities(0);
@@ -536,7 +536,7 @@ public class ListingMockUtil {
         atl.setId(1L);
         atl.setTestingLabCode("02");
         atl.setTestingLabId(1L);
-        atl.setTestingLabName("InfoGard");
+        atl.setTestingLabName("UL LLC");
         return atl;
     }
 
