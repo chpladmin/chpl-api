@@ -10,6 +10,7 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.entity.UserEntity;
+import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.UserCertificationBodyMapDAO;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
 import gov.healthit.chpl.entity.CertificationBodyEntity;
@@ -106,7 +107,7 @@ public class UserCertificationBodyMapDAOImpl extends BaseDAOImpl implements User
     }
 
     private UserCertificationBodyMapEntity create(UserCertificationBodyMapEntity entity) {
-        entity.setLastModifiedUser(getUserId(SYSTEM_USER_ID));
+        entity.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
         if (entity.getRetired() == null) {
             entity.setRetired(false);
         }
@@ -118,7 +119,7 @@ public class UserCertificationBodyMapDAOImpl extends BaseDAOImpl implements User
     }
 
     private UserCertificationBodyMapEntity update(UserCertificationBodyMapEntity entity) {
-        entity.setLastModifiedUser(getUserId(SYSTEM_USER_ID));
+        entity.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
         entityManager.persist(entity);
         return entity;
     }
