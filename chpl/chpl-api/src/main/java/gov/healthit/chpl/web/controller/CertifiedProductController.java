@@ -133,7 +133,8 @@ public class CertifiedProductController {
 
     @Autowired
     private ChplProductNumberUtil chplProductNumberUtil;
-
+    
+    
     /**
      * List all certified products.
      * @param versionId if entered, filters list to only listings under given version
@@ -732,7 +733,7 @@ public class CertifiedProductController {
             //make sure the user has permissions on the pending listings acb
             //will throw access denied if they do not have the permissions
             Long pendingListingAcbId = new Long(details.getCertifyingBody().get("id").toString());
-            acbManager.getIfPermissionById(pendingListingAcbId);
+            userPermissionsManager.getIfPermissionById(pendingListingAcbId);
         }
         return details;
     }
@@ -753,7 +754,7 @@ public class CertifiedProductController {
             //make sure the user has permissions on the pending listings acb
             //will throw access denied if they do not have the permissions
             pendingListingAcbId = new Long(pcp.getCertifyingBody().get("id").toString());
-            acbManager.getIfPermissionById(pendingListingAcbId);
+            userPermissionsManager.getIfPermissionById(pendingListingAcbId);
         }
         pcpManager.deletePendingCertifiedProduct(pendingListingAcbId, pcpId);
         return "{\"success\" : true}";

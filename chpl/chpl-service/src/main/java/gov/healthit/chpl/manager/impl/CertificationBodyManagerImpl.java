@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.support.ApplicationObjectSupport;
-import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
 import org.springframework.security.acls.model.AccessControlEntry;
@@ -76,6 +75,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     @Autowired
     private Permissions permissions;
 
+    @Override
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
             + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).CREATE)")
@@ -116,6 +116,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
         return result;
     }
 
+    @Override
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
             + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).UPDATE, #acb)")
@@ -133,6 +134,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
         return result;
     }
 
+    @Override
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
             + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).RETIRE)")
@@ -157,6 +159,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
         return result;
     }
 
+    @Override
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
             + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).UNRETIRE)")
@@ -175,23 +178,29 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
         return result;
     }
 
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
-            + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).PERMISSIONS_BY_USER, #acb)")
-    public List<Permission> getPermissionsForUser(final CertificationBodyDTO acb, final Sid recipient) {
-        ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
-        MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
+    // @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY,
+    // "
+    // +
+    // "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).PERMISSIONS_BY_USER,
+    // #acb)")
+    // public List<Permission> getPermissionsForUser(final CertificationBodyDTO
+    // acb, final Sid recipient) {
+    // ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class,
+    // acb.getId());
+    // MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
+    //
+    // List<Permission> permissions = new ArrayList<Permission>();
+    // List<AccessControlEntry> entries = acl.getEntries();
+    // for (int i = 0; i < entries.size(); i++) {
+    // AccessControlEntry currEntry = entries.get(i);
+    // if (currEntry.getSid().equals(recipient)) {
+    // permissions.add(currEntry.getPermission());
+    // }
+    // }
+    // return permissions;
+    // }
 
-        List<Permission> permissions = new ArrayList<Permission>();
-        List<AccessControlEntry> entries = acl.getEntries();
-        for (int i = 0; i < entries.size(); i++) {
-            AccessControlEntry currEntry = entries.get(i);
-            if (currEntry.getSid().equals(recipient)) {
-                permissions.add(currEntry.getPermission());
-            }
-        }
-        return permissions;
-    }
-
+    @Override
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
             + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).DELETE_ALL_ACB_PERMISSIONS_FOR_USER, #acb)")
@@ -218,6 +227,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
         LOGGER.debug("Deleted all acb " + acb + " ACL permissions for recipient " + recipient);
     }
 
+    @Override
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
             + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).DELETE_ALL_PERMISSIONS_FOR_USER)")
     public void deletePermissionsForUser(final UserDTO userDto) throws UserRetrievalException {
@@ -242,33 +252,21 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
         }
     }
 
+    @Override
     @Transactional(readOnly = true)
     public List<CertificationBodyDTO> getAll() {
         return certificationBodyDao.findAll();
     }
 
+    @Override
     @Transactional(readOnly = true)
     public List<CertificationBodyDTO> getAllActive() {
         return certificationBodyDao.findAllActive();
     }
 
-    @Transactional(readOnly = true)
-    @PostFilter("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or "
-            + "hasPermission(filterObject, 'read') or hasPermission(filterObject, admin)")
-    public List<CertificationBodyDTO> getAllForUser() {
-        return certificationBodyDao.findAll();
-    }
-
+    @Override
     @Transactional(readOnly = true)
     public CertificationBodyDTO getById(final Long id) throws EntityRetrievalException {
-        return certificationBodyDao.getById(id);
-    }
-
-    @Transactional(readOnly = true)
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_INVITED_USER_CREATOR') or "
-            + "hasPermission(#id, 'gov.healthit.chpl.dto.CertificationBodyDTO', read) or "
-            + "hasPermission(#id, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-    public CertificationBodyDTO getIfPermissionById(final Long id) throws EntityRetrievalException {
         return certificationBodyDao.getById(id);
     }
 

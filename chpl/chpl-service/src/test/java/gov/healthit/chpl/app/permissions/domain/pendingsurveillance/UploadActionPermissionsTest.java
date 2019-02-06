@@ -20,15 +20,17 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.manager.CertificationBodyManager;
+import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.permissions.domains.pendingsurveillance.UploadActionPermissions;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
 public class UploadActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Spy
-    private CertificationBodyManager acbManager;
+    private UserPermissionsManager userPermissionsManager;
 
     @Spy
     private CertifiedProductDAO cpDAO;
@@ -40,11 +42,9 @@ public class UploadActionPermissionsTest extends ActionPermissionsBaseTest {
     public void setup() throws EntityRetrievalException {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(acbManager.getAllForUser())
-        .thenReturn(getAllAcbForUser(2l, 4l));
+        Mockito.when(userPermissionsManager.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
 
-        Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong()))
-        .thenReturn(getCertifiedProduct(1l, 2l));
+        Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getCertifiedProduct(1l, 2l));
     }
 
     @Override
@@ -80,12 +80,10 @@ public class UploadActionPermissionsTest extends ActionPermissionsBaseTest {
         surv.setCertifiedProduct(new CertifiedProduct());
         surv.getCertifiedProduct().setId(1l);
 
-        Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong()))
-        .thenReturn(getCertifiedProduct(1l, 2l));
+        Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getCertifiedProduct(1l, 2l));
         assertTrue(permissions.hasAccess(surv));
 
-        Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong()))
-        .thenReturn(getCertifiedProduct(1l, 3l));
+        Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getCertifiedProduct(1l, 3l));
         assertFalse(permissions.hasAccess(surv));
     }
 

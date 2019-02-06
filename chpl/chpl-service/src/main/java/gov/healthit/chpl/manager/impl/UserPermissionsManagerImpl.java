@@ -8,6 +8,7 @@ import org.apache.commons.collections.Predicate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.UserPermissionsManager;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
 public class UserPermissionsManagerImpl implements UserPermissionsManager {
@@ -29,14 +31,17 @@ public class UserPermissionsManagerImpl implements UserPermissionsManager {
     // private Permissions permissions;
     private UserCertificationBodyMapDAO userCertificationBodyMapDAO;
     private UserDAO userDAO;
+    private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
     public UserPermissionsManagerImpl(// final Permissions permissions,
-            final UserCertificationBodyMapDAO userCertificationBodyMapDAO, final UserDAO userDAO) {
+            final UserCertificationBodyMapDAO userCertificationBodyMapDAO, final UserDAO userDAO,
+            final ErrorMessageUtil errorMessageUtil) {
 
         // this.permissions = permissions;
         this.userCertificationBodyMapDAO = userCertificationBodyMapDAO;
         this.userDAO = userDAO;
+        this.errorMessageUtil = errorMessageUtil;
     }
 
     @Override
@@ -141,5 +146,16 @@ public class UserPermissionsManagerImpl implements UserPermissionsManager {
         });
 
         return dtos.size() > 0;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CertificationBodyDTO getIfPermissionById(final Long id) {
+        List<CertificationBodyDTO> dtos = getAllAcbsForCurrentUser();
+        dtos.stream().filter(dto -> dto.getId().equals(id));
+        if (dtos.size() == 0) {
+            throw new AccessDeniedException(errorMessageUtil.getMessage("access.denied"));
+        }
+        return dtos.get(0);
     }
 }

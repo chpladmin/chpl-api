@@ -22,15 +22,17 @@ import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.manager.CertificationBodyManager;
+import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.permissions.domains.pendingsurveillance.RejectActionPermissions;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
 public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Spy
-    private CertificationBodyManager acbManager;
+    private UserPermissionsManager userPermissionsManager;
 
     @Spy
     private SurveillanceDAO survDAO;
@@ -45,14 +47,13 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
     public void setup() throws EntityRetrievalException {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(acbManager.getAllForUser())
-        .thenReturn(getAllAcbForUser(2l, 4l));
+        Mockito.when(userPermissionsManager.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
 
         Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))
-        .thenReturn(getPendingSurveillanceEntity(1l, 1l, 1l, ROLE_ACB_ID));
+                .thenReturn(getPendingSurveillanceEntity(1l, 1l, 1l, ROLE_ACB_ID));
 
         Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))
-        .thenReturn(getUserPermissionDTO("", "", ""));
+                .thenReturn(getUserPermissionDTO("", "", ""));
     }
 
     @Override
@@ -60,26 +61,26 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_Admin() throws Exception {
         SecurityContextHolder.getContext().setAuthentication(getAdminUser());
 
-        //This should always return false
+        // This should always return false
         assertFalse(permissions.hasAccess());
 
         Long id = 1l;
 
-        //Check where authority matches
+        // Check where authority matches
         Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))
-        .thenReturn(getPendingSurveillanceEntity(1l, 1l, 1l, ROLE_ONC_ID));
+                .thenReturn(getPendingSurveillanceEntity(1l, 1l, 1l, ROLE_ONC_ID));
 
         Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))
-        .thenReturn(getUserPermissionDTO("ROLE_ONC", "", ""));
+                .thenReturn(getUserPermissionDTO("ROLE_ONC", "", ""));
 
         assertTrue(permissions.hasAccess(id));
 
-        //Check where authority is not correct for role
+        // Check where authority is not correct for role
         Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))
-        .thenReturn(getPendingSurveillanceEntity(1l, 1l, 1l, ROLE_ACB_ID));
+                .thenReturn(getPendingSurveillanceEntity(1l, 1l, 1l, ROLE_ACB_ID));
 
         Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))
-        .thenReturn(getUserPermissionDTO("ROLE_ACB", "", ""));
+                .thenReturn(getUserPermissionDTO("ROLE_ACB", "", ""));
 
         assertFalse(permissions.hasAccess(id));
     }
@@ -89,27 +90,26 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_Onc() throws Exception {
         SecurityContextHolder.getContext().setAuthentication(getOncUser());
 
-        //This should always return false
+        // This should always return false
         assertFalse(permissions.hasAccess());
 
         Long id = 1l;
 
-        //Check where authority matches the user's role
+        // Check where authority matches the user's role
         Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))
-        .thenReturn(getPendingSurveillanceEntity(1l, 1l, 1l, ROLE_ONC_ID));
+                .thenReturn(getPendingSurveillanceEntity(1l, 1l, 1l, ROLE_ONC_ID));
 
         Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))
-        .thenReturn(getUserPermissionDTO("ROLE_ONC", "", ""));
+                .thenReturn(getUserPermissionDTO("ROLE_ONC", "", ""));
 
         assertTrue(permissions.hasAccess(id));
 
-        //Check where authority does not match the user's role
+        // Check where authority does not match the user's role
         Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))
-        .thenReturn(getPendingSurveillanceEntity(1l, 1l, 1l, ROLE_ACB_ID));
+                .thenReturn(getPendingSurveillanceEntity(1l, 1l, 1l, ROLE_ACB_ID));
 
         Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))
-        .thenReturn(getUserPermissionDTO("ROLE_ACB", "", ""));
-
+                .thenReturn(getUserPermissionDTO("ROLE_ACB", "", ""));
 
         assertFalse(permissions.hasAccess(id));
     }
@@ -119,36 +119,35 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_Acb() throws Exception {
         SecurityContextHolder.getContext().setAuthentication(getAcbUser());
 
-        //This should always return false
+        // This should always return false
         assertFalse(permissions.hasAccess());
-
 
         Long id = 1l;
 
-        //The user does not have access to this acb
+        // The user does not have access to this acb
         Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))
-        .thenReturn(getPendingSurveillanceEntity(1l, 1l, 3l, ROLE_ACB_ID));
+                .thenReturn(getPendingSurveillanceEntity(1l, 1l, 3l, ROLE_ACB_ID));
 
         Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))
-        .thenReturn(getUserPermissionDTO("ROLE_ACB", "", ""));
+                .thenReturn(getUserPermissionDTO("ROLE_ACB", "", ""));
 
         assertFalse(permissions.hasAccess(id));
 
-        //Should work...
+        // Should work...
         Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))
-        .thenReturn(getPendingSurveillanceEntity(1l, 1l, 4l, ROLE_ACB_ID));
+                .thenReturn(getPendingSurveillanceEntity(1l, 1l, 4l, ROLE_ACB_ID));
 
         Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))
-        .thenReturn(getUserPermissionDTO("ROLE_ACB", "", ""));
+                .thenReturn(getUserPermissionDTO("ROLE_ACB", "", ""));
 
         assertTrue(permissions.hasAccess(id));
 
-        //This one belongs to the wrong authority....
+        // This one belongs to the wrong authority....
         Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))
-        .thenReturn(getPendingSurveillanceEntity(1l, 1l, 4l, ROLE_ONC_ID));
+                .thenReturn(getPendingSurveillanceEntity(1l, 1l, 4l, ROLE_ONC_ID));
 
         Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))
-        .thenReturn(getUserPermissionDTO("ROLE_ONC", "", ""));
+                .thenReturn(getUserPermissionDTO("ROLE_ONC", "", ""));
 
         assertFalse(permissions.hasAccess(id));
     }
@@ -158,7 +157,7 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_Atl() throws Exception {
         SecurityContextHolder.getContext().setAuthentication(getAtlUser());
 
-        //This should always return false
+        // This should always return false
         assertFalse(permissions.hasAccess());
 
         Long id = 1l;
@@ -170,7 +169,7 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_Cms() throws Exception {
         SecurityContextHolder.getContext().setAuthentication(getCmsUser());
 
-        //This should always return false
+        // This should always return false
         assertFalse(permissions.hasAccess());
 
         Long id = 1l;
@@ -182,7 +181,7 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_Anon() throws Exception {
         SecurityContextHolder.getContext().setAuthentication(null);
 
-        //This should always return false
+        // This should always return false
         assertFalse(permissions.hasAccess());
 
         Long id = 1l;
@@ -190,7 +189,8 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
 
     }
 
-    private PendingSurveillanceEntity getPendingSurveillanceEntity(Long id, Long certifiedProductId, Long acbId, Long userPermissionId) {
+    private PendingSurveillanceEntity getPendingSurveillanceEntity(Long id, Long certifiedProductId, Long acbId,
+            Long userPermissionId) {
         PendingSurveillanceEntity entity = new PendingSurveillanceEntity();
         entity.setId(id);
         entity.setCertifiedProduct(new CertifiedProductEntity());

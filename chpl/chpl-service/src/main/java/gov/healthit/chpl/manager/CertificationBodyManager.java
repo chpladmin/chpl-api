@@ -3,7 +3,6 @@ package gov.healthit.chpl.manager;
 import java.util.List;
 
 import org.quartz.SchedulerException;
-import org.springframework.security.acls.model.Permission;
 import org.springframework.security.acls.model.Sid;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -40,7 +39,8 @@ public interface CertificationBodyManager {
 
     CertificationBodyDTO getById(Long id) throws EntityRetrievalException;
 
-    CertificationBodyDTO getIfPermissionById(final Long id) throws EntityRetrievalException;
-
-    List<Permission> getPermissionsForUser(CertificationBodyDTO acb, Sid recipient);
+    // TODO: TMY - Do not believe this is necessary. Make sure to re-analyze
+    // before PR
+    // List<Permission> getPermissionsForUser(CertificationBodyDTO acb, Sid
+    // recipient);
 }

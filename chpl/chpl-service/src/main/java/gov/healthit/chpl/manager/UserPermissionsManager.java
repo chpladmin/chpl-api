@@ -15,4 +15,6 @@ public interface UserPermissionsManager {
     List<CertificationBodyDTO> getAllAcbsForCurrentUser();
 
     List<UserDTO> getAllUsersOnAcb(final CertificationBodyDTO acb);
+
+    CertificationBodyDTO getIfPermissionById(final Long id);
 }
