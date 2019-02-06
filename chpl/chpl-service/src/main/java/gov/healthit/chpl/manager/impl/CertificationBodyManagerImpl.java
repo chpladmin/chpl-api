@@ -1,6 +1,5 @@
 package gov.healthit.chpl.manager.impl;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -12,21 +11,12 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.acls.domain.ObjectIdentityImpl;
-import org.springframework.security.acls.model.AccessControlEntry;
-import org.springframework.security.acls.model.MutableAcl;
-import org.springframework.security.acls.model.MutableAclService;
-import org.springframework.security.acls.model.ObjectIdentity;
-import org.springframework.security.acls.model.Permission;
-import org.springframework.security.acls.model.Sid;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.dao.UserDAO;
-import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ClearAllCaches;
@@ -53,27 +43,21 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     private static final Logger LOGGER = LogManager.getLogger(CertificationBodyManagerImpl.class);
 
     private CertificationBodyDAO certificationBodyDao;
-    private UserDAO userDao;
-    private MutableAclService mutableAclService;
     private ActivityManager activityManager;
     private SchedulerManager schedulerManager;
+    private UserPermissionsManager userPermissionsManager;
+    private Permissions permissions;
 
     @Autowired
-    public CertificationBodyManagerImpl(final CertificationBodyDAO certificationBodyDao, final UserDAO userDao,
-            final MutableAclService mutableAclService, final ActivityManager activityManager,
-            @Lazy final SchedulerManager schedulerManager) {
+    public CertificationBodyManagerImpl(final CertificationBodyDAO certificationBodyDao,
+            final ActivityManager activityManager, @Lazy final SchedulerManager schedulerManager,
+            final UserPermissionsManager userPermissionsManager, final Permissions permissions) {
         this.certificationBodyDao = certificationBodyDao;
-        this.userDao = userDao;
-        this.mutableAclService = mutableAclService;
         this.activityManager = activityManager;
         this.schedulerManager = schedulerManager;
+        this.userPermissionsManager = userPermissionsManager;
+        this.permissions = permissions;
     }
-
-    @Autowired
-    private UserPermissionsManager userPermissionsManager;
-
-    @Autowired
-    private Permissions permissions;
 
     @Override
     @Transactional
@@ -178,80 +162,6 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
         return result;
     }
 
-    // @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY,
-    // "
-    // +
-    // "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).PERMISSIONS_BY_USER,
-    // #acb)")
-    // public List<Permission> getPermissionsForUser(final CertificationBodyDTO
-    // acb, final Sid recipient) {
-    // ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class,
-    // acb.getId());
-    // MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
-    //
-    // List<Permission> permissions = new ArrayList<Permission>();
-    // List<AccessControlEntry> entries = acl.getEntries();
-    // for (int i = 0; i < entries.size(); i++) {
-    // AccessControlEntry currEntry = entries.get(i);
-    // if (currEntry.getSid().equals(recipient)) {
-    // permissions.add(currEntry.getPermission());
-    // }
-    // }
-    // return permissions;
-    // }
-
-    @Override
-    @Transactional
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
-            + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).DELETE_ALL_ACB_PERMISSIONS_FOR_USER, #acb)")
-    public void deleteAllPermissionsOnAcb(final CertificationBodyDTO acb, final Sid recipient) {
-        ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
-        MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
-
-        // TODO: this seems very dangerous. I think we should somehow prevent
-        // from deleting the ADMIN user???
-        List<AccessControlEntry> entries = acl.getEntries();
-
-        for (int i = 0; i < entries.size(); i++) {
-            if (entries.get(i).getSid().equals(recipient)) {
-                acl.deleteAce(i);
-                // cannot just loop through deleting because the "entries"
-                // list changes size each time that we delete one
-                // so we have to re-fetch the entries and re-set the counter
-                entries = acl.getEntries();
-                i = 0;
-            }
-        }
-
-        mutableAclService.updateAcl(acl);
-        LOGGER.debug("Deleted all acb " + acb + " ACL permissions for recipient " + recipient);
-    }
-
-    @Override
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
-            + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).DELETE_ALL_PERMISSIONS_FOR_USER)")
-    public void deletePermissionsForUser(final UserDTO userDto) throws UserRetrievalException {
-        UserDTO foundUser = userDto;
-        if (foundUser.getSubjectName() == null) {
-            foundUser = userDao.getById(userDto.getId());
-        }
-
-        List<CertificationBodyDTO> acbs = certificationBodyDao.findAll();
-        for (CertificationBodyDTO acb : acbs) {
-            ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
-            MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
-
-            List<Permission> permissions = new ArrayList<Permission>();
-            List<AccessControlEntry> entries = acl.getEntries();
-            for (int i = 0; i < entries.size(); i++) {
-                AccessControlEntry currEntry = entries.get(i);
-                if (currEntry.getSid().equals(foundUser.getSubjectName())) {
-                    permissions.remove(currEntry.getPermission());
-                }
-            }
-        }
-    }
-
     @Override
     @Transactional(readOnly = true)
     public List<CertificationBodyDTO> getAll() {
@@ -270,16 +180,8 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
         return certificationBodyDao.getById(id);
     }
 
-    public MutableAclService getMutableAclService() {
-        return mutableAclService;
-    }
-
     public void setCertificationBodyDAO(final CertificationBodyDAO acbDAO) {
         this.certificationBodyDao = acbDAO;
-    }
-
-    public void setMutableAclService(final MutableAclService mutableAclService) {
-        this.mutableAclService = mutableAclService;
     }
 
 }

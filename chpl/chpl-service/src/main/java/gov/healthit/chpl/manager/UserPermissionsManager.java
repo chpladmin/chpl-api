@@ -12,9 +12,12 @@ public interface UserPermissionsManager {
 
     void deletePermission(final CertificationBodyDTO acb, final Long userId) throws EntityRetrievalException;
 
+    void deleteAllPermissionsForUser(final Long userId) throws EntityRetrievalException;
+
     List<CertificationBodyDTO> getAllAcbsForCurrentUser();
 
     List<UserDTO> getAllUsersOnAcb(final CertificationBodyDTO acb);
 
     CertificationBodyDTO getIfPermissionById(final Long id);
+
 }

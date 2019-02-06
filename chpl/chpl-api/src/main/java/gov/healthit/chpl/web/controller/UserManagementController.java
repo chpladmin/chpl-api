@@ -410,7 +410,7 @@ public class UserManagementController {
         }
 
         // delete the acb permissions for that user
-        acbManager.deletePermissionsForUser(toDelete);
+        userPermissionsManager.deleteAllPermissionsForUser(userId);
         atlManager.deletePermissionsForUser(toDelete);
 
         // delete the user

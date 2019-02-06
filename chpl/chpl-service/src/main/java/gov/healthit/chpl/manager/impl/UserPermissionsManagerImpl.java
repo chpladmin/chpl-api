@@ -98,6 +98,20 @@ public class UserPermissionsManagerImpl implements UserPermissionsManager {
     }
 
     @Override
+    @Transactional
+    public void deleteAllPermissionsForUser(final Long userId) throws EntityRetrievalException {
+        // Get the UserCertBodyMapDTO
+        List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByUserId(userId);
+
+        if (dtos == null || dtos.size() == 0) {
+            for (UserCertificationBodyMapDTO dto : dtos) {
+                userCertificationBodyMapDAO.delete(dto);
+                LOGGER.debug("Deleted ACB: " + dto.getCertificationBody().getId() + " for user: " + userId);
+            }
+        }
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<CertificationBodyDTO> getAllAcbsForCurrentUser() {
         User user = Util.getCurrentUser();

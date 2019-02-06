@@ -212,7 +212,7 @@ public class CertificationBodyController {
         }
 
         // delete all permissions on that acb
-        acbManager.deleteAllPermissionsOnAcb(acb, new PrincipalSid(user.getSubjectName()));
+        userPermissionsManager.deletePermission(acb, userId);
 
         return "{\"userDeleted\" : true}";
     }
