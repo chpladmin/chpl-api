@@ -466,18 +466,11 @@
             <durability>true</durability>
             <recover>false</recover>
             <job-data-map>
-            	<entry>
-            		<key>parameters</key>
-            		<value>[{"label": "Job Name", "key": "jobName"}, {"label": "Group Name", "key": "jobGroup"}]</value>
-            	</entry>
                 <entry>
-                    <key>jobNameParameter</key>
-                    <value>Job Name;jobName</value>
+                    <key>parameters</key>
+                    <value>[{"label": "Job Name", "key": "jobName"}, {"label": "Group Name", "key": "jobGroup"}]</value>
                 </entry>
-                <entry>
-                    <key>groupNameParameter</key>
-                    <value>Group Name;jobGroup</value>
-                </entry>
+                
             </job-data-map>
         </job>
 
