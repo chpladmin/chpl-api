@@ -30,8 +30,8 @@ public interface CertificationBodyManager {
     CertificationBodyDTO create(CertificationBodyDTO acb)
             throws UserRetrievalException, EntityCreationException, EntityRetrievalException, JsonProcessingException;
 
-    CertificationBodyDTO update(CertificationBodyDTO acb) throws EntityRetrievalException,
-    JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException;
+    CertificationBodyDTO update(CertificationBodyDTO acb) throws EntityRetrievalException, JsonProcessingException,
+    EntityCreationException, SchedulerException, UpdateCertifiedBodyException, ValidationException;
 
     CertificationBodyDTO retire(CertificationBodyDTO acb) throws EntityRetrievalException, JsonProcessingException,
     EntityCreationException, SchedulerException, UpdateCertifiedBodyException, ValidationException;

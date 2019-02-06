@@ -285,7 +285,7 @@ public class CacheRefreshTest extends TestCase {
         //get the cache before this update, should pull the listings and cache them
         List<CertifiedProductFlatSearchResult> allListingsBeforeUpdate = searchManager.search();
         for (CertifiedProductFlatSearchResult listing : allListingsBeforeUpdate) {
-            if (listing.getAcb().equals("InfoGard")) {
+            if (listing.getAcb().equals("UL LLC")) {
                 listingsFromAcb.add(listing);
             }
         }
@@ -294,10 +294,10 @@ public class CacheRefreshTest extends TestCase {
         //update the acb name
         //should trigger the cache refresh
         CertificationBody acbToUpdate = acbController.getAcbById(-1L);
-        acbToUpdate.setName("InfoGard Updated");
+        acbToUpdate.setName("UL LLC Updated");
         acbController.updateAcb(acbToUpdate);
         CertificationBody updatedAcb = acbController.getAcbById(-1L);
-        assertEquals("InfoGard Updated", updatedAcb.getName());
+        assertEquals("UL LLC Updated", updatedAcb.getName());
 
         //get the cached listings now, should have been updated in the aspect and have
         //the latest acb name

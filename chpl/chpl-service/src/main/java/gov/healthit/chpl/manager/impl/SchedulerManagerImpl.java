@@ -43,7 +43,7 @@ import gov.healthit.chpl.scheduler.ChplSchedulerReference;
 
 /**
  * Implementation of Scheduler Manager.
- * 
+ *
  * @author alarned
  *
  */
@@ -233,6 +233,22 @@ public class SchedulerManagerImpl implements SchedulerManager {
                     trigger.setAcb(String.join(DATA_DELIMITER, acbs));
                     createTrigger(trigger);
                 }
+                deleteTrigger(trigger.getGroup(), trigger.getName());
+            }
+        }
+    }
+
+    @Override
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
+    public void changeAcbName(final String oldAcb, final String newAcb) throws SchedulerException, ValidationException {
+        List<ChplRepeatableTrigger> allTriggers = getAllTriggers();
+        for (ChplRepeatableTrigger trigger : allTriggers) {
+            if (!StringUtils.isEmpty(trigger.getAcb()) && trigger.getAcb().indexOf(oldAcb) > -1) {
+                ArrayList<String> acbs = new ArrayList<String>(Arrays.asList(trigger.getAcb().split(DATA_DELIMITER)));
+                acbs.remove(oldAcb);
+                acbs.add(newAcb);
+                trigger.setAcb(String.join(DATA_DELIMITER, acbs));
+                createTrigger(trigger);
                 deleteTrigger(trigger.getGroup(), trigger.getName());
             }
         }

@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.SchedulerException;
@@ -122,11 +123,14 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or (hasRole('ROLE_ACB') and hasPermission(#acb, admin))")
     @ClearAllCaches
     public CertificationBodyDTO update(final CertificationBodyDTO acb) throws EntityRetrievalException,
-    JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
+    JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException, SchedulerException, ValidationException {
 
         CertificationBodyDTO result = null;
         CertificationBodyDTO toUpdate = certificationBodyDao.getById(acb.getId());
         result = certificationBodyDao.update(acb);
+        if (!StringUtils.equals(acb.getName(), toUpdate.getName())) {
+            schedulerManager.changeAcbName(toUpdate.getName(), acb.getName());
+        }
 
         String activityMsg = "Updated acb " + acb.getName();
         activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, result.getId(), activityMsg,
