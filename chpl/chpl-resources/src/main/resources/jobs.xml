@@ -470,7 +470,6 @@
                     <key>parameters</key>
                     <value>[{"label": "Job Name", "key": "jobName"}, {"label": "Group Name", "key": "jobGroup"}]</value>
                 </entry>
-                
             </job-data-map>
         </job>
 
