@@ -89,7 +89,8 @@ public class DeveloperManagerImpl implements DeveloperManager {
     public DeveloperManagerImpl(final DeveloperDAO developerDao, final ProductManager productManager,
             final CertificationBodyManager acbManager, final CertificationBodyDAO certificationBodyDao,
             final CertifiedProductDAO certifiedProductDAO, final ChplProductNumberUtil chplProductNumberUtil,
-            final ActivityManager activityManager, final ErrorMessageUtil msgUtil) {
+            final ActivityManager activityManager, final ErrorMessageUtil msgUtil,
+            final UserPermissionsManager userPermissionsManager) {
         this.developerDao = developerDao;
         this.productManager = productManager;
         this.acbManager = acbManager;
@@ -98,6 +99,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.activityManager = activityManager;
         this.msgUtil = msgUtil;
+        this.userPermissionsManager = userPermissionsManager;
     }
 
     @Override

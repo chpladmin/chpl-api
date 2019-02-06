@@ -28,7 +28,6 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 public class UserPermissionsManagerImpl implements UserPermissionsManager {
     private static final Logger LOGGER = LogManager.getLogger(UserPermissionsManagerImpl.class);
 
-    // private Permissions permissions;
     private UserCertificationBodyMapDAO userCertificationBodyMapDAO;
     private UserDAO userDAO;
     private ErrorMessageUtil errorMessageUtil;
@@ -38,7 +37,6 @@ public class UserPermissionsManagerImpl implements UserPermissionsManager {
             final UserCertificationBodyMapDAO userCertificationBodyMapDAO, final UserDAO userDAO,
             final ErrorMessageUtil errorMessageUtil) {
 
-        // this.permissions = permissions;
         this.userCertificationBodyMapDAO = userCertificationBodyMapDAO;
         this.userDAO = userDAO;
         this.errorMessageUtil = errorMessageUtil;
