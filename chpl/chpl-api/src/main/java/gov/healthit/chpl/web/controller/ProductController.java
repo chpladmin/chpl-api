@@ -130,7 +130,7 @@ public class ProductController {
                     + "that a new product is created with all of the information provided and all of the versions "
                     + " previously assigned to the productIds specified are reassigned to the newly created product. "
                     + "The old products are then deleted. "
-                    + "Security Restrictions: To merge: ROLE_ADMIN or ROLE.  To update: ROLE_ADMIN, ROLE_ONC or ROLE_ACB.")
+                    + "Security Restrictions: To merge: ROLE_ADMIN or ROLE_ONC.  To update: ROLE_ADMIN, ROLE_ONC or ROLE_ACB.")
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public ResponseEntity<Product> updateProduct(
