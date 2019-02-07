@@ -224,6 +224,22 @@
                 </entry>
             </job-data-map>
         </job>
+        
+        <!-- Job used to trigger interruptions of other jobs -->
+        <job>
+            <name>interruptJob</name>
+            <group>systemJobs</group>
+            <description>Triggers interruption of other running job</description>
+            <job-class>gov.healthit.chpl.scheduler.job.InterruptJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>parameters</key>
+                    <value>[{"label": "Job Name", "key": "jobName"}, {"label": "Group Name", "key": "jobGroup"}]</value>
+                </entry>
+            </job-data-map>
+        </job>
         <!-- DELETE END MARKER -->
     </schedule>
 </job-scheduling-data>

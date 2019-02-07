@@ -605,6 +605,12 @@
             <job-class>gov.healthit.chpl.scheduler.job.InterruptJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>parameters</key>
+                    <value>[{"label": "Job Name", "key": "jobName"}, {"label": "Group Name", "key": "jobGroup"}]</value>
+                </entry>
+            </job-data-map>
         </job>
 
         <!-- Job used to trigger mass required password change of almost all users-->
