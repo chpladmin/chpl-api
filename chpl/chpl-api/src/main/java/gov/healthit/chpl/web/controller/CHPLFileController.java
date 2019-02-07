@@ -65,7 +65,7 @@ public class CHPLFileController {
     }
 
     @ApiOperation(value = "Retrieve an API Documentation file",
-            notes = "Retrieves the current API Documentation file.")
+            notes = "Retrieves the current API Documentation file.  Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/api_documentation", method = RequestMethod.GET, produces = APPLICATION_MS_EXCEL)
     public synchronized ResponseEntity<byte[]> getApiDocumentationFile() throws EntityRetrievalException {
         CHPLFileDTO fileDTO = chplFileManager.getApiDocumentation();
