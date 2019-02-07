@@ -1,4 +1,4 @@
-package gov.healthit.chpl.app.permissions.domain.pendingcertifiedproduct;
+package gov.healthit.chpl.app.permissions.domain.surveillance;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -16,18 +16,18 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.healthit.chpl.app.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.manager.UserPermissionsManager;
-import gov.healthit.chpl.permissions.domains.pendingcertifiedproduct.GetDetailsByIdActionPermissions;
+import gov.healthit.chpl.permissions.domains.surveillance.CreateActionPermissions;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
         gov.healthit.chpl.CHPLTestConfig.class
 })
-public class GetDetailsByIdActionPermissionsTest extends ActionPermissionsBaseTest {
+public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
     @Spy
     private UserPermissionsManager userPermissionsManager;
 
     @InjectMocks
-    private GetDetailsByIdActionPermissions permissions;
+    private CreateActionPermissions permissions;
 
     @Before
     public void setup() {
@@ -41,11 +41,11 @@ public class GetDetailsByIdActionPermissionsTest extends ActionPermissionsBaseTe
     public void hasAccess_Admin() throws Exception {
         SecurityContextHolder.getContext().setAuthentication(getAdminUser());
 
-        // Only ROLE_ADMIN and ROLE_ONC has access
-        assertTrue(permissions.hasAccess());
+        // This should always be false
+        assertFalse(permissions.hasAccess());
 
-        // Not used
-        assertFalse(permissions.hasAccess(new Object()));
+        // Since it is admin it has access to all - param value does not matter.
+        assertTrue(permissions.hasAccess(1L));
     }
 
     @Override
@@ -53,11 +53,11 @@ public class GetDetailsByIdActionPermissionsTest extends ActionPermissionsBaseTe
     public void hasAccess_Onc() throws Exception {
         SecurityContextHolder.getContext().setAuthentication(getOncUser());
 
-        // Only ROLE_ADMIN and ROLE_ONC has access
-        assertTrue(permissions.hasAccess());
+        // This should always be false
+        assertFalse(permissions.hasAccess());
 
-        // Not used
-        assertFalse(permissions.hasAccess(new Object()));
+        // Since it is onc it has access to all - param value does not matter.
+        assertTrue(permissions.hasAccess(1L));
     }
 
     @Override
@@ -65,11 +65,12 @@ public class GetDetailsByIdActionPermissionsTest extends ActionPermissionsBaseTe
     public void hasAccess_Acb() throws Exception {
         SecurityContextHolder.getContext().setAuthentication(getAcbUser());
 
-        // Only ROLE_ADMIN and ROLE_ONC has access
+        // This should always be false
         assertFalse(permissions.hasAccess());
 
-        // Not used
-        assertFalse(permissions.hasAccess(new Object()));
+        assertFalse(permissions.hasAccess(1L));
+
+        assertTrue(permissions.hasAccess(2L));
     }
 
     @Override
@@ -77,11 +78,11 @@ public class GetDetailsByIdActionPermissionsTest extends ActionPermissionsBaseTe
     public void hasAccess_Atl() throws Exception {
         SecurityContextHolder.getContext().setAuthentication(getAtlUser());
 
-        // Only ROLE_ADMIN and ROLE_ONC has access
+        // This should always be false
         assertFalse(permissions.hasAccess());
 
-        // Not used
-        assertFalse(permissions.hasAccess(new Object()));
+        // Atl has no access - the param shouldn't even matter
+        assertFalse(permissions.hasAccess(1L));
     }
 
     @Override
@@ -89,20 +90,20 @@ public class GetDetailsByIdActionPermissionsTest extends ActionPermissionsBaseTe
     public void hasAccess_Cms() throws Exception {
         SecurityContextHolder.getContext().setAuthentication(getCmsUser());
 
-        // Only ROLE_ADMIN and ROLE_ONC has access
+        // This should always be false
         assertFalse(permissions.hasAccess());
 
-        // Not used
-        assertFalse(permissions.hasAccess(new Object()));
+        // Cms has no access - the param shouldn't even matter
+        assertFalse(permissions.hasAccess(1L));
     }
 
     @Override
     @Test
     public void hasAccess_Anon() throws Exception {
-        // Only ROLE_ADMIN and ROLE_ONC has access
+        // This should always be false
         assertFalse(permissions.hasAccess());
 
-        // Not used
-        assertFalse(permissions.hasAccess(new Object()));
+        // Anon has no access - the param shouldn't even matter
+        assertFalse(permissions.hasAccess(1L));
     }
 }

@@ -26,7 +26,6 @@ public class Permissions {
     public static final String PENDING_CERTIFIED_PRODUCT = "PENDING_CERTIFIED_PRODUCT";
     public static final String SURVEILLANCE = "SURVEILLANCE";
     public static final String CERTIFICATION_BODY = "CERTIFICATION_BODY";
-    public static final String USER_PERMISSIONS = "USER_PERMISSIONS";
     public static final String SCHEDULER = "SCHEDULER";
 
     private Map<String, DomainPermissions> domainPermissions = new HashMap<String, DomainPermissions>();
@@ -41,8 +40,6 @@ public class Permissions {
             final PendingCertifiedProductDomainPermissions pendingCertifiedProductDomainPermissions,
             final SurveillanceDomainPermissions surveillanceDomainPermissions,
             final CertificationBodyDomainPermissions certificationBodyDomainPermissions) {
-        // final UserPermissionDomainPermissions
-        // userPermissionDomainPermissions) {
 
         domainPermissions.put(PENDING_SURVEILLANCE, pendingSurveillanceDomainPermissions);
         domainPermissions.put(CERTIFICATION_RESULTS, certificationResultsDomainPermissions);
@@ -52,8 +49,6 @@ public class Permissions {
         domainPermissions.put(PENDING_CERTIFIED_PRODUCT, pendingCertifiedProductDomainPermissions);
         domainPermissions.put(SURVEILLANCE, surveillanceDomainPermissions);
         domainPermissions.put(CERTIFICATION_BODY, certificationBodyDomainPermissions);
-        // domainPermissions.put(USER_PERMISSIONS,
-        // userPermissionDomainPermissions);
     }
 
     public boolean hasAccess(final String domain, final String action) {

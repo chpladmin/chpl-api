@@ -1,4 +1,4 @@
-package gov.healthit.chpl.app.permissions.domain.pendingcertifiedproduct;
+package gov.healthit.chpl.app.permissions.domain.surveillance;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -16,18 +16,18 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.healthit.chpl.app.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.manager.UserPermissionsManager;
-import gov.healthit.chpl.permissions.domains.pendingcertifiedproduct.GetDetailsByIdActionPermissions;
+import gov.healthit.chpl.permissions.domains.surveillance.BasicReportActionPermissions;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
         gov.healthit.chpl.CHPLTestConfig.class
 })
-public class GetDetailsByIdActionPermissionsTest extends ActionPermissionsBaseTest {
+public class BasicReportActionPermissionsTest extends ActionPermissionsBaseTest {
     @Spy
     private UserPermissionsManager userPermissionsManager;
 
     @InjectMocks
-    private GetDetailsByIdActionPermissions permissions;
+    private BasicReportActionPermissions permissions;
 
     @Before
     public void setup() {
