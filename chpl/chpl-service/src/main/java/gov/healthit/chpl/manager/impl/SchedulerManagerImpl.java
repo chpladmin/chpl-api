@@ -108,7 +108,8 @@ public class SchedulerManagerImpl implements SchedulerManager {
         SimpleTrigger trigger = (SimpleTrigger) newTrigger()
                 .withIdentity(createTriggerName(chplTrigger), createTriggerGroup(chplTrigger.getJob()))
                 .startAt(new Date(chplTrigger.getRunDateMillis()))
-                .forJob(chplTrigger.getJob().getName(), chplTrigger.getJob().getGroup()).build();
+                .forJob(chplTrigger.getJob().getName(), chplTrigger.getJob().getGroup())
+                .usingJobData(chplTrigger.getJob().getJobDataMap()).build();
 
         scheduler.scheduleJob(trigger);
 
@@ -195,7 +196,9 @@ public class SchedulerManagerImpl implements SchedulerManager {
         for (String group : scheduler.getJobGroupNames()) {
             for (JobKey jobKey : scheduler.getJobKeys(groupEquals(group))) {
                 JobDetail jobDetail = scheduler.getJobDetail(jobKey);
-                jobs.add(new ChplJob(jobDetail));
+                ChplJob chplJob = new ChplJob(jobDetail);
+                chplJob.setJobDataMap(jobDetail.getJobDataMap());
+                jobs.add(chplJob);
             }
         }
 
