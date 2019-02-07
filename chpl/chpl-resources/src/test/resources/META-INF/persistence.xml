@@ -64,6 +64,7 @@
         <class>gov.healthit.chpl.entity.TestToolEntity</class>
         <class>gov.healthit.chpl.entity.TestingLabEntity</class>
         <class>gov.healthit.chpl.entity.UcdProcessEntity</class>
+        <class>gov.healthit.chpl.entity.UserCertificationBodyMapEntity</class>
         <class>gov.healthit.chpl.entity.developer.DeveloperACBMapEntity</class>
         <class>gov.healthit.chpl.entity.developer.DeveloperACBTransparencyMapEntity</class>
         <class>gov.healthit.chpl.entity.developer.DeveloperCertificationStatusesEntity</class>

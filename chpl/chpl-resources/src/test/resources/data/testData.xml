@@ -1991,6 +1991,8 @@
         last_modified_date="2017-04-26 12:43:00.015"
         last_modified_user="-1" deleted="FALSE" contact_id="1" />
 
+	
+
     <user_reset_token user_reset_token_id="-1"
         user_reset_token="zlhf8n4bfh87kfq" user_id="-2"
         creation_date="2015-08-26 12:43:00.015"
@@ -2176,6 +2178,17 @@
         developer_count="4" product_count="3"
         certification_edition_id="2" certification_status_id="1"
         creation_date="2017-08-28 13:13:24.528"
+        last_modified_date="2017-08-22 13:12:23.525"
+        last_modified_user="-3" deleted="false" />
+    
+    <user_certification_body_map id="-1" 
+    	user_id="3" certification_body_id="-1" retired="false"
+    	creation_date="2017-08-28 13:13:24.528"
+        last_modified_date="2017-08-22 13:12:23.525"
+        last_modified_user="-3" deleted="false" />
+    <user_certification_body_map id="-2" 
+    	user_id="4" certification_body_id="-2" retired="false"
+    	creation_date="2017-08-28 13:13:24.528"
         last_modified_date="2017-08-22 13:12:23.525"
         last_modified_user="-3" deleted="false" />
 </dataset>

@@ -44,11 +44,13 @@ import gov.healthit.chpl.manager.SurveillanceManager;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
+@TestExecutionListeners({
+        DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
+})
 @DatabaseSetup("classpath:data/testData.xml")
 public class SurveillanceManagerTest extends TestCase {
 
@@ -88,7 +90,7 @@ public class SurveillanceManagerTest extends TestCase {
 
         acbUser2 = new JWTAuthenticatedUser();
         acbUser2.setFullName("Test");
-        acbUser2.setId(3L);
+        acbUser2.setId(4L);
         acbUser2.setFriendlyName("User");
         acbUser2.setSubjectName("TESTUSER");
         acbUser2.getPermissions().add(new GrantedPermission("ROLE_ACB"));
@@ -621,10 +623,11 @@ public class SurveillanceManagerTest extends TestCase {
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
-
     /**
      * OCD-1810.
-     * @throws EntityRetrievalException if entity can't be retrieved
+     * 
+     * @throws EntityRetrievalException
+     *             if entity can't be retrieved
      */
     @Test
     @Transactional
