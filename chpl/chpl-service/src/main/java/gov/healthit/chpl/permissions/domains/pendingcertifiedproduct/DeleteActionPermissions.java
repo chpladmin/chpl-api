@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
-@Component("pendingCertifiedProductConfirmActionPermissions")
+@Component("pendingCertifiedProductDeleteActionPermissions")
 public class DeleteActionPermissions extends ActionPermissions {
 
     @Override
