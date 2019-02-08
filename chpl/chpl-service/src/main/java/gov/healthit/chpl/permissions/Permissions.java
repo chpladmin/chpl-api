@@ -15,6 +15,7 @@ import gov.healthit.chpl.permissions.domains.InvitationDomainPermissions;
 import gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions;
 import gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions;
+import gov.healthit.chpl.permissions.domains.UserPermissionsDomainPermissions;
 
 @Component
 public class Permissions {
@@ -27,6 +28,7 @@ public class Permissions {
     public static final String SURVEILLANCE = "SURVEILLANCE";
     public static final String CERTIFICATION_BODY = "CERTIFICATION_BODY";
     public static final String SCHEDULER = "SCHEDULER";
+    public static final String USER_PERMISSIONS = "USER_PERMISSIONS";
 
     private Map<String, DomainPermissions> domainPermissions = new HashMap<String, DomainPermissions>();
 
@@ -38,7 +40,8 @@ public class Permissions {
             final InvitationDomainPermissions invitationDomainPermissions,
             final PendingCertifiedProductDomainPermissions pendingCertifiedProductDomainPermissions,
             final SurveillanceDomainPermissions surveillanceDomainPermissions,
-            final CertificationBodyDomainPermissions certificationBodyDomainPermissions) {
+            final CertificationBodyDomainPermissions certificationBodyDomainPermissions,
+            final UserPermissionsDomainPermissions userPermissionsDomainPermissions) {
 
         domainPermissions.put(PENDING_SURVEILLANCE, pendingSurveillanceDomainPermissions);
         domainPermissions.put(CERTIFICATION_RESULTS, certificationResultsDomainPermissions);
@@ -48,6 +51,7 @@ public class Permissions {
         domainPermissions.put(PENDING_CERTIFIED_PRODUCT, pendingCertifiedProductDomainPermissions);
         domainPermissions.put(SURVEILLANCE, surveillanceDomainPermissions);
         domainPermissions.put(CERTIFICATION_BODY, certificationBodyDomainPermissions);
+        domainPermissions.put(USER_PERMISSIONS, userPermissionsDomainPermissions);
     }
 
     public boolean hasAccess(final String domain, final String action) {

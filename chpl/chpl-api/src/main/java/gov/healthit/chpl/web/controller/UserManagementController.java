@@ -410,7 +410,7 @@ public class UserManagementController {
         }
 
         // delete the acb permissions for that user
-        userPermissionsManager.deleteAllPermissionsForUser(userId);
+        userPermissionsManager.deleteAllAcbPermissionsForUser(userId);
         atlManager.deletePermissionsForUser(toDelete);
 
         // delete the user
@@ -513,7 +513,7 @@ public class UserManagementController {
                 // access removed
                 List<CertificationBodyDTO> acbs = userPermissionsManager.getAllAcbsForCurrentUser();
                 for (CertificationBodyDTO acb : acbs) {
-                    userPermissionsManager.deletePermission(acb, user.getId());
+                    userPermissionsManager.deleteAcbPermission(acb, user.getId());
                 }
             } catch (final AccessDeniedException adEx) {
                 LOGGER.error("User " + Util.getUsername() + " does not have access to revoke ROLE_ADMIN");

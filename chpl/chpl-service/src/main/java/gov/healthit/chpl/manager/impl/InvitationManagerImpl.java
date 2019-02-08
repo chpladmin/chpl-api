@@ -372,7 +372,7 @@ public class InvitationManagerImpl implements InvitationManager {
 
         // give them access to the invited acb
         if (userAcb != null) {
-            userPermissionsManager.addPermission(userAcb, user.getId());
+            userPermissionsManager.addAcbPermission(userAcb, user.getId());
         }
         // give them access to the invited atl
         if (userAtl != null) {

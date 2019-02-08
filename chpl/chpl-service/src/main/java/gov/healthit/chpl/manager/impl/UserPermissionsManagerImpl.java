@@ -7,6 +7,7 @@ import org.apache.commons.collections.Predicate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.UserPermissionsManager;
+import gov.healthit.chpl.permissions.Permissions;
 
 @Component
 public class UserPermissionsManagerImpl implements UserPermissionsManager {
@@ -25,18 +27,22 @@ public class UserPermissionsManagerImpl implements UserPermissionsManager {
 
     private UserCertificationBodyMapDAO userCertificationBodyMapDAO;
     private UserDAO userDAO;
+    private Permissions permissions;
 
     @Autowired
-    public UserPermissionsManagerImpl(// final Permissions permissions,
-            final UserCertificationBodyMapDAO userCertificationBodyMapDAO, final UserDAO userDAO) {
+    public UserPermissionsManagerImpl(final UserCertificationBodyMapDAO userCertificationBodyMapDAO,
+            final UserDAO userDAO, final Permissions permissions) {
 
         this.userCertificationBodyMapDAO = userCertificationBodyMapDAO;
         this.userDAO = userDAO;
+        this.permissions = permissions;
     }
 
     @Override
     @Transactional
-    public void addPermission(CertificationBodyDTO acb, Long userId)
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).USER_PERMISSIONS, "
+            + "T(gov.healthit.chpl.permissions.domains.UserPermissionsDomainPermissions).ADD_ACB, #acb)")
+    public void addAcbPermission(CertificationBodyDTO acb, Long userId)
             throws EntityRetrievalException, UserRetrievalException {
 
         if (doesUserCertificationBodyMapExist(acb.getId(), userId)) {
@@ -51,8 +57,11 @@ public class UserPermissionsManagerImpl implements UserPermissionsManager {
         }
     }
 
+    @Override
     @Transactional
-    public void deletePermission(final CertificationBodyDTO acb, final Long userId) throws EntityRetrievalException {
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).USER_PERMISSIONS, "
+            + "T(gov.healthit.chpl.permissions.domains.UserPermissionsDomainPermissions).DELETE_ACB, #acb)")
+    public void deleteAcbPermission(final CertificationBodyDTO acb, final Long userId) throws EntityRetrievalException {
         // Get the UserCertBodyMapDTO
         List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByUserId(userId);
 
@@ -78,7 +87,9 @@ public class UserPermissionsManagerImpl implements UserPermissionsManager {
 
     @Override
     @Transactional
-    public void deleteAllPermissionsForUser(final Long userId) throws EntityRetrievalException {
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).USER_PERMISSIONS, "
+            + "T(gov.healthit.chpl.permissions.domains.UserPermissionsDomainPermissions).DELETE_ALL_ACBS_FOR_USER)")
+    public void deleteAllAcbPermissionsForUser(final Long userId) throws EntityRetrievalException {
         // Get the UserCertBodyMapDTO
         List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByUserId(userId);
 

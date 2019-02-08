@@ -87,7 +87,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
         CertificationBodyDTO result = certificationBodyDao.create(acb);
 
         // Grant the current principal administrative permission to the ACB
-        userPermissionsManager.addPermission(result, Util.getCurrentUser().getId());
+        userPermissionsManager.addAcbPermission(result, Util.getCurrentUser().getId());
 
         LOGGER.debug("Created acb " + result + " and granted admin permission to recipient "
                 + gov.healthit.chpl.auth.Util.getUsername());
