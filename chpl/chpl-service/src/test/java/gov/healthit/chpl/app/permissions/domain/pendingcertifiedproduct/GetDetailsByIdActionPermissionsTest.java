@@ -41,7 +41,7 @@ public class GetDetailsByIdActionPermissionsTest extends ActionPermissionsBaseTe
     public void hasAccess_Admin() throws Exception {
         SecurityContextHolder.getContext().setAuthentication(getAdminUser());
 
-        // Only ROLE_ADMIN and ROLE_ONC has access
+        // Only ROLE_ADMIN and ROLE_ACB has access
         assertTrue(permissions.hasAccess());
 
         // Not used
@@ -53,8 +53,8 @@ public class GetDetailsByIdActionPermissionsTest extends ActionPermissionsBaseTe
     public void hasAccess_Onc() throws Exception {
         SecurityContextHolder.getContext().setAuthentication(getOncUser());
 
-        // Only ROLE_ADMIN and ROLE_ONC has access
-        assertTrue(permissions.hasAccess());
+        // Only ROLE_ADMIN and ROLE_ACB has access
+        assertFalse(permissions.hasAccess());
 
         // Not used
         assertFalse(permissions.hasAccess(new Object()));
@@ -65,8 +65,8 @@ public class GetDetailsByIdActionPermissionsTest extends ActionPermissionsBaseTe
     public void hasAccess_Acb() throws Exception {
         SecurityContextHolder.getContext().setAuthentication(getAcbUser());
 
-        // Only ROLE_ADMIN and ROLE_ONC has access
-        assertFalse(permissions.hasAccess());
+        // Only ROLE_ADMIN and ROLE_ACB has access
+        assertTrue(permissions.hasAccess());
 
         // Not used
         assertFalse(permissions.hasAccess(new Object()));
@@ -77,7 +77,7 @@ public class GetDetailsByIdActionPermissionsTest extends ActionPermissionsBaseTe
     public void hasAccess_Atl() throws Exception {
         SecurityContextHolder.getContext().setAuthentication(getAtlUser());
 
-        // Only ROLE_ADMIN and ROLE_ONC has access
+        // Only ROLE_ADMIN and ROLE_ACB has access
         assertFalse(permissions.hasAccess());
 
         // Not used
@@ -89,7 +89,7 @@ public class GetDetailsByIdActionPermissionsTest extends ActionPermissionsBaseTe
     public void hasAccess_Cms() throws Exception {
         SecurityContextHolder.getContext().setAuthentication(getCmsUser());
 
-        // Only ROLE_ADMIN and ROLE_ONC has access
+        // Only ROLE_ADMIN and ROLE_ACB has access
         assertFalse(permissions.hasAccess());
 
         // Not used
@@ -101,7 +101,7 @@ public class GetDetailsByIdActionPermissionsTest extends ActionPermissionsBaseTe
     public void hasAccess_Anon() throws Exception {
         SecurityContextHolder.getContext().setAuthentication(null);
 
-        // Only ROLE_ADMIN and ROLE_ONC has access
+        // Only ROLE_ADMIN and ROLE_ACB has access
         assertFalse(permissions.hasAccess());
 
         // Not used

@@ -134,7 +134,7 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess(id));
 
         // Should work...
-        Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))
+        Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
                 .thenReturn(getPendingSurveillanceEntity(1l, 1l, 4l, ROLE_ACB_ID));
 
         Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))

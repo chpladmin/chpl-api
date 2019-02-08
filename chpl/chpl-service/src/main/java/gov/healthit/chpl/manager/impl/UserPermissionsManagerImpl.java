@@ -17,6 +17,7 @@ import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.UserCertificationBodyMapDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
@@ -31,15 +32,17 @@ public class UserPermissionsManagerImpl implements UserPermissionsManager {
     private UserCertificationBodyMapDAO userCertificationBodyMapDAO;
     private UserDAO userDAO;
     private ErrorMessageUtil errorMessageUtil;
+    private CertificationBodyDAO acbDAO;
 
     @Autowired
     public UserPermissionsManagerImpl(// final Permissions permissions,
             final UserCertificationBodyMapDAO userCertificationBodyMapDAO, final UserDAO userDAO,
-            final ErrorMessageUtil errorMessageUtil) {
+            final ErrorMessageUtil errorMessageUtil, final CertificationBodyDAO acbDAO) {
 
         this.userCertificationBodyMapDAO = userCertificationBodyMapDAO;
         this.userDAO = userDAO;
         this.errorMessageUtil = errorMessageUtil;
+        this.acbDAO = acbDAO;
     }
 
     @Override
@@ -102,11 +105,15 @@ public class UserPermissionsManagerImpl implements UserPermissionsManager {
     @Transactional(readOnly = true)
     public List<CertificationBodyDTO> getAllAcbsForCurrentUser() {
         User user = Util.getCurrentUser();
-        List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByUserId(user.getId());
-
         List<CertificationBodyDTO> acbs = new ArrayList<CertificationBodyDTO>();
-        for (UserCertificationBodyMapDTO dto : dtos) {
-            acbs.add(dto.getCertificationBody());
+
+        if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
+            acbs = acbDAO.findAllActive();
+        } else {
+            List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByUserId(user.getId());
+            for (UserCertificationBodyMapDTO dto : dtos) {
+                acbs.add(dto.getCertificationBody());
+            }
         }
         return acbs;
     }

@@ -57,7 +57,7 @@ public class CleanDataActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         // ROLE_ONC does not have access
-        assertFalse(permissions.hasAccess(1L));
+        assertTrue(permissions.hasAccess(1L));
     }
 
     @Override
