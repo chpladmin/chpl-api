@@ -6,7 +6,7 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
-@Component(value = "userPermissionsAddDeleteActionPermissions")
+@Component(value = "userPermissionsDeleteAcbActionPermissions")
 public class DeleteAcbActionPermissions extends ActionPermissions {
 
     @Override

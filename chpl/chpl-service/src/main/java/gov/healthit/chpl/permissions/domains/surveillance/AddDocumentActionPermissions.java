@@ -3,6 +3,7 @@ package gov.healthit.chpl.permissions.domains.surveillance;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
 @Component("surveillanceAddDocumentActionPermissions")
@@ -15,13 +16,13 @@ public class AddDocumentActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess(Object obj) {
-        if (!(obj instanceof Long)) {
+        if (!(obj instanceof CertificationBodyDTO)) {
             return false;
         } else if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
             return true;
         } else if (Util.isUserRoleAcbAdmin()) {
-            Long acbId = (Long) obj;
-            return isAcbValidForCurrentUser(acbId);
+            CertificationBodyDTO acb = (CertificationBodyDTO) obj;
+            return isAcbValidForCurrentUser(acb.getId());
         } else {
             return false;
         }
