@@ -113,6 +113,8 @@ public class GetByIdActionPermissionsTest extends ActionPermissionsBaseTest {
     @Override
     @Test
     public void hasAccess_Anon() throws Exception {
+        SecurityContextHolder.getContext().setAuthentication(null);
+
         // Not Used
         assertFalse(permissions.hasAccess());
 

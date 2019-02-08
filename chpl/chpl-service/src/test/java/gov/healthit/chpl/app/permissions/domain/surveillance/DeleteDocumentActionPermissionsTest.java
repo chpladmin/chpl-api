@@ -100,6 +100,8 @@ public class DeleteDocumentActionPermissionsTest extends ActionPermissionsBaseTe
     @Override
     @Test
     public void hasAccess_Anon() throws Exception {
+        SecurityContextHolder.getContext().setAuthentication(null);
+
         // This should always be false
         assertFalse(permissions.hasAccess());
 

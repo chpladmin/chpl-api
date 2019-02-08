@@ -100,6 +100,8 @@ public class InviteOncActionPermissionsTest extends ActionPermissionsBaseTest {
     @Override
     @Test
     public void hasAccess_Anon() throws Exception {
+        SecurityContextHolder.getContext().setAuthentication(null);
+
         // Only ROLE_ADMIN and ROLE_ONC has access
         assertFalse(permissions.hasAccess());
 

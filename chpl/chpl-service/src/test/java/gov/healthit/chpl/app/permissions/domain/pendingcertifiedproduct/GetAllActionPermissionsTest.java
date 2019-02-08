@@ -99,6 +99,8 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     @Override
     @Test
     public void hasAccess_Anon() throws Exception {
+        SecurityContextHolder.getContext().setAuthentication(null);
+
         // Only ROLE_ADMIN has access
         assertFalse(permissions.hasAccess());
 
