@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
@@ -39,7 +40,7 @@ import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.ProductManager;
-import gov.healthit.chpl.manager.UserPermissionsManager;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -75,8 +76,8 @@ public class DeveloperStatusTest {
     private ActivityManager activityManager;
     @Spy
     private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
-    @Spy
-    private UserPermissionsManager userPermissionsManager;
+    @Mock
+    private ResourcePermissions permissionChecker;
 
     @InjectMocks
     private DeveloperManagerImpl developerManager;
@@ -92,10 +93,9 @@ public class DeveloperStatusTest {
 
         MockitoAnnotations.initMocks(this);
         developerManager = new DeveloperManagerImpl(devDao, productManager, acbManager, certificationBodyDao,
-                certifiedProductDao, chplProductNumberUtil, activityManager, msgUtil, userPermissionsManager);
+                certifiedProductDao, chplProductNumberUtil, activityManager, msgUtil, permissionChecker);
 
-        Mockito.when(userPermissionsManager.getAllAcbsForCurrentUser())
-                .thenReturn(new ArrayList<CertificationBodyDTO>());
+        Mockito.when(permissionChecker.getAllAcbsForCurrentUser()).thenReturn(new ArrayList<CertificationBodyDTO>());
         Mockito.when(acbManager.getAll()).thenReturn(new ArrayList<CertificationBodyDTO>());
         Mockito.doReturn(MISSING_REASON_ERROR).when(msgUtil)
                 .getMessage(ArgumentMatchers.eq("developer.missingReasonForBan"), ArgumentMatchers.anyString());

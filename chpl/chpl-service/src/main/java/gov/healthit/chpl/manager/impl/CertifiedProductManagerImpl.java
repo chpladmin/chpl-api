@@ -161,8 +161,8 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
-import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.permissions.Permissions;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Service("certifiedProductManager")
@@ -272,7 +272,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     private FuzzyChoicesDAO fuzzyChoicesDao;
 
     @Autowired
-    private UserPermissionsManager userPermissionsManager;
+    private ResourcePermissions resourcePermissions;
 
     @Autowired
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
@@ -375,7 +375,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     public List<CertifiedProductDetailsDTO> getByVersionWithEditPermission(final Long versionId)
             throws EntityRetrievalException {
         versionManager.getById(versionId); // throws 404 if bad id
-        List<CertificationBodyDTO> userAcbs = permissions.getAllAcbsForCurrentUser();
+        List<CertificationBodyDTO> userAcbs = resourcePermissions.getAllAcbsForCurrentUser();
         if (userAcbs == null || userAcbs.size() == 0) {
             return new ArrayList<CertifiedProductDetailsDTO>();
         }

@@ -13,13 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
-import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.UserCertificationBodyMapDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.UserPermissionsManager;
-import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
 public class UserPermissionsManagerImpl implements UserPermissionsManager {
@@ -27,7 +25,7 @@ public class UserPermissionsManagerImpl implements UserPermissionsManager {
 
     private UserCertificationBodyMapDAO userCertificationBodyMapDAO;
     private UserDAO userDAO;
-    
+
     @Autowired
     public UserPermissionsManagerImpl(// final Permissions permissions,
             final UserCertificationBodyMapDAO userCertificationBodyMapDAO, final UserDAO userDAO) {

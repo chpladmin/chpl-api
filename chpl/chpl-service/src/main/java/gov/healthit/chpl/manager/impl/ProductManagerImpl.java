@@ -36,8 +36,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.ProductManager;
-import gov.healthit.chpl.manager.UserPermissionsManager;
-import gov.healthit.chpl.permissions.Permissions;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.validation.listing.reviewer.ChplNumberReviewer;
 
 @Service
@@ -57,11 +56,9 @@ public class ProductManagerImpl implements ProductManager {
     @Autowired
     private CertifiedProductDetailsManager cpdManager;
     @Autowired
-    private UserPermissionsManager userPermissionsManager;
-    @Autowired
     private ChplNumberReviewer chplNumberReviewer;
     @Autowired
-    private Permissions permissions;
+    private ResourcePermissions resourcePermissions;
     @Autowired
     private ActivityManager activityManager;
 
@@ -239,7 +236,7 @@ public class ProductManagerImpl implements ProductManager {
             List<ProductVersionDTO> newProductVersions)
             throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
         // what ACB does the user have??
-        List<CertificationBodyDTO> allowedAcbs = permissions.getAllAcbsForCurrentUser();
+        List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
 
         // create the new product and log activity
         // this method checks that the related developer is Active and will

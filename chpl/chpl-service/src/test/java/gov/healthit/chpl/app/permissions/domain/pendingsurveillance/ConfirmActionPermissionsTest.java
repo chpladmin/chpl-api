@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
@@ -19,7 +20,7 @@ import gov.healthit.chpl.app.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.Surveillance;
-import gov.healthit.chpl.manager.UserPermissionsManager;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domains.pendingsurveillance.ConfirmActionPermissions;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -28,8 +29,8 @@ import gov.healthit.chpl.permissions.domains.pendingsurveillance.ConfirmActionPe
 })
 public class ConfirmActionPermissionsTest extends ActionPermissionsBaseTest {
 
-    @Spy
-    private UserPermissionsManager userPermissionsManager;
+    @Mock
+    private ResourcePermissions permissionChecker;
 
     @Spy
     private CertifiedProductDAO cpDAO;
@@ -41,7 +42,7 @@ public class ConfirmActionPermissionsTest extends ActionPermissionsBaseTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(userPermissionsManager.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
+        Mockito.when(permissionChecker.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
     }
 
     @Override

@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
@@ -22,7 +23,7 @@ import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.manager.UserPermissionsManager;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domains.pendingsurveillance.RejectActionPermissions;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -31,8 +32,8 @@ import gov.healthit.chpl.permissions.domains.pendingsurveillance.RejectActionPer
 })
 public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
 
-    @Spy
-    private UserPermissionsManager userPermissionsManager;
+    @Mock
+    private ResourcePermissions permissionChecker;
 
     @Spy
     private SurveillanceDAO survDAO;
@@ -47,7 +48,7 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
     public void setup() throws EntityRetrievalException {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(userPermissionsManager.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
+        Mockito.when(permissionChecker.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
 
         Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))
                 .thenReturn(getPendingSurveillanceEntity(1l, 1l, 1l, ROLE_ACB_ID));

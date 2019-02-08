@@ -7,16 +7,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.healthit.chpl.app.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.manager.UserPermissionsManager;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domains.certificationbody.GetByIdActionPermissions;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -24,8 +24,8 @@ import gov.healthit.chpl.permissions.domains.certificationbody.GetByIdActionPerm
         gov.healthit.chpl.CHPLTestConfig.class
 })
 public class GetByIdActionPermissionsTest extends ActionPermissionsBaseTest {
-    @Spy
-    private UserPermissionsManager userPermissionsManager;
+    @Mock
+    private ResourcePermissions permissionChecker;
 
     @InjectMocks
     private GetByIdActionPermissions permissions;
@@ -34,7 +34,7 @@ public class GetByIdActionPermissionsTest extends ActionPermissionsBaseTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(userPermissionsManager.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
+        Mockito.when(permissionChecker.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
     }
 
     @Override

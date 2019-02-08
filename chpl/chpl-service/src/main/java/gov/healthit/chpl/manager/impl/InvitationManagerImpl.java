@@ -43,7 +43,7 @@ import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.InvitationManager;
 import gov.healthit.chpl.manager.TestingLabManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
-import gov.healthit.chpl.permissions.Permissions;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.Util;
 
 @Service
@@ -74,7 +74,7 @@ public class InvitationManagerImpl implements InvitationManager {
     private UserPermissionsManager userPermissionsManager;
 
     @Autowired
-    private Permissions permissions;
+    private ResourcePermissions resourcePermissions;
 
     private static final Logger LOGGER = LogManager.getLogger(InvitationManagerImpl.class);
 
@@ -334,7 +334,7 @@ public class InvitationManagerImpl implements InvitationManager {
             throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException {
         CertificationBodyDTO userAcb = null;
         if (invitation.getAcbId() != null) {
-            userAcb = permissions.getIfPermissionById(invitation.getAcbId());
+            userAcb = resourcePermissions.getIfPermissionById(invitation.getAcbId());
             if (userAcb == null) {
                 throw new InvalidArgumentsException("Could not find ACB with id " + invitation.getAcbId());
             }

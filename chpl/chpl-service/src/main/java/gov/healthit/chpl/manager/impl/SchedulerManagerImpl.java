@@ -37,8 +37,8 @@ import gov.healthit.chpl.domain.schedule.ChplRepeatableTrigger;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.SchedulerManager;
-import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.permissions.Permissions;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.scheduler.ChplSchedulerReference;
 
 /**
@@ -55,15 +55,15 @@ public class SchedulerManagerImpl implements SchedulerManager {
 
     private ChplSchedulerReference chplScheduler;
     private Permissions permissions;
-    private UserPermissionsManager userPermissionsManager;
+    private ResourcePermissions resourcePermissions;
 
     @Autowired
 
     public SchedulerManagerImpl(final ChplSchedulerReference chplScheduler, final Permissions permissions,
-            UserPermissionsManager userPermissionsManager) {
+            ResourcePermissions resourcePermissions) {
         this.chplScheduler = chplScheduler;
         this.permissions = permissions;
-        this.userPermissionsManager = userPermissionsManager;
+        this.resourcePermissions = resourcePermissions;
     }
 
     @Override
@@ -282,7 +282,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
         if (doesUserHavePermissionToJob(getScheduler().getJobDetail(trigger.getJobKey()))) {
             if (!StringUtils.isEmpty(trigger.getJobDataMap().getString("acb"))) {
                 // get acbs user has access to
-                List<CertificationBodyDTO> validAcbs = permissions.getAllAcbsForCurrentUser();
+                List<CertificationBodyDTO> validAcbs = resourcePermissions.getAllAcbsForCurrentUser();
                 for (String acb : trigger.getJobDataMap().getString("acb").split(DATA_DELIMITER)) {
                     boolean found = false;
                     for (CertificationBodyDTO validAcb : validAcbs) {
