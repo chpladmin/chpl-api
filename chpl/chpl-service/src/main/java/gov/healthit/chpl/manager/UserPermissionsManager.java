@@ -1,8 +1,5 @@
 package gov.healthit.chpl.manager;
 
-import java.util.List;
-
-import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -13,11 +10,4 @@ public interface UserPermissionsManager {
     void deletePermission(final CertificationBodyDTO acb, final Long userId) throws EntityRetrievalException;
 
     void deleteAllPermissionsForUser(final Long userId) throws EntityRetrievalException;
-
-    List<CertificationBodyDTO> getAllAcbsForCurrentUser();
-
-    List<UserDTO> getAllUsersOnAcb(final CertificationBodyDTO acb);
-
-    CertificationBodyDTO getIfPermissionById(final Long id);
-
 }

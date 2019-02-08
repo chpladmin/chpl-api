@@ -49,6 +49,7 @@ import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
+import gov.healthit.chpl.permissions.Permissions;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
@@ -72,6 +73,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
     private ActivityManager activityManager;
     private ErrorMessageUtil msgUtil;
     private UserPermissionsManager userPermissionsManager;
+    private Permissions permissions;
 
     /**
      * Autowired constructor for dependency injection.
@@ -90,7 +92,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
             final CertificationBodyManager acbManager, final CertificationBodyDAO certificationBodyDao,
             final CertifiedProductDAO certifiedProductDAO, final ChplProductNumberUtil chplProductNumberUtil,
             final ActivityManager activityManager, final ErrorMessageUtil msgUtil,
-            final UserPermissionsManager userPermissionsManager) {
+            final UserPermissionsManager userPermissionsManager, final Permissions permissions) {
         this.developerDao = developerDao;
         this.productManager = productManager;
         this.acbManager = acbManager;
@@ -100,6 +102,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
         this.activityManager = activityManager;
         this.msgUtil = msgUtil;
         this.userPermissionsManager = userPermissionsManager;
+        this.permissions = permissions;
     }
 
     @Override
@@ -125,7 +128,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
     @Transactional(readOnly = true)
     public DeveloperDTO getById(final Long id) throws EntityRetrievalException {
         DeveloperDTO developer = developerDao.getById(id);
-        List<CertificationBodyDTO> availableAcbs = userPermissionsManager.getAllAcbsForCurrentUser();
+        List<CertificationBodyDTO> availableAcbs = permissions.getAllAcbsForCurrentUser();
         if (availableAcbs == null || availableAcbs.size() == 0) {
             availableAcbs = acbManager.getAll();
         }
@@ -260,7 +263,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
                 developerDao.update(updatedDev);
                 updateStatusHistory(beforeDev, updatedDev);
 
-                List<CertificationBodyDTO> availableAcbs = userPermissionsManager.getAllAcbsForCurrentUser();
+                List<CertificationBodyDTO> availableAcbs = permissions.getAllAcbsForCurrentUser();
                 if (availableAcbs != null && availableAcbs.size() > 0) {
                     for (CertificationBodyDTO acb : availableAcbs) {
                         DeveloperACBMapDTO existingMap = developerDao.getTransparencyMapping(updatedDev.getId(),
@@ -358,7 +361,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 
         DeveloperDTO created = developerDao.create(dto);
 
-        List<CertificationBodyDTO> availableAcbs = userPermissionsManager.getAllAcbsForCurrentUser();
+        List<CertificationBodyDTO> availableAcbs = permissions.getAllAcbsForCurrentUser();
         if (availableAcbs != null && availableAcbs.size() > 0) {
             for (CertificationBodyDTO acb : availableAcbs) {
                 for (DeveloperACBMapDTO attMap : dto.getTransparencyAttestationMappings()) {
@@ -461,7 +464,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
         }
         // - mark the passed in developers as deleted
         for (Long developerId : developerIdsToMerge) {
-            List<CertificationBodyDTO> availableAcbs = userPermissionsManager.getAllAcbsForCurrentUser();
+            List<CertificationBodyDTO> availableAcbs = permissions.getAllAcbsForCurrentUser();
             if (availableAcbs != null && availableAcbs.size() > 0) {
                 for (CertificationBodyDTO acb : availableAcbs) {
                     developerDao.deleteTransparencyMapping(developerId, acb.getId());

@@ -37,6 +37,7 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
+import gov.healthit.chpl.permissions.Permissions;
 import gov.healthit.chpl.validation.listing.reviewer.ChplNumberReviewer;
 
 @Service
@@ -46,22 +47,23 @@ public class ProductManagerImpl implements ProductManager {
     @Autowired
     private MessageSource messageSource;
     @Autowired
-    ProductDAO productDao;
+    private ProductDAO productDao;
     @Autowired
-    ProductVersionDAO versionDao;
+    private ProductVersionDAO versionDao;
     @Autowired
-    DeveloperDAO devDao;
+    private DeveloperDAO devDao;
     @Autowired
-    CertifiedProductDAO cpDao;
+    private CertifiedProductDAO cpDao;
     @Autowired
-    CertifiedProductDetailsManager cpdManager;
+    private CertifiedProductDetailsManager cpdManager;
     @Autowired
-    UserPermissionsManager userPermissionsManager;
+    private UserPermissionsManager userPermissionsManager;
     @Autowired
-    ChplNumberReviewer chplNumberReviewer;
-
+    private ChplNumberReviewer chplNumberReviewer;
     @Autowired
-    ActivityManager activityManager;
+    private Permissions permissions;
+    @Autowired
+    private ActivityManager activityManager;
 
     @Override
     @Transactional(readOnly = true)
@@ -237,7 +239,7 @@ public class ProductManagerImpl implements ProductManager {
             List<ProductVersionDTO> newProductVersions)
             throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
         // what ACB does the user have??
-        List<CertificationBodyDTO> allowedAcbs = userPermissionsManager.getAllAcbsForCurrentUser();
+        List<CertificationBodyDTO> allowedAcbs = permissions.getAllAcbsForCurrentUser();
 
         // create the new product and log activity
         // this method checks that the related developer is Active and will

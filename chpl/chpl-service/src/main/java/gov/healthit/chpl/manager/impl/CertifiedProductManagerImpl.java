@@ -375,7 +375,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     public List<CertifiedProductDetailsDTO> getByVersionWithEditPermission(final Long versionId)
             throws EntityRetrievalException {
         versionManager.getById(versionId); // throws 404 if bad id
-        List<CertificationBodyDTO> userAcbs = userPermissionsManager.getAllAcbsForCurrentUser();
+        List<CertificationBodyDTO> userAcbs = permissions.getAllAcbsForCurrentUser();
         if (userAcbs == null || userAcbs.size() == 0) {
             return new ArrayList<CertifiedProductDetailsDTO>();
         }
