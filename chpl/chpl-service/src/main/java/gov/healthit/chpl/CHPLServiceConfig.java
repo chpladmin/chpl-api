@@ -8,19 +8,16 @@ import java.util.Locale;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.ehcache.EhCacheCacheManager;
-import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -42,6 +39,7 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import gov.healthit.chpl.job.MeaningfulUseUploadJob;
 
 @Configuration
+@Import(ChplCacheConfig.class)
 @EnableWebMvc
 @EnableTransactionManagement(proxyTargetClass = true)
 @EnableWebSecurity
@@ -57,6 +55,12 @@ import gov.healthit.chpl.job.MeaningfulUseUploadJob;
 public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements EnvironmentAware {
 
     private static final Logger LOGGER = LogManager.getLogger(CHPLServiceConfig.class);
+    private static final int MAX_UPLOAD_SIZE_BYTES = 5242880; //5MB
+    private static final int MAX_COOKIE_AGE = 3600;
+    private static final int CORE_POOL_SIZE = 10;
+    private static final int MAX_POOL_SIZE = 100;
+    private static final int JOB_CORE_POOL_SIZE = 3;
+    private static final int JOB_MAX_POOL_SIZE = 6;
 
     @Autowired
     private Environment env;
@@ -106,7 +110,7 @@ public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements Enviro
         CommonsMultipartResolver resolver = new CommonsMultipartResolver();
 
         // Set the maximum allowed size (in bytes) for each individual file.
-        resolver.setMaxUploadSize(5242880);// 5MB
+        resolver.setMaxUploadSize(MAX_UPLOAD_SIZE_BYTES);
 
         // You may also set other available properties.
 
@@ -116,8 +120,8 @@ public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements Enviro
     @Bean
     public TaskExecutor taskExecutor() {
         ThreadPoolTaskExecutor te = new ThreadPoolTaskExecutor();
-        te.setCorePoolSize(10);
-        te.setMaxPoolSize(100);
+        te.setCorePoolSize(CORE_POOL_SIZE);
+        te.setMaxPoolSize(MAX_POOL_SIZE);
         return te;
     }
 
@@ -125,21 +129,6 @@ public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements Enviro
     public Marshaller marshaller() {
         LOGGER.info("get Marshaller");
         return new CastorMarshaller();
-    }
-
-    @Bean
-    public CacheManager cacheManager() {
-        LOGGER.info("get CacheManager");
-        return new EhCacheCacheManager(ehCacheCacheManager().getObject());
-    }
-
-    @Bean
-    public EhCacheManagerFactoryBean ehCacheCacheManager() {
-        LOGGER.info("get EhCacheManagerFactoryBean");
-        EhCacheManagerFactoryBean cmfb = new EhCacheManagerFactoryBean();
-        cmfb.setConfigLocation(new ClassPathResource("ehCache.xml"));
-        cmfb.setShared(true);
-        return cmfb;
     }
 
     @Bean
@@ -155,7 +144,7 @@ public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements Enviro
         CookieLocaleResolver localeResolver = new CookieLocaleResolver();
         localeResolver.setDefaultLocale(Locale.ENGLISH);
         localeResolver.setCookieName("my-locale-cookie");
-        localeResolver.setCookieMaxAge(3600);
+        localeResolver.setCookieMaxAge(MAX_COOKIE_AGE);
         return localeResolver;
     }
 
@@ -183,8 +172,8 @@ public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements Enviro
     @Bean(name = "jobAsyncDataExecutor")
     public TaskExecutor specificTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(3);
-        executor.setMaxPoolSize(6);
+        executor.setCorePoolSize(JOB_CORE_POOL_SIZE);
+        executor.setMaxPoolSize(JOB_MAX_POOL_SIZE);
         //executor.setCorePoolSize(Integer.parseInt(props.getProperty("corePoolSize")));
         //executor.setMaxPoolSize(Integer.parseInt(props.getProperty("maxPoolSize")));
         //executor.setQueueCapacity(11);
