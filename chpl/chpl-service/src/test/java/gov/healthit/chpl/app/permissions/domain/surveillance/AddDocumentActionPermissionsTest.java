@@ -15,6 +15,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.healthit.chpl.app.permissions.domain.ActionPermissionsBaseTest;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domains.surveillance.AddDocumentActionPermissions;
 
@@ -22,7 +23,7 @@ import gov.healthit.chpl.permissions.domains.surveillance.AddDocumentActionPermi
 @ContextConfiguration(classes = {
         gov.healthit.chpl.CHPLTestConfig.class
 })
-public class AddDocumentationActionPermissionsTest extends ActionPermissionsBaseTest {
+public class AddDocumentActionPermissionsTest extends ActionPermissionsBaseTest {
     @Mock
     private ResourcePermissions permissionChecker;
 
@@ -45,7 +46,9 @@ public class AddDocumentationActionPermissionsTest extends ActionPermissionsBase
         assertFalse(permissions.hasAccess());
 
         // Since it is admin it has access to all - param value does not matter.
-        assertTrue(permissions.hasAccess(1L));
+        CertificationBodyDTO dto = new CertificationBodyDTO();
+        dto.setId(1l);
+        assertTrue(permissions.hasAccess(dto));
     }
 
     @Override
@@ -57,7 +60,9 @@ public class AddDocumentationActionPermissionsTest extends ActionPermissionsBase
         assertFalse(permissions.hasAccess());
 
         // Since it is onc it has access to all - param value does not matter.
-        assertTrue(permissions.hasAccess(1L));
+        CertificationBodyDTO dto = new CertificationBodyDTO();
+        dto.setId(1l);
+        assertTrue(permissions.hasAccess(dto));
     }
 
     @Override
@@ -68,9 +73,12 @@ public class AddDocumentationActionPermissionsTest extends ActionPermissionsBase
         // This should always be false
         assertFalse(permissions.hasAccess());
 
-        assertFalse(permissions.hasAccess(1L));
+        CertificationBodyDTO dto = new CertificationBodyDTO();
+        dto.setId(2l);
+        assertTrue(permissions.hasAccess(dto));
 
-        assertTrue(permissions.hasAccess(2L));
+        dto.setId(1l);
+        assertFalse(permissions.hasAccess(dto));
     }
 
     @Override
@@ -82,7 +90,9 @@ public class AddDocumentationActionPermissionsTest extends ActionPermissionsBase
         assertFalse(permissions.hasAccess());
 
         // Atl has no access - the param shouldn't even matter
-        assertFalse(permissions.hasAccess(1L));
+        CertificationBodyDTO dto = new CertificationBodyDTO();
+        dto.setId(2l);
+        assertFalse(permissions.hasAccess(dto));
     }
 
     @Override
@@ -94,7 +104,10 @@ public class AddDocumentationActionPermissionsTest extends ActionPermissionsBase
         assertFalse(permissions.hasAccess());
 
         // Cms has no access - the param shouldn't even matter
-        assertFalse(permissions.hasAccess(1L));
+        // Atl has no access - the param shouldn't even matter
+        CertificationBodyDTO dto = new CertificationBodyDTO();
+        dto.setId(2l);
+        assertFalse(permissions.hasAccess(dto));
     }
 
     @Override
@@ -106,6 +119,9 @@ public class AddDocumentationActionPermissionsTest extends ActionPermissionsBase
         assertFalse(permissions.hasAccess());
 
         // Anon has no access - the param shouldn't even matter
-        assertFalse(permissions.hasAccess(1L));
+        // Atl has no access - the param shouldn't even matter
+        CertificationBodyDTO dto = new CertificationBodyDTO();
+        dto.setId(2l);
+        assertFalse(permissions.hasAccess(dto));
     }
 }

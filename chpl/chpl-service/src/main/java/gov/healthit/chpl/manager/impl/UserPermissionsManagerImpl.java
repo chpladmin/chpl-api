@@ -66,7 +66,6 @@ public class UserPermissionsManagerImpl implements UserPermissionsManager {
         List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByUserId(userId);
 
         if (dtos == null || dtos.size() == 0) {
-            // TODO: throw an exception throw exception...
             LOGGER.error("Could not locate the UserCertificationBodyMap object for Userid: " + userId + ", ACB: "
                     + acb.getId());
         }
@@ -93,7 +92,7 @@ public class UserPermissionsManagerImpl implements UserPermissionsManager {
         // Get the UserCertBodyMapDTO
         List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByUserId(userId);
 
-        if (dtos == null || dtos.size() == 0) {
+        if (dtos != null) {
             for (UserCertificationBodyMapDTO dto : dtos) {
                 userCertificationBodyMapDAO.delete(dto);
                 LOGGER.debug("Deleted ACB: " + dto.getCertificationBody().getId() + " for user: " + userId);
