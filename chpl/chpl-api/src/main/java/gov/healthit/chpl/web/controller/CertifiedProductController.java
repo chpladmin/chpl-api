@@ -71,6 +71,7 @@ import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandler;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandlerFactory;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
@@ -104,11 +105,11 @@ public class CertifiedProductController {
     @Autowired
     private CertifiedProductManager cpManager;
 
-    @Autowired
-    private CertificationBodyManager acbManager;
-
     @Autowired 
     private UserPermissionsManager userPermissionsManager;
+    
+    @Autowired 
+    private ResourcePermissions resourcePermissions;
     
     @Autowired
     private PendingCertifiedProductManager pcpManager;
@@ -688,7 +689,7 @@ public class CertifiedProductController {
         if (Util.isUserRoleAdmin()) {
             pcps = pcpManager.getAllPendingCertifiedProducts();
         } else if (Util.isUserRoleAcbAdmin()) {
-            List<CertificationBodyDTO> allowedAcbs = userPermissionsManager.getAllAcbsForCurrentUser();
+            List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
             for (CertificationBodyDTO acb : allowedAcbs) {
                 pcps.addAll(pcpManager.getPendingCertifiedProducts(acb.getId()));
             }
@@ -733,7 +734,7 @@ public class CertifiedProductController {
             //make sure the user has permissions on the pending listings acb
             //will throw access denied if they do not have the permissions
             Long pendingListingAcbId = new Long(details.getCertifyingBody().get("id").toString());
-            userPermissionsManager.getIfPermissionById(pendingListingAcbId);
+            resourcePermissions.getIfPermissionById(pendingListingAcbId);
         }
         return details;
     }
@@ -754,7 +755,7 @@ public class CertifiedProductController {
             //make sure the user has permissions on the pending listings acb
             //will throw access denied if they do not have the permissions
             pendingListingAcbId = new Long(pcp.getCertifyingBody().get("id").toString());
-            userPermissionsManager.getIfPermissionById(pendingListingAcbId);
+            resourcePermissions.getIfPermissionById(pendingListingAcbId);
         }
         pcpManager.deletePendingCertifiedProduct(pendingListingAcbId, pcpId);
         return "{\"success\" : true}";

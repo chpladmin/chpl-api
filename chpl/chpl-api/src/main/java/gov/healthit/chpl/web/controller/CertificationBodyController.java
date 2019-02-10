@@ -37,6 +37,7 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.web.controller.results.CertificationBodyResults;
 import gov.healthit.chpl.web.controller.results.PermittedUserResults;
 import io.swagger.annotations.Api;
@@ -50,6 +51,9 @@ public class CertificationBodyController {
     @Autowired
     private CertificationBodyManager acbManager;
 
+    @Autowired
+    private ResourcePermissions resourcePermissions;
+    
     @Autowired
     private UserPermissionsManager userPermissionsManager;
     
@@ -66,7 +70,7 @@ public class CertificationBodyController {
         CertificationBodyResults results = new CertificationBodyResults();
         List<CertificationBodyDTO> acbs = null;
         if (editable) {
-            acbs = userPermissionsManager.getAllAcbsForCurrentUser();
+            acbs = resourcePermissions.getAllAcbsForCurrentUser();
         } else {
             acbs = acbManager.getAll();
         }
@@ -148,7 +152,7 @@ public class CertificationBodyController {
         //Retirement and un-retirement is done as a separate manager action because
         //security is different from normal ACB updates - only admins are allowed
         //whereas an ACB admin can update other info
-        CertificationBodyDTO existingAcb = userPermissionsManager.getIfPermissionById(updatedAcb.getId());
+        CertificationBodyDTO existingAcb = resourcePermissions.getIfPermissionById(updatedAcb.getId());
         if (updatedAcb.isRetired()) {
             //we are retiring this ACB - no other updates can happen
             CertificationBodyDTO toRetire = new CertificationBodyDTO();
@@ -205,7 +209,7 @@ public class CertificationBodyController {
             throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
 
         UserDTO user = userManager.getById(userId);
-        CertificationBodyDTO acb = userPermissionsManager.getIfPermissionById(acbId);
+        CertificationBodyDTO acb = resourcePermissions.getIfPermissionById(acbId);
 
         if (user == null || acb == null) {
             throw new InvalidArgumentsException("Could not find either ACB or User specified");
@@ -224,13 +228,13 @@ public class CertificationBodyController {
     produces = "application/json; charset=utf-8")
     public @ResponseBody PermittedUserResults getUsers(@PathVariable("acbId") final Long acbId)
             throws InvalidArgumentsException, EntityRetrievalException {
-        CertificationBodyDTO acb = userPermissionsManager.getIfPermissionById(acbId);
+        CertificationBodyDTO acb = resourcePermissions.getIfPermissionById(acbId);
         if (acb == null) {
             throw new InvalidArgumentsException("Could not find the ACB specified.");
         }
 
         List<PermittedUser> acbUsers = new ArrayList<PermittedUser>();
-        List<UserDTO> users = userPermissionsManager.getAllUsersOnAcb(acb);
+        List<UserDTO> users = resourcePermissions.getAllUsersOnAcb(acb);
         for (UserDTO user : users) {
 
             // only show users that have ROLE_ACB

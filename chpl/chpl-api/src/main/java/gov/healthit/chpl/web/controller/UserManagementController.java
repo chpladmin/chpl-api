@@ -62,6 +62,7 @@ import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.InvitationManager;
 import gov.healthit.chpl.manager.TestingLabManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -73,9 +74,6 @@ public class UserManagementController {
 
     @Autowired
     private UserManager userManager;
-
-    @Autowired
-    private CertificationBodyManager acbManager;
 
     @Autowired
     private TestingLabManager atlManager;
@@ -97,6 +95,9 @@ public class UserManagementController {
 
     @Autowired
     private UserPermissionsManager userPermissionsManager;
+    
+    @Autowired 
+    private ResourcePermissions resourcePermissions;
     
     @Autowired private MessageSource messageSource;
 
@@ -511,7 +512,7 @@ public class UserManagementController {
 
                 // if they were an acb admin then they need to have all ACB
                 // access removed
-                List<CertificationBodyDTO> acbs = userPermissionsManager.getAllAcbsForCurrentUser();
+                List<CertificationBodyDTO> acbs = resourcePermissions.getAllAcbsForCurrentUser();
                 for (CertificationBodyDTO acb : acbs) {
                     userPermissionsManager.deleteAcbPermission(acb, user.getId());
                 }

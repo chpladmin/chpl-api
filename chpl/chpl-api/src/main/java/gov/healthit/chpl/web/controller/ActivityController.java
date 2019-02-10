@@ -53,6 +53,7 @@ import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.manager.TestingLabManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import io.swagger.annotations.Api;
@@ -95,7 +96,7 @@ public class ActivityController {
     @Autowired
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
     @Autowired
-    private UserPermissionsManager userPermissionsManager;
+    private ResourcePermissions resourcePermissions;
     
     @Autowired private MessageSource messageSource;
 
@@ -114,7 +115,7 @@ public class ActivityController {
         if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
             return activityManager.getAllAcbActivity(startDate, endDate);
         }
-        List<CertificationBodyDTO> allowedAcbs = userPermissionsManager.getAllAcbsForCurrentUser();
+        List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
         return activityManager.getAcbActivity(allowedAcbs, startDate, endDate);
     }
 
@@ -127,7 +128,7 @@ public class ActivityController {
     public List<ActivityEvent> activityForACBById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
-        CertificationBodyDTO acb = userPermissionsManager.getIfPermissionById(id); // throws 404 if ACB doesn't exist
+        CertificationBodyDTO acb = resourcePermissions.getIfPermissionById(id); // throws 404 if ACB doesn't exist
         if (acb != null && acb.isRetired() && !Util.isUserRoleAdmin() && !Util.isUserRoleOnc()) {
             LOGGER.warn("Non-admin user " + Util.getUsername()
             + " tried to see activity for retired ACB " + acb.getName());
@@ -152,7 +153,7 @@ public class ActivityController {
                     LocaleContextHolder.getLocale()));
         }
 
-        List<CertificationBodyDTO> allowedAcbs = userPermissionsManager.getAllAcbsForCurrentUser();
+        List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
         acb = null;
         for (CertificationBodyDTO allowedAcb : allowedAcbs) {
             if (allowedAcb.getId().longValue() == id.longValue()) {
@@ -446,7 +447,7 @@ public class ActivityController {
         if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
             return activityManager.getAllPendingListingActivity(startDate, endDate);
         }
-        List<CertificationBodyDTO> allowedAcbs = userPermissionsManager.getAllAcbsForCurrentUser();
+        List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
         return activityManager.getPendingListingActivityByAcb(allowedAcbs, startDate, endDate);
     }
 
@@ -469,7 +470,7 @@ public class ActivityController {
             //make sure the user has permissions on the pending listings acb
             //will throw access denied if they do not have the permissions
             Long pendingListingAcbId = new Long(pendingListing.getCertifyingBody().get("id").toString());
-            userPermissionsManager.getIfPermissionById(pendingListingAcbId);
+            resourcePermissions.getIfPermissionById(pendingListingAcbId);
         }
 
         //if one of start of end is provided then the other must also be provided.
@@ -735,9 +736,9 @@ public class ActivityController {
         //user can see activity for other users in the same acb
 
         if (Util.isUserRoleAcbAdmin()) {
-            List<CertificationBodyDTO> allowedAcbs = userPermissionsManager.getAllAcbsForCurrentUser();
+            List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
             for (CertificationBodyDTO acb : allowedAcbs) {
-                List<UserDTO> acbUsers = userPermissionsManager.getAllUsersOnAcb(acb);
+                List<UserDTO> acbUsers = resourcePermissions.getAllUsersOnAcb(acb);
                 for (UserDTO user : acbUsers) {
                     allowedUserIds.add(user.getId());
                 }
