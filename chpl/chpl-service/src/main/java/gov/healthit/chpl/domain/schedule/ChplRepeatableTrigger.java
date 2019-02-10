@@ -6,7 +6,7 @@ import org.quartz.CronTrigger;
 
 /**
  * Basic representation of Quartz Triggers.
- * 
+ *
  * @author alarned
  *
  */
@@ -24,7 +24,7 @@ public class ChplRepeatableTrigger extends ChplTrigger implements Serializable {
 
     /**
      * Constructor based on CHPL trigger.
-     * 
+     *
      * @param chplTrigger
      *            the quartz trigger
      */
@@ -39,7 +39,7 @@ public class ChplRepeatableTrigger extends ChplTrigger implements Serializable {
 
     /**
      * Constructor based on Quartz trigger.
-     * 
+     *
      * @param quartzTrigger
      *            the quartz trigger
      */
@@ -93,5 +93,11 @@ public class ChplRepeatableTrigger extends ChplTrigger implements Serializable {
 
     public void setAcb(final String acb) {
         this.acb = acb;
+    }
+
+    @Override
+    public String toString() {
+        return "ChplRepeatableTrigger [name=" + name + ", group=" + group + ", cronSchedule=" + cronSchedule
+                + ", email=" + email + ", acb=" + acb + "]";
     }
 }

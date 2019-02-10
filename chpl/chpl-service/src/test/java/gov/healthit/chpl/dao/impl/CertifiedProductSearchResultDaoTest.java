@@ -204,12 +204,12 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
     public void testSearchCertificationBody() {
 
         SearchRequest searchRequest = new SearchRequest();
-        searchRequest.getCertificationBodies().add("InfoGard");
+        searchRequest.getCertificationBodies().add("UL LLC");
         Collection<CertifiedProductBasicSearchResult> products = searchDao.search(searchRequest);
         assertEquals(7, products.size());
 
         for (CertifiedProductBasicSearchResult dto : products) {
-            assertTrue(dto.getAcb().startsWith("InfoGard"));
+            assertTrue(dto.getAcb().startsWith("UL LLC"));
         }
 
     }
@@ -320,7 +320,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
         searchRequest.setProduct("Test");
         searchRequest.setVersion("2.0");
         searchRequest.getCertificationEditions().add("2014");
-        searchRequest.getCertificationBodies().add("InfoGard");
+        searchRequest.getCertificationBodies().add("UL LLC");
         searchRequest.setPracticeType("Ambulatory");
         searchRequest.setOrderBy("product");
         searchRequest.setSortDescending(true);
@@ -339,7 +339,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
             CertifiedProductDetailsDTO product = searchResultDao.getById(1L);
 
             assertEquals(-1, product.getCertificationBodyId().intValue());
-            assertEquals("InfoGard", product.getCertificationBodyName());
+            assertEquals("UL LLC", product.getCertificationBodyName());
             assertEquals("CHP-024050", product.getChplProductNumber());
             assertEquals(2, product.getCertificationEditionId().intValue());
             assertEquals("Test Developer 1", product.getDeveloper().getName());

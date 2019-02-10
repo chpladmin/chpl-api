@@ -303,7 +303,7 @@
                     </entry>
                     <entry>
                         <key>acb</key>
-                        <value>Drummond Group☺ICSA Labs☺InfoGard☺SLI Compliance</value>
+                        <value>Drummond Group☺ICSA Labs☺UL LLC☺SLI Compliance</value>
                     </entry>
                 </job-data-map>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
@@ -477,7 +477,7 @@
                     </entry>
                     <entry>
                         <key>acb</key>
-                        <value>Drummond Group☺ICSA Labs☺InfoGard☺SLI Compliance</value>
+                        <value>Drummond Group☺ICSA Labs☺UL LLC☺SLI Compliance</value>
                     </entry>
                 </job-data-map>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
@@ -513,7 +513,7 @@
                     </entry>
                     <entry>
                         <key>acb</key>
-                        <value>Drummond Group☺ICSA Labs☺InfoGard☺SLI Compliance</value>
+                        <value>Drummond Group☺ICSA Labs☺UL LLC☺SLI Compliance</value>
                     </entry>
                 </job-data-map>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
@@ -605,6 +605,12 @@
             <job-class>gov.healthit.chpl.scheduler.job.InterruptJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>parameters</key>
+                    <value>[{"label": "Job Name", "key": "jobName"}, {"label": "Group Name", "key": "jobGroup"}]</value>
+                </entry>
+            </job-data-map>
         </job>
 
         <!-- Job used to trigger mass required password change of almost all users-->

@@ -108,13 +108,13 @@ public class CertifiedProductSearchManagerTest extends TestCase {
     public void testSearchCertificationBody() {
 
         SearchRequest searchRequest = new SearchRequest();
-        searchRequest.getCertificationBodies().add("InfoGard");
+        searchRequest.getCertificationBodies().add("UL LLC");
         SearchResponse response = certifiedProductSearchManager.search(searchRequest);
         assertEquals(7, response.getRecordCount().intValue());
         assertEquals(7, response.getResults().size());
 
         for (CertifiedProductBasicSearchResult result : response.getResults()) {
-            assertTrue(result.getAcb().startsWith("InfoGard"));
+            assertTrue(result.getAcb().startsWith("UL LLC"));
         }
     }
 
@@ -217,7 +217,7 @@ public class CertifiedProductSearchManagerTest extends TestCase {
         searchRequest.setProduct("Test");
         searchRequest.setVersion("2.0");
         searchRequest.getCertificationEditions().add("2014");
-        searchRequest.getCertificationBodies().add("InfoGard");
+        searchRequest.getCertificationBodies().add("UL LLC");
         searchRequest.setPracticeType("Ambulatory");
         searchRequest.setOrderBy("product");
         searchRequest.setSortDescending(true);

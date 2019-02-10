@@ -121,7 +121,7 @@ public class ActivityController {
 
     @ApiOperation(value = "Get auditable data for a specific certification body.",
             notes = "A start and end date may optionally be provided to limit activity results.  "
-                    + "Security Restrictions: ROLE_ADMIN AND ROLE_ONC may see activity for all certification bodies.  "
+                    + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all certification bodies.  "
                     + "ROLE_ACB can see their own information.")
     @RequestMapping(value = "/acbs/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
 

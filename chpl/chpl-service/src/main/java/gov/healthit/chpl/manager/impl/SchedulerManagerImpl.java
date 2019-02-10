@@ -43,7 +43,7 @@ import gov.healthit.chpl.scheduler.ChplSchedulerReference;
 
 /**
  * Implementation of Scheduler Manager.
- * 
+ *
  * @author alarned
  *
  */
@@ -109,7 +109,8 @@ public class SchedulerManagerImpl implements SchedulerManager {
         SimpleTrigger trigger = (SimpleTrigger) newTrigger()
                 .withIdentity(createTriggerName(chplTrigger), createTriggerGroup(chplTrigger.getJob()))
                 .startAt(new Date(chplTrigger.getRunDateMillis()))
-                .forJob(chplTrigger.getJob().getName(), chplTrigger.getJob().getGroup()).build();
+                .forJob(chplTrigger.getJob().getName(), chplTrigger.getJob().getGroup())
+                .usingJobData(chplTrigger.getJob().getJobDataMap()).build();
 
         scheduler.scheduleJob(trigger);
 
@@ -196,7 +197,9 @@ public class SchedulerManagerImpl implements SchedulerManager {
         for (String group : scheduler.getJobGroupNames()) {
             for (JobKey jobKey : scheduler.getJobKeys(groupEquals(group))) {
                 JobDetail jobDetail = scheduler.getJobDetail(jobKey);
-                jobs.add(new ChplJob(jobDetail));
+                ChplJob chplJob = new ChplJob(jobDetail);
+                chplJob.setJobDataMap(jobDetail.getJobDataMap());
+                jobs.add(chplJob);
             }
         }
 
@@ -227,13 +230,29 @@ public class SchedulerManagerImpl implements SchedulerManager {
     public void retireAcb(final String acb) throws SchedulerException, ValidationException {
         List<ChplRepeatableTrigger> allTriggers = getAllTriggers();
         for (ChplRepeatableTrigger trigger : allTriggers) {
-            if (trigger.getAcb().indexOf(acb) > -1) {
+            if (!StringUtils.isEmpty(trigger.getAcb()) && trigger.getAcb().indexOf(acb) > -1) {
                 ArrayList<String> acbs = new ArrayList<String>(Arrays.asList(trigger.getAcb().split(DATA_DELIMITER)));
                 acbs.remove(acb);
                 if (acbs.size() > 0) {
                     trigger.setAcb(String.join(DATA_DELIMITER, acbs));
                     createTrigger(trigger);
                 }
+                deleteTrigger(trigger.getGroup(), trigger.getName());
+            }
+        }
+    }
+
+    @Override
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
+    public void changeAcbName(final String oldAcb, final String newAcb) throws SchedulerException, ValidationException {
+        List<ChplRepeatableTrigger> allTriggers = getAllTriggers();
+        for (ChplRepeatableTrigger trigger : allTriggers) {
+            if (!StringUtils.isEmpty(trigger.getAcb()) && trigger.getAcb().indexOf(oldAcb) > -1) {
+                ArrayList<String> acbs = new ArrayList<String>(Arrays.asList(trigger.getAcb().split(DATA_DELIMITER)));
+                acbs.remove(oldAcb);
+                acbs.add(newAcb);
+                trigger.setAcb(String.join(DATA_DELIMITER, acbs));
+                createTrigger(trigger);
                 deleteTrigger(trigger.getGroup(), trigger.getName());
             }
         }

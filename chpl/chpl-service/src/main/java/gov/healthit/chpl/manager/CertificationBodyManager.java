@@ -18,7 +18,7 @@ public interface CertificationBodyManager {
             throws UserRetrievalException, EntityCreationException, EntityRetrievalException, JsonProcessingException;
 
     CertificationBodyDTO update(CertificationBodyDTO acb) throws EntityRetrievalException, JsonProcessingException,
-            EntityCreationException, UpdateCertifiedBodyException;
+            EntityCreationException, SchedulerException, UpdateCertifiedBodyException, ValidationException;
 
     CertificationBodyDTO retire(CertificationBodyDTO acb) throws EntityRetrievalException, JsonProcessingException,
             EntityCreationException, SchedulerException, UpdateCertifiedBodyException, ValidationException;
@@ -31,9 +31,4 @@ public interface CertificationBodyManager {
     List<CertificationBodyDTO> getAllActive();
 
     CertificationBodyDTO getById(Long id) throws EntityRetrievalException;
-
-    // TODO: TMY - Do not believe this is necessary. Make sure to re-analyze
-    // before PR
-    // List<Permission> getPermissionsForUser(CertificationBodyDTO acb, Sid
-    // recipient);
 }

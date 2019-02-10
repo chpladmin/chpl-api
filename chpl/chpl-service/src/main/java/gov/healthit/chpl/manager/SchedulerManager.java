@@ -73,4 +73,13 @@ public interface SchedulerManager {
      * @throws ValidationException if job values aren't correct
      */
     void retireAcb(String acb) throws SchedulerException, ValidationException;
+
+    /**
+     * Change name of ACB in any jobs that depend on it.
+     * @param oldAcb ACB's old name
+     * @param newAcb ACB's new name
+     * @throws SchedulerException if scheduler has issues
+     * @throws ValidationException if job values aren't correct
+     */
+    void changeAcbName(String oldAcb, String newAcb) throws SchedulerException, ValidationException;
 }
