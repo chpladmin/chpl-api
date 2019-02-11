@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dao.UserPermissionDAO;
 import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
@@ -39,6 +38,7 @@ import gov.healthit.chpl.entity.surveillance.SurveillanceRequirementEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.permissions.Permissions;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 
@@ -53,11 +53,12 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     private FileUtils fileUtils;
     private Environment env;
     private Permissions permissions;
+    private ResourcePermissions resourcePermissions;
 
     @Autowired
     public SurveillanceManagerImpl(final SurveillanceDAO survDao, final CertifiedProductDAO cpDao,
             final SurveillanceValidator validator, final UserPermissionDAO userPermissionDao, final FileUtils fileUtils,
-            final Environment env, final Permissions permissions) {
+            final Environment env, final Permissions permissions, final ResourcePermissions resourcePermissions) {
         this.survDao = survDao;
         this.cpDao = cpDao;
         this.validator = validator;
@@ -65,6 +66,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
         this.fileUtils = fileUtils;
         this.env = env;
         this.permissions = permissions;
+        this.resourcePermissions = resourcePermissions;
     }
 
     @Override
@@ -325,8 +327,8 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     }
 
     private void checkSurveillanceAuthority(final Surveillance surv) throws SurveillanceAuthorityAccessDeniedException {
-        Boolean hasOncAdmin = Util.isUserRoleAdmin() || Util.isUserRoleOnc();
-        Boolean hasAcbAdmin = Util.isUserRoleAcbAdmin();
+        Boolean hasOncAdmin = resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc();
+        Boolean hasAcbAdmin = resourcePermissions.isUserRoleAcbAdmin();
         if (StringUtils.isEmpty(surv.getAuthority())) {
             // If user has ROLE_ADMIN and ROLE_ACB
             // return 403
@@ -357,8 +359,8 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     }
 
     private void updateNullAuthority(final Surveillance surv) {
-        Boolean hasOncAdmin = Util.isUserRoleAdmin() || Util.isUserRoleOnc();
-        Boolean hasAcbAdmin = Util.isUserRoleAcbAdmin();
+        Boolean hasOncAdmin = resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc();
+        Boolean hasAcbAdmin = resourcePermissions.isUserRoleAcbAdmin();
         if (StringUtils.isEmpty(surv.getAuthority())) {
             if (hasOncAdmin) {
                 surv.setAuthority(Authority.ROLE_ADMIN);

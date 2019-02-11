@@ -1161,7 +1161,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             case TerminatedByOnc:
                 // only onc admin can do this and it always triggers developer
                 // ban
-                if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
+                if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
                     // find the new developer status
                     if (updatedStatusDto.getStatus().equals(CertificationStatusType.SuspendedByOnc.toString())) {
                         newDevStatusDto = devStatusDao.getByName(DeveloperStatusType.SuspendedByOnc.toString());
@@ -1170,7 +1170,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                         newDevStatusDto = devStatusDao
                                 .getByName(DeveloperStatusType.UnderCertificationBanByOnc.toString());
                     }
-                } else if (!Util.isUserRoleAdmin() && !Util.isUserRoleOnc()) {
+                } else if (!resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
                     LOGGER.error("User " + Util.getUsername()
                             + " does not have ROLE_ADMIN or ROLE_ONC and cannot change the status of developer for certified "
                             + "product with id " + listingId);

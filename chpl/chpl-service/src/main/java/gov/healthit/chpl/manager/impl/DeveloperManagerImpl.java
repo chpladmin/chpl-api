@@ -190,7 +190,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
         // if the before status is not Active and the user is not ROLE_ADMIN
         // then nothing can be changed
         if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
-                && !Util.isUserRoleAdmin() && !Util.isUserRoleOnc()) {
+                && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
             String msg = msgUtil.getMessage("developer.notActiveNotAdminCantChangeStatus", Util.getUsername(),
                     beforeDev.getName());
             LOGGER.error(msg);
@@ -204,14 +204,14 @@ public class DeveloperManagerImpl implements DeveloperManager {
         if (devStatusHistoryUpdated
                 && newDevStatus.getStatus().getStatusName()
                         .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
-                && !Util.isUserRoleAdmin() && !Util.isUserRoleOnc()) {
+                && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
             String msg = msgUtil.getMessage("developer.statusChangeNotAllowedWithoutAdmin",
                     DeveloperStatusType.UnderCertificationBanByOnc.toString());
             throw new EntityCreationException(msg);
         } else if (devStatusHistoryUpdated
                 && !newDevStatus.getStatus().getStatusName()
                         .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
-                && !Util.isUserRoleAdmin() && !Util.isUserRoleOnc()) {
+                && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
             String msg = msgUtil.getMessage("developer.statusHistoryChangeNotAllowedWithoutAdmin");
             throw new EntityCreationException(msg);
         }
@@ -224,7 +224,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
         if (currentStatusChanged
                 && !newDevStatus.getStatus().getStatusName()
                         .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
-                && !Util.isUserRoleAdmin() && !Util.isUserRoleOnc()) {
+                && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
             String msg = msgUtil.getMessage("developer.statusChangeNotAllowedWithoutAdmin");
             throw new EntityCreationException(msg);
         } else if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
@@ -253,9 +253,9 @@ public class DeveloperManagerImpl implements DeveloperManager {
             // proceed
             if (((currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
                     || newDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()))
-                    && (Util.isUserRoleAdmin() || Util.isUserRoleOnc()))
+                    && (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()))
                     || (currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
-                            && !Util.isUserRoleAdmin() && !Util.isUserRoleOnc())) {
+                            && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc())) {
 
                 developerDao.update(updatedDev);
                 updateStatusHistory(beforeDev, updatedDev);

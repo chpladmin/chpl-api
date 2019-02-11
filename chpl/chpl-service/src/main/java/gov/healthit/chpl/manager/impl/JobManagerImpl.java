@@ -24,6 +24,7 @@ import gov.healthit.chpl.job.NoJobTypeException;
 import gov.healthit.chpl.job.RunnableJob;
 import gov.healthit.chpl.job.RunnableJobFactory;
 import gov.healthit.chpl.manager.JobManager;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 
 @Service
 public class JobManagerImpl extends ApplicationObjectSupport implements JobManager {
@@ -38,6 +39,9 @@ public class JobManagerImpl extends ApplicationObjectSupport implements JobManag
     private RunnableJobFactory jobFactory;
     @Autowired
     private JobDAO jobDao;
+
+    @Autowired
+    private ResourcePermissions resourcePermissions;
 
     @Transactional
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
@@ -75,7 +79,7 @@ public class JobManagerImpl extends ApplicationObjectSupport implements JobManag
         Long earliestCompletedJobMillis = System.currentTimeMillis() - (completedJobThresholdDays * MILLIS_PER_DAY);
 
         Long userId = null;
-        if (!Util.isUserRoleAdmin()) {
+        if (!resourcePermissions.isUserRoleAdmin()) {
             userId = Util.getCurrentUser().getId();
         }
         return jobDao.findAllRunningAndCompletedBetweenDates(new Date(earliestCompletedJobMillis), new Date(), userId);

@@ -610,8 +610,8 @@ public class CertifiedProductController {
                     .equals(CertificationStatusType.TerminatedByOnc.toString())
                     || updatedListing.getCurrentStatus().getStatus().getName()
                     .equals(CertificationStatusType.TerminatedByOnc.toString()))
-                    && !Util.isUserRoleOnc()
-                    && !Util.isUserRoleAdmin()) {
+                    && !resourcePermissions.isUserRoleOnc()
+                    && !resourcePermissions.isUserRoleAdmin()) {
                 updatedListing.getErrorMessages()
                 .add("User " + Util.getUsername()
                 + " does not have permission to change certification status of "
@@ -686,9 +686,9 @@ public class CertifiedProductController {
             throws EntityRetrievalException, AccessDeniedException {
 
         List<PendingCertifiedProductDTO> pcps = new ArrayList<PendingCertifiedProductDTO>();
-        if (Util.isUserRoleAdmin()) {
+        if (resourcePermissions.isUserRoleAdmin()) {
             pcps = pcpManager.getAllPendingCertifiedProducts();
-        } else if (Util.isUserRoleAcbAdmin()) {
+        } else if (resourcePermissions.isUserRoleAcbAdmin()) {
             List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
             for (CertificationBodyDTO acb : allowedAcbs) {
                 pcps.addAll(pcpManager.getPendingCertifiedProducts(acb.getId()));

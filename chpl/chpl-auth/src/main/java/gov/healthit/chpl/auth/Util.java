@@ -20,29 +20,29 @@ public class Util {
         }
     }
 
-    public static boolean isUserRoleAdmin() {
-        return doesUserHaveRole(Authority.ROLE_ADMIN);
-    }
-
-    public static boolean isUserRoleOnc() {
-        return doesUserHaveRole(Authority.ROLE_ONC);
-    }
-
-    public static boolean isUserRoleCmsStaff() {
-        return doesUserHaveRole(Authority.ROLE_CMS_STAFF);
-    }
-
-    public static boolean isUserRoleAcbAdmin() {
-        return doesUserHaveRole(Authority.ROLE_ACB);
-    }
-
-    public static boolean isUserRoleAtlAdmin() {
-        return doesUserHaveRole(Authority.ROLE_ATL);
-    }
-    
-    public static boolean isUserRoleUserCreator() {
-        return doesUserHaveRole(Authority.ROLE_USER_CREATOR);
-    }
+//    public static boolean isUserRoleAdmin() {
+//        return doesUserHaveRole(Authority.ROLE_ADMIN);
+//    }
+//
+//    public static boolean isUserRoleOnc() {
+//        return doesUserHaveRole(Authority.ROLE_ONC);
+//    }
+//
+//    public static boolean isUserRoleCmsStaff() {
+//        return doesUserHaveRole(Authority.ROLE_CMS_STAFF);
+//    }
+//
+//    public static boolean isUserRoleAcbAdmin() {
+//        return doesUserHaveRole(Authority.ROLE_ACB);
+//    }
+//
+//    public static boolean isUserRoleAtlAdmin() {
+//        return doesUserHaveRole(Authority.ROLE_ATL);
+//    }
+//    
+//    public static boolean isUserRoleUserCreator() {
+//        return doesUserHaveRole(Authority.ROLE_USER_CREATOR);
+//    }
 
     
     public static User getCurrentUser() {

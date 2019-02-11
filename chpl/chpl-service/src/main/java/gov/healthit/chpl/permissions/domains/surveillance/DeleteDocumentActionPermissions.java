@@ -2,7 +2,6 @@ package gov.healthit.chpl.permissions.domains.surveillance;
 
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
 @Component("surveillanceDeleteDocumentActionPermissions")
@@ -17,9 +16,9 @@ public class DeleteDocumentActionPermissions extends ActionPermissions {
     public boolean hasAccess(Object obj) {
         if (!(obj instanceof Long)) {
             return false;
-        } else if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
+        } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
             return true;
-        } else if (Util.isUserRoleAcbAdmin()) {
+        } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             Long acbId = (Long) obj;
             return isAcbValidForCurrentUser(acbId);
         } else {

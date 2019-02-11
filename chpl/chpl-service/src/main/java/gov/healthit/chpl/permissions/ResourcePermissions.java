@@ -56,7 +56,7 @@ public class ResourcePermissions {
         User user = Util.getCurrentUser();
         List<CertificationBodyDTO> acbs = new ArrayList<CertificationBodyDTO>();
 
-        if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
+        if (isUserRoleAdmin() || isUserRoleOnc()) {
             acbs = acbDAO.findAllActive();
         } else {
             List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByUserId(user.getId());
