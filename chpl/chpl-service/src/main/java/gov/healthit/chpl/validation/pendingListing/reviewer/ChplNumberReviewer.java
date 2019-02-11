@@ -46,7 +46,7 @@ public class ChplNumberReviewer implements Reviewer {
      * May change the CHPL ID if necessary (if additional software was added or certification date was changed)
      * and if the CHPL ID is changed, confirms that the new ID is unique.
      */
-    public void review(PendingCertifiedProductDTO listing) {
+    public void review(final PendingCertifiedProductDTO listing) {
         String uniqueId = listing.getUniqueId();
         String[] uniqueIdParts = uniqueId.split("\\.");
         if (uniqueIdParts.length != CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {

@@ -168,7 +168,8 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 public class CertifiedProductManagerImpl implements CertifiedProductManager {
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductManagerImpl.class);
 
-    @Autowired private ErrorMessageUtil msgUtil;
+    @Autowired
+    private ErrorMessageUtil msgUtil;
 
     @Autowired
     private CertifiedProductDAO cpDao;
@@ -468,9 +469,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         toCreate.setCertificationBodyId(pendingCp.getCertificationBodyId());
 
         if (pendingCp.getCertificationEditionId() == null) {
-            throw new EntityCreationException(
-                    "The ID of an existing certification edition (year) must be provided. "
-                            + "  A new certification edition cannot be created via this process.");
+            throw new EntityCreationException("The ID of an existing certification edition (year) must be provided. "
+                    + "  A new certification edition cannot be created via this process.");
         }
         toCreate.setCertificationEditionId(pendingCp.getCertificationEditionId());
         toCreate.setTransparencyAttestationUrl(pendingCp.getTransparencyAttestationUrl());
@@ -688,7 +688,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                 }
                 certResultToCreate.setApiDocumentation(isCertified ? certResult.getApiDocumentation() : null);
                 certResultToCreate
-                .setPrivacySecurityFramework(isCertified ? certResult.getPrivacySecurityFramework() : null);
+                        .setPrivacySecurityFramework(isCertified ? certResult.getPrivacySecurityFramework() : null);
                 CertificationResultDTO createdCert = certDao.create(certResultToCreate);
 
                 createdCert = addG1G2MacraMeasures(certResult, createdCert);
@@ -697,8 +697,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                     if (certResult.getAdditionalSoftware() != null && certResult.getAdditionalSoftware().size() > 0) {
                         for (PendingCertificationResultAdditionalSoftwareDTO software : certResult
                                 .getAdditionalSoftware()) {
-                            CertificationResultAdditionalSoftwareDTO as =
-                                    new CertificationResultAdditionalSoftwareDTO();
+                            CertificationResultAdditionalSoftwareDTO as = new CertificationResultAdditionalSoftwareDTO();
 
                             as.setCertifiedProductId(software.getCertifiedProductId());
                             as.setJustification(software.getJustification());
@@ -722,8 +721,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                                 fuzzyChoicesDao.update(dto);
                             }
                             CertificationResultUcdProcessDTO ucdDto = new CertificationResultUcdProcessDTO();
-                            UcdProcessDTO ucd =
-                                    ucdDao.findOrCreate(pendingUcd.getUcdProcessId(), pendingUcd.getUcdProcessName());
+                            UcdProcessDTO ucd = ucdDao.findOrCreate(pendingUcd.getUcdProcessId(),
+                                    pendingUcd.getUcdProcessName());
 
                             ucdDto.setUcdProcessId(ucd.getId());
                             ucdDto.setCertificationResultId(createdCert.getId());
@@ -747,7 +746,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                                         certResult.getNumber(), testData.getTestData().getName());
                                 if (foundTestData == null) {
                                     LOGGER.error("Could not find test data for " + certResult.getNumber()
-                                    + " and test data name " + testData.getTestData().getName());
+                                            + " and test data name " + testData.getTestData().getName());
                                 } else {
                                     testDto.setTestData(foundTestData);
                                     testDto.setTestDataId(foundTestData.getId());
@@ -762,8 +761,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                     if (certResult.getTestFunctionality() != null && certResult.getTestFunctionality().size() > 0) {
                         for (PendingCertificationResultTestFunctionalityDTO func : certResult.getTestFunctionality()) {
                             if (func.getTestFunctionalityId() != null) {
-                                CertificationResultTestFunctionalityDTO funcDto =
-                                        new CertificationResultTestFunctionalityDTO();
+                                CertificationResultTestFunctionalityDTO funcDto = new CertificationResultTestFunctionalityDTO();
 
                                 funcDto.setTestFunctionalityId(func.getTestFunctionalityId());
                                 funcDto.setCertificationResultId(createdCert.getId());
@@ -775,8 +773,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                                 TestFunctionalityDTO match = testFuncDao.getByNumberAndEdition(func.getNumber(),
                                         pendingCp.getCertificationEditionId());
                                 if (match != null) {
-                                    CertificationResultTestFunctionalityDTO funcDto =
-                                            new CertificationResultTestFunctionalityDTO();
+                                    CertificationResultTestFunctionalityDTO funcDto = new CertificationResultTestFunctionalityDTO();
 
                                     funcDto.setTestFunctionalityId(match.getId());
                                     funcDto.setCertificationResultId(createdCert.getId());
@@ -801,14 +798,14 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                                 procDto.setTestProcedure(proc.getTestProcedure());
                                 certDao.addTestProcedureMapping(procDto);
                             } else if (proc.getTestProcedure() != null) {
-                                // check again for a matching test procedure because
+                                // check again for a matching test procedure
+                                // because
                                 // the user could have edited it since upload
-                                TestProcedureDTO foundTp =
-                                        testProcDao.getByCriteriaNumberAndValue(certResult.getNumber(),
-                                                proc.getTestProcedure().getName());
+                                TestProcedureDTO foundTp = testProcDao.getByCriteriaNumberAndValue(
+                                        certResult.getNumber(), proc.getTestProcedure().getName());
                                 if (foundTp == null) {
                                     LOGGER.error("Could not find test procedure for " + certResult.getNumber()
-                                    + " and test procedure name " + proc.getTestProcedure().getName());
+                                            + " and test procedure name " + proc.getTestProcedure().getName());
                                 } else {
                                     procDto.setTestProcedure(foundTp);
                                     procDto.setTestProcedureId(foundTp.getId());
@@ -1031,16 +1028,13 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         return newCertifiedProduct;
     }
 
-    private CertificationResultDTO addG1G2MacraMeasures(
-            final PendingCertificationResultDTO certResult, final CertificationResultDTO createdCert)
-                    throws EntityCreationException {
+    private CertificationResultDTO addG1G2MacraMeasures(final PendingCertificationResultDTO certResult,
+            final CertificationResultDTO createdCert) throws EntityCreationException {
         if (certResult.getG1MacraMeasures() != null && certResult.getG1MacraMeasures().size() > 0) {
-            for (PendingCertificationResultMacraMeasureDTO pendingMeasure : certResult
-                    .getG1MacraMeasures()) {
+            for (PendingCertificationResultMacraMeasureDTO pendingMeasure : certResult.getG1MacraMeasures()) {
                 // the validator set the macraMeasure value so it's
                 // definitely filled in
-                if (pendingMeasure.getMacraMeasure() != null
-                        && pendingMeasure.getMacraMeasure().getId() != null) {
+                if (pendingMeasure.getMacraMeasure() != null && pendingMeasure.getMacraMeasure().getId() != null) {
                     CertificationResultMacraMeasureDTO crMeasure = new CertificationResultMacraMeasureDTO();
                     crMeasure.setMeasure(pendingMeasure.getMacraMeasure());
                     crMeasure.setCertificationResultId(createdCert.getId());
@@ -1052,12 +1046,10 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         }
 
         if (certResult.getG2MacraMeasures() != null && certResult.getG2MacraMeasures().size() > 0) {
-            for (PendingCertificationResultMacraMeasureDTO pendingMeasure : certResult
-                    .getG2MacraMeasures()) {
+            for (PendingCertificationResultMacraMeasureDTO pendingMeasure : certResult.getG2MacraMeasures()) {
                 // the validator set the macraMeasure value so it's
                 // definitely filled in
-                if (pendingMeasure.getMacraMeasure() != null
-                        && pendingMeasure.getMacraMeasure().getId() != null) {
+                if (pendingMeasure.getMacraMeasure() != null && pendingMeasure.getMacraMeasure().getId() != null) {
                     CertificationResultMacraMeasureDTO crMeasure = new CertificationResultMacraMeasureDTO();
                     crMeasure.setMeasure(pendingMeasure.getMacraMeasure());
                     crMeasure.setCertificationResultId(createdCert.getId());
@@ -1083,8 +1075,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or "
-            + "(hasRole('ROLE_ACB')"
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or " + "(hasRole('ROLE_ACB')"
             + " and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     @Transactional(readOnly = false)
     public void sanitizeUpdatedListingData(final Long acbId, final CertifiedProductSearchDetails listing)
@@ -1103,7 +1094,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                         if (found != null) {
                             parent.setId(found.getId());
                         }
-                    } catch (Exception ignore) { }
+                    } catch (Exception ignore) {
+                    }
                 } else if (parent.getId() == null) {
                     throw new EntityNotFoundException(
                             "Every ICS parent must have either a CHPL ID or a CHPL Product Number.");
@@ -1139,19 +1131,19 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS
     }, allEntries = true)
     public CertifiedProductDTO update(final Long acbId, final ListingUpdateRequest updateRequest,
-            final CertifiedProductSearchDetails existingListing)
-                    throws AccessDeniedException, EntityRetrievalException, JsonProcessingException,
-                    EntityCreationException, InvalidArgumentsException, IOException {
+            final CertifiedProductSearchDetails existingListing) throws AccessDeniedException, EntityRetrievalException,
+            JsonProcessingException, EntityCreationException, InvalidArgumentsException, IOException {
 
         CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
         Long listingId = updatedListing.getId();
         Long productVersionId = updatedListing.getVersion().getVersionId();
         CertificationStatus updatedStatus = updatedListing.getCurrentStatus().getStatus();
         CertificationStatus existingStatus = existingListing.getCurrentStatus().getStatus();
-        //if listing status has changed that may trigger other changes
-        //to developer status
+        // if listing status has changed that may trigger other changes
+        // to developer status
         if (ObjectUtils.notEqual(updatedStatus.getName(), existingStatus.getName())) {
-            // look at the updated status and see if a developer ban is appropriate
+            // look at the updated status and see if a developer ban is
+            // appropriate
             CertificationStatusDTO updatedStatusDto = certStatusDao.getById(updatedStatus.getId());
             DeveloperDTO cpDeveloper = developerDao.getByVersion(productVersionId);
             if (cpDeveloper == null) {
@@ -1163,31 +1155,34 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             switch (CertificationStatusType.getValue(updatedStatusDto.getStatus())) {
             case SuspendedByOnc:
             case TerminatedByOnc:
-                // only onc admin can do this and it always triggers developer ban
+                // only onc admin can do this and it always triggers developer
+                // ban
                 if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
                     // find the new developer status
                     if (updatedStatusDto.getStatus().equals(CertificationStatusType.SuspendedByOnc.toString())) {
                         newDevStatusDto = devStatusDao.getByName(DeveloperStatusType.SuspendedByOnc.toString());
                     } else if (updatedStatusDto.getStatus()
                             .equals(CertificationStatusType.TerminatedByOnc.toString())) {
-                        newDevStatusDto = devStatusDao.getByName(DeveloperStatusType.UnderCertificationBanByOnc.toString());
+                        newDevStatusDto = devStatusDao
+                                .getByName(DeveloperStatusType.UnderCertificationBanByOnc.toString());
                     }
                 } else if (!Util.isUserRoleAdmin() && !Util.isUserRoleOnc()) {
                     LOGGER.error("User " + Util.getUsername()
-                    + " does not have ROLE_ADMIN and cannot change the status of developer for certified product with id "
-                    + listingId);
+                            + " does not have ROLE_ADMIN or ROLE_ONC and cannot change the status of developer for certified "
+                            + "product with id " + listingId);
                     throw new AccessDeniedException(
                             "User does not have admin permission to change " + cpDeveloper.getName() + " status.");
                 }
                 break;
             case WithdrawnByAcb:
             case WithdrawnByDeveloperUnderReview:
-                // initiate TriggerDeveloperBan job, telling ONC that they might need to ban a Developer
+                // initiate TriggerDeveloperBan job, telling ONC that they might
+                // need to ban a Developer
                 triggerDeveloperBan(updatedListing, updateRequest.getReason());
                 break;
             default:
                 LOGGER.info("New listing status is " + updatedStatusDto.getStatus()
-                + " which does not trigger a developer ban.");
+                        + " which does not trigger a developer ban.");
                 break;
             }
             if (newDevStatusDto != null) {
@@ -1200,7 +1195,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                 try {
                     developerManager.update(cpDeveloper);
                 } catch (MissingReasonException ignore) {
-                    //reason will never be missing since we set it above
+                    // reason will never be missing since we set it above
                 }
             }
         }
@@ -1208,8 +1203,9 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         CertifiedProductDTO dtoToUpdate = new CertifiedProductDTO(updatedListing);
         CertifiedProductDTO result = cpDao.update(dtoToUpdate);
 
-        //Findbugs says this cannot be null since it used above - an NPE would have been thrown
-        //if (updatedListing != null) {
+        // Findbugs says this cannot be null since it used above - an NPE would
+        // have been thrown
+        // if (updatedListing != null) {
         updateTestingLabs(listingId, existingListing.getTestingLabs(), updatedListing.getTestingLabs());
         updateIcsChildren(listingId, existingListing.getIcs(), updatedListing.getIcs());
         updateIcsParents(listingId, existingListing.getIcs(), updatedListing.getIcs());
@@ -1227,13 +1223,13 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         updateCertifications(result.getCertificationBodyId(), existingListing, updatedListing,
                 existingListing.getCertificationResults(), updatedListing.getCertificationResults());
         updateCqms(result, existingListing.getCqmResults(), updatedListing.getCqmResults());
-        //}
+        // }
         return result;
     }
 
     private int updateTestingLabs(final Long listingId, final List<CertifiedProductTestingLab> existingTestingLabs,
             final List<CertifiedProductTestingLab> updatedTestingLabs)
-                    throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
         int numChanges = 0;
         List<CertifiedProductTestingLab> tlsToAdd = new ArrayList<CertifiedProductTestingLab>();
@@ -1301,6 +1297,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
     /**
      * Intelligently determine what updates need to be made to ICS parents.
+     * 
      * @param existingIcs
      * @param updatedIcs
      */
@@ -1377,6 +1374,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
     /**
      * Intelligently update the ICS children relationships
+     * 
      * @param existingIcs
      * @param updatedIcs
      */
@@ -1454,7 +1452,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
     private int updateQmsStandards(final Long listingId, final List<CertifiedProductQmsStandard> existingQmsStandards,
             final List<CertifiedProductQmsStandard> updatedQmsStandards)
-                    throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException {
+            throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException {
 
         int numChanges = 0;
         List<CertifiedProductQmsStandard> qmsToAdd = new ArrayList<CertifiedProductQmsStandard>();
@@ -1562,7 +1560,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     private int updateTargetedUsers(final Long listingId,
             final List<CertifiedProductTargetedUser> existingTargetedUsers,
             final List<CertifiedProductTargetedUser> updatedTargetedUsers)
-                    throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
         int numChanges = 0;
         List<CertifiedProductTargetedUser> tusToAdd = new ArrayList<CertifiedProductTargetedUser>();
@@ -1630,12 +1628,10 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     private int updateAccessibilityStandards(final Long listingId,
             final List<CertifiedProductAccessibilityStandard> existingAccessibilityStandards,
             final List<CertifiedProductAccessibilityStandard> updatedAccessibilityStandards)
-                    throws EntityCreationException, EntityRetrievalException,
-                    JsonProcessingException, IOException {
+            throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException {
 
         int numChanges = 0;
-        List<CertifiedProductAccessibilityStandard> accStdsToAdd =
-                new ArrayList<CertifiedProductAccessibilityStandard>();
+        List<CertifiedProductAccessibilityStandard> accStdsToAdd = new ArrayList<CertifiedProductAccessibilityStandard>();
 
         List<Long> idsToRemove = new ArrayList<Long>();
 
@@ -1724,7 +1720,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     private int updateCertificationStatusEvents(final Long listingId,
             final List<CertificationStatusEvent> existingStatusEvents,
             final List<CertificationStatusEvent> updatedStatusEvents)
-                    throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
         int numChanges = 0;
         List<CertificationStatusEvent> statusEventsToAdd = new ArrayList<CertificationStatusEvent>();
@@ -1789,16 +1785,14 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             } else if (toAdd.getStatus().getId() != null) {
                 CertificationStatusDTO statusDto = certStatusDao.getById(toAdd.getStatus().getId());
                 if (statusDto == null) {
-                    String msg = msgUtil.getMessage("listing.badCertificationStatusId",
-                            toAdd.getStatus().getId());
+                    String msg = msgUtil.getMessage("listing.badCertificationStatusId", toAdd.getStatus().getId());
                     throw new EntityRetrievalException(msg);
                 }
                 statusEventDto.setStatus(statusDto);
             } else if (!StringUtils.isEmpty(toAdd.getStatus().getName())) {
                 CertificationStatusDTO statusDto = certStatusDao.getByStatusName(toAdd.getStatus().getName());
                 if (statusDto == null) {
-                    String msg = msgUtil.getMessage("listing.badCertificationStatusName",
-                            toAdd.getStatus().getName());
+                    String msg = msgUtil.getMessage("listing.badCertificationStatusName", toAdd.getStatus().getName());
                     throw new EntityRetrievalException(msg);
                 }
                 statusEventDto.setStatus(statusDto);
@@ -1808,14 +1802,12 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
         for (CertificationStatusEventPair toUpdate : statusEventsToUpdate) {
             boolean hasChanged = false;
-            if (!ObjectUtils.equals(toUpdate.getOrig().getEventDate(),
-                    toUpdate.getUpdated().getEventDate())
+            if (!ObjectUtils.equals(toUpdate.getOrig().getEventDate(), toUpdate.getUpdated().getEventDate())
                     || !ObjectUtils.equals(toUpdate.getOrig().getStatus().getId(),
                             toUpdate.getUpdated().getStatus().getId())
                     || !ObjectUtils.equals(toUpdate.getOrig().getStatus().getName(),
                             toUpdate.getUpdated().getStatus().getName())
-                    || !ObjectUtils.equals(toUpdate.getOrig().getReason(),
-                            toUpdate.getUpdated().getReason())) {
+                    || !ObjectUtils.equals(toUpdate.getOrig().getReason(), toUpdate.getUpdated().getReason())) {
                 hasChanged = true;
             }
 
@@ -1857,10 +1849,9 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         return numChanges;
     }
 
-    private int updateMeaningfulUseUserHistory(final Long listingId,
-            final List<MeaningfulUseUser> existingMuuHistory,
+    private int updateMeaningfulUseUserHistory(final Long listingId, final List<MeaningfulUseUser> existingMuuHistory,
             final List<MeaningfulUseUser> updatedMuuHistory)
-                    throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
         int numChanges = 0;
         List<MeaningfulUseUser> itemsToAdd = new ArrayList<MeaningfulUseUser>();
@@ -1924,10 +1915,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
         for (MeaningfulUseUserPair toUpdate : itemsToUpdate) {
             boolean hasChanged = false;
-            if (!ObjectUtils.equals(toUpdate.getOrig().getMuuCount(),
-                    toUpdate.getUpdated().getMuuCount())
-                    || !ObjectUtils.equals(toUpdate.getOrig().getMuuDate(),
-                            toUpdate.getUpdated().getMuuDate())) {
+            if (!ObjectUtils.equals(toUpdate.getOrig().getMuuCount(), toUpdate.getUpdated().getMuuCount())
+                    || !ObjectUtils.equals(toUpdate.getOrig().getMuuDate(), toUpdate.getUpdated().getMuuDate())) {
                 hasChanged = true;
             }
 
@@ -1952,7 +1941,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     private int updateCertifications(final Long acbId, final CertifiedProductSearchDetails existingListing,
             final CertifiedProductSearchDetails updatedListing, final List<CertificationResult> existingCertifications,
             final List<CertificationResult> updatedCertifications)
-                    throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException {
+            throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException {
 
         int numChanges = 0;
 
@@ -1977,7 +1966,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
     private int updateCqms(final CertifiedProductDTO listing, final List<CQMResultDetails> existingCqmDetails,
             final List<CQMResultDetails> updatedCqmDetails)
-                    throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
         // convert to CQMResultDetailsDTO since CMS CQMs can have multiple
         // entries
         // per success version. work with these objects instead of the passed-in
@@ -2100,8 +2089,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         return numChanges;
     }
 
-    private int updateCqm(final CertifiedProductDTO listing,
-            final CQMResultDetailsDTO existingCqm,
+    private int updateCqm(final CertifiedProductDTO listing, final CQMResultDetailsDTO existingCqm,
             final CQMResultDetailsDTO updatedCqm) throws EntityRetrievalException {
 
         int numChanges = 0;
@@ -2220,17 +2208,18 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         return result;
     }
 
-    private CertifiedProductDetailsDTO getCertifiedProductDetailsDtoByChplProductNumber(
-            final String chplProductNumber) throws EntityRetrievalException {
+    private CertifiedProductDetailsDTO getCertifiedProductDetailsDtoByChplProductNumber(final String chplProductNumber)
+            throws EntityRetrievalException {
 
-        List<CertifiedProductDetailsDTO> dtos =
-                certifiedProductSearchResultDAO.getByChplProductNumber(chplProductNumber);
+        List<CertifiedProductDetailsDTO> dtos = certifiedProductSearchResultDAO
+                .getByChplProductNumber(chplProductNumber);
 
         if (dtos.size() == 0) {
             throw new EntityRetrievalException("Could not retrieve CertifiedProductSearchDetails.");
         }
         return dtos.get(0);
     }
+
     private void triggerDeveloperBan(final CertifiedProductSearchDetails updatedListing, final String reason) {
         Scheduler scheduler;
         try {
@@ -2239,10 +2228,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             TriggerKey triggerId = triggerKey("triggerBanNow_" + new Date().getTime(), "triggerDeveloperBanTrigger");
             JobKey jobId = jobKey("Trigger Developer Ban Notification", "chplJobs");
 
-            Trigger qzTrigger = newTrigger()
-                    .withIdentity(triggerId)
-                    .startNow()
-                    .forJob(jobId)
+            Trigger qzTrigger = newTrigger().withIdentity(triggerId).startNow().forJob(jobId)
                     .usingJobData("status", updatedListing.getCurrentStatus().getStatus().getName())
                     .usingJobData("dbId", updatedListing.getId())
                     .usingJobData("chplId", updatedListing.getChplProductNumber())
@@ -2254,8 +2240,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                     .usingJobData("openNcs", updatedListing.getCountOpenNonconformities())
                     .usingJobData("closedNcs", updatedListing.getCountClosedNonconformities())
                     .usingJobData("reason", updatedListing.getCurrentStatus().getReason())
-                    .usingJobData("reasonForChange", reason)
-                    .build();
+                    .usingJobData("reasonForChange", reason).build();
             scheduler.scheduleJob(qzTrigger);
         } catch (SchedulerException e) {
             LOGGER.error("Could not start Trigger Developer Ban", e);
@@ -2273,10 +2258,10 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         private CertificationStatusEvent orig;
         private CertificationStatusEvent updated;
 
-        CertificationStatusEventPair() { }
+        CertificationStatusEventPair() {
+        }
 
-        CertificationStatusEventPair(final CertificationStatusEvent orig,
-                final CertificationStatusEvent updated) {
+        CertificationStatusEventPair(final CertificationStatusEvent orig, final CertificationStatusEvent updated) {
 
             this.orig = orig;
             this.updated = updated;
@@ -2304,10 +2289,10 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         private MeaningfulUseUser orig;
         private MeaningfulUseUser updated;
 
-        MeaningfulUseUserPair() { }
+        MeaningfulUseUserPair() {
+        }
 
-        MeaningfulUseUserPair(final MeaningfulUseUser orig,
-                final MeaningfulUseUser updated) {
+        MeaningfulUseUserPair(final MeaningfulUseUser orig, final MeaningfulUseUser updated) {
 
             this.orig = orig;
             this.updated = updated;
@@ -2335,7 +2320,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         private CertifiedProductQmsStandard orig;
         private CertifiedProductQmsStandard updated;
 
-        QmsStandardPair() { }
+        QmsStandardPair() {
+        }
 
         QmsStandardPair(final CertifiedProductQmsStandard orig, final CertifiedProductQmsStandard updated) {
             this.orig = orig;
@@ -2364,7 +2350,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         private CQMResultDetailsDTO orig;
         private CQMResultDetailsDTO updated;
 
-        CQMResultDetailsPair() { }
+        CQMResultDetailsPair() {
+        }
 
         CQMResultDetailsPair(final CQMResultDetailsDTO orig, final CQMResultDetailsDTO updated) {
             this.orig = orig;

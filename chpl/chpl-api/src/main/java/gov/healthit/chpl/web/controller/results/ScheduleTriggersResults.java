@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import gov.healthit.chpl.domain.schedule.ChplTrigger;
+import gov.healthit.chpl.domain.schedule.ChplRepeatableTrigger;
 
 /**
  * Results object for Schedule Triggers.
@@ -13,20 +13,20 @@ import gov.healthit.chpl.domain.schedule.ChplTrigger;
  */
 public class ScheduleTriggersResults implements Serializable {
     private static final long serialVersionUID = 8748244450112564530L;
-    private List<ChplTrigger> results;
+    private List<ChplRepeatableTrigger> results;
 
     /**
      * Default constructor.
      */
     public ScheduleTriggersResults() {
-        results = new ArrayList<ChplTrigger>();
+        results = new ArrayList<ChplRepeatableTrigger>();
     }
 
-    public List<ChplTrigger> getResults() {
+    public List<ChplRepeatableTrigger> getResults() {
         return results;
     }
 
-    public void setResults(final List<ChplTrigger> results) {
+    public void setResults(final List<ChplRepeatableTrigger> results) {
         this.results = results;
     }
 }
