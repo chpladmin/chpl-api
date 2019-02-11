@@ -67,7 +67,8 @@ public class SchedulerManagerImpl implements SchedulerManager {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
+            + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).CREATE_TRIGGER)")
     public ChplRepeatableTrigger createTrigger(final ChplRepeatableTrigger trigger)
             throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
@@ -118,7 +119,8 @@ public class SchedulerManagerImpl implements SchedulerManager {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ONC', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
+            + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).DELETE_TRIGGER)")
     public void deleteTrigger(final String triggerGroup, final String triggerName)
             throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
@@ -132,7 +134,8 @@ public class SchedulerManagerImpl implements SchedulerManager {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ONC', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
+            + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).GET_ALL_TRIGGERS)")
     public List<ChplRepeatableTrigger> getAllTriggers() throws SchedulerException {
         ArrayList<ChplRepeatableTrigger> triggers = new ArrayList<ChplRepeatableTrigger>();
         Scheduler scheduler = getScheduler();
@@ -152,7 +155,8 @@ public class SchedulerManagerImpl implements SchedulerManager {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
+            + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).UPDATE_TRIGGER)")
     public ChplRepeatableTrigger updateTrigger(final ChplRepeatableTrigger trigger)
             throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
@@ -207,7 +211,8 @@ public class SchedulerManagerImpl implements SchedulerManager {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ONC', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
+            + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).UPDATE_JOB)")
     public ChplJob updateJob(final ChplJob job) throws SchedulerException {
         Scheduler scheduler = getScheduler();
         JobKey jobId = jobKey(job.getName(), job.getGroup());
@@ -243,7 +248,8 @@ public class SchedulerManagerImpl implements SchedulerManager {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
+            + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).UPDATE_ACB_NAME)")
     public void changeAcbName(final String oldAcb, final String newAcb) throws SchedulerException, ValidationException {
         List<ChplRepeatableTrigger> allTriggers = getAllTriggers();
         for (ChplRepeatableTrigger trigger : allTriggers) {

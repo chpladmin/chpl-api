@@ -44,7 +44,8 @@ public class JobManagerImpl extends ApplicationObjectSupport implements JobManag
     private ResourcePermissions resourcePermissions;
 
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).JOB, "
+            + "T(gov.healthit.chpl.permissions.domains.JobDomainPermissions).CREATE)")
     public JobDTO createJob(final JobDTO job) throws EntityCreationException, EntityRetrievalException {
         UserDTO user = job.getUser();
         if (user == null || user.getId() == null) {
@@ -56,7 +57,8 @@ public class JobManagerImpl extends ApplicationObjectSupport implements JobManag
     }
 
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).JOB, "
+            + "T(gov.healthit.chpl.permissions.domains.JobDomainPermissions).GET_BY_ID)")
     public JobDTO getJobById(final Long jobId) {
         return jobDao.getById(jobId);
     }
@@ -87,7 +89,8 @@ public class JobManagerImpl extends ApplicationObjectSupport implements JobManag
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).JOB, "
+            + "T(gov.healthit.chpl.permissions.domains.JobDomainPermissions).GET_BY_USER)")
     public List<JobDTO> getJobsForUser(final UserDTO user) throws EntityRetrievalException {
         if (user == null || user.getId() == null) {
             throw new EntityRetrievalException("A user is required.");
@@ -103,7 +106,8 @@ public class JobManagerImpl extends ApplicationObjectSupport implements JobManag
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).JOB, "
+            + "T(gov.healthit.chpl.permissions.domains.JobDomainPermissions).START)")
     public boolean start(final JobDTO job) throws EntityRetrievalException {
         RunnableJob runnableJob = null;
         try {

@@ -6,14 +6,19 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.permissions.domains.ActivityDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CertificationResultsDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CorrectiveActionPlanDomainPermissions;
+import gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions;
 import gov.healthit.chpl.permissions.domains.DomainPermissions;
 import gov.healthit.chpl.permissions.domains.InvitationDomainPermissions;
+import gov.healthit.chpl.permissions.domains.JobDomainPermissions;
 import gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions;
 import gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions;
+import gov.healthit.chpl.permissions.domains.ProductDomainPermissions;
+import gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions;
 import gov.healthit.chpl.permissions.domains.UserPermissionsDomainPermissions;
 
@@ -29,6 +34,11 @@ public class Permissions {
     public static final String CERTIFICATION_BODY = "CERTIFICATION_BODY";
     public static final String SCHEDULER = "SCHEDULER";
     public static final String USER_PERMISSIONS = "USER_PERMISSIONS";
+    public static final String ACTIVITY = "ACTIVITY";
+    public static final String JOB = "JOB";
+    public static final String PRODUCT = "PRODUCT";
+    public static final String DEVELOPER = "DEVELOPER";
+    public static final String PRODUCT_VERSION = "PRODUCT_VERSION";
 
     private Map<String, DomainPermissions> domainPermissions = new HashMap<String, DomainPermissions>();
 
@@ -41,7 +51,11 @@ public class Permissions {
             final PendingCertifiedProductDomainPermissions pendingCertifiedProductDomainPermissions,
             final SurveillanceDomainPermissions surveillanceDomainPermissions,
             final CertificationBodyDomainPermissions certificationBodyDomainPermissions,
-            final UserPermissionsDomainPermissions userPermissionsDomainPermissions) {
+            final UserPermissionsDomainPermissions userPermissionsDomainPermissions,
+            final ActivityDomainPermissions activityDomainPermissions, final JobDomainPermissions jobDomainPermissions,
+            final ProductDomainPermissions productDomainPermissions,
+            final DeveloperDomainPermissions developerDomainPermissions,
+            final ProductVersionDomainPermissions productVersionDomainPermissions) {
 
         domainPermissions.put(PENDING_SURVEILLANCE, pendingSurveillanceDomainPermissions);
         domainPermissions.put(CERTIFICATION_RESULTS, certificationResultsDomainPermissions);
@@ -52,6 +66,11 @@ public class Permissions {
         domainPermissions.put(SURVEILLANCE, surveillanceDomainPermissions);
         domainPermissions.put(CERTIFICATION_BODY, certificationBodyDomainPermissions);
         domainPermissions.put(USER_PERMISSIONS, userPermissionsDomainPermissions);
+        domainPermissions.put(ACTIVITY, activityDomainPermissions);
+        domainPermissions.put(JOB, jobDomainPermissions);
+        domainPermissions.put(PRODUCT, productDomainPermissions);
+        domainPermissions.put(DEVELOPER, developerDomainPermissions);
+        domainPermissions.put(PRODUCT_VERSION, productVersionDomainPermissions);
     }
 
     public boolean hasAccess(final String domain, final String action) {
