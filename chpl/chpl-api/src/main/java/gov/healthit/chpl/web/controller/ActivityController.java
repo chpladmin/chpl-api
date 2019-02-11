@@ -128,7 +128,7 @@ public class ActivityController {
     public List<ActivityEvent> activityForACBById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
-        CertificationBodyDTO acb = resourcePermissions.getIfPermissionById(id); // throws 404 if ACB doesn't exist
+        CertificationBodyDTO acb = resourcePermissions.getAcbIfPermissionById(id); // throws 404 if ACB doesn't exist
         if (acb != null && acb.isRetired() && !Util.isUserRoleAdmin() && !Util.isUserRoleOnc()) {
             LOGGER.warn("Non-admin user " + Util.getUsername()
             + " tried to see activity for retired ACB " + acb.getName());
@@ -470,7 +470,7 @@ public class ActivityController {
             //make sure the user has permissions on the pending listings acb
             //will throw access denied if they do not have the permissions
             Long pendingListingAcbId = new Long(pendingListing.getCertifyingBody().get("id").toString());
-            resourcePermissions.getIfPermissionById(pendingListingAcbId);
+            resourcePermissions.getAcbIfPermissionById(pendingListingAcbId);
         }
 
         //if one of start of end is provided then the other must also be provided.

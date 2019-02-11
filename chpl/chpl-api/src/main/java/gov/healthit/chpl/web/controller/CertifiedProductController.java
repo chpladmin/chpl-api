@@ -734,7 +734,7 @@ public class CertifiedProductController {
             //make sure the user has permissions on the pending listings acb
             //will throw access denied if they do not have the permissions
             Long pendingListingAcbId = new Long(details.getCertifyingBody().get("id").toString());
-            resourcePermissions.getIfPermissionById(pendingListingAcbId);
+            resourcePermissions.getAcbIfPermissionById(pendingListingAcbId);
         }
         return details;
     }
@@ -755,7 +755,7 @@ public class CertifiedProductController {
             //make sure the user has permissions on the pending listings acb
             //will throw access denied if they do not have the permissions
             pendingListingAcbId = new Long(pcp.getCertifyingBody().get("id").toString());
-            resourcePermissions.getIfPermissionById(pendingListingAcbId);
+            resourcePermissions.getAcbIfPermissionById(pendingListingAcbId);
         }
         pcpManager.deletePendingCertifiedProduct(pendingListingAcbId, pcpId);
         return "{\"success\" : true}";

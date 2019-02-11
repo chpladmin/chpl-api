@@ -334,7 +334,7 @@ public class InvitationManagerImpl implements InvitationManager {
             throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException {
         CertificationBodyDTO userAcb = null;
         if (invitation.getAcbId() != null) {
-            userAcb = resourcePermissions.getIfPermissionById(invitation.getAcbId());
+            userAcb = resourcePermissions.getAcbIfPermissionById(invitation.getAcbId());
             if (userAcb == null) {
                 throw new InvalidArgumentsException("Could not find ACB with id " + invitation.getAcbId());
             }

@@ -152,7 +152,7 @@ public class CertificationBodyController {
         //Retirement and un-retirement is done as a separate manager action because
         //security is different from normal ACB updates - only admins are allowed
         //whereas an ACB admin can update other info
-        CertificationBodyDTO existingAcb = resourcePermissions.getIfPermissionById(updatedAcb.getId());
+        CertificationBodyDTO existingAcb = resourcePermissions.getAcbIfPermissionById(updatedAcb.getId());
         if (updatedAcb.isRetired()) {
             //we are retiring this ACB - no other updates can happen
             CertificationBodyDTO toRetire = new CertificationBodyDTO();
@@ -209,7 +209,7 @@ public class CertificationBodyController {
             throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
 
         UserDTO user = userManager.getById(userId);
-        CertificationBodyDTO acb = resourcePermissions.getIfPermissionById(acbId);
+        CertificationBodyDTO acb = resourcePermissions.getAcbIfPermissionById(acbId);
 
         if (user == null || acb == null) {
             throw new InvalidArgumentsException("Could not find either ACB or User specified");
@@ -228,7 +228,7 @@ public class CertificationBodyController {
     produces = "application/json; charset=utf-8")
     public @ResponseBody PermittedUserResults getUsers(@PathVariable("acbId") final Long acbId)
             throws InvalidArgumentsException, EntityRetrievalException {
-        CertificationBodyDTO acb = resourcePermissions.getIfPermissionById(acbId);
+        CertificationBodyDTO acb = resourcePermissions.getAcbIfPermissionById(acbId);
         if (acb == null) {
             throw new InvalidArgumentsException("Could not find the ACB specified.");
         }

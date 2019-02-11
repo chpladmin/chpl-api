@@ -13,6 +13,7 @@ import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.UserCertificationBodyMapDAO;
+import gov.healthit.chpl.dao.UserRoleMapDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -20,12 +21,14 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 @Component
 public class ResourcePermissions {
     private UserCertificationBodyMapDAO userCertificationBodyMapDAO;
+    private UserRoleMapDAO userRoleMapDAO;
     private ErrorMessageUtil errorMessageUtil;
     private CertificationBodyDAO acbDAO;
 
     @Autowired
     public ResourcePermissions(final UserCertificationBodyMapDAO userCertificationBodyMapDAO,
-            final CertificationBodyDAO acbDAO, final ErrorMessageUtil errorMessageUtil) {
+            final UserRoleMapDAO userRoleMapDAO, final CertificationBodyDAO acbDAO,
+            final ErrorMessageUtil errorMessageUtil) {
 
         this.userCertificationBodyMapDAO = userCertificationBodyMapDAO;
         this.acbDAO = acbDAO;
