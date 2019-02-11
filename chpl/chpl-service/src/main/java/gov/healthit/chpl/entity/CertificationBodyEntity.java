@@ -50,6 +50,9 @@ public class CertificationBodyEntity implements Serializable {
     @Column(name = "retired", nullable = false)
     private Boolean retired;
 
+    @Column(name = "retirement_date", nullable = true)
+    private Date retirementDate;
+
     @Basic(optional = false)
     @Column(name = "creation_date", insertable = false, updatable = false)
     private Date creationDate;
@@ -142,8 +145,24 @@ public class CertificationBodyEntity implements Serializable {
         return retired;
     }
 
-    public void setRetired(Boolean retired) {
+    public void setRetired(final Boolean retired) {
         this.retired = retired;
+    }
+
+    public final Date getRetirementDate() {
+        return retirementDate;
+    }
+
+    public final void setRetirementDate(final Date retirementDate) {
+        this.retirementDate = retirementDate;
+    }
+
+    @Override
+    public String toString() {
+        return "CertificationBodyEntity [id=" + id + ", address=" + address + ", acbCode=" + acbCode + ", name=" + name
+                + ", website=" + website + ", retired=" + retired + ", retirementDate=" + retirementDate
+                + ", creationDate=" + creationDate + ", lastModifiedDate=" + lastModifiedDate + ", lastModifiedUser="
+                + lastModifiedUser + ", deleted=" + deleted + "]";
     }
 
 }

@@ -176,7 +176,6 @@ public class PendingCertifiedProductDTO implements Serializable {
         if (details.getCertifyingBody().get("name") != null) {
             this.certificationBodyName = details.getCertifyingBody().get("name").toString();
         }
-
         if (details.getClassificationType().get("id") != null) {
             String classificationTypeId = details.getClassificationType().get("id").toString();
             this.productClassificationId = Long.valueOf(classificationTypeId);
@@ -184,7 +183,6 @@ public class PendingCertifiedProductDTO implements Serializable {
         if (details.getClassificationType().get("name") != null) {
             this.productClassificationName = details.getClassificationType().get("name").toString();
         }
-
         if (details.getCertificationDate() != null) {
             this.certificationDate = new Date(details.getCertificationDate());
         }

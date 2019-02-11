@@ -53,7 +53,7 @@ public class ChplProductNumberUtil {
      * @param certifiedProductId - Long
      * @return - String
      */
-    public String generate(Long certifiedProductId) {
+    public String generate(final Long certifiedProductId) {
         return chplProductNumberDAO.getChplProductNumber(certifiedProductId);
     }
 

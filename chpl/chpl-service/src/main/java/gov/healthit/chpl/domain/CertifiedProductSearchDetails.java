@@ -128,7 +128,7 @@ public class CertifiedProductSearchDetails implements Serializable {
     /**
      * The ONC-ACB responsible for certifying the Health IT Module. This
      * variable is applicable to 2014 and 2015 Edition, and allowable values
-     * are: Drummond Group, ICSA Labs, Infogard.
+     * are: Drummond Group, ICSA Labs, UL LLC.
      */
     @XmlElement(required = true)
     private Map<String, Object> certifyingBody = new HashMap<String, Object>();
@@ -136,7 +136,7 @@ public class CertifiedProductSearchDetails implements Serializable {
     /**
      * The ATL responsible for testing the Health IT Module. It is applicable
      * for 2014 and 2015 Edition and takes values of: Drummond Group, ICSA Labs,
-     * Infogard, National Technical Systems, SLI Global, CCHIT
+     * UL LLC, National Technical Systems, SLI Global, CCHIT
      */
     @XmlElementWrapper(name = "testingLabs", nillable = true, required = false)
     @XmlElement(name = "testingLab")

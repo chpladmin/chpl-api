@@ -5,32 +5,23 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.EntityNotFoundException;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dao.UserPermissionDAO;
 import gov.healthit.chpl.auth.domain.Authority;
-import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
-import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.SurveillanceNonconformityDocument;
@@ -39,23 +30,13 @@ import gov.healthit.chpl.domain.SurveillanceRequirement;
 import gov.healthit.chpl.domain.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
-import gov.healthit.chpl.domain.concept.ActivityConcept;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.entity.ValidationMessageType;
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
-import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
-import gov.healthit.chpl.entity.surveillance.PendingSurveillanceNonconformityEntity;
-import gov.healthit.chpl.entity.surveillance.PendingSurveillanceRequirementEntity;
-import gov.healthit.chpl.entity.surveillance.PendingSurveillanceValidationEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityDocumentationEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceRequirementEntity;
-import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.exception.ObjectMissingValidationException;
-import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
@@ -64,44 +45,31 @@ import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 public class SurveillanceManagerImpl implements SurveillanceManager {
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceManagerImpl.class);
 
-    @Autowired
     private SurveillanceDAO survDao;
-    @Autowired
     private CertifiedProductDAO cpDao;
-    @Autowired
-    private UserDAO userDAO;
-    @Autowired
     private SurveillanceValidator validator;
-    @Autowired
     private UserPermissionDAO userPermissionDao;
+    private FileUtils fileUtils;
+    private Environment env;
 
     @Autowired
-    private ActivityManager activityManager;
-    @Autowired
-    private FileUtils fileUtils;
-    @Autowired
-    private Environment env;
+    public SurveillanceManagerImpl(final SurveillanceDAO survDao, final CertifiedProductDAO cpDao,
+            final SurveillanceValidator validator, final UserPermissionDAO userPermissionDao,
+            final FileUtils fileUtils, final Environment env) {
+        this.survDao = survDao;
+        this.cpDao = cpDao;
+        this.validator = validator;
+        this.userPermissionDao = userPermissionDao;
+        this.fileUtils = fileUtils;
+        this.env = env;
+    }
 
     @Override
     @Transactional(readOnly = true)
     public Surveillance getById(final Long survId) throws EntityRetrievalException {
         SurveillanceEntity surv = survDao.getSurveillanceById(survId);
         Surveillance result = convertToDomain(surv);
-        validator.validate(result);
-        return result;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Surveillance getByFriendlyIdAndProduct(final Long certifiedProductId, final String survFriendlyId) {
-        SurveillanceEntity surv = survDao.getSurveillanceByCertifiedProductAndFriendlyId(certifiedProductId,
-                survFriendlyId);
-        if (surv == null) {
-            throw new EntityNotFoundException("Could not find surveillance for certified product " + certifiedProductId
-                    + " with friendly id " + survFriendlyId);
-        }
-        Surveillance result = convertToDomain(surv);
-        validator.validate(result);
+        validator.validate(result, true);
         return result;
     }
 
@@ -113,7 +81,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
         if (survResults != null) {
             for (SurveillanceEntity survResult : survResults) {
                 Surveillance surv = convertToDomain(survResult);
-                validator.validate(surv);
+                validator.validate(surv, true);
                 results.add(surv);
             }
         }
@@ -159,7 +127,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
             + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     public Long addDocumentToNonconformity(final Long acbId, final Long nonconformityId,
             final SurveillanceNonconformityDocument doc)
-            throws EntityRetrievalException {
+                    throws EntityRetrievalException {
         Long insertedId = null;
         insertedId = survDao.insertNonconformityDocument(nonconformityId, doc);
         return insertedId;
@@ -170,7 +138,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or (hasRole('ROLE_ACB') "
             + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     public void updateSurveillance(final Long acbId, final Surveillance surv) throws EntityRetrievalException,
-            UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
+    UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
         SurveillanceEntity dbSurvEntity = new SurveillanceEntity();
         try {
             dbSurvEntity = survDao.getSurveillanceById(surv.getId());
@@ -208,182 +176,10 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
         survDao.deleteNonconformityDocument(documentId);
     }
 
-    @Override
     @Transactional(readOnly = true)
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or (hasRole('ROLE_ACB') "
-            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-    public List<Surveillance> getPendingByAcb(final Long acbId) {
-        List<PendingSurveillanceEntity> pendingResults = survDao.getPendingSurveillanceByAcb(acbId);
-        List<Surveillance> results = new ArrayList<Surveillance>();
-        if (pendingResults != null) {
-            for (PendingSurveillanceEntity pr : pendingResults) {
-                Surveillance surv = convertToDomain(pr);
-                results.add(surv);
-            }
-        }
-        return results;
-    }
-
     @Override
-    @Transactional(readOnly = true)
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or (hasRole('ROLE_ACB') "
-            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-    public Surveillance getPendingById(final Long acbId, final Long survId, final boolean includeDeleted)
-            throws EntityRetrievalException {
-        PendingSurveillanceEntity pending = survDao.getPendingSurveillanceById(survId, includeDeleted);
-        Surveillance surv = convertToDomain(pending);
-        return surv;
-    }
-
-    @Override
-    @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or (hasRole('ROLE_ACB') "
-            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-    public Long createPendingSurveillance(final Long acbId, final Surveillance surv) {
-        Long insertedId = null;
-
-        try {
-            insertedId = survDao.insertPendingSurveillance(surv);
-        } catch (Exception ex) {
-            LOGGER.error("Error inserting pending surveillance.", ex);
-        }
-
-        return insertedId;
-    }
-
-    @Override
-    @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or (hasRole('ROLE_ACB') "
-            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-    public void deletePendingSurveillance(final Long acbId, final Long survId, final boolean isConfirmed)
-            throws ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException,
-            EntityCreationException {
-        PendingSurveillanceEntity surv = survDao.getPendingSurveillanceById(survId, true);
-        CertifiedProductEntity ownerCp = surv.getCertifiedProduct();
-        if (ownerCp == null) {
-            throw new EntityNotFoundException("Could not find certified product associated with pending surveillance.");
-        }
-
-        Surveillance toDelete = getPendingById(acbId, survId, true);
-
-        if (isPendingSurveillanceAvailableForUpdate(ownerCp.getCertificationBodyId(), surv)) {
-            try {
-                survDao.deletePendingSurveillance(toDelete);
-            } catch (Exception ex) {
-                LOGGER.error("Error marking pending surveillance with id " + toDelete.getId() + " as deleted.", ex);
-            }
-            StringBuilder activityMsg = new StringBuilder()
-                    .append("Pending surveillance " + toDelete.getId() + " has been ");
-            if (isConfirmed) {
-                activityMsg.append("confirmed.");
-            } else {
-                activityMsg.append("rejected.");
-            }
-            activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_SURVEILLANCE, toDelete.getId(),
-                    activityMsg.toString(), toDelete, null);
-        }
-    }
-
-    @Override
-    @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
-    public void deletePendingSurveillance(final List<CertificationBodyDTO> userAcbs,
-            final Long survId, final boolean isConfirmed)
-            throws EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException,
-            JsonProcessingException, EntityRetrievalException, EntityCreationException {
-        PendingSurveillanceEntity surv = survDao.getPendingSurveillanceById(survId, true);
-        if (surv == null) {
-            throw new EntityNotFoundException("Could not find pending surveillance with id " + survId);
-        }
-        CertifiedProductEntity ownerCp = surv.getCertifiedProduct();
-        if (ownerCp == null) {
-            throw new EntityNotFoundException("Could not find certified product associated with pending surveillance.");
-        }
-        boolean userHasAcbPermissions = false;
-        for (CertificationBodyDTO acb : userAcbs) {
-            if (acb.getId() != null && ownerCp.getCertificationBodyId() != null
-                    && acb.getId().longValue() == ownerCp.getCertificationBodyId().longValue()) {
-                userHasAcbPermissions = true;
-            }
-        }
-
-        if (!userHasAcbPermissions) {
-            throw new AccessDeniedException("Permission denied on ACB " + ownerCp.getCertificationBodyId()
-                    + " for user " + Util.getCurrentUser().getSubjectName());
-        }
-
-        if (isPendingSurveillanceAvailableForUpdate(ownerCp.getCertificationBodyId(), surv)) {
-            Surveillance toDelete = convertToDomain(surv);
-            try {
-                survDao.deletePendingSurveillance(toDelete);
-            } catch (Exception ex) {
-                LOGGER.error("Error marking pending surveillance with id " + toDelete.getId() + " as deleted.", ex);
-            }
-
-            StringBuilder activityMsg = new StringBuilder()
-                    .append("Pending surveillance " + toDelete.getId() + " has been ");
-            if (isConfirmed) {
-                activityMsg.append("confirmed.");
-            } else {
-                activityMsg.append("rejected.");
-            }
-            activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_SURVEILLANCE, toDelete.getId(),
-                    activityMsg.toString(), toDelete, null);
-        }
-    }
-
-    @Override
-    @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or (hasRole('ROLE_ACB') "
-            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-    public boolean isPendingSurveillanceAvailableForUpdate(final Long acbId, final Long pendingSurvId)
-            throws EntityRetrievalException, ObjectMissingValidationException {
-        PendingSurveillanceEntity pendingSurv = survDao.getPendingSurveillanceById(pendingSurvId, true);
-        return isPendingSurveillanceAvailableForUpdate(acbId, pendingSurv);
-    }
-
-    @Override
-    @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or (hasRole('ROLE_ACB') "
-            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-    public boolean isPendingSurveillanceAvailableForUpdate(final Long acbId,
-            final PendingSurveillanceEntity pendingSurv)
-            throws EntityRetrievalException, ObjectMissingValidationException {
-        if (pendingSurv.getDeleted().booleanValue()) {
-            ObjectMissingValidationException alreadyDeletedEx = new ObjectMissingValidationException();
-            alreadyDeletedEx.getErrorMessages()
-                    .add("This pending surveillance has already been confirmed or rejected by another user.");
-            alreadyDeletedEx.setObjectId(pendingSurv.getId().toString());
-            alreadyDeletedEx.setStartDate(pendingSurv.getStartDate());
-            alreadyDeletedEx.setEndDate(pendingSurv.getEndDate());
-
-            try {
-                UserDTO lastModifiedUser = userDAO.getById(pendingSurv.getLastModifiedUser());
-                if (lastModifiedUser != null) {
-                    Contact contact = new Contact();
-                    contact.setFullName(lastModifiedUser.getFullName());
-                    contact.setFriendlyName(lastModifiedUser.getFriendlyName());
-                    contact.setEmail(lastModifiedUser.getEmail());
-                    contact.setPhoneNumber(lastModifiedUser.getPhoneNumber());
-                    contact.setTitle(lastModifiedUser.getTitle());
-                    alreadyDeletedEx.setContact(contact);
-                } else {
-                    alreadyDeletedEx.setContact(null);
-                }
-            } catch (final UserRetrievalException ex) {
-                alreadyDeletedEx.setContact(null);
-            }
-            throw alreadyDeletedEx;
-        }
-        //If pendingSurv were null, we would have gotten an NPE by this point
-        //return pendingSurv != null;
-        return true;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public void validate(final Surveillance surveillance) {
-        validator.validate(surveillance);
+        validator.validate(surveillance, true);
     }
 
     @Override
@@ -400,72 +196,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     @Override
     public File getSurveillanceWithNonconformitiesDownloadFile() throws IOException {
         return fileUtils.getNewestFileMatchingName("^" + env.getProperty("surveillanceNonconformitiesReportName")
-            + "-.+\\.csv$");
-    }
-
-    private Surveillance convertToDomain(final PendingSurveillanceEntity pr) {
-        Surveillance surv = new Surveillance();
-        surv.setId(pr.getId());
-        surv.setSurveillanceIdToReplace(pr.getSurvFriendlyIdToReplace());
-        surv.setStartDate(pr.getStartDate());
-        surv.setEndDate(pr.getEndDate());
-        surv.setRandomizedSitesUsed(pr.getNumRandomizedSites());
-
-        SurveillanceType survType = new SurveillanceType();
-        survType.setName(pr.getSurveillanceType());
-        surv.setType(survType);
-
-        if (pr.getSurveilledRequirements() != null) {
-            for (PendingSurveillanceRequirementEntity preq : pr.getSurveilledRequirements()) {
-                SurveillanceRequirement req = new SurveillanceRequirement();
-                req.setId(preq.getId());
-                req.setRequirement(preq.getSurveilledRequirement());
-                SurveillanceResultType result = new SurveillanceResultType();
-                result.setName(preq.getResult());
-                req.setResult(result);
-                SurveillanceRequirementType reqType = new SurveillanceRequirementType();
-                reqType.setName(preq.getRequirementType());
-                req.setType(reqType);
-
-                CertifiedProduct cp = new CertifiedProduct();
-                cp.setId(pr.getCertifiedProductId());
-                cp.setChplProductNumber(pr.getCertifiedProductUniqueId());
-                surv.setCertifiedProduct(cp);
-
-                if (preq.getNonconformities() != null) {
-                    for (PendingSurveillanceNonconformityEntity pnc : preq.getNonconformities()) {
-                        SurveillanceNonconformity nc = new SurveillanceNonconformity();
-                        nc.setCapApprovalDate(pnc.getCapApproval());
-                        nc.setCapEndDate(pnc.getCapEndDate());
-                        nc.setCapMustCompleteDate(pnc.getCapMustCompleteDate());
-                        nc.setCapStartDate(pnc.getCapStart());
-                        nc.setDateOfDetermination(pnc.getDateOfDetermination());
-                        nc.setDeveloperExplanation(pnc.getDeveloperExplanation());
-                        nc.setFindings(pnc.getFindings());
-                        nc.setId(pnc.getId());
-                        nc.setNonconformityType(pnc.getType());
-                        nc.setResolution(pnc.getResolution());
-                        nc.setSitesPassed(pnc.getSitesPassed());
-                        nc.setSummary(pnc.getSummary());
-                        nc.setTotalSites(pnc.getTotalSites());
-                        SurveillanceNonconformityStatus status = new SurveillanceNonconformityStatus();
-                        status.setName(pnc.getStatus());
-                        nc.setStatus(status);
-                        req.getNonconformities().add(nc);
-                    }
-                }
-                surv.getRequirements().add(req);
-            }
-        }
-
-        if (pr.getValidation() != null && pr.getValidation().size() > 0) {
-            for (PendingSurveillanceValidationEntity validation : pr.getValidation()) {
-                if (validation.getMessageType() == ValidationMessageType.Error) {
-                    surv.getErrorMessages().add(validation.getMessage());
-                }
-            }
-        }
-        return surv;
+        + "-.+\\.csv$");
     }
 
     private SurveillanceNonconformityDocument convertToDomain(final SurveillanceNonconformityDocumentationEntity entity,

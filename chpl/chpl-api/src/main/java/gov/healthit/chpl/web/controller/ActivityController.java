@@ -97,7 +97,9 @@ public class ActivityController {
     @Autowired private MessageSource messageSource;
 
     @ApiOperation(value = "Get auditable data for certification bodies.",
-            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "
+                    + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all certification bodies.  "
+                    + "ROLE_ACB can see their own information.")
     @RequestMapping(value = "/acbs", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForACBs(@RequestParam final Long start,
             @RequestParam final Long end)
@@ -114,7 +116,9 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get auditable data for a specific certification body.",
-            notes = "A start and end date may optionally be provided to limit activity results.")
+            notes = "A start and end date may optionally be provided to limit activity results.  "
+                    + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all certification bodies.  "
+                    + "ROLE_ACB can see their own information.")
     @RequestMapping(value = "/acbs/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
 
     public List<ActivityEvent> activityForACBById(@PathVariable("id") final Long id,
@@ -178,8 +182,9 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get auditable data for a specific announcement",
-            notes = "Anonymous users are only allowed to see activity for public announcements."
-                    + "A start and end date may optionally be provided to limit activity results.")
+            notes = "A start and end date may optionally be provided to limit activity results.  "
+                    + "Security Restrictions: Anonymous users are only allowed to see activity for public "
+                    + "announcements.  All other roles can see private and public announcements.")
     @RequestMapping(value = "/announcements/{id}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForAnnouncementById(@PathVariable("id") final Long id,
@@ -209,7 +214,9 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get auditable data for testing labs.",
-            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "
+                    + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all testing labs.  "
+                    + "ROLE_ATL can see their own information.")
     @RequestMapping(value = "/atls", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityforATLs(@RequestParam final Long start, @RequestParam final Long end)
             throws JsonParseException, IOException, ValidationException {
@@ -224,7 +231,9 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get auditable data for a specific testing lab.",
-            notes = "A start and end date may optionally be provided to limit activity results.")
+            notes = "A start and end date may optionally be provided to limit activity results.  "
+                    + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all testing labs.  "
+                    + "ROLE_ATL can see their own information.")
     @RequestMapping(value = "/atls/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForATLById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
@@ -271,7 +280,8 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get auditable data for all API keys",
-            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
+                    + "Security Restrictions: Only ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/api_keys", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForApiKeys(@RequestParam final Long start,
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
@@ -421,7 +431,8 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get auditable data for all pending certified products",
-            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.  "
+                    + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB (specific to own ACB).")
     @RequestMapping(value = "/pending_certified_products", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForPendingCertifiedProducts(@RequestParam final Long start,
@@ -437,7 +448,8 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get auditable data for a specific pending certified product.",
-            notes = "A start and end date may optionally be provided to limit activity results.")
+            notes = "A start and end date may optionally be provided to limit activity results.  "
+                    + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB (specific to own ACB).")
     @RequestMapping(value = "/pending_certified_products/{id}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForPendingCertifiedProductById(@PathVariable("id") final Long id,
@@ -565,7 +577,9 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get auditable data about all CHPL user accounts",
-            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.  "
+                    + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_CMS_STAFF "
+                    + "(of ROLE_CMS_STAFF Users), ROLE_ACB (of their own), or ROLE_ATL (of their own).")
     @RequestMapping(value = "/users", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @PreAuthorize("isAuthenticated()")
     public List<ActivityEvent> activityForUsers(@RequestParam final Long start,
@@ -581,7 +595,9 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get auditable data about a specific CHPL user account.",
-            notes = "A start and end date may optionally be provided to limit activity results.")
+            notes = "A start and end date may optionally be provided to limit activity results.  "
+                    + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_CMS_STAFF "
+                    + "(of ROLE_CMS_STAFF Users), ROLE_ACB (of their own), or ROLE_ATL (of their own).")
     @RequestMapping(value = "/users/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForUsers(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start,
@@ -664,8 +680,8 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Track the actions of all users in the system",
-            notes = "The authenticated user calling this method must have ROLE_ADMIN or ROLE_ONC. "
-                    + "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
+                    + "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/user_activities", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<UserActivity> activityByUser(@RequestParam final Long start,
@@ -678,8 +694,8 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Track the actions of a specific user in the system",
-            notes = "The authenticated user calling this method must have ROLE_ADMIN or ROLE_ONC. "
-                    + "A start and end date may optionally be provided to limit activity results.")
+            notes = "A start and end date may optionally be provided to limit activity results."
+                    + "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/user_activities/{id}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityByUser(@PathVariable("id") final Long id,

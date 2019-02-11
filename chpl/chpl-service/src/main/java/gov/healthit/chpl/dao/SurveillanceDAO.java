@@ -21,26 +21,25 @@ public interface SurveillanceDAO {
     Long insertNonconformityDocument(Long nonconformityId, SurveillanceNonconformityDocument doc)
             throws EntityRetrievalException;
 
-    Long updateSurveillance(Surveillance newSurv)
-            throws EntityRetrievalException, UserPermissionRetrievalException;
+    Long updateSurveillance(Surveillance newSurv) throws EntityRetrievalException, UserPermissionRetrievalException;
 
-    SurveillanceEntity getSurveillanceByCertifiedProductAndFriendlyId(Long certifiedProductId,
-            String survFriendlyId);
+    SurveillanceEntity getSurveillanceByCertifiedProductAndFriendlyId(Long certifiedProductId, String survFriendlyId);
 
     SurveillanceEntity getSurveillanceById(Long id) throws EntityRetrievalException;
 
     List<SurveillanceEntity> getSurveillanceByCertifiedProductId(Long id);
 
-    SurveillanceNonconformityDocumentationEntity getDocumentById(Long documentId)
-            throws EntityRetrievalException;
+    SurveillanceNonconformityDocumentationEntity getDocumentById(Long documentId) throws EntityRetrievalException;
 
     void deleteSurveillance(Surveillance surv) throws EntityRetrievalException;
 
     void deleteNonconformityDocument(Long documentId) throws EntityRetrievalException;
 
-    Long insertPendingSurveillance(Surveillance surv);
+    Long insertPendingSurveillance(Surveillance surv) throws UserPermissionRetrievalException;
 
-    PendingSurveillanceEntity getPendingSurveillanceById(Long id, boolean includeDeleted)
+    PendingSurveillanceEntity getPendingSurveillanceById(Long id) throws EntityRetrievalException;
+
+    PendingSurveillanceEntity getPendingSurveillanceById(final Long id, Boolean includeDeleted)
             throws EntityRetrievalException;
 
     List<PendingSurveillanceEntity> getPendingSurveillanceByAcb(Long acbId);
@@ -74,4 +73,6 @@ public interface SurveillanceDAO {
     List<SurveillanceEntity> getAllSurveillance();
 
     List<SurveillanceNonconformityEntity> getAllSurveillanceNonConformities();
+
+    List<PendingSurveillanceEntity> getAllPendingSurveillance();
 }

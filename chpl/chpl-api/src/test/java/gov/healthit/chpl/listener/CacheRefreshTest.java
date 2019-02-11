@@ -10,6 +10,7 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -266,6 +267,8 @@ public class CacheRefreshTest extends TestCase {
      * @throws EntityCreationException
      * @throws JsonProcessingException
      * @throws InvalidArgumentsException
+     * @throws ValidationException
+     * @throws SchedulerException
      */
     @Test
     @Transactional
@@ -273,7 +276,7 @@ public class CacheRefreshTest extends TestCase {
     @Ignore
     public void testUpdateAcbNameRefreshesCache() throws
     UpdateCertifiedBodyException, EntityRetrievalException, EntityCreationException,
-    JsonProcessingException, InvalidArgumentsException {
+    JsonProcessingException, InvalidArgumentsException, SchedulerException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         List<CertifiedProductFlatSearchResult> listingsFromAcb =
@@ -282,7 +285,7 @@ public class CacheRefreshTest extends TestCase {
         //get the cache before this update, should pull the listings and cache them
         List<CertifiedProductFlatSearchResult> allListingsBeforeUpdate = searchManager.search();
         for (CertifiedProductFlatSearchResult listing : allListingsBeforeUpdate) {
-            if (listing.getAcb().equals("InfoGard")) {
+            if (listing.getAcb().equals("UL LLC")) {
                 listingsFromAcb.add(listing);
             }
         }
@@ -291,10 +294,10 @@ public class CacheRefreshTest extends TestCase {
         //update the acb name
         //should trigger the cache refresh
         CertificationBody acbToUpdate = acbController.getAcbById(-1L);
-        acbToUpdate.setName("InfoGard Updated");
+        acbToUpdate.setName("UL LLC Updated");
         acbController.updateAcb(acbToUpdate);
         CertificationBody updatedAcb = acbController.getAcbById(-1L);
-        assertEquals("InfoGard Updated", updatedAcb.getName());
+        assertEquals("UL LLC Updated", updatedAcb.getName());
 
         //get the cached listings now, should have been updated in the aspect and have
         //the latest acb name
