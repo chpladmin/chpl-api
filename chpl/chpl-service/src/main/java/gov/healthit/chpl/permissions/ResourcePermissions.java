@@ -19,25 +19,18 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
 public class ResourcePermissions {
-    @Autowired
     private UserCertificationBodyMapDAO userCertificationBodyMapDAO;
-
-    @Autowired
     private ErrorMessageUtil errorMessageUtil;
-
-    @Autowired
     private CertificationBodyDAO acbDAO;
 
-    // @Autowired
-    // public ResourcePermissions(final UserCertificationBodyMapDAO
-    // userCertificationBodyMapDAO,
-    // final CertificationBodyDAO acbDAO, final ErrorMessageUtil
-    // errorMessageUtil) {
-    //
-    // this.userCertificationBodyMapDAO = userCertificationBodyMapDAO;
-    // this.acbDAO = acbDAO;
-    // this.errorMessageUtil = errorMessageUtil;
-    // }
+    @Autowired
+    public ResourcePermissions(final UserCertificationBodyMapDAO userCertificationBodyMapDAO,
+            final CertificationBodyDAO acbDAO, final ErrorMessageUtil errorMessageUtil) {
+
+        this.userCertificationBodyMapDAO = userCertificationBodyMapDAO;
+        this.acbDAO = acbDAO;
+        this.errorMessageUtil = errorMessageUtil;
+    }
 
     @Transactional(readOnly = true)
     public List<UserDTO> getAllUsersOnAcb(final CertificationBodyDTO acb) {

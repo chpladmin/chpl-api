@@ -24,37 +24,20 @@ public class UserCertificationBodyMapDAOImpl extends BaseDAOImpl implements User
     public UserCertificationBodyMapDTO create(UserCertificationBodyMapDTO dto) throws EntityRetrievalException {
 
         UserCertificationBodyMapEntity entity = new UserCertificationBodyMapEntity();
-        entity.setId(dto.getId());
-        entity.setCertificationBody(getAcbEntityById(dto.getCertificationBody().getId()));
-        entity.setUser(getUserEntityById(dto.getUser().getId()));
-        entity.setRetired(dto.getRetired());
-
-        entity = create(entity);
+        entity = create(getUserCertificationBodyMapEntity(dto));
         return new UserCertificationBodyMapDTO(entity);
     }
 
     @Override
     public UserCertificationBodyMapDTO update(UserCertificationBodyMapDTO dto) throws EntityRetrievalException {
         UserCertificationBodyMapEntity entity = new UserCertificationBodyMapEntity();
-        entity.setId(dto.getId());
-        entity.setCertificationBody(getAcbEntityById(dto.getCertificationBody().getId()));
-        entity.setUser(getUserEntityById(dto.getUser().getId()));
-        entity.setRetired(dto.getRetired());
-
-        entity = update(entity);
+        entity = update(getUserCertificationBodyMapEntity(dto));
         return new UserCertificationBodyMapDTO(entity);
 
     }
 
     public void delete(UserCertificationBodyMapDTO dto) throws EntityRetrievalException {
-        UserCertificationBodyMapEntity entity = new UserCertificationBodyMapEntity();
-        entity.setId(dto.getId());
-        entity.setCertificationBody(getAcbEntityById(dto.getCertificationBody().getId()));
-        entity.setUser(getUserEntityById(dto.getUser().getId()));
-        entity.setRetired(dto.getRetired());
-        entity.setDeleted(true);
-
-        entity = update(entity);
+        update(getUserCertificationBodyMapEntity(dto));
     }
 
     @Override
@@ -168,6 +151,17 @@ public class UserCertificationBodyMapDAOImpl extends BaseDAOImpl implements User
             return null;
         }
         return result.get(0);
+    }
+
+    private UserCertificationBodyMapEntity getUserCertificationBodyMapEntity(UserCertificationBodyMapDTO dto)
+            throws EntityRetrievalException {
+        UserCertificationBodyMapEntity entity = new UserCertificationBodyMapEntity();
+        entity.setId(dto.getId());
+        entity.setCertificationBody(getAcbEntityById(dto.getCertificationBody().getId()));
+        entity.setUser(getUserEntityById(dto.getUser().getId()));
+        entity.setRetired(dto.getRetired());
+
+        return entity;
     }
 
 }
