@@ -39,7 +39,7 @@ public class CHPLFileController {
     }
 
     @ApiOperation(value = "Upload an API Documentation file",
-            notes = "Uploads a new current API Documentation file.")
+            notes = "Uploads a new current API Documentation file.  Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/api_documentation",
             method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")

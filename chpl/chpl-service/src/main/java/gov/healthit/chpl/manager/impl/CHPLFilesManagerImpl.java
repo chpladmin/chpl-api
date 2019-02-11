@@ -3,6 +3,7 @@ package gov.healthit.chpl.manager.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,16 +27,16 @@ public class CHPLFilesManagerImpl implements CHPLFileManager {
 
     @Override
     @Transactional
-    //@PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     public CHPLFileDTO addApiDocumentationFile(final CHPLFileDTO newFileDTO)
             throws EntityCreationException, EntityRetrievalException {
-        //Need to delete the existing 'current' file
+        // Need to delete the existing 'current' file
         CHPLFileDTO toDelete = getApiDocumentation();
         if (toDelete != null) {
             chplFileDAO.delete(toDelete.getId());
         }
 
-        //Add the new Api Documentation
+        // Add the new Api Documentation
         FileTypeDTO fileTypeDTO = new FileTypeDTO();
         fileTypeDTO.setId(API_DOCUMENTATION_FILE_TYPE);
         newFileDTO.setFileType(fileTypeDTO);
@@ -54,7 +55,7 @@ public class CHPLFilesManagerImpl implements CHPLFileManager {
 
         List<CHPLFileDTO> dtos = chplFileDAO.findByFileType(fileTypeDTO);
 
-        //Business logic dictates there should only be one active Api Doc file
+        // Business logic dictates there should only be one active Api Doc file
         if (dtos != null && dtos.size() > 0) {
             return dtos.get(0);
         } else {
