@@ -1,5 +1,6 @@
 package gov.healthit.chpl.permissions.domains;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +16,7 @@ public class ActivityDomainPermissions extends DomainPermissions {
     public static final String GET_PENDING_LISTING_ACTIVITY = "GET_PENDING_LISTING_ACTIVITY";
     public static final String GET_USER_ACTIVITY = "GET_USER_ACTIVITY";
 
+    @Autowired
     public ActivityDomainPermissions(
             @Qualifier("actionGetByAcbActionPermissions") GetByAcbActionPermissions getByAcbActionPermissions,
             @Qualifier("actionGetPendingListingActivityByAcbActionPermissions") GetPendingListingActivityByAcbActionPermissions getPendingListingActivityByAcb,

@@ -26,6 +26,6 @@ public abstract class ActionPermissions {
     }
 
     public ResourcePermissions getResourcePermissions() {
-        return this.getResourcePermissions();
+        return resourcePermissions;
     }
 }

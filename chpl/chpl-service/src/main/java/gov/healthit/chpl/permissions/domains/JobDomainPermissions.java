@@ -1,5 +1,6 @@
 package gov.healthit.chpl.permissions.domains;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +16,7 @@ public class JobDomainPermissions extends DomainPermissions {
     public static final String GET_BY_USER = "GET_BY_USER";
     public static final String START = "START";
 
+    @Autowired
     public JobDomainPermissions(
             @Qualifier("jobCreateActionPermissions") CreateActionPermissions createActionPermissions,
             @Qualifier("jobGetByIdActionPermissions") GetByIdActionPermissions getByIdActionPermissions,
