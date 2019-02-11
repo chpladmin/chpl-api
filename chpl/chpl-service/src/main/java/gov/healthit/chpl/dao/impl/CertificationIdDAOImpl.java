@@ -15,9 +15,12 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertificationIdDAO;
+import gov.healthit.chpl.domain.SimpleCertificationId;
+import gov.healthit.chpl.domain.SimpleCertificationIdWithProducts;
 import gov.healthit.chpl.dto.CQMMetDTO;
 import gov.healthit.chpl.dto.CertificationIdAndCertifiedProductDTO;
 import gov.healthit.chpl.dto.CertificationIdDTO;
@@ -175,16 +178,16 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
     }
 
     @Override
-    public List<CertificationIdDTO> findAll() {
+    public List<SimpleCertificationId> findAll() {
 
         List<CertificationIdEntity> entities = getAllEntities();
-        List<CertificationIdDTO> dtos = new ArrayList<>();
+        List<SimpleCertificationId> results = new ArrayList<SimpleCertificationId>();
 
         for (CertificationIdEntity entity : entities) {
             CertificationIdDTO dto = new CertificationIdDTO(entity);
-            dtos.add(dto);
+            results.add(new SimpleCertificationId(dto));
         }
-        return dtos;
+        return results;
     }
 
     @Override
@@ -212,13 +215,36 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
     }
 
     @Override
-    public List<CertificationIdAndCertifiedProductDTO> getAllCertificationIdsWithProducts() {
+    public List<SimpleCertificationId> getAllCertificationIdsWithProducts() {
         List<CertificationIdAndCertifiedProductEntity> entities = getAllCertificationIdsWithProductsEntities();
-
-        List<CertificationIdAndCertifiedProductDTO> results = new ArrayList<CertificationIdAndCertifiedProductDTO>();
+        List<CertificationIdAndCertifiedProductDTO> allCertificationIds = new ArrayList<CertificationIdAndCertifiedProductDTO>();
         for (CertificationIdAndCertifiedProductEntity entity : entities) {
             CertificationIdAndCertifiedProductDTO dto = new CertificationIdAndCertifiedProductDTO(entity);
-            results.add(dto);
+            allCertificationIds.add(dto);
+        }
+
+        List<SimpleCertificationId> results = new ArrayList<SimpleCertificationId>(allCertificationIds.size());
+        for (CertificationIdAndCertifiedProductDTO ehr : allCertificationIds) {
+            SimpleCertificationId cert = new SimpleCertificationId();
+            cert.setCertificationId(ehr.getCertificationId());
+            cert.setCreated(ehr.getCreationDate());
+            int index = results.indexOf(cert);
+            if (index >= 0) {
+                SimpleCertificationIdWithProducts currResult = (SimpleCertificationIdWithProducts) results.get(index);
+                if (StringUtils.isEmpty(currResult.getProducts())) {
+                    currResult.setProducts(ehr.getChplProductNumber());
+                } else {
+                    String currProducts = currResult.getProducts();
+                    currProducts = currProducts + ";" + ehr.getChplProductNumber();
+                    currResult.setProducts(currProducts);
+                }
+            } else {
+                SimpleCertificationIdWithProducts currResult = new SimpleCertificationIdWithProducts();
+                currResult.setCertificationId(ehr.getCertificationId());
+                currResult.setCreated(ehr.getCreationDate());
+                currResult.setProducts(ehr.getChplProductNumber());
+                results.add(currResult);
+            }
         }
         return results;
     }

@@ -46,7 +46,7 @@ public class ChplTestCacheConfig {
         backingManager.addCacheIfAbsent(createCache(CacheNames.CLASSIFICATION_NAMES));
         backingManager.addCacheIfAbsent(createCache(CacheNames.COLLECTIONS_DEVELOPERS));
         backingManager.addCacheIfAbsent(createCache(CacheNames.COLLECTIONS_LISTINGS));
-        backingManager.addCacheIfAbsent(createCache(CacheNames.COLLECTIONS_PREFETCHED_LISTINGS));
+        backingManager.addCacheIfAbsent(createCache(CacheNames.PREFETCHED_COLLECTIONS_LISTINGS));
         backingManager.addCacheIfAbsent(createCache(CacheNames.CQM_CRITERION_NUMBERS));
         backingManager.addCacheIfAbsent(createCache(CacheNames.DEVELOPER_NAMES));
         backingManager.addCacheIfAbsent(createCache(CacheNames.EDITION_NAMES));
@@ -68,7 +68,7 @@ public class ChplTestCacheConfig {
 
     private Cache createCache(String name) {
         int maxEntriesLocalHeap = (name.equals(CacheNames.COLLECTIONS_LISTINGS)
-                || name.equals(CacheNames.COLLECTIONS_PREFETCHED_LISTINGS)) ? MAX_ENTRIES_LOCAL_HEAP_LISTING_COLLECTION : MAX_ENTRIES_LOCAL_HEAP;
+                || name.equals(CacheNames.PREFETCHED_COLLECTIONS_LISTINGS)) ? MAX_ENTRIES_LOCAL_HEAP_LISTING_COLLECTION : MAX_ENTRIES_LOCAL_HEAP;
         Cache cache = new Cache(
                 new CacheConfiguration(name, maxEntriesLocalHeap)
                   .memoryStoreEvictionPolicy(MemoryStoreEvictionPolicy.LFU)

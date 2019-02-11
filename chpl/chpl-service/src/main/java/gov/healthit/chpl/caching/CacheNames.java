@@ -30,5 +30,20 @@ public final class CacheNames {
     public static final String TEST_DATA = "testData";
     public static final String COLLECTIONS_DEVELOPERS = "developerCollection";
     public static final String COLLECTIONS_LISTINGS = "listingCollection";
-    public static final String COLLECTIONS_PREFETCHED_LISTINGS = "preFetchedListingCollection";
+
+    //caches that are pre-fethed due to longish load times
+    public static final String PREFETCHED_COLLECTIONS_LISTINGS = "prefetchedListingCollection";
+    public static final String PREFETCHED_ALL_CERT_IDS = "prefetchedAllCertIds";
+    public static final String PREFETCHED_ALL_CERT_IDS_WITH_PRODUCTS = "prefetchedAllCertIdsWithProducts";
+    public static final String PREFETCHED_FIND_BY_ACB_ID = "prefetchedFindByAcbId";
+
+    public static final String PREFETCHED_CERT_BODY_NAMES = "prefetchedCertBodyNames";
+    public static final String PREFETCHED_EDITION_NAMES = "prefetchedEditionNames";
+    public static final String PREFETCHED_CERTIFICATION_STATUSES = "prefetchedCertificationStatuses";
+    public static final String PREFETCHED_PRACTICE_TYPE_NAMES = "prefetchedPracticeTypeNames";
+    public static final String PREFETCHED_CLASSIFICATION_NAMES = "prefetchedClassificationNames";
+    public static final String PREFETCHED_PRODUCT_NAMES = "prefetchedProductNames";
+    public static final String PREFETCHED_DEVELOPER_NAMES = "prefetchedDeveloperNames";
+    public static final String PREFETCHED_CQM_CRITERION_NAMES = "prefetchedCqmCriterionNames";
+    public static final String PREFETCHED_CERTIFICATION_CRITERION_NUMBERS = "prefetchedCertificationCriterionNumbers";
 }

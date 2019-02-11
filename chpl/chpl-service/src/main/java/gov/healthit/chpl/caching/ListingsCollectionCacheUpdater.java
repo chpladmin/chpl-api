@@ -34,9 +34,9 @@ public class ListingsCollectionCacheUpdater {
      */
     private void refreshCache() {
         CacheManager manager = CacheManager.getInstance();
-        prefetchedCaches.loadPreFetchedBasicSearch();
+        prefetchedCaches.loadPrefetchedListingCollection();
         LOGGER.debug("Replacing live listings collection cache with pre-fetched data.");
         CacheReplacer.replaceCache(manager.getCache(CacheNames.COLLECTIONS_LISTINGS),
-                manager.getCache(CacheNames.COLLECTIONS_PREFETCHED_LISTINGS));
+                manager.getCache(CacheNames.PREFETCHED_COLLECTIONS_LISTINGS));
     }
 }
