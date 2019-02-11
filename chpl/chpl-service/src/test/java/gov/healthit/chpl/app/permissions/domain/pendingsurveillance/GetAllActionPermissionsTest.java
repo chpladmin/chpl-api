@@ -30,7 +30,7 @@ import gov.healthit.chpl.permissions.domains.pendingsurveillance.GetAllActionPer
 public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Mock
-    private ResourcePermissions permissionChecker;
+    private ResourcePermissions resourcePermissions;
 
     @Spy
     private CertifiedProductDAO cpDAO;
@@ -42,13 +42,13 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(permissionChecker.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
+        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
     }
 
     @Override
     @Test
     public void hasAccess_Admin() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getAdminUser());
+        setupForAdminUser(resourcePermissions);
 
         assertTrue(permissions.hasAccess());
 
@@ -64,7 +64,7 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     @Override
     @Test
     public void hasAccess_Onc() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getOncUser());
+        setupForOncUser(resourcePermissions);
 
         assertTrue(permissions.hasAccess());
 
@@ -80,7 +80,7 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     @Override
     @Test
     public void hasAccess_Acb() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getAcbUser());
+        setupForAcbUser(resourcePermissions);
 
         assertTrue(permissions.hasAccess());
 
@@ -118,7 +118,7 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     @Override
     @Test
     public void hasAccess_Atl() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getAtlUser());
+        setupForAtlUser(resourcePermissions);
 
         assertFalse(permissions.hasAccess());
 
@@ -130,7 +130,7 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     @Override
     @Test
     public void hasAccess_Cms() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getCmsUser());
+        setupForCmsUser(resourcePermissions);
 
         assertFalse(permissions.hasAccess());
 
@@ -142,7 +142,7 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     @Override
     @Test
     public void hasAccess_Anon() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(null);
+        setupForAnonUser(resourcePermissions);
         assertFalse(permissions.hasAccess());
 
         // This should always return false

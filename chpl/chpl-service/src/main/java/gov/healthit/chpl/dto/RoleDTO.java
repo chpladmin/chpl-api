@@ -21,7 +21,8 @@ public class RoleDTO {
     public RoleDTO(RoleEntity entity) {
         this.id = entity.getId();
         this.name = entity.getName();
-        this.authority = entity.getName();
+        this.authority = entity.getAuthority();
+        this.description = entity.getDescription();
         this.deleted = entity.getDeleted();
     }
 

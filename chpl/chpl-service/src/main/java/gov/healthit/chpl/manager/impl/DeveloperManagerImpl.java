@@ -213,7 +213,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
         } else if (devStatusHistoryUpdated
                 && !newDevStatus.getStatus().getStatusName()
                         .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
-                && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
+                && resourcePermissions.isUserRoleAdmin() && resourcePermissions.isUserRoleOnc()) {
             String msg = msgUtil.getMessage("developer.statusHistoryChangeNotAllowedWithoutAdmin");
             throw new EntityCreationException(msg);
         }

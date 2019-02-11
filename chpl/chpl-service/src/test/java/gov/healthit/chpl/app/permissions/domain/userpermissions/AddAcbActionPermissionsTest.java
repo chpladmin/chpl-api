@@ -10,7 +10,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -25,7 +24,7 @@ import gov.healthit.chpl.permissions.domains.userpermissions.AddAcbActionPermiss
 })
 public class AddAcbActionPermissionsTest extends ActionPermissionsBaseTest {
     @Mock
-    private ResourcePermissions permissionChecker;
+    private ResourcePermissions resourcePermissions;;
 
     @InjectMocks
     private AddAcbActionPermissions permissions;
@@ -34,13 +33,13 @@ public class AddAcbActionPermissionsTest extends ActionPermissionsBaseTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(permissionChecker.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
+        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
     }
 
     @Override
     @Test
     public void hasAccess_Admin() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getAdminUser());
+        setupForAdminUser(resourcePermissions);
 
         // This is not used
         assertFalse(permissions.hasAccess());
@@ -53,7 +52,7 @@ public class AddAcbActionPermissionsTest extends ActionPermissionsBaseTest {
     @Override
     @Test
     public void hasAccess_Onc() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getOncUser());
+        setupForOncUser(resourcePermissions);
 
         // This is not used
         assertFalse(permissions.hasAccess());
@@ -66,7 +65,7 @@ public class AddAcbActionPermissionsTest extends ActionPermissionsBaseTest {
     @Override
     @Test
     public void hasAccess_Acb() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getAcbUser());
+        setupForAcbUser(resourcePermissions);
 
         // This is not used
         assertFalse(permissions.hasAccess());
@@ -82,7 +81,7 @@ public class AddAcbActionPermissionsTest extends ActionPermissionsBaseTest {
     @Override
     @Test
     public void hasAccess_Atl() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getAtlUser());
+        setupForAtlUser(resourcePermissions);
 
         // This is not used
         assertFalse(permissions.hasAccess());
@@ -95,7 +94,7 @@ public class AddAcbActionPermissionsTest extends ActionPermissionsBaseTest {
     @Override
     @Test
     public void hasAccess_Cms() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getCmsUser());
+        setupForCmsUser(resourcePermissions);
 
         // This is not used
         assertFalse(permissions.hasAccess());
@@ -108,7 +107,7 @@ public class AddAcbActionPermissionsTest extends ActionPermissionsBaseTest {
     @Override
     @Test
     public void hasAccess_Anon() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(null);
+        setupForAnonUser(resourcePermissions);
 
         // This is not used
         assertFalse(permissions.hasAccess());

@@ -24,7 +24,7 @@ import gov.healthit.chpl.permissions.domains.pendingcertifiedproduct.GetAllActio
 })
 public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     @Mock
-    private ResourcePermissions permissionChecker;
+    private ResourcePermissions resourcePermissions;
 
     @InjectMocks
     private GetAllActionPermissions permissions;
@@ -33,13 +33,13 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(permissionChecker.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
+        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
     }
 
     @Override
     @Test
     public void hasAccess_Admin() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getAdminUser());
+        setupForAdminUser(resourcePermissions);
 
         // Only ROLE_ADMIN has access
         assertTrue(permissions.hasAccess());
@@ -51,7 +51,7 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     @Override
     @Test
     public void hasAccess_Onc() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getOncUser());
+        setupForOncUser(resourcePermissions);
 
         // Only ROLE_ADMIN has access
         assertFalse(permissions.hasAccess());
@@ -63,7 +63,7 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     @Override
     @Test
     public void hasAccess_Acb() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getAcbUser());
+        setupForAcbUser(resourcePermissions);
 
         // Only ROLE_ADMIN has access
         assertFalse(permissions.hasAccess());
@@ -75,7 +75,7 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     @Override
     @Test
     public void hasAccess_Atl() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getAtlUser());
+        setupForAtlUser(resourcePermissions);
 
         // Only ROLE_ADMIN has access
         assertFalse(permissions.hasAccess());
@@ -87,7 +87,7 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     @Override
     @Test
     public void hasAccess_Cms() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getCmsUser());
+        setupForCmsUser(resourcePermissions);
 
         // Only ROLE_ADMIN has access
         assertFalse(permissions.hasAccess());
@@ -99,7 +99,7 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     @Override
     @Test
     public void hasAccess_Anon() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(null);
+        setupForAnonUser(resourcePermissions);
 
         // Only ROLE_ADMIN has access
         assertFalse(permissions.hasAccess());

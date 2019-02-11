@@ -24,7 +24,7 @@ import gov.healthit.chpl.permissions.domains.userpermissions.DeleteAllAcbPermiss
 })
 public class DeleteAllAcbPermissionsForUserActionPermissionsTest extends ActionPermissionsBaseTest {
     @Mock
-    private ResourcePermissions permissionChecker;
+    private ResourcePermissions resourcePermissions;
 
     @InjectMocks
     private DeleteAllAcbPermissionsForUserActionPermissions permissions;
@@ -33,13 +33,13 @@ public class DeleteAllAcbPermissionsForUserActionPermissionsTest extends ActionP
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(permissionChecker.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
+        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
     }
 
     @Override
     @Test
     public void hasAccess_Admin() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getAdminUser());
+        setupForAdminUser(resourcePermissions);
 
         // Admin should have access
         assertTrue(permissions.hasAccess());
@@ -51,7 +51,7 @@ public class DeleteAllAcbPermissionsForUserActionPermissionsTest extends ActionP
     @Override
     @Test
     public void hasAccess_Onc() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getOncUser());
+        setupForOncUser(resourcePermissions);
 
         // ONC should have access
         assertTrue(permissions.hasAccess());
@@ -63,7 +63,7 @@ public class DeleteAllAcbPermissionsForUserActionPermissionsTest extends ActionP
     @Override
     @Test
     public void hasAccess_Acb() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getAcbUser());
+        setupForAcbUser(resourcePermissions);
 
         // ACB should have access
         assertTrue(permissions.hasAccess());
@@ -75,7 +75,7 @@ public class DeleteAllAcbPermissionsForUserActionPermissionsTest extends ActionP
     @Override
     @Test
     public void hasAccess_Atl() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getAtlUser());
+        setupForAtlUser(resourcePermissions);
 
         // ATL should have access
         assertFalse(permissions.hasAccess());
@@ -87,7 +87,7 @@ public class DeleteAllAcbPermissionsForUserActionPermissionsTest extends ActionP
     @Override
     @Test
     public void hasAccess_Cms() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getCmsUser());
+        setupForCmsUser(resourcePermissions);
 
         // CMS should have access
         assertFalse(permissions.hasAccess());
@@ -99,7 +99,7 @@ public class DeleteAllAcbPermissionsForUserActionPermissionsTest extends ActionP
     @Override
     @Test
     public void hasAccess_Anon() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(null);
+        setupForAnonUser(resourcePermissions);
 
         // Anon should have access
         assertFalse(permissions.hasAccess());

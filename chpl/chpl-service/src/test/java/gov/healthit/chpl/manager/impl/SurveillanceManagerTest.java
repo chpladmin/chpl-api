@@ -97,7 +97,7 @@ public class SurveillanceManagerTest extends TestCase {
 
         atlUser = new JWTAuthenticatedUser();
         atlUser.setFullName("ATL");
-        atlUser.setId(3L);
+        atlUser.setId(4L);
         atlUser.setFriendlyName("User");
         atlUser.setSubjectName("atlUser");
         atlUser.getPermissions().add(new GrantedPermission("ROLE_ATL"));

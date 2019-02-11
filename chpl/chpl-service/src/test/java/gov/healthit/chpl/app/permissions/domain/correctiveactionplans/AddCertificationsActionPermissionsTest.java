@@ -24,7 +24,7 @@ import gov.healthit.chpl.permissions.domains.correctiveactionplans.AddCertificat
 })
 public class AddCertificationsActionPermissionsTest extends ActionPermissionsBaseTest {
     @Mock
-    private ResourcePermissions permissionChecker;
+    private ResourcePermissions resourcePermissions;
 
     @InjectMocks
     private AddCertificationsActionPermissions permissions;
@@ -33,13 +33,13 @@ public class AddCertificationsActionPermissionsTest extends ActionPermissionsBas
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(permissionChecker.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
+        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
     }
 
     @Override
     @Test
     public void hasAccess_Admin() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getAdminUser());
+        setupForAdminUser(resourcePermissions);
 
         // This should always be false
         assertFalse(permissions.hasAccess());
@@ -51,7 +51,7 @@ public class AddCertificationsActionPermissionsTest extends ActionPermissionsBas
     @Override
     @Test
     public void hasAccess_Onc() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getOncUser());
+        setupForOncUser(resourcePermissions);
 
         // This should always be false
         assertFalse(permissions.hasAccess());
@@ -63,7 +63,7 @@ public class AddCertificationsActionPermissionsTest extends ActionPermissionsBas
     @Override
     @Test
     public void hasAccess_Acb() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getAcbUser());
+        setupForAcbUser(resourcePermissions);
 
         // This should always be false
         assertFalse(permissions.hasAccess());
@@ -76,7 +76,7 @@ public class AddCertificationsActionPermissionsTest extends ActionPermissionsBas
     @Override
     @Test
     public void hasAccess_Atl() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getAtlUser());
+        setupForAtlUser(resourcePermissions);
 
         // This should always be false
         assertFalse(permissions.hasAccess());
@@ -88,7 +88,7 @@ public class AddCertificationsActionPermissionsTest extends ActionPermissionsBas
     @Override
     @Test
     public void hasAccess_Cms() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getCmsUser());
+        setupForCmsUser(resourcePermissions);
 
         // This should always be false
         assertFalse(permissions.hasAccess());
@@ -100,7 +100,7 @@ public class AddCertificationsActionPermissionsTest extends ActionPermissionsBas
     @Override
     @Test
     public void hasAccess_Anon() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(null);
+        setupForAnonUser(resourcePermissions);
 
         // This should always be false
         assertFalse(permissions.hasAccess());

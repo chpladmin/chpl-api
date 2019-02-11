@@ -33,7 +33,7 @@ import gov.healthit.chpl.permissions.domains.pendingsurveillance.RejectActionPer
 public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Mock
-    private ResourcePermissions permissionChecker;
+    private ResourcePermissions resourcePermissions;
 
     @Spy
     private SurveillanceDAO survDAO;
@@ -48,7 +48,7 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
     public void setup() throws EntityRetrievalException {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(permissionChecker.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
+        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
 
         Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))
                 .thenReturn(getPendingSurveillanceEntity(1l, 1l, 1l, ROLE_ACB_ID));
@@ -60,7 +60,7 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
     @Override
     @Test
     public void hasAccess_Admin() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getAdminUser());
+        setupForAdminUser(resourcePermissions);
 
         // This should always return false
         assertFalse(permissions.hasAccess());
@@ -89,7 +89,7 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
     @Override
     @Test
     public void hasAccess_Onc() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getOncUser());
+        setupForOncUser(resourcePermissions);
 
         // This should always return false
         assertFalse(permissions.hasAccess());
@@ -118,7 +118,7 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
     @Override
     @Test
     public void hasAccess_Acb() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getAcbUser());
+        setupForAcbUser(resourcePermissions);
 
         // This should always return false
         assertFalse(permissions.hasAccess());
@@ -156,7 +156,7 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
     @Override
     @Test
     public void hasAccess_Atl() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getAtlUser());
+        setupForAtlUser(resourcePermissions);
 
         // This should always return false
         assertFalse(permissions.hasAccess());
@@ -168,7 +168,7 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
     @Override
     @Test
     public void hasAccess_Cms() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getCmsUser());
+        setupForCmsUser(resourcePermissions);
 
         // This should always return false
         assertFalse(permissions.hasAccess());
@@ -180,7 +180,7 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
     @Override
     @Test
     public void hasAccess_Anon() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(null);
+        setupForAnonUser(resourcePermissions);
 
         // This should always return false
         assertFalse(permissions.hasAccess());
