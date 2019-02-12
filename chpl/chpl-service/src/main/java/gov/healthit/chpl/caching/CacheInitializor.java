@@ -50,7 +50,7 @@ public class CacheInitializor {
         caches.add(CacheNames.COLLECTIONS_LISTINGS);
         caches.add(CacheNames.ALL_CERT_IDS);
         caches.add(CacheNames.ALL_CERT_IDS_WITH_PRODUCTS);
-        caches.add(CacheNames.FIND_BY_ACB_ID);
+        caches.add(CacheNames.FIND_PENDING_LISTINGS_BY_ACB_ID);
         //all below caches make up the search options
         caches.add(CacheNames.CERT_BODY_NAMES);
         caches.add(CacheNames.EDITION_NAMES);
@@ -119,7 +119,7 @@ public class CacheInitializor {
                     if (isInitializeFindByAcbId != null && !isInitializeFindByAcbId.isDone()) {
                         isInitializeFindByAcbId.cancel(true);
                     }
-                    isInitializeFindByAcbId = asynchronousCacheInitialization.initializeFindByAcbId();
+                    isInitializeFindByAcbId = asynchronousCacheInitialization.initializeFindPendingListingsByAcbId();
                 }
             } catch (Exception e) {
                 System.out.println("Caching failed to initialize");

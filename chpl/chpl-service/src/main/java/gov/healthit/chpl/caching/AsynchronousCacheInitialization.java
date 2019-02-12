@@ -1,6 +1,8 @@
 package gov.healthit.chpl.caching;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Future;
 
@@ -9,15 +11,23 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.auth.domain.Authority;
+import gov.healthit.chpl.auth.permission.GrantedPermission;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertificationIdManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
+import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.manager.SearchMenuManager;
 
 @Component
@@ -31,7 +41,7 @@ public class AsynchronousCacheInitialization {
     @Autowired
     private CertifiedProductSearchManager certifiedProductSearchManager;
     @Autowired
-    private PendingCertifiedProductDAO pendingCertifiedProductDAO;
+    private PendingCertifiedProductManager pcpManager;
     @Autowired
     private CertificationBodyDAO certificationBodyDAO;
 
@@ -86,15 +96,75 @@ public class AsynchronousCacheInitialization {
 
     @Async
     @Transactional
-    public Future<Boolean> initializeFindByAcbId() throws IOException, EntityRetrievalException, InterruptedException {
+    public Future<Boolean> initializeFindPendingListingsByAcbId() throws IOException, EntityRetrievalException, InterruptedException {
         LOGGER.info("Starting cache initialization for PendingCertifiedProductDAO.findByAcbId()");
-        List<CertificationBodyDTO> cbs = certificationBodyDAO.findAllActive();
-        for (CertificationBodyDTO dto : cbs) {
-            pendingCertifiedProductDAO.findByAcbId(dto.getId());
+        List<CertificationBodyDTO> acbs = certificationBodyDAO.findAllActive();
+      //assume the admin role to query for pending certified products
+        Authentication actor = getAdminUserAuthenticator();
+        SecurityContextHolder.getContext().setAuthentication(actor);
+        for (CertificationBodyDTO dto : acbs) {
+            pcpManager.getPendingCertifiedProducts(dto.getId());
         }
-
+        SecurityContextHolder.getContext().setAuthentication(null);
         LOGGER.info("Finished cache initialization for PendingCertifiedProductDAO.findByAcbId()");
         return new AsyncResult<>(true);
     }
 
+    /**
+     * An inner class to act as the admin user so that all pending
+     * certified product data may be cached.
+     * @return
+     */
+    private Authentication getAdminUserAuthenticator() {
+        JWTAuthenticatedUser authenticator = new JWTAuthenticatedUser() {
+
+            @Override
+            public Long getId() {
+                return User.ADMIN_USER_ID;
+            }
+
+            @Override
+            public Collection<? extends GrantedAuthority> getAuthorities() {
+                List<GrantedAuthority> auths = new ArrayList<GrantedAuthority>();
+                auths.add(new GrantedPermission(Authority.ROLE_ADMIN));
+                return auths;
+            }
+
+            @Override
+            public Object getCredentials() {
+                return null;
+            }
+
+            @Override
+            public Object getDetails() {
+                return null;
+            }
+
+            @Override
+            public Object getPrincipal() {
+                return getName();
+            }
+
+            @Override
+            public String getSubjectName() {
+                return this.getName();
+            }
+
+            @Override
+            public boolean isAuthenticated() {
+                return true;
+            }
+
+            @Override
+            public void setAuthenticated(final boolean arg0) throws IllegalArgumentException {
+            }
+
+            @Override
+            public String getName() {
+                return "admin";
+            }
+
+        };
+        return authenticator;
+    }
 }

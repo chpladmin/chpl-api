@@ -50,7 +50,7 @@ public class ChplTestCacheConfig {
         backingManager.addCacheIfAbsent(createCache(CacheNames.CQM_CRITERION_NUMBERS));
         backingManager.addCacheIfAbsent(createCache(CacheNames.DEVELOPER_NAMES));
         backingManager.addCacheIfAbsent(createCache(CacheNames.EDITION_NAMES));
-        backingManager.addCacheIfAbsent(createCache(CacheNames.FIND_BY_ACB_ID));
+        backingManager.addCacheIfAbsent(createCache(CacheNames.FIND_PENDING_LISTINGS_BY_ACB_ID));
         backingManager.addCacheIfAbsent(createCache(CacheNames.FIND_SURVEILLANCE_NONCONFORMITY_STATUS_TYPE));
         backingManager.addCacheIfAbsent(createCache(CacheNames.FIND_SURVEILLANCE_REQ_TYPE));
         backingManager.addCacheIfAbsent(createCache(CacheNames.FIND_SURVEILLANCE_RESULT_TYPE));
