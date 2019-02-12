@@ -3,7 +3,6 @@ package gov.healthit.chpl.dao;
 import java.util.List;
 import java.util.Map;
 
-import gov.healthit.chpl.domain.SimpleCertificationId;
 import gov.healthit.chpl.dto.CQMMetDTO;
 import gov.healthit.chpl.dto.CertificationIdAndCertifiedProductDTO;
 import gov.healthit.chpl.dto.CertificationIdDTO;
@@ -16,13 +15,13 @@ public interface CertificationIdDAO {
 
     CertificationIdDTO create(CertificationIdDTO dto) throws EntityCreationException;
 
-    List<SimpleCertificationId> findAll();
+    List<CertificationIdDTO> findAll();
 
     CertificationIdDTO getById(Long id) throws EntityRetrievalException;
 
     CertificationIdDTO getByCertificationId(String certificationId) throws EntityRetrievalException;
 
-    List<SimpleCertificationId> getAllCertificationIdsWithProducts();
+    List<CertificationIdAndCertifiedProductDTO> getAllCertificationIdsWithProducts();
 
     CertificationIdDTO getByProductIds(List<Long> productIds, String year) throws EntityRetrievalException;
 

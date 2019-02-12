@@ -17,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.auth.authentication.AdminUserAuthenticator;
 import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
@@ -79,7 +80,7 @@ public class AsynchronousCacheInitialization {
     public Future<Boolean> initializeCertificationIdsGetAll()
             throws IOException, EntityRetrievalException, InterruptedException {
         LOGGER.info("Starting cache initialization for CertificationIdManager.getAll()");
-        certificationIdManager.getAll();
+        certificationIdManager.getAllCached();
         LOGGER.info("Finished cache initialization for CertificationIdManager.getAll()");
         return new AsyncResult<>(true);
     }
@@ -89,7 +90,7 @@ public class AsynchronousCacheInitialization {
     public Future<Boolean> initializeCertificationIdsGetAllWithProducts()
             throws IOException, EntityRetrievalException, InterruptedException {
         LOGGER.info("Starting cache initialization for CertificationIdManager.getAllWithProducts()");
-        certificationIdManager.getAllWithProducts();
+        certificationIdManager.getAllWithProductsCached();
         LOGGER.info("Finished cache initialization for CertificationIdManager.getAllWithProducts()");
         return new AsyncResult<>(true);
     }
@@ -99,72 +100,14 @@ public class AsynchronousCacheInitialization {
     public Future<Boolean> initializeFindPendingListingsByAcbId() throws IOException, EntityRetrievalException, InterruptedException {
         LOGGER.info("Starting cache initialization for PendingCertifiedProductDAO.findByAcbId()");
         List<CertificationBodyDTO> acbs = certificationBodyDAO.findAllActive();
-      //assume the admin role to query for pending certified products
-        Authentication actor = getAdminUserAuthenticator();
+        //assume the admin role to query for pending certified products
+        Authentication actor = new AdminUserAuthenticator();
         SecurityContextHolder.getContext().setAuthentication(actor);
         for (CertificationBodyDTO dto : acbs) {
-            pcpManager.getPendingCertifiedProducts(dto.getId());
+            pcpManager.getPendingCertifiedProductsCached(dto.getId());
         }
         SecurityContextHolder.getContext().setAuthentication(null);
         LOGGER.info("Finished cache initialization for PendingCertifiedProductDAO.findByAcbId()");
         return new AsyncResult<>(true);
-    }
-
-    /**
-     * An inner class to act as the admin user so that all pending
-     * certified product data may be cached.
-     * @return
-     */
-    private Authentication getAdminUserAuthenticator() {
-        JWTAuthenticatedUser authenticator = new JWTAuthenticatedUser() {
-
-            @Override
-            public Long getId() {
-                return User.ADMIN_USER_ID;
-            }
-
-            @Override
-            public Collection<? extends GrantedAuthority> getAuthorities() {
-                List<GrantedAuthority> auths = new ArrayList<GrantedAuthority>();
-                auths.add(new GrantedPermission(Authority.ROLE_ADMIN));
-                return auths;
-            }
-
-            @Override
-            public Object getCredentials() {
-                return null;
-            }
-
-            @Override
-            public Object getDetails() {
-                return null;
-            }
-
-            @Override
-            public Object getPrincipal() {
-                return getName();
-            }
-
-            @Override
-            public String getSubjectName() {
-                return this.getName();
-            }
-
-            @Override
-            public boolean isAuthenticated() {
-                return true;
-            }
-
-            @Override
-            public void setAuthenticated(final boolean arg0) throws IllegalArgumentException {
-            }
-
-            @Override
-            public String getName() {
-                return "admin";
-            }
-
-        };
-        return authenticator;
     }
 }

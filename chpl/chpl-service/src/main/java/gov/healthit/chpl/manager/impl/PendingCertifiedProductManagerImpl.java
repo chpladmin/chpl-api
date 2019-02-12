@@ -128,8 +128,28 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
         return products;
     }
 
+    /**
+     * Get the pending listings from a specific ACB.
+     * Users of this class should call this method to get the listings
+     * which should always be returned quickly from the cache.
+     */
     @Override
     @Cacheable(CacheNames.FIND_PENDING_LISTINGS_BY_ACB_ID)
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') and "
+            + "hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+    public List<PendingCertifiedProductDTO> getPendingCertifiedProductsCached(final Long acbId) {
+        return getPendingCertifiedProducts(acbId);
+    }
+
+    /**
+     * This method is included so that the pending listings may be pre-loaded
+     * in a background cache without having to duplicate manager logic.
+     * Prefer users of this class to call getPendingCertifiedProductsCached.
+     * @param acbId
+     * @return
+     */
+    @Override
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') and "
             + "hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
@@ -145,9 +165,6 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
     @Transactional(rollbackFor = {
             EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class
     })
-    @CacheEvict(value = {
-            CacheNames.FIND_PENDING_LISTINGS_BY_ACB_ID
-    }, allEntries = true)
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or (hasRole('ROLE_ACB') "
             + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     public PendingCertifiedProductDTO createOrReplace(final Long acbId, final PendingCertifiedProductEntity toCreate)
@@ -181,9 +198,6 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 
     @Override
     @Transactional
-    @CacheEvict(value = {
-            CacheNames.FIND_PENDING_LISTINGS_BY_ACB_ID
-    }, allEntries = true)
     @PreAuthorize("hasRole('ROLE_ADMIN') or "
             + "(hasRole('ROLE_ACB') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     public void deletePendingCertifiedProduct(final Long acbId, final Long pendingProductId)
@@ -205,9 +219,6 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 
     @Override
     @Transactional
-    @CacheEvict(value = {
-            CacheNames.FIND_PENDING_LISTINGS_BY_ACB_ID
-    }, allEntries = true)
     @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') "
             + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     public void confirm(final Long acbId, final Long pendingProductId)

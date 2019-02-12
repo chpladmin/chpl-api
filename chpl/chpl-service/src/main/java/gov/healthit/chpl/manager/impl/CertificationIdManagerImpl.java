@@ -75,25 +75,85 @@ public class CertificationIdManagerImpl implements CertificationIdManager {
         return certificationIdDao.verifyByCertificationId(certificationIds);
     }
 
+    /**
+     * Should be secured at controller level for ROLE_ADMIN || ROLE_CMS_STAFF
+     * Get all cert ids.
+     * Users of this class should call this method to get the cert ids
+     * which should always be returned quickly from the cache.
+     */
     @Override
     @Transactional(readOnly = true)
     @Cacheable(CacheNames.ALL_CERT_IDS)
-    /**
-     * Should be secured at controller level for ROLE_ADMIN ||
-     * ROLE_CMS_STAFF
-     */
-    public List<SimpleCertificationId> getAll() {
-        return certificationIdDao.findAll();
+    public List<SimpleCertificationId> getAllCached() {
+        return getAll();
     }
 
+    /**
+     * This method gets all the cert ids but does
+     * not cache the result. This method should only be used for
+     * filling in the pre-fetched cache and is here to avoid duplicating
+     * manager logic elsewhere.
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<SimpleCertificationId> getAll() {
+        List<SimpleCertificationId> results = new ArrayList<SimpleCertificationId>();
+        List<CertificationIdDTO> allCertificationIds = certificationIdDao.findAll();
+        for (CertificationIdDTO dto : allCertificationIds) {
+            results.add(new SimpleCertificationId(dto));
+        }
+        return results;
+    }
+
+    /**
+     * Should be secured at controller level for ROLE_ADMIN || ROLE_ONC
+     * Get all cert ids and their associated listings.
+     * Users of this class should call this method to get the cert ids
+     * which should always be returned quickly from the cache.
+     */
     @Override
     @Transactional(readOnly = true)
     @Cacheable(CacheNames.ALL_CERT_IDS_WITH_PRODUCTS)
+    public List<SimpleCertificationId> getAllWithProductsCached() {
+        return getAllWithProducts();
+    }
+
     /**
-     * Should be secured at controller level for ROLE_ADMIN || ROLE_ONC
+     * This method gets all the cert ids with products but does
+     * not cache the result. This method should only be used for
+     * filling in the pre-fetched cache and is here to avoid duplicating
+     * manager logic elsewhere.
      */
+    @Override
+    @Transactional(readOnly = true)
     public List<SimpleCertificationId> getAllWithProducts() {
-        return certificationIdDao.getAllCertificationIdsWithProducts();
+        List<SimpleCertificationId> results = new ArrayList<SimpleCertificationId>();
+        List<CertificationIdAndCertifiedProductDTO> allCertificationIds = certificationIdDao
+                .getAllCertificationIdsWithProducts();
+        for (CertificationIdAndCertifiedProductDTO ehr : allCertificationIds) {
+            SimpleCertificationId cert = new SimpleCertificationId();
+            cert.setCertificationId(ehr.getCertificationId());
+            cert.setCreated(ehr.getCreationDate());
+            int index = results.indexOf(cert);
+            if (index >= 0) {
+                SimpleCertificationIdWithProducts currResult = (SimpleCertificationIdWithProducts) results.get(index);
+                if (StringUtils.isEmpty(currResult.getProducts())) {
+                    currResult.setProducts(ehr.getChplProductNumber());
+                } else {
+                    String currProducts = currResult.getProducts();
+                    currProducts = currProducts + ";" + ehr.getChplProductNumber();
+                    currResult.setProducts(currProducts);
+                }
+            } else {
+                SimpleCertificationIdWithProducts currResult = new SimpleCertificationIdWithProducts();
+                currResult.setCertificationId(ehr.getCertificationId());
+                currResult.setCreated(ehr.getCreationDate());
+                currResult.setProducts(ehr.getChplProductNumber());
+                results.add(currResult);
+            }
+        }
+
+        return results;
     }
 
     @Override

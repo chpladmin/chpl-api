@@ -685,7 +685,7 @@ public class CertifiedProductController {
         } else if (Util.isUserRoleAcbAdmin()) {
             List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser();
             for (CertificationBodyDTO acb : allowedAcbs) {
-                pcps.addAll(pcpManager.getPendingCertifiedProducts(acb.getId()));
+                pcps.addAll(pcpManager.getPendingCertifiedProductsCached(acb.getId()));
             }
         } else {
             throw new AccessDeniedException(msgUtil.getMessage("access.denied"));

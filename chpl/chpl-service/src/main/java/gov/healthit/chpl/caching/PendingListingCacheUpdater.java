@@ -9,32 +9,30 @@ import org.springframework.stereotype.Component;
 import net.sf.ehcache.CacheManager;
 
 @Component
-public class CertIdsCacheUpdater {
-    private static final Logger LOGGER = LogManager.getLogger(CertIdsCacheUpdater.class);
+public class PendingListingCacheUpdater {
+    private static final Logger LOGGER = LogManager.getLogger(PendingListingCacheUpdater.class);
 
     @Autowired
     private PrefetchedCacheLoader prefetchedCaches;
 
     @Async
     public synchronized void refreshCacheAsync() {
-        refreshCertIdsCache();
-        refreshCertIdsWithProductsCache();
+        refreshPendingListingCache();
     }
 
     public synchronized void refreshCacheSync() {
-        refreshCertIdsCache();
-        refreshCertIdsWithProductsCache();
+        refreshPendingListingCache();
     }
 
     /**
-     * Load the cert ids cache into a pre-fetched cache.
+     * Load the pending listing cache into a pre-fetched cache.
      */
-    private void refreshCertIdsCache() {
+    private void refreshPendingListingCache() {
         CacheManager manager = CacheManager.getInstance();
-        prefetchedCaches.loadPrefetchedCertificationIds();
-        LOGGER.debug("Replacing live cert ids cache with pre-fetched data.");
-        CacheReplacer.replaceCache(manager.getCache(CacheNames.ALL_CERT_IDS),
-                manager.getCache(CacheNames.PREFETCHED_ALL_CERT_IDS));
+        prefetchedCaches.loadPrefetchedPendingListings();
+        LOGGER.debug("Replacing live pending listings cache with pre-fetched data.");
+        CacheReplacer.replaceCache(manager.getCache(CacheNames.FIND_PENDING_LISTINGS_BY_ACB_ID),
+                manager.getCache(CacheNames.PREFETCHED_FIND_PENDING_LISTINGS_BY_ACB_ID));
     }
 
     /**

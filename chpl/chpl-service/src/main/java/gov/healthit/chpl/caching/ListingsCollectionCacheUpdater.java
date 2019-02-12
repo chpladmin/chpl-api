@@ -13,7 +13,7 @@ public class ListingsCollectionCacheUpdater {
     private static final Logger LOGGER = LogManager.getLogger(ListingsCollectionCacheUpdater.class);
 
     @Autowired
-    private PreFetchedCaches prefetchedCaches;
+    private PrefetchedCacheLoader prefetchedCaches;
 
     @Async
     public synchronized void refreshCacheAsync() {
