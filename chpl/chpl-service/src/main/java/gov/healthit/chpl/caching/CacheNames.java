@@ -3,8 +3,6 @@ package gov.healthit.chpl.caching;
 public final class CacheNames {
     private CacheNames() {}
 
-    public static final String ALL_CERT_IDS_WITH_PRODUCTS = "allCertIdsWithProducts";
-    public static final String ALL_CERT_IDS = "allCertIds";
     public static final String ALL_DEVELOPERS = "allDevelopers";
     public static final String ALL_DEVELOPERS_INCLUDING_DELETED = "allDevelopersIncludingDeleted";
     public static final String JOB_TYPES = "jobTypes";
@@ -20,7 +18,6 @@ public final class CacheNames {
     public static final String CERTIFICATION_CRITERION_NUMBERS = "certificationCriterionNumbers";
     public static final String CERTIFICATION_CRITERION_WITH_EDITIONS = "certificationCriterionWithEditions";
     public static final String GET_DECERTIFIED_DEVELOPERS = "getDecertifiedDevelopers";
-    public static final String FIND_PENDING_LISTINGS_BY_ACB_ID = "findPendingListingsByAcbId";
     public static final String GET_ALL_WHITELISTED = "getAllWhitelistedEntities";
     public static final String FIND_SURVEILLANCE_REQ_TYPE = "findSurveillanceRequirementType";
     public static final String FIND_SURVEILLANCE_RESULT_TYPE = "findSurveillanceResultType";
@@ -31,12 +28,8 @@ public final class CacheNames {
     public static final String COLLECTIONS_DEVELOPERS = "developerCollection";
     public static final String COLLECTIONS_LISTINGS = "listingCollection";
 
-    //caches that are pre-fethed due to longish load times
+    //caches that are pre-fetched due to longish load times
     public static final String PREFETCHED_COLLECTIONS_LISTINGS = "prefetchedListingCollection";
-    public static final String PREFETCHED_ALL_CERT_IDS = "prefetchedAllCertIds";
-    public static final String PREFETCHED_ALL_CERT_IDS_WITH_PRODUCTS = "prefetchedAllCertIdsWithProducts";
-    public static final String PREFETCHED_FIND_PENDING_LISTINGS_BY_ACB_ID = "prefetchedFindPendingListingsByAcbId";
-
     public static final String PREFETCHED_CERT_BODY_NAMES = "prefetchedCertBodyNames";
     public static final String PREFETCHED_EDITION_NAMES = "prefetchedEditionNames";
     public static final String PREFETCHED_CERTIFICATION_STATUSES = "prefetchedCertificationStatuses";

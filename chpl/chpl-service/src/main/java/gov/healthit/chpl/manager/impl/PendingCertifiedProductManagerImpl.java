@@ -129,20 +129,6 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
     }
 
     /**
-     * Get the pending listings from a specific ACB.
-     * Users of this class should call this method to get the listings
-     * which should always be returned quickly from the cache.
-     */
-    @Override
-    @Cacheable(CacheNames.FIND_PENDING_LISTINGS_BY_ACB_ID)
-    @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') and "
-            + "hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-    public List<PendingCertifiedProductDTO> getPendingCertifiedProductsCached(final Long acbId) {
-        return getPendingCertifiedProducts(acbId);
-    }
-
-    /**
      * This method is included so that the pending listings may be pre-loaded
      * in a background cache without having to duplicate manager logic.
      * Prefer users of this class to call getPendingCertifiedProductsCached.

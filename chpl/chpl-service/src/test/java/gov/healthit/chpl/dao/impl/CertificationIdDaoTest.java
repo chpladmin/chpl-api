@@ -21,8 +21,6 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertificationIdDAO;
-import gov.healthit.chpl.domain.SimpleCertificationId;
-import gov.healthit.chpl.domain.SimpleCertificationIdWithProducts;
 import gov.healthit.chpl.dto.CertificationIdAndCertifiedProductDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -54,14 +52,13 @@ public class CertificationIdDaoTest extends TestCase {
         ids.add(1L);
         ehrDao.create(ids, "2014");
 
-        List<SimpleCertificationId> results = ehrDao.getAllCertificationIdsWithProducts();
+        List<CertificationIdAndCertifiedProductDTO> results = ehrDao.getAllCertificationIdsWithProducts();
         assertNotNull(results);
         assertEquals(1, results.size());
-        SimpleCertificationId result = results.get(0);
-        assertTrue(result instanceof SimpleCertificationIdWithProducts);
-        SimpleCertificationIdWithProducts resultCasted = (SimpleCertificationIdWithProducts) result;
-        assertNotNull(resultCasted.getProducts());
-        assertTrue(resultCasted.getProducts().contains("CHP-024050"));
+        CertificationIdAndCertifiedProductDTO result = results.get(0);
+        assertNotNull(result.getChplProductNumber());
+        assertEquals("CHP-024050", result.getChplProductNumber());
+
     }
 
     @Test
@@ -74,14 +71,8 @@ public class CertificationIdDaoTest extends TestCase {
         ids.add(2L);
         ehrDao.create(ids, "2014");
 
-        List<SimpleCertificationId> results = ehrDao.getAllCertificationIdsWithProducts();
+        List<CertificationIdAndCertifiedProductDTO> results = ehrDao.getAllCertificationIdsWithProducts();
         assertNotNull(results);
-        assertEquals(1, results.size());
-        SimpleCertificationId result = results.get(0);
-        assertTrue(result instanceof SimpleCertificationIdWithProducts);
-        SimpleCertificationIdWithProducts resultCasted = (SimpleCertificationIdWithProducts) result;
-        assertNotNull(resultCasted.getProducts());
-        assertTrue(resultCasted.getProducts().contains("CHP-024050"));
-        assertTrue(resultCasted.getProducts().contains("CHP-024051"));
+        assertEquals(2, results.size());
     }
 }
