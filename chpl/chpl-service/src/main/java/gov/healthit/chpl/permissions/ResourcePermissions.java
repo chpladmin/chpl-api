@@ -3,6 +3,8 @@ package gov.healthit.chpl.permissions;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
@@ -70,7 +72,15 @@ public class ResourcePermissions {
     @Transactional(readOnly = true)
     public CertificationBodyDTO getAcbIfPermissionById(final Long id) {
         List<CertificationBodyDTO> dtos = getAllAcbsForCurrentUser();
-        dtos.stream().filter(dto -> dto.getId().equals(id));
+
+        CollectionUtils.filter(dtos, new Predicate<CertificationBodyDTO>() {
+            @Override
+            public boolean evaluate(CertificationBodyDTO object) {
+                return object.getId().equals(id);
+            }
+
+        });
+
         if (dtos.size() == 0) {
             throw new AccessDeniedException(errorMessageUtil.getMessage("access.denied"));
         }
