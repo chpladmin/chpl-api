@@ -35,6 +35,8 @@ public class ChplCacheConfig {
     public CacheManager cacheManager() {
         EhCacheCacheManager cacheManager = new EhCacheCacheManager(ehCacheCacheManager().getObject());
         net.sf.ehcache.CacheManager backingManager = cacheManager.getCacheManager();
+        backingManager.addCacheIfAbsent(createCache(CacheNames.ALL_CERT_IDS));
+        backingManager.addCacheIfAbsent(createCache(CacheNames.ALL_CERT_IDS_WITH_PRODUCTS));
         backingManager.addCacheIfAbsent(createCache(CacheNames.ALL_DEVELOPERS));
         backingManager.addCacheIfAbsent(createCache(CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED));
         backingManager.addCacheIfAbsent(createCache(CacheNames.CERT_BODY_NAMES));
@@ -61,7 +63,8 @@ public class ChplCacheConfig {
         backingManager.addCacheIfAbsent(createCache(CacheNames.UPLOAD_TEMPLATE_VERSIONS));
 
         backingManager.addCacheIfAbsent(createCache(CacheNames.PREFETCHED_COLLECTIONS_LISTINGS));
-
+        backingManager.addCacheIfAbsent(createCache(CacheNames.PREFETCHED_ALL_CERT_IDS));
+        backingManager.addCacheIfAbsent(createCache(CacheNames.PREFETCHED_ALL_CERT_IDS_WITH_PRODUCTS));
         return cacheManager;
     }
 

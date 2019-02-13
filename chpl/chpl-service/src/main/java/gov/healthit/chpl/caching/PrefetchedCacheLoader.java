@@ -16,13 +16,17 @@ import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
+import gov.healthit.chpl.domain.SimpleCertificationId;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
+import gov.healthit.chpl.manager.CertificationIdManager;
 
 @Component
 public class PrefetchedCacheLoader {
     private static final Logger LOGGER = LogManager.getLogger(PrefetchedCacheLoader.class);
     @Autowired
     private CertifiedProductSearchDAO certifiedProductSearchDao;
+    @Autowired
+    private CertificationIdManager certIdManager;
     @Autowired
     private CertificationBodyDAO certificationBodyDAO;
     @Autowired
@@ -41,6 +45,26 @@ public class PrefetchedCacheLoader {
         LOGGER.info("Loading prefetched listings collection");
         List<CertifiedProductFlatSearchResult> results = certifiedProductSearchDao.getAllCertifiedProducts();
         LOGGER.info("Completed database call to get all listings.");
+        return results;
+    }
+
+    @Transactional
+    @CacheEvict(value = CacheNames.PREFETCHED_ALL_CERT_IDS, beforeInvocation = true, allEntries = true)
+    @Cacheable(CacheNames.PREFETCHED_ALL_CERT_IDS)
+    public List<SimpleCertificationId> loadPrefetchedCertificationIds() {
+        LOGGER.info("Loading prefetched certification IDs");
+        List<SimpleCertificationId> results =  certIdManager.getAll();
+        LOGGER.info("Completed database call to get all certification IDs.");
+        return results;
+    }
+
+    @Transactional
+    @CacheEvict(value = CacheNames.PREFETCHED_ALL_CERT_IDS_WITH_PRODUCTS, beforeInvocation = true, allEntries = true)
+    @Cacheable(CacheNames.PREFETCHED_ALL_CERT_IDS_WITH_PRODUCTS)
+    public List<SimpleCertificationId> loadPrefetchedCertificationIdsWithProducts() {
+        LOGGER.info("Loading prefetched certification IDs with products");
+        List<SimpleCertificationId> results = certIdManager.getAllWithProducts();
+        LOGGER.info("Completed database call to get all certification IDs with products.");
         return results;
     }
 

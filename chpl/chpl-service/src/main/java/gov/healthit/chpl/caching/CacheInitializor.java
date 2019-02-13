@@ -36,6 +36,8 @@ public class CacheInitializor {
     private Double tClearAllElapsedSecs;
     private Future<Boolean> isInitializeSearchOptionsDone;
     private Future<Boolean> isInitializeBasicSearch;
+    private Future<Boolean> isInitializeCertificationIdsGetAllDone;
+    private Future<Boolean> isInitializeCertificationIdsGetAllWithProductsDone;
     private Properties props;
     private String enableCacheInitializationValue;
 
@@ -45,6 +47,8 @@ public class CacheInitializor {
     public static List<String> getPreInitializedCaches() {
         List<String> caches = new ArrayList<String>();
         caches.add(CacheNames.COLLECTIONS_LISTINGS);
+        caches.add(CacheNames.ALL_CERT_IDS);
+        caches.add(CacheNames.ALL_CERT_IDS_WITH_PRODUCTS);
         //all below caches make up the search options
         caches.add(CacheNames.CERT_BODY_NAMES);
         caches.add(CacheNames.EDITION_NAMES);
@@ -90,6 +94,19 @@ public class CacheInitializor {
                         isInitializeSearchOptionsDone.cancel(true);
                     }
                     isInitializeSearchOptionsDone = asynchronousCacheInitialization.initializeSearchOptions();
+                    if (isInitializeCertificationIdsGetAllDone != null
+                            && !isInitializeCertificationIdsGetAllDone.isDone()) {
+                        isInitializeCertificationIdsGetAllDone.cancel(true);
+                    }
+                    isInitializeCertificationIdsGetAllDone = asynchronousCacheInitialization
+                            .initializeCertificationIdsGetAll();
+
+                    if (isInitializeCertificationIdsGetAllWithProductsDone != null
+                            && !isInitializeCertificationIdsGetAllWithProductsDone.isDone()) {
+                        isInitializeCertificationIdsGetAllWithProductsDone.cancel(true);
+                    }
+                    isInitializeCertificationIdsGetAllWithProductsDone = asynchronousCacheInitialization
+                            .initializeCertificationIdsGetAllWithProducts();
 
                     if (isInitializeBasicSearch != null && !isInitializeBasicSearch.isDone()) {
                         isInitializeBasicSearch.cancel(true);
@@ -117,7 +134,14 @@ public class CacheInitializor {
             if (isInitializeSearchOptionsDone != null && !isInitializeSearchOptionsDone.isDone()) {
                 isInitializeSearchOptionsDone.cancel(true);
             }
+            if (isInitializeCertificationIdsGetAllDone != null && !isInitializeCertificationIdsGetAllDone.isDone()) {
+                isInitializeCertificationIdsGetAllDone.cancel(true);
+            }
 
+            if (isInitializeCertificationIdsGetAllWithProductsDone != null
+                    && !isInitializeCertificationIdsGetAllWithProductsDone.isDone()) {
+                isInitializeCertificationIdsGetAllWithProductsDone.cancel(true);
+            }
             LOGGER.info("Clearing all caches before @ClearAllCaches method execution.");
             CacheManager.getInstance().clearAll();
         }

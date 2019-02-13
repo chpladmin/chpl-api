@@ -33,9 +33,6 @@ public class CertificationIdAndCertifiedProductEntity implements Serializable {
     @Column(name = "ehr_certification_id_creation_date", nullable = false)
     private Date creationDate;
 
-    @Column(name = "certified_product_id")
-    private Long certifiedProductId;
-
     @Column(name = "chpl_product_number")
     private String chplProductNumber;
 
@@ -73,14 +70,6 @@ public class CertificationIdAndCertifiedProductEntity implements Serializable {
 
     public void setCertificationId(final String certificationId) {
         this.certificationId = certificationId;
-    }
-
-    public Long getCertifiedProductId() {
-        return certifiedProductId;
-    }
-
-    public void setCertifiedProductId(final Long certifiedProductId) {
-        this.certifiedProductId = certifiedProductId;
     }
 
     public String getChplProductNumber() {

@@ -61,6 +61,9 @@ public class ChplTestCacheConfig {
         backingManager.addCacheIfAbsent(createCache(CacheNames.UPLOAD_TEMPLATE_VERSIONS));
 
         backingManager.addCacheIfAbsent(createCache(CacheNames.PREFETCHED_COLLECTIONS_LISTINGS));
+        backingManager.addCacheIfAbsent(createCache(CacheNames.PREFETCHED_ALL_CERT_IDS));
+        backingManager.addCacheIfAbsent(createCache(CacheNames.PREFETCHED_ALL_CERT_IDS_WITH_PRODUCTS));
+
         return cacheManager;
     }
 
