@@ -29,6 +29,7 @@ import gov.healthit.chpl.auth.user.UpdateExpiredPasswordRequest;
 import gov.healthit.chpl.auth.user.UpdatePasswordResponse;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.web.controller.AuthenticationController;
 
 /**
  * Tests for authentication controller.

@@ -19,6 +19,7 @@ import gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermis
 import gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions;
 import gov.healthit.chpl.permissions.domains.ProductDomainPermissions;
 import gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions;
+import gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions;
 import gov.healthit.chpl.permissions.domains.UserPermissionsDomainPermissions;
 
@@ -39,6 +40,7 @@ public class Permissions {
     public static final String PRODUCT = "PRODUCT";
     public static final String DEVELOPER = "DEVELOPER";
     public static final String PRODUCT_VERSION = "PRODUCT_VERSION";
+    public static final String SECURED_USER = "SECURED_USER";
 
     private Map<String, DomainPermissions> domainPermissions = new HashMap<String, DomainPermissions>();
 
@@ -55,7 +57,8 @@ public class Permissions {
             final ActivityDomainPermissions activityDomainPermissions, final JobDomainPermissions jobDomainPermissions,
             final ProductDomainPermissions productDomainPermissions,
             final DeveloperDomainPermissions developerDomainPermissions,
-            final ProductVersionDomainPermissions productVersionDomainPermissions) {
+            final ProductVersionDomainPermissions productVersionDomainPermissions,
+            final SecuredUserDomainPermissions securedUserDomainPermissions) {
 
         domainPermissions.put(PENDING_SURVEILLANCE, pendingSurveillanceDomainPermissions);
         domainPermissions.put(CERTIFICATION_RESULTS, certificationResultsDomainPermissions);
@@ -71,6 +74,7 @@ public class Permissions {
         domainPermissions.put(PRODUCT, productDomainPermissions);
         domainPermissions.put(DEVELOPER, developerDomainPermissions);
         domainPermissions.put(PRODUCT_VERSION, productVersionDomainPermissions);
+        domainPermissions.put(SECURED_USER, securedUserDomainPermissions);
     }
 
     public boolean hasAccess(final String domain, final String action) {

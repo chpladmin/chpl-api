@@ -12,7 +12,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -60,7 +59,7 @@ public class UserAuthenticator implements Authenticator {
             }
             if (user.getComplianceSignatureDate() == null) {
                 throw new BadCredentialsException("Account for user " + user.getSubjectName()
-                + " has not accepted the compliance terms and conditions.");
+                        + " has not accepted the compliance terms and conditions.");
             }
 
             if (checkPassword(credentials.getPassword(), userManager.getEncodedPassword(user))) {
@@ -236,6 +235,7 @@ public class UserAuthenticator implements Authenticator {
     private UserDTO getUserByName(final String userName) throws UserRetrievalException {
 
         Authentication authenticator = new Authentication() {
+            private static final long serialVersionUID = 6718133333641942231L;
 
             @Override
             public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -4,7 +4,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.User;
 
@@ -20,31 +19,30 @@ public class Util {
         }
     }
 
-//    public static boolean isUserRoleAdmin() {
-//        return doesUserHaveRole(Authority.ROLE_ADMIN);
-//    }
-//
-//    public static boolean isUserRoleOnc() {
-//        return doesUserHaveRole(Authority.ROLE_ONC);
-//    }
-//
-//    public static boolean isUserRoleCmsStaff() {
-//        return doesUserHaveRole(Authority.ROLE_CMS_STAFF);
-//    }
-//
-//    public static boolean isUserRoleAcbAdmin() {
-//        return doesUserHaveRole(Authority.ROLE_ACB);
-//    }
-//
-//    public static boolean isUserRoleAtlAdmin() {
-//        return doesUserHaveRole(Authority.ROLE_ATL);
-//    }
-//    
-//    public static boolean isUserRoleUserCreator() {
-//        return doesUserHaveRole(Authority.ROLE_USER_CREATOR);
-//    }
+    // public static boolean isUserRoleAdmin() {
+    // return doesUserHaveRole(Authority.ROLE_ADMIN);
+    // }
+    //
+    // public static boolean isUserRoleOnc() {
+    // return doesUserHaveRole(Authority.ROLE_ONC);
+    // }
+    //
+    // public static boolean isUserRoleCmsStaff() {
+    // return doesUserHaveRole(Authority.ROLE_CMS_STAFF);
+    // }
+    //
+    // public static boolean isUserRoleAcbAdmin() {
+    // return doesUserHaveRole(Authority.ROLE_ACB);
+    // }
+    //
+    // public static boolean isUserRoleAtlAdmin() {
+    // return doesUserHaveRole(Authority.ROLE_ATL);
+    // }
+    //
+    // public static boolean isUserRoleUserCreator() {
+    // return doesUserHaveRole(Authority.ROLE_USER_CREATOR);
+    // }
 
-    
     public static User getCurrentUser() {
 
         User user = null;
@@ -55,6 +53,11 @@ public class Util {
             user = (User) auth;
         }
         return user;
+    }
+
+    public static Authentication getCurrentAuthentication() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth;
     }
 
     public static String fromInt(final Integer toStr) {

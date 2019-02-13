@@ -1,4 +1,4 @@
-package gov.healthit.chpl.auth.controller;
+package gov.healthit.chpl.web.controller;
 
 import java.util.ArrayList;
 import java.util.Arrays;

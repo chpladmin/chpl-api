@@ -7,6 +7,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,12 +60,14 @@ public class ResourcePermissions {
         User user = Util.getCurrentUser();
         List<CertificationBodyDTO> acbs = new ArrayList<CertificationBodyDTO>();
 
-        if (isUserRoleAdmin() || isUserRoleOnc()) {
-            acbs = acbDAO.findAllActive();
-        } else {
-            List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByUserId(user.getId());
-            for (UserCertificationBodyMapDTO dto : dtos) {
-                acbs.add(dto.getCertificationBody());
+        if (user != null) {
+            if (isUserRoleAdmin() || isUserRoleOnc()) {
+                acbs = acbDAO.findAllActive();
+            } else {
+                List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByUserId(user.getId());
+                for (UserCertificationBodyMapDTO dto : dtos) {
+                    acbs.add(dto.getCertificationBody());
+                }
             }
         }
         return acbs;
@@ -123,6 +127,14 @@ public class ResourcePermissions {
         return doesUserHaveRole(Authority.ROLE_USER_CREATOR);
     }
 
+    public boolean isUserRoleUserAuthenticator() {
+        return doesAuthenticationHaveRole(Authority.ROLE_USER_AUTHENTICATOR);
+    }
+
+    public boolean isUserRoleInvitedUserCreator() {
+        return doesAuthenticationHaveRole(Authority.ROLE_INVITED_USER_CREATOR);
+    }
+
     private boolean doesUserHaveRole(final String authority) {
         User user = Util.getCurrentUser();
         if (user == null) {
@@ -132,6 +144,20 @@ public class ResourcePermissions {
         List<RoleDTO> roles = getRolesByUserId(user.getId());
         for (RoleDTO role : roles) {
             if (role.getAuthority().equals(authority)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean doesAuthenticationHaveRole(final String authority) {
+        Authentication auth = Util.getCurrentAuthentication();
+        if (auth == null) {
+            return false;
+        }
+
+        for (GrantedAuthority role : auth.getAuthorities()) {
+            if (role.getAuthority().contentEquals(authority)) {
                 return true;
             }
         }
