@@ -4,6 +4,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
+import org.springframework.context.annotation.AdviceMode;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -39,7 +40,6 @@ public class ChplCacheConfig {
         backingManager.addCacheIfAbsent(createCache(CacheNames.ALL_CERT_IDS_WITH_PRODUCTS));
         backingManager.addCacheIfAbsent(createCache(CacheNames.ALL_DEVELOPERS));
         backingManager.addCacheIfAbsent(createCache(CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED));
-        backingManager.addCacheIfAbsent(createCache(CacheNames.CERT_BODY_NAMES));
         backingManager.addCacheIfAbsent(createCache(CacheNames.CERTIFICATION_CRITERION_NUMBERS));
         backingManager.addCacheIfAbsent(createCache(CacheNames.CERTIFICATION_CRITERION_WITH_EDITIONS));
         backingManager.addCacheIfAbsent(createCache(CacheNames.CERTIFICATION_STATUSES));
@@ -65,6 +65,8 @@ public class ChplCacheConfig {
         backingManager.addCacheIfAbsent(createCache(CacheNames.PREFETCHED_COLLECTIONS_LISTINGS));
         backingManager.addCacheIfAbsent(createCache(CacheNames.PREFETCHED_ALL_CERT_IDS));
         backingManager.addCacheIfAbsent(createCache(CacheNames.PREFETCHED_ALL_CERT_IDS_WITH_PRODUCTS));
+        backingManager.addCacheIfAbsent(createCache(CacheNames.PREFETCHED_PRODUCT_NAMES));
+        backingManager.addCacheIfAbsent(createCache(CacheNames.PREFETCHED_DEVELOPER_NAMES));
         return cacheManager;
     }
 

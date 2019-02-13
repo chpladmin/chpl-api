@@ -441,8 +441,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
-            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
-            CacheNames.DEVELOPER_NAMES, CacheNames.PRODUCT_NAMES
+            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS
     }, allEntries = true)
     public CertifiedProductDTO createFromPending(final Long acbId, final PendingCertifiedProductDTO pendingCp)
             throws EntityRetrievalException, EntityCreationException, IOException {

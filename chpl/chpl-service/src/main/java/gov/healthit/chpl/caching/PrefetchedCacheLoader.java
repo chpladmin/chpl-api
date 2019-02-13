@@ -1,6 +1,7 @@
 package gov.healthit.chpl.caching;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,15 +11,12 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.dao.CQMCriterionDAO;
-import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.dao.CertificationCriterionDAO;
-import gov.healthit.chpl.dao.CertificationEditionDAO;
-import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
+import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.SimpleCertificationId;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.manager.CertificationIdManager;
+import gov.healthit.chpl.manager.SearchMenuManager;
 
 @Component
 public class PrefetchedCacheLoader {
@@ -28,15 +26,7 @@ public class PrefetchedCacheLoader {
     @Autowired
     private CertificationIdManager certIdManager;
     @Autowired
-    private CertificationBodyDAO certificationBodyDAO;
-    @Autowired
-    private CQMCriterionDAO cqmCriterionDAO;
-    @Autowired
-    private CertificationCriterionDAO certificationCriterionDAO;
-    @Autowired
-    private CertificationEditionDAO certificationEditionDAO;
-    @Autowired
-    private CertificationStatusDAO certificationStatusDao;
+    private SearchMenuManager searchManager;
 
     @Transactional
     @CacheEvict(value = CacheNames.PREFETCHED_COLLECTIONS_LISTINGS, beforeInvocation = true, allEntries = true)
@@ -44,7 +34,7 @@ public class PrefetchedCacheLoader {
     public List<CertifiedProductFlatSearchResult> loadPrefetchedListingCollection() {
         LOGGER.info("Loading prefetched listings collection");
         List<CertifiedProductFlatSearchResult> results = certifiedProductSearchDao.getAllCertifiedProducts();
-        LOGGER.info("Completed database call to get all listings.");
+        LOGGER.info("Completed loading all listings.");
         return results;
     }
 
@@ -54,7 +44,7 @@ public class PrefetchedCacheLoader {
     public List<SimpleCertificationId> loadPrefetchedCertificationIds() {
         LOGGER.info("Loading prefetched certification IDs");
         List<SimpleCertificationId> results =  certIdManager.getAll();
-        LOGGER.info("Completed database call to get all certification IDs.");
+        LOGGER.info("Completed loading all certification IDs.");
         return results;
     }
 
@@ -64,21 +54,27 @@ public class PrefetchedCacheLoader {
     public List<SimpleCertificationId> loadPrefetchedCertificationIdsWithProducts() {
         LOGGER.info("Loading prefetched certification IDs with products");
         List<SimpleCertificationId> results = certIdManager.getAllWithProducts();
-        LOGGER.info("Completed database call to get all certification IDs with products.");
+        LOGGER.info("Completed loading all certification IDs with products.");
         return results;
     }
 
-    //TODO: search options
-//    searchMenuManager.getCertBodyNames();
-//    searchMenuManager.getEditionNames(false);
-//    searchMenuManager.getEditionNames(true);
-//    searchMenuManager.getCertificationStatuses();
-//    searchMenuManager.getPracticeTypeNames();
-//    searchMenuManager.getClassificationNames();
-//    searchMenuManager.getProductNames();
-//    searchMenuManager.getDeveloperNames();
-//    searchMenuManager.getCQMCriterionNumbers(false);
-//    searchMenuManager.getCQMCriterionNumbers(true);
-//    searchMenuManager.getCertificationCriterionNumbers(false);
-//    searchMenuManager.getCertificationCriterionNumbers(true);
+    @Transactional
+    @CacheEvict(value = CacheNames.PREFETCHED_PRODUCT_NAMES, beforeInvocation = true, allEntries = true)
+    @Cacheable(CacheNames.PREFETCHED_PRODUCT_NAMES)
+    public Set<KeyValueModelStatuses> loadPrefetchedProductNames() {
+        LOGGER.info("Loading prefetched product names");
+        Set<KeyValueModelStatuses> results = searchManager.getProductNames();
+        LOGGER.info("Completed loading product names.");
+        return results;
+    }
+
+    @Transactional
+    @CacheEvict(value = CacheNames.PREFETCHED_DEVELOPER_NAMES, beforeInvocation = true, allEntries = true)
+    @Cacheable(CacheNames.PREFETCHED_DEVELOPER_NAMES)
+    public Set<KeyValueModelStatuses> loadPrefetchedDeveloperNames() {
+        LOGGER.info("Loading prefetched developer names");
+        Set<KeyValueModelStatuses> results = searchManager.getDeveloperNames();
+        LOGGER.info("Completed loading developer names.");
+        return results;
+    }
 }

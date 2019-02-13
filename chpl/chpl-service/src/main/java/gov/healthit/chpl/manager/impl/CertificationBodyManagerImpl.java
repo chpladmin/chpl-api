@@ -140,7 +140,6 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 
     @Transactional
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    @CacheEvict(CacheNames.CERT_BODY_NAMES)
     public CertificationBodyDTO retire(final CertificationBodyDTO acb) throws EntityRetrievalException,
     JsonProcessingException, EntityCreationException, IllegalArgumentException, SchedulerException, ValidationException {
         Date now = new Date();
@@ -162,7 +161,6 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 
     @Transactional
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    @CacheEvict(CacheNames.CERT_BODY_NAMES)
     public CertificationBodyDTO unretire(final Long acbId) throws EntityRetrievalException, JsonProcessingException,
     EntityCreationException, UpdateCertifiedBodyException {
         CertificationBodyDTO result = null;

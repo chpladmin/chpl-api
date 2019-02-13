@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.CacheRefreshListener;
-import gov.healthit.chpl.caching.CertIdsCacheUpdater;
+import gov.healthit.chpl.caching.updater.CertIdsCacheUpdater;
 import gov.healthit.chpl.domain.SimpleCertificationId;
 import gov.healthit.chpl.dto.CertificationIdDTO;
 import gov.healthit.chpl.util.PropertyUtil;

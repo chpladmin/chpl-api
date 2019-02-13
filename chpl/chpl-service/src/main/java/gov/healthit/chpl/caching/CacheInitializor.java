@@ -50,7 +50,6 @@ public class CacheInitializor {
         caches.add(CacheNames.ALL_CERT_IDS);
         caches.add(CacheNames.ALL_CERT_IDS_WITH_PRODUCTS);
         //all below caches make up the search options
-        caches.add(CacheNames.CERT_BODY_NAMES);
         caches.add(CacheNames.EDITION_NAMES);
         caches.add(CacheNames.CERTIFICATION_STATUSES);
         caches.add(CacheNames.PRACTICE_TYPE_NAMES);

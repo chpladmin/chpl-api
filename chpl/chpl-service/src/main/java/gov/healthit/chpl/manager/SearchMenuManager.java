@@ -14,6 +14,7 @@ import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.FuzzyChoices;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
+import gov.healthit.chpl.domain.SearchOptions;
 import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
@@ -39,8 +40,10 @@ public interface SearchMenuManager {
 
     Set<KeyValueModel> getPracticeTypeNames();
 
+    Set<KeyValueModelStatuses> getProductNamesCached();
     Set<KeyValueModelStatuses> getProductNames();
 
+    Set<KeyValueModelStatuses> getDeveloperNamesCached();
     Set<KeyValueModelStatuses> getDeveloperNames();
 
     Set<CertificationBody> getCertBodyNames();
@@ -90,5 +93,7 @@ public interface SearchMenuManager {
     Set<CertificationCriterion> getCertificationCriterion();
 
     Set<DescriptiveModel> getCQMCriterionNumbers(Boolean simple);
+
+    SearchOptions getSearchOptions(Boolean simple) throws EntityRetrievalException;
 
 }

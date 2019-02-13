@@ -37,7 +37,6 @@ public class ChplTestCacheConfig {
         net.sf.ehcache.CacheManager backingManager = cacheManager.getCacheManager();
         backingManager.addCacheIfAbsent(createCache(CacheNames.ALL_DEVELOPERS));
         backingManager.addCacheIfAbsent(createCache(CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED));
-        backingManager.addCacheIfAbsent(createCache(CacheNames.CERT_BODY_NAMES));
         backingManager.addCacheIfAbsent(createCache(CacheNames.CERTIFICATION_CRITERION_NUMBERS));
         backingManager.addCacheIfAbsent(createCache(CacheNames.CERTIFICATION_CRITERION_WITH_EDITIONS));
         backingManager.addCacheIfAbsent(createCache(CacheNames.CERTIFICATION_STATUSES));
@@ -63,13 +62,16 @@ public class ChplTestCacheConfig {
         backingManager.addCacheIfAbsent(createCache(CacheNames.PREFETCHED_COLLECTIONS_LISTINGS));
         backingManager.addCacheIfAbsent(createCache(CacheNames.PREFETCHED_ALL_CERT_IDS));
         backingManager.addCacheIfAbsent(createCache(CacheNames.PREFETCHED_ALL_CERT_IDS_WITH_PRODUCTS));
+        backingManager.addCacheIfAbsent(createCache(CacheNames.PREFETCHED_PRODUCT_NAMES));
+        backingManager.addCacheIfAbsent(createCache(CacheNames.PREFETCHED_DEVELOPER_NAMES));
 
         return cacheManager;
     }
 
-    private Cache createCache(String name) {
+    private Cache createCache(final String name) {
         int maxEntriesLocalHeap = (name.equals(CacheNames.COLLECTIONS_LISTINGS)
-                || name.equals(CacheNames.PREFETCHED_COLLECTIONS_LISTINGS)) ? MAX_ENTRIES_LOCAL_HEAP_LISTING_COLLECTION : MAX_ENTRIES_LOCAL_HEAP;
+                || name.equals(CacheNames.PREFETCHED_COLLECTIONS_LISTINGS))
+                    ? MAX_ENTRIES_LOCAL_HEAP_LISTING_COLLECTION : MAX_ENTRIES_LOCAL_HEAP;
         Cache cache = new Cache(
                 new CacheConfiguration(name, maxEntriesLocalHeap)
                   .memoryStoreEvictionPolicy(MemoryStoreEvictionPolicy.LFU)

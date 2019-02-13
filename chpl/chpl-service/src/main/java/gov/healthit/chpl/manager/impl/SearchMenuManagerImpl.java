@@ -50,6 +50,7 @@ import gov.healthit.chpl.domain.FuzzyChoices;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.NonconformityType;
+import gov.healthit.chpl.domain.SearchOptions;
 import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;
 import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
 import gov.healthit.chpl.domain.SurveillanceRequirementType;
@@ -255,48 +256,73 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
         return practiceTypeNames;
     }
 
+    /**
+     * Get all product names.
+     * Users of this class should call this method to get the product names
+     * and statuses, which should always be returned quickly from the cache.
+     */
     @Transactional
     @Override
     @Cacheable(CacheNames.PRODUCT_NAMES)
-    public Set<KeyValueModelStatuses> getProductNames() {
+    public Set<KeyValueModelStatuses> getProductNamesCached() {
+        return getProductNames();
+    }
 
+    /**
+     * This method gets all the product names but does
+     * not cache the result. This method should only be used for
+     * filling in the pre-fetched cache and is here to avoid duplicating
+     * manager logic elsewhere.
+     */
+    @Transactional
+    @Override
+    public Set<KeyValueModelStatuses> getProductNames() {
         List<ProductDTO> productDTOs = this.productDAO.findAll();
         Set<KeyValueModelStatuses> productNames = new HashSet<KeyValueModelStatuses>();
-
         for (ProductDTO dto : productDTOs) {
             productNames.add(new KeyValueModelStatuses(dto.getId(), dto.getName(), dto.getStatuses()));
         }
-
         return productNames;
     }
 
+    /**
+     * Get all developer names.
+     * Users of this class should call this method to get the developer names
+     * and statuses, which should always be returned quickly from the cache.
+     */
     @Transactional
     @Override
     @Cacheable(CacheNames.DEVELOPER_NAMES)
-    public Set<KeyValueModelStatuses> getDeveloperNames() {
+    public Set<KeyValueModelStatuses> getDeveloperNamesCached() {
+        return getDeveloperNames();
+    }
 
+    /**
+     * This method gets all the developer names but does
+     * not cache the result. This method should only be used for
+     * filling in the pre-fetched cache and is here to avoid duplicating
+     * manager logic elsewhere.
+     */
+    @Transactional
+    @Override
+    public Set<KeyValueModelStatuses> getDeveloperNames() {
         List<DeveloperDTO> developerDTOs = this.developerDAO.findAll();
         Set<KeyValueModelStatuses> developerNames = new HashSet<KeyValueModelStatuses>();
-
         for (DeveloperDTO dto : developerDTOs) {
             developerNames.add(new KeyValueModelStatuses(dto.getId(), dto.getName(), dto.getStatuses()));
         }
-
         return developerNames;
     }
 
     @Transactional
     @Override
-    @Cacheable(CacheNames.CERT_BODY_NAMES)
     public Set<CertificationBody> getCertBodyNames() {
-
         List<CertificationBodyDTO> dtos = this.certificationBodyDAO.findAll();
         Set<CertificationBody> acbNames = new HashSet<CertificationBody>();
 
         for (CertificationBodyDTO dto : dtos) {
             acbNames.add(new CertificationBody(dto));
         }
-
         return acbNames;
     }
 
@@ -632,5 +658,28 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
             criterionNames.add(new DescriptiveModel(dto.getId(), idNumber, dto.getTitle()));
         }
         return criterionNames;
+    }
+
+    @Override
+    public SearchOptions getSearchOptions(final Boolean simple) throws EntityRetrievalException {
+        SearchOptions searchOptions = new SearchOptions();
+        //the following calls contain data that could possibly change
+        //without the system rebooting so we need to make sure to
+        //keep their cached data up-to-date
+        searchOptions.setProductNames(getProductNamesCached());
+        searchOptions.setDeveloperNames(getDeveloperNamesCached());
+        //acb names can change but there are so few that it's fine to not cache them
+        searchOptions.setCertBodyNames(getCertBodyNames());
+
+        //the following calls will be cached and their data
+        //will never change without the system being rebooted
+        //so we do not need to worry about re-getting the data
+        searchOptions.setEditions(getEditionNames(simple));
+        searchOptions.setCertificationStatuses(getCertificationStatuses());
+        searchOptions.setPracticeTypeNames(getPracticeTypeNames());
+        searchOptions.setProductClassifications(getClassificationNames());
+        searchOptions.setCqmCriterionNumbers(getCQMCriterionNumbers(simple));
+        searchOptions.setCertificationCriterionNumbers(getCertificationCriterionNumbers(simple));
+        return searchOptions;
     }
 }

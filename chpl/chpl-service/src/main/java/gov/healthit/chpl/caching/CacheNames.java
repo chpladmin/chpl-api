@@ -8,7 +8,6 @@ public final class CacheNames {
     public static final String ALL_DEVELOPERS = "allDevelopers";
     public static final String ALL_DEVELOPERS_INCLUDING_DELETED = "allDevelopersIncludingDeleted";
     public static final String JOB_TYPES = "jobTypes";
-    public static final String CERT_BODY_NAMES = "certBodyNames";
     public static final String EDITION_NAMES = "editionNames";
     public static final String CERTIFICATION_STATUSES = "certificationStatuses";
     public static final String PRACTICE_TYPE_NAMES = "practiceTypeNames";
@@ -34,13 +33,6 @@ public final class CacheNames {
     public static final String PREFETCHED_COLLECTIONS_LISTINGS = "prefetchedListingCollection";
     public static final String PREFETCHED_ALL_CERT_IDS = "prefetchedAllCertIds";
     public static final String PREFETCHED_ALL_CERT_IDS_WITH_PRODUCTS = "prefetchedAllCertIdsWithProducts";
-    public static final String PREFETCHED_CERT_BODY_NAMES = "prefetchedCertBodyNames";
-    public static final String PREFETCHED_EDITION_NAMES = "prefetchedEditionNames";
-    public static final String PREFETCHED_CERTIFICATION_STATUSES = "prefetchedCertificationStatuses";
-    public static final String PREFETCHED_PRACTICE_TYPE_NAMES = "prefetchedPracticeTypeNames";
-    public static final String PREFETCHED_CLASSIFICATION_NAMES = "prefetchedClassificationNames";
     public static final String PREFETCHED_PRODUCT_NAMES = "prefetchedProductNames";
     public static final String PREFETCHED_DEVELOPER_NAMES = "prefetchedDeveloperNames";
-    public static final String PREFETCHED_CQM_CRITERION_NAMES = "prefetchedCqmCriterionNames";
-    public static final String PREFETCHED_CERTIFICATION_CRITERION_NUMBERS = "prefetchedCertificationCriterionNumbers";
 }

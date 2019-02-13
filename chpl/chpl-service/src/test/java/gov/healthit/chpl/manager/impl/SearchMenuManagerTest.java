@@ -89,32 +89,16 @@ public class SearchMenuManagerTest {
     @Transactional
     @Rollback(true)
     @Test
-    public void testGetCertBodyNamesCachesData()
+    public void testGetCertBodyNames()
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
-        final int maxDuration = 100;
         long startTime = System.currentTimeMillis();
         Set<CertificationBody> results = searchMenuManager.getCertBodyNames();
-        // certBodyNames should now be cached
         long endTime = System.currentTimeMillis();
         long timeLength = endTime - startTime;
         double elapsedSecs = timeLength / MILLIS_TO_SECONDS;
-
         assertTrue("Returned " + results.size() + " certBodyNames but should return more than 0", results.size() > 0);
-
         System.out.println("getCertBodyNames returned " + results.size() + " total certBodyNames.");
         System.out.println("getCertBodyNames completed in  " + timeLength + " millis or " + elapsedSecs + " seconds");
-
-        // now compare cached time vs non-cached time
-        startTime = System.currentTimeMillis();
-        results = searchMenuManager.getCertBodyNames();
-        endTime = System.currentTimeMillis();
-        timeLength = endTime - startTime;
-        elapsedSecs = timeLength / MILLIS_TO_SECONDS;
-        System.out.println("getCertBodyNames returned " + results.size() + " total certBodyNames.");
-        System.out.println("getCertBodyNames completed in  " + timeLength + " millis or " + elapsedSecs + " seconds");
-
-        assertTrue("getCertBodyNames should complete within 100 ms but took " + timeLength + " millis or " + elapsedSecs
-                + " seconds", timeLength < maxDuration);
     }
 
     /**
@@ -275,7 +259,7 @@ public class SearchMenuManagerTest {
     public void test_getProductNames_CachesData()
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         long startTime = System.currentTimeMillis();
-        Set<KeyValueModelStatuses> results = searchMenuManager.getProductNames();
+        Set<KeyValueModelStatuses> results = searchMenuManager.getProductNamesCached();
         // getProductNames should now be cached
         long endTime = System.currentTimeMillis();
         long timeLength = endTime - startTime;
@@ -288,7 +272,7 @@ public class SearchMenuManagerTest {
 
         // now compare cached time vs non-cached time
         startTime = System.currentTimeMillis();
-        results = searchMenuManager.getProductNames();
+        results = searchMenuManager.getProductNamesCached();
         endTime = System.currentTimeMillis();
         timeLength = endTime - startTime;
         elapsedSecs = timeLength / 1000.0;
@@ -308,7 +292,7 @@ public class SearchMenuManagerTest {
     public void test_getDeveloperNames_CachesData()
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         long startTime = System.currentTimeMillis();
-        Set<KeyValueModelStatuses> results = searchMenuManager.getDeveloperNames();
+        Set<KeyValueModelStatuses> results = searchMenuManager.getDeveloperNamesCached();
         // getDeveloperNames should now be cached
         long endTime = System.currentTimeMillis();
         long timeLength = endTime - startTime;
@@ -322,7 +306,7 @@ public class SearchMenuManagerTest {
 
         // now compare cached time vs non-cached time
         startTime = System.currentTimeMillis();
-        results = searchMenuManager.getDeveloperNames();
+        results = searchMenuManager.getDeveloperNamesCached();
         endTime = System.currentTimeMillis();
         timeLength = endTime - startTime;
         elapsedSecs = timeLength / 1000.0;
@@ -441,7 +425,7 @@ public class SearchMenuManagerTest {
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         long getDeveloperNamesStartTime = System.currentTimeMillis();
-        Set<KeyValueModelStatuses> results = searchMenuManager.getDeveloperNames();
+        Set<KeyValueModelStatuses> results = searchMenuManager.getDeveloperNamesCached();
         long getDeveloperNamesEndTime = System.currentTimeMillis();
         long getDeveloperNamesTimeLength = getDeveloperNamesEndTime - getDeveloperNamesStartTime;
         double getDeveloperNamesElapsedSeconds = getDeveloperNamesTimeLength / 1000.0;
@@ -471,7 +455,7 @@ public class SearchMenuManagerTest {
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         long getProductNamesStartTime = System.currentTimeMillis();
-        Set<KeyValueModelStatuses> results = searchMenuManager.getProductNames();
+        Set<KeyValueModelStatuses> results = searchMenuManager.getProductNamesCached();
         long getProductNamesEndTime = System.currentTimeMillis();
         long getProductNamesTimeLength = getProductNamesEndTime - getProductNamesStartTime;
         double getProductNamesElapsedSeconds = getProductNamesTimeLength / 1000.0;
@@ -503,7 +487,7 @@ public class SearchMenuManagerTest {
     public void test_getDeveloperNames_ReturnsValidStatusesObject()
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        Set<KeyValueModelStatuses> results = searchMenuManager.getDeveloperNames();
+        Set<KeyValueModelStatuses> results = searchMenuManager.getDeveloperNamesCached();
         for (KeyValueModelStatuses result : results) {
             Statuses status = result.getStatuses();
 
@@ -539,7 +523,7 @@ public class SearchMenuManagerTest {
     public void test_getProductNames_ReturnsValidStatusesObject()
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        Set<KeyValueModelStatuses> results = searchMenuManager.getProductNames();
+        Set<KeyValueModelStatuses> results = searchMenuManager.getProductNamesCached();
         for (KeyValueModelStatuses result : results) {
             Statuses status = result.getStatuses();
 

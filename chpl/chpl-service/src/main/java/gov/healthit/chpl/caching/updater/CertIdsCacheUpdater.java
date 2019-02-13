@@ -1,4 +1,4 @@
-package gov.healthit.chpl.caching;
+package gov.healthit.chpl.caching.updater;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.caching.CacheReplacer;
+import gov.healthit.chpl.caching.PrefetchedCacheLoader;
 import net.sf.ehcache.CacheManager;
 
 @Component

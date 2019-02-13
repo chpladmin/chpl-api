@@ -40,7 +40,7 @@ import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.FuzzyChoices;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
-import gov.healthit.chpl.domain.PopulateSearchOptions;
+import gov.healthit.chpl.domain.SearchOptions;
 import gov.healthit.chpl.domain.SearchOption;
 import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
 import gov.healthit.chpl.domain.TestFunctionality;
@@ -881,7 +881,7 @@ public class SearchViewController {
     @RequestMapping(value = "/data/products", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody Set<KeyValueModelStatuses> getProductNames() {
-        return searchMenuManager.getProductNames();
+        return searchMenuManager.getProductNamesCached();
     }
 
     @ApiOperation(value = "Get all possible developer names in the CHPL",
@@ -889,7 +889,7 @@ public class SearchViewController {
     @RequestMapping(value = "/data/developers", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody Set<KeyValueModelStatuses> getDeveloperNames() {
-        return searchMenuManager.getDeveloperNames();
+        return searchMenuManager.getDeveloperNamesCached();
     }
 
     @ApiOperation(value = "Get all possible ACBs in the CHPL",
@@ -1140,22 +1140,11 @@ public class SearchViewController {
             notes = "This returns all of the other /data/{something} results in one single response.")
     @RequestMapping(value = "/data/search_options", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
-    public @ResponseBody PopulateSearchOptions getPopulateSearchData(
+    public @ResponseBody SearchOptions getSearchOptions(
             @RequestParam(value = "simple", required = false, defaultValue = "false") final Boolean simple)
                     throws EntityRetrievalException {
 
-        PopulateSearchOptions searchOptions = new PopulateSearchOptions();
-        searchOptions.setCertBodyNames(searchMenuManager.getCertBodyNames());
-        searchOptions.setEditions(searchMenuManager.getEditionNames(simple));
-        searchOptions.setCertificationStatuses(searchMenuManager.getCertificationStatuses());
-        searchOptions.setPracticeTypeNames(searchMenuManager.getPracticeTypeNames());
-        searchOptions.setProductClassifications(searchMenuManager.getClassificationNames());
-        searchOptions.setProductNames(searchMenuManager.getProductNames());
-        searchOptions.setDeveloperNames(searchMenuManager.getDeveloperNames());
-        searchOptions.setCqmCriterionNumbers(searchMenuManager.getCQMCriterionNumbers(simple));
-        searchOptions.setCertificationCriterionNumbers(searchMenuManager.getCertificationCriterionNumbers(simple));
-
-        return searchOptions;
+        return searchMenuManager.getSearchOptions(simple);
     }
 
     @ApiOperation(value = "Get all developer decertifications in the CHPL",

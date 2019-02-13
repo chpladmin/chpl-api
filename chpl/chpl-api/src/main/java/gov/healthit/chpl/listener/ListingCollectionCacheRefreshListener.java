@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.caching.CacheRefreshListener;
-import gov.healthit.chpl.caching.ListingsCollectionCacheUpdater;
+import gov.healthit.chpl.caching.updater.ListingsCollectionCacheUpdater;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
