@@ -32,15 +32,18 @@ import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.auth.CHPLAuthenticationSecurityTestConfig.class })
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
+@TestExecutionListeners({
+        DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
+})
 @DatabaseSetup("classpath:data/testData.xml")
 public class UserAuthenticatorTest {
 
-    @Autowired private Environment env;
+    @Autowired
+    private Environment env;
 
     @Autowired
     private Authenticator authenticator;
@@ -50,8 +53,7 @@ public class UserAuthenticatorTest {
 
     @Test
     public void testGetDTOFromCredentials()
-            throws BadCredentialsException, AccountStatusException, UserRetrievalException{
-
+            throws BadCredentialsException, AccountStatusException, UserRetrievalException {
 
         LoginCredentials credentials = new LoginCredentials();
         credentials.setPassword("test");
@@ -62,9 +64,8 @@ public class UserAuthenticatorTest {
     }
 
     @Test
-    public void testGetJWTFromUserDTO()
-            throws BadCredentialsException, AccountStatusException, UserRetrievalException,
-            JWTCreationException, JWTValidationException{
+    public void testGetJWTFromUserDTO() throws BadCredentialsException, AccountStatusException, UserRetrievalException,
+            JWTCreationException, JWTValidationException {
 
         LoginCredentials credentials = new LoginCredentials();
         credentials.setPassword("test");
@@ -80,9 +81,8 @@ public class UserAuthenticatorTest {
     }
 
     @Test
-    public void testGetJWTFromCredentials()
-            throws BadCredentialsException, AccountStatusException, UserRetrievalException,
-            JWTCreationException, JWTValidationException{
+    public void testGetJWTFromCredentials() throws BadCredentialsException, AccountStatusException,
+            UserRetrievalException, JWTCreationException, JWTValidationException {
 
         LoginCredentials credentials = new LoginCredentials();
         credentials.setPassword("test");
@@ -95,9 +95,7 @@ public class UserAuthenticatorTest {
 
     }
 
-
-    public void testRefreshJWT()
-            throws JWTCreationException, JWTValidationException{
+    public void testRefreshJWT() throws JWTCreationException, JWTValidationException {
 
         JWTAuthenticatedUser adminUser;
         adminUser = new JWTAuthenticatedUser();

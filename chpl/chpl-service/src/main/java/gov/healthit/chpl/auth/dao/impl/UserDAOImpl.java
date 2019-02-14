@@ -1,6 +1,5 @@
 package gov.healthit.chpl.auth.dao.impl;
 
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,8 +27,11 @@ import gov.healthit.chpl.auth.entity.UserEntity;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.dao.UserCertificationBodyMapDAO;
+import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
-@Repository(value="userDAO")
+@Repository(value = "userDAO")
 public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
     private static final Logger LOGGER = LogManager.getLogger(UserDAOImpl.class);
 
@@ -39,6 +41,9 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
     @Autowired
     private UserContactDAO userContactDAO;
 
+    @Autowired
+    private UserCertificationBodyMapDAO userCertificationBodyMapDAO;
+
     @Override
     @Transactional
     public UserDTO create(final UserDTO user, final String encodedPassword) throws UserCreationException {
@@ -46,7 +51,8 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
         UserEntity userEntity = null;
         try {
             userEntity = getEntityByName(user.getSubjectName());
-        } catch (UserRetrievalException ignore) { }
+        } catch (UserRetrievalException ignore) {
+        }
 
         if (userEntity != null) {
             throw new UserCreationException("user name: " + user.getSubjectName() + " already exists.");
@@ -76,7 +82,8 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
             contact.setLastModifiedUser(Util.getCurrentUser().getId());
             contact.setLastModifiedDate(new Date());
             contact.setDeleted(false);
-            contact.setSignatureDate(null); //null for new user, must confirm email to get it filled in
+            contact.setSignatureDate(null); // null for new user, must confirm
+                                            // email to get it filled in
 
             userContactDAO.create(contact);
             userEntity.setContact(contact);
@@ -85,7 +92,6 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 
         return new UserDTO(userEntity);
     }
-
 
     @Override
     @Transactional
@@ -113,7 +119,6 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
         return new UserDTO(userEntity);
     }
 
-
     @Override
     @Transactional
     public void delete(final String uname) throws UserRetrievalException {
@@ -126,9 +131,18 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
             throw new UserRetrievalException("Could not find user with name " + uname);
         }
 
+        // Delete the user / acb relations if it exists
+        List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByUserId(toDelete.getId());
+        for (UserCertificationBodyMapDTO dto : dtos) {
+            try {
+                userCertificationBodyMapDAO.delete(dto);
+            } catch (EntityRetrievalException e) {
+                throw new UserRetrievalException(e.getMessage());
+            }
+        }
+
         delete(toDelete);
     }
-
 
     @Override
     @Transactional
@@ -146,12 +160,12 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
     }
 
     private void delete(final UserEntity toDelete) {
-        //delete the contact
+        // delete the contact
         if (toDelete.getContact() != null) {
             userContactDAO.delete(toDelete.getContact());
         }
 
-        //delete the user
+        // delete the user
         toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
         toDelete.setLastModifiedDate(new Date());
         toDelete.setDeleted(true);
@@ -193,10 +207,8 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
     public UserDTO findUserByNameAndEmail(final String username, final String email) {
         UserDTO foundUser = null;
 
-        String userQuery = "from UserEntity u"
-                + " where (NOT u.deleted = true) "
-                + " AND (u.subjectName = :subjectName) "
-                + " AND (u.contact.email = :email)";
+        String userQuery = "from UserEntity u" + " where (NOT u.deleted = true) "
+                + " AND (u.subjectName = :subjectName) " + " AND (u.contact.email = :email)";
 
         Query query = entityManager.createQuery(userQuery, UserEntity.class);
         query.setParameter("subjectName", username);
@@ -213,12 +225,9 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
     public UserDTO findUser(final UserDTO toSearch) {
         UserDTO foundUser = null;
 
-        String userQuery = "from UserEntity u"
-                + " where (NOT u.deleted = true) "
-                + " AND (u.subjectName = :subjectName) "
-                + " AND (u.contact.fullName = :fullName)"
-                + " AND (u.contact.friendlyName = :friendlyName)"
-                + " AND (u.contact.email = :email)"
+        String userQuery = "from UserEntity u" + " where (NOT u.deleted = true) "
+                + " AND (u.subjectName = :subjectName) " + " AND (u.contact.fullName = :fullName)"
+                + " AND (u.contact.friendlyName = :friendlyName)" + " AND (u.contact.email = :email)"
                 + " AND (u.contact.phoneNumber = :phoneNumber)";
         if (toSearch.getTitle() != null) {
             userQuery += " AND (u.contact.title = :title)";
@@ -257,8 +266,8 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 
     private List<UserEntity> getAllEntities() {
 
-        List<UserEntity> result = entityManager.createQuery("from UserEntity where (NOT deleted = true) ",
-                UserEntity.class).getResultList();
+        List<UserEntity> result = entityManager
+                .createQuery("from UserEntity where (NOT deleted = true) ", UserEntity.class).getResultList();
 
         return result;
     }
@@ -267,14 +276,14 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 
         UserEntity user = null;
 
-        Query query = entityManager.createQuery("from UserEntity where (NOT deleted = true) "
-                + "AND (user_id = :userid) ", UserEntity.class);
+        Query query = entityManager.createQuery(
+                "from UserEntity where (NOT deleted = true) " + "AND (user_id = :userid) ", UserEntity.class);
         query.setParameter("userid", userId);
         List<UserEntity> result = query.getResultList();
 
         if (result == null || result.size() == 0) {
-            String msg = String.format(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("user.notFound"), LocaleContextHolder.getLocale()));
+            String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("user.notFound"),
+                    LocaleContextHolder.getLocale()));
             throw new UserRetrievalException(msg);
         } else if (result.size() > 1) {
             throw new UserRetrievalException("Data error. Duplicate user id in database.");
@@ -286,18 +295,17 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
         return result.get(0);
     }
 
-
     private UserEntity getEntityByName(final String uname) throws UserRetrievalException {
         UserEntity user = null;
 
-        Query query = entityManager.createQuery("from UserEntity where ((NOT deleted = true) "
-                + "AND (user_name = (:uname))) ", UserEntity.class);
+        Query query = entityManager.createQuery(
+                "from UserEntity where ((NOT deleted = true) " + "AND (user_name = (:uname))) ", UserEntity.class);
         query.setParameter("uname", uname);
         List<UserEntity> result = query.getResultList();
 
         if (result == null || result.size() == 0) {
-            String msg = String.format(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("user.notFound"), LocaleContextHolder.getLocale()));
+            String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("user.notFound"),
+                    LocaleContextHolder.getLocale()));
             throw new UserRetrievalException(msg);
         } else if (result.size() > 1) {
             throw new UserRetrievalException("Data error. Duplicate user name in database.");
@@ -349,14 +357,14 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 
     /**
      * Get Users with permission.
-     * @param permissionName the ROLE_SOMETHING that we care about
+     * 
+     * @param permissionName
+     *            the ROLE_SOMETHING that we care about
      * @return
      */
     @Override
     public List<UserDTO> getUsersWithPermission(final String permissionName) {
-        String hql = "SELECT u "
-                + "FROM UserEntity u "
-                + "JOIN FETCH u.permissionMappings userPermissionMap "
+        String hql = "SELECT u " + "FROM UserEntity u " + "JOIN FETCH u.permissionMappings userPermissionMap "
                 + "JOIN FETCH userPermissionMap.permission permission "
                 + "WHERE permission.authority = :permissionName";
         Query query = entityManager.createQuery(hql);
@@ -373,8 +381,8 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 
     @Override
     @Transactional
-    public void removePermission(final String uname, final String authority) throws UserRetrievalException,
-    UserPermissionRetrievalException {
+    public void removePermission(final String uname, final String authority)
+            throws UserRetrievalException, UserPermissionRetrievalException {
         userPermissionDAO.deleteMapping(uname, authority);
     }
 

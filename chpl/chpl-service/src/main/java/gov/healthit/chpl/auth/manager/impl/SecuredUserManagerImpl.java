@@ -31,6 +31,7 @@ import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.permissions.Permissions;
 
 @Service
 public class SecuredUserManagerImpl implements SecuredUserManager {
@@ -46,6 +47,9 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
 
     @Autowired
     private MutableAclService mutableAclService;
+
+    @Autowired
+    private Permissions permissions;
 
     @Override
     @Transactional
@@ -181,7 +185,7 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
 
     @Override
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
-            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).REMOVE_ROLE, #user)")
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).REMOVE_ROLE)")
     public void removeRole(final String userName, final String role)
             throws UserManagementException, UserRetrievalException, UserPermissionRetrievalException {
         if (role.equals(Authority.ROLE_ADMIN) || role.equals("ROLE_ACL_ADMIN") || role.equals("ROLE_ADMINISTRATOR")
@@ -194,7 +198,7 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
 
     @Override
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
-            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).REMOVE_ADMIN)")
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).REMOVE_ROLE_ADMIN)")
     public void removeAdmin(final String userName)
             throws UserPermissionRetrievalException, UserRetrievalException, UserManagementException {
         userDAO.removePermission(userName, Authority.ROLE_ADMIN);

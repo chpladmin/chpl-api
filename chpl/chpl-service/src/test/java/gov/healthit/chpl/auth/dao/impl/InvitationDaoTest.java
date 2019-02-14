@@ -32,78 +32,84 @@ import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.auth.CHPLAuthenticationSecurityTestConfig.class })
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
+@TestExecutionListeners({
+        DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
+})
 @DatabaseSetup("classpath:data/testData.xml")
 public class InvitationDaoTest {
 
-	@Autowired private InvitationDAO dao;
-	@Autowired private InvitationPermissionDAO permDao;
-	@Autowired private BCryptPasswordEncoder bCryptPasswordEncoder;
-	@Autowired private MutableAclService mutableAclService;
-	
-	private static final String ROLE_CHPL_ADMIN = "ROLE_ADMIN";
-	private static final String ROLE_ONC = "ROLE_ONC";
-	private static final String ROLE_ACB = "ROLE_ACB";
-	private static JWTAuthenticatedUser chplAdminUser;
-	private static JWTAuthenticatedUser acbAdminUser;
-	
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-		chplAdminUser = new JWTAuthenticatedUser();
-		chplAdminUser.setFullName("Administrator");
-		chplAdminUser.setId(-2L);
-		chplAdminUser.setFriendlyName("Administrator");
-		chplAdminUser.setSubjectName("admin");
-		chplAdminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
-	}
-	
-	@Test
-	@Transactional
-	public void testInviteChplAdmin() throws UserCreationException, UserRetrievalException {
-		SecurityContextHolder.getContext().setAuthentication(chplAdminUser);
+    @Autowired
+    private InvitationDAO dao;
+    @Autowired
+    private InvitationPermissionDAO permDao;
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Autowired
+    private MutableAclService mutableAclService;
 
-		String emailAddress = "katy.ekey@gmail.com";
-		String token = bCryptPasswordEncoder.encode(emailAddress);
-				
-		InvitationDTO testDto = new InvitationDTO();
-		testDto.setCreationDate(new Date());
-		testDto.setDeleted(false);
-		testDto.setEmail(emailAddress);
-		testDto.setInviteToken(token);
-		InvitationPermissionDTO permissionDto = new InvitationPermissionDTO();
-		permissionDto.setPermissionName(ROLE_CHPL_ADMIN);
-		permissionDto.setPermissionId(-2L);
+    private static final String ROLE_CHPL_ADMIN = "ROLE_ADMIN";
+    private static final String ROLE_ONC = "ROLE_ONC";
+    private static final String ROLE_ACB = "ROLE_ACB";
+    private static JWTAuthenticatedUser chplAdminUser;
+    private static JWTAuthenticatedUser acbAdminUser;
 
-		testDto = dao.create(testDto);
-		
-		assertNotNull(testDto.getId());
-		SecurityContextHolder.getContext().setAuthentication(null);
-	}
-	
-	@Test
-	@Transactional
-	public void testInviteOnc() throws UserCreationException, UserRetrievalException {
-		SecurityContextHolder.getContext().setAuthentication(chplAdminUser);
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        chplAdminUser = new JWTAuthenticatedUser();
+        chplAdminUser.setFullName("Administrator");
+        chplAdminUser.setId(-2L);
+        chplAdminUser.setFriendlyName("Administrator");
+        chplAdminUser.setSubjectName("admin");
+        chplAdminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+    }
 
-		String emailAddress = "dlucas@ainq.com";
-		String token = bCryptPasswordEncoder.encode(emailAddress);
-				
-		InvitationDTO testDto = new InvitationDTO();
-		testDto.setCreationDate(new Date());
-		testDto.setDeleted(false);
-		testDto.setEmail(emailAddress);
-		testDto.setInviteToken(token);
-		InvitationPermissionDTO permissionDto = new InvitationPermissionDTO();
-		permissionDto.setPermissionName(ROLE_ONC);
-		permissionDto.setPermissionId(-2L);
+    @Test
+    @Transactional
+    public void testInviteChplAdmin() throws UserCreationException, UserRetrievalException {
+        SecurityContextHolder.getContext().setAuthentication(chplAdminUser);
 
-		testDto = dao.create(testDto);
-		
-		assertNotNull(testDto.getId());
-		SecurityContextHolder.getContext().setAuthentication(null);
-	}
+        String emailAddress = "katy.ekey@gmail.com";
+        String token = bCryptPasswordEncoder.encode(emailAddress);
+
+        InvitationDTO testDto = new InvitationDTO();
+        testDto.setCreationDate(new Date());
+        testDto.setDeleted(false);
+        testDto.setEmail(emailAddress);
+        testDto.setInviteToken(token);
+        InvitationPermissionDTO permissionDto = new InvitationPermissionDTO();
+        permissionDto.setPermissionName(ROLE_CHPL_ADMIN);
+        permissionDto.setPermissionId(-2L);
+
+        testDto = dao.create(testDto);
+
+        assertNotNull(testDto.getId());
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    @Test
+    @Transactional
+    public void testInviteOnc() throws UserCreationException, UserRetrievalException {
+        SecurityContextHolder.getContext().setAuthentication(chplAdminUser);
+
+        String emailAddress = "dlucas@ainq.com";
+        String token = bCryptPasswordEncoder.encode(emailAddress);
+
+        InvitationDTO testDto = new InvitationDTO();
+        testDto.setCreationDate(new Date());
+        testDto.setDeleted(false);
+        testDto.setEmail(emailAddress);
+        testDto.setInviteToken(token);
+        InvitationPermissionDTO permissionDto = new InvitationPermissionDTO();
+        permissionDto.setPermissionName(ROLE_ONC);
+        permissionDto.setPermissionId(-2L);
+
+        testDto = dao.create(testDto);
+
+        assertNotNull(testDto.getId());
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
 }

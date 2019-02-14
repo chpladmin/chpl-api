@@ -1,6 +1,8 @@
 package gov.healthit.chpl.auth.manager;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,30 +18,31 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.auth.CHPLAuthenticationSecurityTestConfig.class })
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
+@TestExecutionListeners({
+        DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
+})
 @DatabaseSetup("classpath:data/testData.xml")
 public class SecuredUserManagerTest {
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-    
-	@Test
-	public void checkDifferentPasswordsWithSalt() {
-	    String pw = "katys123Password";
-	    String encodedPassword = bCryptPasswordEncoder.encode(pw);
-	    String encodedPassword2 = bCryptPasswordEncoder.encode(pw);
-	    System.out.println(encodedPassword);
-	    System.out.println(encodedPassword2);
-	    assertNotEquals(encodedPassword, encodedPassword2);
-	    
-	    assertTrue(bCryptPasswordEncoder.matches(pw, encodedPassword));
-	    assertTrue(bCryptPasswordEncoder.matches(pw, encodedPassword2));
-	    assertFalse(bCryptPasswordEncoder.matches("different123Password", encodedPassword2));
-	}
+
+    @Test
+    public void checkDifferentPasswordsWithSalt() {
+        String pw = "katys123Password";
+        String encodedPassword = bCryptPasswordEncoder.encode(pw);
+        String encodedPassword2 = bCryptPasswordEncoder.encode(pw);
+        System.out.println(encodedPassword);
+        System.out.println(encodedPassword2);
+        assertNotEquals(encodedPassword, encodedPassword2);
+
+        assertTrue(bCryptPasswordEncoder.matches(pw, encodedPassword));
+        assertTrue(bCryptPasswordEncoder.matches(pw, encodedPassword2));
+        assertFalse(bCryptPasswordEncoder.matches("different123Password", encodedPassword2));
+    }
 
 }

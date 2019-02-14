@@ -1419,7 +1419,10 @@
     <acl_sid id="2" principal="TRUE" sid="testUser2" />
     <acl_sid id="3" principal="TRUE" sid="testUser3" />
     <acl_sid id="4" principal="TRUE" sid="atlUser" />
-
+    <acl_sid id="5" principal="TRUE" sid="cmsStaffUser" />
+    <acl_sid id="6" principal="TRUE" sid="oncStaffUser" />
+    <acl_sid id="7" principal="TRUE" sid="oncAndAcb" />
+    
     <!-- user acls -->
     <acl_object_identity id="-2" object_id_class="1"
         object_id_identity="-2" owner_sid="-2" entries_inheriting="TRUE" />
@@ -1431,6 +1434,13 @@
         object_id_identity="3" owner_sid="3" entries_inheriting="TRUE" />
     <acl_object_identity id="11" object_id_class="1"
         object_id_identity="4" owner_sid="4" entries_inheriting="TRUE" />
+    <acl_object_identity id="14" object_id_class="1"
+        object_id_identity="5" owner_sid="5" entries_inheriting="TRUE" />
+	<acl_object_identity id="15" object_id_class="1"
+        object_id_identity="6" owner_sid="6" entries_inheriting="TRUE" />
+	<acl_object_identity id="16" object_id_class="1"
+        object_id_identity="7" owner_sid="7" entries_inheriting="TRUE" />
+	
 
     <!-- acb acls -->
     <acl_object_identity id="3" object_id_class="2"

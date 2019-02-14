@@ -2,7 +2,6 @@ package gov.healthit.chpl.auth.authentication;
 
 import static org.junit.Assert.assertEquals;
 
-import org.jose4j.jwt.consumer.InvalidJwtException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,9 @@ import gov.healthit.chpl.auth.jwt.JWTValidationException;
 import gov.healthit.chpl.auth.user.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.auth.CHPLAuthenticationSecurityTestConfig.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
 public class JWTUserConverterImplTest {
 
     @Autowired

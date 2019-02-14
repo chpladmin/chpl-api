@@ -6,7 +6,6 @@ import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
 @Component("securedUserGetByIdActionPermissions")
@@ -25,7 +24,7 @@ public class GetByIdActionPermissions extends ActionPermissions {
     // admin)")
     @Override
     public boolean hasAccess(Object obj) {
-        if (!(obj instanceof UserDTO)) {
+        if (!(obj instanceof Long)) {
             return false;
         } else {
             return getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()
