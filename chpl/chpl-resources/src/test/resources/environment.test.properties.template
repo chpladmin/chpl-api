@@ -10,6 +10,7 @@ keyLocation=C:\\CHPL\\keys\\JSONRsaJoseJWebKeyTest.txt
 jobThresholdDays=7
 maxActivityRangeInDays=500
 resetLinkExpirationTimeInHours=24
+authMaximumLoginAttempts=3
 
 enableCacheInitialization=true
 cacheClearTimeoutSecs=15
