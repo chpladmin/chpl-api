@@ -218,8 +218,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
             throw new EntityCreationException(msg);
         }
 
-        // determine if the status has been changed
-        // in most cases only allowed by ROLE_ADMIN but ROLE_ACB
+        // determine if the status has been changed in most cases only allowed by ROLE_ADMIN but ROLE_ACB
         // can change it to UnderCertificationBanByOnc
         boolean currentStatusChanged = !currDevStatus.getStatus().getStatusName()
                 .equals(newDevStatus.getStatus().getStatusName());
@@ -231,8 +230,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
             throw new EntityCreationException(msg);
         } else if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
                 && !newDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-            // if the developer is not active and not going to be active
-            // only its current status can be updated
+            // if the developer is not active and not going to be active only its current status can be updated
             updateStatusHistory(beforeDev, updatedDev);
         } else {
             /*
@@ -248,11 +246,8 @@ public class DeveloperManagerImpl implements DeveloperManager {
             if (beforeDev.getContact() != null && beforeDev.getContact().getId() != null) {
                 updatedDev.getContact().setId(beforeDev.getContact().getId());
             }
-            // if either the before or updated statuses are active and the user
-            // is
-            // ROLE_ADMIN
-            // OR if before status is active and user is not ROLE_ADMIN -
-            // proceed
+            // if either the before or updated statuses are active and the user is ROLE_ADMIN
+            // OR if before status is active and user is not ROLE_ADMIN - proceed
             if (((currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
                     || newDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()))
                     && (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()))
@@ -393,16 +388,14 @@ public class DeveloperManagerImpl implements DeveloperManager {
             beforeDevelopers.add(developerDao.getById(developerId));
         }
 
-        // Check to see if the merge will create any duplicate
-        // chplProductNumbers
+        // Check to see if the merge will create any duplicate chplProductNumbers
         List<DuplicateChplProdNumber> duplicateChplProdNumbers = getDuplicateChplProductNumbersBasedOnDevMerge(
                 developerIdsToMerge, developerToCreate.getDeveloperCode());
         if (duplicateChplProdNumbers.size() != 0) {
             throw new ValidationException(getDuplicateChplProductNumberErrorMessages(duplicateChplProdNumbers), null);
         }
 
-        // check for any non-active developers and throw an error if any are
-        // found
+        // check for any non-active developers and throw an error if any are found
         for (DeveloperDTO beforeDeveloper : beforeDevelopers) {
             DeveloperStatusEventDTO currDeveloperStatus = beforeDeveloper.getStatus();
             if (currDeveloperStatus == null || currDeveloperStatus.getStatus() == null) {
@@ -418,8 +411,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
             }
         }
 
-        // check if the transparency attestation for each developer is
-        // conflicting
+        // check if the transparency attestation for each developer is conflicting
         List<CertificationBodyDTO> allAcbs = acbManager.getAll();
         for (CertificationBodyDTO acb : allAcbs) {
             AttestationType transparencyAttestation = null;
@@ -516,10 +508,8 @@ public class DeveloperManagerImpl implements DeveloperManager {
 
         String newChplProductNumber = "";
 
-        // Hold the list of duplicate chpl prod nbrs {new, origA, origB} where
-        // "origA" and "origB" are the
-        // original chpl prod nbrs that would be duplicated during merge and
-        // "new" is chpl prod nbr that
+        // Hold the list of duplicate chpl prod nbrs {new, origA, origB} where "origA" and "origB" are the
+        // original chpl prod nbrs that would be duplicated during merge and "new" is chpl prod nbr that
         // "origA" and "origB" would be updated to
         List<DuplicateChplProdNumber> duplicatedChplProductNumbers = new ArrayList<DuplicateChplProdNumber>();
 
@@ -583,8 +573,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
                 || (original.getStatusEvents().size() != changed.getStatusEvents().size())) {
             hasChanged = true;
         } else {
-            // neither status history is null and they have the same size
-            // history arrays
+            // neither status history is null and they have the same size history arrays
             // so now check for any differences in the values of each
             for (DeveloperStatusEventDTO origStatusHistory : original.getStatusEvents()) {
                 boolean foundMatchInChanged = false;

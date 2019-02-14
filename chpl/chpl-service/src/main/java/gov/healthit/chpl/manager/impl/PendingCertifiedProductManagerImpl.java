@@ -93,8 +93,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
     }
 
     /**
-     * ROLE_ONC is allowed to see pending listings only for activity and no
-     * other times.
+     * ROLE_ONC is allowed to see pending listings only for activity and no other times.
      */
     @Override
     @Transactional(readOnly = true)
@@ -171,8 +170,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
             updateCertResults(pendingCpDto);
             validate(pendingCpDto);
         } catch (Exception ex) {
-            // something unexpected happened on upload
-            // make sure the user gets an appropriate error message
+            // something unexpected happened on upload make sure the user gets an appropriate error message
             EntityCreationException toThrow = new EntityCreationException(
                     "An unexpected error occurred. Please review the information in your upload file. The CHPL team has been notified.");
             toThrow.setStackTrace(ex.getStackTrace());

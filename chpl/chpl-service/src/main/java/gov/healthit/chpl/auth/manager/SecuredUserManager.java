@@ -28,14 +28,6 @@ public interface SecuredUserManager {
 
     public List<UserDTO> getUsersWithPermission(String permissionName);
 
-    // Not used publicly
-    // public void addAclPermission(UserDTO user, Sid recipient, Permission
-    // permission);
-
-    // Not used publicly
-    // public void deleteAclPermission(UserDTO user, Sid recipient, Permission
-    // permission);
-
     public void grantRole(String userName, String role)
             throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException;
 

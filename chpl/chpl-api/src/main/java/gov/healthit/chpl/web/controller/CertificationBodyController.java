@@ -252,17 +252,6 @@ public class CertificationBodyController {
                     roleNames.add(role.getAuthority());
                 }
 
-                //TODO: TMY - Do not believe this is necessary.  Make sure to re-analyze before PR
-                //List<Permission> permissions = acbManager.getPermissionsForUser(acb,
-                //        new PrincipalSid(user.getSubjectName()));
-                //List<String> acbPerm = new ArrayList<String>(permissions.size());
-                //for (Permission permission : permissions) {
-                //    ChplPermission perm = ChplPermission.fromPermission(permission);
-                //    if (perm != null) {
-                //        acbPerm.add(perm.toString());
-                //    }
-                //}
-
                 PermittedUser userInfo = new PermittedUser();
                 userInfo.setUser(new User(user));
                 //userInfo.setPermissions(acbPerm);

@@ -330,8 +330,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
         Boolean hasOncAdmin = resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc();
         Boolean hasAcbAdmin = resourcePermissions.isUserRoleAcbAdmin();
         if (StringUtils.isEmpty(surv.getAuthority())) {
-            // If user has ROLE_ADMIN and ROLE_ACB
-            // return 403
+            // If user has ROLE_ADMIN and ROLE_ACB return 403
             if (hasOncAdmin && hasAcbAdmin) {
                 String errorMsg = "Surveillance cannot be created by user having " + Authority.ROLE_ADMIN + " and "
                         + Authority.ROLE_ACB;
@@ -339,16 +338,13 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
                 throw new SurveillanceAuthorityAccessDeniedException(errorMsg);
             }
         } else {
-            // Cannot have surveillance authority as ROLE_ADMIN for user lacking
-            // ROLE_ADMIN
+            // Cannot have surveillance authority as ROLE_ADMIN for user lacking ROLE_ADMIN
             if (surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ADMIN) && !hasOncAdmin) {
                 String errorMsg = "User must have authority " + Authority.ROLE_ADMIN;
                 LOGGER.error(errorMsg);
                 throw new SurveillanceAuthorityAccessDeniedException(errorMsg);
             } else if (surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB)) {
-                // Cannot have surveillance authority as ACB for user lacking
-                // ONC
-                // and ACB roles
+                // Cannot have surveillance authority as ACB for user lacking ONC and ACB roles
                 if (!hasOncAdmin && !hasAcbAdmin) {
                     String errorMsg = "User must have ONC or ACB roles for a surveillance authority created by ACB";
                     LOGGER.error(errorMsg);

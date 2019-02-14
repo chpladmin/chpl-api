@@ -22,7 +22,6 @@ public class UserCertificationBodyMapDAOImpl extends BaseDAOImpl implements User
 
     @Override
     public UserCertificationBodyMapDTO create(UserCertificationBodyMapDTO dto) throws EntityRetrievalException {
-
         UserCertificationBodyMapEntity entity = new UserCertificationBodyMapEntity();
         entity = create(getUserCertificationBodyMapEntity(dto));
         return new UserCertificationBodyMapDTO(entity);
@@ -33,7 +32,6 @@ public class UserCertificationBodyMapDAOImpl extends BaseDAOImpl implements User
         UserCertificationBodyMapEntity entity = new UserCertificationBodyMapEntity();
         entity = update(getUserCertificationBodyMapEntity(dto));
         return new UserCertificationBodyMapDTO(entity);
-
     }
 
     public void delete(UserCertificationBodyMapDTO dto) throws EntityRetrievalException {
@@ -86,7 +84,6 @@ public class UserCertificationBodyMapDAOImpl extends BaseDAOImpl implements User
             return null;
         }
         return new UserCertificationBodyMapDTO(result.get(0));
-
     }
 
     private UserCertificationBodyMapEntity create(UserCertificationBodyMapEntity entity) {
@@ -126,7 +123,6 @@ public class UserCertificationBodyMapDAOImpl extends BaseDAOImpl implements User
         } else if (result.size() == 1) {
             entity = result.get(0);
         }
-
         return entity;
     }
 
@@ -160,7 +156,6 @@ public class UserCertificationBodyMapDAOImpl extends BaseDAOImpl implements User
         entity.setCertificationBody(getAcbEntityById(dto.getCertificationBody().getId()));
         entity.setUser(getUserEntityById(dto.getUser().getId()));
         entity.setRetired(dto.getRetired());
-
         return entity;
     }
 

@@ -135,25 +135,6 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
 
     }
 
-    // @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or
-    // hasPermission(#user, admin)")
-    // public void deleteAclPermission(final UserDTO user, final Sid recipient,
-    // final Permission permission) {
-    //
-    // ObjectIdentity oid = new ObjectIdentityImpl(UserDTO.class, user.getId());
-    // MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
-    //
-    // List<AccessControlEntry> entries = acl.getEntries();
-    //
-    // for (int i = 0; i < entries.size(); i++) {
-    // if (entries.get(i).getSid().equals(recipient) &&
-    // entries.get(i).getPermission().equals(permission)) {
-    // acl.deleteAce(i);
-    // }
-    // }
-    // mutableAclService.updateAcl(acl);
-    // }
-
     @Override
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GRANT_ROLE)")
