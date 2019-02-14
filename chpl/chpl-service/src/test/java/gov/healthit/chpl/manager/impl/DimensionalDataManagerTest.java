@@ -51,9 +51,9 @@ import gov.healthit.chpl.manager.DimensionalDataManager;
     TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
 })
 @DatabaseSetup("classpath:data/testData.xml")
-public class SearchMenuManagerTest {
+public class DimensionalDataManagerTest {
     @Autowired
-    private DimensionalDataManager searchMenuManager;
+    private DimensionalDataManager dimensionalDataManager;
 
     private static JWTAuthenticatedUser adminUser;
     private static JWTAuthenticatedUser testUser3;
@@ -92,7 +92,7 @@ public class SearchMenuManagerTest {
     public void testGetCertBodyNames()
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         long startTime = System.currentTimeMillis();
-        Set<CertificationBody> results = searchMenuManager.getCertBodyNames();
+        Set<CertificationBody> results = dimensionalDataManager.getCertBodyNames();
         long endTime = System.currentTimeMillis();
         long timeLength = endTime - startTime;
         double elapsedSecs = timeLength / MILLIS_TO_SECONDS;
@@ -114,7 +114,7 @@ public class SearchMenuManagerTest {
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         final int maxDuration = 100;
         long startTime = System.currentTimeMillis();
-        Set<KeyValueModel> results = searchMenuManager.getEditionNames(true);
+        Set<KeyValueModel> results = dimensionalDataManager.getEditionNames(true);
         // getEditionNames should now be cached
         long endTime = System.currentTimeMillis();
         long timeLength = endTime - startTime;
@@ -127,7 +127,7 @@ public class SearchMenuManagerTest {
 
         // now compare cached time vs non-cached time
         startTime = System.currentTimeMillis();
-        results = searchMenuManager.getEditionNames(true);
+        results = dimensionalDataManager.getEditionNames(true);
         endTime = System.currentTimeMillis();
         timeLength = endTime - startTime;
         elapsedSecs = timeLength / MILLIS_TO_SECONDS;
@@ -151,7 +151,7 @@ public class SearchMenuManagerTest {
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         final int maxDuration = 100;
         long startTime = System.currentTimeMillis();
-        Set<KeyValueModel> results = searchMenuManager.getCertificationStatuses();
+        Set<KeyValueModel> results = dimensionalDataManager.getCertificationStatuses();
         // getCertificationStatuses should now be cached
         long endTime = System.currentTimeMillis();
         long timeLength = endTime - startTime;
@@ -166,7 +166,7 @@ public class SearchMenuManagerTest {
 
         // now compare cached time vs non-cached time
         startTime = System.currentTimeMillis();
-        results = searchMenuManager.getCertificationStatuses();
+        results = dimensionalDataManager.getCertificationStatuses();
         endTime = System.currentTimeMillis();
         timeLength = endTime - startTime;
         elapsedSecs = timeLength / MILLIS_TO_SECONDS;
@@ -187,7 +187,7 @@ public class SearchMenuManagerTest {
     public void test_getPracticeTypeNames_CachesData()
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         long startTime = System.currentTimeMillis();
-        Set<KeyValueModel> results = searchMenuManager.getPracticeTypeNames();
+        Set<KeyValueModel> results = dimensionalDataManager.getPracticeTypeNames();
         // getPracticeTypeNames should now be cached
         long endTime = System.currentTimeMillis();
         long timeLength = endTime - startTime;
@@ -202,7 +202,7 @@ public class SearchMenuManagerTest {
 
         // now compare cached time vs non-cached time
         startTime = System.currentTimeMillis();
-        results = searchMenuManager.getPracticeTypeNames();
+        results = dimensionalDataManager.getPracticeTypeNames();
         endTime = System.currentTimeMillis();
         timeLength = endTime - startTime;
         elapsedSecs = timeLength / 1000.0;
@@ -223,7 +223,7 @@ public class SearchMenuManagerTest {
     public void test_getClassificationNames_CachesData()
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         long startTime = System.currentTimeMillis();
-        Set<KeyValueModel> results = searchMenuManager.getClassificationNames();
+        Set<KeyValueModel> results = dimensionalDataManager.getClassificationNames();
         // getClassificationNames should now be cached
         long endTime = System.currentTimeMillis();
         long timeLength = endTime - startTime;
@@ -238,7 +238,7 @@ public class SearchMenuManagerTest {
 
         // now compare cached time vs non-cached time
         startTime = System.currentTimeMillis();
-        results = searchMenuManager.getClassificationNames();
+        results = dimensionalDataManager.getClassificationNames();
         endTime = System.currentTimeMillis();
         timeLength = endTime - startTime;
         elapsedSecs = timeLength / 1000.0;
@@ -259,7 +259,7 @@ public class SearchMenuManagerTest {
     public void test_getProductNames_CachesData()
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         long startTime = System.currentTimeMillis();
-        Set<KeyValueModelStatuses> results = searchMenuManager.getProductNamesCached();
+        Set<KeyValueModelStatuses> results = dimensionalDataManager.getProductNames();
         // getProductNames should now be cached
         long endTime = System.currentTimeMillis();
         long timeLength = endTime - startTime;
@@ -272,7 +272,7 @@ public class SearchMenuManagerTest {
 
         // now compare cached time vs non-cached time
         startTime = System.currentTimeMillis();
-        results = searchMenuManager.getProductNamesCached();
+        results = dimensionalDataManager.getProductNames();
         endTime = System.currentTimeMillis();
         timeLength = endTime - startTime;
         elapsedSecs = timeLength / 1000.0;
@@ -292,7 +292,7 @@ public class SearchMenuManagerTest {
     public void test_getDeveloperNames_CachesData()
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         long startTime = System.currentTimeMillis();
-        Set<KeyValueModelStatuses> results = searchMenuManager.getDeveloperNamesCached();
+        Set<KeyValueModelStatuses> results = dimensionalDataManager.getDeveloperNames();
         // getDeveloperNames should now be cached
         long endTime = System.currentTimeMillis();
         long timeLength = endTime - startTime;
@@ -306,7 +306,7 @@ public class SearchMenuManagerTest {
 
         // now compare cached time vs non-cached time
         startTime = System.currentTimeMillis();
-        results = searchMenuManager.getDeveloperNamesCached();
+        results = dimensionalDataManager.getDeveloperNames();
         endTime = System.currentTimeMillis();
         timeLength = endTime - startTime;
         elapsedSecs = timeLength / 1000.0;
@@ -326,7 +326,7 @@ public class SearchMenuManagerTest {
     public void test_getCQMCriterionNumbers_CachesData()
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         long startTime = System.currentTimeMillis();
-        Set<DescriptiveModel> results = searchMenuManager.getCQMCriterionNumbers(false);
+        Set<DescriptiveModel> results = dimensionalDataManager.getCQMCriterionNumbers(false);
         // getCQMCriterionNumbers should now be cached
         long endTime = System.currentTimeMillis();
         long timeLength = endTime - startTime;
@@ -341,7 +341,7 @@ public class SearchMenuManagerTest {
 
         // now compare cached time vs non-cached time
         startTime = System.currentTimeMillis();
-        results = searchMenuManager.getCQMCriterionNumbers(false);
+        results = dimensionalDataManager.getCQMCriterionNumbers(false);
         endTime = System.currentTimeMillis();
         timeLength = endTime - startTime;
         elapsedSecs = timeLength / 1000.0;
@@ -362,7 +362,7 @@ public class SearchMenuManagerTest {
     public void test_getCertificationCriterionNumbers_CachesData()
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         long startTime = System.currentTimeMillis();
-        Set<DescriptiveModel> results = searchMenuManager.getCertificationCriterionNumbers(false);
+        Set<DescriptiveModel> results = dimensionalDataManager.getCertificationCriterionNumbers(false);
         // getCertificationCriterionNumbers should now be cached
         long endTime = System.currentTimeMillis();
         long timeLength = endTime - startTime;
@@ -378,7 +378,7 @@ public class SearchMenuManagerTest {
 
         // now compare cached time vs non-cached time
         startTime = System.currentTimeMillis();
-        results = searchMenuManager.getCertificationCriterionNumbers(false);
+        results = dimensionalDataManager.getCertificationCriterionNumbers(false);
         endTime = System.currentTimeMillis();
         timeLength = endTime - startTime;
         elapsedSecs = timeLength / 1000.0;
@@ -394,7 +394,7 @@ public class SearchMenuManagerTest {
     @Transactional(readOnly = true)
     @Test
     public void testGetAllCertificationCriterionWithEditions() {
-        Set<CertificationCriterion> results = searchMenuManager.getCertificationCriterion();
+        Set<CertificationCriterion> results = dimensionalDataManager.getCertificationCriterion();
         assertNotNull(results);
         assertEquals(164, results.size());
         for (CertificationCriterion crit : results) {
@@ -425,7 +425,7 @@ public class SearchMenuManagerTest {
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         long getDeveloperNamesStartTime = System.currentTimeMillis();
-        Set<KeyValueModelStatuses> results = searchMenuManager.getDeveloperNamesCached();
+        Set<KeyValueModelStatuses> results = dimensionalDataManager.getDeveloperNames();
         long getDeveloperNamesEndTime = System.currentTimeMillis();
         long getDeveloperNamesTimeLength = getDeveloperNamesEndTime - getDeveloperNamesStartTime;
         double getDeveloperNamesElapsedSeconds = getDeveloperNamesTimeLength / 1000.0;
@@ -455,7 +455,7 @@ public class SearchMenuManagerTest {
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         long getProductNamesStartTime = System.currentTimeMillis();
-        Set<KeyValueModelStatuses> results = searchMenuManager.getProductNamesCached();
+        Set<KeyValueModelStatuses> results = dimensionalDataManager.getProductNames();
         long getProductNamesEndTime = System.currentTimeMillis();
         long getProductNamesTimeLength = getProductNamesEndTime - getProductNamesStartTime;
         double getProductNamesElapsedSeconds = getProductNamesTimeLength / 1000.0;
@@ -487,7 +487,7 @@ public class SearchMenuManagerTest {
     public void test_getDeveloperNames_ReturnsValidStatusesObject()
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        Set<KeyValueModelStatuses> results = searchMenuManager.getDeveloperNamesCached();
+        Set<KeyValueModelStatuses> results = dimensionalDataManager.getDeveloperNames();
         for (KeyValueModelStatuses result : results) {
             Statuses status = result.getStatuses();
 
@@ -523,7 +523,7 @@ public class SearchMenuManagerTest {
     public void test_getProductNames_ReturnsValidStatusesObject()
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        Set<KeyValueModelStatuses> results = searchMenuManager.getProductNamesCached();
+        Set<KeyValueModelStatuses> results = dimensionalDataManager.getProductNames();
         for (KeyValueModelStatuses result : results) {
             Statuses status = result.getStatuses();
 
@@ -552,7 +552,7 @@ public class SearchMenuManagerTest {
     public void test_getEditionNames_CacheRefreshesWithParameter()
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         long startTime = System.currentTimeMillis();
-        Set<KeyValueModel> firstResult = searchMenuManager.getEditionNames(true);
+        Set<KeyValueModel> firstResult = dimensionalDataManager.getEditionNames(true);
         // search should now be cached
         long endTime = System.currentTimeMillis();
         long timeLength = endTime - startTime;
@@ -564,7 +564,7 @@ public class SearchMenuManagerTest {
 
         // now compare cached time vs non-cached time
         startTime = System.currentTimeMillis();
-        Set<KeyValueModel> secondResult = searchMenuManager.getEditionNames(false);
+        Set<KeyValueModel> secondResult = dimensionalDataManager.getEditionNames(false);
         endTime = System.currentTimeMillis();
         timeLength = endTime - startTime;
         elapsedSecs = timeLength / 1000.0;
@@ -577,7 +577,7 @@ public class SearchMenuManagerTest {
     @Rollback(true)
     @Test
     public void getTestFunctionality_hasEditions() {
-        Set<TestFunctionality> tfs = searchMenuManager.getTestFunctionality();
+        Set<TestFunctionality> tfs = dimensionalDataManager.getTestFunctionality();
         assertNotNull(tfs);
         assertTrue(tfs.size() > 0);
         for (TestFunctionality tf : tfs) {
@@ -590,7 +590,7 @@ public class SearchMenuManagerTest {
     @Rollback(true)
     @Test
     public void getTestStandards_hasEditions() {
-        Set<TestStandard> testStandards = searchMenuManager.getTestStandards();
+        Set<TestStandard> testStandards = dimensionalDataManager.getTestStandards();
         assertNotNull(testStandards);
         assertTrue(testStandards.size() > 0);
         for (TestStandard testStandard : testStandards) {
@@ -603,7 +603,7 @@ public class SearchMenuManagerTest {
     @Rollback(true)
     @Test
     public void getTestData() {
-        Set<CriteriaSpecificDescriptiveModel> testData = searchMenuManager.getTestData();
+        Set<CriteriaSpecificDescriptiveModel> testData = dimensionalDataManager.getTestData();
         assertNotNull(testData);
         assertTrue(testData.size() > 0);
         for (CriteriaSpecificDescriptiveModel td : testData) {
@@ -620,7 +620,7 @@ public class SearchMenuManagerTest {
     @Rollback(true)
     @Test
     public void getTestProcedures() {
-        Set<CriteriaSpecificDescriptiveModel> testProcs = searchMenuManager.getTestProcedures();
+        Set<CriteriaSpecificDescriptiveModel> testProcs = dimensionalDataManager.getTestProcedures();
         assertNotNull(testProcs);
         assertTrue(testProcs.size() > 0);
         for (CriteriaSpecificDescriptiveModel tp : testProcs) {
@@ -637,7 +637,7 @@ public class SearchMenuManagerTest {
     @Rollback(true)
     @Test
     public void getUploadTemplateVersions() {
-        Set<UploadTemplateVersion> templateVersions = searchMenuManager.getUploadTemplateVersions();
+        Set<UploadTemplateVersion> templateVersions = dimensionalDataManager.getUploadTemplateVersions();
         assertNotNull(templateVersions);
         assertTrue(templateVersions.size() >= 2);
     }

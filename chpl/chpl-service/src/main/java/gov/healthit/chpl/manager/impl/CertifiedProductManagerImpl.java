@@ -36,7 +36,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.caching.ClearAllCaches;
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
@@ -1065,7 +1064,11 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     @Transactional(readOnly = false)
-    @ClearAllCaches
+    @CacheEvict(value = {
+            CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.GET_DECERTIFIED_DEVELOPERS
+    }, allEntries = true)
+    //listings collection is not evicted here because it's pre-fetched and handled in a listener
+    //no other caches have ACB data so we do not need to clear all
     public CertifiedProductDTO changeOwnership(final Long certifiedProductId, final Long acbId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         CertifiedProductDTO toUpdate = cpDao.getById(certifiedProductId);

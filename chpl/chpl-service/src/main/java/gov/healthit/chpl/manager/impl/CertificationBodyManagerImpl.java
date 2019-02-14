@@ -36,7 +36,6 @@ import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.caching.ClearAllCaches;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -76,7 +75,6 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 
     @Transactional
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    @ClearAllCaches
     public CertificationBodyDTO create(final CertificationBodyDTO acb)
             throws UserRetrievalException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
         // assign a code
@@ -121,7 +119,11 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 
     @Transactional
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or (hasRole('ROLE_ACB') and hasPermission(#acb, admin))")
-    @ClearAllCaches
+    @CacheEvict(value = {
+            CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.GET_DECERTIFIED_DEVELOPERS
+    }, allEntries = true)
+    //listings collection is not evicted here because it's pre-fetched and handled in a listener
+    //no other caches have ACB data so we do not need to clear all
     public CertificationBodyDTO update(final CertificationBodyDTO acb) throws EntityRetrievalException,
     JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException, SchedulerException, ValidationException {
 

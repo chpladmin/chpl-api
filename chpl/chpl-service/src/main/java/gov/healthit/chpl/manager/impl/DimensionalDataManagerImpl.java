@@ -14,17 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.AgeRangeDAO;
-import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
-import gov.healthit.chpl.dao.CertificationEditionDAO;
-import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
 import gov.healthit.chpl.dao.JobDAO;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
-import gov.healthit.chpl.dao.PracticeTypeDAO;
-import gov.healthit.chpl.dao.ProductClassificationTypeDAO;
 import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
@@ -55,16 +50,11 @@ import gov.healthit.chpl.domain.UploadTemplateVersion;
 import gov.healthit.chpl.domain.concept.RequirementTypeEnum;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AgeRangeDTO;
-import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
-import gov.healthit.chpl.dto.CertificationEditionDTO;
-import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
-import gov.healthit.chpl.dto.PracticeTypeDTO;
-import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
 import gov.healthit.chpl.dto.QmsStandardDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
 import gov.healthit.chpl.dto.TestDataCriteriaMapDTO;
@@ -90,16 +80,7 @@ public class DimensionalDataManagerImpl implements DimensionalDataManager {
     private CertificationBodyDAO certificationBodyDAO;
 
     @Autowired
-    private CQMCriterionDAO cqmCriterionDAO;
-
-    @Autowired
     private CertificationCriterionDAO certificationCriterionDAO;
-
-    @Autowired
-    private CertificationEditionDAO certificationEditionDAO;
-
-    @Autowired
-    private CertificationStatusDAO certificationStatusDao;
 
     @Autowired
     private EducationTypeDAO educationTypeDao;
@@ -128,14 +109,10 @@ public class DimensionalDataManagerImpl implements DimensionalDataManager {
     private SurveillanceDAO survDao;
     @Autowired
     private UploadTemplateVersionDAO uploadTemplateDao;
-    @Autowired
-    private ProductClassificationTypeDAO productClassificationTypeDAO;
+
 
     @Autowired
     private JobDAO jobDao;
-
-    @Autowired
-    private PracticeTypeDAO practiceTypeDAO;
 
     @Autowired
     private MacraMeasureDAO macraDao;
@@ -151,84 +128,6 @@ public class DimensionalDataManagerImpl implements DimensionalDataManager {
             results.add(new KeyValueModel(dto.getId(), dto.getName(), dto.getDescription()));
         }
         return results;
-    }
-
-    @Transactional
-    @Override
-    @Cacheable(value = CacheNames.CLASSIFICATION_NAMES)
-    public Set<KeyValueModel> getClassificationNames() {
-        LOGGER.debug("Getting all classification names from the database (not cached).");
-        List<ProductClassificationTypeDTO> classificationTypes = productClassificationTypeDAO.findAll();
-        Set<KeyValueModel> classificationTypeNames = new HashSet<KeyValueModel>();
-
-        for (ProductClassificationTypeDTO dto : classificationTypes) {
-            classificationTypeNames.add(new KeyValueModel(dto.getId(), dto.getName()));
-        }
-
-        return classificationTypeNames;
-    }
-
-    @Transactional
-    @Override
-    @Cacheable(value = CacheNames.EDITION_NAMES)
-    public Set<KeyValueModel> getEditionNames(final Boolean simple) {
-        LOGGER.debug("Getting all edition names from the database (not cached).");
-        List<CertificationEditionDTO> certificationEditions = certificationEditionDAO.findAll();
-        Set<KeyValueModel> editionNames = new HashSet<KeyValueModel>();
-
-        for (CertificationEditionDTO dto : certificationEditions) {
-
-            if (simple) {
-                if (dto.getYear().equals("2011")) {
-                    continue;
-                }
-            }
-            editionNames.add(new KeyValueModel(dto.getId(), dto.getYear()));
-        }
-
-        return editionNames;
-    }
-
-    @Transactional
-    @Override
-    @Cacheable(value = CacheNames.CERTIFICATION_STATUSES)
-    public Set<KeyValueModel> getCertificationStatuses() {
-        LOGGER.debug("Getting all certification statuses from the database (not cached).");
-        List<CertificationStatusDTO> certificationStatuses = certificationStatusDao.findAll();
-        Set<KeyValueModel> results = new HashSet<KeyValueModel>();
-
-        for (CertificationStatusDTO dto : certificationStatuses) {
-            results.add(new KeyValueModel(dto.getId(), dto.getStatus()));
-        }
-
-        return results;
-    }
-
-    @Transactional
-    @Override
-    @Cacheable(value = CacheNames.PRACTICE_TYPE_NAMES)
-    public Set<KeyValueModel> getPracticeTypeNames() {
-        LOGGER.debug("Getting all practice type names from the database (not cached).");
-        List<PracticeTypeDTO> practiceTypeDTOs = practiceTypeDAO.findAll();
-        Set<KeyValueModel> practiceTypeNames = new HashSet<KeyValueModel>();
-
-        for (PracticeTypeDTO dto : practiceTypeDTOs) {
-            practiceTypeNames.add(new KeyValueModel(dto.getId(), dto.getName()));
-        }
-
-        return practiceTypeNames;
-    }
-
-    @Transactional
-    @Override
-    public Set<KeyValueModelStatuses> getProductNames() {
-        return precache.getProductNamesCached();
-    }
-
-    @Transactional
-    @Override
-    public Set<KeyValueModelStatuses> getDeveloperNames() {
-        return precache.getDeveloperNamesCached();
     }
 
     @Transactional
@@ -545,23 +444,6 @@ public class DimensionalDataManagerImpl implements DimensionalDataManager {
 
     @Transactional
     @Override
-    @Cacheable(value = CacheNames.CERTIFICATION_CRITERION_NUMBERS)
-    public Set<DescriptiveModel> getCertificationCriterionNumbers(final Boolean simple) throws EntityRetrievalException {
-        LOGGER.debug("Getting all criterion numbers from the database (not cached).");
-
-        List<CertificationCriterionDTO> dtos = this.certificationCriterionDAO.findAll();
-        Set<DescriptiveModel> criterionNames = new HashSet<DescriptiveModel>();
-
-        for (CertificationCriterionDTO dto : dtos) {
-            criterionNames.add(new DescriptiveModel(dto.getId(), dto.getNumber(), dto.getTitle()));
-        }
-
-        return criterionNames;
-
-    }
-
-    @Transactional
-    @Override
     @Cacheable(value = CacheNames.CERTIFICATION_CRITERION_WITH_EDITIONS)
     public Set<CertificationCriterion> getCertificationCriterion() {
         LOGGER.debug("Getting all criterion with editions from the database (not cached).");
@@ -577,36 +459,50 @@ public class DimensionalDataManagerImpl implements DimensionalDataManager {
 
     }
 
+    // The following methods are called from inside this class as searchable dimensional data.
+    // Since they are called from within the same class, any annotations on the below methods
+    // are ignored due to Spring's proxying mechanism. Therefore the caching of these methods
+    // has been moved to the PrecacheableDimensionalDataModel class which is called through.
+
+    @Override
+    public Set<KeyValueModel> getClassificationNames() {
+        return precache.getClassificationNames();
+    }
+
+    @Override
+    public Set<KeyValueModel> getEditionNames(final Boolean simple) {
+       return precache.getEditionNames(simple);
+    }
+
+    @Override
+    public Set<KeyValueModel> getCertificationStatuses() {
+        return precache.getCertificationStatuses();
+    }
+
+    @Override
+    public Set<KeyValueModel> getPracticeTypeNames() {
+        return precache.getPracticeTypeNames();
+    }
+
+    @Override
+    public Set<KeyValueModelStatuses> getProductNames() {
+        return precache.getProductNamesCached();
+    }
+
     @Transactional
     @Override
-    @Cacheable(value = CacheNames.CQM_CRITERION_NUMBERS)
+    public Set<KeyValueModelStatuses> getDeveloperNames() {
+        return precache.getDeveloperNamesCached();
+    }
+
+    @Override
+    public Set<DescriptiveModel> getCertificationCriterionNumbers(final Boolean simple) throws EntityRetrievalException {
+        return precache.getCertificationCriterionNumbers(simple);
+    }
+
+    @Override
     public Set<DescriptiveModel> getCQMCriterionNumbers(final Boolean simple) {
-        LOGGER.debug("Getting all CQM numbers from the database (not cached).");
-
-        List<CQMCriterionDTO> dtos = this.cqmCriterionDAO.findAll();
-        Set<DescriptiveModel> criterionNames = new HashSet<DescriptiveModel>();
-
-        for (CQMCriterionDTO dto : dtos) {
-
-            String idNumber;
-
-            if (simple) {
-                if (dto.getCmsId() != null) {
-                    idNumber = dto.getCmsId();
-                } else {
-                    continue;
-                }
-            } else {
-                if (dto.getCmsId() != null) {
-                    idNumber = dto.getCmsId();
-                } else {
-                    idNumber = dto.getNqfNumber();
-                }
-            }
-
-            criterionNames.add(new DescriptiveModel(dto.getId(), idNumber, dto.getTitle()));
-        }
-        return criterionNames;
+        return precache.getCQMCriterionNumbers(simple);
     }
 
     @Override
@@ -615,8 +511,8 @@ public class DimensionalDataManagerImpl implements DimensionalDataManager {
         //the following calls contain data that could possibly change
         //without the system rebooting so we need to make sure to
         //keep their cached data up-to-date
-        searchOptions.setProductNames(precache.getProductNamesCached());
-        searchOptions.setDeveloperNames(precache.getDeveloperNamesCached());
+        searchOptions.setProductNames(getProductNames());
+        searchOptions.setDeveloperNames(getDeveloperNames());
         //acb names can change but there are so few that it's fine to not cache them
         searchOptions.setCertBodyNames(getCertBodyNames());
 

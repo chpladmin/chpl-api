@@ -27,13 +27,9 @@ public class CacheInitializor {
     private static final Logger LOGGER = LogManager.getLogger(CacheInitializor.class);
     private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
     private Integer initializeTimeoutSecs;
-    private Integer clearAllCachesTimeoutSecs;
     private Long tInitStart;
     private Long tInitEnd;
     private Double tInitElapsedSecs;
-    private Long tClearAllStart;
-    private Long tClearAllEnd;
-    private Double tClearAllElapsedSecs;
     private Future<Boolean> isInitializeSearchOptionsDone;
     private Future<Boolean> isInitializeBasicSearch;
     private Future<Boolean> isInitializeCertificationIdsGetAllDone;
@@ -78,7 +74,6 @@ public class CacheInitializor {
 
             enableCacheInitializationValue = props.getProperty("enableCacheInitialization");
             initializeTimeoutSecs = Integer.parseInt(props.getProperty("cacheInitializeTimeoutSecs").toString());
-            clearAllCachesTimeoutSecs = Integer.parseInt(props.getProperty("cacheClearTimeoutSecs").toString());
         }
 
         tInitStart = System.currentTimeMillis();
@@ -118,32 +113,5 @@ public class CacheInitializor {
             }
         }
         tInitEnd = System.currentTimeMillis();
-    }
-
-    @Before("@annotation(ClearAllCaches)")
-    public void beforeClearAllCachesMethod() {
-        LOGGER.info("Clearing all caches.");
-        tClearAllStart = System.currentTimeMillis();
-        if (tClearAllEnd != null) {
-            tClearAllElapsedSecs = (tClearAllStart - tClearAllEnd) / 1000.0;
-        }
-
-        if (tClearAllEnd == null || tClearAllElapsedSecs > clearAllCachesTimeoutSecs) {
-            // Stop initializing caches if running
-            if (isInitializeSearchOptionsDone != null && !isInitializeSearchOptionsDone.isDone()) {
-                isInitializeSearchOptionsDone.cancel(true);
-            }
-            if (isInitializeCertificationIdsGetAllDone != null && !isInitializeCertificationIdsGetAllDone.isDone()) {
-                isInitializeCertificationIdsGetAllDone.cancel(true);
-            }
-
-            if (isInitializeCertificationIdsGetAllWithProductsDone != null
-                    && !isInitializeCertificationIdsGetAllWithProductsDone.isDone()) {
-                isInitializeCertificationIdsGetAllWithProductsDone.cancel(true);
-            }
-            LOGGER.info("Clearing all caches before @ClearAllCaches method execution.");
-            CacheManager.getInstance().clearAll();
-        }
-        tClearAllEnd = System.currentTimeMillis();
     }
 }
