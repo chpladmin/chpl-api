@@ -40,7 +40,7 @@ import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.UploadTemplateVersion;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.manager.SearchMenuManager;
+import gov.healthit.chpl.manager.DimensionalDataManager;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
@@ -53,7 +53,7 @@ import gov.healthit.chpl.manager.SearchMenuManager;
 @DatabaseSetup("classpath:data/testData.xml")
 public class SearchMenuManagerTest {
     @Autowired
-    private SearchMenuManager searchMenuManager;
+    private DimensionalDataManager searchMenuManager;
 
     private static JWTAuthenticatedUser adminUser;
     private static JWTAuthenticatedUser testUser3;

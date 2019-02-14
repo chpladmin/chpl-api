@@ -17,7 +17,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertificationIdManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
-import gov.healthit.chpl.manager.SearchMenuManager;
+import gov.healthit.chpl.manager.DimensionalDataManager;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
@@ -29,7 +29,7 @@ public class AsynchronousCacheInitialization {
     @Autowired
     private CertificationIdManager certificationIdManager;
     @Autowired
-    private SearchMenuManager searchMenuManager;
+    private DimensionalDataManager dimensionalDataManager;
     @Autowired
     private CertifiedProductSearchManager certifiedProductSearchManager;
 
@@ -37,8 +37,8 @@ public class AsynchronousCacheInitialization {
     @Transactional
     public Future<Boolean> initializeSearchOptions() throws EntityRetrievalException {
         LOGGER.info("Starting cache initialization for SearchViewController.getPopulateSearchData()");
-        searchMenuManager.getSearchOptions(true);
-        searchMenuManager.getSearchOptions(false);
+        dimensionalDataManager.getSearchableDimensionalData(true);
+        dimensionalDataManager.getSearchableDimensionalData(false);
         LOGGER.info("Finished cache initialization for SearchViewController.getPopulateSearchData()");
         return new AsyncResult<>(true);
     }

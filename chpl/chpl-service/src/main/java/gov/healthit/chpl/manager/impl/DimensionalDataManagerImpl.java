@@ -1,19 +1,15 @@
 package gov.healthit.chpl.manager.impl;
 
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
@@ -23,15 +19,12 @@ import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
-import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
-import gov.healthit.chpl.dao.FuzzyChoicesDAO;
 import gov.healthit.chpl.dao.JobDAO;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.PracticeTypeDAO;
 import gov.healthit.chpl.dao.ProductClassificationTypeDAO;
-import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
@@ -46,11 +39,10 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
-import gov.healthit.chpl.domain.FuzzyChoices;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.NonconformityType;
-import gov.healthit.chpl.domain.SearchOptions;
+import gov.healthit.chpl.domain.SearchableDimensionalData;
 import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;
 import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
 import gov.healthit.chpl.domain.SurveillanceRequirementType;
@@ -68,14 +60,11 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
-import gov.healthit.chpl.dto.FuzzyChoicesDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
-import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.QmsStandardDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
 import gov.healthit.chpl.dto.TestDataCriteriaMapDTO;
@@ -86,12 +75,16 @@ import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.dto.UploadTemplateVersionDTO;
 import gov.healthit.chpl.dto.job.JobTypeDTO;
-import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.manager.SearchMenuManager;
+import gov.healthit.chpl.manager.DimensionalDataManager;
+import gov.healthit.chpl.manager.PrecacheableDimensionalDataManager;
 
-@Service("searchMenuManager")
-public class SearchMenuManagerImpl implements SearchMenuManager {
+@Service("dimensionalDataManager")
+public class DimensionalDataManagerImpl implements DimensionalDataManager {
+    private static final Logger LOGGER = LogManager.getLogger(DimensionalDataManagerImpl.class);
+
+    @Autowired
+    private PrecacheableDimensionalDataManager precache;
 
     @Autowired
     private CertificationBodyDAO certificationBodyDAO;
@@ -139,27 +132,19 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
     private ProductClassificationTypeDAO productClassificationTypeDAO;
 
     @Autowired
-    private ProductDAO productDAO;
-
-    @Autowired
     private JobDAO jobDao;
 
     @Autowired
-    private FuzzyChoicesDAO fuzzyChoicesDAO;
-
-    @Autowired
     private PracticeTypeDAO practiceTypeDAO;
-
-    @Autowired
-    private DeveloperDAO developerDAO;
 
     @Autowired
     private MacraMeasureDAO macraDao;
 
     @Transactional
     @Override
-    @Cacheable(CacheNames.JOB_TYPES)
+    @Cacheable(value = CacheNames.JOB_TYPES)
     public Set<KeyValueModel> getJobTypes() {
+        LOGGER.debug("Getting all job types from the database (not cached).");
         List<JobTypeDTO> jobTypes = jobDao.findAllTypes();
         Set<KeyValueModel> results = new HashSet<KeyValueModel>();
         for (JobTypeDTO dto : jobTypes) {
@@ -170,32 +155,9 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
     @Transactional
     @Override
-    public Set<FuzzyChoices> getFuzzyChoices() throws EntityRetrievalException, JsonParseException,
-    JsonMappingException, IOException {
-        List<FuzzyChoicesDTO> fuzzyChoices = fuzzyChoicesDAO.findAllTypes();
-        Set<FuzzyChoices> results = new HashSet<FuzzyChoices>();
-        for (FuzzyChoicesDTO dto : fuzzyChoices) {
-            results.add(new FuzzyChoices(dto));
-        }
-        return results;
-    }
-
-    @Transactional
-    @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    public FuzzyChoices updateFuzzyChoices(final FuzzyChoicesDTO fuzzyChoicesDTO)
-        throws EntityRetrievalException, JsonProcessingException, EntityCreationException, IOException {
-
-        FuzzyChoices result = null;
-        result = new FuzzyChoices(fuzzyChoicesDAO.update(fuzzyChoicesDTO));
-        return result;
-    }
-
-    @Transactional
-    @Override
-    @Cacheable(CacheNames.CLASSIFICATION_NAMES)
+    @Cacheable(value = CacheNames.CLASSIFICATION_NAMES)
     public Set<KeyValueModel> getClassificationNames() {
-
+        LOGGER.debug("Getting all classification names from the database (not cached).");
         List<ProductClassificationTypeDTO> classificationTypes = productClassificationTypeDAO.findAll();
         Set<KeyValueModel> classificationTypeNames = new HashSet<KeyValueModel>();
 
@@ -208,9 +170,9 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
     @Transactional
     @Override
-    @Cacheable(CacheNames.EDITION_NAMES)
+    @Cacheable(value = CacheNames.EDITION_NAMES)
     public Set<KeyValueModel> getEditionNames(final Boolean simple) {
-
+        LOGGER.debug("Getting all edition names from the database (not cached).");
         List<CertificationEditionDTO> certificationEditions = certificationEditionDAO.findAll();
         Set<KeyValueModel> editionNames = new HashSet<KeyValueModel>();
 
@@ -229,8 +191,9 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
     @Transactional
     @Override
-    @Cacheable(CacheNames.CERTIFICATION_STATUSES)
+    @Cacheable(value = CacheNames.CERTIFICATION_STATUSES)
     public Set<KeyValueModel> getCertificationStatuses() {
+        LOGGER.debug("Getting all certification statuses from the database (not cached).");
         List<CertificationStatusDTO> certificationStatuses = certificationStatusDao.findAll();
         Set<KeyValueModel> results = new HashSet<KeyValueModel>();
 
@@ -243,9 +206,9 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
     @Transactional
     @Override
-    @Cacheable(CacheNames.PRACTICE_TYPE_NAMES)
+    @Cacheable(value = CacheNames.PRACTICE_TYPE_NAMES)
     public Set<KeyValueModel> getPracticeTypeNames() {
-
+        LOGGER.debug("Getting all practice type names from the database (not cached).");
         List<PracticeTypeDTO> practiceTypeDTOs = practiceTypeDAO.findAll();
         Set<KeyValueModel> practiceTypeNames = new HashSet<KeyValueModel>();
 
@@ -256,67 +219,22 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
         return practiceTypeNames;
     }
 
-    /**
-     * Get all product names.
-     * Users of this class should call this method to get the product names
-     * and statuses, which should always be returned quickly from the cache.
-     */
-    @Transactional
-    @Override
-    @Cacheable(CacheNames.PRODUCT_NAMES)
-    public Set<KeyValueModelStatuses> getProductNamesCached() {
-        return getProductNames();
-    }
-
-    /**
-     * This method gets all the product names but does
-     * not cache the result. This method should only be used for
-     * filling in the pre-fetched cache and is here to avoid duplicating
-     * manager logic elsewhere.
-     */
     @Transactional
     @Override
     public Set<KeyValueModelStatuses> getProductNames() {
-        List<ProductDTO> productDTOs = this.productDAO.findAll();
-        Set<KeyValueModelStatuses> productNames = new HashSet<KeyValueModelStatuses>();
-        for (ProductDTO dto : productDTOs) {
-            productNames.add(new KeyValueModelStatuses(dto.getId(), dto.getName(), dto.getStatuses()));
-        }
-        return productNames;
+        return precache.getProductNamesCached();
     }
 
-    /**
-     * Get all developer names.
-     * Users of this class should call this method to get the developer names
-     * and statuses, which should always be returned quickly from the cache.
-     */
-    @Transactional
-    @Override
-    @Cacheable(CacheNames.DEVELOPER_NAMES)
-    public Set<KeyValueModelStatuses> getDeveloperNamesCached() {
-        return getDeveloperNames();
-    }
-
-    /**
-     * This method gets all the developer names but does
-     * not cache the result. This method should only be used for
-     * filling in the pre-fetched cache and is here to avoid duplicating
-     * manager logic elsewhere.
-     */
     @Transactional
     @Override
     public Set<KeyValueModelStatuses> getDeveloperNames() {
-        List<DeveloperDTO> developerDTOs = this.developerDAO.findAll();
-        Set<KeyValueModelStatuses> developerNames = new HashSet<KeyValueModelStatuses>();
-        for (DeveloperDTO dto : developerDTOs) {
-            developerNames.add(new KeyValueModelStatuses(dto.getId(), dto.getName(), dto.getStatuses()));
-        }
-        return developerNames;
+        return precache.getDeveloperNamesCached();
     }
 
     @Transactional
     @Override
     public Set<CertificationBody> getCertBodyNames() {
+        LOGGER.debug("Getting all certification body names from the database (not cached).");
         List<CertificationBodyDTO> dtos = this.certificationBodyDAO.findAll();
         Set<CertificationBody> acbNames = new HashSet<CertificationBody>();
 
@@ -329,7 +247,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
     @Transactional
     @Override
     public Set<KeyValueModel> getEducationTypes() {
-
+        LOGGER.debug("Getting all education types from the database (not cached).");
         List<EducationTypeDTO> dtos = this.educationTypeDao.getAll();
         Set<KeyValueModel> educationTypes = new HashSet<KeyValueModel>();
 
@@ -343,7 +261,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
     @Transactional
     @Override
     public Set<KeyValueModel> getAgeRanges() {
-
+        LOGGER.debug("Getting all age ranges from the database (not cached).");
         List<AgeRangeDTO> dtos = this.ageRangeDao.getAll();
         Set<KeyValueModel> ageRanges = new HashSet<KeyValueModel>();
 
@@ -357,7 +275,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
     @Transactional
     @Override
     public Set<TestFunctionality> getTestFunctionality() {
-
+        LOGGER.debug("Getting all test functionality from the database (not cached).");
         List<TestFunctionalityDTO> dtos = this.testFuncDao.findAll();
         Set<TestFunctionality> testFuncs = new HashSet<TestFunctionality>();
 
@@ -371,7 +289,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
     @Transactional
     @Override
     public Set<KeyValueModel> getTestTools() {
-
+        LOGGER.debug("Getting all test tools from the database (not cached).");
         List<TestToolDTO> dtos = this.testToolsDao.findAll();
         Set<KeyValueModel> testTools = new HashSet<KeyValueModel>();
 
@@ -385,7 +303,9 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
     }
 
     @Override
+    @Transactional
     public Set<KeyValueModel> getDeveloperStatuses() {
+        LOGGER.debug("Getting all developer statuses from the database (not cached).");
         List<DeveloperStatusDTO> dtos = this.devStatusDao.findAll();
         Set<KeyValueModel> statuses = new HashSet<KeyValueModel>();
 
@@ -398,6 +318,8 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
     @Override
     public Set<KeyValueModel> getAccessibilityStandards() {
+        LOGGER.debug("Getting all accessibility standards from the database (not cached).");
+
         List<AccessibilityStandardDTO> dtos = this.asDao.findAll();
         Set<KeyValueModel> standards = new HashSet<KeyValueModel>();
 
@@ -409,6 +331,8 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
     @Override
     public Set<KeyValueModel> getUcdProcesses() {
+        LOGGER.debug("Getting all ucd processesfrom the database (not cached).");
+
         List<UcdProcessDTO> dtos = this.ucdDao.findAll();
         Set<KeyValueModel> ucds = new HashSet<KeyValueModel>();
 
@@ -420,6 +344,8 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
     @Override
     public Set<KeyValueModel> getQmsStandards() {
+        LOGGER.debug("Getting all qms standards from the database (not cached).");
+
         List<QmsStandardDTO> dtos = this.qmsDao.findAll();
         Set<KeyValueModel> qms = new HashSet<KeyValueModel>();
 
@@ -443,6 +369,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
     @Transactional
     @Override
     public Set<TestStandard> getTestStandards() {
+        LOGGER.debug("Getting all test standards from the database (not cached).");
 
         List<TestStandardDTO> dtos = this.testStandardDao.findAll();
         Set<TestStandard> testStds = new HashSet<TestStandard>();
@@ -456,6 +383,8 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
     @Override
     public Set<KeyValueModel> getSurveillanceTypes() {
+        LOGGER.debug("Getting all surveillance types from the database (not cached).");
+
         List<SurveillanceType> daoResults = survDao.getAllSurveillanceTypes();
         Set<KeyValueModel> results = new HashSet<KeyValueModel>();
 
@@ -467,6 +396,8 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
     @Override
     public SurveillanceRequirementOptions getSurveillanceRequirementOptions() {
+        LOGGER.debug("Getting all surveillance requirements from the database (not cached).");
+
         SurveillanceRequirementOptions result = new SurveillanceRequirementOptions();
 
         List<CertificationCriterionDTO> criteria2014 = certificationCriterionDAO.findByCertificationEditionYear("2014");
@@ -487,6 +418,8 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
     @Override
     public Set<KeyValueModel> getNonconformityTypeOptions() {
+        LOGGER.debug("Getting all nonconformity types from the database (not cached).");
+
         Set<KeyValueModel> result = new HashSet<KeyValueModel>();
 
         List<CertificationCriterionDTO> criteria2014 = certificationCriterionDAO.findByCertificationEditionYear("2014");
@@ -507,6 +440,8 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
     @Override
     public Set<KeyValueModel> getSurveillanceRequirementTypes() {
+        LOGGER.debug("Getting all surveillance requirement types from the database (not cached).");
+
         List<SurveillanceRequirementType> daoResults = survDao.getAllSurveillanceRequirementTypes();
         Set<KeyValueModel> results = new HashSet<KeyValueModel>();
 
@@ -518,6 +453,8 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
     @Override
     public Set<KeyValueModel> getSurveillanceResultTypes() {
+        LOGGER.debug("Getting all surveillance result types from the database (not cached).");
+
         List<SurveillanceResultType> daoResults = survDao.getAllSurveillanceResultTypes();
         Set<KeyValueModel> results = new HashSet<KeyValueModel>();
 
@@ -529,6 +466,8 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
     @Override
     public Set<KeyValueModel> getNonconformityStatusTypes() {
+        LOGGER.debug("Getting all nonconformity status types from the database (not cached).");
+
         List<SurveillanceNonconformityStatus> daoResults = survDao.getAllSurveillanceNonconformityStatusTypes();
         Set<KeyValueModel> results = new HashSet<KeyValueModel>();
 
@@ -540,8 +479,9 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
     @Transactional
     @Override
-    @Cacheable(CacheNames.UPLOAD_TEMPLATE_VERSIONS)
+    @Cacheable(value = CacheNames.UPLOAD_TEMPLATE_VERSIONS)
     public Set<UploadTemplateVersion> getUploadTemplateVersions() {
+        LOGGER.debug("Getting all upload template verisons from the database (not cached).");
 
         List<UploadTemplateVersionDTO> dtos = this.uploadTemplateDao.findAll();
         Set<UploadTemplateVersion> templates = new HashSet<UploadTemplateVersion>();
@@ -555,8 +495,10 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
     @Transactional
     @Override
-    @Cacheable(CacheNames.MACRA_MEASURES)
+    @Cacheable(value = CacheNames.MACRA_MEASURES)
     public Set<CriteriaSpecificDescriptiveModel> getMacraMeasures() {
+        LOGGER.debug("Getting all macra measuresfrom the database (not cached).");
+
         List<MacraMeasureDTO> measureDtos = macraDao.findAll();
         Set<CriteriaSpecificDescriptiveModel> measures = new HashSet<CriteriaSpecificDescriptiveModel>();
 
@@ -569,8 +511,10 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
     @Transactional
     @Override
-    @Cacheable(CacheNames.TEST_PROCEDURES)
+    @Cacheable(value = CacheNames.TEST_PROCEDURES)
     public Set<CriteriaSpecificDescriptiveModel> getTestProcedures() {
+        LOGGER.debug("Getting all test procedures from the database (not cached).");
+
         List<TestProcedureCriteriaMapDTO> testProcedureDtos = testProcedureDao.findAllWithMappedCriteria();
         Set<CriteriaSpecificDescriptiveModel> testProcedures = new HashSet<CriteriaSpecificDescriptiveModel>();
 
@@ -584,8 +528,10 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
     @Transactional
     @Override
-    @Cacheable(CacheNames.TEST_DATA)
+    @Cacheable(value = CacheNames.TEST_DATA)
     public Set<CriteriaSpecificDescriptiveModel> getTestData() {
+        LOGGER.debug("Getting all test data from the database (not cached).");
+
         List<TestDataCriteriaMapDTO> testDataDtos = testDataDao.findAllWithMappedCriteria();
         Set<CriteriaSpecificDescriptiveModel> testData = new HashSet<CriteriaSpecificDescriptiveModel>();
 
@@ -599,8 +545,9 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
     @Transactional
     @Override
-    @Cacheable(CacheNames.CERTIFICATION_CRITERION_NUMBERS)
+    @Cacheable(value = CacheNames.CERTIFICATION_CRITERION_NUMBERS)
     public Set<DescriptiveModel> getCertificationCriterionNumbers(final Boolean simple) throws EntityRetrievalException {
+        LOGGER.debug("Getting all criterion numbers from the database (not cached).");
 
         List<CertificationCriterionDTO> dtos = this.certificationCriterionDAO.findAll();
         Set<DescriptiveModel> criterionNames = new HashSet<DescriptiveModel>();
@@ -615,8 +562,9 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
     @Transactional
     @Override
-    @Cacheable(CacheNames.CERTIFICATION_CRITERION_WITH_EDITIONS)
+    @Cacheable(value = CacheNames.CERTIFICATION_CRITERION_WITH_EDITIONS)
     public Set<CertificationCriterion> getCertificationCriterion() {
+        LOGGER.debug("Getting all criterion with editions from the database (not cached).");
 
         List<CertificationCriterionDTO> dtos = this.certificationCriterionDAO.findAll();
         Set<CertificationCriterion> criterion = new HashSet<CertificationCriterion>();
@@ -631,8 +579,9 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
     @Transactional
     @Override
-    @Cacheable(CacheNames.CQM_CRITERION_NUMBERS)
+    @Cacheable(value = CacheNames.CQM_CRITERION_NUMBERS)
     public Set<DescriptiveModel> getCQMCriterionNumbers(final Boolean simple) {
+        LOGGER.debug("Getting all CQM numbers from the database (not cached).");
 
         List<CQMCriterionDTO> dtos = this.cqmCriterionDAO.findAll();
         Set<DescriptiveModel> criterionNames = new HashSet<DescriptiveModel>();
@@ -661,13 +610,13 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
     }
 
     @Override
-    public SearchOptions getSearchOptions(final Boolean simple) throws EntityRetrievalException {
-        SearchOptions searchOptions = new SearchOptions();
+    public SearchableDimensionalData getSearchableDimensionalData(final Boolean simple) throws EntityRetrievalException {
+        SearchableDimensionalData searchOptions = new SearchableDimensionalData();
         //the following calls contain data that could possibly change
         //without the system rebooting so we need to make sure to
         //keep their cached data up-to-date
-        searchOptions.setProductNames(getProductNamesCached());
-        searchOptions.setDeveloperNames(getDeveloperNamesCached());
+        searchOptions.setProductNames(precache.getProductNamesCached());
+        searchOptions.setDeveloperNames(precache.getDeveloperNamesCached());
         //acb names can change but there are so few that it's fine to not cache them
         searchOptions.setCertBodyNames(getCertBodyNames());
 
