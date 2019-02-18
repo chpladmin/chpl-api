@@ -21,8 +21,12 @@ import gov.healthit.chpl.domain.UpdateDevelopersRequest;
 @Aspect
 public class DeveloperNamesCacheRefreshListener extends CacheRefreshListener {
     private static final Logger LOGGER = LogManager.getLogger(DeveloperNamesCacheRefreshListener.class);
-    @Autowired
     private DeveloperNamesCacheUpdater cacheUpdater;
+
+    @Autowired
+    public DeveloperNamesCacheRefreshListener(final DeveloperNamesCacheUpdater cacheUpdater) {
+        this.cacheUpdater = cacheUpdater;
+    }
 
     /**
      * After a developer is updated refresh the developer names cache.

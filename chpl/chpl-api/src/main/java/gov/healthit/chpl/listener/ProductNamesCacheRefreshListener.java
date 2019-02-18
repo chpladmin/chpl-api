@@ -22,8 +22,12 @@ import gov.healthit.chpl.domain.UpdateProductsRequest;
 @Aspect
 public class ProductNamesCacheRefreshListener extends CacheRefreshListener {
     private static final Logger LOGGER = LogManager.getLogger(ProductNamesCacheRefreshListener.class);
-    @Autowired
     private ProductNamesCacheUpdater cacheUpdater;
+
+    @Autowired
+    public ProductNamesCacheRefreshListener(final ProductNamesCacheUpdater cacheUpdater) {
+        this.cacheUpdater = cacheUpdater;
+    }
 
     /**
      * After a product is updated refresh the product names cache.
