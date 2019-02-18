@@ -1,4 +1,4 @@
-package gov.healthit.chpl.auth.controller;
+package gov.healthit.chpl.web.controller;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;

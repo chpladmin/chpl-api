@@ -48,8 +48,10 @@ public class UserCertificationBodyMapDAOImpl extends BaseDAOImpl implements User
         List<UserCertificationBodyMapEntity> result = query.getResultList();
 
         List<UserCertificationBodyMapDTO> dtos = new ArrayList<UserCertificationBodyMapDTO>();
-        for (UserCertificationBodyMapEntity entity : result) {
-            dtos.add(new UserCertificationBodyMapDTO(entity));
+        if (result != null) {
+            for (UserCertificationBodyMapEntity entity : result) {
+                dtos.add(new UserCertificationBodyMapDTO(entity));
+            }
         }
         return dtos;
     }
