@@ -140,7 +140,7 @@ public class SchedulerController {
     @ApiOperation(value = "Get the list of all jobs that are applicable to the currently logged in user",
             notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and have administrative authority on the specified ACB")
     @RequestMapping(value = "/jobs", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.ONE_MINUTE)
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody ChplJobsResults getAllJobs() throws SchedulerException {
         List<ChplJob> jobs = schedulerManager.getAllJobs();
         ChplJobsResults results = new ChplJobsResults();

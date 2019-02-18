@@ -59,6 +59,9 @@ import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.SearchMenuManager;
 import gov.healthit.chpl.util.FileUtils;
+import gov.healthit.chpl.web.controller.annotation.CacheControl;
+import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
+import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -804,6 +807,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible types of jobs that can be created in the system.")
     @RequestMapping(value = "/data/job_types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<KeyValueModel> getJobTypes() {
         return searchMenuManager.getJobTypes();
     }
@@ -814,6 +818,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all fuzzy matching choices for the items that be fuzzy matched.")
     @RequestMapping(value = "/data/fuzzy_choices", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<FuzzyChoices> getFuzzyChoices()
             throws EntityRetrievalException, JsonParseException, JsonMappingException, IOException {
         return searchMenuManager.getFuzzyChoices();
@@ -848,6 +853,7 @@ public class SearchViewController {
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/classification_types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<KeyValueModel> getClassificationNames() {
         return searchMenuManager.getClassificationNames();
     }
@@ -856,6 +862,7 @@ public class SearchViewController {
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/certification_editions", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<KeyValueModel> getEditionNames() {
         return searchMenuManager.getEditionNames(false);
     }
@@ -864,6 +871,7 @@ public class SearchViewController {
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/certification_statuses", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<KeyValueModel> getCertificationStatuses() {
         return searchMenuManager.getCertificationStatuses();
     }
@@ -872,6 +880,7 @@ public class SearchViewController {
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/practice_types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<KeyValueModel> getPracticeTypeNames() {
         return searchMenuManager.getPracticeTypeNames();
     }
@@ -880,6 +889,7 @@ public class SearchViewController {
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/products", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<KeyValueModelStatuses> getProductNames() {
         return searchMenuManager.getProductNames();
     }
@@ -888,6 +898,7 @@ public class SearchViewController {
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/developers", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<KeyValueModelStatuses> getDeveloperNames() {
         return searchMenuManager.getDeveloperNames();
     }
@@ -896,6 +907,7 @@ public class SearchViewController {
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/certification_bodies", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<CertificationBody> getCertBodyNames() {
         return searchMenuManager.getCertBodyNames();
     }
@@ -904,6 +916,7 @@ public class SearchViewController {
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/education_types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getEducationTypes() {
         Set<KeyValueModel> data = searchMenuManager.getEducationTypes();
         SearchOption result = new SearchOption();
@@ -916,6 +929,7 @@ public class SearchViewController {
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/age_ranges", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getAgeRanges() {
         Set<KeyValueModel> data = searchMenuManager.getAgeRanges();
         SearchOption result = new SearchOption();
@@ -928,6 +942,7 @@ public class SearchViewController {
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/test_functionality", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getTestFunctionality() {
         Set<TestFunctionality> data = searchMenuManager.getTestFunctionality();
         SearchOption result = new SearchOption();
@@ -940,6 +955,7 @@ public class SearchViewController {
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/test_tools", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getTestTools() {
         Set<KeyValueModel> data = searchMenuManager.getTestTools();
         SearchOption result = new SearchOption();
@@ -952,6 +968,7 @@ public class SearchViewController {
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/test_procedures", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getTestProcedures() {
         Set<CriteriaSpecificDescriptiveModel> data = searchMenuManager.getTestProcedures();
         SearchOption result = new SearchOption();
@@ -964,6 +981,7 @@ public class SearchViewController {
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/test_data", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getTestData() {
         Set<CriteriaSpecificDescriptiveModel> data = searchMenuManager.getTestData();
         SearchOption result = new SearchOption();
@@ -976,6 +994,7 @@ public class SearchViewController {
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/test_standards", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getTestStandards() {
         Set<TestStandard> data = searchMenuManager.getTestStandards();
         SearchOption result = new SearchOption();
@@ -988,6 +1007,7 @@ public class SearchViewController {
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/qms_standards", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getQmsStandards() {
         Set<KeyValueModel> data = searchMenuManager.getQmsStandards();
         SearchOption result = new SearchOption();
@@ -1000,6 +1020,7 @@ public class SearchViewController {
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/targeted_users", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getTargetedUsers() {
         Set<KeyValueModel> data = searchMenuManager.getTargetedUesrs();
         SearchOption result = new SearchOption();
@@ -1012,6 +1033,7 @@ public class SearchViewController {
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/ucd_processes", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getUcdProcesses() {
         Set<KeyValueModel> data = searchMenuManager.getUcdProcesses();
         SearchOption result = new SearchOption();
@@ -1024,6 +1046,7 @@ public class SearchViewController {
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/accessibility_standards", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getAccessibilityStandards() {
         Set<KeyValueModel> data = searchMenuManager.getAccessibilityStandards();
         SearchOption result = new SearchOption();
@@ -1036,6 +1059,7 @@ public class SearchViewController {
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/macra_measures", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getMacraMeasures() {
         Set<CriteriaSpecificDescriptiveModel> data = searchMenuManager.getMacraMeasures();
         SearchOption result = new SearchOption();
@@ -1047,6 +1071,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible developer status options in the CHPL")
     @RequestMapping(value = "/data/developer_statuses", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getDeveloperStatuses() {
         Set<KeyValueModel> data = searchMenuManager.getDeveloperStatuses();
         SearchOption result = new SearchOption();
@@ -1058,6 +1083,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible surveillance type options in the CHPL")
     @RequestMapping(value = "/data/surveillance_types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getSurveillanceTypes() {
         Set<KeyValueModel> data = searchMenuManager.getSurveillanceTypes();
         SearchOption result = new SearchOption();
@@ -1069,6 +1095,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible surveillance result type options in the CHPL")
     @RequestMapping(value = "/data/surveillance_result_types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getSurveillanceResultTypes() {
         Set<KeyValueModel> data = searchMenuManager.getSurveillanceResultTypes();
         SearchOption result = new SearchOption();
@@ -1080,6 +1107,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible surveillance requirement type options in the CHPL")
     @RequestMapping(value = "/data/surveillance_requirement_types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getSurveillanceRequirementTypes() {
         Set<KeyValueModel> data = searchMenuManager.getSurveillanceRequirementTypes();
         SearchOption result = new SearchOption();
@@ -1091,6 +1119,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible surveillance requirement options in the CHPL")
     @RequestMapping(value = "/data/surveillance_requirements", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SurveillanceRequirementOptions getSurveillanceRequirementOptions() {
         SurveillanceRequirementOptions data = searchMenuManager.getSurveillanceRequirementOptions();
         return data;
@@ -1099,6 +1128,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible nonconformity status type options in the CHPL")
     @RequestMapping(value = "/data/nonconformity_status_types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getNonconformityStatusTypes() {
         Set<KeyValueModel> data = searchMenuManager.getNonconformityStatusTypes();
         SearchOption result = new SearchOption();
@@ -1110,6 +1140,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible nonconformity type options in the CHPL")
     @RequestMapping(value = "/data/nonconformity_types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getNonconformityTypeOptions() {
         Set<KeyValueModel> data = searchMenuManager.getNonconformityTypeOptions();
         SearchOption result = new SearchOption();
@@ -1121,6 +1152,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all available pending listing upload template versions.")
     @RequestMapping(value = "/data/upload_template_versions", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getUploadTemplateVersions() {
         Set<UploadTemplateVersion> data = searchMenuManager.getUploadTemplateVersions();
         SearchOption result = new SearchOption();
@@ -1140,6 +1172,7 @@ public class SearchViewController {
             notes = "This returns all of the other /data/{something} results in one single response.")
     @RequestMapping(value = "/data/search_options", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody PopulateSearchOptions getPopulateSearchData(
             @RequestParam(value = "simple", required = false, defaultValue = "false") final Boolean simple)
                     throws EntityRetrievalException {
@@ -1162,6 +1195,7 @@ public class SearchViewController {
             notes = "This returns all decertified developers.")
     @RequestMapping(value = "/decertifications/developers", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody DecertifiedDeveloperResults getDecertifiedDevelopers() throws EntityRetrievalException {
         DecertifiedDeveloperResults ddr = new DecertifiedDeveloperResults();
         List<DecertifiedDeveloperResult> results = developerManager.getDecertifiedDevelopers();
