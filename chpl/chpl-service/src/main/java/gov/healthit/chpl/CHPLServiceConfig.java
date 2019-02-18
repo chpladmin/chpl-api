@@ -56,7 +56,7 @@ public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements Enviro
 
     private static final Logger LOGGER = LogManager.getLogger(CHPLServiceConfig.class);
     private static final int MAX_UPLOAD_SIZE_BYTES = 5242880; //5MB
-    private static final int MAX_COOKIE_AGE = 3600;
+    private static final int MAX_COOKIE_AGE_SECONDS = 3600; //1 hour
     private static final int CORE_POOL_SIZE = 10;
     private static final int MAX_POOL_SIZE = 100;
     private static final int JOB_CORE_POOL_SIZE = 3;
@@ -144,7 +144,7 @@ public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements Enviro
         CookieLocaleResolver localeResolver = new CookieLocaleResolver();
         localeResolver.setDefaultLocale(Locale.ENGLISH);
         localeResolver.setCookieName("my-locale-cookie");
-        localeResolver.setCookieMaxAge(MAX_COOKIE_AGE);
+        localeResolver.setCookieMaxAge(MAX_COOKIE_AGE_SECONDS);
         return localeResolver;
     }
 
