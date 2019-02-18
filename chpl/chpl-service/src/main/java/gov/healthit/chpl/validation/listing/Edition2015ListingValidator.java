@@ -12,7 +12,6 @@ import gov.healthit.chpl.validation.listing.reviewer.CertificationStatusReviewer
 import gov.healthit.chpl.validation.listing.reviewer.ChplNumberReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.DeveloperStatusReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.FieldLengthReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.ForbiddenMacraMeasureReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.InheritedCertificationStatusReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestToolReviewer;
@@ -92,10 +91,6 @@ public class Edition2015ListingValidator extends Validator {
     @Qualifier("testFunctionality2015Reviewer")
     private TestFunctionality2015Reviewer testFunctionalityReviewer;
 
-    @Autowired
-    @Qualifier("forbiddenMacraMeasureReviewer")
-    private ForbiddenMacraMeasureReviewer forbiddenMacraMeasureReviewer;
-
     private List<Reviewer> reviewers;
 
     @Override
@@ -117,7 +112,6 @@ public class Edition2015ListingValidator extends Validator {
             reviewers.add(ttReviewer);
             reviewers.add(urlReviewer);
             reviewers.add(testFunctionalityReviewer);
-            reviewers.add(forbiddenMacraMeasureReviewer);
         }
         return reviewers;
     }
