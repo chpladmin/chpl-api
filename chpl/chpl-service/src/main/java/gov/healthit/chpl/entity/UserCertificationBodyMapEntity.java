@@ -110,4 +110,11 @@ public class UserCertificationBodyMapEntity {
         this.lastModifiedUser = lastModifiedUser;
     }
 
+    @Override
+    public String toString() {
+        return "UserCertificationBodyMapEntity [id=" + id + ", user=" + user + ", certificationBody="
+                + certificationBody + ", retired=" + retired + ", creationDate=" + creationDate + ", deleted=" + deleted
+                + ", lastModifiedDate=" + lastModifiedDate + ", lastModifiedUser=" + lastModifiedUser + "]";
+    }
+
 }

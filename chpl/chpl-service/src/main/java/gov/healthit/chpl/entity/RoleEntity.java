@@ -102,4 +102,11 @@ public class RoleEntity {
         this.lastModifiedUser = lastModifiedUser;
     }
 
+    @Override
+    public String toString() {
+        return "RoleEntity [id=" + id + ", name=" + name + ", description=" + description + ", authority=" + authority
+                + ", creationDate=" + creationDate + ", deleted=" + deleted + ", lastModifiedDate=" + lastModifiedDate
+                + ", lastModifiedUser=" + lastModifiedUser + "]";
+    }
+
 }
