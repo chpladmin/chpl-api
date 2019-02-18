@@ -57,13 +57,13 @@ public class PendingTestParticipantEntity {
     private String occupation;
 
     @Column(name = "professional_experience_months", nullable = false)
-    private Integer professionalExperienceMonths;
+    private String professionalExperienceMonths;
 
     @Column(name = "computer_experience_months", nullable = false)
-    private Integer computerExperienceMonths;
+    private String computerExperienceMonths;
 
     @Column(name = "product_experience_months", nullable = false)
-    private Integer productExperienceMonths;
+    private String productExperienceMonths;
 
     @Column(name = "assistive_technology_needs", nullable = false)
     private String assistiveTechnologyNeeds;
@@ -148,27 +148,27 @@ public class PendingTestParticipantEntity {
         this.occupation = occupation;
     }
 
-    public Integer getProfessionalExperienceMonths() {
+    public String getProfessionalExperienceMonths() {
         return professionalExperienceMonths;
     }
 
-    public void setProfessionalExperienceMonths(final Integer professionalExperienceMonths) {
+    public void setProfessionalExperienceMonths(final String professionalExperienceMonths) {
         this.professionalExperienceMonths = professionalExperienceMonths;
     }
 
-    public Integer getComputerExperienceMonths() {
+    public String getComputerExperienceMonths() {
         return computerExperienceMonths;
     }
 
-    public void setComputerExperienceMonths(final Integer computerExperienceMonths) {
+    public void setComputerExperienceMonths(final String computerExperienceMonths) {
         this.computerExperienceMonths = computerExperienceMonths;
     }
 
-    public Integer getProductExperienceMonths() {
+    public String getProductExperienceMonths() {
         return productExperienceMonths;
     }
 
-    public void setProductExperienceMonths(final Integer productExperienceMonths) {
+    public void setProductExperienceMonths(final String productExperienceMonths) {
         this.productExperienceMonths = productExperienceMonths;
     }
 
@@ -226,5 +226,17 @@ public class PendingTestParticipantEntity {
 
     public void setUserEnteredAge(final String userEnteredAge) {
         this.userEnteredAge = userEnteredAge;
+    }
+
+    @Override
+    public String toString() {
+        return "PendingTestParticipantEntity [id=" + id + ", uniqueId=" + uniqueId + ", gender=" + gender
+                + ", userEnteredEducation=" + userEnteredEducation + ", educationTypeId=" + educationTypeId
+                + ", education=" + education + ", userEnteredAge=" + userEnteredAge + ", ageRangeId=" + ageRangeId
+                + ", ageRange=" + ageRange + ", occupation=" + occupation + ", professionalExperienceMonths="
+                + professionalExperienceMonths + ", computerExperienceMonths=" + computerExperienceMonths
+                + ", productExperienceMonths=" + productExperienceMonths + ", assistiveTechnologyNeeds="
+                + assistiveTechnologyNeeds + ", lastModifiedDate=" + lastModifiedDate + ", lastModifiedUser="
+                + lastModifiedUser + ", creationDate=" + creationDate + ", deleted=" + deleted + "]";
     }
 }

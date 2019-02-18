@@ -418,19 +418,19 @@ public class PendingCertifiedProductDTO implements Serializable {
                         PendingCertificationResultTestTaskDTO crTaskDto = new PendingCertificationResultTestTaskDTO();
                         PendingTestTaskDTO taskDto = new PendingTestTaskDTO();
                         taskDto.setDescription(task.getDescription());
-                        taskDto.setTaskErrors(task.getTaskErrors());
-                        taskDto.setTaskErrorsStddev(task.getTaskErrorsStddev());
-                        taskDto.setTaskPathDeviationObserved(task.getTaskPathDeviationObserved());
-                        taskDto.setTaskPathDeviationOptimal(task.getTaskPathDeviationOptimal());
-                        taskDto.setTaskRating(task.getTaskRating());
+                        taskDto.setTaskErrors(task.getTaskErrors().toString());
+                        taskDto.setTaskErrorsStddev(task.getTaskErrorsStddev().toString());
+                        taskDto.setTaskPathDeviationObserved(task.getTaskPathDeviationObserved().toString());
+                        taskDto.setTaskPathDeviationOptimal(task.getTaskPathDeviationOptimal().toString());
+                        taskDto.setTaskRating(task.getTaskRating().toString());
                         taskDto.setTaskRatingScale(task.getTaskRatingScale());
-                        taskDto.setTaskRatingStddev(task.getTaskRatingStddev());
-                        taskDto.setTaskSuccessAverage(task.getTaskSuccessAverage());
-                        taskDto.setTaskSuccessStddev(task.getTaskSuccessStddev());
-                        taskDto.setTaskTimeAvg(task.getTaskTimeAvg());
-                        taskDto.setTaskTimeDeviationObservedAvg(task.getTaskTimeDeviationObservedAvg());
-                        taskDto.setTaskTimeDeviationOptimalAvg(task.getTaskTimeDeviationOptimalAvg());
-                        taskDto.setTaskTimeStddev(task.getTaskTimeStddev());
+                        taskDto.setTaskRatingStddev(task.getTaskRatingStddev().toString());
+                        taskDto.setTaskSuccessAverage(task.getTaskSuccessAverage().toString());
+                        taskDto.setTaskSuccessStddev(task.getTaskSuccessStddev().toString());
+                        taskDto.setTaskTimeAvg(task.getTaskTimeAvg().toString());
+                        taskDto.setTaskTimeDeviationObservedAvg(task.getTaskTimeDeviationObservedAvg().toString());
+                        taskDto.setTaskTimeDeviationOptimalAvg(task.getTaskTimeDeviationOptimalAvg().toString());
+                        taskDto.setTaskTimeStddev(task.getTaskTimeStddev().toString());
                         taskDto.setUniqueId(task.getUniqueId());
                         crTaskDto.setPendingTestTask(taskDto);
 
@@ -439,7 +439,7 @@ public class PendingCertifiedProductDTO implements Serializable {
                                     new PendingCertificationResultTestTaskParticipantDTO();
                             PendingTestParticipantDTO partDto = new PendingTestParticipantDTO();
                             partDto.setAssistiveTechnologyNeeds(part.getAssistiveTechnologyNeeds());
-                            partDto.setComputerExperienceMonths(part.getComputerExperienceMonths());
+                            partDto.setComputerExperienceMonths(part.getComputerExperienceMonths().toString());
 
                             partDto.setEducationTypeId(part.getEducationTypeId());
                             EducationTypeDTO etDto = new EducationTypeDTO();
@@ -454,8 +454,8 @@ public class PendingCertifiedProductDTO implements Serializable {
 
                             partDto.setGender(part.getGender());
                             partDto.setOccupation(part.getOccupation());
-                            partDto.setProductExperienceMonths(part.getProductExperienceMonths());
-                            partDto.setProfessionalExperienceMonths(part.getProfessionalExperienceMonths());
+                            partDto.setProductExperienceMonths(part.getProductExperienceMonths().toString());
+                            partDto.setProfessionalExperienceMonths(part.getProfessionalExperienceMonths().toString());
                             partDto.setUniqueId(part.getUniqueId());
                             crPartDto.setTestParticipant(partDto);
                             crTaskDto.getTaskParticipants().add(crPartDto);

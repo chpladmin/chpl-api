@@ -286,51 +286,139 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                     listing.getErrorMessages().add(
                                             msgUtil.getMessage("listing.criteria.badTestTaskSuccessAverage",
                                                     task.getUniqueId(), certCriteria.getNumber()));
+                                } else {
+                                    try {
+                                        Float.valueOf(task.getTaskSuccessAverage());
+                                    } catch (final Exception e) {
+                                        listing.getErrorMessages().add(
+                                                msgUtil.getMessage("listing.criteria.badTestTaskNumber",
+                                                        task.getUniqueId(), "Task Success Average",
+                                                        task.getTaskSuccessAverage()));
+                                    }
                                 }
                                 if (task.getTaskSuccessStddev() == null) {
                                     listing.getErrorMessages().add(
                                             msgUtil.getMessage("listing.criteria.badTestTaskSuccessStddev",
                                                     task.getUniqueId(), certCriteria.getNumber()));
+                                } else {
+                                    try {
+                                        Float.valueOf(task.getTaskSuccessStddev());
+                                    } catch (final Exception e) {
+                                        listing.getErrorMessages().add(
+                                                msgUtil.getMessage("listing.criteria.badTestTaskNumber",
+                                                        task.getUniqueId(), "Task Success Standard Deviation",
+                                                        task.getTaskSuccessStddev()));
+                                    }
                                 }
                                 if (task.getTaskPathDeviationObserved() == null) {
                                     listing.getErrorMessages().add(
                                             msgUtil.getMessage("listing.criteria.badTestTaskPathDeviationObserved",
                                                     task.getUniqueId(), certCriteria.getNumber()));
+                                } else {
+                                    try {
+                                        Integer.valueOf(task.getTaskPathDeviationObserved());
+                                    } catch (final Exception e) {
+                                        listing.getErrorMessages().add(
+                                                msgUtil.getMessage("listing.criteria.badTestTaskNumber",
+                                                        task.getUniqueId(), "Task Path Deviation Observed",
+                                                        task.getTaskPathDeviationObserved()));
+                                    }
                                 }
                                 if (task.getTaskPathDeviationOptimal() == null) {
                                     listing.getErrorMessages().add(
                                             msgUtil.getMessage("listing.criteria.badTestTaskPathDeviationOptimal",
                                                     task.getUniqueId(), certCriteria.getNumber()));
+                                } else {
+                                    try {
+                                        Integer.valueOf(task.getTaskPathDeviationOptimal());
+                                    } catch (final Exception e) {
+                                        listing.getErrorMessages().add(
+                                                msgUtil.getMessage("listing.criteria.badTestTaskNumber",
+                                                        task.getUniqueId(), "Task Path Deviation Optimal",
+                                                        task.getTaskPathDeviationOptimal()));
+                                    }
                                 }
                                 if (task.getTaskTimeAvg() == null) {
                                     listing.getErrorMessages().add(
                                             msgUtil.getMessage("listing.criteria.badTestTaskTimeAvg",
                                                     task.getUniqueId(), certCriteria.getNumber()));
+                                } else {
+                                    try {
+                                        Long.valueOf(task.getTaskTimeAvg());
+                                    } catch (final Exception e) {
+                                        listing.getErrorMessages().add(
+                                                msgUtil.getMessage("listing.criteria.badTestTaskNumber",
+                                                        task.getUniqueId(), "Task Time Average", task.getTaskTimeAvg()));
+                                    }
                                 }
                                 if (task.getTaskTimeStddev() == null) {
                                     listing.getErrorMessages().add(
                                             msgUtil.getMessage("listing.criteria.badTestTaskTimeStddev",
                                                     task.getUniqueId(), certCriteria.getNumber()));
+                                } else {
+                                    try {
+                                        Integer.valueOf(task.getTaskTimeStddev());
+                                    } catch (final Exception e) {
+                                        listing.getErrorMessages().add(
+                                                msgUtil.getMessage("listing.criteria.badTestTaskNumber",
+                                                        task.getUniqueId(), "Task Time Standard Deviation",
+                                                        task.getTaskTimeStddev()));
+                                    }
                                 }
                                 if (task.getTaskTimeDeviationObservedAvg() == null) {
                                     listing.getErrorMessages().add(
                                             msgUtil.getMessage("listing.criteria.badTestTaskTimeDeviationObservedAvg",
                                                     task.getUniqueId(), certCriteria.getNumber()));
+                                } else {
+                                    try {
+                                        Integer.valueOf(task.getTaskTimeDeviationObservedAvg());
+                                    } catch (final Exception e) {
+                                        listing.getErrorMessages().add(
+                                                msgUtil.getMessage("listing.criteria.badTestTaskNumber",
+                                                        task.getUniqueId(), "Task Time Deviation Observed Average",
+                                                        task.getTaskTimeDeviationObservedAvg()));
+                                    }
                                 }
                                 if (task.getTaskTimeDeviationOptimalAvg() == null) {
                                     listing.getErrorMessages().add(
                                             msgUtil.getMessage("listing.criteria.badTestTaskTimeDeviationOptimalAvg",
                                                     task.getUniqueId(), certCriteria.getNumber()));
+                                } else {
+                                    try {
+                                        Integer.valueOf(task.getTaskTimeDeviationOptimalAvg());
+                                    } catch (final Exception e) {
+                                        listing.getErrorMessages().add(
+                                                msgUtil.getMessage("listing.criteria.badTestTaskNumber",
+                                                        task.getUniqueId(), "Task Time Deviation Optimal Average",
+                                                        task.getTaskTimeDeviationOptimalAvg()));
+                                    }
                                 }
                                 if (task.getTaskErrors() == null) {
                                     listing.getErrorMessages().add(
                                             msgUtil.getMessage("listing.criteria.badTestTaskErrors",
                                                     task.getUniqueId(), certCriteria.getNumber()));
+                                } else {
+                                    try {
+                                        Float.valueOf(task.getTaskErrors());
+                                    } catch (final Exception e) {
+                                        listing.getErrorMessages().add(
+                                                msgUtil.getMessage("listing.criteria.badTestTaskNumber",
+                                                        task.getUniqueId(), "Task Errors", task.getTaskErrors()));
+                                    }
                                 }
                                 if (task.getTaskErrorsStddev() == null) {
                                     listing.getErrorMessages().add(
                                             msgUtil.getMessage("listing.criteria.badTestTaskErrorsStddev",
                                                     task.getUniqueId(), certCriteria.getNumber()));
+                                } else {
+                                    try {
+                                        Float.valueOf(task.getTaskErrorsStddev());
+                                    } catch (final Exception e) {
+                                        listing.getErrorMessages().add(
+                                                msgUtil.getMessage("listing.criteria.badTestTaskNumber",
+                                                        task.getUniqueId(), "Task Errors Standard Deviation",
+                                                        task.getTaskErrorsStddev()));
+                                    }
                                 }
                                 if (StringUtils.isEmpty(task.getTaskRatingScale())) {
                                     listing.getErrorMessages().add(
@@ -341,11 +429,28 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                     listing.getErrorMessages().add(
                                             msgUtil.getMessage("listing.criteria.badTestTaskRating",
                                                     task.getUniqueId(), certCriteria.getNumber()));
+                                } else {
+                                    try {
+                                        Float.valueOf(task.getTaskRating());
+                                    } catch (final Exception e) {
+                                        listing.getErrorMessages().add(
+                                                msgUtil.getMessage("listing.criteria.badTestTaskNumber",
+                                                        task.getUniqueId(), "Task Rating", task.getTaskRating()));
+                                    }
                                 }
                                 if (task.getTaskRatingStddev() == null) {
                                     listing.getErrorMessages().add(
                                             msgUtil.getMessage("listing.criteria.badTestTaskRatingStddev",
                                                     task.getUniqueId(), certCriteria.getNumber()));
+                                } else {
+                                    try {
+                                        Float.valueOf(task.getTaskRatingStddev());
+                                    } catch (final Exception e) {
+                                        listing.getErrorMessages().add(
+                                                msgUtil.getMessage("listing.criteria.badTestTaskNumber",
+                                                        task.getUniqueId(), "Task Rating Standard Deviation",
+                                                        task.getTaskRatingStddev()));
+                                    }
                                 }
                                 for (PendingCertificationResultTestTaskParticipantDTO part : certResultTask
                                         .getTaskParticipants()) {
@@ -385,16 +490,46 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                         listing.getErrorMessages().add(
                                                 msgUtil.getMessage("listing.criteria.badParticipantProfessionalExperienceMonths",
                                                         part.getTestParticipant().getUniqueId()));
+                                    } else {
+                                        try {
+                                            Integer.parseInt(part.getTestParticipant().getProfessionalExperienceMonths());
+                                        } catch (Exception e) {
+                                            listing.getErrorMessages().add(
+                                                    msgUtil.getMessage("listing.criteria.badParticipantNumber",
+                                                            part.getTestParticipant().getUniqueId(),
+                                                            "Professional Experience Months",
+                                                            part.getTestParticipant().getProfessionalExperienceMonths()));
+                                        }
                                     }
                                     if (part.getTestParticipant().getProductExperienceMonths() == null) {
                                         listing.getErrorMessages().add(
                                                 msgUtil.getMessage("listing.criteria.badParticipantProductExperienceMonths",
                                                         part.getTestParticipant().getUniqueId()));
+                                    } else {
+                                        try {
+                                            Integer.parseInt(part.getTestParticipant().getProductExperienceMonths());
+                                        } catch (Exception e) {
+                                            listing.getErrorMessages().add(
+                                                    msgUtil.getMessage("listing.criteria.badParticipantNumber",
+                                                            part.getTestParticipant().getUniqueId(),
+                                                            "Product Experience Months",
+                                                            part.getTestParticipant().getProductExperienceMonths()));
+                                        }
                                     }
                                     if (part.getTestParticipant().getComputerExperienceMonths() == null) {
                                         listing.getErrorMessages().add(
                                                 msgUtil.getMessage("listing.criteria.badParticipantComputerExperienceMonths",
                                                         part.getTestParticipant().getUniqueId()));
+                                    } else {
+                                        try {
+                                            Integer.parseInt(part.getTestParticipant().getComputerExperienceMonths());
+                                        } catch (Exception e) {
+                                            listing.getErrorMessages().add(
+                                                    msgUtil.getMessage("listing.criteria.badParticipantNumber",
+                                                            part.getTestParticipant().getUniqueId(),
+                                                            "Computer Experience Months",
+                                                            part.getTestParticipant().getComputerExperienceMonths()));
+                                        }
                                     }
                                 }
                             }

@@ -28,7 +28,7 @@ public class TestTaskDAOImpl extends BaseDAOImpl implements TestTaskDAO {
     MessageSource messageSource;
 
     @Override
-    public TestTaskDTO create(TestTaskDTO dto) throws EntityCreationException {
+    public TestTaskDTO create(final TestTaskDTO dto) throws EntityCreationException {
 
         TestTaskEntity entity = null;
         if (dto.getId() != null) {
