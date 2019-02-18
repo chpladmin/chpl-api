@@ -254,7 +254,6 @@ public class CertificationBodyController {
 
                 PermittedUser userInfo = new PermittedUser();
                 userInfo.setUser(new User(user));
-                //userInfo.setPermissions(acbPerm);
                 userInfo.setRoles(roleNames);
                 acbUsers.add(userInfo);
             }
