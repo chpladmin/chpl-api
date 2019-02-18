@@ -30,11 +30,6 @@
         creation_date="2017-08-28 13:13:24.528"
         last_modified_date="2017-08-22 13:12:23.525"
         last_modified_user="-3" deleted="false" />
-    <user_permission user_permission_id="7"
-        name="ONC_STAFF" authority="ROLE_ONC_STAFF" description="ONC_STAFF"
-        creation_date="2017-08-28 13:13:24.528"
-        last_modified_date="2017-08-22 13:12:23.525"
-        last_modified_user="-3" deleted="false" />
         
     <address address_id="-1" street_line_1="1 Test Road"
         city="Baltimore" state="MD" zipcode="21220" country="USA"
