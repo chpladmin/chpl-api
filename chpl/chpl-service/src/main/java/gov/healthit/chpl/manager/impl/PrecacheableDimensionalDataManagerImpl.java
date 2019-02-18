@@ -37,36 +37,41 @@ import gov.healthit.chpl.manager.PrecacheableDimensionalDataManager;
 @Service("precacheableDimensionalDataManager")
 public class PrecacheableDimensionalDataManagerImpl implements PrecacheableDimensionalDataManager {
     private static final Logger LOGGER = LogManager.getLogger(PrecacheableDimensionalDataManagerImpl.class);
-    @Autowired
-    private ProductClassificationTypeDAO productClassificationTypeDAO;
-
-    @Autowired
-    private CertificationEditionDAO certificationEditionDAO;
-
-    @Autowired
+    private ProductClassificationTypeDAO productClassificationTypeDao;
+    private CertificationEditionDAO certificationEditionDao;
     private CertificationStatusDAO certificationStatusDao;
+    private PracticeTypeDAO practiceTypeDao;
+    private CQMCriterionDAO cqmCriterionDao;
+    private CertificationCriterionDAO certificationCriterionDao;
+    private ProductDAO productDao;
+    private DeveloperDAO developerDao;
 
     @Autowired
-    private PracticeTypeDAO practiceTypeDAO;
-
-    @Autowired
-    private CQMCriterionDAO cqmCriterionDAO;
-
-    @Autowired
-    private CertificationCriterionDAO certificationCriterionDAO;
-
-    @Autowired
-    private ProductDAO productDAO;
-
-    @Autowired
-    private DeveloperDAO developerDAO;
+    public PrecacheableDimensionalDataManagerImpl(
+            final ProductClassificationTypeDAO productClassificationTypeDao,
+            final CertificationEditionDAO certificationEditionDao,
+            final CertificationStatusDAO certificationStatusDao,
+            final PracticeTypeDAO practiceTypeDao,
+            final CQMCriterionDAO cqmCriterionDao,
+            final CertificationCriterionDAO certificationCriterionDao,
+            final ProductDAO productDao,
+            final DeveloperDAO developerDao) {
+        this.productClassificationTypeDao = productClassificationTypeDao;
+        this.certificationEditionDao = certificationEditionDao;
+        this.certificationStatusDao = certificationStatusDao;
+        this.practiceTypeDao = practiceTypeDao;
+        this.cqmCriterionDao = cqmCriterionDao;
+        this.certificationCriterionDao = certificationCriterionDao;
+        this.productDao = productDao;
+        this.developerDao = developerDao;
+    }
 
     @Transactional
     @Override
     @Cacheable(value = CacheNames.CLASSIFICATION_NAMES)
     public Set<KeyValueModel> getClassificationNames() {
         LOGGER.debug("Getting all classification names from the database (not cached).");
-        List<ProductClassificationTypeDTO> classificationTypes = productClassificationTypeDAO.findAll();
+        List<ProductClassificationTypeDTO> classificationTypes = productClassificationTypeDao.findAll();
         Set<KeyValueModel> classificationTypeNames = new HashSet<KeyValueModel>();
 
         for (ProductClassificationTypeDTO dto : classificationTypes) {
@@ -81,7 +86,7 @@ public class PrecacheableDimensionalDataManagerImpl implements PrecacheableDimen
     @Cacheable(value = CacheNames.EDITION_NAMES)
     public Set<KeyValueModel> getEditionNames(final Boolean simple) {
         LOGGER.debug("Getting all edition names from the database (not cached).");
-        List<CertificationEditionDTO> certificationEditions = certificationEditionDAO.findAll();
+        List<CertificationEditionDTO> certificationEditions = certificationEditionDao.findAll();
         Set<KeyValueModel> editionNames = new HashSet<KeyValueModel>();
 
         for (CertificationEditionDTO dto : certificationEditions) {
@@ -117,7 +122,7 @@ public class PrecacheableDimensionalDataManagerImpl implements PrecacheableDimen
     @Cacheable(value = CacheNames.PRACTICE_TYPE_NAMES)
     public Set<KeyValueModel> getPracticeTypeNames() {
         LOGGER.debug("Getting all practice type names from the database (not cached).");
-        List<PracticeTypeDTO> practiceTypeDTOs = practiceTypeDAO.findAll();
+        List<PracticeTypeDTO> practiceTypeDTOs = practiceTypeDao.findAll();
         Set<KeyValueModel> practiceTypeNames = new HashSet<KeyValueModel>();
 
         for (PracticeTypeDTO dto : practiceTypeDTOs) {
@@ -133,7 +138,7 @@ public class PrecacheableDimensionalDataManagerImpl implements PrecacheableDimen
     public Set<DescriptiveModel> getCQMCriterionNumbers(final Boolean simple) {
         LOGGER.debug("Getting all CQM numbers from the database (not cached).");
 
-        List<CQMCriterionDTO> dtos = this.cqmCriterionDAO.findAll();
+        List<CQMCriterionDTO> dtos = this.cqmCriterionDao.findAll();
         Set<DescriptiveModel> criterionNames = new HashSet<DescriptiveModel>();
 
         for (CQMCriterionDTO dto : dtos) {
@@ -165,7 +170,7 @@ public class PrecacheableDimensionalDataManagerImpl implements PrecacheableDimen
     public Set<DescriptiveModel> getCertificationCriterionNumbers(final Boolean simple) throws EntityRetrievalException {
         LOGGER.debug("Getting all criterion numbers from the database (not cached).");
 
-        List<CertificationCriterionDTO> dtos = this.certificationCriterionDAO.findAll();
+        List<CertificationCriterionDTO> dtos = this.certificationCriterionDao.findAll();
         Set<DescriptiveModel> criterionNames = new HashSet<DescriptiveModel>();
 
         for (CertificationCriterionDTO dto : dtos) {
@@ -186,7 +191,7 @@ public class PrecacheableDimensionalDataManagerImpl implements PrecacheableDimen
     @Transactional
     @Override
     public Set<KeyValueModelStatuses> getProductNames() {
-        List<ProductDTO> productDTOs = this.productDAO.findAll();
+        List<ProductDTO> productDTOs = this.productDao.findAll();
         Set<KeyValueModelStatuses> productNames = new HashSet<KeyValueModelStatuses>();
         for (ProductDTO dto : productDTOs) {
             productNames.add(new KeyValueModelStatuses(dto.getId(), dto.getName(), dto.getStatuses()));
@@ -204,7 +209,7 @@ public class PrecacheableDimensionalDataManagerImpl implements PrecacheableDimen
     @Transactional
     @Override
     public Set<KeyValueModelStatuses> getDeveloperNames() {
-        List<DeveloperDTO> developerDTOs = this.developerDAO.findAll();
+        List<DeveloperDTO> developerDTOs = this.developerDao.findAll();
         Set<KeyValueModelStatuses> developerNames = new HashSet<KeyValueModelStatuses>();
         for (DeveloperDTO dto : developerDTOs) {
             developerNames.add(new KeyValueModelStatuses(dto.getId(), dto.getName(), dto.getStatuses()));
