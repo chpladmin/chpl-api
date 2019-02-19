@@ -219,7 +219,7 @@
         <Logger name="net.sf.ehcache" level="INFO" additivity="false">
             <AppenderRef ref="STDOUT" />
         </Logger>
-        <Logger name="gov.healthit.chpl" level="INFO" additivity="false">
+        <Logger name="gov.healthit.chpl" level="DEBUG" additivity="false">
             <AppenderRef ref="STDOUT" />
         </Logger>
         <Logger name="summaryStatisticsEmailJobLogger" level="INFO"
