@@ -105,7 +105,7 @@ public class SchedulerController {
             notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and have administrative "
                     + "authority on the specified ACB.")
     @RequestMapping(value = "/triggers", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody ScheduleTriggersResults getAllTriggers(final HttpServletResponse response) throws SchedulerException {
+    public @ResponseBody ScheduleTriggersResults getAllTriggers() throws SchedulerException {
         List<ChplRepeatableTrigger> triggers = schedulerManager.getAllTriggers();
         ScheduleTriggersResults results = new ScheduleTriggersResults();
         results.setResults(triggers);
