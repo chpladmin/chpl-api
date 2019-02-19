@@ -418,19 +418,43 @@ public class PendingCertifiedProductDTO implements Serializable {
                         PendingCertificationResultTestTaskDTO crTaskDto = new PendingCertificationResultTestTaskDTO();
                         PendingTestTaskDTO taskDto = new PendingTestTaskDTO();
                         taskDto.setDescription(task.getDescription());
-                        taskDto.setTaskErrors(task.getTaskErrors().toString());
-                        taskDto.setTaskErrorsStddev(task.getTaskErrorsStddev().toString());
-                        taskDto.setTaskPathDeviationObserved(task.getTaskPathDeviationObserved().toString());
-                        taskDto.setTaskPathDeviationOptimal(task.getTaskPathDeviationOptimal().toString());
-                        taskDto.setTaskRating(task.getTaskRating().toString());
+                        if (task.getTaskErrors() != null) {
+                            taskDto.setTaskErrors(task.getTaskErrors().toString());
+                        }
+                        if (task.getTaskErrorsStddev() != null) {
+                            taskDto.setTaskErrorsStddev(task.getTaskErrorsStddev().toString());
+                        }
+                        if (task.getTaskPathDeviationObserved() != null) {
+                            taskDto.setTaskPathDeviationObserved(task.getTaskPathDeviationObserved().toString());
+                        }
+                        if (task.getTaskPathDeviationOptimal() != null) {
+                            taskDto.setTaskPathDeviationOptimal(task.getTaskPathDeviationOptimal().toString());
+                        }
+                        if (task.getTaskRating() != null) {
+                            taskDto.setTaskRating(task.getTaskRating().toString());
+                        }
                         taskDto.setTaskRatingScale(task.getTaskRatingScale());
-                        taskDto.setTaskRatingStddev(task.getTaskRatingStddev().toString());
-                        taskDto.setTaskSuccessAverage(task.getTaskSuccessAverage().toString());
-                        taskDto.setTaskSuccessStddev(task.getTaskSuccessStddev().toString());
-                        taskDto.setTaskTimeAvg(task.getTaskTimeAvg().toString());
-                        taskDto.setTaskTimeDeviationObservedAvg(task.getTaskTimeDeviationObservedAvg().toString());
-                        taskDto.setTaskTimeDeviationOptimalAvg(task.getTaskTimeDeviationOptimalAvg().toString());
-                        taskDto.setTaskTimeStddev(task.getTaskTimeStddev().toString());
+                        if (task.getTaskRatingStddev() != null) {
+                            taskDto.setTaskRatingStddev(task.getTaskRatingStddev().toString());
+                        }
+                        if (task.getTaskSuccessAverage() != null) {
+                            taskDto.setTaskSuccessAverage(task.getTaskSuccessAverage().toString());
+                        }
+                        if (task.getTaskSuccessStddev() != null) {
+                            taskDto.setTaskSuccessStddev(task.getTaskSuccessStddev().toString());
+                        }
+                        if (task.getTaskTimeAvg() != null) {
+                            taskDto.setTaskTimeAvg(task.getTaskTimeAvg().toString());
+                        }
+                        if (task.getTaskTimeDeviationObservedAvg() != null) {
+                            taskDto.setTaskTimeDeviationObservedAvg(task.getTaskTimeDeviationObservedAvg().toString());
+                        }
+                        if (task.getTaskTimeDeviationOptimalAvg() != null) {
+                            taskDto.setTaskTimeDeviationOptimalAvg(task.getTaskTimeDeviationOptimalAvg().toString());
+                        }
+                        if (task.getTaskTimeStddev() != null) {
+                            taskDto.setTaskTimeStddev(task.getTaskTimeStddev().toString());
+                        }
                         taskDto.setUniqueId(task.getUniqueId());
                         crTaskDto.setPendingTestTask(taskDto);
 
@@ -439,7 +463,9 @@ public class PendingCertifiedProductDTO implements Serializable {
                                     new PendingCertificationResultTestTaskParticipantDTO();
                             PendingTestParticipantDTO partDto = new PendingTestParticipantDTO();
                             partDto.setAssistiveTechnologyNeeds(part.getAssistiveTechnologyNeeds());
-                            partDto.setComputerExperienceMonths(part.getComputerExperienceMonths().toString());
+                            if (part.getComputerExperienceMonths() != null) {
+                                partDto.setComputerExperienceMonths(part.getComputerExperienceMonths().toString());
+                            }
 
                             partDto.setEducationTypeId(part.getEducationTypeId());
                             EducationTypeDTO etDto = new EducationTypeDTO();
@@ -454,8 +480,12 @@ public class PendingCertifiedProductDTO implements Serializable {
 
                             partDto.setGender(part.getGender());
                             partDto.setOccupation(part.getOccupation());
-                            partDto.setProductExperienceMonths(part.getProductExperienceMonths().toString());
-                            partDto.setProfessionalExperienceMonths(part.getProfessionalExperienceMonths().toString());
+                            if (part.getProductExperienceMonths() != null) {
+                                partDto.setProductExperienceMonths(part.getProductExperienceMonths().toString());
+                            }
+                            if (part.getProfessionalExperienceMonths() != null) {
+                                partDto.setProfessionalExperienceMonths(part.getProfessionalExperienceMonths().toString());
+                            }
                             partDto.setUniqueId(part.getUniqueId());
                             crPartDto.setTestParticipant(partDto);
                             crTaskDto.getTaskParticipants().add(crPartDto);
