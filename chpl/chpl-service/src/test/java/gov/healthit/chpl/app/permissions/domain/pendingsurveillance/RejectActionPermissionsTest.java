@@ -123,11 +123,11 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
 
-        Long id = 1l;
+        Long id = 1L;
 
         //The user does not have access to this acb
-        Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))
-        .thenReturn(getPendingSurveillanceEntity(1l, 1l, 3l, ROLE_ACB_ID));
+        Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+        .thenReturn(getPendingSurveillanceEntity(1L, 1L, 3L, ROLE_ACB_ID));
 
         Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))
         .thenReturn(getUserPermissionDTO("ROLE_ACB", "", ""));
@@ -135,8 +135,8 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess(id));
 
         //Should work...
-        Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))
-        .thenReturn(getPendingSurveillanceEntity(1l, 1l, 4l, ROLE_ACB_ID));
+        Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+        .thenReturn(getPendingSurveillanceEntity(1L, 1L, 4L, ROLE_ACB_ID));
 
         Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))
         .thenReturn(getUserPermissionDTO("ROLE_ACB", "", ""));
@@ -144,8 +144,8 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
         assertTrue(permissions.hasAccess(id));
 
         //This one belongs to the wrong authority....
-        Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))
-        .thenReturn(getPendingSurveillanceEntity(1l, 1l, 4l, ROLE_ONC_ID));
+        Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+        .thenReturn(getPendingSurveillanceEntity(1L, 1L, 4L, ROLE_ONC_ID));
 
         Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))
         .thenReturn(getUserPermissionDTO("ROLE_ONC", "", ""));
