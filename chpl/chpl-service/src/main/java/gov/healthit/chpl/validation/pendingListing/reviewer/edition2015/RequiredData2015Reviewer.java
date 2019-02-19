@@ -88,6 +88,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
 
     private static final String G1_CRITERIA_NUMBER = "170.315 (g)(1)";
     private static final String G2_CRITERIA_NUMBER = "170.315 (g)(2)";
+    private static final int MINIMIMUM_PARTICIPANTS = 10;
     private List<String> e2e3Criterion = new ArrayList<String>();
     private List<String> g7g8g9Criterion = new ArrayList<String>();
     private List<String> d2d10Criterion = new ArrayList<String>();
@@ -98,7 +99,9 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     private TestDataDAO testDataDao;
 
     @Autowired
-    public RequiredData2015Reviewer(MacraMeasureDAO macraDao, TestFunctionalityDAO testFuncDao, TestProcedureDAO testProcDao, TestDataDAO testDataDao, ErrorMessageUtil msgUtil, CertificationResultRules certRules) {
+    public RequiredData2015Reviewer(final MacraMeasureDAO macraDao, final TestFunctionalityDAO testFuncDao,
+            final TestProcedureDAO testProcDao, final TestDataDAO testDataDao, final ErrorMessageUtil msgUtil,
+            final CertificationResultRules certRules) {
         super(msgUtil, certRules);
 
         this.macraDao = macraDao;
@@ -201,12 +204,14 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
 
         // check for (e)(2) or (e)(3) required complimentary certs
         List<String> e2e3ComplimentaryErrors =
-                ValidationUtils.checkComplimentaryCriteriaAllRequired(e2e3Criterion, Arrays.asList(E2E3_RELATED_CERTS), allMetCerts);
+                ValidationUtils.checkComplimentaryCriteriaAllRequired(e2e3Criterion,
+                        Arrays.asList(E2E3_RELATED_CERTS), allMetCerts);
         listing.getErrorMessages().addAll(e2e3ComplimentaryErrors);
 
         // check for (g)(7) or (g)(8) or (g)(9) required complimentary certs
         List<String> g7g8g9ComplimentaryErrors =
-                ValidationUtils.checkComplimentaryCriteriaAllRequired(g7g8g9Criterion, Arrays.asList(G7G8G9_RELATED_CERTS), allMetCerts);
+                ValidationUtils.checkComplimentaryCriteriaAllRequired(g7g8g9Criterion,
+                        Arrays.asList(G7G8G9_RELATED_CERTS), allMetCerts);
         listing.getErrorMessages().addAll(g7g8g9ComplimentaryErrors);
 
         //if g7, g8, or g9 is found then one of d2 or d10 is required
@@ -272,7 +277,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                             for (PendingCertificationResultTestTaskDTO certResultTask : certCriteria.getTestTasks()) {
                                 PendingTestTaskDTO task = certResultTask.getPendingTestTask();
                                 if (certResultTask.getTaskParticipants() == null
-                                        || certResultTask.getTaskParticipants().size() < 10) {
+                                        || certResultTask.getTaskParticipants().size() < MINIMIMUM_PARTICIPANTS) {
                                     listing.getErrorMessages().add(
                                             msgUtil.getMessage("listing.criteria.badTestTaskParticipantsSize",
                                                     task.getUniqueId(), certCriteria.getNumber()));
@@ -689,10 +694,12 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                     for (PendingCertificationResultTestProcedureDTO crTestProc : cert.getTestProcedures()) {
                         if (crTestProc.getTestProcedure() == null || crTestProc.getTestProcedureId() == null) {
                             listing.getErrorMessages().add(
-                                    msgUtil.getMessage("listing.criteria.badTestProcedureName", cert.getNumber(), crTestProc.getEnteredName()));
+                                    msgUtil.getMessage("listing.criteria.badTestProcedureName",
+                                            cert.getNumber(), crTestProc.getEnteredName()));
                         } else if (crTestProc.getTestProcedure() != null && crTestProc.getTestProcedure().getId() == null) {
                             TestProcedureDTO foundTestProc =
-                                    testProcDao.getByCriteriaNumberAndValue(cert.getNumber(), crTestProc.getTestProcedure().getName());
+                                    testProcDao.getByCriteriaNumberAndValue(cert.getNumber(),
+                                            crTestProc.getTestProcedure().getName());
                             if(foundTestProc == null || foundTestProc.getId() == null) {
                                 listing.getErrorMessages().add(
                                         msgUtil.getMessage("listing.criteria.badTestProcedureName",
@@ -725,7 +732,8 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                             if (foundTestData == null || foundTestData.getId() == null) {
                                 listing.getWarningMessages().add(
                                         msgUtil.getMessage("listing.criteria.badTestDataName",
-                                                crTestData.getTestData().getName(), cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA));
+                                                crTestData.getTestData().getName(), cert.getNumber(),
+                                                TestDataDTO.DEFALUT_TEST_DATA));
                                 foundTestData =
                                         testDataDao.getByCriteriaNumberAndValue(cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA);
                                 crTestData.getTestData().setId(foundTestData.getId());

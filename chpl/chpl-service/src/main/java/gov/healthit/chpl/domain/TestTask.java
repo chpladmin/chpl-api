@@ -316,7 +316,7 @@ public class TestTask implements Serializable {
             try {
                 taskSuccessAverage = Float.valueOf(value);
             } catch (final Exception e) {
-                LOGGER.error("can't parse " + value + " as a float or integer.");
+                LOGGER.error("can't parse " + value + " as a float.");
             }
         }
     }
@@ -330,7 +330,7 @@ public class TestTask implements Serializable {
             try {
                 taskSuccessStddev = Float.valueOf(value);
             } catch (final Exception e) {
-                LOGGER.error("can't parse " + value + " as a float or integer.");
+                LOGGER.error("can't parse " + value + " as a float.");
             }
         }
     }
@@ -344,7 +344,7 @@ public class TestTask implements Serializable {
             try {
                 taskPathDeviationObserved = Integer.valueOf(value);
             } catch (final Exception e) {
-                LOGGER.error("can't parse " + value + " as a float or integer.");
+                LOGGER.error("can't parse " + value + " as an integer.");
             }
         }
     }
@@ -358,7 +358,7 @@ public class TestTask implements Serializable {
             try {
                 taskPathDeviationOptimal = Integer.valueOf(value);
             } catch (final Exception e) {
-                LOGGER.error("can't parse " + value + " as a float or integer.");
+                LOGGER.error("can't parse " + value + " as an integer.");
             }
         }
     }
@@ -372,7 +372,7 @@ public class TestTask implements Serializable {
             try {
                 taskTimeAvg = Long.valueOf(value);
             } catch (final Exception e) {
-                LOGGER.error("can't parse " + value + " as a float or integer.");
+                LOGGER.error("can't parse " + value + " as a long.");
             }
         }
     }
@@ -386,7 +386,7 @@ public class TestTask implements Serializable {
             try {
                 taskTimeStddev = Integer.valueOf(value);
             } catch (final Exception e) {
-                LOGGER.error("can't parse " + value + " as a float or integer.");
+                LOGGER.error("can't parse " + value + " as an integer.");
             }
         }
     }
@@ -400,7 +400,7 @@ public class TestTask implements Serializable {
             try {
                 taskTimeDeviationObservedAvg = Integer.valueOf(value);
             } catch (final Exception e) {
-                LOGGER.error("can't parse " + value + " as a float or integer.");
+                LOGGER.error("can't parse " + value + " as an integer.");
             }
         }
     }
@@ -414,7 +414,7 @@ public class TestTask implements Serializable {
             try {
                 taskTimeDeviationOptimalAvg = Integer.valueOf(value);
             } catch (final Exception e) {
-                LOGGER.error("can't parse " + value + " as a float or integer.");
+                LOGGER.error("can't parse " + value + " as an integer.");
             }
         }
     }
@@ -428,7 +428,7 @@ public class TestTask implements Serializable {
             try {
                 taskErrors = Float.valueOf(value);
             } catch (final Exception e) {
-                LOGGER.error("can't parse " + value + " as a float or integer.");
+                LOGGER.error("can't parse " + value + " as a float.");
             }
         }
     }
@@ -442,7 +442,7 @@ public class TestTask implements Serializable {
             try {
                 taskErrorsStddev = Float.valueOf(value);
             } catch (final Exception e) {
-                LOGGER.error("can't parse " + value + " as a float or integer.");
+                LOGGER.error("can't parse " + value + " as a float.");
             }
         }
     }
@@ -464,7 +464,7 @@ public class TestTask implements Serializable {
             try {
                 taskRating = Float.valueOf(value);
             } catch (final Exception e) {
-                LOGGER.error("can't parse " + value + " as a float or integer.");
+                LOGGER.error("can't parse " + value + " as a float.");
             }
         }
     }

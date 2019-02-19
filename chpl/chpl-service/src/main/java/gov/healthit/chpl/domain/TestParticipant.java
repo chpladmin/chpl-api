@@ -255,7 +255,7 @@ public class TestParticipant implements Serializable {
             try {
                 professionalExperienceMonths = Integer.valueOf(value);
             } catch (final Exception e) {
-                LOGGER.error("can't parse " + value + " as a float or integer.");
+                LOGGER.error("can't parse " + value + " as an integer.");
             }
         }
     }
@@ -269,7 +269,7 @@ public class TestParticipant implements Serializable {
             try {
                 computerExperienceMonths = Integer.valueOf(value);
             } catch (final Exception e) {
-                LOGGER.error("can't parse " + value + " as a float or integer.");
+                LOGGER.error("can't parse " + value + " as an integer.");
             }
         }
     }
@@ -283,7 +283,7 @@ public class TestParticipant implements Serializable {
             try {
                 productExperienceMonths = Integer.valueOf(value);
             } catch (final Exception e) {
-                LOGGER.error("can't parse " + value + " as a float or integer.");
+                LOGGER.error("can't parse " + value + " as an integer.");
             }
         }
     }
