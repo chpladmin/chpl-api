@@ -578,7 +578,6 @@ public class CertifiedProductController {
                     + "authority on the ACB that certified the product.")
     @RequestMapping(value = "/{certifiedProductId}", method = RequestMethod.PUT,
     produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public ResponseEntity<CertifiedProductSearchDetails> updateCertifiedProduct(
             @RequestBody(required = true) final ListingUpdateRequest updateRequest)
                     throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
