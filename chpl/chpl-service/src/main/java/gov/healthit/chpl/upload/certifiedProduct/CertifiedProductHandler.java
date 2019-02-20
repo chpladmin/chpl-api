@@ -36,6 +36,7 @@ import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTestingLa
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("certifiedProductHandler")
 public abstract class CertifiedProductHandler extends CertifiedProductUploadHandlerImpl {
@@ -47,7 +48,9 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
     protected static final String CRITERIA_COL_HEADING_BEGIN = "CRITERIA_";
 
     @Autowired
-    MessageSource messageSource;
+    private MessageSource messageSource;
+    @Autowired
+    private ErrorMessageUtil msgUtil;
 
     @Override
     public abstract PendingCertifiedProductEntity handle() throws InvalidArgumentsException;
@@ -243,6 +246,7 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
             Date certificationDate = dateFormatter.parse(dateStr);
             pendingCertifiedProduct.setCertificationDate(certificationDate);
         } catch (final ParseException ex) {
+            pendingCertifiedProduct.getErrorMessages().add(msgUtil.getMessage("listing.badCertificationDate", dateStr));
             pendingCertifiedProduct.setCertificationDate(null);
         }
     }
