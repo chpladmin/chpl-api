@@ -20,7 +20,7 @@ import gov.healthit.chpl.dto.TestParticipantDTO;
 import gov.healthit.chpl.dto.TestTaskDTO;
 
 /**
- * A task used for SED testing for a given criteria
+ * A task used for SED testing for a given criteria.
  */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -175,7 +175,7 @@ public class TestTask implements Serializable {
         criteria = new HashSet<CertificationCriterion>();
     }
 
-    public TestTask(TestTaskDTO dto) {
+    public TestTask(final TestTaskDTO dto) {
         this();
         this.id = dto.getId();
         this.description = dto.getDescription();
@@ -199,13 +199,13 @@ public class TestTask implements Serializable {
         }
     }
 
-    public TestTask(CertificationResultTestTaskDTO dto) {
+    public TestTask(final CertificationResultTestTaskDTO dto) {
         this(dto.getTestTask());
         this.id = dto.getTestTaskId();
     }
 
     @Override
-    public boolean equals(Object other) {
+    public boolean equals(final Object other) {
         if (other == null || !(other instanceof TestTask)) {
             return false;
         }
@@ -265,7 +265,7 @@ public class TestTask implements Serializable {
         return hashCode;
     }
 
-    public boolean matches(TestTask anotherTask) {
+    public boolean matches(final TestTask anotherTask) {
         boolean result = false;
         if (this.getId() != null && anotherTask.getId() != null
                 && this.getId().longValue() == anotherTask.getId().longValue()) {
@@ -311,16 +311,28 @@ public class TestTask implements Serializable {
         return taskSuccessAverage;
     }
 
-    public void setTaskSuccessAverage(final Float taskSuccessAverage) {
-        this.taskSuccessAverage = taskSuccessAverage;
+    public void setTaskSuccessAverage(final String value) {
+        if (!StringUtils.isEmpty(value)) {
+            try {
+                taskSuccessAverage = Float.valueOf(value);
+            } catch (final Exception e) {
+                LOGGER.error("can't parse " + value + " as a float.");
+            }
+        }
     }
 
     public Float getTaskSuccessStddev() {
         return taskSuccessStddev;
     }
 
-    public void setTaskSuccessStddev(final Float taskSuccessStddev) {
-        this.taskSuccessStddev = taskSuccessStddev;
+    public void setTaskSuccessStddev(final String value) {
+        if (!StringUtils.isEmpty(value)) {
+            try {
+                taskSuccessStddev = Float.valueOf(value);
+            } catch (final Exception e) {
+                LOGGER.error("can't parse " + value + " as a float.");
+            }
+        }
     }
 
     public Integer getTaskPathDeviationObserved() {
@@ -330,9 +342,9 @@ public class TestTask implements Serializable {
     public void setTaskPathDeviationObserved(final String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
-                taskPathDeviationObserved = Math.round(new Float(value));
-            } catch (final NumberFormatException e) {
-                LOGGER.error("can't parse " + value + " as a float or integer.");
+                taskPathDeviationObserved = Integer.valueOf(value);
+            } catch (final Exception e) {
+                LOGGER.error("can't parse " + value + " as an integer.");
             }
         }
     }
@@ -344,9 +356,9 @@ public class TestTask implements Serializable {
     public void setTaskPathDeviationOptimal(final String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
-                taskPathDeviationOptimal = Math.round(Float.valueOf(value));
-            } catch (final NumberFormatException e) {
-                LOGGER.error("can't parse " + value + " as a float or integer.");
+                taskPathDeviationOptimal = Integer.valueOf(value);
+            } catch (final Exception e) {
+                LOGGER.error("can't parse " + value + " as an integer.");
             }
         }
     }
@@ -358,9 +370,9 @@ public class TestTask implements Serializable {
     public void setTaskTimeAvg(final String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
-                taskTimeAvg = Long.valueOf(Math.round(Float.valueOf((value))));
-            } catch (final NumberFormatException e) {
-                LOGGER.error("can't parse " + value + " as a float or integer.");
+                taskTimeAvg = Long.valueOf(value);
+            } catch (final Exception e) {
+                LOGGER.error("can't parse " + value + " as a long.");
             }
         }
     }
@@ -372,9 +384,9 @@ public class TestTask implements Serializable {
     public void setTaskTimeStddev(final String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
-                taskTimeStddev = Math.round(Float.valueOf(value));
-            } catch (final NumberFormatException e) {
-                LOGGER.error("can't parse " + value + " as a float or integer.");
+                taskTimeStddev = Integer.valueOf(value);
+            } catch (final Exception e) {
+                LOGGER.error("can't parse " + value + " as an integer.");
             }
         }
     }
@@ -386,9 +398,9 @@ public class TestTask implements Serializable {
     public void setTaskTimeDeviationObservedAvg(final String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
-                taskTimeDeviationObservedAvg = Math.round(new Float(value));
-            } catch (final NumberFormatException e) {
-                LOGGER.error("can't parse " + value + " as a float or integer.");
+                taskTimeDeviationObservedAvg = Integer.valueOf(value);
+            } catch (final Exception e) {
+                LOGGER.error("can't parse " + value + " as an integer.");
             }
         }
     }
@@ -400,9 +412,9 @@ public class TestTask implements Serializable {
     public void setTaskTimeDeviationOptimalAvg(final String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
-                taskTimeDeviationOptimalAvg = Math.round(new Float(value));
-            } catch (final NumberFormatException e) {
-                LOGGER.error("can't parse " + value + " as a float or integer.");
+                taskTimeDeviationOptimalAvg = Integer.valueOf(value);
+            } catch (final Exception e) {
+                LOGGER.error("can't parse " + value + " as an integer.");
             }
         }
     }
@@ -411,16 +423,28 @@ public class TestTask implements Serializable {
         return taskErrors;
     }
 
-    public void setTaskErrors(final Float taskErrors) {
-        this.taskErrors = taskErrors;
+    public void setTaskErrors(final String value) {
+        if (!StringUtils.isEmpty(value)) {
+            try {
+                taskErrors = Float.valueOf(value);
+            } catch (final Exception e) {
+                LOGGER.error("can't parse " + value + " as a float.");
+            }
+        }
     }
 
     public Float getTaskErrorsStddev() {
         return taskErrorsStddev;
     }
 
-    public void setTaskErrorsStddev(final Float taskErrorsStddev) {
-        this.taskErrorsStddev = taskErrorsStddev;
+    public void setTaskErrorsStddev(final String value) {
+        if (!StringUtils.isEmpty(value)) {
+            try {
+                taskErrorsStddev = Float.valueOf(value);
+            } catch (final Exception e) {
+                LOGGER.error("can't parse " + value + " as a float.");
+            }
+        }
     }
 
     public String getTaskRatingScale() {
@@ -435,8 +459,14 @@ public class TestTask implements Serializable {
         return taskRating;
     }
 
-    public void setTaskRating(final Float taskRating) {
-        this.taskRating = taskRating;
+    public void setTaskRating(final String value) {
+        if (!StringUtils.isEmpty(value)) {
+            try {
+                taskRating = Float.valueOf(value);
+            } catch (final Exception e) {
+                LOGGER.error("can't parse " + value + " as a float.");
+            }
+        }
     }
 
     public Set<TestParticipant> getTestParticipants() {
@@ -459,8 +489,14 @@ public class TestTask implements Serializable {
         return taskRatingStddev;
     }
 
-    public void setTaskRatingStddev(final Float taskRatingStddev) {
-        this.taskRatingStddev = taskRatingStddev;
+    public void setTaskRatingStddev(final String value) {
+        if (!StringUtils.isEmpty(value)) {
+            try {
+                taskRatingStddev = Float.valueOf(value);
+            } catch (final Exception e) {
+                LOGGER.error("can't parse " + value + " as a float or integer.");
+            }
+        }
     }
 
     public Set<CertificationCriterion> getCriteria() {
@@ -469,5 +505,17 @@ public class TestTask implements Serializable {
 
     public void setCriteria(final Set<CertificationCriterion> criteria) {
         this.criteria = criteria;
+    }
+
+    @Override
+    public String toString() {
+        return "TestTask [id=" + id + ", uniqueId=" + uniqueId + ", description=" + description
+                + ", taskSuccessAverage=" + taskSuccessAverage + ", taskSuccessStddev=" + taskSuccessStddev
+                + ", taskPathDeviationObserved=" + taskPathDeviationObserved + ", taskPathDeviationOptimal="
+                + taskPathDeviationOptimal + ", taskTimeAvg=" + taskTimeAvg + ", taskTimeStddev=" + taskTimeStddev
+                + ", taskTimeDeviationObservedAvg=" + taskTimeDeviationObservedAvg + ", taskTimeDeviationOptimalAvg="
+                + taskTimeDeviationOptimalAvg + ", taskErrors=" + taskErrors + ", taskErrorsStddev=" + taskErrorsStddev
+                + ", taskRatingScale=" + taskRatingScale + ", taskRating=" + taskRating + ", taskRatingStddev="
+                + taskRatingStddev + ", criteria=" + criteria + ", testParticipants=" + testParticipants + "]";
     }
 }
