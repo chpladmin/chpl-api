@@ -24,7 +24,7 @@ public interface PendingCertifiedProductManager {
             throws EntityRetrievalException, AccessDeniedException;
 
     List<PendingCertifiedProductDTO> getAllPendingCertifiedProducts();
-    List<PendingCertifiedProductDTO> getPendingCertifiedProducts(Long acbId);
+    List<PendingCertifiedProductDTO> getPendingCertifiedProducts(final Long acbId);
 
     PendingCertifiedProductDTO createOrReplace(Long acbId, PendingCertifiedProductEntity toCreate)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException;

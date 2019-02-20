@@ -368,10 +368,13 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 
         List<ProductEntity> result = entityManager
                 .createQuery(
-                        "SELECT distinct pe " + "FROM ProductEntity pe " + "LEFT JOIN FETCH pe.developer "
-                                + "LEFT JOIN FETCH pe.contact " + "LEFT JOIN FETCH pe.ownerHistory "
+                        "SELECT distinct pe " + "FROM ProductEntity pe "
+                                + "LEFT JOIN FETCH pe.developer "
+                                + "LEFT JOIN FETCH pe.contact "
+                                + "LEFT JOIN FETCH pe.ownerHistory "
                                 + "LEFT JOIN FETCH pe.productVersions "
-                                + "LEFT JOIN FETCH pe.productCertificationStatuses " + "where (NOT pe.deleted = true) ",
+                                + "LEFT JOIN FETCH pe.productCertificationStatuses "
+                                + "where (NOT pe.deleted = true) ",
                                 ProductEntity.class)
                 .getResultList();
 
@@ -380,7 +383,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 
     }
 
-    private ProductActiveOwnerEntity getProductPreviousOwner(Long ppoId) {
+    private ProductActiveOwnerEntity getProductPreviousOwner(final Long ppoId) {
         ProductActiveOwnerEntity result = null;
         Query query = entityManager.createQuery("SELECT po " + "FROM ProductActiveOwnerEntity po "
                 + "LEFT OUTER JOIN FETCH po.developer " + "WHERE (po.id = :ppoId)", ProductActiveOwnerEntity.class);

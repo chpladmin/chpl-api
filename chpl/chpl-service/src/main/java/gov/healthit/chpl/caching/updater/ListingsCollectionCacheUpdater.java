@@ -1,4 +1,4 @@
-package gov.healthit.chpl.caching;
+package gov.healthit.chpl.caching.updater;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.caching.CacheReplacer;
+import gov.healthit.chpl.caching.PrefetchedCacheLoader;
 import net.sf.ehcache.CacheManager;
 
 @Component
@@ -13,7 +16,7 @@ public class ListingsCollectionCacheUpdater {
     private static final Logger LOGGER = LogManager.getLogger(ListingsCollectionCacheUpdater.class);
 
     @Autowired
-    private PreFetchedCaches prefetchedCaches;
+    private PrefetchedCacheLoader prefetchedCaches;
 
     @Async
     public synchronized void refreshCacheAsync() {
@@ -34,9 +37,9 @@ public class ListingsCollectionCacheUpdater {
      */
     private void refreshCache() {
         CacheManager manager = CacheManager.getInstance();
-        prefetchedCaches.loadPreFetchedBasicSearch();
+        prefetchedCaches.loadPrefetchedListingCollection();
         LOGGER.debug("Replacing live listings collection cache with pre-fetched data.");
         CacheReplacer.replaceCache(manager.getCache(CacheNames.COLLECTIONS_LISTINGS),
-                manager.getCache(CacheNames.COLLECTIONS_PREFETCHED_LISTINGS));
+                manager.getCache(CacheNames.PREFETCHED_COLLECTIONS_LISTINGS));
     }
 }

@@ -90,9 +90,6 @@ public class ProductManagerImpl implements ProductManager {
     @Override
     @Transactional(readOnly = false)
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
-    @CacheEvict(value = {
-            CacheNames.PRODUCT_NAMES
-    }, allEntries = true)
     public ProductDTO create(ProductDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
         // check that the developer of this product is Active
@@ -127,9 +124,6 @@ public class ProductManagerImpl implements ProductManager {
     @Override
     @Transactional(readOnly = false)
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
-    @CacheEvict(value = {
-            CacheNames.PRODUCT_NAMES
-    }, allEntries = true)
     public ProductDTO update(ProductDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 
@@ -173,9 +167,6 @@ public class ProductManagerImpl implements ProductManager {
     @Override
     @Transactional(readOnly = false)
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    @CacheEvict(value = {
-            CacheNames.PRODUCT_NAMES
-    }, allEntries = true)
     public ProductDTO merge(List<Long> productIdsToMerge, ProductDTO toCreate)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 
@@ -230,9 +221,6 @@ public class ProductManagerImpl implements ProductManager {
             AccessDeniedException.class
     })
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
-    @CacheEvict(value = {
-            CacheNames.PRODUCT_NAMES
-    }, allEntries = true)
     public ProductDTO split(ProductDTO oldProduct, ProductDTO newProduct, String newProductCode,
             List<ProductVersionDTO> newProductVersions)
             throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
