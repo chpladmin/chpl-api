@@ -11,6 +11,7 @@ import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.Util;
 
 /**
@@ -20,76 +21,6 @@ import gov.healthit.chpl.util.Util;
  */
 public class CertifiedProductDTO implements Serializable {
     private static final long serialVersionUID = 7918387302717979598L;
-    /**
-     * How many parts there are in the CHPL Product ID.
-     */
-    public static final int CHPL_PRODUCT_ID_PARTS = 9;
-    /**
-     * Location of the EDITION in the CHPL_PRODUCT_ID.
-     */
-    public static final int EDITION_CODE_INDEX = 0;
-    /**
-     * Location of the ATL in the CHPL_PRODUCT_ID.
-     */
-    public static final int ATL_CODE_INDEX = 1;
-    /**
-     * Location of the ACB in the CHPL_PRODUCT_ID.
-     */
-    public static final int ACB_CODE_INDEX = 2;
-    /**
-     * Location of the Developer in the CHPL_PRODUCT_ID.
-     */
-    public static final int DEVELOPER_CODE_INDEX = 3;
-    /**
-     * Location of the Product in the CHPL_PRODUCT_ID.
-     */
-    public static final int PRODUCT_CODE_INDEX = 4;
-    /**
-     * Location of the Version in the CHPL_PRODUCT_ID.
-     */
-    public static final int VERSION_CODE_INDEX = 5;
-    /**
-     * Location of the ICS in the CHPL_PRODUCT_ID.
-     */
-    public static final int ICS_CODE_INDEX = 6;
-    /**
-     * Location of the Additional Software in the CHPL_PRODUCT_ID.
-     */
-    public static final int ADDITIONAL_SOFTWARE_CODE_INDEX = 7;
-    /**
-     * Location of the Certification Date in the CHPL_PRODUCT_ID.
-     */
-    public static final int CERTIFIED_DATE_CODE_INDEX = 8;
-
-    /**
-     * Required length of the PRODUCT code.
-     */
-    public static final int PRODUCT_CODE_LENGTH = 4;
-    /**
-     * Required length of the VERSION code.
-     */
-    public static final int VERSION_CODE_LENGTH = 2;
-    /**
-     * Required length of the ICS code.
-     */
-    public static final int ICS_CODE_LENGTH = 2;
-    /**
-     * Required length of the ADDITIONAL SOFTWARE code.
-     */
-    public static final int ADDITIONAL_SOFTWARE_CODE_LENGTH = 1;
-    /**
-     * Required length of the CERTIFICATION DATE code.
-     */
-    public static final int CERTIFIED_DATE_CODE_LENGTH = 6;
-
-    /**
-     * REGEX that matches a CHPL Product ID for searching.
-     * Requires first four components (Edition, ATL, ACB, Developer Code).
-     * Optional for remaining parts.
-     */
-    public static final String CHPL_PRODUCT_NUMBER_SEARCH_REGEX =
-            "(\\d{2}\\.){3}\\d{4}\\.(\\w{4}\\.(\\w{2}\\.(\\d{2}\\.(\\d\\.(\\d{6})?)?)?)?)?";
-
     private Long id;
     private String productCode;
     private String versionCode;
@@ -205,15 +136,15 @@ public class CertifiedProductDTO implements Serializable {
             } else {
                 String chplProductId = from.getChplProductNumber();
                 String[] chplProductIdComponents = chplProductId.split("\\.");
-                if (chplProductIdComponents == null || chplProductIdComponents.length != CHPL_PRODUCT_ID_PARTS) {
+                if (chplProductIdComponents == null || chplProductIdComponents.length != ChplProductNumberUtil.CHPL_PRODUCT_ID_PARTS) {
                     throw new InvalidArgumentsException(
                             "CHPL Product Id " + chplProductId + " is not in a format recognized by the system.");
                 } else {
-                    this.setProductCode(chplProductIdComponents[PRODUCT_CODE_INDEX]);
-                    this.setVersionCode(chplProductIdComponents[VERSION_CODE_INDEX]);
-                    this.setIcsCode(chplProductIdComponents[ICS_CODE_INDEX]);
-                    this.setAdditionalSoftwareCode(chplProductIdComponents[ADDITIONAL_SOFTWARE_CODE_INDEX]);
-                    this.setCertifiedDateCode(chplProductIdComponents[CERTIFIED_DATE_CODE_INDEX]);
+                    this.setProductCode(chplProductIdComponents[ChplProductNumberUtil.PRODUCT_CODE_INDEX]);
+                    this.setVersionCode(chplProductIdComponents[ChplProductNumberUtil.VERSION_CODE_INDEX]);
+                    this.setIcsCode(chplProductIdComponents[ChplProductNumberUtil.ICS_CODE_INDEX]);
+                    this.setAdditionalSoftwareCode(chplProductIdComponents[ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_INDEX]);
+                    this.setCertifiedDateCode(chplProductIdComponents[ChplProductNumberUtil.CERTIFIED_DATE_CODE_INDEX]);
                 }
 
                 if (from.getCertificationDate() != null) {

@@ -47,6 +47,28 @@ public final class ValidationUtils {
     }
 
     /**
+     * Validation utility to check if a part of the chpl product number
+     * matches a specific regex. Useful to determine if any other than the
+     * allowed characters are present.
+     * @param chplProductNumber the chpl product number to test
+     * @param partIndex the index, 0-8
+     * @param regexToMatch regex like ^[0-9]$
+     * @return true of the part matches the regex and false otherwise
+     */
+    public static boolean chplNumberPartIsValid(final String chplProductNumber,
+            final int partIndex, final String regexToMatch) {
+        String[] uniqueIdParts = chplProductNumber.split("\\.");
+        if (uniqueIdParts.length == ChplProductNumberUtil.CHPL_PRODUCT_ID_PARTS) {
+            String chplNumberPart = uniqueIdParts[partIndex];
+            if (StringUtils.isEmpty(chplNumberPart)
+                    || !chplNumberPart.matches(regexToMatch)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Check that input string is in the default charset.
      * @param input string to check
      * @return true iff string is in default charset

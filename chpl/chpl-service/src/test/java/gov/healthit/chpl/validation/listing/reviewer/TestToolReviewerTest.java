@@ -19,7 +19,6 @@ import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.listing.ListingMockUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
@@ -249,7 +248,7 @@ public class TestToolReviewerTest {
     public void testListingWithIcsAndRetiredTestTool_HasNoError() {
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         String updatedListingId =
-                mockUtil.getChangedListingId(listing.getChplProductNumber(), CertifiedProductDTO.ICS_CODE_INDEX, "01");
+                mockUtil.getChangedListingId(listing.getChplProductNumber(), ChplProductNumberUtil.ICS_CODE_INDEX, "01");
         listing.setChplProductNumber(updatedListingId);
         listing.getIcs().setInherits(Boolean.TRUE);
 
