@@ -517,7 +517,6 @@ throws EntityCreationException {
         return entity.getCertificationBodyId();
     }
 
-    @Cacheable(CacheNames.FIND_BY_ACB_ID)
     @Override
     public List<PendingCertifiedProductDTO> findByAcbId(final Long acbId) {
         List<PendingCertifiedProductEntity> entities = getEntityByAcbId(acbId);
