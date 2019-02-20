@@ -224,7 +224,7 @@ public class ProductManagerImpl implements ProductManager {
             AccessDeniedException.class
     })
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
-    public ProductDTO split(final ProductDTO oldProduct, ProductDTO newProduct,
+    public ProductDTO split(final ProductDTO oldProduct, final ProductDTO productToCreate,
             final String newProductCode, final List<ProductVersionDTO> newProductVersions)
             throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
         // what ACB does the user have??
@@ -233,15 +233,15 @@ public class ProductManagerImpl implements ProductManager {
         // create the new product and log activity
         // this method checks that the related developer is Active and will
         // throw an exception if they aren't
-        newProduct = create(newProduct);
+        ProductDTO createdProduct = create(productToCreate);
 
         // re-assign versions to the new product and log activity for each
         List<Long> affectedVersionIds = new ArrayList<Long>();
         for (ProductVersionDTO affectedVersion : newProductVersions) {
             // get before and after for activity; update product owner
             ProductVersionDTO beforeVersion = versionDao.getById(affectedVersion.getId());
-            affectedVersion.setProductId(newProduct.getId());
-            affectedVersion.setProductName(newProduct.getName());
+            affectedVersion.setProductId(createdProduct.getId());
+            affectedVersion.setProductName(createdProduct.getName());
             versionDao.update(affectedVersion);
             ProductVersionDTO afterVersion = versionDao.getById(affectedVersion.getId());
             activityManager.addActivity(
@@ -302,6 +302,6 @@ public class ProductManagerImpl implements ProductManager {
                     afterProduct);
         }
 
-        return getById(newProduct.getId());
+        return getById(createdProduct.getId());
     }
 }
