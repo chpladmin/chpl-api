@@ -323,10 +323,18 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                     try {
                                         Integer.valueOf(task.getTaskPathDeviationObserved());
                                     } catch (final Exception e) {
-                                        listing.getErrorMessages().add(
-                                                msgUtil.getMessage("listing.criteria.badTestTaskNumber",
-                                                        task.getUniqueId(), "Task Path Deviation Observed",
-                                                        task.getTaskPathDeviationObserved()));
+                                        try {
+                                            int val = Math.round(Float.valueOf(task.getTaskPathDeviationObserved()));
+                                            listing.getWarningMessages().add(
+                                                    msgUtil.getMessage("listing.criteria.roundedTestTaskNumber",
+                                                            task.getUniqueId(), "Task Path Deviation Observed",
+                                                            task.getTaskPathDeviationObserved(), String.valueOf(val)));
+                                        } catch (final Exception ex) {
+                                            listing.getErrorMessages().add(
+                                                    msgUtil.getMessage("listing.criteria.badTestTaskNumber",
+                                                            task.getUniqueId(), "Task Path Deviation Observed",
+                                                            task.getTaskPathDeviationObserved()));
+                                        }
                                     }
                                 }
                                 if (task.getTaskPathDeviationOptimal() == null) {
@@ -337,10 +345,18 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                     try {
                                         Integer.valueOf(task.getTaskPathDeviationOptimal());
                                     } catch (final Exception e) {
-                                        listing.getErrorMessages().add(
-                                                msgUtil.getMessage("listing.criteria.badTestTaskNumber",
-                                                        task.getUniqueId(), "Task Path Deviation Optimal",
-                                                        task.getTaskPathDeviationOptimal()));
+                                        try {
+                                            int val = Math.round(Float.valueOf(task.getTaskPathDeviationOptimal()));
+                                            listing.getWarningMessages().add(
+                                                    msgUtil.getMessage("listing.criteria.roundedTestTaskNumber",
+                                                            task.getUniqueId(), "Task Path Deviation Optimal",
+                                                            task.getTaskPathDeviationOptimal(), String.valueOf(val)));
+                                        } catch (final Exception ex) {
+                                            listing.getErrorMessages().add(
+                                                    msgUtil.getMessage("listing.criteria.badTestTaskNumber",
+                                                            task.getUniqueId(), "Task Path Deviation Optimal",
+                                                            task.getTaskPathDeviationOptimal()));
+                                        }
                                     }
                                 }
                                 if (task.getTaskTimeAvg() == null) {
@@ -351,9 +367,17 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                     try {
                                         Long.valueOf(task.getTaskTimeAvg());
                                     } catch (final Exception e) {
-                                        listing.getErrorMessages().add(
-                                                msgUtil.getMessage("listing.criteria.badTestTaskNumber",
-                                                        task.getUniqueId(), "Task Time Average", task.getTaskTimeAvg()));
+                                        try {
+                                            int val = Math.round(Float.valueOf(task.getTaskTimeAvg()));
+                                            listing.getWarningMessages().add(
+                                                    msgUtil.getMessage("listing.criteria.roundedTestTaskNumber",
+                                                            task.getUniqueId(), "Task Time Average",
+                                                            task.getTaskTimeAvg(), String.valueOf(val)));
+                                        } catch (final Exception ex) {
+                                            listing.getErrorMessages().add(
+                                                    msgUtil.getMessage("listing.criteria.badTestTaskNumber",
+                                                            task.getUniqueId(), "Task Time Average", task.getTaskTimeAvg()));
+                                        }
                                     }
                                 }
                                 if (task.getTaskTimeStddev() == null) {
@@ -364,10 +388,18 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                     try {
                                         Integer.valueOf(task.getTaskTimeStddev());
                                     } catch (final Exception e) {
-                                        listing.getErrorMessages().add(
-                                                msgUtil.getMessage("listing.criteria.badTestTaskNumber",
-                                                        task.getUniqueId(), "Task Time Standard Deviation",
-                                                        task.getTaskTimeStddev()));
+                                        try {
+                                            int val = Math.round(Float.valueOf(task.getTaskTimeStddev()));
+                                            listing.getWarningMessages().add(
+                                                    msgUtil.getMessage("listing.criteria.roundedTestTaskNumber",
+                                                            task.getUniqueId(), "Task Time Standard Deviation",
+                                                            task.getTaskTimeStddev(), String.valueOf(val)));
+                                        } catch (final Exception ex) {
+                                            listing.getErrorMessages().add(
+                                                    msgUtil.getMessage("listing.criteria.badTestTaskNumber",
+                                                            task.getUniqueId(), "Task Time Standard Deviation",
+                                                            task.getTaskTimeStddev()));
+                                        }
                                     }
                                 }
                                 if (task.getTaskTimeDeviationObservedAvg() == null) {
@@ -378,10 +410,18 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                     try {
                                         Integer.valueOf(task.getTaskTimeDeviationObservedAvg());
                                     } catch (final Exception e) {
-                                        listing.getErrorMessages().add(
-                                                msgUtil.getMessage("listing.criteria.badTestTaskNumber",
-                                                        task.getUniqueId(), "Task Time Deviation Observed Average",
-                                                        task.getTaskTimeDeviationObservedAvg()));
+                                        try {
+                                            int val = Math.round(Float.valueOf(task.getTaskTimeDeviationObservedAvg()));
+                                            listing.getWarningMessages().add(
+                                                    msgUtil.getMessage("listing.criteria.roundedTestTaskNumber",
+                                                            task.getUniqueId(), "Task Time Deviation Observed Average",
+                                                            task.getTaskTimeDeviationObservedAvg(), String.valueOf(val)));
+                                        } catch (final Exception ex) {
+                                            listing.getErrorMessages().add(
+                                                    msgUtil.getMessage("listing.criteria.badTestTaskNumber",
+                                                            task.getUniqueId(), "Task Time Deviation Observed Average",
+                                                            task.getTaskTimeDeviationObservedAvg()));
+                                        }
                                     }
                                 }
                                 if (task.getTaskTimeDeviationOptimalAvg() == null) {
@@ -392,10 +432,18 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                     try {
                                         Integer.valueOf(task.getTaskTimeDeviationOptimalAvg());
                                     } catch (final Exception e) {
-                                        listing.getErrorMessages().add(
-                                                msgUtil.getMessage("listing.criteria.badTestTaskNumber",
-                                                        task.getUniqueId(), "Task Time Deviation Optimal Average",
-                                                        task.getTaskTimeDeviationOptimalAvg()));
+                                        try {
+                                            int val = Math.round(Float.valueOf(task.getTaskTimeDeviationOptimalAvg()));
+                                            listing.getWarningMessages().add(
+                                                    msgUtil.getMessage("listing.criteria.roundedTestTaskNumber",
+                                                            task.getUniqueId(), "Task Time Deviation Optimal Average",
+                                                            task.getTaskTimeDeviationOptimalAvg(), String.valueOf(val)));
+                                        } catch (final Exception ex) {
+                                            listing.getErrorMessages().add(
+                                                    msgUtil.getMessage("listing.criteria.badTestTaskNumber",
+                                                            task.getUniqueId(), "Task Time Deviation Optimal Average",
+                                                            task.getTaskTimeDeviationOptimalAvg()));
+                                        }
                                     }
                                 }
                                 if (task.getTaskErrors() == null) {
@@ -499,11 +547,22 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                         try {
                                             Integer.parseInt(part.getTestParticipant().getProfessionalExperienceMonths());
                                         } catch (Exception e) {
-                                            listing.getErrorMessages().add(
-                                                    msgUtil.getMessage("listing.criteria.badParticipantNumber",
-                                                            part.getTestParticipant().getUniqueId(),
-                                                            "Professional Experience Months",
-                                                            part.getTestParticipant().getProfessionalExperienceMonths()));
+                                            try {
+                                                int val = Math.round(Float.valueOf(part.getTestParticipant()
+                                                        .getProfessionalExperienceMonths()));
+                                                listing.getWarningMessages().add(
+                                                        msgUtil.getMessage("listing.criteria.roundedParticipantNumber",
+                                                                part.getTestParticipant().getUniqueId(),
+                                                                "Professional Experience Months",
+                                                                part.getTestParticipant().getProfessionalExperienceMonths(),
+                                                                String.valueOf(val)));
+                                            } catch (final Exception ex) {
+                                                listing.getErrorMessages().add(
+                                                        msgUtil.getMessage("listing.criteria.badParticipantNumber",
+                                                                part.getTestParticipant().getUniqueId(),
+                                                                "Professional Experience Months",
+                                                                part.getTestParticipant().getProfessionalExperienceMonths()));
+                                            }
                                         }
                                     }
                                     if (part.getTestParticipant().getProductExperienceMonths() == null) {
@@ -514,11 +573,22 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                         try {
                                             Integer.parseInt(part.getTestParticipant().getProductExperienceMonths());
                                         } catch (Exception e) {
-                                            listing.getErrorMessages().add(
-                                                    msgUtil.getMessage("listing.criteria.badParticipantNumber",
-                                                            part.getTestParticipant().getUniqueId(),
-                                                            "Product Experience Months",
-                                                            part.getTestParticipant().getProductExperienceMonths()));
+                                            try {
+                                                int val = Math.round(Float.valueOf(part.getTestParticipant()
+                                                        .getProductExperienceMonths()));
+                                                listing.getWarningMessages().add(
+                                                        msgUtil.getMessage("listing.criteria.roundedParticipantNumber",
+                                                                part.getTestParticipant().getUniqueId(),
+                                                                "Product Experience Months",
+                                                                part.getTestParticipant().getProductExperienceMonths(),
+                                                                String.valueOf(val)));
+                                            } catch (final Exception ex) {
+                                                listing.getErrorMessages().add(
+                                                        msgUtil.getMessage("listing.criteria.badParticipantNumber",
+                                                                part.getTestParticipant().getUniqueId(),
+                                                                "Product Experience Months",
+                                                                part.getTestParticipant().getProductExperienceMonths()));
+                                            }
                                         }
                                     }
                                     if (part.getTestParticipant().getComputerExperienceMonths() == null) {
@@ -529,11 +599,22 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                         try {
                                             Integer.parseInt(part.getTestParticipant().getComputerExperienceMonths());
                                         } catch (Exception e) {
-                                            listing.getErrorMessages().add(
-                                                    msgUtil.getMessage("listing.criteria.badParticipantNumber",
-                                                            part.getTestParticipant().getUniqueId(),
-                                                            "Computer Experience Months",
-                                                            part.getTestParticipant().getComputerExperienceMonths()));
+                                            try {
+                                                int val = Math.round(Float.valueOf(part.getTestParticipant()
+                                                        .getComputerExperienceMonths()));
+                                                listing.getWarningMessages().add(
+                                                        msgUtil.getMessage("listing.criteria.roundedParticipantNumber",
+                                                                part.getTestParticipant().getUniqueId(),
+                                                                "Computer Experience Months",
+                                                                part.getTestParticipant().getComputerExperienceMonths(),
+                                                                String.valueOf(val)));
+                                            } catch (final Exception ex) {
+                                                listing.getErrorMessages().add(
+                                                        msgUtil.getMessage("listing.criteria.badParticipantNumber",
+                                                                part.getTestParticipant().getUniqueId(),
+                                                                "Computer Experience Months",
+                                                                part.getTestParticipant().getComputerExperienceMonths()));
+                                            }
                                         }
                                     }
                                 }
