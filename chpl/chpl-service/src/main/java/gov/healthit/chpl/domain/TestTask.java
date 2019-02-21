@@ -342,9 +342,9 @@ public class TestTask implements Serializable {
     public void setTaskPathDeviationObserved(final String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
-                taskPathDeviationObserved = Integer.valueOf(value);
+                taskPathDeviationObserved = Math.round(Float.valueOf(value));
             } catch (final Exception e) {
-                LOGGER.error("can't parse " + value + " as an integer.");
+                LOGGER.error("can't parse " + value + " as a float.");
             }
         }
     }
@@ -356,9 +356,9 @@ public class TestTask implements Serializable {
     public void setTaskPathDeviationOptimal(final String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
-                taskPathDeviationOptimal = Integer.valueOf(value);
+                taskPathDeviationOptimal = Math.round(Float.valueOf(value));
             } catch (final Exception e) {
-                LOGGER.error("can't parse " + value + " as an integer.");
+                LOGGER.error("can't parse " + value + " as a float.");
             }
         }
     }
@@ -370,9 +370,9 @@ public class TestTask implements Serializable {
     public void setTaskTimeAvg(final String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
-                taskTimeAvg = Long.valueOf(value);
+                taskTimeAvg = (long) Math.round(Float.valueOf(value));
             } catch (final Exception e) {
-                LOGGER.error("can't parse " + value + " as a long.");
+                LOGGER.error("can't parse " + value + " as a float.");
             }
         }
     }
@@ -384,9 +384,9 @@ public class TestTask implements Serializable {
     public void setTaskTimeStddev(final String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
-                taskTimeStddev = Integer.valueOf(value);
+                taskTimeStddev = Math.round(Float.valueOf(value));
             } catch (final Exception e) {
-                LOGGER.error("can't parse " + value + " as an integer.");
+                LOGGER.error("can't parse " + value + " as a float.");
             }
         }
     }
@@ -398,9 +398,9 @@ public class TestTask implements Serializable {
     public void setTaskTimeDeviationObservedAvg(final String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
-                taskTimeDeviationObservedAvg = Integer.valueOf(value);
+                taskTimeDeviationObservedAvg = Math.round(Float.valueOf(value));
             } catch (final Exception e) {
-                LOGGER.error("can't parse " + value + " as an integer.");
+                LOGGER.error("can't parse " + value + " as a float.");
             }
         }
     }
@@ -412,9 +412,9 @@ public class TestTask implements Serializable {
     public void setTaskTimeDeviationOptimalAvg(final String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
-                taskTimeDeviationOptimalAvg = Integer.valueOf(value);
+                taskTimeDeviationOptimalAvg = Math.round(Float.valueOf(value));
             } catch (final Exception e) {
-                LOGGER.error("can't parse " + value + " as an integer.");
+                LOGGER.error("can't parse " + value + " as a float.");
             }
         }
     }

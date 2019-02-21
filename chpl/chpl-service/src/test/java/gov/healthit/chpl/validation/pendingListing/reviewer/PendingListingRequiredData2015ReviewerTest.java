@@ -82,6 +82,20 @@ public class PendingListingRequiredData2015ReviewerTest {
             @Override
             public String answer(final InvocationOnMock invocation) throws Throwable {
                 String badTestTaskNumber =
+                        "A non-integer numeric number was found in Test Task \"%s\" \"%s\" \"%s\". "
+                                + "The number has been rounded to \"%s\".";
+                Object[] args = invocation.getArguments();
+                return formatMessage(badTestTaskNumber, (String) args[1], (String) args[2], (String) args[3], (String) args[4]);
+            }
+        }).when(msgUtil).getMessage(
+                ArgumentMatchers.eq("listing.criteria.roundedTestTaskNumber"),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
+
+        Mockito.doAnswer(new Answer<String>() {
+            @Override
+            public String answer(final InvocationOnMock invocation) throws Throwable {
+                String badTestTaskNumber =
                         "The test task %s for criteria %s requires a Task Success Average value.";
                 Object[] args = invocation.getArguments();
                 return formatMessage(badTestTaskNumber, (String) args[1], (String) args[2]);
@@ -220,8 +234,8 @@ public class PendingListingRequiredData2015ReviewerTest {
         PendingCertificationResultTestTaskDTO task = cert.getTestTasks().get(0);
         task.getPendingTestTask().setTaskErrors("1.6 e-1");
         task.getPendingTestTask().setTaskErrorsStddev("1.1ddds");
-        task.getPendingTestTask().setTaskPathDeviationObserved("3.3d");
-        task.getPendingTestTask().setTaskPathDeviationOptimal("3.33d");
+        task.getPendingTestTask().setTaskPathDeviationObserved("3.3dd");
+        task.getPendingTestTask().setTaskPathDeviationOptimal("3.33dd");
         task.getPendingTestTask().setTaskRating("3l3.3d");
         task.getPendingTestTask().setTaskRatingStddev("3.s3");
         task.getPendingTestTask().setTaskSuccessAverage("3lk.");
@@ -235,8 +249,8 @@ public class PendingListingRequiredData2015ReviewerTest {
 
         assertTrue(hasTestTaskNumberErrorMessage(listing, "Task ID", "Task Errors", "1.6 e-1"));
         assertTrue(hasTestTaskNumberErrorMessage(listing, "Task ID", "Task Errors Standard Deviation", "1.1ddds"));
-        assertTrue(hasTestTaskNumberErrorMessage(listing, "Task ID", "Task Path Deviation Observed", "3.3d"));
-        assertTrue(hasTestTaskNumberErrorMessage(listing, "Task ID", "Task Path Deviation Optimal", "3.33d"));
+        assertTrue(hasTestTaskNumberErrorMessage(listing, "Task ID", "Task Path Deviation Observed", "3.3dd"));
+        assertTrue(hasTestTaskNumberErrorMessage(listing, "Task ID", "Task Path Deviation Optimal", "3.33dd"));
         assertTrue(hasTestTaskNumberErrorMessage(listing, "Task ID", "Task Rating", "3l3.3d"));
         assertTrue(hasTestTaskNumberErrorMessage(listing, "Task ID", "Task Rating Standard Deviation", "3.s3"));
         assertTrue(hasTestTaskNumberErrorMessage(listing, "Task ID", "Task Success Average", "3lk."));
@@ -291,11 +305,46 @@ public class PendingListingRequiredData2015ReviewerTest {
         assertTrue(hasTestTaskNumberMissingMessage(listing, "Task ID", "170.315 (a)(1)", "Task Time Standard Deviation"));
     }
 
+    @Test
+    public void testRoundedNumbersInTestTask() {
+        PendingCertifiedProductDTO listing = mockUtil.createPending2015Listing();
+
+        PendingCertificationResultDTO cert = findPendingCertification(listing, "170.315 (a)(1)");
+        PendingCertificationResultTestTaskDTO task = cert.getTestTasks().get(0);
+        task.getPendingTestTask().setTaskPathDeviationObserved("3.3");
+        task.getPendingTestTask().setTaskPathDeviationOptimal("3.33");
+        task.getPendingTestTask().setTaskTimeAvg("1.3");
+        task.getPendingTestTask().setTaskTimeDeviationOptimalAvg("5.3");
+        task.getPendingTestTask().setTaskTimeDeviationObservedAvg("9.9");
+        task.getPendingTestTask().setTaskTimeStddev("8.0");
+
+        reviewer.review(listing);
+
+        assertTrue(hasRoundedTestTaskWarningMessage(listing, "Task ID", "Task Path Deviation Observed", "3.3", "3"));
+        assertTrue(hasRoundedTestTaskWarningMessage(listing, "Task ID", "Task Path Deviation Optimal", "3.33", "3"));
+        assertTrue(hasRoundedTestTaskWarningMessage(listing, "Task ID", "Task Time Average", "1.3", "1"));
+        assertTrue(hasRoundedTestTaskWarningMessage(listing, "Task ID", "Task Time Deviation Optimal Average", "5.3", "5"));
+        assertTrue(hasRoundedTestTaskWarningMessage(listing, "Task ID", "Task Time Deviation Observed Average", "9.9", "10"));
+        assertTrue(hasRoundedTestTaskWarningMessage(listing, "Task ID", "Task Time Standard Deviation", "8.0", "8"));
+    }
+
     private Boolean hasTestTaskNumberErrorMessage(final PendingCertifiedProductDTO listing,
             final String taskId, final String valueName, final String badValue) {
         for (String message : listing.getErrorMessages()) {
             if (StringUtils.contains(message, "An unrecognized character was found in Test Task \""
                     + taskId + "\" \"" + valueName + "\" \"" + badValue + "\"")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Boolean hasRoundedTestTaskWarningMessage(final PendingCertifiedProductDTO listing,
+            final String taskId, final String valueName, final String badValue, final String roundedValue) {
+        for (String message : listing.getWarningMessages()) {
+            if (StringUtils.contains(message, "A non-integer numeric number was found in Test Task \""
+                    + taskId + "\" \"" + valueName + "\" \"" + badValue
+                    + "\". The number has been rounded to \"" + roundedValue)) {
                 return true;
             }
         }
@@ -322,12 +371,8 @@ public class PendingListingRequiredData2015ReviewerTest {
         return false;
     }
 
-    private String formatMessage(final String message, final String a, final String b, final String c) {
-        return String.format(message, a, b, c);
-    }
-
-    private String formatMessage(final String message, final String a, final String b) {
-        return String.format(message, a, b);
+    private String formatMessage(final String message, final Object... args) {
+        return String.format(message, args);
     }
 
     private PendingCertificationResultDTO findPendingCertification(final PendingCertifiedProductDTO listing,
