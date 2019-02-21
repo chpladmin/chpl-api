@@ -371,16 +371,8 @@ public class PendingListingRequiredData2015ReviewerTest {
         return false;
     }
 
-    private String formatMessage(final String message, final String a, final String b, final String c, final String d) {
-        return String.format(message, a, b, c, d);
-    }
-
-    private String formatMessage(final String message, final String a, final String b, final String c) {
-        return String.format(message, a, b, c);
-    }
-
-    private String formatMessage(final String message, final String a, final String b) {
-        return String.format(message, a, b);
+    private String formatMessage(final String message, final Object... args) {
+        return String.format(message, args);
     }
 
     private PendingCertificationResultDTO findPendingCertification(final PendingCertifiedProductDTO listing,
