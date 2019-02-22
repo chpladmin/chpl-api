@@ -16,12 +16,6 @@ public class BaseDAOImpl {
     @Autowired
     MessageSource messageSource;
 
-    /**
-     * User ID for the "system" user.
-     */
-    public static final Long SYSTEM_USER_ID = -3L;
-    // Other constants can be added for other user types
-
     public EntityManager getEntityManager() {
         return entityManager;
     }

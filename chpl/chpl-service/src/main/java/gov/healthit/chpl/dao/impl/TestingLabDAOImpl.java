@@ -63,6 +63,7 @@ public class TestingLabDAOImpl extends BaseDAOImpl implements TestingLabDAO {
             entity.setAccredidationNumber(dto.getAccredidationNumber());
             entity.setTestingLabCode(dto.getTestingLabCode());
             entity.setRetired(dto.isRetired());
+            entity.setRetirementDate(dto.getRetirementDate());
             entity.setLastModifiedUser(Util.getCurrentUser().getId());
             create(entity);
             return new TestingLabDTO(entity);
@@ -95,6 +96,7 @@ public class TestingLabDAOImpl extends BaseDAOImpl implements TestingLabDAO {
         entity.setWebsite(dto.getWebsite());
         entity.setAccredidationNumber(dto.getAccredidationNumber());
         entity.setRetired(dto.isRetired());
+        entity.setRetirementDate(dto.getRetirementDate());
 
         if (dto.getName() != null) {
             entity.setName(dto.getName());
@@ -148,7 +150,7 @@ public class TestingLabDAOImpl extends BaseDAOImpl implements TestingLabDAO {
      * Gets a single ATL by ID.
      */
     @Override
-    public TestingLabDTO getById(Long id) throws EntityRetrievalException {
+    public TestingLabDTO getById(final Long id) throws EntityRetrievalException {
 
         TestingLabEntity entity = getEntityById(id);
         TestingLabDTO dto = null;
@@ -162,7 +164,7 @@ public class TestingLabDAOImpl extends BaseDAOImpl implements TestingLabDAO {
      * Get a single ATL by name.
      */
     @Override
-    public TestingLabDTO getByName(String name) {
+    public TestingLabDTO getByName(final String name) {
         TestingLabEntity entity = getEntityByName(name);
         TestingLabDTO dto = null;
         if (entity != null) {

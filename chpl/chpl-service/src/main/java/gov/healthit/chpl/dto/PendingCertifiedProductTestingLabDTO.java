@@ -71,4 +71,11 @@ public class PendingCertifiedProductTestingLabDTO implements Serializable {
     public void setTestingLabName(final String testingLabName) {
         this.testingLabName = testingLabName;
     }
+
+    @Override
+    public String toString() {
+        return "PendingCertifiedProductTestingLabDTO [id=" + id + ", pendingCertifiedProductId="
+                + pendingCertifiedProductId + ", testingLabId=" + testingLabId + ", testingLabName=" + testingLabName
+                + "]";
+    }
 }

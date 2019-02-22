@@ -8,6 +8,7 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.scheduler.InheritanceErrorsReportDTO;
 import gov.healthit.chpl.entity.scheduler.InheritanceErrorsReportEntity;
@@ -60,7 +61,7 @@ public class InheritanceErrorsReportDAOImpl extends BaseDAOImpl implements Inher
             entity.setUrl(dto.getUrl());
             entity.setReason(dto.getReason());
             entity.setDeleted(false);
-            entity.setLastModifiedUser(getUserId(SYSTEM_USER_ID));
+            entity.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
 
             entityManager.persist(entity);
         }

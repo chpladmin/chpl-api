@@ -13,12 +13,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertificationIdManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
-import gov.healthit.chpl.manager.SearchMenuManager;
+import gov.healthit.chpl.manager.PendingCertifiedProductManager;
+import gov.healthit.chpl.manager.DimensionalDataManager;
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
 
 @Component
 public class AsynchronousCacheInitialization {
@@ -27,30 +29,16 @@ public class AsynchronousCacheInitialization {
     @Autowired
     private CertificationIdManager certificationIdManager;
     @Autowired
-    private SearchMenuManager searchMenuManager;
+    private DimensionalDataManager dimensionalDataManager;
     @Autowired
     private CertifiedProductSearchManager certifiedProductSearchManager;
-    @Autowired
-    private PendingCertifiedProductDAO pendingCertifiedProductDAO;
-    @Autowired
-    private CertificationBodyDAO certificationBodyDAO;
 
     @Async
     @Transactional
     public Future<Boolean> initializeSearchOptions() throws EntityRetrievalException {
         LOGGER.info("Starting cache initialization for SearchViewController.getPopulateSearchData()");
-        searchMenuManager.getCertBodyNames();
-        searchMenuManager.getEditionNames(false);
-        searchMenuManager.getEditionNames(true);
-        searchMenuManager.getCertificationStatuses();
-        searchMenuManager.getPracticeTypeNames();
-        searchMenuManager.getClassificationNames();
-        searchMenuManager.getProductNames();
-        searchMenuManager.getDeveloperNames();
-        searchMenuManager.getCQMCriterionNumbers(false);
-        searchMenuManager.getCQMCriterionNumbers(true);
-        searchMenuManager.getCertificationCriterionNumbers(false);
-        searchMenuManager.getCertificationCriterionNumbers(true);
+        dimensionalDataManager.getSearchableDimensionalData(true);
+        dimensionalDataManager.getSearchableDimensionalData(false);
         LOGGER.info("Finished cache initialization for SearchViewController.getPopulateSearchData()");
         return new AsyncResult<>(true);
     }
@@ -69,7 +57,7 @@ public class AsynchronousCacheInitialization {
     public Future<Boolean> initializeCertificationIdsGetAll()
             throws IOException, EntityRetrievalException, InterruptedException {
         LOGGER.info("Starting cache initialization for CertificationIdManager.getAll()");
-        certificationIdManager.getAll();
+        certificationIdManager.getAllCached();
         LOGGER.info("Finished cache initialization for CertificationIdManager.getAll()");
         return new AsyncResult<>(true);
     }
@@ -79,22 +67,8 @@ public class AsynchronousCacheInitialization {
     public Future<Boolean> initializeCertificationIdsGetAllWithProducts()
             throws IOException, EntityRetrievalException, InterruptedException {
         LOGGER.info("Starting cache initialization for CertificationIdManager.getAllWithProducts()");
-        certificationIdManager.getAllWithProducts();
+        certificationIdManager.getAllWithProductsCached();
         LOGGER.info("Finished cache initialization for CertificationIdManager.getAllWithProducts()");
         return new AsyncResult<>(true);
     }
-
-    @Async
-    @Transactional
-    public Future<Boolean> initializeFindByAcbId() throws IOException, EntityRetrievalException, InterruptedException {
-        LOGGER.info("Starting cache initialization for PendingCertifiedProductDAO.findByAcbId()");
-        List<CertificationBodyDTO> cbs = certificationBodyDAO.findAllActive();
-        for (CertificationBodyDTO dto : cbs) {
-            pendingCertifiedProductDAO.findByAcbId(dto.getId());
-        }
-
-        LOGGER.info("Finished cache initialization for PendingCertifiedProductDAO.findByAcbId()");
-        return new AsyncResult<>(true);
-    }
-
 }

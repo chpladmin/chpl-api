@@ -1,6 +1,7 @@
 package gov.healthit.chpl.dto;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import gov.healthit.chpl.entity.TestingLabEntity;
 
@@ -18,6 +19,7 @@ public class TestingLabDTO implements Serializable {
     private String website;
     private String accredidationNumber;
     private boolean retired;
+    private Date retirementDate;
 
     /**
      * No-args constructor.
@@ -25,11 +27,7 @@ public class TestingLabDTO implements Serializable {
     public TestingLabDTO() {
     }
 
-    /**
-     * Create a testing lab object from entity.
-     * @param entity
-     */
-    public TestingLabDTO(TestingLabEntity entity) {
+    public TestingLabDTO(final TestingLabEntity entity) {
         this.id = entity.getId();
         this.testingLabCode = entity.getTestingLabCode();
         if (entity.getAddress() != null) {
@@ -39,6 +37,7 @@ public class TestingLabDTO implements Serializable {
         this.website = entity.getWebsite();
         this.accredidationNumber = entity.getAccredidationNumber();
         this.retired = entity.getRetired();
+        this.retirementDate = entity.getRetirementDate();
     }
 
     public Long getId() {
@@ -96,4 +95,20 @@ public class TestingLabDTO implements Serializable {
     public void setRetired(final boolean retired) {
         this.retired = retired;
     }
+
+    public Date getRetirementDate() {
+        return retirementDate;
+    }
+
+    public void setRetirementDate(final Date retirementDate) {
+        this.retirementDate = retirementDate;
+    }
+
+    @Override
+    public String toString() {
+        return "TestingLabDTO [id=" + id + ", testingLabCode=" + testingLabCode + ", address=" + address + ", name="
+                + name + ", website=" + website + ", accredidationNumber=" + accredidationNumber + ", retired="
+                + retired + ", retirementDate=" + retirementDate + "]";
+    }
+
 }

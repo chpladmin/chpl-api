@@ -1,6 +1,7 @@
 package gov.healthit.chpl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -12,15 +13,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.cache.ehcache.EhCacheFactoryBean;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
+import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -59,9 +63,11 @@ import com.github.springtestdbunit.bean.DatabaseConfigBean;
 import com.github.springtestdbunit.bean.DatabaseDataSourceConnectionFactoryBean;
 
 import gov.healthit.chpl.caching.CacheInitializor;
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.job.MeaningfulUseUploadJob;
 
 @Configuration
+@Import(ChplTestCacheConfig.class)
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @PropertySource("classpath:/environment.test.properties")
 @EnableCaching
@@ -74,6 +80,9 @@ import gov.healthit.chpl.job.MeaningfulUseUploadJob;
         @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = CacheInitializor.class)
 })
 public class CHPLTestConfig implements EnvironmentAware {
+
+    private static final int CORE_POOL_SIZE = 10;
+    private static final int MAX_POOL_SIZE = 100;
 
     private Environment env;
 
@@ -182,20 +191,14 @@ public class CHPLTestConfig implements EnvironmentAware {
     @Bean
     public TaskExecutor taskExecutor() {
         ThreadPoolTaskExecutor te = new ThreadPoolTaskExecutor();
-        te.setCorePoolSize(10);
-        te.setMaxPoolSize(100);
+        te.setCorePoolSize(CORE_POOL_SIZE);
+        te.setMaxPoolSize(MAX_POOL_SIZE);
         return te;
-    }
-
-    @Bean
-    public CacheManager cacheManager() {
-        return new EhCacheCacheManager(ehCacheCacheManager().getObject());
     }
 
     @Bean
     public EhCacheManagerFactoryBean ehCacheCacheManager() {
         EhCacheManagerFactoryBean cmfb = new EhCacheManagerFactoryBean();
-        cmfb.setConfigLocation(new ClassPathResource("ehCache-test.xml"));
         cmfb.setShared(true);
         return cmfb;
     }
