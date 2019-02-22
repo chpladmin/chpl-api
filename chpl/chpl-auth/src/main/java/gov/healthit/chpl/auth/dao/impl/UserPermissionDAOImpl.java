@@ -267,7 +267,7 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 		permissionMapping.setUser(user);
 		permissionMapping.setPermission(permission);
 		permissionMapping.setDeleted(false);
-		permissionMapping.setLastModifiedUser(Util.getCurrentUser().getId());
+		permissionMapping.setLastModifiedUser(Util.getAuditId());
 		createMapping(permissionMapping);
 	}
 

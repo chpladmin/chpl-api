@@ -125,7 +125,7 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
             if (dto.getLastModifiedUser() != null) {
                 entity.setLastModifiedUser(dto.getLastModifiedUser());
             } else {
-                entity.setLastModifiedUser(Util.getCurrentUser().getId());
+                entity.setLastModifiedUser(Util.getAuditId());
             }
 
             if (dto.getLastModifiedDate() != null) {

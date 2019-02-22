@@ -46,7 +46,7 @@ public class UserContactDAOImpl extends BaseDAOImpl implements UserContactDAO {
 	@Override 
 	public void delete(UserContactEntity contact) {
 		contact.setLastModifiedDate(new Date());
-		contact.setLastModifiedUser(Util.getCurrentUser().getId());
+		contact.setLastModifiedUser(Util.getAuditId());
 		contact.setDeleted(true);
 		update(contact);
 	}

@@ -33,7 +33,7 @@ public class InvitationPermissionDAOImpl extends BaseDAOImpl implements Invitati
 		invitationEntity.setId(dto.getUserId());
 		permissionToCreate.setInvitedUser(invitationEntity);
 		permissionToCreate.setLastModifiedDate(new Date());
-		permissionToCreate.setLastModifiedUser(Util.getCurrentUser().getId());
+		permissionToCreate.setLastModifiedUser(Util.getAuditId());
 		permissionToCreate.setUserPermissionId(dto.getPermissionId());
 		create(permissionToCreate);
 		return new InvitationPermissionDTO(permissionToCreate);
@@ -48,7 +48,7 @@ public class InvitationPermissionDAOImpl extends BaseDAOImpl implements Invitati
 			toDelete.setDeleted(true);
 			toDelete.setLastModifiedDate(currentDate);
 			//TODO: can we update the last modified user field like this? is someone authenticated at this point?
-			//toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+			//toDelete.setLastModifiedUser(Util.getAuditId());
 				
 			update(toDelete);
 		} else {
