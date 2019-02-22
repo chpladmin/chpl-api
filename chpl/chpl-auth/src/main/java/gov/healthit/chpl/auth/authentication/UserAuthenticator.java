@@ -26,6 +26,7 @@ import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.jwt.JWTAuthor;
 import gov.healthit.chpl.auth.jwt.JWTCreationException;
+import gov.healthit.chpl.auth.manager.SecuredUserManager;
 import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
@@ -42,6 +43,9 @@ public class UserAuthenticator implements Authenticator {
 
     @Autowired
     protected UserManager userManager;
+
+    @Autowired
+    private SecuredUserManager securedUserManager;
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -338,11 +342,11 @@ public class UserAuthenticator implements Authenticator {
     @Override
     public String impersonateUser(final String username) throws UserRetrievalException,
     JWTCreationException, UserManagementException {
-        User user = Util.getCurrentUser();
-        UserDTO impersonatingUser = getUserByName(user.getSubjectName());
-        if (impersonatingUser.getImpersonatedBy() != null) {
+        JWTAuthenticatedUser user = (JWTAuthenticatedUser) Util.getCurrentUser();
+        if (user.getImpersonatingUser() != null) {
             throw new UserManagementException("Unable to impersonate user while already impersonating");
         }
+        UserDTO impersonatingUser = getUserByName(user.getSubjectName());
         UserDTO impersonatedUser = getUserByName(username);
         if (canImpersonate(user, impersonatedUser)) {
             impersonatedUser.setImpersonatedBy(impersonatingUser);
@@ -359,8 +363,8 @@ public class UserAuthenticator implements Authenticator {
 
     private Boolean canImpersonate(final User actor, final UserDTO target) { //UserDTOs don't have the permissions. Ugh
         for (GrantedPermission a : actor.getPermissions()) {
-            for (GrantedAuthority t : target.getAuthorities()) {
-                if (!isGreaterRole(a.getAuthority(), t.getAuthority())) {
+            for (UserPermissionDTO t : securedUserManager.getGrantedPermissionsForUser(target)) {
+                if (!isGreaterRole(a.getAuthority(), t.getName())) {
                     return false;
                 }
             }
@@ -368,12 +372,21 @@ public class UserAuthenticator implements Authenticator {
         return true;
     }
 
+    /**
+     * Compare acting user's role with targeted user's role.
+     * ROLE_ADMIN > all other roles
+     * ROLE_ADMIN is not > ROLE_ADMIN
+     * ROLE_ONC > all roles except ROLE_ADMIN and ROLE_ONC
+     * @param a acting user's ROLE
+     * @param t targeted user's ROLE
+     * @return true iff a > t
+     */
     private Boolean isGreaterRole(final String a, final String t) {
         if (a.equalsIgnoreCase("ROLE_ADMIN")) {
-            return !t.equalsIgnoreCase("ROLE_ADMIN");
+            return !t.equalsIgnoreCase("ADMIN");
         }
         if (a.equalsIgnoreCase("ROLE_ONC")) {
-            return !t.equalsIgnoreCase("ROLE_ADMIN") && !t.equalsIgnoreCase("ROLE_ONC");
+            return !t.equalsIgnoreCase("ADMIN") && !t.equalsIgnoreCase("ONC");
         }
         return false;
     }
