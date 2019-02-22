@@ -275,8 +275,11 @@ public class UserManagementController {
         } else {
             // add authorization to the currently logged in user
             UserDTO userToUpdate = userManager.getById(loggedInUser.getId());
+            if (userToUpdate.getImpersonatedBy() != null) {
+                userToUpdate = userToUpdate.getImpersonatedBy();
+            }
             invitationManager.updateUserFromInvitation(invitation, userToUpdate);
-            UserDTO updatedUser = userManager.getById(loggedInUser.getId());
+            UserDTO updatedUser = userManager.getById(userToUpdate.getId());
             jwtToken = authenticator.getJWT(updatedUser);
         }
 
