@@ -13,6 +13,7 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.SimpleExplainableAction;
+import gov.healthit.chpl.domain.SplitProductsRequest;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.UpdateDevelopersRequest;
 import gov.healthit.chpl.domain.UpdateProductsRequest;
@@ -51,6 +52,19 @@ public class ListingCollectionCacheRefreshListener extends CacheRefreshListener 
             + "args(productInfo,..)")
     public void afterProductUpdate(final UpdateProductsRequest productInfo) {
         LOGGER.debug("A product was updated. Refreshing listings collection cache.");
+        refreshCache();
+    }
+
+    /**
+     * After a product is split refresh the listings collection cache.
+     * @param productId product id to split
+     * @param splitRequest other information what to split
+     */
+    @AfterReturning(
+            "execution(* gov.healthit.chpl.web.controller.ProductController.splitProduct(..)) && "
+            + "args(productId,splitRequest,..)")
+    public void afterProductSplit(final Long productId, final SplitProductsRequest splitRequest) {
+        LOGGER.debug("A product was split. Refreshing listings collection cache.");
         refreshCache();
     }
 

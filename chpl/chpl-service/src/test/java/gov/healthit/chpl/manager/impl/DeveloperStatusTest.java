@@ -38,6 +38,8 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
+import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
+import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -67,6 +69,8 @@ public class DeveloperStatusTest {
 
     @Spy private DeveloperDAO devDao;
     @Spy private CertificationBodyManager acbManager;
+    @Spy private CertifiedProductManager cpManager;
+    @Spy private CertifiedProductDetailsManager cpdManager;
     @Spy private ActivityManager activityManager;
     @Spy private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
 
@@ -86,6 +90,8 @@ public class DeveloperStatusTest {
         developerManager = new DeveloperManagerImpl(devDao,
                 productManager,
                 acbManager,
+                cpManager,
+                cpdManager,
                 certificationBodyDao,
                 certifiedProductDao,
                 chplProductNumberUtil,

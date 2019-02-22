@@ -2,11 +2,14 @@ package gov.healthit.chpl.manager;
 
 import java.util.List;
 
+import org.springframework.security.access.AccessDeniedException;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.DeveloperTransparency;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.MissingReasonException;
@@ -30,6 +33,9 @@ public interface DeveloperManager {
 
     DeveloperDTO merge(List<Long> developerIdsToMerge, DeveloperDTO developerToCreate)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException;
+
+    DeveloperDTO split(DeveloperDTO oldDeveloper, DeveloperDTO developerToCreate, List<Long> productIdsToMove)
+            throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException;
 
     List<DecertifiedDeveloperResult> getDecertifiedDevelopers() throws EntityRetrievalException;
 }

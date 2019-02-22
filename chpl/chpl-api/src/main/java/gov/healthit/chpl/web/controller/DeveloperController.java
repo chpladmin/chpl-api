@@ -11,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,24 +24,38 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.Address;
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
+import gov.healthit.chpl.domain.Product;
+import gov.healthit.chpl.domain.ProductVersion;
+import gov.healthit.chpl.domain.SplitDeveloperRequest;
+import gov.healthit.chpl.domain.SplitProductsRequest;
 import gov.healthit.chpl.domain.TransparencyAttestationMap;
 import gov.healthit.chpl.domain.UpdateDevelopersRequest;
 import gov.healthit.chpl.dto.AddressDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
+import gov.healthit.chpl.dto.ProductDTO;
+import gov.healthit.chpl.dto.ProductOwnerDTO;
+import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
+import gov.healthit.chpl.manager.ProductManager;
+import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.web.controller.results.DeveloperResults;
+import gov.healthit.chpl.web.controller.results.SplitDeveloperResponse;
+import gov.healthit.chpl.web.controller.results.SplitProductResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -51,6 +66,10 @@ public class DeveloperController {
 
     @Autowired
     private DeveloperManager developerManager;
+    @Autowired
+    private CertifiedProductManager cpManager;
+    @Autowired
+    private ChplProductNumberUtil chplProductNumberUtil;
 
     @ApiOperation(value = "List all developers in the system.",
             notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, and ROLE_ACB can see deleted "
@@ -107,6 +126,84 @@ public class DeveloperController {
     EntityCreationException, EntityRetrievalException, JsonProcessingException,
     ValidationException, MissingReasonException {
         return update(developerInfo);
+    }
+
+    @ApiOperation(
+            value = "Split a developer - some products stay with the existing developer and some products are moved "
+                    + "to a new developer.",
+                    notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB")
+    @RequestMapping(value = "/{developerId}/split", method = RequestMethod.POST,
+    consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+    public ResponseEntity<SplitDeveloperResponse> splitDeveloper(@PathVariable("developerId") final Long developerId,
+            @RequestBody(required = true) final SplitDeveloperRequest splitRequest)
+                    throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
+                    JsonProcessingException {
+
+        //TODO: validate required fields are present in the split request
+        //new developer product ids cannot be empty
+        //old developer product ids cannot be empty
+        //new developer required fields:
+            // developer contact name
+            // developer contact email
+            // developer contact phone number
+
+        //make sure the developer id in the split request matches the developer id on the url path
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+        DeveloperDTO oldDeveloper = developerManager.getById(splitRequest.getOldDeveloper().getDeveloperId());
+        DeveloperDTO newDeveloper = new DeveloperDTO();
+        newDeveloper.setName(splitRequest.getNewDeveloper().getName());
+        newDeveloper.setWebsite(splitRequest.getNewDeveloper().getWebsite());
+        //TODO: anything special to populate the transparency map??
+//        DeveloperACBMapDTO transparencyMap = new DeveloperACBMapDTO();
+//        transparencyMap.setAcbId(pendingCp.getCertificationBodyId());
+//        transparencyMap.setAcbName(pendingCp.getCertificationBodyName());
+//        transparencyMap.setTransparencyAttestation(pendingCp.getTransparencyAttestation());
+//        newDeveloper.getTransparencyAttestationMappings().add(transparencyMap);
+        if (splitRequest.getNewDeveloper().getAddress() != null) {
+            AddressDTO developerAddress = new AddressDTO();
+            developerAddress.setStreetLineOne(splitRequest.getNewDeveloper().getAddress().getLine1());
+            developerAddress.setStreetLineTwo(splitRequest.getNewDeveloper().getAddress().getLine2());
+            developerAddress.setCity(splitRequest.getNewDeveloper().getAddress().getCity());
+            developerAddress.setState(splitRequest.getNewDeveloper().getAddress().getState());
+            developerAddress.setZipcode(splitRequest.getNewDeveloper().getAddress().getZipcode());
+            developerAddress.setCountry(splitRequest.getNewDeveloper().getAddress().getCountry());
+            newDeveloper.setAddress(developerAddress);
+        }
+        if (splitRequest.getNewDeveloper().getContact() != null) {
+            ContactDTO developerContact = new ContactDTO();
+            developerContact.setFullName(splitRequest.getNewDeveloper().getContact().getFullName());
+            developerContact.setFriendlyName(splitRequest.getNewDeveloper().getContact().getFriendlyName());
+            developerContact.setEmail(splitRequest.getNewDeveloper().getContact().getEmail());
+            developerContact.setPhoneNumber(splitRequest.getNewDeveloper().getContact().getPhoneNumber());
+            developerContact.setTitle(splitRequest.getNewDeveloper().getContact().getTitle());
+            newDeveloper.setContact(developerContact);
+        }
+
+        DeveloperDTO createdDeveloper = developerManager.split(oldDeveloper, newDeveloper,
+                splitRequest.getNewDeveloperProductIds());
+        responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+        DeveloperDTO originalDeveloper = developerManager.getById(oldDeveloper.getId());
+        SplitDeveloperResponse response = new SplitDeveloperResponse();
+        response.setNewDeveloper(new Developer(createdDeveloper));
+        response.setOldDeveloper(new Developer(originalDeveloper));
+
+        // find out which CHPL product numbers would have changed (only
+        // new-style ones) and add them to the response header
+        List<CertifiedProductDetailsDTO> possibleChangedChplIds = cpManager.getByDeveloperId(originalDeveloper.getId());
+        if (possibleChangedChplIds != null && possibleChangedChplIds.size() > 0) {
+            StringBuffer buf = new StringBuffer();
+            for (CertifiedProductDetailsDTO possibleChanged : possibleChangedChplIds) {
+                if (!chplProductNumberUtil.isLegacy(possibleChanged.getChplProductNumber())) {
+                    if (buf.length() > 0) {
+                        buf.append(",");
+                    }
+                    buf.append(possibleChanged.getChplProductNumber());
+                }
+            }
+            responseHeaders.set("CHPL-Id-Changed", buf.toString());
+        }
+        return new ResponseEntity<SplitDeveloperResponse>(response, responseHeaders, HttpStatus.OK);
     }
 
     private synchronized ResponseEntity<Developer> update(final UpdateDevelopersRequest developerInfo)

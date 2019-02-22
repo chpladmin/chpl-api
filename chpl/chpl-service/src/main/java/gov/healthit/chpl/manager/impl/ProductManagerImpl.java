@@ -267,9 +267,9 @@ public class ProductManagerImpl implements ProductManager {
                 }
             }
             if (!hasAccessToAcb) {
-                throw new AccessDeniedException(
-                        "Access is denied to update certified product " + beforeProduct.getChplProductNumber()
-                                + " because it is owned by " + beforeProduct.getCertifyingBody().get("name") + ".");
+                    throw new AccessDeniedException(msgUtil.getMessage("acb.accessDenied.listingUpdate",
+                            beforeProduct.getChplProductNumber(),
+                            beforeProduct.getCertifyingBody().get("name")));
             }
 
             // make sure the updated CHPL product number is unique and that the

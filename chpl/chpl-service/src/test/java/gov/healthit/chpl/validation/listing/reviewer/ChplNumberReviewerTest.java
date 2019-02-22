@@ -60,8 +60,11 @@ public class ChplNumberReviewerTest {
     @Autowired
     private MessageSource messageSource;
 
+//    @Spy
+//    private CertifiedProductDAO listingDao;
+
     @Spy
-    private CertifiedProductDAO listingDao;
+    private ChplProductNumberUtil chplProductNumberUtil;
 
     @Spy
     private CertificationResultManager certResultManager;
@@ -78,7 +81,7 @@ public class ChplNumberReviewerTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        chplNumberReviewer = new ChplNumberReviewer(listingDao, certificationResultManager, msgUtil);
+        chplNumberReviewer = new ChplNumberReviewer(certificationResultManager, chplProductNumberUtil, msgUtil);
 
         Mockito.doReturn(PRODUCT_CODE_ERROR)
         .when(msgUtil).getMessage(
@@ -105,6 +108,7 @@ public class ChplNumberReviewerTest {
         .when(msgUtil).getMessage(
                 ArgumentMatchers.eq("listing.icsCodeTrueValueFalse"));
 
+        Mockito.doReturn(true).when(chplProductNumberUtil).isUnique(ArgumentMatchers.anyString());
         Mockito.doReturn(false).when(certificationResultManager).getCertifiedProductHasAdditionalSoftware(ArgumentMatchers.anyLong());
         Mockito.when(
                 certResultManager.getCertifiedProductHasAdditionalSoftware(ArgumentMatchers.anyLong()))
@@ -327,11 +331,6 @@ public class ChplNumberReviewerTest {
 
     @Test
     public void testAdditionalSoftwareCodeChanged_IsNotDuplicate_HasNoErrors() {
-        try {
-            Mockito.when(listingDao.getByChplUniqueId(ArgumentMatchers.anyString()))
-            .thenReturn(null);
-        } catch (EntityRetrievalException ex) { }
-
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         //the mock listing does not have additional software;
         //add some to a criteria that was met.
@@ -361,14 +360,11 @@ public class ChplNumberReviewerTest {
 
     @Test
     public void testAdditionalSoftwareCodeChanged_IsDuplicate_HasError() {
-        try {
-            Mockito.when(listingDao.getByChplUniqueId(ArgumentMatchers.anyString()))
-            .thenReturn(new CertifiedProductDetailsDTO());
+        Mockito.doReturn(false).when(chplProductNumberUtil).isUnique(ArgumentMatchers.anyString());
 
-            Mockito.doReturn(true)
-            .when(certificationResultManager).getCertifiedProductHasAdditionalSoftware(ArgumentMatchers.anyLong());
+        Mockito.doReturn(true)
+        .when(certificationResultManager).getCertifiedProductHasAdditionalSoftware(ArgumentMatchers.anyLong());
 
-        } catch (EntityRetrievalException ex) { }
         Mockito.when(
                 certResultManager.getCertifiedProductHasAdditionalSoftware(ArgumentMatchers.anyLong()))
         .thenReturn(Boolean.TRUE);
@@ -402,11 +398,6 @@ public class ChplNumberReviewerTest {
 
     @Test
     public void testCertificationDateChanged_IsNotDuplicate_HasNoErrors() {
-        try {
-            Mockito.when(listingDao.getByChplUniqueId(ArgumentMatchers.anyString()))
-            .thenReturn(null);
-        } catch(EntityRetrievalException ex) { }
-
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         listing.setCertificationDate(System.currentTimeMillis());
         chplNumberReviewer.review(listing);
@@ -423,10 +414,7 @@ public class ChplNumberReviewerTest {
 
     @Test
     public void testCertificationDateChanged_IsDuplicate_HasError() {
-        try {
-            Mockito.when(listingDao.getByChplUniqueId(ArgumentMatchers.anyString()))
-            .thenReturn(new CertifiedProductDetailsDTO());
-        } catch (EntityRetrievalException ex) { }
+        Mockito.doReturn(false).when(chplProductNumberUtil).isUnique(ArgumentMatchers.anyString());
 
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         listing.setCertificationDate(System.currentTimeMillis());
