@@ -39,6 +39,7 @@ import gov.healthit.chpl.auth.user.UpdateExpiredPasswordRequest;
 import gov.healthit.chpl.auth.user.UpdatePasswordRequest;
 import gov.healthit.chpl.auth.user.UpdatePasswordResponse;
 import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -287,8 +288,9 @@ public class AuthenticationController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     @RequestMapping(value = "/impersonate", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
-    public String impersonateUser(@RequestParam(value = "username", required = true) final String username)
-            throws UserRetrievalException, JWTCreationException {
+    public String impersonateUser(@RequestHeader(value = "Authorization", required = true) final String userJwt,
+            @RequestParam(value = "username", required = true) final String username)
+                    throws UserRetrievalException, JWTCreationException, UserManagementException, JWTValidationException {
 
         String jwt = authenticator.impersonateUser(username);
         String jwtJSON = "{\"token\": \"" + jwt + "\"}";
