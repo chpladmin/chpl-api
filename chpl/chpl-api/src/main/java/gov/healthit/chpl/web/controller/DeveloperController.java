@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -53,6 +54,9 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.validation.developer.DeveloperCreationValidator;
+import gov.healthit.chpl.validation.developer.DeveloperUpdateValidator;
 import gov.healthit.chpl.web.controller.results.DeveloperResults;
 import gov.healthit.chpl.web.controller.results.SplitDeveloperResponse;
 import gov.healthit.chpl.web.controller.results.SplitProductResponse;
@@ -68,6 +72,12 @@ public class DeveloperController {
     private DeveloperManager developerManager;
     @Autowired
     private CertifiedProductManager cpManager;
+    @Autowired
+    private DeveloperUpdateValidator updateValidator;
+    @Autowired
+    private DeveloperCreationValidator creationValidator;
+    @Autowired
+    private ErrorMessageUtil msgUtil;
     @Autowired
     private ChplProductNumberUtil chplProductNumberUtil;
 
@@ -137,17 +147,33 @@ public class DeveloperController {
     public ResponseEntity<SplitDeveloperResponse> splitDeveloper(@PathVariable("developerId") final Long developerId,
             @RequestBody(required = true) final SplitDeveloperRequest splitRequest)
                     throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
-                    JsonProcessingException {
+                    ValidationException, JsonProcessingException {
 
-        //TODO: validate required fields are present in the split request
+        //validate required fields are present in the split request
         //new developer product ids cannot be empty
+        if (splitRequest.getNewDeveloperProductIds() == null || splitRequest.getNewDeveloperProductIds().size() == 0) {
+            String error = msgUtil.getMessage("developer.split.missingNewDeveloperProductIds");
+            throw new InvalidArgumentsException(error);
+        }
         //old developer product ids cannot be empty
-        //new developer required fields:
-            // developer contact name
-            // developer contact email
-            // developer contact phone number
-
+        if (splitRequest.getNewDeveloperProductIds() == null || splitRequest.getNewDeveloperProductIds().size() == 0) {
+            String error = msgUtil.getMessage("developer.split.missingOldDeveloperProductIds");
+            throw new InvalidArgumentsException(error);
+        }
+        //new and old developers cannot be empty
+        if (splitRequest.getNewDeveloper() == null || splitRequest.getOldDeveloper() == null) {
+            String error = msgUtil.getMessage("developer.split.newAndOldDeveloperRequired");
+            throw new InvalidArgumentsException(error);
+        }
         //make sure the developer id in the split request matches the developer id on the url path
+        if (developerId != splitRequest.getOldDeveloper().getDeveloperId()) {
+            throw new InvalidArgumentsException(msgUtil.getMessage("developer.split.requestMismatch"));
+        }
+        //check developer fields
+        Set<String> devErrors = creationValidator.validate(splitRequest.getNewDeveloper());
+        if (devErrors != null && devErrors.size() > 0) {
+            throw new ValidationException(devErrors, null);
+        }
 
         HttpHeaders responseHeaders = new HttpHeaders();
         DeveloperDTO oldDeveloper = developerManager.getById(splitRequest.getOldDeveloper().getDeveloperId());
@@ -215,23 +241,19 @@ public class DeveloperController {
         HttpHeaders responseHeaders = new HttpHeaders();
 
         if (developerInfo.getDeveloperIds().size() > 1) {
-            // merge these developers into one
-            // - create a new developer with the rest of the passed in
-            // information
+            // Merge these developers into one.
+            // create a new developer with the rest of the passed in
+            // information; first validate the new developer
+            Set<String> errors = creationValidator.validate(developerInfo.getDeveloper());
+            if (errors != null && errors.size() > 0) {
+                throw new ValidationException(errors, null);
+            }
             DeveloperDTO toCreate = new DeveloperDTO();
             toCreate.setDeveloperCode(developerInfo.getDeveloper().getDeveloperCode());
             toCreate.setName(developerInfo.getDeveloper().getName());
             toCreate.setWebsite(developerInfo.getDeveloper().getWebsite());
-
             if (developerInfo.getDeveloper().getStatusEvents() != null
                     && developerInfo.getDeveloper().getStatusEvents().size() > 0) {
-                List<String> statusErrors = validateDeveloperStatusEvents(
-                        developerInfo.getDeveloper().getStatusEvents());
-                if (statusErrors.size() > 0) {
-                    // can only have one error message here for the status text
-                    // so just pick the first one
-                    throw new InvalidArgumentsException(statusErrors.get(0));
-                }
                 for (DeveloperStatusEvent providedStatusHistory : developerInfo.getDeveloper().getStatusEvents()) {
                     DeveloperStatusDTO status = new DeveloperStatusDTO();
                     status.setStatusName(providedStatusHistory.getStatus().getStatus());
@@ -272,7 +294,12 @@ public class DeveloperController {
             result = developerManager.getById(result.getId());
         } else if (developerInfo.getDeveloperIds().size() == 1) {
             // update the information for the developer id supplied in the
-            // database
+            // database. first validate the new developer info
+            Set<String> errors = updateValidator.validate(developerInfo.getDeveloper());
+            if (errors != null && errors.size() > 0) {
+                throw new ValidationException(errors, null);
+            }
+
             DeveloperDTO toUpdate = new DeveloperDTO();
             toUpdate.setDeveloperCode(developerInfo.getDeveloper().getDeveloperCode());
             toUpdate.setId(developerInfo.getDeveloperIds().get(0));
@@ -288,14 +315,6 @@ public class DeveloperController {
 
             if (developerInfo.getDeveloper().getStatusEvents() != null
                     && developerInfo.getDeveloper().getStatusEvents().size() > 0) {
-                List<String> statusErrors = validateDeveloperStatusEvents(
-                        developerInfo.getDeveloper().getStatusEvents());
-                if (statusErrors.size() > 0) {
-                    // can only have one error message here for the status text
-                    // so just pick the first one
-                    throw new InvalidArgumentsException(statusErrors.get(0));
-                }
-
                 for (DeveloperStatusEvent providedStatusHistory : developerInfo.getDeveloper().getStatusEvents()) {
                     DeveloperStatusDTO status = new DeveloperStatusDTO();
                     status.setId(providedStatusHistory.getStatus().getId());
@@ -308,8 +327,6 @@ public class DeveloperController {
                     toCreateHistory.setReason(providedStatusHistory.getReason());
                     toUpdate.getStatusEvents().add(toCreateHistory);
                 }
-            } else {
-                throw new InvalidArgumentsException("The developer must have a current status specified.");
             }
 
             if (developerInfo.getDeveloper().getAddress() != null) {
@@ -343,54 +360,5 @@ public class DeveloperController {
         }
         Developer restResult = new Developer(result);
         return new ResponseEntity<Developer>(restResult, responseHeaders, HttpStatus.OK);
-    }
-
-    private List<String> validateDeveloperStatusEvents(final List<DeveloperStatusEvent> statusEvents) {
-        List<String> errors = new ArrayList<String>();
-        if (statusEvents == null || statusEvents.size() == 0) {
-            errors.add("The developer must have at least a current status specified.");
-        } else {
-            // sort the status events by date
-            statusEvents.sort(new DeveloperStatusEventComparator());
-
-            // now that the list is sorted by date, make sure no two statuses
-            // next to each other are the same
-            Iterator<DeveloperStatusEvent> iter = statusEvents.iterator();
-            DeveloperStatusEvent prev = null, curr = null;
-            while (iter.hasNext()) {
-                if (prev == null) {
-                    prev = iter.next();
-                } else if (curr == null) {
-                    curr = iter.next();
-                } else {
-                    prev = curr;
-                    curr = iter.next();
-                }
-
-                if (prev != null && curr != null
-                        && prev.getStatus().getStatus().equalsIgnoreCase(curr.getStatus().getStatus())) {
-                    errors.add("The status '" + prev.getStatus().getStatus() + "' cannot be listed twice in a row.");
-                }
-            }
-        }
-        return errors;
-    }
-
-    static class DeveloperStatusEventComparator implements Comparator<DeveloperStatusEvent>, Serializable {
-        private static final long serialVersionUID = 7816629342251138939L;
-
-        @Override
-        public int compare(final DeveloperStatusEvent o1, final DeveloperStatusEvent o2) {
-            if (o1 != null && o2 != null) {
-                // neither are null, compare the dates
-                return o1.getStatusDate().compareTo(o2.getStatusDate());
-            } else if (o1 == null && o2 != null) {
-                return -1;
-            } else if (o1 != null && o2 == null) {
-                return 1;
-            } else {  // o1 and o2 are both null
-                return 0;
-            }
-        }
     }
 }
