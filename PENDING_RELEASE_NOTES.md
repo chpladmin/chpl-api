@@ -1,8 +1,9 @@
 
-## Version 20.6.0
+## Version 20.5.0
 _Date TBD_
 
-### New features
+### New Features
+* Modify security to use CHPL managed user/ACB relationship
 * Allow certain users to impersonate certain other ones
 
 ---

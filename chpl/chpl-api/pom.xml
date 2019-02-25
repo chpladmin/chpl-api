@@ -211,6 +211,12 @@
             </exclusions>
         </dependency>
         
+        <!-- Password strength checking library -->
+        <dependency>
+            <groupId>com.nulab-inc</groupId>
+            <artifactId>zxcvbn</artifactId>
+            <version>1.2.5</version>
+        </dependency>
     </dependencies>
 
     <profiles>

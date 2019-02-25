@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -17,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.ProductDAO;
@@ -34,9 +32,9 @@ import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
-import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.ProductManager;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.validation.listing.reviewer.ChplNumberReviewer;
 
 @Service
@@ -46,22 +44,21 @@ public class ProductManagerImpl implements ProductManager {
     @Autowired
     private MessageSource messageSource;
     @Autowired
-    ProductDAO productDao;
+    private ProductDAO productDao;
     @Autowired
-    ProductVersionDAO versionDao;
+    private ProductVersionDAO versionDao;
     @Autowired
-    DeveloperDAO devDao;
+    private DeveloperDAO devDao;
     @Autowired
-    CertifiedProductDAO cpDao;
+    private CertifiedProductDAO cpDao;
     @Autowired
-    CertifiedProductDetailsManager cpdManager;
+    private CertifiedProductDetailsManager cpdManager;
     @Autowired
-    CertificationBodyManager acbManager;
+    private ChplNumberReviewer chplNumberReviewer;
     @Autowired
-    ChplNumberReviewer chplNumberReviewer;
-
+    private ResourcePermissions resourcePermissions;
     @Autowired
-    ActivityManager activityManager;
+    private ActivityManager activityManager;
 
     @Override
     @Transactional(readOnly = true)
@@ -89,7 +86,8 @@ public class ProductManagerImpl implements ProductManager {
 
     @Override
     @Transactional(readOnly = false)
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
+            + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).CREATE)")
     public ProductDTO create(ProductDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
         // check that the developer of this product is Active
@@ -123,7 +121,8 @@ public class ProductManagerImpl implements ProductManager {
 
     @Override
     @Transactional(readOnly = false)
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
+            + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).UPDATE)")
     public ProductDTO update(ProductDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 
@@ -220,12 +219,13 @@ public class ProductManagerImpl implements ProductManager {
             EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class,
             AccessDeniedException.class
     })
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
+            + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).SPLIT)")
     public ProductDTO split(ProductDTO oldProduct, ProductDTO newProduct, String newProductCode,
             List<ProductVersionDTO> newProductVersions)
             throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
         // what ACB does the user have??
-        List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser();
+        List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
 
         // create the new product and log activity
         // this method checks that the related developer is Active and will
@@ -281,12 +281,10 @@ public class ProductManagerImpl implements ProductManager {
                             + potentialChplNumber + " because a certified product with that CHPL ID already exists.");
                 }
                 if (!chplNumberReviewer.validateProductCodeCharacters(potentialChplNumber)) {
-                    throw new EntityCreationException(
-                            String.format(
-                                    messageSource.getMessage(
-                                            new DefaultMessageSourceResolvable("listing.badProductCodeChars"),
-                                            LocaleContextHolder.getLocale()),
-                                    CertifiedProductDTO.PRODUCT_CODE_LENGTH));
+                    throw new EntityCreationException(String.format(
+                            messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badProductCodeChars"),
+                                    LocaleContextHolder.getLocale()),
+                            CertifiedProductDTO.PRODUCT_CODE_LENGTH));
                 }
 
                 affectedCp.setProductCode(newProductCode);

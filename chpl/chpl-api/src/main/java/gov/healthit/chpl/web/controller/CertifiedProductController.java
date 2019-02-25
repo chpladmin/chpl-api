@@ -70,6 +70,8 @@ import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
+import gov.healthit.chpl.manager.UserPermissionsManager;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandler;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandlerFactory;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
@@ -103,9 +105,12 @@ public class CertifiedProductController {
     @Autowired
     private CertifiedProductManager cpManager;
 
-    @Autowired
-    private CertificationBodyManager acbManager;
-
+    @Autowired 
+    private UserPermissionsManager userPermissionsManager;
+    
+    @Autowired 
+    private ResourcePermissions resourcePermissions;
+    
     @Autowired
     private PendingCertifiedProductManager pcpManager;
 
@@ -129,7 +134,8 @@ public class CertifiedProductController {
 
     @Autowired
     private ChplProductNumberUtil chplProductNumberUtil;
-
+    
+    
     /**
      * List all certified products.
      * @param versionId if entered, filters list to only listings under given version
@@ -604,8 +610,8 @@ public class CertifiedProductController {
                     .equals(CertificationStatusType.TerminatedByOnc.toString())
                     || updatedListing.getCurrentStatus().getStatus().getName()
                     .equals(CertificationStatusType.TerminatedByOnc.toString()))
-                    && !Util.isUserRoleOnc()
-                    && !Util.isUserRoleAdmin()) {
+                    && !resourcePermissions.isUserRoleOnc()
+                    && !resourcePermissions.isUserRoleAdmin()) {
                 updatedListing.getErrorMessages()
                 .add("User " + Util.getUsername()
                 + " does not have permission to change certification status of "
@@ -680,10 +686,10 @@ public class CertifiedProductController {
             throws EntityRetrievalException, AccessDeniedException {
 
         List<PendingCertifiedProductDTO> pcps = new ArrayList<PendingCertifiedProductDTO>();
-        if (Util.isUserRoleAdmin()) {
+        if (resourcePermissions.isUserRoleAdmin()) {
             pcps = pcpManager.getAllPendingCertifiedProducts();
-        } else if (Util.isUserRoleAcbAdmin()) {
-            List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser();
+        } else if (resourcePermissions.isUserRoleAcbAdmin()) {
+            List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
             for (CertificationBodyDTO acb : allowedAcbs) {
                 pcps.addAll(pcpManager.getPendingCertifiedProducts(acb.getId()));
             }
@@ -728,7 +734,7 @@ public class CertifiedProductController {
             //make sure the user has permissions on the pending listings acb
             //will throw access denied if they do not have the permissions
             Long pendingListingAcbId = new Long(details.getCertifyingBody().get("id").toString());
-            acbManager.getIfPermissionById(pendingListingAcbId);
+            resourcePermissions.getAcbIfPermissionById(pendingListingAcbId);
         }
         return details;
     }
@@ -749,7 +755,7 @@ public class CertifiedProductController {
             //make sure the user has permissions on the pending listings acb
             //will throw access denied if they do not have the permissions
             pendingListingAcbId = new Long(pcp.getCertifyingBody().get("id").toString());
-            acbManager.getIfPermissionById(pendingListingAcbId);
+            resourcePermissions.getAcbIfPermissionById(pendingListingAcbId);
         }
         pcpManager.deletePendingCertifiedProduct(pendingListingAcbId, pcpId);
         return "{\"success\" : true}";

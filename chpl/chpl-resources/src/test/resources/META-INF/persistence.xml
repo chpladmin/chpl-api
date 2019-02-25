@@ -48,6 +48,7 @@
         <class>gov.healthit.chpl.entity.ProductInsertableOwnerEntity</class>
         <class>gov.healthit.chpl.entity.ProductVersionEntity</class>
         <class>gov.healthit.chpl.entity.QmsStandardEntity</class>
+        <class>gov.healthit.chpl.entity.RoleEntity</class>
         <class>gov.healthit.chpl.entity.TargetedUserEntity</class>
         <class>gov.healthit.chpl.entity.TestDataCriteriaMapEntity</class>
         <class>gov.healthit.chpl.entity.TestDataEntity</class>
@@ -61,6 +62,8 @@
         <class>gov.healthit.chpl.entity.TestToolEntity</class>
         <class>gov.healthit.chpl.entity.TestingLabEntity</class>
         <class>gov.healthit.chpl.entity.UcdProcessEntity</class>
+        <class>gov.healthit.chpl.entity.UserCertificationBodyMapEntity</class>
+        <class>gov.healthit.chpl.entity.UserRoleMapEntity</class>
         <class>gov.healthit.chpl.entity.developer.DeveloperACBMapEntity</class>
         <class>gov.healthit.chpl.entity.developer.DeveloperACBTransparencyMapEntity</class>
         <class>gov.healthit.chpl.entity.developer.DeveloperCertificationStatusesEntity</class>

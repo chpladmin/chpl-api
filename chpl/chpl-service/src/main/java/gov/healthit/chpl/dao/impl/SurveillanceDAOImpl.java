@@ -45,6 +45,7 @@ import gov.healthit.chpl.entity.surveillance.SurveillanceRequirementTypeEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceResultTypeEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceTypeEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 
 @Repository("surveillanceDAO")
 public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO {
@@ -52,12 +53,14 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 
     private CertificationCriterionDAO criterionDao;
     private UserPermissionDAO userPermissionDao;
+    private ResourcePermissions resourcePermissions;
 
     @Autowired
-    public SurveillanceDAOImpl(final CertificationCriterionDAO criterionDao,
-            final UserPermissionDAO userPermissionDao) {
+    public SurveillanceDAOImpl(final CertificationCriterionDAO criterionDao, final UserPermissionDAO userPermissionDao,
+            final ResourcePermissions resourcePermissions) {
         this.criterionDao = criterionDao;
         this.userPermissionDao = userPermissionDao;
+        this.resourcePermissions = resourcePermissions;
     }
 
     @Override
@@ -295,9 +298,9 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
     }
 
     private Long getSurveillanceAuthority() throws UserPermissionRetrievalException {
-        if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
+        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
             return userPermissionDao.getIdFromAuthority(Authority.ROLE_ONC);
-        } else if (Util.isUserRoleAcbAdmin()) {
+        } else if (resourcePermissions.isUserRoleAcbAdmin()) {
             return userPermissionDao.getIdFromAuthority(Authority.ROLE_ACB);
         } else {
             return null;
