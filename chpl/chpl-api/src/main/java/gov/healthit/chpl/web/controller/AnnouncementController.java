@@ -23,6 +23,9 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.manager.AnnouncementManager;
 import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
+import gov.healthit.chpl.web.controller.annotation.CacheControl;
+import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
+import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import gov.healthit.chpl.web.controller.results.AnnouncementResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -40,6 +43,7 @@ public class AnnouncementController {
                     + "and private announcements.  ROLE_ACB, ROLE_ATL, and ROLE_CMS_STAFF can retrieve private "
                     + "announcements.  All users can retrieve public announcements.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.FOUR_HOURS)
     public @ResponseBody AnnouncementResults getAnnouncements(
             @RequestParam(required = false, defaultValue = "false") final boolean future) {
         AnnouncementResults results = new AnnouncementResults();
@@ -63,6 +67,7 @@ public class AnnouncementController {
                     + "can retrieve private announcements.  All users can retrieve public announcements.")
     @RequestMapping(value = "/{announcementId}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.FOUR_HOURS)
     public @ResponseBody Announcement getAnnouncementById(@PathVariable("announcementId") final Long announcementId)
             throws EntityRetrievalException {
         AnnouncementDTO announcement = announcementManager.getById(announcementId);

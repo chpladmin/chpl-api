@@ -35,6 +35,7 @@ import org.springframework.web.servlet.view.JstlView;
 import gov.healthit.chpl.manager.ApiKeyManager;
 import gov.healthit.chpl.registration.APIKeyAuthenticationFilter;
 import gov.healthit.chpl.registration.RateLimitingInterceptor;
+import gov.healthit.chpl.web.controller.annotation.CacheControlHandlerInterceptor;
 
 /**
  * Entry point and main configuration class for Spring application.
@@ -124,12 +125,19 @@ public class CHPLConfig extends WebMvcConfigurerAdapter {
         return interceptor;
     }
 
+    @Bean
+    public CacheControlHandlerInterceptor cacheControlHandlerInterceptor() {
+        CacheControlHandlerInterceptor interceptor = new CacheControlHandlerInterceptor();
+        return interceptor;
+    }
+    
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
         registry.addInterceptor(localeInterceptor());
         registry.addInterceptor(rateLimitingInterceptor())
         .addPathPatterns("/**")
         .excludePathPatterns(APIKeyAuthenticationFilter.ALLOWED_REQUEST_PATHS);
+        registry.addInterceptor(cacheControlHandlerInterceptor());
     }
 
     @Bean

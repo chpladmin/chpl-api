@@ -38,6 +38,9 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.manager.TestingLabManager;
 import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
+import gov.healthit.chpl.web.controller.annotation.CacheControl;
+import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
+import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import gov.healthit.chpl.web.controller.results.PermittedUserResults;
 import gov.healthit.chpl.web.controller.results.TestingLabResults;
 import io.swagger.annotations.Api;
@@ -59,6 +62,7 @@ public class TestingLabController {
                     + "permissions on.  Security Restrictions: When 'editable' is 'true' ROLE_ADMIN or ROLE_ONC can see all ATLs.  ROLE_ATL "
                     + "can see their own ATL.  When 'editable' is 'false' all users can see all ATLs.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody TestingLabResults getAtls(
             @RequestParam(required = false, defaultValue = "false") final boolean editable) {
         TestingLabResults results = new TestingLabResults();
