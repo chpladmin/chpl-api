@@ -21,6 +21,7 @@ import gov.healthit.chpl.auth.dao.InvitationDAO;
 import gov.healthit.chpl.auth.dao.InvitationPermissionDAO;
 import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dao.UserPermissionDAO;
+import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.auth.dto.InvitationDTO;
 import gov.healthit.chpl.auth.dto.InvitationPermissionDTO;
 import gov.healthit.chpl.auth.dto.UserDTO;
@@ -84,7 +85,20 @@ public class InvitationManagerImpl implements InvitationManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
+    public InvitationDTO inviteOnc(final String emailAddress, final List<String> permissions)
+            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
+        InvitationDTO dto = new InvitationDTO();
+        dto.setEmail(emailAddress);
+        Date now = new Date();
+        dto.setInviteToken(Util.md5(emailAddress + now.getTime()));
+
+        return createInvitation(dto, permissions);
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
     public InvitationDTO inviteWithRolesOnly(final String emailAddress, final List<String> permissions)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
         InvitationDTO dto = new InvitationDTO();
@@ -97,7 +111,7 @@ public class InvitationManagerImpl implements InvitationManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or "
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or "
             + "(hasRole('ROLE_ACB') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     public InvitationDTO inviteWithAcbAccess(final String emailAddress, final Long acbId,
             final List<String> permissions)
@@ -115,7 +129,7 @@ public class InvitationManagerImpl implements InvitationManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or "
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or "
             + "(hasRole('ROLE_ATL') and hasPermission(#atlId, 'gov.healthit.chpl.dto.TestingLabDTO', admin))")
     public InvitationDTO inviteWithAtlAccess(final String emailAddress, final Long atlId,
             final List<String> permissions)
@@ -133,10 +147,12 @@ public class InvitationManagerImpl implements InvitationManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or " + "("
-            + "hasRole('ROLE_ACB') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin) "
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') "
+            + "or "
+            + "(hasRole('ROLE_ACB') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin) "
             + " and "
-            + "hasRole('ROLE_ATL') and hasPermission(#atlId, 'gov.healthit.chpl.dto.TestingLabDTO', admin)" + ")")
+            + "hasRole('ROLE_ATL') and hasPermission(#atlId, 'gov.healthit.chpl.dto.TestingLabDTO', admin)"
+            + ")")
     public InvitationDTO inviteWithAcbAndAtlAccess(final String emailAddress, final Long acbId, final Long atlId,
             final List<String> permissions)
                     throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
@@ -310,14 +326,14 @@ public class InvitationManagerImpl implements InvitationManager {
             throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException {
         CertificationBodyDTO userAcb = null;
         if (invitation.getAcbId() != null) {
-            userAcb = acbManager.getById(invitation.getAcbId());
+            userAcb = acbManager.getIfPermissionById(invitation.getAcbId());
             if (userAcb == null) {
                 throw new InvalidArgumentsException("Could not find ACB with id " + invitation.getAcbId());
             }
         }
         TestingLabDTO userAtl = null;
         if (invitation.getTestingLabId() != null) {
-            userAtl = atlManager.getById(invitation.getTestingLabId());
+            userAtl = atlManager.getIfPermissionById(invitation.getTestingLabId());
             if (userAtl == null) {
                 throw new InvalidArgumentsException(
                         "Could not find the testing lab with id " + invitation.getTestingLabId());
@@ -329,7 +345,7 @@ public class InvitationManagerImpl implements InvitationManager {
             for (InvitationPermissionDTO permission : invitation.getPermissions()) {
                 UserPermissionDTO userPermission = userPermissionDao.findById(permission.getPermissionId());
                 try {
-                    if (userPermission.getAuthority().equals("ROLE_ADMIN")) {
+                    if (userPermission.getAuthority().equals(Authority.ROLE_ADMIN)) {
                         userManager.grantAdmin(user.getUsername());
                     } else {
                         userManager.grantRole(user.getUsername(), userPermission.getAuthority());
@@ -359,7 +375,7 @@ public class InvitationManagerImpl implements InvitationManager {
 
             @Override
             public Long getId() {
-                return id == null ? Long.valueOf(-2L) : id;
+                return id == null ? Long.valueOf(User.ADMIN_USER_ID) : id;
             }
 
             @Override

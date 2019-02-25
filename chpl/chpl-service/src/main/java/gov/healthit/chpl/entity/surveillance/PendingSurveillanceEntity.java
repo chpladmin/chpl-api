@@ -65,10 +65,14 @@ public class PendingSurveillanceEntity {
     @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
 
+    @Column(name = "user_permission_id")
+    private Long userPermissionId;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingSurveillanceId")
     @Basic(optional = false)
     @Column(name = "pending_surveillance_id", nullable = false)
-    private Set<PendingSurveillanceRequirementEntity> surveilledRequirements = new HashSet<PendingSurveillanceRequirementEntity>();
+    private Set<PendingSurveillanceRequirementEntity> surveilledRequirements =
+    new HashSet<PendingSurveillanceRequirementEntity>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingSurveillanceId")
     @Basic(optional = false)
@@ -153,6 +157,14 @@ public class PendingSurveillanceEntity {
 
     public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
+    }
+
+    public Long getUserPermissionId() {
+        return userPermissionId;
+    }
+
+    public void setUserPermissionId(final Long userPermissionId) {
+        this.userPermissionId = userPermissionId;
     }
 
     public Set<PendingSurveillanceRequirementEntity> getSurveilledRequirements() {

@@ -8,7 +8,6 @@ public final class CacheNames {
     public static final String ALL_DEVELOPERS = "allDevelopers";
     public static final String ALL_DEVELOPERS_INCLUDING_DELETED = "allDevelopersIncludingDeleted";
     public static final String JOB_TYPES = "jobTypes";
-    public static final String CERT_BODY_NAMES = "certBodyNames";
     public static final String EDITION_NAMES = "editionNames";
     public static final String CERTIFICATION_STATUSES = "certificationStatuses";
     public static final String PRACTICE_TYPE_NAMES = "practiceTypeNames";
@@ -20,7 +19,6 @@ public final class CacheNames {
     public static final String CERTIFICATION_CRITERION_NUMBERS = "certificationCriterionNumbers";
     public static final String CERTIFICATION_CRITERION_WITH_EDITIONS = "certificationCriterionWithEditions";
     public static final String GET_DECERTIFIED_DEVELOPERS = "getDecertifiedDevelopers";
-    public static final String FIND_BY_ACB_ID = "findByAcbId";
     public static final String GET_ALL_WHITELISTED = "getAllWhitelistedEntities";
     public static final String FIND_SURVEILLANCE_REQ_TYPE = "findSurveillanceRequirementType";
     public static final String FIND_SURVEILLANCE_RESULT_TYPE = "findSurveillanceResultType";
@@ -30,5 +28,11 @@ public final class CacheNames {
     public static final String TEST_DATA = "testData";
     public static final String COLLECTIONS_DEVELOPERS = "developerCollection";
     public static final String COLLECTIONS_LISTINGS = "listingCollection";
-    public static final String COLLECTIONS_PREFETCHED_LISTINGS = "preFetchedListingCollection";
+
+    //caches that are pre-fetched due to longish load times
+    public static final String PREFETCHED_COLLECTIONS_LISTINGS = "prefetchedListingCollection";
+    public static final String PREFETCHED_ALL_CERT_IDS = "prefetchedAllCertIds";
+    public static final String PREFETCHED_ALL_CERT_IDS_WITH_PRODUCTS = "prefetchedAllCertIdsWithProducts";
+    public static final String PREFETCHED_PRODUCT_NAMES = "prefetchedProductNames";
+    public static final String PREFETCHED_DEVELOPER_NAMES = "prefetchedDeveloperNames";
 }

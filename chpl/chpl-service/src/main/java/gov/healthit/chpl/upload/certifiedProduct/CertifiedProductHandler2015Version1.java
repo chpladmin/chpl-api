@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -53,11 +54,14 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap;
 import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap2015Version1;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("certifiedProductHandler2015Version1")
 public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler {
 
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductHandler2015Version1.class);
+    @Autowired
+    private ErrorMessageUtil msgUtil;
     private TemplateColumnIndexMap templateColumnIndexMap;
     private String[] criteriaNames = {
             "170.315 (a)(1)", "170.315 (a)(2)", "170.315 (a)(3)", "170.315 (a)(4)", "170.315 (a)(5)",
@@ -337,30 +341,9 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                 }
             }
             participant.setOccupation(record.get(colIndex++).trim());
-            String profExperienceStr = record.get(colIndex++).trim();
-            try {
-                Integer profExperience = Math.round(new Float(profExperienceStr));
-                participant.setProfessionalExperienceMonths(profExperience);
-            } catch (Exception ex) {
-                LOGGER.error("Could not parse " + profExperienceStr + " into an integer.");
-            }
-
-            String computerExperienceStr = record.get(colIndex++).trim();
-            try {
-                Integer computerExperience = Math.round(new Float(computerExperienceStr));
-                participant.setComputerExperienceMonths(computerExperience);
-            } catch (Exception ex) {
-                LOGGER.error("Could not parse " + computerExperienceStr + " into an integer.");
-            }
-
-            String productExperienceStr = record.get(colIndex++).trim();
-            try {
-                Integer productExperience = Math.round(new Float(productExperienceStr));
-                participant.setProductExperienceMonths(productExperience);
-            } catch (Exception ex) {
-                LOGGER.error("Could not parse " + productExperienceStr + " into an integer.");
-            }
-
+            participant.setProfessionalExperienceMonths(record.get(colIndex++).trim());
+            participant.setComputerExperienceMonths(record.get(colIndex++).trim());
+            participant.setProductExperienceMonths(record.get(colIndex++).trim());
             participant.setAssistiveTechnologyNeeds(record.get(colIndex).trim());
             this.participants.add(participant);
         }
@@ -377,93 +360,24 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
 
         PendingTestTaskEntity task = new PendingTestTaskEntity();
         task.setUniqueId(record.get(colIndex++).trim());
+        if (task.getUniqueId().length() > msgUtil.getMaxLength("maxLength.taskIdentifier")) {
+            pendingCertifiedProductEntity.getErrorMessages().add(msgUtil.getMessage("listing.taskIdentifier.maxlength",
+                    String.valueOf(msgUtil.getMaxLength("maxLength.taskIdentifier")), task.getUniqueId()));
+        }
         task.setDescription(record.get(colIndex++).trim());
-        String successAvgStr = record.get(colIndex++).trim();
-        try {
-            Float successAvg = Float.valueOf(successAvgStr);
-            task.setTaskSuccessAverage(successAvg);
-        } catch (Exception ex) {
-            LOGGER.error("Cannot convert " + successAvgStr + " to a Float.");
-        }
-        String successStddevStr = record.get(colIndex++).trim();
-        try {
-            Float successStddev = new Float(successStddevStr);
-            task.setTaskSuccessStddev(successStddev);
-        } catch (Exception ex) {
-            LOGGER.error("Cannot convert " + successStddevStr + " to a Float.");
-        }
-        String taskPathDeviationObsStr = record.get(colIndex++).trim();
-        try {
-            Integer taskPathDeviationObs = Math.round(new Float(taskPathDeviationObsStr));
-            task.setTaskPathDeviationObserved(taskPathDeviationObs);
-        } catch (Exception ex) {
-            LOGGER.error("Cannot convert " + taskPathDeviationObsStr + " to a Integer.");
-        }
-        String taskPathDeviationOptStr = record.get(colIndex++).trim();
-        try {
-            Integer taskPathDeviationOpt = Math.round(new Float(taskPathDeviationOptStr));
-            task.setTaskPathDeviationOptimal(taskPathDeviationOpt);
-        } catch (Exception ex) {
-            LOGGER.error("Cannot convert " + taskPathDeviationOptStr + " to a Integer.");
-        }
-        String taskTimeAvgStr = record.get(colIndex++).trim();
-        try {
-            Integer taskTimeAvg = Math.round(new Float(taskTimeAvgStr));
-            task.setTaskTimeAvg(Long.valueOf(taskTimeAvg));
-        } catch (Exception ex) {
-            LOGGER.error("Cannot convert " + taskTimeAvgStr + " to a Integer.");
-        }
-        String taskTimeStddevStr = record.get(colIndex++).trim();
-        try {
-            Integer taskTimeStddev = Math.round(new Float(taskTimeStddevStr));
-            task.setTaskTimeStddev(taskTimeStddev);
-        } catch (Exception ex) {
-            LOGGER.error("Cannot convert " + taskTimeStddevStr + " to a Integer.");
-        }
-        String taskTimeDeviationAvgStr = record.get(colIndex++).trim();
-        try {
-            Integer taskTimeDeviationAvg = Math.round(new Float(taskTimeDeviationAvgStr));
-            task.setTaskTimeDeviationObservedAvg(taskTimeDeviationAvg);
-        } catch (Exception ex) {
-            LOGGER.error("Cannot convert " + taskTimeDeviationAvgStr + " to a Integer.");
-        }
-        String taskTimeDeviationOptimalAvgStr = record.get(colIndex++).trim();
-        try {
-            Integer taskTimeDeviationOptimalAvg = Math.round(new Float(taskTimeDeviationOptimalAvgStr));
-            task.setTaskTimeDeviationOptimalAvg(taskTimeDeviationOptimalAvg);
-        } catch (Exception ex) {
-            LOGGER.error("Cannot convert " + taskTimeDeviationOptimalAvgStr + " to a Integer.");
-        }
-        String taskErrorsAvgStr = record.get(colIndex++).trim();
-        try {
-            Float taskErrorsAvg = new Float(taskErrorsAvgStr);
-            task.setTaskErrors(taskErrorsAvg);
-        } catch (Exception ex) {
-            LOGGER.error("Cannot convert " + taskErrorsAvgStr + " to a Float.");
-        }
-        String taskErrorsStddevStr = record.get(colIndex++).trim();
-        try {
-            Float taskErrorsStddev = new Float(taskErrorsStddevStr);
-            task.setTaskErrorsStddev(taskErrorsStddev);
-        } catch (Exception ex) {
-            LOGGER.error("Cannot convert " + taskErrorsStddevStr + " to a Float.");
-        }
+        task.setTaskSuccessAverage(record.get(colIndex++).trim());
+        task.setTaskSuccessStddev(record.get(colIndex++).trim());
+        task.setTaskPathDeviationObserved(record.get(colIndex++).trim());
+        task.setTaskPathDeviationOptimal(record.get(colIndex++).trim());
+        task.setTaskTimeAvg(record.get(colIndex++).trim());
+        task.setTaskTimeStddev(record.get(colIndex++).trim());
+        task.setTaskTimeDeviationObservedAvg(record.get(colIndex++).trim());
+        task.setTaskTimeDeviationOptimalAvg(record.get(colIndex++).trim());
+        task.setTaskErrors(record.get(colIndex++).trim());
+        task.setTaskErrorsStddev(record.get(colIndex++).trim());
         task.setTaskRatingScale(record.get(colIndex++).trim());
-        String taskRatingStr = record.get(colIndex++).trim();
-        try {
-            Float taskRating = new Float(taskRatingStr);
-            task.setTaskRating(taskRating);
-        } catch (Exception ex) {
-            LOGGER.error("Cannot convert " + taskRatingStr + " to a Float.");
-        }
-
-        String taskRatingStddevStr = record.get(colIndex++).trim();
-        try {
-            Float taskRatingStddev = new Float(taskRatingStddevStr);
-            task.setTaskRatingStddev(taskRatingStddev);
-        } catch (Exception ex) {
-            LOGGER.error("Cannot convert " + taskRatingStddevStr + " to a Float.");
-        }
+        task.setTaskRating(record.get(colIndex++).trim());
+        task.setTaskRatingStddev(record.get(colIndex++).trim());
         this.tasks.add(task);
         return (getColumnIndexMap().getTestTaskEndIndex() - getColumnIndexMap().getTestTaskStartIndex()) + 1;
     }
@@ -814,6 +728,10 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                     for (int i = 0; i < participantUniqueIds.length; i++) {
                         PendingTestParticipantEntity participantEntity = null;
                         for (PendingTestParticipantEntity participant : this.participants) {
+                            if (participant.getUniqueId().length() > msgUtil.getMaxLength("maxLength.participantIdentifier")) {
+                                product.getErrorMessages().add(msgUtil.getMessage("listing.participantIdentifier.maxlength",
+                                        String.valueOf(msgUtil.getMaxLength("maxLength.participantIdentifier")), participant.getUniqueId()));
+                            }
                             if (participant.getUniqueId().equals(participantUniqueIds[i].trim())) {
                                 participantEntity = participant;
                             }

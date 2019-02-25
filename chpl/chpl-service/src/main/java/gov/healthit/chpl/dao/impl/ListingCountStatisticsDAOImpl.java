@@ -9,6 +9,7 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.ListingCountStatisticsDAO;
 import gov.healthit.chpl.dto.ListingCountStatisticsDTO;
 import gov.healthit.chpl.entity.ListingCountStatisticsEntity;
@@ -40,7 +41,7 @@ public class ListingCountStatisticsDAOImpl extends BaseDAOImpl implements Listin
 
         if (toDelete != null) {
             toDelete.setDeleted(true);
-            toDelete.setLastModifiedUser(getUserId(SYSTEM_USER_ID));
+            toDelete.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
             entityManager.merge(toDelete);
         }
     }
@@ -63,7 +64,7 @@ public class ListingCountStatisticsDAOImpl extends BaseDAOImpl implements Listin
         if (dto.getLastModifiedUser() != null) {
             entity.setLastModifiedUser(dto.getLastModifiedUser());
         } else {
-            entity.setLastModifiedUser(getUserId(SYSTEM_USER_ID));
+            entity.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
         }
         if (dto.getLastModifiedDate() != null) {
             entity.setLastModifiedDate(dto.getLastModifiedDate());

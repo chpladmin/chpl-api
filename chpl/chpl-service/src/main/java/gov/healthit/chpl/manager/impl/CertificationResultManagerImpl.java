@@ -102,7 +102,8 @@ public class CertificationResultManagerImpl implements CertificationResultManage
     private FuzzyChoicesDAO fuzzyChoicesDao;
 
     @Override
-    @PreAuthorize("(hasRole('ROLE_ADMIN') or " + "(hasRole('ROLE_ACB'))"
+    @PreAuthorize("(hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or " 
+            + "(hasRole('ROLE_ACB'))"
             + "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     @Transactional(rollbackFor = {
             EntityRetrievalException.class, EntityCreationException.class

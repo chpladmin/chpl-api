@@ -60,6 +60,14 @@ public interface PendingCertifiedProductDAO {
     PendingCertifiedProductDTO findById(Long pcpId, boolean includeDeleted) throws EntityRetrievalException;
 
     /**
+     * Returns the ACB ID associated with a given pending listing. Useful for authorization.
+     * @param pcpId
+     * @return
+     * @throws EntityRetrievalException
+     */
+    Long findAcbIdById(final Long pcpId) throws EntityRetrievalException;
+
+    /**
      * Return all pending Certified Products at a given ACB.
      * @param acbId the ACB's ID
      * @return DTOs of the relevant Products

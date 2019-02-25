@@ -286,7 +286,7 @@
         creation_date="2015-08-20 13:14:00" deleted="false" />
 
     <certification_body certification_body_id="-1"
-        acb_code="01" name="InfoGard"
+        acb_code="01" name="UL LLC"
         creation_date="2015-08-27 15:36:44.217"
         last_modified_date="2015-08-27 15:36:44.217"
         last_modified_user="-2" website="http://www.test.com"
@@ -408,7 +408,7 @@
     <certified_product certified_product_id="1"
         certification_edition_id="2" product_version_id="1"
         certification_body_id="-1" chpl_product_number="CHP-024050"
-        report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
+        report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         sed_report_file_location="http://www.google.com"
         acb_certification_id="abcdef"
         creation_date="2015-08-20 13:14:00" last_modified_user="-2"
@@ -420,7 +420,7 @@
     <certified_product certified_product_id="2"
         certification_edition_id="2" product_version_id="3"
         certification_body_id="-1" chpl_product_number="CHP-024051"
-        report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
+        report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2015-08-20 13:14:00" last_modified_user="-2"
         last_modified_date="2015-08-20 13:15:00" deleted="false"
         practice_type_id="1" product_classification_type_id="2"
@@ -430,7 +430,7 @@
     <certified_product certified_product_id="3"
         certification_edition_id="1" product_version_id="3"
         certification_body_id="-1" chpl_product_number="CHP-024052"
-        report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
+        report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2015-08-20 13:14:00" last_modified_user="-2"
         last_modified_date="2015-08-20 13:15:00" deleted="false"
         practice_type_id="1" product_classification_type_id="2"
@@ -440,7 +440,7 @@
     <certified_product certified_product_id="4"
         certification_edition_id="1" product_version_id="9"
         certification_body_id="-1" chpl_product_number="CHP-024053"
-        report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
+        report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2015-08-20 13:14:00" last_modified_user="-2"
         last_modified_date="2015-08-20 13:15:00" deleted="false"
         practice_type_id="1" product_classification_type_id="2"
@@ -450,7 +450,7 @@
     <certified_product certified_product_id="5"
         certification_edition_id="3" product_version_id="5"
         certification_body_id="-1" chpl_product_number="CHP-024054"
-        report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
+        report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         sed_report_file_location="http://www.google.com"
         acb_certification_id="abcdef"
         creation_date="2015-08-20 13:14:00" last_modified_user="-2"
@@ -461,7 +461,7 @@
     <certified_product certified_product_id="6"
         certification_edition_id="3" product_version_id="6"
         certification_body_id="-1" chpl_product_number="CHP-024055"
-        report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
+        report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2016-07-15 13:14:00" last_modified_user="-2"
         last_modified_date="2016-07-15 13:15:00" deleted="false"
         practice_type_id="1" product_classification_type_id="2"
@@ -471,7 +471,7 @@
     <certified_product certified_product_id="7"
         certification_edition_id="1" product_version_id="7"
         certification_body_id="-1"
-        report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
+        report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2016-07-15 13:14:00" last_modified_user="-2"
         last_modified_date="2016-07-15 13:15:00" deleted="false"
         practice_type_id="1" product_classification_type_id="2"
@@ -481,7 +481,7 @@
     <certified_product certified_product_id="8"
         certification_edition_id="2" product_version_id="8"
         certification_body_id="-2"
-        report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
+        report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
         last_modified_date="2016-08-20 13:15:00" deleted="false"
         practice_type_id="1" product_classification_type_id="2"
@@ -491,7 +491,7 @@
     <certified_product certified_product_id="9"
         certification_edition_id="3" product_version_id="4"
         certification_body_id="-2" chpl_product_number="CHP-024058"
-        report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
+        report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
         last_modified_date="2016-08-20 13:15:00" deleted="false"
         practice_type_id="2" product_classification_type_id="1"
@@ -501,7 +501,7 @@
     <certified_product certified_product_id="10"
         certification_edition_id="3" product_version_id="1"
         certification_body_id="-2" ics="false"
-        report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
+        report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
         last_modified_date="2016-08-20 13:15:00"
         acb_certification_id="abcdef" deleted="false"
@@ -511,7 +511,7 @@
     <certified_product certified_product_id="11"
         certification_edition_id="3" product_version_id="11"
         certification_body_id="-2"
-        report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
+        report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
         last_modified_date="2016-08-20 13:15:00" deleted="true"
         practice_type_id="2" product_classification_type_id="1"
@@ -521,7 +521,7 @@
     <certified_product certified_product_id="12"
         certification_edition_id="3" product_version_id="12"
         certification_body_id="-2"
-        report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
+        report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
         last_modified_date="2016-08-20 13:15:00" deleted="false"
         practice_type_id="2" product_classification_type_id="1"
@@ -531,7 +531,7 @@
     <certified_product certified_product_id="13"
         certification_edition_id="3" product_version_id="13"
         certification_body_id="-2"
-        report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
+        report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
         last_modified_date="2016-08-20 13:15:00" deleted="false"
         practice_type_id="2" product_classification_type_id="1"
@@ -541,7 +541,7 @@
     <certified_product certified_product_id="14"
         certification_edition_id="3" product_version_id="14"
         certification_body_id="-3"
-        report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
+        report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
         last_modified_date="2016-08-20 13:15:00" deleted="false"
         practice_type_id="2" product_classification_type_id="1"
@@ -551,7 +551,7 @@
     <certified_product certified_product_id="15"
         certification_edition_id="3" product_version_id="15"
         certification_body_id="-4"
-        report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
+        report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
         last_modified_date="2016-08-20 13:15:00" deleted="false"
         practice_type_id="2" product_classification_type_id="1"
@@ -561,7 +561,7 @@
     <certified_product certified_product_id="16"
         certification_edition_id="3" product_version_id="16"
         certification_body_id="-5"
-        report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
+        report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
         last_modified_date="2016-08-20 13:15:00" deleted="false"
         practice_type_id="2" product_classification_type_id="1"
@@ -571,7 +571,7 @@
     <certified_product certified_product_id="17"
         certification_edition_id="3" product_version_id="16"
         certification_body_id="-6"
-        report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
+        report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
         last_modified_date="2016-08-20 13:15:00" deleted="false"
         practice_type_id="2" product_classification_type_id="1"
@@ -581,7 +581,7 @@
     <certified_product certified_product_id="18"
         certification_edition_id="3" product_version_id="1"
         certification_body_id="-5"
-        report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
+        report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
         last_modified_date="2016-08-20 13:15:00" deleted="false"
         practice_type_id="2" product_classification_type_id="1"
@@ -591,7 +591,7 @@
     <certified_product certified_product_id="19"
         certification_edition_id="3" product_version_id="9"
         certification_body_id="-5"
-        report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
+        report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
         last_modified_date="2016-08-20 13:15:00" deleted="false"
         practice_type_id="2" product_classification_type_id="1"
@@ -1504,7 +1504,7 @@
     <pending_certified_product
         pending_certified_product_id="-1"
         unique_id="14.01.01.1009.FU01.05.1.0.160331" record_status="New"
-        practice_type="Ambulatory" testing_lab_name="My Testing Lab"
+        practice_type="Ambulatory"
         vendor_name="Test Developer 1" product_name="Test Product 1"
         product_version="5.3.1.1" certification_edition="2014"
         acb_certification_id="150080R04"
@@ -1525,7 +1525,7 @@
         sed_testing_end="2016-07-07 15:49:23.117772" ics="true"
         practice_type_id="1" vendor_id="-1" vendor_address_id="-1"
         vendor_contact_id="-1" product_id="-1" product_version_id="1722"
-        certification_edition_id="2" certification_body_id="-1"
+        certification_edition_id="2" certification_body_id="-6"
         product_classification_id="1"
         creation_date="2016-04-01 23:46:27.707"
         last_modified_date="2016-06-07 15:49:23.117772"
@@ -1534,7 +1534,7 @@
     <pending_certified_product
         pending_certified_product_id="-2"
         unique_id="15.04.04.2315.SESD.02.0.0.170217" record_status="New"
-        practice_type="Ambulatory" testing_lab_name="Drummond Group"
+        practice_type="Ambulatory"
         vendor_name="Secure Exchange Solutions"
         product_name="SES Direct" product_version="Version 2.0"
         certification_edition="2015"
@@ -1565,10 +1565,10 @@
 
     <pending_certified_product_testing_lab_map
         id="-1" pending_certified_product_id="-1" testing_lab_id="-1"
-        last_modified_user="-2" />
+        testing_lab_name="My Testing Lab" last_modified_user="-2" />
     <pending_certified_product_testing_lab_map
-        id="-2" pending_certified_product_id="-2" testing_lab_id="-1"
-        last_modified_user="-2" />
+        id="-2" pending_certified_product_id="-2" testing_lab_id="2"
+        testing_lab_name="Drummond Group" last_modified_user="-2" />
 
     <pending_certification_result
         pending_certification_result_id="-1"
@@ -1741,6 +1741,7 @@
         certified_product_unique_id="CHP-024050"
         start_date="2016-05-01 12:42:00.000"
         end_date="2016-06-01 12:42:00.000" type_value="1"
+        user_permission_id="2"
         creation_date="2016-05-01 12:42:00.000"
         last_modified_date="2016-05-01 12:42:00.000"
         last_modified_user="1" deleted="FALSE" />
@@ -1749,6 +1750,7 @@
         certified_product_unique_id="CHP-024051"
         start_date="2017-03-01 12:42:00.000"
         end_date="2017-04-01 12:42:00.000" type_value="1"
+        user_permission_id="2"
         creation_date="2017-03-01 12:42:00.000"
         last_modified_date="2017-03-01 12:42:00.000"
         last_modified_user="2" deleted="FALSE" />
@@ -1757,6 +1759,7 @@
         certified_product_unique_id="CHP-024051"
         start_date="2017-03-01 12:42:00.000"
         end_date="2017-04-01 12:42:00.000" type_value="1"
+        user_permission_id="2"
         creation_date="2017-03-01 12:42:00.000"
         last_modified_date="2017-03-01 12:42:00.000"
         last_modified_user="2" deleted="FALSE" />
@@ -1765,6 +1768,7 @@
         certified_product_unique_id="CHP-024051"
         start_date="2017-03-01 12:42:00.000"
         end_date="2017-04-01 12:42:00.000" type_value="1"
+        user_permission_id="2"
         creation_date="2017-03-01 12:42:00.000"
         last_modified_date="2017-03-01 12:42:00.000"
         last_modified_user="2" deleted="FALSE" />
@@ -1773,6 +1777,7 @@
         certified_product_unique_id="CHP-024051"
         start_date="2017-03-01 12:42:00.000"
         end_date="2017-04-01 12:42:00.000" type_value="1"
+        user_permission_id="2"
         creation_date="2017-03-01 12:42:00.000"
         last_modified_date="2017-03-01 12:42:00.000"
         last_modified_user="2" deleted="FALSE" />
@@ -1781,6 +1786,7 @@
         certified_product_unique_id="CHP-024051"
         start_date="2017-03-01 12:42:00.000"
         end_date="2017-04-01 12:42:00.000" type_value="1"
+        user_permission_id="2"
         creation_date="2017-03-01 12:42:00.000"
         last_modified_date="2017-03-01 12:42:00.000"
         last_modified_user="2" deleted="FALSE" />
@@ -1789,6 +1795,7 @@
         certified_product_unique_id="CHP-024051"
         start_date="2017-03-01 12:42:00.000"
         end_date="2017-04-01 12:42:00.000" type_value="1"
+        user_permission_id="2"
         creation_date="2017-03-01 12:42:00.000"
         last_modified_date="2017-03-01 12:42:00.000"
         last_modified_user="2" deleted="FALSE" />
@@ -1797,6 +1804,7 @@
         certified_product_unique_id="CHP-024051"
         start_date="2017-03-01 12:42:00.000"
         end_date="2017-04-01 12:42:00.000" type_value="1"
+        user_permission_id="2"
         creation_date="2017-03-01 12:42:00.000"
         last_modified_date="2017-03-01 12:42:00.000"
         last_modified_user="2" deleted="FALSE" />
@@ -1805,6 +1813,7 @@
         certified_product_unique_id="CHP-024051"
         start_date="2017-03-01 12:42:00.000"
         end_date="2017-04-01 12:42:00.000" type_value="1"
+        user_permission_id="2"
         creation_date="2017-03-01 12:42:00.000"
         last_modified_date="2017-03-01 12:42:00.000"
         last_modified_user="2" deleted="FALSE" />
@@ -1813,6 +1822,7 @@
         certified_product_unique_id="CHP-024051"
         start_date="2017-03-01 12:42:00.000"
         end_date="2017-04-01 12:42:00.000" type_value="1"
+        user_permission_id="2"
         creation_date="2017-03-01 12:42:00.000"
         last_modified_date="2017-03-01 12:42:00.000"
         last_modified_user="2" deleted="FALSE" />
@@ -1821,6 +1831,7 @@
         certified_product_unique_id="CHP-024051"
         start_date="2017-03-01 12:42:00.000"
         end_date="2017-04-01 12:42:00.000" type_value="1"
+        user_permission_id="2"
         creation_date="2017-03-01 12:42:00.000"
         last_modified_date="2017-03-01 12:42:00.000"
         last_modified_user="2" deleted="FALSE" />
@@ -1829,6 +1840,7 @@
         certified_product_unique_id="CHP-024051"
         start_date="2017-03-01 12:42:00.000"
         end_date="2017-04-01 12:42:00.000" type_value="1"
+        user_permission_id="2"
         creation_date="2017-03-01 12:42:00.000"
         last_modified_date="2017-03-01 12:42:00.000"
         last_modified_user="2" deleted="FALSE" />
@@ -1837,6 +1849,7 @@
         certified_product_unique_id="CHP-024051"
         start_date="2017-03-01 12:42:00.000"
         end_date="2017-04-01 12:42:00.000" type_value="1"
+        user_permission_id="2"
         creation_date="2017-03-01 12:42:00.000"
         last_modified_date="2017-03-01 12:42:00.000"
         last_modified_user="2" deleted="FALSE" />
@@ -1845,6 +1858,7 @@
         certified_product_unique_id="CHP-024051"
         start_date="2017-03-01 12:42:00.000"
         end_date="2017-04-01 12:42:00.000" type_value="1"
+        user_permission_id="2"
         creation_date="2017-03-01 12:42:00.000"
         last_modified_date="2017-03-01 12:42:00.000"
         last_modified_user="2" deleted="FALSE" />
@@ -1853,6 +1867,7 @@
         certified_product_unique_id="CHP-024051"
         start_date="2017-03-01 12:42:00.000"
         end_date="2017-04-01 12:42:00.000" type_value="1"
+        user_permission_id="2"
         creation_date="2017-03-01 12:42:00.000"
         last_modified_date="2017-03-01 12:42:00.000"
         last_modified_user="2" deleted="FALSE" />
@@ -1861,6 +1876,7 @@
         certified_product_unique_id="CHP-024051"
         start_date="2017-03-01 12:42:00.000"
         end_date="2017-04-01 12:42:00.000" type_value="1"
+        user_permission_id="2"
         creation_date="2017-03-01 12:42:00.000"
         last_modified_date="2017-03-01 12:42:00.000"
         last_modified_user="2" deleted="FALSE" />
@@ -1869,6 +1885,7 @@
         certified_product_unique_id="CHP-024051"
         start_date="2017-03-01 12:42:00.000"
         end_date="2017-04-01 12:42:00.000" type_value="1"
+        user_permission_id="2"
         creation_date="2017-03-01 12:42:00.000"
         last_modified_date="2017-03-01 12:42:00.000"
         last_modified_user="2" deleted="FALSE" />
@@ -1877,6 +1894,7 @@
         certified_product_unique_id="CHP-024051"
         start_date="2017-03-01 12:42:00.000"
         end_date="2017-04-01 12:42:00.000" type_value="1"
+        user_permission_id="2"
         creation_date="2017-03-01 12:42:00.000"
         last_modified_date="2017-03-01 12:42:00.000"
         last_modified_user="2" deleted="FALSE" />
@@ -1885,6 +1903,7 @@
         certified_product_unique_id="CHP-024051"
         start_date="2017-03-01 12:42:00.000"
         end_date="2017-04-01 12:42:00.000" type_value="1"
+        user_permission_id="2"
         creation_date="2017-03-01 12:42:00.000"
         last_modified_date="2017-03-01 12:42:00.000"
         last_modified_user="2" deleted="FALSE" />
@@ -1893,6 +1912,7 @@
         certified_product_unique_id="CHP-024050"
         start_date="2017-03-01 12:42:00.000"
         end_date="2018-04-01 12:42:00.000" type_value="1"
+        user_permission_id="2"
         creation_date="2017-03-01 12:42:00.000"
         last_modified_date="2017-03-01 12:42:00.000"
         last_modified_user="2" deleted="FALSE" />
@@ -1901,6 +1921,7 @@
         certified_product_unique_id="CHP-024051"
         start_date="2017-03-01 12:42:00.000"
         end_date="2018-04-01 12:42:00.000" type_value="1"
+        user_permission_id="2"
         creation_date="2017-03-01 12:42:00.000"
         last_modified_date="2017-03-01 12:42:00.000"
         last_modified_user="2" deleted="FALSE" />
@@ -1909,6 +1930,7 @@
         certified_product_unique_id="CHP-024052"
         start_date="2017-03-01 12:42:00.000"
         end_date="2018-04-01 12:42:00.000" type_value="1"
+        user_permission_id="2"
         creation_date="2017-03-01 12:42:00.000"
         last_modified_date="2017-03-01 12:42:00.000"
         last_modified_user="2" deleted="FALSE" />

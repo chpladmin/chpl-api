@@ -1,5 +1,44 @@
 # Release Notes
 
+## Version 20.4.0
+_25 February 2019_
+
+### New features
+* Allow upload / confirm of macra measures RT 13, 14, 15
+* Update behavior of pre-loaded caches which will affect the /cache_status call.
+  * All pre-loaded caches have an additional copy loaded in the background when their data changes. The background cache is then swapped with the live cache when necessary.
+  * The /cache_status call was reporting OK after initial startup but would later report INITIALIZING if user actions changed any cached data. Now once it reports OK it should continue to do so.
+* Save uploaded SED task/participant numbers as text; give error when cannot be parsed to numbers
+
+---
+
+## Version 20.3.0
+_11 February 2019_
+
+### New Features
+* Remove ACB from scheduled jobs when ACB is retired
+* Save retirement dates for ACBs/ATLs
+* Allow ROLE_ADMIN and ROLE_ONC to manage pending surveillances
+* Allow ROLE_ADMIN to run Quartz system jobs
+* Update Swagger documentation regarding API security
+* Change InfoGard's name to UL LLC
+
+### Bug Fixes
+* Allow newly added ACBs and ATLs to have users added to them.
+* Remove duplicate G1/G2 macra measures and warn the user for criteria that are not attested to.
+
+---
+
+## Version 20.2.0
+_28 January 2019_
+
+### New Features
+* Added ROLE_ONC user role. ROLE_ONC replaces the existing ROLE_ADMIN and all relevant accounts were converted to the new role.
+* Removed references to ROLE_ONC_STAFF.
+* Add upload errors for test task id and participant id being too long
+
+---
+
 ## Version 20.1.0
 _14 January 2019_
 

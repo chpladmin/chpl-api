@@ -45,7 +45,7 @@ public class MeaningfulUseController {
 
     @ApiOperation(value = "Upload a file to update the number of meaningful use users for each CHPL Product Number",
             notes = "Accepts a CSV file with chpl_product_number and num_meaningful_use_users to update the number of meaningful use users for each CHPL Product Number."
-                    + " The user uploading the file must have ROLE_ADMIN or ROLE_ONC_STAFF ")
+                    + " The user uploading the file must have ROLE_ADMIN, ROLE_ONC. ")
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public synchronized ResponseEntity<Job> uploadMeaningfulUseUsers(
             @RequestParam("file") final MultipartFile file,

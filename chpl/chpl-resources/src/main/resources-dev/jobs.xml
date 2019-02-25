@@ -164,7 +164,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN</value> <!-- Semi-colon delimited string -->
+                    <value>ROLE_ADMIN;ROLE_ONC</value> <!-- Semi-colon delimited string -->
                 </entry>
                 <entry>
                     <key>frequency</key>
@@ -200,7 +200,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN</value> <!-- Semi-colon delimited string -->
+                    <value>ROLE_ADMIN;ROLE_ONC</value> <!-- Semi-colon delimited string -->
                 </entry>
                 <entry>
                     <key>email</key>
@@ -244,7 +244,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN</value>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
                 </entry>
                 <entry>
                     <key>frequency</key>
@@ -262,7 +262,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ACB</value>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB</value>
                 </entry>
                 <entry>
                     <key>frequency</key>
@@ -303,7 +303,7 @@
                     </entry>
                     <entry>
                         <key>acb</key>
-                        <value>Drummond Group☺ICSA Labs☺InfoGard☺SLI Compliance</value>
+                        <value>Drummond Group☺ICSA Labs☺UL LLC☺SLI Compliance</value>
                     </entry>
                 </job-data-map>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
@@ -342,7 +342,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN</value>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
                 </entry>
                 <entry>
                     <key>frequency</key>
@@ -364,7 +364,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ACB</value>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB</value>
                 </entry>
                 <entry>
                     <key>frequency</key>
@@ -390,7 +390,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN</value>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
                 </entry>
                 <entry>
                     <key>frequency</key>
@@ -412,7 +412,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ACB</value>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB</value>
                 </entry>
                 <entry>
                     <key>frequency</key>
@@ -440,7 +440,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN</value>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
                 </entry>
                 <entry>
                     <key>frequency</key>
@@ -477,7 +477,7 @@
                     </entry>
                     <entry>
                         <key>acb</key>
-                        <value>Drummond Group☺ICSA Labs☺InfoGard☺SLI Compliance</value>
+                        <value>Drummond Group☺ICSA Labs☺UL LLC☺SLI Compliance</value>
                     </entry>
                 </job-data-map>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
@@ -513,7 +513,7 @@
                     </entry>
                     <entry>
                         <key>acb</key>
-                        <value>Drummond Group☺ICSA Labs☺InfoGard☺SLI Compliance</value>
+                        <value>Drummond Group☺ICSA Labs☺UL LLC☺SLI Compliance</value>
                     </entry>
                 </job-data-map>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
@@ -605,6 +605,12 @@
             <job-class>gov.healthit.chpl.scheduler.job.InterruptJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>parameters</key>
+                    <value>[{"label": "Job Name", "key": "jobName"}, {"label": "Group Name", "key": "jobGroup"}]</value>
+                </entry>
+            </job-data-map>
         </job>
 
         <!-- Job used to trigger mass required password change of almost all users-->

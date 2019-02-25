@@ -241,7 +241,7 @@ public class SearchViewControllerTest extends TestCase {
 
         try {
             searchViewController.searchGet(null, "Active", "2014", "170.314 (a)(1)", "OR", "CMS122", "AND",
-                    "BAD ACB,Infogard", null, null, null, null, null, null, null, null, null, 0, 50,
+                    "BAD ACB,UL LLC", null, null, null, null, null, null, null, null, null, 0, 50,
                     SearchRequest.ORDER_BY_DEVELOPER, true);
             fail();
         } catch (InvalidArgumentsException ex) {
@@ -259,7 +259,7 @@ public class SearchViewControllerTest extends TestCase {
         badRequest.getCertificationEditions().add("2011");
         badRequest.getCertificationCriteria().add("170.314 (a)(1)");
         badRequest.getCqms().add("CMS122");
-        badRequest.getCertificationBodies().add("Infogard");
+        badRequest.getCertificationBodies().add("UL LLC");
         badRequest.getCertificationBodies().add("BAD ACB");
         try {
             searchViewController.searchPost(badRequest);
@@ -276,7 +276,7 @@ public class SearchViewControllerTest extends TestCase {
             EntityCreationException, InvalidArgumentsException {
 
         try {
-            searchViewController.searchGet(null, "Active", "2014", "170.314 (a)(1)", "OR", "CMS122", "AND", "Infogard",
+            searchViewController.searchGet(null, "Active", "2014", "170.314 (a)(1)", "OR", "CMS122", "AND", "UL LLC",
                     "TRUEORFALSE", null, null, null, null, null, null, null, null, 0, 50,
                     SearchRequest.ORDER_BY_DEVELOPER, true);
             fail();
@@ -292,7 +292,7 @@ public class SearchViewControllerTest extends TestCase {
             EntityCreationException, InvalidArgumentsException {
 
         try {
-            searchViewController.searchGet(null, "Active", "2014", "170.314 (a)(1)", "OR", "CMS122", "AND", "Infogard",
+            searchViewController.searchGet(null, "Active", "2014", "170.314 (a)(1)", "OR", "CMS122", "AND", "UL LLC",
                     "FALSE", NonconformitySearchOptions.CLOSED_NONCONFORMITY + "," + "BAD_OPTION", null, null, null,
                     null, null, null, null, 0, 50, SearchRequest.ORDER_BY_DEVELOPER, true);
             fail();
@@ -308,7 +308,7 @@ public class SearchViewControllerTest extends TestCase {
             JsonProcessingException, EntityCreationException, InvalidArgumentsException {
 
         try {
-            searchViewController.searchGet(null, "Active", "2014", "170.314 (a)(1)", "OR", "CMS122", "AND", "Infogard",
+            searchViewController.searchGet(null, "Active", "2014", "170.314 (a)(1)", "OR", "CMS122", "AND", "UL LLC",
                     "TRUE", NonconformitySearchOptions.CLOSED_NONCONFORMITY.toString(), "NEITHER", null, null, null,
                     null, null, null, 0, 50, SearchRequest.ORDER_BY_DEVELOPER, true);
             fail();
@@ -324,7 +324,7 @@ public class SearchViewControllerTest extends TestCase {
             EntityCreationException, InvalidArgumentsException {
 
         try {
-            searchViewController.searchGet(null, "Active", "2014", "170.314 (a)(1)", "OR", "CMS122", "AND", "Infogard",
+            searchViewController.searchGet(null, "Active", "2014", "170.314 (a)(1)", "OR", "CMS122", "AND", "UL LLC",
                     "FALSE", null, null, null, null, null, "BAD_PRACTICE_TYPE", null, null, 0, 50,
                     SearchRequest.ORDER_BY_DEVELOPER, true);
             fail();
@@ -343,7 +343,7 @@ public class SearchViewControllerTest extends TestCase {
         badRequest.getCertificationEditions().add("2011");
         badRequest.getCertificationCriteria().add("170.314 (a)(1)");
         badRequest.getCqms().add("CMS122");
-        badRequest.getCertificationBodies().add("Infogard");
+        badRequest.getCertificationBodies().add("UL LLC");
         badRequest.setPracticeType("BAD_PRACTICE_TYPE");
         try {
             searchViewController.searchPost(badRequest);
@@ -360,7 +360,7 @@ public class SearchViewControllerTest extends TestCase {
             EntityCreationException, InvalidArgumentsException {
 
         try {
-            searchViewController.searchGet(null, "Active", "2014", "170.314 (a)(1)", "OR", "CMS122", "AND", "Infogard",
+            searchViewController.searchGet(null, "Active", "2014", "170.314 (a)(1)", "OR", "CMS122", "AND", "UL LLC",
                     "FALSE", null, null, null, null, null, "Ambulatory", "20110101", null, 0, 50,
                     SearchRequest.ORDER_BY_DEVELOPER, true);
             fail();
@@ -379,7 +379,7 @@ public class SearchViewControllerTest extends TestCase {
         badRequest.getCertificationEditions().add("2011");
         badRequest.getCertificationCriteria().add("170.314 (a)(1)");
         badRequest.getCqms().add("CMS122");
-        badRequest.getCertificationBodies().add("Infogard");
+        badRequest.getCertificationBodies().add("UL LLC");
         badRequest.setPracticeType("Ambulatory");
         badRequest.setCertificationDateStart("20110101");
         try {
@@ -397,7 +397,7 @@ public class SearchViewControllerTest extends TestCase {
             EntityCreationException, InvalidArgumentsException {
 
         try {
-            searchViewController.searchGet(null, "Active", "2014", "170.314 (a)(1)", "OR", "CMS122", "AND", "Infogard",
+            searchViewController.searchGet(null, "Active", "2014", "170.314 (a)(1)", "OR", "CMS122", "AND", "UL LLC",
                     "FALSE", null, null, null, null, null, "Ambulatory", "2011-01-01", "20110131", 0, 50,
                     SearchRequest.ORDER_BY_DEVELOPER, true);
             fail();
@@ -416,7 +416,7 @@ public class SearchViewControllerTest extends TestCase {
         badRequest.getCertificationEditions().add("2011");
         badRequest.getCertificationCriteria().add("170.314 (a)(1)");
         badRequest.getCqms().add("CMS122");
-        badRequest.getCertificationBodies().add("Infogard");
+        badRequest.getCertificationBodies().add("UL LLC");
         badRequest.setPracticeType("Ambulatory");
         badRequest.setCertificationDateStart("2011-01-01");
         badRequest.setCertificationDateEnd("20110131");
@@ -435,7 +435,7 @@ public class SearchViewControllerTest extends TestCase {
             EntityCreationException, InvalidArgumentsException {
 
         try {
-            searchViewController.searchGet(null, "Active", "2014", "170.314 (a)(1)", "OR", "CMS122", "AND", "Infogard",
+            searchViewController.searchGet(null, "Active", "2014", "170.314 (a)(1)", "OR", "CMS122", "AND", "UL LLC",
                     "FALSE", null, null, null, null, null, "Ambulatory", "2011-01-01", "2011-01-31", 0, 5000,
                     SearchRequest.ORDER_BY_DEVELOPER, true);
             fail();
@@ -454,7 +454,7 @@ public class SearchViewControllerTest extends TestCase {
         badRequest.getCertificationEditions().add("2011");
         badRequest.getCertificationCriteria().add("170.314 (a)(1)");
         badRequest.getCqms().add("CMS122");
-        badRequest.getCertificationBodies().add("Infogard");
+        badRequest.getCertificationBodies().add("UL LLC");
         badRequest.setPracticeType("Ambulatory");
         badRequest.setCertificationDateStart("2011-01-01");
         badRequest.setCertificationDateEnd("2011-01-31");
@@ -474,7 +474,7 @@ public class SearchViewControllerTest extends TestCase {
             EntityCreationException, InvalidArgumentsException {
 
         try {
-            searchViewController.searchGet(null, "Active", "2014", "170.314 (a)(1)", "OR", "CMS122", "AND", "Infogard",
+            searchViewController.searchGet(null, "Active", "2014", "170.314 (a)(1)", "OR", "CMS122", "AND", "UL LLC",
                     "FALSE", null, null, null, null, null, "Ambulatory", "2011-01-01", "2011-01-31", 0, 50,
                     "bad_order_by", true);
             fail();
@@ -493,7 +493,7 @@ public class SearchViewControllerTest extends TestCase {
         badRequest.getCertificationEditions().add("2011");
         badRequest.getCertificationCriteria().add("170.314 (a)(1)");
         badRequest.getCqms().add("CMS122");
-        badRequest.getCertificationBodies().add("Infogard");
+        badRequest.getCertificationBodies().add("UL LLC");
         badRequest.setPracticeType("Ambulatory");
         badRequest.setCertificationDateStart("2011-01-01");
         badRequest.setCertificationDateEnd("2011-01-31");
@@ -519,7 +519,7 @@ public class SearchViewControllerTest extends TestCase {
         searchRequest.setProduct("Test");
         searchRequest.setVersion("2.0");
         searchRequest.getCertificationEditions().add("2014");
-        searchRequest.getCertificationBodies().add("InfoGard");
+        searchRequest.getCertificationBodies().add("UL LLC");
         searchRequest.setPracticeType("Ambulatory");
         searchRequest.setOrderBy("product");
         searchRequest.setSortDescending(true);
@@ -537,7 +537,7 @@ public class SearchViewControllerTest extends TestCase {
     public void testGetSearch() throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
             InvalidArgumentsException {
         SearchResponse response = searchViewController.searchGet("Test", null, "2014", null, null, null, null,
-                "Infogard", null, null, null, "Test Developer 1", "Test", "2.0", "Ambulatory", null, null, 0, 50,
+                "UL LLC", null, null, null, "Test Developer 1", "Test", "2.0", "Ambulatory", null, null, 0, 50,
                 "product", true);
         assertNotNull(response);
         assertEquals(1, response.getRecordCount().intValue());

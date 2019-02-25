@@ -33,16 +33,22 @@ import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.TestData;
 import gov.healthit.chpl.domain.TestProcedure;
 import gov.healthit.chpl.dto.AddressDTO;
+import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestStandardDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultTestTaskDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultTestTaskParticipantDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductTestingLabDTO;
+import gov.healthit.chpl.dto.PendingTestParticipantDTO;
+import gov.healthit.chpl.dto.PendingTestTaskDTO;
 import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
 import gov.healthit.chpl.util.CertificationResultRules;
@@ -263,6 +269,167 @@ public class ListingMockUtil {
         return listing;
     }
 
+    public PendingCertifiedProductDTO createPending2015Listing() {
+        PendingCertifiedProductDTO listing = createPendingListing("2015");
+        listing.setAcbCertificationId("IG-4152-18-0007");
+        listing.setAccessibilityCertified(null);
+        listing.setCertificationBodyId(1L);
+        listing.setCertificationBodyName("ICSA Labs");
+        listing.setCertificationDate(new Date(1459555200000L));
+        listing.setCertificationEdition("2015");
+        listing.setCertificationEditionId(EDITION_2015_ID);
+        listing.setDeveloperCity("Palo Alto");
+        listing.setDeveloperContactName("Test Person");
+        listing.setDeveloperEmail("test@mail.com");
+        listing.setDeveloperId(1L);
+        listing.setDeveloperName("Epic Systems Corporation");
+        listing.setDeveloperPhoneNumber("555-444-3333");
+        listing.setDeveloperState("CA");
+        listing.setDeveloperStreetAddress("541 E. Charleston Rd #4");
+        listing.setDeveloperWebsite("http://healthmetricssystems.com");
+        listing.setDeveloperZipCode("94303");
+        listing.setHasQms(Boolean.TRUE);
+        listing.setIcs(Boolean.FALSE);
+        listing.setId(9001L);
+        listing.setLastModifiedUser(-2L);
+        listing.setProductId(1L);
+        listing.setProductName("(SQI) Solution For Quality Improvement");
+        listing.setProductVersion("v4.6.9.25");
+        listing.setProductVersionId(1L);
+        listing.getQmsStandards().add(createPendingQmsStandard());
+        listing.getTestingLabs().add(createPendingTestingLab());
+        listing.setTransparencyAttestation("Affirmative");
+        listing.setTransparencyAttestationUrl("http://www.healthmetricssystems.com/index.php/certifications/");
+
+        //certification results
+        PendingCertificationResultDTO a1 = create2015PendingCertResult(1L, "170.315 (a)(1)", true);
+        a1.setG1Success(Boolean.TRUE);
+        a1.setG2Success(Boolean.TRUE);
+        a1.getG1MacraMeasures().add(createPendingMacraMeasure());
+        a1.getTestProcedures().add(createPendingTestProcedure(1L, null, "1"));
+        a1.getTestTasks().add(createPendingCertificationResultTestTaskDTO());
+        listing.getCertificationCriterion().add(a1);
+
+        PendingCertificationResultDTO a2 = create2015PendingCertResult(2L, "170.315 (a)(2)", true);
+        a2.getTestProcedures().add(createPendingTestProcedure(1L, null, "1.9"));
+        a2.setSed(Boolean.TRUE);
+        a1.getG2MacraMeasures().add(createPendingMacraMeasure());
+        a2.getUcdProcesses().add(createPendingUcdProcess(1L, "NISTIR 7741", "changed things"));
+        listing.getCertificationCriterion().add(a2);
+
+        PendingCertificationResultDTO a3 = create2015PendingCertResult(3L, "170.315 (a)(3)", true);
+        a3.getTestProcedures().add(createPendingTestProcedure(1L, null, "1.9"));
+        listing.getCertificationCriterion().add(a3);
+
+        PendingCertificationResultDTO a4 = create2015PendingCertResult(4L, "170.315 (a)(4)", true);
+        a4.getTestFunctionality().add(createPendingTestFunctionality(1L, "(a)(5)(i)", "2015"));
+        a4.getTestProcedures().add(createPendingTestProcedure(1L, null, "1.9"));
+        listing.getCertificationCriterion().add(a4);
+
+        PendingCertificationResultDTO a5 = create2015PendingCertResult(5L, "170.315 (a)(5)", true);
+        a5.getTestFunctionality().add(createPendingTestFunctionality(1L, "(a)(5)(i)", "2015"));
+        a5.getTestProcedures().add(createPendingTestProcedure(1L, null, "1.9"));
+        listing.getCertificationCriterion().add(a5);
+
+        PendingCertificationResultDTO a6 = create2015PendingCertResult(6L, "170.315 (a)(6)", true);
+        a6.getTestFunctionality().add(createPendingTestFunctionality(1L, "(a)(6)(i)", "2015"));
+        a6.getTestProcedures().add(createPendingTestProcedure(1L, null, "1.9"));
+        a6.setSed(Boolean.TRUE);
+        a6.getUcdProcesses().add(createPendingUcdProcess(1L, "NISTIR 7741", "changed things"));
+        listing.getCertificationCriterion().add(a6);
+
+        PendingCertificationResultDTO a7 = create2015PendingCertResult(7L, "170.315 (a)(7)", true);
+        a7.getTestFunctionality().add(createPendingTestFunctionality(1L, "(a)(7)(i)", "2015"));
+        a7.getTestProcedures().add(createPendingTestProcedure(1L, null, "1.9"));
+        a7.setSed(Boolean.TRUE);
+        a7.getUcdProcesses().add(createPendingUcdProcess(1L, "NISTIR 7741", "changed things"));
+        listing.getCertificationCriterion().add(a7);
+
+        PendingCertificationResultDTO a8 = create2015PendingCertResult(8L, "170.315 (a)(8)", true);
+        a8.getTestProcedures().add(createPendingTestProcedure(1L, null, "1.9"));
+        a8.setSed(Boolean.TRUE);
+        a8.getUcdProcesses().add(createPendingUcdProcess(1L, "NISTIR 7741", "changed things"));
+        listing.getCertificationCriterion().add(a8);
+
+        PendingCertificationResultDTO a9 = create2015PendingCertResult(9L, "170.315 (a)(9)", true);
+        a9.getTestProcedures().add(createPendingTestProcedure(1L, null, "1.9"));
+        listing.getCertificationCriterion().add(a9);
+
+        PendingCertificationResultDTO a10 = create2015PendingCertResult(10L, "170.315 (a)(10)", true);
+        a10.getTestProcedures().add(createPendingTestProcedure(1L, null, "1.9"));
+        listing.getCertificationCriterion().add(a10);
+
+        PendingCertificationResultDTO a11 = create2015PendingCertResult(11L, "170.315 (a)(11)", true);
+        a11.getTestProcedures().add(createPendingTestProcedure(1L, null, "1.9"));
+        listing.getCertificationCriterion().add(a11);
+
+        PendingCertificationResultDTO a12 = create2015PendingCertResult(12L, "170.315 (a)(12)", true);
+        a12.getTestProcedures().add(createPendingTestProcedure(1L, null, "1.9"));
+        listing.getCertificationCriterion().add(a12);
+
+        PendingCertificationResultDTO a13 = create2015PendingCertResult(13L, "170.315 (a)(13)", true);
+        a13.getTestStandards().add(createPendingTestStandard(2L, "170.207(a)(3)"));
+        a13.getTestProcedures().add(createPendingTestProcedure(1L, null, "1.9"));
+        listing.getCertificationCriterion().add(a13);
+
+        PendingCertificationResultDTO a14 = create2015PendingCertResult(14L, "170.315 (a)(14)", true);
+        a14.getTestProcedures().add(createPendingTestProcedure(1L, null, "1.9"));
+        listing.getCertificationCriterion().add(a14);
+
+        PendingCertificationResultDTO a15 = create2015PendingCertResult(15L, "170.315 (a)(15)", true);
+        a15.getTestStandards().add(createPendingTestStandard(2L, "170.204(b)(1)"));
+        a15.getTestProcedures().add(createPendingTestProcedure(1L, null, "1.9"));
+        listing.getCertificationCriterion().add(a15);
+
+        PendingCertificationResultDTO a16 = create2015PendingCertResult(16L, "170.315 (a)(16)", true);
+        a16.setSed(Boolean.TRUE);
+        a16.getUcdProcesses().add(createPendingUcdProcess(1L, "NISTIR 7741", "changed things"));
+        listing.getCertificationCriterion().add(a16);
+
+        PendingCertificationResultDTO a17 = create2015PendingCertResult(17L, "170.315 (a)(17)", true);
+        a17.setGap(Boolean.TRUE);
+        listing.getCertificationCriterion().add(a17);
+
+        listing.getCertificationCriterion().add(create2015PendingCertResult(18L, "170.315 (a)(18)", false));
+
+        PendingCertificationResultDTO a19 = create2015PendingCertResult(19L, "170.315 (a)(19)", true);
+        a19.setGap(Boolean.TRUE);
+        a19.setSed(Boolean.TRUE);
+        a19.getUcdProcesses().add(createPendingUcdProcess(1L, "NISTIR 7741", "changed things"));
+        listing.getCertificationCriterion().add(a19);
+
+        listing.getCertificationCriterion().add(create2015PendingCertResult(20L, "170.315 (a)(20)", false));
+
+        PendingCertificationResultDTO b1 = create2015PendingCertResult(21L, "170.315 (b)(1)", true);
+        b1.getTestStandards().add(createPendingTestStandard(2L, "170.207(i)"));
+        b1.getTestTools().add(createPendingTestTool(1L, "Direct Certificate Discovery Tool", "181", false));
+        b1.getTestProcedures().add(createPendingTestProcedure(1L, null, "1.7"));
+        listing.getCertificationCriterion().add(b1);
+
+        PendingCertificationResultDTO b2 = create2015PendingCertResult(22L, "170.315 (b)(2)", true);
+        b2.getTestStandards().add(createPendingTestStandard(2L, "170.207(a)(3)"));
+        b2.getTestTools().add(createPendingTestTool(1L, "Direct Certificate Discovery Tool", "3.0.4", false));
+        b2.getTestProcedures().add(createPendingTestProcedure(1L, null, "1.8"));
+        listing.getCertificationCriterion().add(b2);
+
+        PendingCertificationResultDTO g1 = create2015PendingCertResult(23L, "170.315 (g)(1)", true);
+        g1.getTestProcedures().add(createPendingTestProcedure(1L, null, "1.8"));
+        listing.getCertificationCriterion().add(g1);
+
+        PendingCertificationResultDTO g2 = create2015PendingCertResult(24L, "170.315 (g)(2)", true);
+        g2.getTestProcedures().add(createPendingTestProcedure(1L, null, "1.8"));
+        listing.getCertificationCriterion().add(g2);
+
+        PendingCertificationResultDTO f3 = create2015PendingCertResult(25L, "170.315 (f)(3)", true);
+        f3.getTestStandards().add(createPendingTestStandard(2L, "170.205(d)(3)"));
+        f3.getTestTools().add(createPendingTestTool(1L, "Direct Certificate Discovery Tool", "3.0.4", false));
+        f3.getTestProcedures().add(createPendingTestProcedure(1L, null, "1.8"));
+        listing.getCertificationCriterion().add(f3);
+
+        //TODO: cqms
+        return listing;
+    }
+
     public CertifiedProductSearchDetails createValid2015Listing() {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
         listing.setAcbCertificationId("IG-4152-18-0007");
@@ -274,7 +441,7 @@ public class ListingMockUtil {
         listing.getCertificationEvents().add(createActiveCertificationEvent());
         listing.getCertifyingBody().put("id", "1");
         listing.getCertifyingBody().put("code", "02");
-        listing.getCertifyingBody().put("name", "InfoGard");
+        listing.getCertifyingBody().put("name", "UL LLC");
         listing.setChplProductNumber(CHPL_ID_2015);
         listing.setCountCerts(8);
         listing.setCountClosedNonconformities(0);
@@ -536,7 +703,7 @@ public class ListingMockUtil {
         atl.setId(1L);
         atl.setTestingLabCode("02");
         atl.setTestingLabId(1L);
-        atl.setTestingLabName("InfoGard");
+        atl.setTestingLabName("UL LLC");
         return atl;
     }
 
@@ -616,6 +783,66 @@ public class ListingMockUtil {
     }
 
     public PendingCertificationResultDTO create2014PendingCertResult(final Long id, final String number,
+            final Boolean success) {
+        PendingCertificationResultDTO certResult = new PendingCertificationResultDTO();
+        certResult.setId(id);
+        certResult.setNumber(number);
+        certResult.setMeetsCriteria(success);
+
+        if (!certRules.hasCertOption(number, CertificationResultRules.ADDITIONAL_SOFTWARE)) {
+            certResult.setAdditionalSoftware(null);
+        }
+        if (!certRules.hasCertOption(number, CertificationResultRules.API_DOCUMENTATION)) {
+            certResult.setApiDocumentation(null);
+        }
+        if (!certRules.hasCertOption(number, CertificationResultRules.G1_SUCCESS)) {
+            certResult.setG1Success(null);
+        }
+        if (!certRules.hasCertOption(number, CertificationResultRules.G1_MACRA)) {
+            certResult.setG1MacraMeasures(null);
+        }
+        if (!certRules.hasCertOption(number, CertificationResultRules.G2_SUCCESS)) {
+            certResult.setG2Success(null);
+        }
+        if (!certRules.hasCertOption(number, CertificationResultRules.G2_MACRA)) {
+            certResult.setG2MacraMeasures(null);
+        }
+
+        if (!certRules.hasCertOption(number, CertificationResultRules.GAP)) {
+            certResult.setGap(null);
+        } else {
+            certResult.setGap(Boolean.FALSE);
+        }
+
+        if (!certRules.hasCertOption(number, CertificationResultRules.PRIVACY_SECURITY)) {
+            certResult.setPrivacySecurityFramework(null);
+        }
+
+        if (!certRules.hasCertOption(number, CertificationResultRules.SED)) {
+            certResult.setSed(null);
+        } else {
+            certResult.setSed(Boolean.FALSE);
+        }
+
+        if (!certRules.hasCertOption(number, CertificationResultRules.TEST_DATA)) {
+            certResult.setTestData(null);
+        }
+        if (!certRules.hasCertOption(number, CertificationResultRules.FUNCTIONALITY_TESTED)) {
+            certResult.setTestFunctionality(null);
+        }
+        if (!certRules.hasCertOption(number, CertificationResultRules.TEST_PROCEDURE)) {
+            certResult.setTestProcedures(null);
+        }
+        if (!certRules.hasCertOption(number, CertificationResultRules.STANDARDS_TESTED)) {
+            certResult.setTestStandards(null);
+        }
+        if (!certRules.hasCertOption(number, CertificationResultRules.TEST_TOOLS_USED)) {
+            certResult.setTestTools(null);
+        }
+        return certResult;
+    }
+
+    public PendingCertificationResultDTO create2015PendingCertResult(final Long id, final String number,
             final Boolean success) {
         PendingCertificationResultDTO certResult = new PendingCertificationResultDTO();
         certResult.setId(id);
@@ -790,6 +1017,48 @@ public class ListingMockUtil {
         ucd.setUcdProcessDetails(modification);
         ucd.setUcdProcessName(name);
         return ucd;
+    }
+
+    private PendingCertificationResultMacraMeasureDTO createPendingMacraMeasure() {
+        PendingCertificationResultMacraMeasureDTO measure = new PendingCertificationResultMacraMeasureDTO();
+        measure.setMacraMeasure(new MacraMeasureDTO());
+        measure.setEnteredValue("GAP-EP");
+        return measure;
+    }
+
+    private PendingCertificationResultTestTaskDTO createPendingCertificationResultTestTaskDTO() {
+        PendingCertificationResultTestTaskDTO crTask = new PendingCertificationResultTestTaskDTO();
+        PendingTestTaskDTO task = new PendingTestTaskDTO();
+        task.setUniqueId("Task ID");
+        task.setDescription("Description");
+        task.setTaskErrors("1");
+        task.setTaskErrorsStddev("1");
+        task.setTaskPathDeviationObserved("1");
+        task.setTaskPathDeviationOptimal("1");
+        task.setTaskRating("3");
+        task.setTaskRatingScale("scale");
+        task.setTaskRatingStddev("2");
+        task.setTaskSuccessAverage("3");
+        task.setTaskSuccessStddev("3");
+        task.setTaskTimeAvg("3");
+        task.setTaskTimeDeviationObservedAvg("3");
+        task.setTaskTimeDeviationOptimalAvg("23");
+        task.setTaskTimeStddev("2");
+        crTask.setPendingTestTask(task);
+        for (int i = 0; i < 10; i++) {
+            PendingCertificationResultTestTaskParticipantDTO part = new PendingCertificationResultTestTaskParticipantDTO();
+            part.setTestParticipant(new PendingTestParticipantDTO());
+            part.getTestParticipant().setAgeRangeId(1L);
+            part.getTestParticipant().setAssistiveTechnologyNeeds("None");
+            part.getTestParticipant().setComputerExperienceMonths("4");
+            part.getTestParticipant().setEducationTypeId(2L);
+            part.getTestParticipant().setGender("N/A");
+            part.getTestParticipant().setOccupation("job");
+            part.getTestParticipant().setProductExperienceMonths("3");
+            part.getTestParticipant().setProfessionalExperienceMonths("98");
+            crTask.getTaskParticipants().add(part);
+        }
+        return crTask;
     }
 
     public String getChangedListingId(final String origValue,

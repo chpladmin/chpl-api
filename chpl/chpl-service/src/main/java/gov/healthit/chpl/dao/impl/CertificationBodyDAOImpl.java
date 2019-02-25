@@ -92,6 +92,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 
         entity.setWebsite(dto.getWebsite());
         entity.setRetired(dto.isRetired());
+        entity.setRetirementDate(dto.getRetirementDate());
 
         if (dto.getName() != null) {
             entity.setName(dto.getName());
@@ -233,7 +234,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
                     LocaleContextHolder.getLocale()));
             throw new EntityRetrievalException(msg);
         } else if (result.size() > 1) {
-            throw new EntityRetrievalException("Data error. Duplicate certificaiton body id in database.");
+            throw new EntityRetrievalException("Data error. Duplicate certification body id in database.");
         } else if (result.size() == 1) {
             entity = result.get(0);
         }

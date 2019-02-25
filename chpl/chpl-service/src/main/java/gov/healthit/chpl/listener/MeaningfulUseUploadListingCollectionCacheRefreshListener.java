@@ -7,7 +7,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.caching.ListingsCollectionCacheUpdater;
+import gov.healthit.chpl.caching.updater.ListingsCollectionCacheUpdater;
 import gov.healthit.chpl.util.PropertyUtil;
 
 @Component

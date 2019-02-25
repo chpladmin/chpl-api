@@ -107,7 +107,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 
     @Override
     @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
     @Cacheable(CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED)
     public List<DeveloperDTO> getAllIncludingDeleted() {
         List<DeveloperDTO> allDevelopers = developerDao.findAllIncludingDeleted();
@@ -152,10 +152,10 @@ public class DeveloperManagerImpl implements DeveloperManager {
     }
 
     @Override
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
-            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.DEVELOPER_NAMES,
+            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
             CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.GET_DECERTIFIED_DEVELOPERS
     }, allEntries = true)
     public DeveloperDTO update(final DeveloperDTO updatedDev)
@@ -185,7 +185,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
         // if the before status is not Active and the user is not ROLE_ADMIN
         // then nothing can be changed
         if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
-                && !Util.isUserRoleAdmin()) {
+                && !Util.isUserRoleAdmin() && !Util.isUserRoleOnc()) {
             String msg = msgUtil.getMessage("developer.notActiveNotAdminCantChangeStatus",
                     Util.getUsername(), beforeDev.getName());
             LOGGER.error(msg);
@@ -199,12 +199,13 @@ public class DeveloperManagerImpl implements DeveloperManager {
         if (devStatusHistoryUpdated
                 && newDevStatus.getStatus().getStatusName()
                 .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
-                && !Util.isUserRoleAdmin()) {
+                && !Util.isUserRoleAdmin() && !Util.isUserRoleOnc()) {
             String  msg = msgUtil.getMessage("developer.statusChangeNotAllowedWithoutAdmin",
                     DeveloperStatusType.UnderCertificationBanByOnc.toString());
             throw new EntityCreationException(msg);
         } else if (devStatusHistoryUpdated && !newDevStatus.getStatus().getStatusName()
-                .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString()) && !Util.isUserRoleAdmin()) {
+                .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
+                && !Util.isUserRoleAdmin() && !Util.isUserRoleOnc()) {
             String msg = msgUtil.getMessage("developer.statusHistoryChangeNotAllowedWithoutAdmin");
             throw new EntityCreationException(msg);
         }
@@ -214,15 +215,9 @@ public class DeveloperManagerImpl implements DeveloperManager {
         // can change it to UnderCertificationBanByOnc
         boolean currentStatusChanged = !currDevStatus.getStatus().getStatusName()
                 .equals(newDevStatus.getStatus().getStatusName());
-        if (currentStatusChanged
-                && newDevStatus.getStatus().getStatusName()
+        if (currentStatusChanged && !newDevStatus.getStatus().getStatusName()
                 .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
-                && !(Util.isUserRoleAdmin() || Util.isUserRoleAcbAdmin())) {
-            String msg = msgUtil.getMessage("developer.statusChangeNotAllowedWithoutAdminOrAcb",
-                    DeveloperStatusType.UnderCertificationBanByOnc.toString());
-            throw new EntityCreationException(msg);
-        } else if (currentStatusChanged && !newDevStatus.getStatus().getStatusName()
-                .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString()) && !Util.isUserRoleAdmin()) {
+                && !Util.isUserRoleAdmin() && !Util.isUserRoleOnc()) {
             String  msg = msgUtil.getMessage("developer.statusChangeNotAllowedWithoutAdmin");
             throw new EntityCreationException(msg);
         } else if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
@@ -249,9 +244,9 @@ public class DeveloperManagerImpl implements DeveloperManager {
             // OR if before status is active and user is not ROLE_ADMIN - proceed
             if (((currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
                     || newDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()))
-                    && Util.isUserRoleAdmin())
+                    && (Util.isUserRoleAdmin() || Util.isUserRoleOnc()))
                     || (currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
-                            && !Util.isUserRoleAdmin())) {
+                            && !Util.isUserRoleAdmin() && !Util.isUserRoleOnc())) {
 
                 developerDao.update(updatedDev);
                 updateStatusHistory(beforeDev, updatedDev);
@@ -338,7 +333,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB')")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
-            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.DEVELOPER_NAMES,
+            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
             CacheNames.COLLECTIONS_DEVELOPERS
     }, allEntries = true)
     public DeveloperDTO create(final DeveloperDTO dto)
@@ -374,10 +369,10 @@ public class DeveloperManagerImpl implements DeveloperManager {
     }
 
     @Override
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
-            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.DEVELOPER_NAMES,
+            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
             CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.GET_DECERTIFIED_DEVELOPERS
     }, allEntries = true)
     public DeveloperDTO merge(final List<Long> developerIdsToMerge, final DeveloperDTO developerToCreate)
