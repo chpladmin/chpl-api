@@ -250,7 +250,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
                 updatedDev.getContact().setId(beforeDev.getContact().getId());
             }
             // if either the before or updated statuses are active and the user is
-            // ROLE_ADMIN
+            // ROLE_ADMIN or ROLE_ONC
             // OR if before status is active and user is not ROLE_ADMIN - proceed
             if (((currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
                     || newDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()))
@@ -260,39 +260,48 @@ public class DeveloperManagerImpl implements DeveloperManager {
 
                 developerDao.update(updatedDev);
                 updateStatusHistory(beforeDev, updatedDev);
-
-                List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser();
-                if (availableAcbs != null && availableAcbs.size() > 0) {
-                    for (CertificationBodyDTO acb : availableAcbs) {
-                        DeveloperACBMapDTO existingMap = developerDao.getTransparencyMapping(updatedDev.getId(),
-                                acb.getId());
-                        if (existingMap == null) {
-                            DeveloperACBMapDTO developerMappingToCreate = new DeveloperACBMapDTO();
-                            developerMappingToCreate.setAcbId(acb.getId());
-                            developerMappingToCreate.setDeveloperId(beforeDev.getId());
-                            for (DeveloperACBMapDTO attMap : updatedDev.getTransparencyAttestationMappings()) {
-                                if (attMap.getAcbName().equals(acb.getName())) {
-                                    developerMappingToCreate
-                                    .setTransparencyAttestation(attMap.getTransparencyAttestation());
-                                    developerDao.createTransparencyMapping(developerMappingToCreate);
-                                }
-                            }
-                        } else {
-                            for (DeveloperACBMapDTO attMap : updatedDev.getTransparencyAttestationMappings()) {
-                                if (attMap.getAcbName().equals(acb.getName())) {
-                                    existingMap.setTransparencyAttestation(attMap.getTransparencyAttestation());
-                                    developerDao.updateTransparencyMapping(existingMap);
-                                }
-                            }
-                        }
-                    }
-                }
+                createOrUpdateTransparencyMappings(updatedDev);
             }
         }
         DeveloperDTO after = getById(updatedDev.getId());
         activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, after.getId(),
                 "Developer " + updatedDev.getName() + " was updated.", beforeDev, after);
         return after;
+    }
+
+    /**
+     * Add or edit a transparency mapping between ACB and Developer.
+     * If the current user does not have access to an ACB the mapping
+     * will be ignored.
+     * @param developer
+     */
+    private void createOrUpdateTransparencyMappings(final DeveloperDTO developer) {
+        List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser();
+        if (availableAcbs != null && availableAcbs.size() > 0) {
+            for (CertificationBodyDTO acb : availableAcbs) {
+                DeveloperACBMapDTO existingMap = developerDao.getTransparencyMapping(developer.getId(),
+                        acb.getId());
+                if (existingMap == null) {
+                    DeveloperACBMapDTO developerMappingToCreate = new DeveloperACBMapDTO();
+                    developerMappingToCreate.setAcbId(acb.getId());
+                    developerMappingToCreate.setDeveloperId(developer.getId());
+                    for (DeveloperACBMapDTO attMap : developer.getTransparencyAttestationMappings()) {
+                        if (attMap.getAcbName().equals(acb.getName())) {
+                            developerMappingToCreate
+                            .setTransparencyAttestation(attMap.getTransparencyAttestation());
+                            developerDao.createTransparencyMapping(developerMappingToCreate);
+                        }
+                    }
+                } else {
+                    for (DeveloperACBMapDTO attMap : developer.getTransparencyAttestationMappings()) {
+                        if (attMap.getAcbName().equals(acb.getName())) {
+                            existingMap.setTransparencyAttestation(attMap.getTransparencyAttestation());
+                            developerDao.updateTransparencyMapping(existingMap);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private void updateStatusHistory(final DeveloperDTO beforeDev, final DeveloperDTO updatedDev)
@@ -360,19 +369,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
         }
 
         DeveloperDTO created = developerDao.create(dto);
-
-        List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser();
-        if (availableAcbs != null && availableAcbs.size() > 0) {
-            for (CertificationBodyDTO acb : availableAcbs) {
-                for (DeveloperACBMapDTO attMap : dto.getTransparencyAttestationMappings()) {
-                    if (acb.getId().longValue() == attMap.getAcbId().longValue()
-                            && !StringUtils.isEmpty(attMap.getTransparencyAttestation())) {
-                        attMap.setDeveloperId(created.getId());
-                        developerDao.createTransparencyMapping(attMap);
-                    }
-                }
-            }
-        }
+        createOrUpdateTransparencyMappings(dto);
         activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, created.getId(),
                 "Developer " + created.getName() + " has been created.", null, created);
         return created;
@@ -497,19 +494,31 @@ public class DeveloperManagerImpl implements DeveloperManager {
             EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class,
             AccessDeniedException.class
     })
+    @CacheEvict(value = {
+            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
+            CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.GET_DECERTIFIED_DEVELOPERS
+    }, allEntries = true)
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
     public DeveloperDTO split(final DeveloperDTO oldDeveloper, final DeveloperDTO developerToCreate,
             final List<Long> productIdsToMove)
             throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
-        Date splitDate = new Date();
-
-        // what ACB(s) does the user have access to?
-        List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser();
+        //if the user is an ACB then the developer must be Active otherwise the split is not allowed.
+        //ADMIN and ONC can perform a split no matter the developer's status
+        DeveloperStatusEventDTO currDevStatus = oldDeveloper.getStatus();
+        if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
+                && !Util.isUserRoleAdmin() && !Util.isUserRoleOnc()) {
+            String msg = msgUtil.getMessage("developer.notActiveNotAdminCantSplit",
+                    Util.getUsername(), oldDeveloper.getName());
+            LOGGER.error(msg);
+            throw new EntityCreationException(msg);
+        }
 
         // create the new developer and log activity
         DeveloperDTO createdDeveloper = create(developerToCreate);
 
         // re-assign products to the new developer as of now
+        Date splitDate = new Date();
+        List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser();
         for (Long productIdToMove : productIdsToMove) {
             // get before and after for activity; update product owner
             ProductDTO productToMove = productManager.getById(productIdToMove);

@@ -175,17 +175,17 @@ public class DeveloperController {
             throw new ValidationException(devErrors, null);
         }
 
-        HttpHeaders responseHeaders = new HttpHeaders();
         DeveloperDTO oldDeveloper = developerManager.getById(splitRequest.getOldDeveloper().getDeveloperId());
         DeveloperDTO newDeveloper = new DeveloperDTO();
         newDeveloper.setName(splitRequest.getNewDeveloper().getName());
         newDeveloper.setWebsite(splitRequest.getNewDeveloper().getWebsite());
-        //TODO: anything special to populate the transparency map??
-//        DeveloperACBMapDTO transparencyMap = new DeveloperACBMapDTO();
-//        transparencyMap.setAcbId(pendingCp.getCertificationBodyId());
-//        transparencyMap.setAcbName(pendingCp.getCertificationBodyName());
-//        transparencyMap.setTransparencyAttestation(pendingCp.getTransparencyAttestation());
-//        newDeveloper.getTransparencyAttestationMappings().add(transparencyMap);
+        for (TransparencyAttestationMap attMap : splitRequest.getNewDeveloper().getTransparencyAttestations()) {
+            DeveloperACBMapDTO devMap = new DeveloperACBMapDTO();
+            devMap.setAcbId(attMap.getAcbId());
+            devMap.setAcbName(attMap.getAcbName());
+            devMap.setTransparencyAttestation(attMap.getAttestation());
+            newDeveloper.getTransparencyAttestationMappings().add(devMap);
+        }
         if (splitRequest.getNewDeveloper().getAddress() != null) {
             AddressDTO developerAddress = new AddressDTO();
             developerAddress.setStreetLineOne(splitRequest.getNewDeveloper().getAddress().getLine1());
@@ -208,6 +208,7 @@ public class DeveloperController {
 
         DeveloperDTO createdDeveloper = developerManager.split(oldDeveloper, newDeveloper,
                 splitRequest.getNewDeveloperProductIds());
+        HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
         DeveloperDTO originalDeveloper = developerManager.getById(oldDeveloper.getId());
         SplitDeveloperResponse response = new SplitDeveloperResponse();
@@ -240,11 +241,13 @@ public class DeveloperController {
         DeveloperDTO result = null;
         HttpHeaders responseHeaders = new HttpHeaders();
 
+        // Merge these developers into one.
+        // create a new developer with the rest of the passed in
+        // information; first validate the new developer
         if (developerInfo.getDeveloperIds().size() > 1) {
-            // Merge these developers into one.
-            // create a new developer with the rest of the passed in
-            // information; first validate the new developer
-            Set<String> errors = creationValidator.validate(developerInfo.getDeveloper());
+            //merging doesn't require developer address which is why the update validator
+            //is getting used here.
+            Set<String> errors = updateValidator.validate(developerInfo.getDeveloper());
             if (errors != null && errors.size() > 0) {
                 throw new ValidationException(errors, null);
             }
@@ -263,8 +266,7 @@ public class DeveloperController {
                     toCreate.getStatusEvents().add(toCreateHistory);
                 }
                 // if no history is passed in, an Active status gets added in
-                // the DAO
-                // when the new developer is created
+                // the DAO when the new developer is created
             }
 
             Address developerAddress = developerInfo.getDeveloper().getAddress();
