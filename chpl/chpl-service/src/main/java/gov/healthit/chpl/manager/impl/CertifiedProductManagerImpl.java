@@ -893,19 +893,19 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                                 // } else {
                                 TestTaskDTO tt = new TestTaskDTO();
                                 tt.setDescription(pendingTask.getDescription());
-                                tt.setTaskErrors(pendingTask.getTaskErrors());
-                                tt.setTaskErrorsStddev(pendingTask.getTaskErrorsStddev());
-                                tt.setTaskPathDeviationObserved(pendingTask.getTaskPathDeviationObserved());
-                                tt.setTaskPathDeviationOptimal(pendingTask.getTaskPathDeviationOptimal());
-                                tt.setTaskRating(pendingTask.getTaskRating());
+                                tt.setTaskErrors(Float.valueOf(pendingTask.getTaskErrors()));
+                                tt.setTaskErrorsStddev(Float.valueOf(pendingTask.getTaskErrorsStddev()));
+                                tt.setTaskPathDeviationObserved(Integer.valueOf(pendingTask.getTaskPathDeviationObserved()));
+                                tt.setTaskPathDeviationOptimal(Integer.valueOf(pendingTask.getTaskPathDeviationOptimal()));
+                                tt.setTaskRating(Float.valueOf(pendingTask.getTaskRating()));
                                 tt.setTaskRatingScale(pendingTask.getTaskRatingScale());
-                                tt.setTaskRatingStddev(pendingTask.getTaskRatingStddev());
-                                tt.setTaskSuccessAverage(pendingTask.getTaskSuccessAverage());
-                                tt.setTaskSuccessStddev(pendingTask.getTaskSuccessStddev());
-                                tt.setTaskTimeAvg(pendingTask.getTaskTimeAvg());
-                                tt.setTaskTimeDeviationObservedAvg(pendingTask.getTaskTimeDeviationObservedAvg());
-                                tt.setTaskTimeDeviationOptimalAvg(pendingTask.getTaskTimeDeviationOptimalAvg());
-                                tt.setTaskTimeStddev(pendingTask.getTaskTimeStddev());
+                                tt.setTaskRatingStddev(Float.valueOf(pendingTask.getTaskRatingStddev()));
+                                tt.setTaskSuccessAverage(Float.valueOf(pendingTask.getTaskSuccessAverage()));
+                                tt.setTaskSuccessStddev(Float.valueOf(pendingTask.getTaskSuccessStddev()));
+                                tt.setTaskTimeAvg(Long.valueOf(pendingTask.getTaskTimeAvg()));
+                                tt.setTaskTimeDeviationObservedAvg(Integer.valueOf(pendingTask.getTaskTimeDeviationObservedAvg()));
+                                tt.setTaskTimeDeviationOptimalAvg(Integer.valueOf(pendingTask.getTaskTimeDeviationOptimalAvg()));
+                                tt.setTaskTimeStddev(Integer.valueOf(pendingTask.getTaskTimeStddev()));
 
                                 // add test task
                                 existingTt = testTaskDao.create(tt);
@@ -938,13 +938,13 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                                             TestParticipantDTO tp = new TestParticipantDTO();
                                             tp.setAgeRangeId(certPart.getAgeRangeId());
                                             tp.setAssistiveTechnologyNeeds(certPart.getAssistiveTechnologyNeeds());
-                                            tp.setComputerExperienceMonths(certPart.getComputerExperienceMonths());
+                                            tp.setComputerExperienceMonths(Integer.valueOf(certPart.getComputerExperienceMonths()));
                                             tp.setEducationTypeId(certPart.getEducationTypeId());
                                             tp.setGender(certPart.getGender());
                                             tp.setOccupation(certPart.getOccupation());
-                                            tp.setProductExperienceMonths(certPart.getProductExperienceMonths());
+                                            tp.setProductExperienceMonths(Integer.valueOf(certPart.getProductExperienceMonths()));
                                             tp.setProfessionalExperienceMonths(
-                                                    certPart.getProfessionalExperienceMonths());
+                                                    Integer.valueOf(certPart.getProfessionalExperienceMonths()));
 
                                             // add participant
                                             existingPart = testParticipantDao.create(tp);

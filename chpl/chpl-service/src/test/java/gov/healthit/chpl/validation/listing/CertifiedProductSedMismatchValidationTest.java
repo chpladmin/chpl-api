@@ -1,4 +1,4 @@
-package gov.heatlhit.chpl.validation.listing;
+package gov.healthit.chpl.validation.listing;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
