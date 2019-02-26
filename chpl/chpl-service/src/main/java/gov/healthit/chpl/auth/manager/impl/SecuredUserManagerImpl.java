@@ -31,7 +31,6 @@ import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
-import gov.healthit.chpl.permissions.Permissions;
 
 @Service
 public class SecuredUserManagerImpl implements SecuredUserManager {
@@ -48,22 +47,19 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
     @Autowired
     private MutableAclService mutableAclService;
 
-    @Autowired
-    private Permissions permissions;
-
     @Override
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).CREATE)")
-    public UserDTO create(UserDTO user, final String encodedPassword)
+    public UserDTO create(final UserDTO user, final String encodedPassword)
             throws UserCreationException, UserRetrievalException {
 
-        user = userDAO.create(user, encodedPassword);
+        UserDTO newUser = userDAO.create(user, encodedPassword);
 
         // Grant the user administrative permission over itself.
-        addAclPermission(user, new PrincipalSid(user.getSubjectName()), BasePermission.ADMINISTRATION);
+        addAclPermission(newUser, new PrincipalSid(newUser.getSubjectName()), BasePermission.ADMINISTRATION);
 
-        return user;
+        return newUser;
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "

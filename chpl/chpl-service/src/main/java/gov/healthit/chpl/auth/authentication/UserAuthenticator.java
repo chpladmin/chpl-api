@@ -10,6 +10,7 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -340,6 +341,8 @@ public class UserAuthenticator implements Authenticator {
     }
 
     @Override
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).USER_PERMISSIONS, "
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).IMPERSONATE_USER)")
     public String impersonateUser(final String username) throws UserRetrievalException,
     JWTCreationException, UserManagementException {
         JWTAuthenticatedUser user = (JWTAuthenticatedUser) Util.getCurrentUser();

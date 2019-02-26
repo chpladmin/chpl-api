@@ -285,7 +285,6 @@ public class AuthenticationController {
     }
 
     @ApiOperation(value = "Impersonate another user.", notes = "")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     @RequestMapping(value = "/impersonate", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public String impersonateUser(@RequestHeader(value = "Authorization", required = true) final String userJwt,
