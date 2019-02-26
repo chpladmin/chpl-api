@@ -145,7 +145,7 @@ public class DeveloperController {
             value = "Split a developer - some products stay with the existing developer and some products are moved "
                     + "to a new developer.",
                     notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB")
-    @RequestMapping(value = "/{developerId}/split", method = RequestMethod.POST,
+    @RequestMapping(value = "/{developerId}/split", method = RequestMethod.PUT,
     consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public ResponseEntity<SplitDeveloperResponse> splitDeveloper(@PathVariable("developerId") final Long developerId,
             @RequestBody(required = true) final SplitDeveloperRequest splitRequest)
@@ -169,7 +169,8 @@ public class DeveloperController {
             throw new InvalidArgumentsException(error);
         }
         //make sure the developer id in the split request matches the developer id on the url path
-        if (developerId != splitRequest.getOldDeveloper().getDeveloperId()) {
+        if (splitRequest.getOldDeveloper().getDeveloperId() != null
+                && developerId.longValue() != splitRequest.getOldDeveloper().getDeveloperId().longValue()) {
             throw new InvalidArgumentsException(msgUtil.getMessage("developer.split.requestMismatch"));
         }
         //check developer fields

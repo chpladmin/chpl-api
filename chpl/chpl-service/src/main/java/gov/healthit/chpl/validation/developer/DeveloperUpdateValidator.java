@@ -40,9 +40,8 @@ public class DeveloperUpdateValidator {
         if (StringUtils.isEmpty(developer.getName())) {
             errorMessages.add(msgUtil.getMessage("developer.nameRequired"));
         }
-        if (StringUtils.isEmpty(developer.getWebsite())) {
-            errorMessages.add(msgUtil.getMessage("developer.websiteRequired"));
-        } else if (!ValidationUtils.isWellFormedUrl(developer.getWebsite())) {
+        if (!StringUtils.isEmpty(developer.getWebsite())
+                && !ValidationUtils.isWellFormedUrl(developer.getWebsite())) {
             errorMessages.add(msgUtil.getMessage("developer.websiteIsInvalid"));
         }
 
