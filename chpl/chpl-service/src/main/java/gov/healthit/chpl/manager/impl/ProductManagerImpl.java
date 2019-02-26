@@ -58,6 +58,7 @@ public class ProductManagerImpl implements ProductManager {
             ActivityManager activityManager) {
         this.msgUtil = msgUtil;
         this.productDao = productDao;
+        this.versionDao = versionDao;
         this.devDao = devDao;
         this.cpDao = cpDao;
         this.cpdManager = cpdManager;

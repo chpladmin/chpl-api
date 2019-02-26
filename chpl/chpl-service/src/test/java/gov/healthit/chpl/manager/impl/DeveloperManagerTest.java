@@ -232,10 +232,12 @@ public class DeveloperManagerTest extends TestCase {
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
+
+
     @Test(expected = ValidationException.class)
     @Transactional
     @Rollback
-    public void testMergeDeveloperDuplicateChplProductNumberValidatioError()
+    public void testMergeDeveloperDuplicateChplProductNumberValidationError()
             throws JsonProcessingException, EntityRetrievalException, EntityCreationException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
@@ -275,6 +277,46 @@ public class DeveloperManagerTest extends TestCase {
             failed = true;
         }
         assertTrue(failed);
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testSplitDeveloper_productOwnershipHistoryAdded() {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        Long developerIdToSplit = -1L;
+        List<Long> productIdsToMove = new ArrayList<Long>();
+        productIdsToMove.add(-1L);
+
+        DeveloperDTO toCreate = new DeveloperDTO();
+        toCreate.setName("Split Developer");
+
+        DeveloperDTO createdDev = null;
+        try {
+            createdDev = developerManager.split(developerManager.getById(developerIdToSplit), toCreate, productIdsToMove);
+        } catch (EntityCreationException | JsonProcessingException | EntityRetrievalException ex) {
+            fail(ex.getMessage());
+        }
+
+        assertNotNull(createdDev);
+        assertNotNull(createdDev.getId());
+
+        try {
+            ProductDTO movedProduct = productManager.getById(-1L);
+            assertNotNull(movedProduct);
+            assertNotNull(movedProduct.getOwnerHistory());
+            assertEquals(2, movedProduct.getOwnerHistory().size());
+            boolean foundNewOwner = false;
+            for (ProductOwnerDTO owner : movedProduct.getOwnerHistory()) {
+                if (owner.getDeveloper() != null && owner.getDeveloper().getId().longValue() == createdDev.getId()) {
+                    foundNewOwner = true;
+                }
+            }
+            assertTrue(foundNewOwner);
+        } catch (EntityRetrievalException ex) {
+            fail(ex.getMessage());
+        }
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 

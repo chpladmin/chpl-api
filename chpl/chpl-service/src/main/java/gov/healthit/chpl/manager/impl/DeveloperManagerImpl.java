@@ -369,7 +369,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
         }
 
         DeveloperDTO created = developerDao.create(dto);
-        createOrUpdateTransparencyMappings(dto);
+        createOrUpdateTransparencyMappings(created);
         activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, created.getId(),
                 "Developer " + created.getName() + " has been created.", null, created);
         return created;
@@ -530,7 +530,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
             productToMove.getOwnerHistory().add(newOwner);
             productManager.update(productToMove);
 
-            // update product code on all associated certified products and log
+            // update developer code on all associated certified products and log
             // activity for each listing unique id change
             List<CertifiedProductDetailsDTO> affectedListings = cpManager.getByProduct(productToMove.getId());
             for (CertifiedProductDetailsDTO affectedListing : affectedListings) {
