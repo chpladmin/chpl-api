@@ -65,7 +65,7 @@ public class UserAuthenticator implements Authenticator {
             }
             if (user.getComplianceSignatureDate() == null) {
                 throw new BadCredentialsException("Account for user " + user.getSubjectName()
-                        + " has not accepted the compliance terms and conditions.");
+                + " has not accepted the compliance terms and conditions.");
             }
 
             if (checkPassword(credentials.getPassword(), userManager.getEncodedPassword(user))) {
@@ -342,7 +342,7 @@ public class UserAuthenticator implements Authenticator {
 
     @Override
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).USER_PERMISSIONS, "
-            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).IMPERSONATE_USER)")
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).IMPERSONATE_USER, #username)")
     public String impersonateUser(final String username) throws UserRetrievalException,
     JWTCreationException, UserManagementException {
         JWTAuthenticatedUser user = (JWTAuthenticatedUser) Util.getCurrentUser();
@@ -351,46 +351,13 @@ public class UserAuthenticator implements Authenticator {
         }
         UserDTO impersonatingUser = getUserByName(user.getSubjectName());
         UserDTO impersonatedUser = getUserByName(username);
-        if (canImpersonate(user, impersonatedUser)) {
-            impersonatedUser.setImpersonatedBy(impersonatingUser);
-            return getJWT(impersonatedUser);
-        } else {
-            throw new UserManagementException("Unable to impersonate user");
-        }
+
+        impersonatedUser.setImpersonatedBy(impersonatingUser);
+        return getJWT(impersonatedUser);
     }
 
     @Override
     public String unimpersonateUser(final User user) throws JWTCreationException, UserRetrievalException {
         return getJWT(getUserByName(user.getSubjectName()));
-    }
-
-    private Boolean canImpersonate(final User actor, final UserDTO target) { //UserDTOs don't have the permissions. Ugh
-        for (GrantedPermission a : actor.getPermissions()) {
-            for (UserPermissionDTO t : securedUserManager.getGrantedPermissionsForUser(target)) {
-                if (!isGreaterRole(a.getAuthority(), t.getName())) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Compare acting user's role with targeted user's role.
-     * ROLE_ADMIN > all other roles
-     * ROLE_ADMIN is not > ROLE_ADMIN
-     * ROLE_ONC > all roles except ROLE_ADMIN and ROLE_ONC
-     * @param a acting user's ROLE
-     * @param t targeted user's ROLE
-     * @return true iff a > t
-     */
-    private Boolean isGreaterRole(final String a, final String t) {
-        if (a.equalsIgnoreCase("ROLE_ADMIN")) {
-            return !t.equalsIgnoreCase("ADMIN");
-        }
-        if (a.equalsIgnoreCase("ROLE_ONC")) {
-            return !t.equalsIgnoreCase("ADMIN") && !t.equalsIgnoreCase("ONC");
-        }
-        return false;
     }
 }
