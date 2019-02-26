@@ -153,7 +153,6 @@ public class CacheRefreshTest extends TestCase {
         //set other required information
         Contact contact = new Contact();
         contact.setEmail("test@test.com");
-        //contact.setFriendlyName("Test Name");
         contact.setFullName("Test Fullname");
         contact.setPhoneNumber("111-222-3333");
         devToUpdate.setContact(contact);
