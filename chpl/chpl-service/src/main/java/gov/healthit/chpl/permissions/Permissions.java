@@ -19,6 +19,7 @@ import gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermis
 import gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions;
 import gov.healthit.chpl.permissions.domains.ProductDomainPermissions;
 import gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions;
+import gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions;
 import gov.healthit.chpl.permissions.domains.UserPermissionsDomainPermissions;
@@ -58,7 +59,8 @@ public class Permissions {
             final ProductDomainPermissions productDomainPermissions,
             final DeveloperDomainPermissions developerDomainPermissions,
             final ProductVersionDomainPermissions productVersionDomainPermissions,
-            final SecuredUserDomainPermissions securedUserDomainPermissions) {
+            final SecuredUserDomainPermissions securedUserDomainPermissions,
+            final SchedulerDomainPermissions schedulerDomainPermissions) {
 
         domainPermissions.put(PENDING_SURVEILLANCE, pendingSurveillanceDomainPermissions);
         domainPermissions.put(CERTIFICATION_RESULTS, certificationResultsDomainPermissions);
@@ -75,6 +77,7 @@ public class Permissions {
         domainPermissions.put(DEVELOPER, developerDomainPermissions);
         domainPermissions.put(PRODUCT_VERSION, productVersionDomainPermissions);
         domainPermissions.put(SECURED_USER, securedUserDomainPermissions);
+        domainPermissions.put(SCHEDULER, schedulerDomainPermissions);
     }
 
     public boolean hasAccess(final String domain, final String action) {
