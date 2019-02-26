@@ -36,6 +36,9 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
+import gov.healthit.chpl.web.controller.annotation.CacheControl;
+import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
+import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import gov.healthit.chpl.web.controller.results.CertificationBodyResults;
 import gov.healthit.chpl.web.controller.results.PermittedUserResults;
 import io.swagger.annotations.Api;
@@ -56,6 +59,7 @@ public class CertificationBodyController {
             notes = "Setting the 'editable' parameter to true will return all ACBs that the logged in user has "
                     + "edit permissions on. Security Restrictions:  All users can see all active ACBs.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertificationBodyResults getAcbs(
             @RequestParam(required = false, defaultValue = "false") final boolean editable) {
         //TODO confirm a user is logged in here

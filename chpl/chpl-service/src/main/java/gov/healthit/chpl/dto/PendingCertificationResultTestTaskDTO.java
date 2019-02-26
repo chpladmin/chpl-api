@@ -19,7 +19,7 @@ public class PendingCertificationResultTestTaskDTO implements Serializable {
         taskParticipants = new HashSet<PendingCertificationResultTestTaskParticipantDTO>();
     }
 
-    public PendingCertificationResultTestTaskDTO(PendingCertificationResultTestTaskEntity entity) {
+    public PendingCertificationResultTestTaskDTO(final PendingCertificationResultTestTaskEntity entity) {
         this();
         this.setId(entity.getId());
         this.pendingCertificationResultId = entity.getPendingCertificationResultId();
@@ -74,5 +74,12 @@ public class PendingCertificationResultTestTaskDTO implements Serializable {
 
     public void setTaskParticipants(final Set<PendingCertificationResultTestTaskParticipantDTO> taskParticipants) {
         this.taskParticipants = taskParticipants;
+    }
+
+    @Override
+    public String toString() {
+        return "PendingCertificationResultTestTaskDTO [id=" + id + ", pendingCertificationResultId="
+                + pendingCertificationResultId + ", pendingTestTaskId=" + pendingTestTaskId + ", pendingTestTask="
+                + pendingTestTask + ", taskParticipants=" + taskParticipants + "]";
     }
 }
