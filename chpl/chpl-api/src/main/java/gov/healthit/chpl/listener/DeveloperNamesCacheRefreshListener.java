@@ -43,12 +43,13 @@ public class DeveloperNamesCacheRefreshListener extends CacheRefreshListener {
 
     /**
      * After a developer is split refresh the developer names cache.
-     * @param developerInfo developer update request object
+     * @param developerId developer id that is getting split
+     * @param splitRequest the split request data
      */
     @AfterReturning(
-            "execution(* gov.healthit.chpl.web.controller.DeveloperController.updateDeveloper(..)) && "
-            + "args(developerId,splitRequest..)")
-    public void afterDeveloperSplit(final Long developerInfo, final SplitDeveloperRequest splitRequest) {
+            "execution(* gov.healthit.chpl.web.controller.DeveloperController.splitDeveloper(..)) && "
+            + "args(developerId,splitRequest,..)")
+    public void afterDeveloperSplit(final Long developerId, final SplitDeveloperRequest splitRequest) {
         LOGGER.debug("A developer was split. Refreshing developer names cache.");
         refreshCache();
     }

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -73,8 +74,10 @@ public class DeveloperController {
     @Autowired
     private CertifiedProductManager cpManager;
     @Autowired
+    @Qualifier("developerUpdateValidator")
     private DeveloperUpdateValidator updateValidator;
     @Autowired
+    @Qualifier("developerCreationValidator")
     private DeveloperCreationValidator creationValidator;
     @Autowired
     private ErrorMessageUtil msgUtil;

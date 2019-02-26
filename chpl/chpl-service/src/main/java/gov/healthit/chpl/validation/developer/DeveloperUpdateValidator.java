@@ -55,7 +55,7 @@ public class DeveloperUpdateValidator {
             if (StringUtils.isEmpty(developer.getContact().getPhoneNumber())) {
                 errorMessages.add(msgUtil.getMessage("developer.contact.phoneRequired"));
             }
-            if (StringUtils.isEmpty(developer.getContact().getFriendlyName())) {
+            if (StringUtils.isEmpty(developer.getContact().getFullName())) {
                 errorMessages.add(msgUtil.getMessage("developer.contact.nameRequired"));
             }
         }

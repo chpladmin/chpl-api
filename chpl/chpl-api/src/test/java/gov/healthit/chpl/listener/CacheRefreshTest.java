@@ -38,6 +38,7 @@ import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.Product;
@@ -149,6 +150,13 @@ public class CacheRefreshTest extends TestCase {
         Developer devToUpdate = developerController.getDeveloperById(-1L);
         UpdateDevelopersRequest req = new UpdateDevelopersRequest();
         devToUpdate.setName("Updated Name");
+        //set other required information
+        Contact contact = new Contact();
+        contact.setEmail("test@test.com");
+        //contact.setFriendlyName("Test Name");
+        contact.setFullName("Test Fullname");
+        contact.setPhoneNumber("111-222-3333");
+        devToUpdate.setContact(contact);
         req.setDeveloper(devToUpdate);
         List<Long> idsToUpdate = new ArrayList<Long>();
         idsToUpdate.add(-1L);
