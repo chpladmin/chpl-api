@@ -56,7 +56,6 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 
             userEntity.setFullName(user.getFullName());
             userEntity.setFriendlyName(user.getFriendlyName());
-            userEntity.setComplianceSignature(user.getComplianceSignatureDate());
             userEntity.setFailedLoginCount(0);
             userEntity.setAccountEnabled(user.isAccountEnabled());
             userEntity.setAccountExpired(user.isAccountExpired());
@@ -95,7 +94,6 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 
         userEntity.setFullName(user.getFullName());
         userEntity.setFriendlyName(user.getFriendlyName());
-        userEntity.setComplianceSignature(user.getComplianceSignatureDate());
         userEntity.setFailedLoginCount(user.getFailedLoginCount());
         userEntity.getContact().setEmail(user.getEmail());
         userEntity.getContact().setPhoneNumber(user.getPhoneNumber());
