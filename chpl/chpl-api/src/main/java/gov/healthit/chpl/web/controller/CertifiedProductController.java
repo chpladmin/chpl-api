@@ -343,6 +343,7 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{chplPrefix}-{identifier}",
     method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByChplProductNumberBasic2(
             @PathVariable("chplPrefix") final String chplPrefix,
             @PathVariable("identifier") final String identifier) throws EntityRetrievalException {
