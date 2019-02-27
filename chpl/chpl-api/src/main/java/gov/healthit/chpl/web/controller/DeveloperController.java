@@ -74,10 +74,8 @@ public class DeveloperController {
     @Autowired
     private CertifiedProductManager cpManager;
     @Autowired
-    @Qualifier("developerUpdateValidator")
     private DeveloperUpdateValidator updateValidator;
     @Autowired
-    @Qualifier("developerCreationValidator")
     private DeveloperCreationValidator creationValidator;
     @Autowired
     private ErrorMessageUtil msgUtil;
