@@ -145,7 +145,7 @@ public class DeveloperController {
             value = "Split a developer - some products stay with the existing developer and some products are moved "
                     + "to a new developer.",
                     notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB")
-    @RequestMapping(value = "/{developerId}/split", method = RequestMethod.PUT,
+    @RequestMapping(value = "/{developerId}/split", method = RequestMethod.POST,
     consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public ResponseEntity<SplitDeveloperResponse> splitDeveloper(@PathVariable("developerId") final Long developerId,
             @RequestBody(required = true) final SplitDeveloperRequest splitRequest)
@@ -154,13 +154,13 @@ public class DeveloperController {
 
         //validate required fields are present in the split request
         //new developer product ids cannot be empty
-        if (splitRequest.getNewDeveloperProductIds() == null || splitRequest.getNewDeveloperProductIds().size() == 0) {
-            String error = msgUtil.getMessage("developer.split.missingNewDeveloperProductIds");
+        if (splitRequest.getNewProducts() == null || splitRequest.getNewProducts().size() == 0) {
+            String error = msgUtil.getMessage("developer.split.missingNewDeveloperProducts");
             throw new InvalidArgumentsException(error);
         }
         //old developer product ids cannot be empty
-        if (splitRequest.getNewDeveloperProductIds() == null || splitRequest.getNewDeveloperProductIds().size() == 0) {
-            String error = msgUtil.getMessage("developer.split.missingOldDeveloperProductIds");
+        if (splitRequest.getOldProducts() == null || splitRequest.getOldProducts().size() == 0) {
+            String error = msgUtil.getMessage("developer.split.missingOldDeveloperProducts");
             throw new InvalidArgumentsException(error);
         }
         //new and old developers cannot be empty
@@ -209,9 +209,12 @@ public class DeveloperController {
             developerContact.setTitle(splitRequest.getNewDeveloper().getContact().getTitle());
             newDeveloper.setContact(developerContact);
         }
+        List<Long> newDeveloperProductIds = new ArrayList<Long>(splitRequest.getNewProducts().size());
+        for (Product newDeveloperProduct : splitRequest.getNewProducts()) {
+            newDeveloperProductIds.add(newDeveloperProduct.getProductId());
+        }
 
-        DeveloperDTO createdDeveloper = developerManager.split(oldDeveloper, newDeveloper,
-                splitRequest.getNewDeveloperProductIds());
+        DeveloperDTO createdDeveloper = developerManager.split(oldDeveloper, newDeveloper, newDeveloperProductIds);
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
         DeveloperDTO originalDeveloper = developerManager.getById(oldDeveloper.getId());
