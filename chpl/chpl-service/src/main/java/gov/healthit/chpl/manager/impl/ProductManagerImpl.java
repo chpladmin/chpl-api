@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.ProductDAO;
@@ -148,7 +149,8 @@ public class ProductManagerImpl implements ProductManager {
                     + dev.getName() + " cannot be determined.";
             LOGGER.error(msg);
             throw new EntityCreationException(msg);
-        } else if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
+        } else if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
+                && !Util.isUserRoleAdmin() && !Util.isUserRoleOnc()) {
             String msg = "The product " + dto.getName() + " cannot be updated since the developer " + dev.getName()
                     + " has a status of " + currDevStatus.getStatus().getStatusName();
             LOGGER.error(msg);
