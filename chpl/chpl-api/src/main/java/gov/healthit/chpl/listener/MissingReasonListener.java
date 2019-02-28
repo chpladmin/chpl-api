@@ -6,9 +6,6 @@ import java.util.Locale;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -22,6 +19,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.questionableactivity.ListingQuestionableActivityProvider;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 /**
  * Listens for a questionable activity action that requires a user-supplied
@@ -32,23 +30,23 @@ import gov.healthit.chpl.questionableactivity.ListingQuestionableActivityProvide
 @Component
 @Aspect
 public class MissingReasonListener {
-    private MessageSource messageSource;
+    private ErrorMessageUtil errorMessageUtil;
     private CertifiedProductDetailsManager cpdManager;
     private ListingQuestionableActivityProvider listingQuestionableActivityProvider;
 
     /**
      * Autowired constructor for dependency injection.
-     * @param messageSource - MessageSource
+     * @param errorMessageUtil - Error message utility class
      * @param cpdManager - CertifiedProductDetailsManager
      * @param listingDao - CertifiedProductDAO
      * @param listingQuestionableActivityProvider - ListingQuestionableActivityProvider
      */
     @Autowired
-    public MissingReasonListener(final MessageSource messageSource,
+    public MissingReasonListener(final ErrorMessageUtil errorMessageUtil,
             final CertifiedProductDetailsManager cpdManager, final CertifiedProductDAO listingDao,
             final ListingQuestionableActivityProvider listingQuestionableActivityProvider) {
 
-        this.messageSource = messageSource;
+        this.errorMessageUtil = errorMessageUtil;
         this.cpdManager = cpdManager;
         this.listingQuestionableActivityProvider = listingQuestionableActivityProvider;
     }
@@ -70,23 +68,20 @@ public class MissingReasonListener {
         QuestionableActivityListingDTO activity = listingQuestionableActivityProvider
                 .check2011EditionUpdated(origListing, newListing);
         if (activity != null && StringUtils.isEmpty(updateRequest.getReason())) {
-            throw new MissingReasonException(String.format(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("listing.reasonRequired"),
-                    LocaleContextHolder.getLocale())));
+            throw new MissingReasonException(errorMessageUtil
+                    .getMessage("listing.reasonRequired", "updating a 2011 Edition Certified Product"));
         }
 
         activities = listingQuestionableActivityProvider.checkCqmsRemoved(origListing, newListing);
         if (activities.size() > 0 && StringUtils.isEmpty(updateRequest.getReason())) {
-            throw new MissingReasonException(String.format(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("listing.reasonRequired"),
-                    LocaleContextHolder.getLocale())));
+            throw new MissingReasonException(errorMessageUtil
+                    .getMessage("listing.reasonRequired", "removing a Clinical Quality Measure"));
         }
 
         activities = listingQuestionableActivityProvider.checkCertificationsRemoved(origListing, newListing);
         if (activities.size() > 0 && StringUtils.isEmpty(updateRequest.getReason())) {
-            throw new MissingReasonException(String.format(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("listing.reasonRequired"),
-                    LocaleContextHolder.getLocale())));
+            throw new MissingReasonException(errorMessageUtil
+                    .getMessage("listing.reasonRequired", "removing a Certification Criteria"));
         }
 
         activity = listingQuestionableActivityProvider.checkCertificationStatusUpdated(origListing, newListing);
@@ -94,10 +89,8 @@ public class MissingReasonListener {
                 && newListing.getCurrentStatus().getStatus().getName().toUpperCase(Locale.ENGLISH).equals(
                         CertificationStatusType.Active.getName().toUpperCase(Locale.ENGLISH))
                 &&  StringUtils.isEmpty(updateRequest.getReason())) {
-            throw new MissingReasonException(String.format(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("listing.reasonRequired"),
-                    LocaleContextHolder.getLocale()),
-                    origListing.getCurrentStatus().getStatus().getName()));
+            throw new MissingReasonException(errorMessageUtil
+                    .getMessage("listing.reasonRequired", "changing Certification Status from anything to \"Active\""));
         }
     }
 
@@ -114,9 +107,7 @@ public class MissingReasonListener {
                     throws MissingReasonException {
         if (surveillanceId != null && (requestBody == null
                 ||  StringUtils.isEmpty(requestBody.getReason()))) {
-            throw new MissingReasonException(String.format(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("surveillance.reasonRequired"),
-                    LocaleContextHolder.getLocale())));
+            throw new MissingReasonException(errorMessageUtil.getMessage("surveillance.reasonRequired"));
         }
     }
 }
