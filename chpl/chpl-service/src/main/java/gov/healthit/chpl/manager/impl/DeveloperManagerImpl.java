@@ -517,29 +517,19 @@ public class DeveloperManagerImpl implements DeveloperManager {
         // create the new developer and log activity
         DeveloperDTO createdDeveloper = create(developerToCreate);
 
-        // re-assign products to the new developer as of now
+        // re-assign products to the new developer
+        // log activity for all listings whose ID will have changed
         Date splitDate = new Date();
         List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser();
         for (Long productIdToMove : productIdsToMove) {
-            // get before and after for activity; update product owner
-            ProductDTO productToMove = productManager.getById(productIdToMove);
-            productToMove.setDeveloperId(createdDeveloper.getId());
-            ProductOwnerDTO newOwner = new ProductOwnerDTO();
-            newOwner.setProductId(productToMove.getId());
-            newOwner.setDeveloper(createdDeveloper);
-            newOwner.setTransferDate(splitDate.getTime());
-            productToMove.getOwnerHistory().add(newOwner);
-            productManager.update(productToMove);
-
-            // update developer code on all associated certified products and log
-            // activity for each listing unique id change
-            List<CertifiedProductDetailsDTO> affectedListings = cpManager.getByProduct(productToMove.getId());
+            List<CertifiedProductDetailsDTO> affectedListings = cpManager.getByProduct(productIdToMove);
+            //need to get details for affected listings now before the product is re-assigned
+            //so that any listings with a generated new-style CHPL ID have the old developer code
+            Map<Long, CertifiedProductSearchDetails> beforeListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
             for (CertifiedProductDetailsDTO affectedListing : affectedListings) {
-                // have to get the details for before and after code update
-                // because that is object sent into activity reports
                 CertifiedProductSearchDetails beforeListing = cpdManager.getCertifiedProductDetails(affectedListing.getId());
-                // make sure each listing associated with the newDeveloper -> product ->
-                // version is owned by an ACB the user has access to
+
+                // make sure each listing associated with the new developer
                 boolean hasAccessToAcb = false;
                 for (CertificationBodyDTO allowedAcb : allowedAcbs) {
                     if (allowedAcb.getId().longValue() == affectedListing.getCertificationBodyId().longValue()) {
@@ -552,8 +542,24 @@ public class DeveloperManagerImpl implements DeveloperManager {
                             beforeListing.getCertifyingBody().get("name")));
                 }
 
-                // do the update and add activity
+                beforeListingDetails.put(beforeListing.getId(), beforeListing);
+            }
+
+            //move the product to be owned by the new developer
+            ProductDTO productToMove = productManager.getById(productIdToMove);
+            productToMove.setDeveloperId(createdDeveloper.getId());
+            ProductOwnerDTO newOwner = new ProductOwnerDTO();
+            newOwner.setProductId(productToMove.getId());
+            newOwner.setDeveloper(createdDeveloper);
+            newOwner.setTransferDate(splitDate.getTime());
+            productToMove.getOwnerHistory().add(newOwner);
+            productManager.update(productToMove);
+
+            //get the listing details again - this time they will have the new developer code
+            //so the change will show up in activity reports
+            for (CertifiedProductDetailsDTO affectedListing : affectedListings) {
                 CertifiedProductSearchDetails afterListing = cpdManager.getCertifiedProductDetails(affectedListing.getId());
+                CertifiedProductSearchDetails beforeListing = beforeListingDetails.get(afterListing.getId());
                 activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, beforeListing.getId(),
                         "Updated certified product " + afterListing.getChplProductNumber() + ".", beforeListing,
                         afterListing);
