@@ -121,6 +121,6 @@ public class EmailOverrider {
     }
 
     private String getForwardToEmail() {
-        return env.getProperty("emailBuilder_config_forwardAddress");
+        return env.getProperty("emailBuilder.config.forwardAddress");
     }
 }
