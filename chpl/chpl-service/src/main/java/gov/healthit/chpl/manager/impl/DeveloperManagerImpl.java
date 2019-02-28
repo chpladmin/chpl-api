@@ -369,6 +369,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
         }
 
         DeveloperDTO created = developerDao.create(dto);
+        dto.setId(created.getId());
         createOrUpdateTransparencyMappings(dto);
         activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, created.getId(),
                 "Developer " + created.getName() + " has been created.", null, created);
