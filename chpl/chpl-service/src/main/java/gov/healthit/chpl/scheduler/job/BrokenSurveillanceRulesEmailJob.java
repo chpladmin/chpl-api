@@ -109,20 +109,22 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
         String subject = null;
         String htmlMessage = null;
         if (jobContext.getMergedJobDataMap().getString("type").equalsIgnoreCase("All")) {
-            subject = props.getProperty("oversightEmailWeeklySubject");
             if (jobContext.getMergedJobDataMap().getBoolean("acbSpecific")) {
-                subject = jobContext.getMergedJobDataMap().getString("acb").replaceAll("\u263A", ", ") + " " + subject;
+                String subjectSuffix = props.getProperty("oversightEmailAcbWeeklySubjectSuffix");
+                subject = jobContext.getMergedJobDataMap().getString("acb").replaceAll("\u263A", ", ") + " " + subjectSuffix;
                 htmlMessage = props.getProperty("oversightEmailAcbWeeklyHtmlMessage");
             } else {
+                subject = props.getProperty("oversightEmailWeeklySubject");
                 htmlMessage = props.getProperty("oversightEmailWeeklyHtmlMessage");
             }
             htmlMessage += createHtmlEmailBody(errors.size(), props.getProperty("oversightEmailWeeklyNoContent"));
         } else {
-            subject = props.getProperty("oversightEmailDailySubject");
             if (jobContext.getMergedJobDataMap().getBoolean("acbSpecific")) {
-                subject = jobContext.getMergedJobDataMap().getString("acb").replaceAll("\u263A", ", ") + " " + subject;
+                String subjectSuffix = props.getProperty("oversightEmailAcbDailySubjectSuffix");
+                subject = jobContext.getMergedJobDataMap().getString("acb").replaceAll("\u263A", ", ") + " " + subjectSuffix;
                 htmlMessage = props.getProperty("oversightEmailAcbDailyHtmlMessage");
             } else {
+                subject = props.getProperty("oversightEmailDailySubject");
                 htmlMessage = props.getProperty("oversightEmailDailyHtmlMessage");
             }
             htmlMessage += createHtmlEmailBody(errors.size(), props.getProperty("oversightEmailDailyNoContent"));

@@ -885,7 +885,7 @@ public class SurveillanceControllerTest {
     public void test_deleteSurveillance_HaveOncAdmin_survCreatedByOnc_isPermitted()
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
             InvalidArgumentsException, ValidationException {
-        SecurityContextHolder.getContext().setAuthentication(oncAdmin);
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
         Surveillance surv = new Surveillance();
 
         CertifiedProductDTO cpDto = cpDao.getById(1L);
@@ -965,7 +965,7 @@ public class SurveillanceControllerTest {
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
             InvalidArgumentsException, ValidationException, AccessDeniedException,
             SurveillanceAuthorityAccessDeniedException, MissingReasonException {
-        SecurityContextHolder.getContext().setAuthentication(oncAdmin);
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
         Surveillance surv = new Surveillance();
 
         CertifiedProductDTO cpDto = cpDao.getById(1L);
@@ -991,10 +991,12 @@ public class SurveillanceControllerTest {
         surv.getRequirements().add(req);
 
         Surveillance insertedSurv = null;
+        
         try {
             ResponseEntity<Surveillance> response = surveillanceController.createSurveillance(surv);
             insertedSurv = response.getBody();
             assertNotNull(insertedSurv);
+            
             Surveillance got = survManager.getById(insertedSurv.getId());
             assertNotNull(got);
             assertNotNull(got.getCertifiedProduct());
@@ -1896,7 +1898,7 @@ public class SurveillanceControllerTest {
     public void test_deletePendingSurveillance()
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
             InvalidArgumentsException, ValidationException, CertificationBodyAccessException, UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException, EntityNotFoundException, AccessDeniedException, ObjectsMissingValidationException {
-        SecurityContextHolder.getContext().setAuthentication(oncAndAcb);
+        SecurityContextHolder.getContext().setAuthentication(acbAdmin);
         List<Long> ids = new ArrayList<Long>(Arrays.asList(-3L, -4L, -5L, -6L, -7L, -8L, -9L, -20L, -21L, -22L));
         IdListContainer idList = new IdListContainer();
         idList.setIds(ids);
@@ -1954,7 +1956,7 @@ public class SurveillanceControllerTest {
             InvalidArgumentsException, ValidationException, CertificationBodyAccessException,
             UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException, EntityNotFoundException,
             AccessDeniedException, ObjectsMissingValidationException {
-        SecurityContextHolder.getContext().setAuthentication(oncAndAcb);
+        SecurityContextHolder.getContext().setAuthentication(acbAdmin);
         List<Long> ids = new ArrayList<Long>(Arrays.asList(-3L, -4L, -5L, -6L, -7L, -8L, -9L, -20L, -21L, -22L));
         IdListContainer idList = new IdListContainer();
         idList.setIds(ids);
@@ -2017,7 +2019,7 @@ public class SurveillanceControllerTest {
      */
     @Transactional
     @Rollback
-    @Test(expected = EntityRetrievalException.class)
+    @Test(expected = AccessDeniedException.class)
     public void test_deletePendingSurveillance_alreadyRejected()
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
             InvalidArgumentsException, ValidationException, CertificationBodyAccessException, UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException, EntityNotFoundException, AccessDeniedException, ObjectsMissingValidationException {

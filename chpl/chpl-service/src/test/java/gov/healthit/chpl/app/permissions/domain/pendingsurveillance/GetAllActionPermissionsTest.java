@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
@@ -19,15 +20,17 @@ import gov.healthit.chpl.app.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.Surveillance;
-import gov.healthit.chpl.manager.CertificationBodyManager;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domains.pendingsurveillance.GetAllActionPermissions;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
 public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
 
-    @Spy
-    private CertificationBodyManager acbManager;
+    @Mock
+    private ResourcePermissions resourcePermissions;
 
     @Spy
     private CertifiedProductDAO cpDAO;
@@ -39,14 +42,13 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(acbManager.getAllForUser())
-        .thenReturn(getAllAcbForUser(2l, 4l));
+        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
     }
 
     @Override
     @Test
-    public void hasAccess_Admin()  throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getAdminUser());
+    public void hasAccess_Admin() throws Exception {
+        setupForAdminUser(resourcePermissions);
 
         assertTrue(permissions.hasAccess());
 
@@ -61,8 +63,8 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
-    public void hasAccess_Onc()  throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getOncUser());
+    public void hasAccess_Onc() throws Exception {
+        setupForOncUser(resourcePermissions);
 
         assertTrue(permissions.hasAccess());
 
@@ -77,37 +79,35 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
-    public void hasAccess_Acb()  throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getAcbUser());
+    public void hasAccess_Acb() throws Exception {
+        setupForAcbUser(resourcePermissions);
 
         assertTrue(permissions.hasAccess());
 
-        //Setup Mock
-        Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong()))
-        .thenReturn(getCertifiedProduct(1l, 2l));
+        // Setup Mock
+        Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getCertifiedProduct(1l, 2l));
 
-        //With the above mock, the user should have access
-        //The ACB is correct, but the authority is incorrect
+        // With the above mock, the user should have access
+        // The ACB is correct, but the authority is incorrect
         Surveillance surv = new Surveillance();
         surv.setCertifiedProduct(new CertifiedProduct());
         surv.getCertifiedProduct().setId(1l);
         surv.setAuthority("ROLE_ACB");
         assertTrue(permissions.hasAccess(surv));
 
-        //With the above mock, the user should have access.
-        //The ACB is correct, and the authority is correct
+        // With the above mock, the user should have access.
+        // The ACB is correct, and the authority is correct
         surv = new Surveillance();
         surv.setCertifiedProduct(new CertifiedProduct());
         surv.getCertifiedProduct().setId(1l);
         surv.setAuthority("ROLE_ONC");
         assertFalse(permissions.hasAccess(surv));
 
-        //Setup Mock
-        Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong()))
-        .thenReturn(getCertifiedProduct(1l, 3l));
+        // Setup Mock
+        Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getCertifiedProduct(1l, 3l));
 
-        //With the above mock, the user should NOT have access
-        //The ACB is incorrect, but the authority is correct
+        // With the above mock, the user should NOT have access
+        // The ACB is incorrect, but the authority is correct
         surv = new Surveillance();
         surv.setCertifiedProduct(new CertifiedProduct());
         surv.getCertifiedProduct().setId(1l);
@@ -118,11 +118,11 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     @Override
     @Test
     public void hasAccess_Atl() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getAtlUser());
+        setupForAtlUser(resourcePermissions);
 
         assertFalse(permissions.hasAccess());
 
-        //This should always return false
+        // This should always return false
         Surveillance surv = new Surveillance();
         assertFalse(permissions.hasAccess(surv));
     }
@@ -130,11 +130,11 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     @Override
     @Test
     public void hasAccess_Cms() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getCmsUser());
+        setupForCmsUser(resourcePermissions);
 
         assertFalse(permissions.hasAccess());
 
-        //This should always return false
+        // This should always return false
         Surveillance surv = new Surveillance();
         assertFalse(permissions.hasAccess(surv));
     }
@@ -142,10 +142,10 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     @Override
     @Test
     public void hasAccess_Anon() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(null);
+        setupForAnonUser(resourcePermissions);
         assertFalse(permissions.hasAccess());
 
-        //This should always return false
+        // This should always return false
         Surveillance surv = new Surveillance();
         assertFalse(permissions.hasAccess(surv));
     }

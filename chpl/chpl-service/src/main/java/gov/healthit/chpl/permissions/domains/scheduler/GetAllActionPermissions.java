@@ -20,7 +20,8 @@ public class GetAllActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess() {
-        return Util.isUserRoleAdmin() || Util.isUserRoleOnc() || Util.isUserRoleAcbAdmin();
+        return getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()
+                || getResourcePermissions().isUserRoleAcbAdmin();
     }
 
     @Override
@@ -28,11 +29,11 @@ public class GetAllActionPermissions extends ActionPermissions {
         try {
             if (!(obj instanceof ChplJob)) {
                 return false;
-            } else if (Util.isUserRoleAcbAdmin() || Util.isUserRoleOnc()) {
+            } else if (getResourcePermissions().isUserRoleAcbAdmin() || getResourcePermissions().isUserRoleOnc()) {
                 ChplJob job = (ChplJob) obj;
                 return doesUserHavePermissionToJob(job);
             } else {
-                return Util.isUserRoleAdmin();
+                return getResourcePermissions().isUserRoleAdmin();
             }
         } catch (Exception e) {
             LOGGER.error(e);

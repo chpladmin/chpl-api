@@ -3,7 +3,6 @@ package gov.healthit.chpl.permissions.domains.pendingsurveillance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dao.UserPermissionDAO;
 import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.dao.SurveillanceDAO;
@@ -31,7 +30,7 @@ public class RejectActionPermissions extends ActionPermissions {
         try {
             if (!(obj instanceof Long)) {
                 return false;
-            } else if (Util.isUserRoleAcbAdmin()) {
+            } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
                 Long pendingSurveillanceId = (Long) obj;
                 PendingSurveillanceEntity entity = surveillanceDAO.getPendingSurveillanceById(pendingSurveillanceId,
                         true);
@@ -45,7 +44,7 @@ public class RejectActionPermissions extends ActionPermissions {
                     // Make sure the user has access to the pendingSurveillance
                     return isAcbValidForCurrentUser(entity.getCertifiedProduct().getCertificationBodyId());
                 }
-            } else if (Util.isUserRoleOnc() || Util.isUserRoleAdmin()) {
+            } else if (getResourcePermissions().isUserRoleOnc() || getResourcePermissions().isUserRoleAdmin()) {
                 Long pendingSurveillanceId = (Long) obj;
                 PendingSurveillanceEntity entity = surveillanceDAO.getPendingSurveillanceById(pendingSurveillanceId);
 

@@ -70,7 +70,8 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 
     @Override
     @Transactional(readOnly = false)
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
+            + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).CREATE)")
     public ProductVersionDTO create(ProductVersionDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
         // check that the developer of this version is Active
@@ -106,7 +107,8 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 
     @Override
     @Transactional(readOnly = false)
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
+            + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).UPDATE)")
     public ProductVersionDTO update(ProductVersionDTO dto)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 
