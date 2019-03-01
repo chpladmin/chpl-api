@@ -134,8 +134,7 @@ public class CHPLTestConfig implements EnvironmentAware {
 
     @Bean
     public org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-        org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean bean =
-                new org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean();
+        org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean bean = new org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean();
         bean.setDataSource(dataSource());
         bean.setPersistenceUnitName(env.getProperty("persistenceUnitName"));
         return bean;
@@ -253,6 +252,10 @@ public class CHPLTestConfig implements EnvironmentAware {
     public JdbcMutableAclService mutableAclService() throws Exception {
         DataSource datasource = (DataSource) dataSource();
         JdbcMutableAclService bean = new JdbcMutableAclService(datasource, lookupStrategy(), aclCache());
+        // set these because the default spring-provided query is invalid in
+        // postgres
+        bean.setClassIdentityQuery("select currval('acl_class_id_seq')");
+        bean.setSidIdentityQuery("select currval('acl_sid_id_seq')");
         return bean;
     }
 

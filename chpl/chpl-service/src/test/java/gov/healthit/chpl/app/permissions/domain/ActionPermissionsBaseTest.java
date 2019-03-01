@@ -3,10 +3,14 @@ package gov.healthit.chpl.app.permissions.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mockito.Mockito;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 
 public abstract class ActionPermissionsBaseTest {
     public final static Long ROLE_ONC_ID = 8l;
@@ -14,12 +18,16 @@ public abstract class ActionPermissionsBaseTest {
     public final static Long ROLE_ACB_ID = 2l;
 
     public abstract void hasAccess_Admin() throws Exception;
-    public abstract void hasAccess_Onc() throws Exception;
-    public abstract void hasAccess_Acb() throws Exception;
-    public abstract void hasAccess_Atl() throws Exception;
-    public abstract void hasAccess_Cms() throws Exception;
-    public abstract void hasAccess_Anon() throws Exception;
 
+    public abstract void hasAccess_Onc() throws Exception;
+
+    public abstract void hasAccess_Acb() throws Exception;
+
+    public abstract void hasAccess_Atl() throws Exception;
+
+    public abstract void hasAccess_Cms() throws Exception;
+
+    public abstract void hasAccess_Anon() throws Exception;
 
     public List<CertificationBodyDTO> getAllAcbForUser(Long... acbIds) {
         List<CertificationBodyDTO> dtos = new ArrayList<CertificationBodyDTO>();
@@ -41,7 +49,12 @@ public abstract class ActionPermissionsBaseTest {
         return dto;
     }
 
-    public JWTAuthenticatedUser getAdminUser() {
+    public void setupForAdminUser(ResourcePermissions resourcePermissions) {
+        SecurityContextHolder.getContext().setAuthentication(getAdminUser());
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(true);
+    }
+
+    private JWTAuthenticatedUser getAdminUser() {
         JWTAuthenticatedUser adminUser = new JWTAuthenticatedUser();
         adminUser.setFullName("Administrator");
         adminUser.setId(-2L);
@@ -51,7 +64,12 @@ public abstract class ActionPermissionsBaseTest {
         return adminUser;
     }
 
-    public JWTAuthenticatedUser getAcbUser() {
+    public void setupForAcbUser(ResourcePermissions resourcePermissions) {
+        SecurityContextHolder.getContext().setAuthentication(getAcbUser());
+        Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(true);
+    }
+
+    private JWTAuthenticatedUser getAcbUser() {
         JWTAuthenticatedUser acbUser = new JWTAuthenticatedUser();
         acbUser.setFullName("Test");
         acbUser.setId(3L);
@@ -61,7 +79,12 @@ public abstract class ActionPermissionsBaseTest {
         return acbUser;
     }
 
-    public JWTAuthenticatedUser getAtlUser() {
+    public void setupForAtlUser(ResourcePermissions resourcePermissions) {
+        SecurityContextHolder.getContext().setAuthentication(getAtlUser());
+        Mockito.when(resourcePermissions.isUserRoleAtlAdmin()).thenReturn(true);
+    }
+
+    private JWTAuthenticatedUser getAtlUser() {
         JWTAuthenticatedUser atlUser = new JWTAuthenticatedUser();
         atlUser.setFullName("ATL");
         atlUser.setId(3L);
@@ -71,7 +94,12 @@ public abstract class ActionPermissionsBaseTest {
         return atlUser;
     }
 
-    public JWTAuthenticatedUser getCmsUser() {
+    public void setupForCmsUser(ResourcePermissions resourcePermissions) {
+        SecurityContextHolder.getContext().setAuthentication(getCmsUser());
+        Mockito.when(resourcePermissions.isUserRoleCmsStaff()).thenReturn(true);
+    }
+
+    private JWTAuthenticatedUser getCmsUser() {
         JWTAuthenticatedUser cmsUser = new JWTAuthenticatedUser();
         cmsUser.setFullName("CMS");
         cmsUser.setId(3L);
@@ -81,7 +109,12 @@ public abstract class ActionPermissionsBaseTest {
         return cmsUser;
     }
 
-    public JWTAuthenticatedUser getOncUser() {
+    public void setupForOncUser(ResourcePermissions resourcePermissions) {
+        SecurityContextHolder.getContext().setAuthentication(getOncUser());
+        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(true);
+    }
+
+    private JWTAuthenticatedUser getOncUser() {
         JWTAuthenticatedUser oncUser = new JWTAuthenticatedUser();
         oncUser.setFullName("ONC");
         oncUser.setId(3L);
@@ -91,4 +124,14 @@ public abstract class ActionPermissionsBaseTest {
         return oncUser;
     }
 
+    public void setupForAnonUser(ResourcePermissions resourcePermissions) {
+        SecurityContextHolder.getContext().setAuthentication(null);
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleAtlAdmin()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleCmsStaff()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleUserCreator()).thenReturn(false);
+
+    }
 }

@@ -213,7 +213,7 @@ public class ActivityControllerTest {
     }
 
     @Transactional
-    @Test(expected = EntityRetrievalException.class)
+    @Test(expected = AccessDeniedException.class)
     public void testGetAcbActivityWithBadId() throws EntityRetrievalException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         activityController.activityForACBById(-100L, null, null);
@@ -239,7 +239,7 @@ public class ActivityControllerTest {
     @Test(expected = AccessDeniedException.class)
     public void testGetAcbActivityAsAtlUser() throws EntityRetrievalException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(atlUser);
-        activityController.activityForACBById(-1L, null, null);
+        activityController.activityForACBById(-2L, null, null);
     }
 
     @Transactional
