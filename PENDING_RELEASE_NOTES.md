@@ -7,7 +7,4 @@ _Date TBD_
 * Update subject and email text of overnight surveillance broken rules report and all surveillance broken rules report
 * Display more helpful error message when a Reason for Change is required
 
-### Bug fixes
-* Correctly send intercepted emails
-
 ---
