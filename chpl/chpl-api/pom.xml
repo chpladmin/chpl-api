@@ -116,6 +116,14 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>gov.healthit.chpl</groupId>
+            <artifactId>chpl-service</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <classifier>tests</classifier>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>20090211</version>

@@ -23,9 +23,9 @@ public interface CertificationIdManager {
     Map<String, Boolean> verifyByCertificationId(List<String> certificationIds) throws EntityRetrievalException;
 
     List<SimpleCertificationId> getAll();
-
+    List<SimpleCertificationId> getAllCached();
     List<SimpleCertificationId> getAllWithProducts();
-
+    List<SimpleCertificationId> getAllWithProductsCached();
     CertificationIdDTO create(List<Long> productIds, String year)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 

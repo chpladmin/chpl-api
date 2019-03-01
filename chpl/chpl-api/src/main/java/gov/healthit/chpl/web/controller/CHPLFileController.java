@@ -21,6 +21,9 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CHPLFileManager;
+import gov.healthit.chpl.web.controller.annotation.CacheControl;
+import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
+import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -67,6 +70,7 @@ public class CHPLFileController {
     @ApiOperation(value = "Retrieve an API Documentation file",
             notes = "Retrieves the current API Documentation file.")
     @RequestMapping(value = "/api_documentation", method = RequestMethod.GET, produces = APPLICATION_MS_EXCEL)
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public synchronized ResponseEntity<byte[]> getApiDocumentationFile() throws EntityRetrievalException {
         CHPLFileDTO fileDTO = chplFileManager.getApiDocumentation();
 
@@ -84,6 +88,7 @@ public class CHPLFileController {
     @RequestMapping(value = "/api_documentation/details",
         method = RequestMethod.GET,
         produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public synchronized ResponseEntity<CHPLFileDTO> getApiDocumentationFileDetails() throws EntityRetrievalException {
         CHPLFileDTO fileDTO = chplFileManager.getApiDocumentation();
         return new ResponseEntity<CHPLFileDTO>(fileDTO, HttpStatus.OK);

@@ -20,7 +20,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.caching.ClearAllCaches;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -64,7 +63,6 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
             + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).CREATE)")
-    @ClearAllCaches
     public CertificationBodyDTO create(final CertificationBodyDTO acb)
             throws UserRetrievalException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
         // assign a code
@@ -105,7 +103,11 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
             + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).UPDATE, #acb)")
-    @ClearAllCaches
+    @CacheEvict(value = {
+            CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.GET_DECERTIFIED_DEVELOPERS
+    }, allEntries = true)
+    // listings collection is not evicted here because it's pre-fetched and handled in a listener
+    // no other caches have ACB data so we do not need to clear all
     public CertificationBodyDTO update(final CertificationBodyDTO acb)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
             UpdateCertifiedBodyException, SchedulerException, ValidationException {
@@ -127,7 +129,6 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
             + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).RETIRE)")
-    @CacheEvict(CacheNames.CERT_BODY_NAMES)
     public CertificationBodyDTO retire(final CertificationBodyDTO acb)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, IllegalArgumentException,
             SchedulerException, ValidationException {
@@ -152,7 +153,6 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
             + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).UNRETIRE)")
-    @CacheEvict(CacheNames.CERT_BODY_NAMES)
     public CertificationBodyDTO unretire(final Long acbId) throws EntityRetrievalException, JsonProcessingException,
             EntityCreationException, UpdateCertifiedBodyException {
         CertificationBodyDTO result = null;

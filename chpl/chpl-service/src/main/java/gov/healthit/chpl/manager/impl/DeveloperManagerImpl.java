@@ -163,7 +163,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).UPDATE)")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
-            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.DEVELOPER_NAMES,
+            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
             CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.GET_DECERTIFIED_DEVELOPERS
     }, allEntries = true)
     public DeveloperDTO update(final DeveloperDTO updatedDev)
@@ -338,7 +338,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).CREATE)")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
-            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.DEVELOPER_NAMES,
+            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
             CacheNames.COLLECTIONS_DEVELOPERS
     }, allEntries = true)
     public DeveloperDTO create(final DeveloperDTO dto)
@@ -377,7 +377,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
-            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.DEVELOPER_NAMES,
+            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
             CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.GET_DECERTIFIED_DEVELOPERS
     }, allEntries = true)
     public DeveloperDTO merge(final List<Long> developerIdsToMerge, final DeveloperDTO developerToCreate)

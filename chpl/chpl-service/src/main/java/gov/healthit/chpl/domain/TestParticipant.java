@@ -253,9 +253,9 @@ public class TestParticipant implements Serializable {
     public void setProfessionalExperienceMonths(final String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
-                professionalExperienceMonths = Math.round(new Float(value));
-            } catch (final NumberFormatException e) {
-                LOGGER.error("can't parse " + value + " as a float or integer.");
+                professionalExperienceMonths = Math.round(Float.valueOf(value));
+            } catch (final Exception e) {
+                LOGGER.error("can't parse " + value + " as a float.");
             }
         }
     }
@@ -267,9 +267,9 @@ public class TestParticipant implements Serializable {
     public void setComputerExperienceMonths(final String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
-                computerExperienceMonths = Math.round(new Float(value));
-            } catch (final NumberFormatException e) {
-                LOGGER.error("can't parse " + value + " as a float or integer.");
+                computerExperienceMonths = Math.round(Float.valueOf(value));
+            } catch (final Exception e) {
+                LOGGER.error("can't parse " + value + " as a float.");
             }
         }
     }
@@ -281,9 +281,9 @@ public class TestParticipant implements Serializable {
     public void setProductExperienceMonths(final String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
-                productExperienceMonths = Math.round(new Float(value));
-            } catch (final NumberFormatException e) {
-                LOGGER.error("can't parse " + value + " as a float or integer.");
+                productExperienceMonths = Math.round(Float.valueOf(value));
+            } catch (final Exception e) {
+                LOGGER.error("can't parse " + value + " as a float.");
             }
         }
     }

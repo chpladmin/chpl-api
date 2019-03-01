@@ -10,9 +10,7 @@ import org.dbunit.ext.postgresql.PostgresqlDataTypeFactory;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.cache.ehcache.EhCacheFactoryBean;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.EnvironmentAware;
@@ -21,11 +19,11 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -61,9 +59,10 @@ import gov.healthit.chpl.caching.CacheInitializor;
 import gov.healthit.chpl.job.MeaningfulUseUploadJob;
 
 @Configuration
+@Import(ChplTestCacheConfig.class)
+@EnableCaching
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @PropertySource("classpath:/environment.test.properties")
-@EnableCaching
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableTransactionManagement
 @ComponentScan(basePackages = {
@@ -73,6 +72,9 @@ import gov.healthit.chpl.job.MeaningfulUseUploadJob;
         @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = CacheInitializor.class)
 })
 public class CHPLTestConfig implements EnvironmentAware {
+
+    private static final int CORE_POOL_SIZE = 10;
+    private static final int MAX_POOL_SIZE = 100;
 
     private Environment env;
 
@@ -92,7 +94,7 @@ public class CHPLTestConfig implements EnvironmentAware {
 
     @Bean
     @Autowired
-    public AuthenticationManager authenticationManager(AuthenticationManagerBuilder auth) throws Exception {
+    public AuthenticationManager authenticationManager(final AuthenticationManagerBuilder auth) throws Exception {
         return auth.getOrBuild();
     }
 
@@ -111,7 +113,7 @@ public class CHPLTestConfig implements EnvironmentAware {
         // dbunit has limited support for postgres enum types so we have to tell
         // it about any enum type names here
         PostgresqlDataTypeFactory factory = new PostgresqlDataTypeFactory() {
-            public boolean isEnumType(String sqlTypeName) {
+            public boolean isEnumType(final String sqlTypeName) {
                 if (sqlTypeName.equalsIgnoreCase("attestation")) {
                     return true;
                 }
@@ -176,20 +178,14 @@ public class CHPLTestConfig implements EnvironmentAware {
     @Bean
     public TaskExecutor taskExecutor() {
         ThreadPoolTaskExecutor te = new ThreadPoolTaskExecutor();
-        te.setCorePoolSize(10);
-        te.setMaxPoolSize(100);
+        te.setCorePoolSize(CORE_POOL_SIZE);
+        te.setMaxPoolSize(MAX_POOL_SIZE);
         return te;
-    }
-
-    @Bean
-    public CacheManager cacheManager() {
-        return new EhCacheCacheManager(ehCacheCacheManager().getObject());
     }
 
     @Bean
     public EhCacheManagerFactoryBean ehCacheCacheManager() {
         EhCacheManagerFactoryBean cmfb = new EhCacheManagerFactoryBean();
-        cmfb.setConfigLocation(new ClassPathResource("ehCache-test.xml"));
         cmfb.setShared(true);
         return cmfb;
     }
@@ -246,9 +242,7 @@ public class CHPLTestConfig implements EnvironmentAware {
 
     @Bean
     public BasicLookupStrategy lookupStrategy() throws Exception {
-
-        DataSource datasource = (DataSource) dataSource();// .getObject();
-
+        DataSource datasource = (DataSource) dataSource();
         BasicLookupStrategy bean = new BasicLookupStrategy(datasource, aclCache(), aclAuthorizationStrategyImplAdmin(),
                 consoleAuditLogger());
         return bean;
@@ -256,9 +250,7 @@ public class CHPLTestConfig implements EnvironmentAware {
 
     @Bean
     public JdbcMutableAclService mutableAclService() throws Exception {
-
         DataSource datasource = (DataSource) dataSource();
-
         JdbcMutableAclService bean = new JdbcMutableAclService(datasource, lookupStrategy(), aclCache());
         // set these because the default spring-provided query is invalid in
         // postgres
@@ -281,7 +273,6 @@ public class CHPLTestConfig implements EnvironmentAware {
 
     @Bean
     public DefaultMethodSecurityExpressionHandler expressionHandler() throws Exception {
-
         DefaultMethodSecurityExpressionHandler bean = new DefaultMethodSecurityExpressionHandler();
         bean.setPermissionEvaluator(permissionEvaluator());
         bean.setPermissionCacheOptimizer(aclPermissionCacheOptimizer());

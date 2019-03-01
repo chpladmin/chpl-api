@@ -16,9 +16,9 @@ public class PendingTestParticipantDTO implements Serializable {
     private String userEnteredAgeRange;
     private AgeRangeDTO ageRange;
     private String occupation;
-    private Integer professionalExperienceMonths;
-    private Integer computerExperienceMonths;
-    private Integer productExperienceMonths;
+    private String professionalExperienceMonths;
+    private String computerExperienceMonths;
+    private String productExperienceMonths;
     private String assistiveTechnologyNeeds;
 
     public PendingTestParticipantDTO() {
@@ -85,27 +85,27 @@ public class PendingTestParticipantDTO implements Serializable {
         this.occupation = occupation;
     }
 
-    public Integer getProfessionalExperienceMonths() {
+    public String getProfessionalExperienceMonths() {
         return professionalExperienceMonths;
     }
 
-    public void setProfessionalExperienceMonths(final Integer professionalExperienceMonths) {
+    public void setProfessionalExperienceMonths(final String professionalExperienceMonths) {
         this.professionalExperienceMonths = professionalExperienceMonths;
     }
 
-    public Integer getComputerExperienceMonths() {
+    public String getComputerExperienceMonths() {
         return computerExperienceMonths;
     }
 
-    public void setComputerExperienceMonths(final Integer computerExperienceMonths) {
+    public void setComputerExperienceMonths(final String computerExperienceMonths) {
         this.computerExperienceMonths = computerExperienceMonths;
     }
 
-    public Integer getProductExperienceMonths() {
+    public String getProductExperienceMonths() {
         return productExperienceMonths;
     }
 
-    public void setProductExperienceMonths(final Integer productExperienceMonths) {
+    public void setProductExperienceMonths(final String productExperienceMonths) {
         this.productExperienceMonths = productExperienceMonths;
     }
 
@@ -155,5 +155,16 @@ public class PendingTestParticipantDTO implements Serializable {
 
     public void setUserEnteredAgeRange(final String userEnteredAgeRange) {
         this.userEnteredAgeRange = userEnteredAgeRange;
+    }
+
+    @Override
+    public String toString() {
+        return "PendingTestParticipantDTO [id=" + id + ", uniqueId=" + uniqueId + ", gender=" + gender
+                + ", educationTypeId=" + educationTypeId + ", userEnteredEducationType=" + userEnteredEducationType
+                + ", educationType=" + educationType + ", ageRangeId=" + ageRangeId + ", userEnteredAgeRange="
+                + userEnteredAgeRange + ", ageRange=" + ageRange + ", occupation=" + occupation
+                + ", professionalExperienceMonths=" + professionalExperienceMonths + ", computerExperienceMonths="
+                + computerExperienceMonths + ", productExperienceMonths=" + productExperienceMonths
+                + ", assistiveTechnologyNeeds=" + assistiveTechnologyNeeds + "]";
     }
 }

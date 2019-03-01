@@ -36,7 +36,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.caching.ClearAllCaches;
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
@@ -445,8 +444,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).CREATE_FROM_PENDING, #acbId)")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
-            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
-            CacheNames.DEVELOPER_NAMES, CacheNames.PRODUCT_NAMES
+            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS
     }, allEntries = true)
     public CertifiedProductDTO createFromPending(final Long acbId, final PendingCertifiedProductDTO pendingCp)
             throws EntityRetrievalException, EntityCreationException, IOException {
@@ -899,19 +897,19 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                                 // } else {
                                 TestTaskDTO tt = new TestTaskDTO();
                                 tt.setDescription(pendingTask.getDescription());
-                                tt.setTaskErrors(pendingTask.getTaskErrors());
-                                tt.setTaskErrorsStddev(pendingTask.getTaskErrorsStddev());
-                                tt.setTaskPathDeviationObserved(pendingTask.getTaskPathDeviationObserved());
-                                tt.setTaskPathDeviationOptimal(pendingTask.getTaskPathDeviationOptimal());
-                                tt.setTaskRating(pendingTask.getTaskRating());
+                                tt.setTaskErrors(Float.valueOf(pendingTask.getTaskErrors()));
+                                tt.setTaskErrorsStddev(Float.valueOf(pendingTask.getTaskErrorsStddev()));
+                                tt.setTaskPathDeviationObserved(Integer.valueOf(pendingTask.getTaskPathDeviationObserved()));
+                                tt.setTaskPathDeviationOptimal(Integer.valueOf(pendingTask.getTaskPathDeviationOptimal()));
+                                tt.setTaskRating(Float.valueOf(pendingTask.getTaskRating()));
                                 tt.setTaskRatingScale(pendingTask.getTaskRatingScale());
-                                tt.setTaskRatingStddev(pendingTask.getTaskRatingStddev());
-                                tt.setTaskSuccessAverage(pendingTask.getTaskSuccessAverage());
-                                tt.setTaskSuccessStddev(pendingTask.getTaskSuccessStddev());
-                                tt.setTaskTimeAvg(pendingTask.getTaskTimeAvg());
-                                tt.setTaskTimeDeviationObservedAvg(pendingTask.getTaskTimeDeviationObservedAvg());
-                                tt.setTaskTimeDeviationOptimalAvg(pendingTask.getTaskTimeDeviationOptimalAvg());
-                                tt.setTaskTimeStddev(pendingTask.getTaskTimeStddev());
+                                tt.setTaskRatingStddev(Float.valueOf(pendingTask.getTaskRatingStddev()));
+                                tt.setTaskSuccessAverage(Float.valueOf(pendingTask.getTaskSuccessAverage()));
+                                tt.setTaskSuccessStddev(Float.valueOf(pendingTask.getTaskSuccessStddev()));
+                                tt.setTaskTimeAvg(Long.valueOf(pendingTask.getTaskTimeAvg()));
+                                tt.setTaskTimeDeviationObservedAvg(Integer.valueOf(pendingTask.getTaskTimeDeviationObservedAvg()));
+                                tt.setTaskTimeDeviationOptimalAvg(Integer.valueOf(pendingTask.getTaskTimeDeviationOptimalAvg()));
+                                tt.setTaskTimeStddev(Integer.valueOf(pendingTask.getTaskTimeStddev()));
 
                                 // add test task
                                 existingTt = testTaskDao.create(tt);
@@ -944,13 +942,13 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                                             TestParticipantDTO tp = new TestParticipantDTO();
                                             tp.setAgeRangeId(certPart.getAgeRangeId());
                                             tp.setAssistiveTechnologyNeeds(certPart.getAssistiveTechnologyNeeds());
-                                            tp.setComputerExperienceMonths(certPart.getComputerExperienceMonths());
+                                            tp.setComputerExperienceMonths(Integer.valueOf(certPart.getComputerExperienceMonths()));
                                             tp.setEducationTypeId(certPart.getEducationTypeId());
                                             tp.setGender(certPart.getGender());
                                             tp.setOccupation(certPart.getOccupation());
-                                            tp.setProductExperienceMonths(certPart.getProductExperienceMonths());
+                                            tp.setProductExperienceMonths(Integer.valueOf(certPart.getProductExperienceMonths()));
                                             tp.setProfessionalExperienceMonths(
-                                                    certPart.getProfessionalExperienceMonths());
+                                                    Integer.valueOf(certPart.getProfessionalExperienceMonths()));
 
                                             // add participant
                                             existingPart = testParticipantDao.create(tp);
@@ -1070,7 +1068,11 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     @Transactional(readOnly = false)
-    @ClearAllCaches
+    @CacheEvict(value = {
+            CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.GET_DECERTIFIED_DEVELOPERS
+    }, allEntries = true)
+    //listings collection is not evicted here because it's pre-fetched and handled in a listener
+    //no other caches have ACB data so we do not need to clear all
     public CertifiedProductDTO changeOwnership(final Long certifiedProductId, final Long acbId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         CertifiedProductDTO toUpdate = cpDao.getById(certifiedProductId);

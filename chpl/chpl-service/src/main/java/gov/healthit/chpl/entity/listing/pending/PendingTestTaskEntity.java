@@ -29,43 +29,43 @@ public class PendingTestTaskEntity {
     private String description;
 
     @Column(name = "task_success_avg_pct", nullable = false)
-    private Float taskSuccessAverage;
+    private String taskSuccessAverage;
 
     @Column(name = "task_success_stddev_pct", nullable = false)
-    private Float taskSuccessStddev;
+    private String taskSuccessStddev;
 
     @Column(name = "task_path_deviation_observed", nullable = false)
-    private Integer taskPathDeviationObserved;
+    private String taskPathDeviationObserved;
 
     @Column(name = "task_path_deviation_optimal", nullable = false)
-    private Integer taskPathDeviationOptimal;
+    private String taskPathDeviationOptimal;
 
     @Column(name = "task_time_avg_seconds", nullable = false)
-    private Long taskTimeAvg;
+    private String taskTimeAvg;
 
     @Column(name = "task_time_stddev_seconds", nullable = false)
-    private Integer taskTimeStddev;
+    private String taskTimeStddev;
 
     @Column(name = "task_time_deviation_observed_avg_seconds", nullable = false)
-    private Integer taskTimeDeviationObservedAvg;
+    private String taskTimeDeviationObservedAvg;
 
     @Column(name = "task_time_deviation_optimal_avg_seconds", nullable = false)
-    private Integer taskTimeDeviationOptimalAvg;
+    private String taskTimeDeviationOptimalAvg;
 
     @Column(name = "task_errors_pct", nullable = false)
-    private Float taskErrors;
+    private String taskErrors;
 
     @Column(name = "task_errors_stddev_pct", nullable = false)
-    private Float taskErrorsStddev;
+    private String taskErrorsStddev;
 
     @Column(name = "task_rating_scale", nullable = false)
     private String taskRatingScale;
 
     @Column(name = "task_rating", nullable = false)
-    private Float taskRating;
+    private String taskRating;
 
     @Column(name = "task_rating_stddev", nullable = false)
-    private Float taskRatingStddev;
+    private String taskRatingStddev;
 
     @Basic(optional = false)
     @Column(name = "last_modified_date", nullable = false)
@@ -139,83 +139,83 @@ public class PendingTestTaskEntity {
         this.description = description;
     }
 
-    public Float getTaskSuccessAverage() {
+    public String getTaskSuccessAverage() {
         return taskSuccessAverage;
     }
 
-    public void setTaskSuccessAverage(final Float taskSuccessAverage) {
+    public void setTaskSuccessAverage(final String taskSuccessAverage) {
         this.taskSuccessAverage = taskSuccessAverage;
     }
 
-    public Float getTaskSuccessStddev() {
+    public String getTaskSuccessStddev() {
         return taskSuccessStddev;
     }
 
-    public void setTaskSuccessStddev(final Float taskSuccessStddev) {
+    public void setTaskSuccessStddev(final String taskSuccessStddev) {
         this.taskSuccessStddev = taskSuccessStddev;
     }
 
-    public Integer getTaskPathDeviationObserved() {
+    public String getTaskPathDeviationObserved() {
         return taskPathDeviationObserved;
     }
 
-    public void setTaskPathDeviationObserved(final Integer taskPathDeviationObserved) {
+    public void setTaskPathDeviationObserved(final String taskPathDeviationObserved) {
         this.taskPathDeviationObserved = taskPathDeviationObserved;
     }
 
-    public Integer getTaskPathDeviationOptimal() {
+    public String getTaskPathDeviationOptimal() {
         return taskPathDeviationOptimal;
     }
 
-    public void setTaskPathDeviationOptimal(final Integer taskPathDeviationOptimal) {
+    public void setTaskPathDeviationOptimal(final String taskPathDeviationOptimal) {
         this.taskPathDeviationOptimal = taskPathDeviationOptimal;
     }
 
-    public Long getTaskTimeAvg() {
+    public String getTaskTimeAvg() {
         return taskTimeAvg;
     }
 
-    public void setTaskTimeAvg(final Long taskTimeAvg) {
+    public void setTaskTimeAvg(final String taskTimeAvg) {
         this.taskTimeAvg = taskTimeAvg;
     }
 
-    public Integer getTaskTimeStddev() {
+    public String getTaskTimeStddev() {
         return taskTimeStddev;
     }
 
-    public void setTaskTimeStddev(final Integer taskTimeStddev) {
+    public void setTaskTimeStddev(final String taskTimeStddev) {
         this.taskTimeStddev = taskTimeStddev;
     }
 
-    public Integer getTaskTimeDeviationObservedAvg() {
+    public String getTaskTimeDeviationObservedAvg() {
         return taskTimeDeviationObservedAvg;
     }
 
-    public void setTaskTimeDeviationObservedAvg(final Integer taskTimeDeviationObservedAvg) {
+    public void setTaskTimeDeviationObservedAvg(final String taskTimeDeviationObservedAvg) {
         this.taskTimeDeviationObservedAvg = taskTimeDeviationObservedAvg;
     }
 
-    public Integer getTaskTimeDeviationOptimalAvg() {
+    public String getTaskTimeDeviationOptimalAvg() {
         return taskTimeDeviationOptimalAvg;
     }
 
-    public void setTaskTimeDeviationOptimalAvg(final Integer taskTimeDeviationOptimalAvg) {
+    public void setTaskTimeDeviationOptimalAvg(final String taskTimeDeviationOptimalAvg) {
         this.taskTimeDeviationOptimalAvg = taskTimeDeviationOptimalAvg;
     }
 
-    public Float getTaskErrors() {
+    public String getTaskErrors() {
         return taskErrors;
     }
 
-    public void setTaskErrors(final Float taskErrors) {
+    public void setTaskErrors(final String taskErrors) {
         this.taskErrors = taskErrors;
     }
 
-    public Float getTaskErrorsStddev() {
+    public String getTaskErrorsStddev() {
         return taskErrorsStddev;
     }
 
-    public void setTaskErrorsStddev(final Float taskErrorsStddev) {
+    public void setTaskErrorsStddev(final String taskErrorsStddev) {
         this.taskErrorsStddev = taskErrorsStddev;
     }
 
@@ -227,19 +227,32 @@ public class PendingTestTaskEntity {
         this.taskRatingScale = taskRatingScale;
     }
 
-    public Float getTaskRating() {
+    public String getTaskRating() {
         return taskRating;
     }
 
-    public void setTaskRating(final Float taskRating) {
+    public void setTaskRating(final String taskRating) {
         this.taskRating = taskRating;
     }
 
-    public Float getTaskRatingStddev() {
+    public String getTaskRatingStddev() {
         return taskRatingStddev;
     }
 
-    public void setTaskRatingStddev(final Float taskRatingStddev) {
+    public void setTaskRatingStddev(final String taskRatingStddev) {
         this.taskRatingStddev = taskRatingStddev;
+    }
+
+    @Override
+    public String toString() {
+        return "PendingTestTaskEntity [id=" + id + ", uniqueId=" + uniqueId + ", description=" + description
+                + ", taskSuccessAverage=" + taskSuccessAverage + ", taskSuccessStddev=" + taskSuccessStddev
+                + ", taskPathDeviationObserved=" + taskPathDeviationObserved + ", taskPathDeviationOptimal="
+                + taskPathDeviationOptimal + ", taskTimeAvg=" + taskTimeAvg + ", taskTimeStddev=" + taskTimeStddev
+                + ", taskTimeDeviationObservedAvg=" + taskTimeDeviationObservedAvg + ", taskTimeDeviationOptimalAvg="
+                + taskTimeDeviationOptimalAvg + ", taskErrors=" + taskErrors + ", taskErrorsStddev=" + taskErrorsStddev
+                + ", taskRatingScale=" + taskRatingScale + ", taskRating=" + taskRating + ", taskRatingStddev="
+                + taskRatingStddev + ", lastModifiedDate=" + lastModifiedDate + ", lastModifiedUser=" + lastModifiedUser
+                + ", creationDate=" + creationDate + ", deleted=" + deleted + "]";
     }
 }

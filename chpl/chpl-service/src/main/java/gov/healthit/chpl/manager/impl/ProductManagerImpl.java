@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -17,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.ProductDAO;
@@ -90,9 +88,6 @@ public class ProductManagerImpl implements ProductManager {
     @Transactional(readOnly = false)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).CREATE)")
-    @CacheEvict(value = {
-            CacheNames.PRODUCT_NAMES
-    }, allEntries = true)
     public ProductDTO create(ProductDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
         // check that the developer of this product is Active
@@ -128,9 +123,6 @@ public class ProductManagerImpl implements ProductManager {
     @Transactional(readOnly = false)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).UPDATE)")
-    @CacheEvict(value = {
-            CacheNames.PRODUCT_NAMES
-    }, allEntries = true)
     public ProductDTO update(ProductDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 
@@ -174,9 +166,6 @@ public class ProductManagerImpl implements ProductManager {
     @Override
     @Transactional(readOnly = false)
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    @CacheEvict(value = {
-            CacheNames.PRODUCT_NAMES
-    }, allEntries = true)
     public ProductDTO merge(List<Long> productIdsToMerge, ProductDTO toCreate)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 
@@ -232,9 +221,6 @@ public class ProductManagerImpl implements ProductManager {
     })
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).SPLIT)")
-    @CacheEvict(value = {
-            CacheNames.PRODUCT_NAMES
-    }, allEntries = true)
     public ProductDTO split(ProductDTO oldProduct, ProductDTO newProduct, String newProductCode,
             List<ProductVersionDTO> newProductVersions)
             throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException {

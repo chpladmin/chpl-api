@@ -32,9 +32,6 @@
         <class>gov.healthit.chpl.entity.CertificationIdProductMapEntity</class>
         <class>gov.healthit.chpl.entity.CertificationStatusEntity</class>
         <class>gov.healthit.chpl.entity.ContactEntity</class>
-        <class>gov.healthit.chpl.entity.CorrectiveActionPlanCertificationEntity</class>
-        <class>gov.healthit.chpl.entity.CorrectiveActionPlanDocumentationEntity</class>
-        <class>gov.healthit.chpl.entity.CorrectiveActionPlanEntity</class>
         <class>gov.healthit.chpl.entity.CriterionProductStatisticsEntity</class>
         <class>gov.healthit.chpl.entity.EducationTypeEntity</class>
         <class>gov.healthit.chpl.entity.FuzzyChoicesEntity</class>

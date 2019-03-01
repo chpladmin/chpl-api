@@ -9,7 +9,6 @@ import javax.persistence.EntityNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
-import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
@@ -135,6 +133,13 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
         return products;
     }
 
+    /**
+     * This method is included so that the pending listings may be pre-loaded in a background cache without having to
+     * duplicate manager logic. Prefer users of this class to call getPendingCertifiedProductsCached.
+     * 
+     * @param acbId
+     * @return
+     */
     @Override
     @Transactional(readOnly = true)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_CERTIFIED_PRODUCT, "
@@ -151,9 +156,6 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
     @Transactional(rollbackFor = {
             EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class
     })
-    @CacheEvict(value = {
-            CacheNames.FIND_BY_ACB_ID
-    }, allEntries = true)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_CERTIFIED_PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions).CREATE_OR_REPLACE, #acbId)")
     public PendingCertifiedProductDTO createOrReplace(final Long acbId, final PendingCertifiedProductEntity toCreate)
@@ -186,9 +188,6 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 
     @Override
     @Transactional
-    @CacheEvict(value = {
-            CacheNames.FIND_BY_ACB_ID
-    }, allEntries = true)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_CERTIFIED_PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions).DELETE, #acbId)")
     public void deletePendingCertifiedProduct(final Long acbId, final Long pendingProductId)
@@ -210,9 +209,6 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 
     @Override
     @Transactional
-    @CacheEvict(value = {
-            CacheNames.FIND_BY_ACB_ID
-    }, allEntries = true)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_CERTIFIED_PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions).CONFIRM, #acbId)")
     public void confirm(final Long acbId, final Long pendingProductId)
