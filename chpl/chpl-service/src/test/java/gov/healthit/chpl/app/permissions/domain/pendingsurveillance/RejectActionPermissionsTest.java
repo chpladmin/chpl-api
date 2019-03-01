@@ -12,7 +12,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -133,9 +132,10 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
                 .thenReturn(getUserPermissionDTO("ROLE_ACB", "", ""));
 
         assertFalse(permissions.hasAccess(id));
+
        //Should work...
         Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
-        .thenReturn(getPendingSurveillanceEntity(1L, 1L, 4L, ROLE_ACB_ID));
+                .thenReturn(getPendingSurveillanceEntity(1L, 1L, 4L, ROLE_ACB_ID));
 
         Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))
                 .thenReturn(getUserPermissionDTO("ROLE_ACB", "", ""));
@@ -144,7 +144,7 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
 
         //This one belongs to the wrong authority....
         Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
-        .thenReturn(getPendingSurveillanceEntity(1L, 1L, 4L, ROLE_ONC_ID));
+                .thenReturn(getPendingSurveillanceEntity(1L, 1L, 4L, ROLE_ONC_ID));
 
         Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))
                 .thenReturn(getUserPermissionDTO("ROLE_ONC", "", ""));

@@ -134,8 +134,7 @@ public class CHPLTestConfig implements EnvironmentAware {
 
     @Bean
     public org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-        org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean bean =
-                new org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean();
+        org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean bean = new org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean();
         bean.setDataSource(dataSource());
         bean.setPersistenceUnitName(env.getProperty("persistenceUnitName"));
         return bean;

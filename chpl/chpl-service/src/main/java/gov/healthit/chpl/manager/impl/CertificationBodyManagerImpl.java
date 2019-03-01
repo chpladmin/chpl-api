@@ -106,8 +106,8 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     @CacheEvict(value = {
             CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.GET_DECERTIFIED_DEVELOPERS
     }, allEntries = true)
-    //listings collection is not evicted here because it's pre-fetched and handled in a listener
-    //no other caches have ACB data so we do not need to clear all
+    // listings collection is not evicted here because it's pre-fetched and handled in a listener
+    // no other caches have ACB data so we do not need to clear all
     public CertificationBodyDTO update(final CertificationBodyDTO acb)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
             UpdateCertifiedBodyException, SchedulerException, ValidationException {

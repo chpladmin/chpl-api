@@ -7,8 +7,6 @@ import java.util.Set;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.security.acls.domain.PrincipalSid;
-import org.springframework.security.acls.model.Permission;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,7 +24,6 @@ import gov.healthit.chpl.auth.json.User;
 import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.ChplPermission;
 import gov.healthit.chpl.domain.PermittedUser;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -38,6 +35,9 @@ import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.web.controller.annotation.CacheControl;
+import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
+import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import gov.healthit.chpl.web.controller.results.CertificationBodyResults;
 import gov.healthit.chpl.web.controller.results.PermittedUserResults;
 import io.swagger.annotations.Api;
@@ -64,6 +64,7 @@ public class CertificationBodyController {
             notes = "Setting the 'editable' parameter to true will return all ACBs that the logged in user has "
                     + "edit permissions on. Security Restrictions:  All users can see all active ACBs.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertificationBodyResults getAcbs(
             @RequestParam(required = false, defaultValue = "false") final boolean editable) {
         //TODO confirm a user is logged in here
