@@ -15,8 +15,10 @@ import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 /**
- * Checks test tool related requirements. Test tool name must match a test tool in the database. Test tool version is
- * required Listings shouldn't use retired test tools.
+ * Checks test tool related requirements.
+ * Test tool name must match a test tool in the database.
+ * Test tool version is required
+ * Listings shouldn't use retired test tools.
  * 
  * @author kekey
  *

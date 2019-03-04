@@ -15,7 +15,6 @@ import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 
 /**
  * Utilities used to validate various basic elements of CHPL domain objects.
- * 
  * @author alarned
  *
  */
@@ -28,9 +27,7 @@ public final class ValidationUtils {
 
     /**
      * Check to see if input string has either Windows or *nix flavored new line character.
-     * 
-     * @param input
-     *            string to check
+     * @param input string to check
      * @return true iff string contains "\n" or "\r\n"
      */
     public static boolean hasNewline(final String input) {
@@ -43,9 +40,7 @@ public final class ValidationUtils {
 
     /**
      * Validate that input string is a well formed URL.
-     * 
-     * @param input
-     *            URL to check
+     * @param input URL to check
      * @return true iff input is a valid URL. Will return false for empty/null string
      */
     public static boolean isWellFormedUrl(final String input) {
@@ -54,9 +49,7 @@ public final class ValidationUtils {
 
     /**
      * Check that input string is in the default charset.
-     * 
-     * @param input
-     *            string to check
+     * @param input string to check
      * @return true iff string is in default charset
      */
     public static boolean isValidUtf8(final String input) {
@@ -65,11 +58,8 @@ public final class ValidationUtils {
 
     /**
      * Check that input string is in the passed in charset.
-     * 
-     * @param inputCharset
-     *            charset to check
-     * @param input
-     *            string to check
+     * @param inputCharset charset to check
+     * @param input string to check
      * @return true iff input is in inputCharset
      */
     public static boolean isValidUtf8(final Charset inputCharset, final String input) {
@@ -85,10 +75,10 @@ public final class ValidationUtils {
     }
 
     /**
-     * This method could be called if the encoding in which input is received IS UTF-8.
+     * This method could be called if the encoding in which input is received IS
+     * UTF-8.
      *
-     * @param input
-     *            string to check
+     * @param input string to check
      * @return true iff input string contains \uFFFD
      */
     public static boolean hasUtf8ReplacementCharacter(final String input) {
@@ -99,10 +89,10 @@ public final class ValidationUtils {
     }
 
     /**
-     * This method could be called if the encoding in which input is received is NOT already UTF-8.
+     * This method could be called if the encoding in which input is received is
+     * NOT already UTF-8.
      *
-     * @param input
-     *            string to check
+     * @param input string to check
      * @return true iff input has non UTF-8 character
      */
     public static boolean hasNonUtf8Character(final byte[] input) {
@@ -145,11 +135,8 @@ public final class ValidationUtils {
 
     /**
      * Check to see if the input certification is in the list of certifications.
-     * 
-     * @param certNumber
-     *            certification to look for
-     * @param allCerts
-     *            certifications to check in
+     * @param certNumber certification to look for
+     * @param allCerts certifications to check in
      * @return true iff certNumber found in allCerts
      */
     public static boolean hasCert(final String certNumber, final List<String> allCerts) {
@@ -163,15 +150,13 @@ public final class ValidationUtils {
     }
 
     /**
-     * Look for required complimentary criteria; if any one of the criterionToCheck is present in allCriteriaMet then all of
-     * the complimentaryCertNumbers must be present in allCriteriaMet.
+     * Look for required complimentary criteria; if any one of the
+     * criterionToCheck is present in allCriteriaMet then all of the
+     * complimentaryCertNumbers must be present in allCriteriaMet.
      *
-     * @param criterionToCheck
-     *            criteria to check
-     * @param allCriteriaMet
-     *            criteria to check against
-     * @param complimentaryCertNumbers
-     *            complimentary criteria that must be present
+     * @param criterionToCheck criteria to check
+     * @param allCriteriaMet criteria to check against
+     * @param complimentaryCertNumbers complimentary criteria that must be present
      * @return a list of error messages
      */
     public static List<String> checkComplimentaryCriteriaAllRequired(final List<String> criterionToCheck,
@@ -200,15 +185,13 @@ public final class ValidationUtils {
     }
 
     /**
-     * Look for required complimentary criteria; if any one of the criterionToCheck is present in allCriteriaMet, then any
-     * one of the complimentaryCertNumbers must also be present in allCriteriaMet.
+     * Look for required complimentary criteria; if any one of the
+     * criterionToCheck is present in allCriteriaMet, then any one
+     * of the complimentaryCertNumbers must also be present in allCriteriaMet.
      *
-     * @param criterionToCheck
-     *            criteria to check
-     * @param allCriteriaMet
-     *            criteria to check against
-     * @param complimentaryCertNumbers
-     *            complimentary criteria of which at least one must be present
+     * @param criterionToCheck criteria to check
+     * @param allCriteriaMet criteria to check against
+     * @param complimentaryCertNumbers complimentary criteria of which at least one must be present
      * @return a list of error messages
      */
     public static List<String> checkComplimentaryCriteriaAnyRequired(final List<String> criterionToCheck,
@@ -244,11 +227,8 @@ public final class ValidationUtils {
 
     /**
      * Returns true if any of the passed in certs are present.
-     * 
-     * @param certsToCheck
-     *            criteria to check
-     * @param allCerts
-     *            criteria to check against
+     * @param certsToCheck criteria to check
+     * @param allCerts criteria to check against
      * @return true iff at least one of certsToCheck is in allCerts
      */
     public static boolean hasAnyCert(final List<String> certsToCheck, final List<String> allCerts) {
@@ -263,11 +243,8 @@ public final class ValidationUtils {
 
     /**
      * Returns true if any of the passed in certs are present.
-     * 
-     * @param certToCompare
-     *            criteria to check
-     * @param certs
-     *            criteria to check against
+     * @param certToCompare criteria to check
+     * @param certs criteria to check against
      * @return true iff at least one of certToCompare is in certs
      */
     public static boolean containsCert(final PendingCertificationResultDTO certToCompare, final String[] certs) {
@@ -282,11 +259,8 @@ public final class ValidationUtils {
 
     /**
      * Returns true if any of the passed in certs are present.
-     * 
-     * @param certToCompare
-     *            criteria to check
-     * @param certs
-     *            criteria to check against
+     * @param certToCompare criteria to check
+     * @param certs criteria to check against
      * @return true iff at least one of certToCompare is in certs
      */
     public static boolean containsCert(final CertificationResult certToCompare, final String[] certs) {
@@ -300,15 +274,12 @@ public final class ValidationUtils {
     }
 
     /**
-     * look for required complimentary certs when one of the criteria met is a certain class of cert... such as 170.315
-     * (a)(*)
+     * look for required complimentary certs when one of the criteria met is a
+     * certain class of cert... such as 170.315 (a)(*)
      *
-     * @param criterionNumberStart
-     *            class of criteria to check
-     * @param allCriteriaMet
-     *            all criteria met
-     * @param complimentaryCertNumbers
-     *            complimentary criteria that must be met
+     * @param criterionNumberStart class of criteria to check
+     * @param allCriteriaMet all criteria met
+     * @param complimentaryCertNumbers complimentary criteria that must be met
      * @return list of errors
      */
     public static List<String> checkClassOfCriteriaForErrors(final String criterionNumberStart,
@@ -339,14 +310,12 @@ public final class ValidationUtils {
     }
 
     /**
-     * Look for a required complimentary criteria when a specific criteria has been met.
+     * Look for a required complimentary criteria when a specific criteria has
+     * been met.
      *
-     * @param criterionNumber
-     *            criteria to check
-     * @param allCriteriaMet
-     *            all criteria met
-     * @param complimentaryCertNumbers
-     *            complimentary criteria that must be met
+     * @param criterionNumber criteria to check
+     * @param allCriteriaMet all criteria met
+     * @param complimentaryCertNumbers complimentary criteria that must be met
      * @return list of errors
      */
     public static List<String> checkSpecificCriteriaForErrors(final String criterionNumber,

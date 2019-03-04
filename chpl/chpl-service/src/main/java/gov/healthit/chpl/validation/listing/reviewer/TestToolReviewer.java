@@ -15,8 +15,9 @@ import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 /**
- * Makes sure a valid test tool was entered by the user - otherwise removes it and includes an error. Makes sure the version
- * is included with a test tool. Checks that retired test tools are not used if not appropriate.
+ * Makes sure a valid test tool was entered by the user - otherwise removes it and includes an error.
+ * Makes sure the version is included with a test tool.
+ * Checks that retired test tools are not used if not appropriate.
  * 
  * @author kekey
  *
