@@ -482,8 +482,6 @@ public class UserManagerTest {
     }
 
     @Test
-    @Transactional
-    @Rollback(true)
     public void testPasswordResetValid() throws UserRetrievalException {
         UserResetTokenDTO tokenDTO = userManager.createResetUserPasswordToken("admin", "info@ainq.com");
         assertNotNull(tokenDTO);
