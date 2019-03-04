@@ -55,31 +55,10 @@ public class TestToolReviewer implements Reviewer {
                             }
 
                             TestToolDTO tt = testToolDao.getByName(testTool.getTestToolName());
-                            if (tt != null) {
-                                // if (tt.isRetired() && icsCodeInteger != null && icsCodeInteger.intValue() == 0) {
-                                // if (productNumUtil.hasIcsConflict(listing.getChplProductNumber(),
-                                // (listing.getIcs() == null ? Boolean.FALSE : listing.getIcs().getInherits()))) {
-                                // listing.getErrorMessages().add(
-                                // msgUtil.getMessage("listing.criteria.retiredTestToolNotAllowed",
-                                // testTool.getTestToolName(), cert.getNumber()));
-                                // } else {
-                                // listing.getErrorMessages().add(
-                                // msgUtil.getMessage("listing.criteria.retiredTestToolNotAllowed",
-                                // testTool.getTestToolName(), cert.getNumber()));
-                                // }
-                                // } else if (tt.isRetired()
-                                // && (listing.getIcs() == null || listing.getIcs().getInherits() == null
-                                // || listing.getIcs().getInherits().equals(Boolean.FALSE))) {
-                                // listing.getErrorMessages().add(
-                                // msgUtil.getMessage("listing.criteria.retiredTestToolNotAllowed",
-                                // testTool.getTestToolName(), cert.getNumber()));
-                                // }
-                                // The system allows the use of retired test tools, but will return a warning
-                                if (tt.isRetired()) {
-                                    listing.getWarningMessages()
-                                            .add(msgUtil.getMessage("listing.criteria.retiredTestToolNotAllowed",
-                                                    testTool.getTestToolName(), cert.getNumber()));
-                                }
+                            if (tt != null && tt.isRetired()) {
+                                listing.getWarningMessages()
+                                        .add(msgUtil.getMessage("listing.criteria.retiredTestToolNotAllowed",
+                                                testTool.getTestToolName(), cert.getNumber()));
                             } else {
                                 listing.getErrorMessages()
                                         .add(msgUtil.getMessage("listing.criteria.testToolNotFoundAndRemoved",
