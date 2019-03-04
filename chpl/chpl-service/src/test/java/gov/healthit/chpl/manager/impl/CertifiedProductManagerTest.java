@@ -62,6 +62,7 @@ import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
@@ -153,7 +154,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Transactional(readOnly = false)
     @Rollback(true)
     public void testAdminUserChangeStatusToSuspendedByOnc() throws EntityRetrievalException,
-    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException {
+    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.SuspendedByOnc.getName());
         assertNotNull(stat);
@@ -184,7 +185,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Transactional(readOnly = false)
     @Rollback(true)
     public void testAdminUserChangeStatusToWithdrawnByAcbWithReason() throws EntityRetrievalException,
-    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException {
+    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByAcb.getName());
         assertNotNull(stat);
@@ -209,7 +210,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Transactional(readOnly = false)
     @Rollback(true)
     public void testAdminUserSeesStatusChangeReason() throws EntityRetrievalException,
-    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException {
+    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByAcb.getName());
         assertNotNull(stat);
@@ -227,7 +228,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Transactional(readOnly = false)
     @Rollback(true)
     public void testAcbUserSeesStatusChangeReason() throws EntityRetrievalException,
-    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException {
+    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByAcb.getName());
         assertNotNull(stat);
@@ -246,7 +247,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Transactional(readOnly = false)
     @Rollback(true)
     public void testNonLoggedInUserSeesStatusChangeReason() throws EntityRetrievalException,
-    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException {
+    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByAcb.getName());
@@ -265,7 +266,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Transactional(readOnly = false)
     @Rollback(true)
     public void testNonAdminUserNotAllowedToChangeStatusToSuspendedByOnc() throws EntityRetrievalException,
-    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException {
+    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(testUser3);
         CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.SuspendedByOnc.getName());
         assertNotNull(stat);
@@ -295,7 +296,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback(true)
     public void testNonAdminUserNotAllowedToChangeStatusToWithdrawnByDeveloperUnderReview()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(testUser3);
         CertificationStatusDTO stat = certStatusDao.getByStatusName(
                 CertificationStatusType.WithdrawnByDeveloperUnderReview.getName());
@@ -326,7 +327,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback(true)
     public void testAdminUserChangeStatusToWithdrawnByDeveloperUnderReviewWithDeveloperBan()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         CertificationStatusDTO stat = certStatusDao.getByStatusName(
                 CertificationStatusType.WithdrawnByDeveloperUnderReview.getName());
@@ -360,7 +361,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback(true)
     public void testAdminUserChangeStatusToWithdrawnByDeveloperUnderReviewWithoutDeveloperBan()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         CertificationStatusDTO stat = certStatusDao.getByStatusName(
                 CertificationStatusType.WithdrawnByDeveloperUnderReview.getName());
@@ -388,7 +389,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Transactional(readOnly = false)
     @Rollback(true)
     public void testAdminUserChangeStatusToTerminatedByOnc() throws EntityRetrievalException,
-    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException {
+    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.TerminatedByOnc.getName());
         assertNotNull(stat);
@@ -410,7 +411,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Transactional(readOnly = false)
     @Rollback(true)
     public void testNonAdminUserNotAllowedToChangeStatusToTerminatedByOnc() throws EntityRetrievalException,
-    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException {
+    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(testUser3);
         CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.TerminatedByOnc.getName());
         assertNotNull(stat);
@@ -443,7 +444,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Transactional(readOnly = false)
     @Rollback
     public void testAddExistingQmsStandard() throws EntityRetrievalException,
-    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException {
+    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -479,7 +480,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Transactional(readOnly = false)
     @Rollback
     public void testAddNonExistingQmsStandard() throws EntityRetrievalException,
-    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException {
+    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -515,7 +516,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Transactional(readOnly = false)
     @Rollback
     public void testDeleteQmsStandard() throws EntityRetrievalException,
-    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException {
+    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -557,7 +558,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback
     public void testUpdateQmsModification()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -603,7 +604,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Transactional(readOnly = false)
     @Rollback
     public void testAddExistingTargetedUser() throws EntityRetrievalException,
-    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException {
+    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -636,7 +637,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Transactional(readOnly = false)
     @Rollback
     public void testAddNonExistingTargetedUser() throws EntityRetrievalException,
-    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException {
+    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -668,7 +669,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback
     public void testDeleteTargetedUser()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -710,7 +711,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback
     public void testAddExistingAccessibilityStandard()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -744,7 +745,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback
     public void testAddNonExistingAccessibilityStandard()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -776,7 +777,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback
     public void testDeleteAccessibilityStandard()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -816,7 +817,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Transactional(readOnly = false)
     @Rollback
     public void testAddMeaningfulUseHistoryEntry() throws EntityRetrievalException,
-    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException {
+    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -854,7 +855,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback
     public void testDeleteMeaningfulUseUser()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -898,7 +899,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback
     public void testUpdateCertificationResultSuccess()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -938,7 +939,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback
     public void testAddCertificationResultAdditionalSoftware()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -983,7 +984,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback
     public void testAddCertificationResultAdditionalSoftwareAsCertifiedProduct()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -1027,7 +1028,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback
     public void testAddCertificationResultAdditionalSoftwareWithGroupings()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -1078,7 +1079,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback
     public void testUpdateCertificationResultAdditionalSoftwareJustification()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -1136,7 +1137,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback
     public void testRemoveCertificationResultAdditionalSoftware()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -1176,7 +1177,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback
     public void testAddCertificationResultMacraMeasure()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -1215,7 +1216,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback
     public void testRemoveCertificationResultMacraMeasure()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -1268,7 +1269,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback
     public void testAddCertificationResultUcdProcess()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -1309,7 +1310,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback
     public void testUpdateCertificationResultUcdProcessDetails()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -1357,7 +1358,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback
     public void testRemoveCertificationResultUcdProcess()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -1405,7 +1406,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback
     public void testAddExistingCertificationResultTestStandard()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -1444,7 +1445,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback
     public void testAddNewCertificationResultTestStandard()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -1486,7 +1487,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback
     public void testRemoveCertificationResultTestStandard()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -1539,7 +1540,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback
     public void testAddCertificationResultTestTool()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -1580,7 +1581,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback
     public void testUpdateCertificationResultTestTool()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -1637,7 +1638,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback
     public void testRemoveCertificationResultTestTool()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -1690,7 +1691,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback
     public void testAddCertificationResultTestData()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -1737,7 +1738,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback
     public void testUpdateCertificationResultTestDataAlteration()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -1793,7 +1794,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback
     public void testRemoveCertificationResultTestData()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -1850,7 +1851,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback
     public void testAddNewCertificationResultTestProcedure()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -1895,7 +1896,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback
     public void testRemoveCertificationResultTestProcedure()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -1951,7 +1952,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback
     public void testAddNewCertificationResultTestFunctionality()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -1990,7 +1991,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback
     public void testRemoveCertificationResultTestFunctionality()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -2042,7 +2043,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Transactional(readOnly = false)
     @Rollback
     public void testAddCqm() throws EntityRetrievalException, EntityCreationException,
-    JsonProcessingException, InvalidArgumentsException, IOException {
+    JsonProcessingException, InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = -1L;
@@ -2086,7 +2087,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Transactional(readOnly = false)
     @Rollback
     public void testUpdateCqmAddCriteria() throws EntityRetrievalException, EntityCreationException,
-    JsonProcessingException, InvalidArgumentsException, IOException {
+    JsonProcessingException, InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = -1L;
@@ -2143,7 +2144,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Transactional(readOnly = false)
     @Rollback
     public void testRemoveCqm() throws EntityRetrievalException, EntityCreationException,
-    JsonProcessingException, InvalidArgumentsException, IOException {
+    JsonProcessingException, InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = -1L;
@@ -2182,7 +2183,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback
     public void testAddTestTask()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -2244,7 +2245,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback
     public void testUpdateEducationForOneParticipant()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
@@ -2286,7 +2287,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback
     public void testUpdateOccupationForAllParticipants()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long listingId = 5L;
@@ -2336,7 +2337,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback
     public void testUpdateEducationForAllParticipants()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long listingId = 5L;
@@ -2387,7 +2388,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback
     public void testUpdateAgeRangeForAllParticipants()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long listingId = 5L;
@@ -2441,7 +2442,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback(true)
     public void testUpdateG1MacraMeasures()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long listingId = 3L;
@@ -2484,7 +2485,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback(true)
     public void testAddG2Measure()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long listingId = 3L;
@@ -2525,7 +2526,7 @@ public class CertifiedProductManagerTest extends TestCase {
     @Rollback(true)
     public void testDeleteG1MacraMeasure()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+            InvalidArgumentsException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long listingId = 3L;
@@ -2568,7 +2569,7 @@ public class CertifiedProductManagerTest extends TestCase {
     private void updateListingStatus(final Long acbId, final Long listingId,
             final CertificationStatusDTO stat, final String reason)
             throws EntityRetrievalException, EntityCreationException,
-            JsonProcessingException, InvalidArgumentsException, IOException {
+            JsonProcessingException, InvalidArgumentsException, IOException, ValidationException {
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
 
         CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);

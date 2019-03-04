@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 
@@ -19,6 +19,8 @@ public class DeveloperCreationValidator {
 
     private ErrorMessageUtil msgUtil;
 
+    public DeveloperCreationValidator() {}
+
     @Autowired
     public DeveloperCreationValidator(final ErrorMessageUtil msgUtil) {
         this.msgUtil = msgUtil;
@@ -29,7 +31,7 @@ public class DeveloperCreationValidator {
      * @param developer the developer to validate
      * @return a list of error messages generated from problems found with the developer
      */
-    public Set<String> validate(final Developer developer) {
+    public Set<String> validate(final DeveloperDTO developer) {
         Set<String> errorMessages = new HashSet<String>();
         //developer name is required
         if (StringUtils.isEmpty(developer.getName())) {
@@ -61,7 +63,7 @@ public class DeveloperCreationValidator {
         if (developer.getAddress() == null) {
             errorMessages.add(msgUtil.getMessage("developer.addressRequired"));
         } else {
-            if (StringUtils.isEmpty(developer.getAddress().getLine1())) {
+            if (StringUtils.isEmpty(developer.getAddress().getStreetLineOne())) {
                 errorMessages.add(msgUtil.getMessage("developer.address.streetRequired"));
             }
             if (StringUtils.isEmpty(developer.getAddress().getCity())) {

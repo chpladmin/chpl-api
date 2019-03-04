@@ -36,6 +36,7 @@ import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.MissingReasonException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
@@ -43,6 +44,8 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.validation.developer.DeveloperCreationValidator;
+import gov.healthit.chpl.validation.developer.DeveloperUpdateValidator;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
@@ -72,6 +75,8 @@ public class DeveloperStatusTest {
     @Spy private CertifiedProductManager cpManager;
     @Spy private CertifiedProductDetailsManager cpdManager;
     @Spy private ActivityManager activityManager;
+    @Spy private DeveloperCreationValidator creationValidator;
+    @Spy private DeveloperUpdateValidator updateValidator;
     @Spy private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
 
     @InjectMocks
@@ -96,6 +101,8 @@ public class DeveloperStatusTest {
                 certifiedProductDao,
                 chplProductNumberUtil,
                 activityManager,
+                creationValidator,
+                updateValidator,
                 msgUtil);
 
         Mockito.when(acbManager.getAllForUser())
@@ -111,7 +118,7 @@ public class DeveloperStatusTest {
     @Test
     public void testDeveloperStatusChange_ActiveToSuspended_NoReasonRequired()
         throws EntityCreationException, EntityRetrievalException,
-        JsonProcessingException, MissingReasonException {
+        JsonProcessingException, MissingReasonException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         DeveloperDTO activeDeveloper = createDeveloper(1L, "0001", "Test Developer");
         try {
@@ -125,7 +132,7 @@ public class DeveloperStatusTest {
                         DeveloperStatusType.SuspendedByOnc, new Date(), null));
 
         DeveloperDTO updatedDeveloper =
-                developerManager.update(activeToSuspendedDeveloper);
+                developerManager.update(activeToSuspendedDeveloper, false);
         //the update was allowed
         assertNotNull(updatedDeveloper);
     }
@@ -133,7 +140,7 @@ public class DeveloperStatusTest {
     @Test(expected = MissingReasonException.class)
     public void testDeveloperStatusChange_ActiveToBannedNullReason_ThrowsException()
             throws EntityCreationException, EntityRetrievalException,
-            JsonProcessingException, MissingReasonException {
+            JsonProcessingException, MissingReasonException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         DeveloperDTO activeDeveloper = createDeveloper(1L, "0001", "Test Developer");
         try {
@@ -146,13 +153,13 @@ public class DeveloperStatusTest {
                 createStatusEvent(2L, activeToBannedDeveloper.getId(),
                         DeveloperStatusType.UnderCertificationBanByOnc, new Date(), null));
 
-        developerManager.update(activeToBannedDeveloper);
+        developerManager.update(activeToBannedDeveloper, false);
     }
 
     @Test(expected = MissingReasonException.class)
     public void testDeveloperWithHistoryChange_ActiveToBannedNullReason_ThrowsException()
             throws EntityCreationException, EntityRetrievalException,
-            JsonProcessingException, MissingReasonException {
+            JsonProcessingException, MissingReasonException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         DeveloperDTO activeDeveloperWithStatusHistory = createDeveloper(1L, "0001", "Test Developer");
         activeDeveloperWithStatusHistory.getStatusEvents().add(
@@ -170,13 +177,13 @@ public class DeveloperStatusTest {
         } catch (EntityRetrievalException ex) { }
 
         activeDeveloperWithStatusHistory.setName("New Name");
-        developerManager.update(activeDeveloperWithStatusHistory);
+        developerManager.update(activeDeveloperWithStatusHistory, false);
     }
 
     @Test(expected = MissingReasonException.class)
     public void testDeveloperStatusChange_ActiveToBannedEmptyReason_ThrowsException()
             throws EntityCreationException, EntityRetrievalException,
-            JsonProcessingException, MissingReasonException {
+            JsonProcessingException, MissingReasonException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         DeveloperDTO activeDeveloper = createDeveloper(1L, "0001", "Test Developer");
         try {
@@ -189,13 +196,13 @@ public class DeveloperStatusTest {
                 createStatusEvent(2L, activeToBannedDeveloper.getId(),
                         DeveloperStatusType.UnderCertificationBanByOnc, new Date(), ""));
 
-        developerManager.update(activeToBannedDeveloper);
+        developerManager.update(activeToBannedDeveloper, false);
     }
 
     @Test
     public void testDeveloperStatusChange_ActiveToSuspendedWithReason_Allowed()
         throws EntityCreationException, EntityRetrievalException,
-        JsonProcessingException, MissingReasonException {
+        JsonProcessingException, MissingReasonException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         DeveloperDTO activeDeveloper = createDeveloper(1L, "0001", "Test Developer");
         try {
@@ -209,7 +216,7 @@ public class DeveloperStatusTest {
                         DeveloperStatusType.UnderCertificationBanByOnc, new Date(), "A Reason"));
 
         DeveloperDTO updatedDeveloper =
-                developerManager.update(activeToSuspendedDeveloper);
+                developerManager.update(activeToSuspendedDeveloper, false);
         //the update was allowed
         assertNotNull(updatedDeveloper);
     }

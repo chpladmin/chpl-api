@@ -12,8 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.DeveloperStatusEvent;
+import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 
@@ -25,6 +25,8 @@ import gov.healthit.chpl.util.ValidationUtils;
 public class DeveloperUpdateValidator {
     private ErrorMessageUtil msgUtil;
 
+    public DeveloperUpdateValidator() {}
+
     @Autowired
     public DeveloperUpdateValidator(final ErrorMessageUtil msgUtil) {
         this.msgUtil = msgUtil;
@@ -35,7 +37,7 @@ public class DeveloperUpdateValidator {
      * @param developer the developer to validate
      * @return a list of error messages generated from problems found with the developer
      */
-    public Set<String> validate(final Developer developer) {
+    public Set<String> validate(final DeveloperDTO developer) {
         Set<String> errorMessages = new HashSet<String>();
         if (StringUtils.isEmpty(developer.getName())) {
             errorMessages.add(msgUtil.getMessage("developer.nameRequired"));
@@ -62,7 +64,7 @@ public class DeveloperUpdateValidator {
         return errorMessages;
     }
 
-    protected List<String> validateDeveloperStatusEvents(final List<DeveloperStatusEvent> statusEvents) {
+    protected List<String> validateDeveloperStatusEvents(final List<DeveloperStatusEventDTO> statusEvents) {
         List<String> errors = new ArrayList<String>();
         if (statusEvents == null || statusEvents.size() == 0) {
             errors.add(msgUtil.getMessage("developer.status.noCurrent"));
@@ -72,8 +74,8 @@ public class DeveloperUpdateValidator {
 
             // now that the list is sorted by date, make sure no two statuses
             // next to each other are the same
-            Iterator<DeveloperStatusEvent> iter = statusEvents.iterator();
-            DeveloperStatusEvent prev = null, curr = null;
+            Iterator<DeveloperStatusEventDTO> iter = statusEvents.iterator();
+            DeveloperStatusEventDTO prev = null, curr = null;
             while (iter.hasNext()) {
                 if (prev == null) {
                     prev = iter.next();
@@ -85,19 +87,19 @@ public class DeveloperUpdateValidator {
                 }
 
                 if (prev != null && curr != null
-                        && prev.getStatus().getStatus().equalsIgnoreCase(curr.getStatus().getStatus())) {
-                    errors.add(msgUtil.getMessage("developer.status.duplicateStatus", prev.getStatus().getStatus()));
+                        && prev.getStatus().getStatusName().equalsIgnoreCase(curr.getStatus().getStatusName())) {
+                    errors.add(msgUtil.getMessage("developer.status.duplicateStatus", prev.getStatus().getStatusName()));
                 }
             }
         }
         return errors;
     }
 
-    static class DeveloperStatusEventComparator implements Comparator<DeveloperStatusEvent>, Serializable {
+    static class DeveloperStatusEventComparator implements Comparator<DeveloperStatusEventDTO>, Serializable {
         private static final long serialVersionUID = 7816629342251138939L;
 
         @Override
-        public int compare(final DeveloperStatusEvent o1, final DeveloperStatusEvent o2) {
+        public int compare(final DeveloperStatusEventDTO o1, final DeveloperStatusEventDTO o2) {
             if (o1 != null && o2 != null) {
                 // neither are null, compare the dates
                 return o1.getStatusDate().compareTo(o2.getStatusDate());

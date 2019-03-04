@@ -38,6 +38,7 @@ import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.MissingReasonException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.DeveloperManager;
 import junit.framework.TestCase;
 
@@ -73,13 +74,13 @@ public class DeveloperTest extends TestCase {
     @Rollback
     public void testUpdateName() throws
     EntityCreationException, EntityRetrievalException,
-    JsonProcessingException, MissingReasonException {
+    JsonProcessingException, MissingReasonException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date();
         DeveloperDTO developer = devManager.getById(-1L);
         developer.setName("NEW DEVELOPER NAME");
-        devManager.update(developer);
+        devManager.update(developer, false);
         Date afterActivity = new Date();
 
         List<QuestionableActivityDeveloperDTO> activities =
@@ -101,7 +102,7 @@ public class DeveloperTest extends TestCase {
     @Rollback
     public void testUpdateCurrentStatus() throws
     EntityCreationException, EntityRetrievalException,
-    JsonProcessingException, MissingReasonException {
+    JsonProcessingException, MissingReasonException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date();
@@ -115,7 +116,7 @@ public class DeveloperTest extends TestCase {
         status.setStatusName(DeveloperStatusType.SuspendedByOnc.toString());
         newCurrStatus.setStatus(status);
         developer.getStatusEvents().add(newCurrStatus);
-        devManager.update(developer);
+        devManager.update(developer, false);
         Date afterActivity = new Date();
 
         List<QuestionableActivityDeveloperDTO> activities =
@@ -147,7 +148,7 @@ public class DeveloperTest extends TestCase {
     @Rollback
     public void testRemoveStatusHistory() throws
     EntityCreationException, EntityRetrievalException,
-    JsonProcessingException, MissingReasonException {
+    JsonProcessingException, MissingReasonException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date();
@@ -160,7 +161,7 @@ public class DeveloperTest extends TestCase {
                 iter.remove();
             }
         }
-        devManager.update(developer);
+        devManager.update(developer, false);
         Date afterActivity = new Date();
 
         List<QuestionableActivityDeveloperDTO> activities =

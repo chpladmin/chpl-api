@@ -1,19 +1,13 @@
 package gov.healthit.chpl.web.controller;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,14 +20,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.Address;
-import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.domain.Product;
-import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.SplitDeveloperRequest;
-import gov.healthit.chpl.domain.SplitProductsRequest;
 import gov.healthit.chpl.domain.TransparencyAttestationMap;
 import gov.healthit.chpl.domain.UpdateDevelopersRequest;
 import gov.healthit.chpl.dto.AddressDTO;
@@ -43,9 +34,6 @@ import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
-import gov.healthit.chpl.dto.ProductDTO;
-import gov.healthit.chpl.dto.ProductOwnerDTO;
-import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -53,14 +41,10 @@ import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
-import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.validation.developer.DeveloperCreationValidator;
-import gov.healthit.chpl.validation.developer.DeveloperUpdateValidator;
 import gov.healthit.chpl.web.controller.results.DeveloperResults;
 import gov.healthit.chpl.web.controller.results.SplitDeveloperResponse;
-import gov.healthit.chpl.web.controller.results.SplitProductResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -73,10 +57,6 @@ public class DeveloperController {
     private DeveloperManager developerManager;
     @Autowired
     private CertifiedProductManager cpManager;
-    @Autowired
-    private DeveloperUpdateValidator updateValidator;
-    @Autowired
-    private DeveloperCreationValidator creationValidator;
     @Autowired
     private ErrorMessageUtil msgUtil;
     @Autowired
@@ -171,11 +151,6 @@ public class DeveloperController {
                 && developerId.longValue() != splitRequest.getOldDeveloper().getDeveloperId().longValue()) {
             throw new InvalidArgumentsException(msgUtil.getMessage("developer.split.requestMismatch"));
         }
-        //check developer fields
-        Set<String> devErrors = creationValidator.validate(splitRequest.getNewDeveloper());
-        if (devErrors != null && devErrors.size() > 0) {
-            throw new ValidationException(devErrors, null);
-        }
 
         DeveloperDTO oldDeveloper = developerManager.getById(splitRequest.getOldDeveloper().getDeveloperId());
         DeveloperDTO newDeveloper = new DeveloperDTO();
@@ -250,12 +225,6 @@ public class DeveloperController {
         // create a new developer with the rest of the passed in
         // information; first validate the new developer
         if (developerInfo.getDeveloperIds().size() > 1) {
-            //merging doesn't require developer address which is why the update validator
-            //is getting used here.
-            Set<String> errors = updateValidator.validate(developerInfo.getDeveloper());
-            if (errors != null && errors.size() > 0) {
-                throw new ValidationException(errors, null);
-            }
             DeveloperDTO toCreate = new DeveloperDTO();
             toCreate.setDeveloperCode(developerInfo.getDeveloper().getDeveloperCode());
             toCreate.setName(developerInfo.getDeveloper().getName());
@@ -301,12 +270,7 @@ public class DeveloperController {
             result = developerManager.getById(result.getId());
         } else if (developerInfo.getDeveloperIds().size() == 1) {
             // update the information for the developer id supplied in the
-            // database. first validate the new developer info
-            Set<String> errors = updateValidator.validate(developerInfo.getDeveloper());
-            if (errors != null && errors.size() > 0) {
-                throw new ValidationException(errors, null);
-            }
-
+            // database.
             DeveloperDTO toUpdate = new DeveloperDTO();
             toUpdate.setDeveloperCode(developerInfo.getDeveloper().getDeveloperCode());
             toUpdate.setId(developerInfo.getDeveloperIds().get(0));
@@ -358,7 +322,7 @@ public class DeveloperController {
                 toUpdate.setContact(toUpdateContact);
             }
 
-            result = developerManager.update(toUpdate);
+            result = developerManager.update(toUpdate, true);
             responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
         }
 

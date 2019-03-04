@@ -155,6 +155,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.MissingReasonException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
@@ -1134,7 +1135,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     }, allEntries = true)
     public CertifiedProductDTO update(final Long acbId, final ListingUpdateRequest updateRequest,
             final CertifiedProductSearchDetails existingListing) throws AccessDeniedException, EntityRetrievalException,
-            JsonProcessingException, EntityCreationException, InvalidArgumentsException, IOException {
+            JsonProcessingException, EntityCreationException, InvalidArgumentsException, IOException, ValidationException {
 
         CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
         Long listingId = updatedListing.getId();
@@ -1195,7 +1196,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                 statusHistoryToAdd.setReason(msgUtil.getMessage("developer.statusAutomaticallyChanged"));
                 cpDeveloper.getStatusEvents().add(statusHistoryToAdd);
                 try {
-                    developerManager.update(cpDeveloper);
+                    developerManager.update(cpDeveloper, false);
                 } catch (MissingReasonException ignore) {
                     // reason will never be missing since we set it above
                 }

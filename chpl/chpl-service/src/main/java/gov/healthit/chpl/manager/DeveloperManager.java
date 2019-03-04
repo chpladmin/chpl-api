@@ -9,7 +9,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.DeveloperTransparency;
 import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.MissingReasonException;
@@ -24,9 +23,9 @@ public interface DeveloperManager {
 
     List<DeveloperTransparency> getDeveloperCollection();
 
-    DeveloperDTO update(DeveloperDTO developer)
+    DeveloperDTO update(DeveloperDTO developer, boolean doValidation)
             throws EntityRetrievalException, JsonProcessingException,
-            EntityCreationException, MissingReasonException;
+            EntityCreationException, MissingReasonException, ValidationException;
 
     DeveloperDTO create(DeveloperDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
@@ -35,7 +34,8 @@ public interface DeveloperManager {
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException;
 
     DeveloperDTO split(DeveloperDTO oldDeveloper, DeveloperDTO developerToCreate, List<Long> productIdsToMove)
-            throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException;
+            throws AccessDeniedException, EntityRetrievalException, EntityCreationException,
+            JsonProcessingException, ValidationException;
 
     List<DecertifiedDeveloperResult> getDecertifiedDevelopers() throws EntityRetrievalException;
 }

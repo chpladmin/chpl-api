@@ -56,6 +56,8 @@ import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
+import gov.healthit.chpl.validation.developer.DeveloperCreationValidator;
+import gov.healthit.chpl.validation.developer.DeveloperUpdateValidator;
 
 /**
  * Implementation of DeveloperManager class.
@@ -75,6 +77,8 @@ public class DeveloperManagerImpl implements DeveloperManager {
     private CertifiedProductDAO certifiedProductDAO;
     private ChplProductNumberUtil chplProductNumberUtil;
     private ActivityManager activityManager;
+    private DeveloperCreationValidator creationValidator;
+    private DeveloperUpdateValidator updateValidator;
     private ErrorMessageUtil msgUtil;
 
     /**
@@ -93,7 +97,8 @@ public class DeveloperManagerImpl implements DeveloperManager {
             final CertificationBodyManager acbManager, final CertifiedProductManager cpManager,
             final CertifiedProductDetailsManager cpdManager, final CertificationBodyDAO certificationBodyDao,
             final CertifiedProductDAO certifiedProductDAO, final ChplProductNumberUtil chplProductNumberUtil,
-            final ActivityManager activityManager, final ErrorMessageUtil msgUtil) {
+            final ActivityManager activityManager, final DeveloperCreationValidator creationValidator,
+            final DeveloperUpdateValidator updateValidator, final ErrorMessageUtil msgUtil) {
         this.developerDao = developerDao;
         this.productManager = productManager;
         this.acbManager = acbManager;
@@ -103,6 +108,8 @@ public class DeveloperManagerImpl implements DeveloperManager {
         this.certifiedProductDAO = certifiedProductDAO;
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.activityManager = activityManager;
+        this.creationValidator = creationValidator;
+        this.updateValidator = updateValidator;
         this.msgUtil = msgUtil;
     }
 
@@ -168,9 +175,17 @@ public class DeveloperManagerImpl implements DeveloperManager {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
             CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.GET_DECERTIFIED_DEVELOPERS
     }, allEntries = true)
-    public DeveloperDTO update(final DeveloperDTO updatedDev)
+    public DeveloperDTO update(final DeveloperDTO updatedDev, final boolean doValidation)
             throws EntityRetrievalException, JsonProcessingException,
-            EntityCreationException, MissingReasonException {
+            EntityCreationException, MissingReasonException, ValidationException {
+        if(doValidation) {
+            //validation is not done during listing update -> developer ban
+            //but should be done at other times
+            Set<String> errors = updateValidator.validate(updatedDev);
+            if (errors != null && errors.size() > 0) {
+                throw new ValidationException(errors, null);
+            }
+        }
 
         DeveloperDTO beforeDev = getById(updatedDev.getId());
         DeveloperStatusEventDTO newDevStatus = updatedDev.getStatus();
@@ -386,6 +401,13 @@ public class DeveloperManagerImpl implements DeveloperManager {
     public DeveloperDTO merge(final List<Long> developerIdsToMerge, final DeveloperDTO developerToCreate)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException {
 
+        //merging doesn't require developer address which is why the update validator
+        //is getting used here.
+        Set<String> errors = updateValidator.validate(developerToCreate);
+        if (errors != null && errors.size() > 0) {
+            throw new ValidationException(errors, null);
+        }
+
         List<DeveloperDTO> beforeDevelopers = new ArrayList<DeveloperDTO>();
         for (Long developerId : developerIdsToMerge) {
             beforeDevelopers.add(developerDao.getById(developerId));
@@ -502,7 +524,14 @@ public class DeveloperManagerImpl implements DeveloperManager {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
     public DeveloperDTO split(final DeveloperDTO oldDeveloper, final DeveloperDTO developerToCreate,
             final List<Long> productIdsToMove)
-            throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
+            throws ValidationException, AccessDeniedException, EntityRetrievalException,
+            EntityCreationException, JsonProcessingException {
+        //check developer fields for all valid values
+        Set<String> devErrors = creationValidator.validate(developerToCreate);
+        if (devErrors != null && devErrors.size() > 0) {
+            throw new ValidationException(devErrors, null);
+        }
+
         //if the user is an ACB then the developer must be Active otherwise the split is not allowed.
         //ADMIN and ONC can perform a split no matter the developer's status
         DeveloperStatusEventDTO currDevStatus = oldDeveloper.getStatus();
