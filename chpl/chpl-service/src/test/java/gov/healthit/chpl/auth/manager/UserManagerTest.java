@@ -20,12 +20,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
@@ -82,6 +84,8 @@ public class UserManagerTest {
     }
 
     @Test(expected = UserRetrievalException.class)
+    @Transactional
+    @Rollback(true)
     public void testCreateDeleteUser() throws UserCreationException, UserRetrievalException,
             UserPermissionRetrievalException, UserManagementException {
 
@@ -110,6 +114,8 @@ public class UserManagerTest {
     }
 
     @Test(expected = UserRetrievalException.class)
+    @Transactional
+    @Rollback(true)
     public void testCreateDeleteUserByUsername() throws UserCreationException, UserRetrievalException,
             UserPermissionRetrievalException, UserManagementException {
 
@@ -150,6 +156,8 @@ public class UserManagerTest {
      *             not expected
      */
     @Test(expected = UserCreationException.class)
+    @Transactional
+    @Rollback(true)
     public void testCreateDeleteUserWithBadPassword() throws UserCreationException, UserRetrievalException,
             UserPermissionRetrievalException, UserManagementException {
 
@@ -178,6 +186,8 @@ public class UserManagerTest {
     }
 
     @Test
+    @Transactional
+    @Rollback(true)
     public void testUpdateUser() throws UserRetrievalException {
 
         SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -200,6 +210,8 @@ public class UserManagerTest {
 
     @Ignore("Broken during Auth project merge into Services project")
     @Test
+    @Transactional
+    @Rollback(true)
     public void testGetAll() {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         List<UserDTO> results = userManager.getAll();
@@ -208,6 +220,8 @@ public class UserManagerTest {
     }
 
     @Test
+    @Transactional
+    @Rollback(true)
     public void testGetById() throws UserRetrievalException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         UserDTO result = userManager.getById(-2L);
@@ -216,6 +230,8 @@ public class UserManagerTest {
     }
 
     @Test(expected = UserRetrievalException.class)
+    @Transactional
+    @Rollback(true)
     public void testGetByIdNotFound() throws UserRetrievalException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         userManager.getById(-6000L);
@@ -223,6 +239,8 @@ public class UserManagerTest {
     }
 
     @Test
+    @Transactional
+    @Rollback(true)
     public void testGetByName() throws UserRetrievalException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         UserDTO result = userManager.getByName("admin");
@@ -231,6 +249,8 @@ public class UserManagerTest {
     }
 
     @Test
+    @Transactional
+    @Rollback(true)
     public void testGetUserInfo() throws UserRetrievalException {
 
         SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -242,6 +262,8 @@ public class UserManagerTest {
     }
 
     @Test
+    @Transactional
+    @Rollback(true)
     public void testGrantRole()
             throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
 
@@ -263,6 +285,8 @@ public class UserManagerTest {
     }
 
     @Test
+    @Transactional
+    @Rollback(true)
     public void testGrantAdmin() throws UserRetrievalException, UserPermissionRetrievalException,
             UserManagementException, JWTCreationException, JWTValidationException {
 
@@ -302,6 +326,8 @@ public class UserManagerTest {
     }
 
     @Test
+    @Transactional
+    @Rollback(true)
     public void testRemoveRole()
             throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
 
@@ -324,6 +350,8 @@ public class UserManagerTest {
     }
 
     @Test
+    @Transactional
+    @Rollback(true)
     public void testRemoveRoleDTO()
             throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
 
@@ -346,6 +374,8 @@ public class UserManagerTest {
     }
 
     @Test
+    @Transactional
+    @Rollback(true)
     public void testRemoveAdmin() throws UserRetrievalException, UserPermissionRetrievalException,
             UserManagementException, JWTCreationException, JWTValidationException {
 
@@ -452,6 +482,8 @@ public class UserManagerTest {
     }
 
     @Test
+    @Transactional
+    @Rollback(true)
     public void testPasswordResetValid() throws UserRetrievalException {
         UserResetTokenDTO tokenDTO = userManager.createResetUserPasswordToken("admin", "info@ainq.com");
         assertNotNull(tokenDTO);
@@ -463,6 +495,8 @@ public class UserManagerTest {
     }
 
     @Test
+    @Transactional
+    @Rollback(true)
     public void testPasswordResetInvalid() throws UserRetrievalException {
         assertFalse(userManager.authorizePasswordReset(RESET_PASSWORD_TOKEN));
     }
