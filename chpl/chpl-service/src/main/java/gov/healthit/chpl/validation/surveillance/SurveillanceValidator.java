@@ -514,20 +514,16 @@ public class SurveillanceValidator {
     }
 
     /**
-     * Validate that user has correct authority on surveillance.
-     * 
-     * @param surv
-     *            the relevant surveillance
+     * Validate that user has correct authority on surveillance. Valid authorities are ROLE_ONC or ROLE_ACB
+     *
+     * @param surv the surveillance to check
      */
     public void validateSurveillanceAuthority(final Surveillance surv) {
-        // non-null surveillance must be ROLE_ADMIN, ROLE_ACB
-        if (!StringUtils.isEmpty(surv.getAuthority())) {
-            if (!surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ADMIN)
-                    && !surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ONC)
-                    && !surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB)) {
-                surv.getErrorMessages().add(msgUtil.getMessage("surveillance.authorityRequired", Authority.ROLE_ADMIN,
-                        Authority.ROLE_ONC, Authority.ROLE_ACB));
-            }
+        if (StringUtils.isEmpty(surv.getAuthority()) ||
+                (!surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ONC)
+                        && !surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB))) {
+            surv.getErrorMessages().add(msgUtil.getMessage("surveillance.authorityRequired",
+                    Authority.ROLE_ONC, Authority.ROLE_ACB));
         }
     }
 
