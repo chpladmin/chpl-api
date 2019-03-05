@@ -62,7 +62,7 @@ public class ResourcePermissions {
 
         if (user != null) {
             if (isUserRoleAdmin() || isUserRoleOnc()) {
-                acbs = acbDAO.findAllActive();
+                acbs = acbDAO.findAll();
             } else {
                 List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByUserId(user.getId());
                 for (UserCertificationBodyMapDTO dto : dtos) {
