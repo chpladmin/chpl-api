@@ -102,7 +102,7 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
     }
 
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
-            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_ALL)")
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_ALL, filterObject)")
     public List<UserDTO> getAll() {
         return userDAO.findAll();
     }
