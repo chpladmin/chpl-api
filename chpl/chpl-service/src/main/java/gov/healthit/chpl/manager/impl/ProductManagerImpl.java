@@ -37,6 +37,8 @@ import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil.ChplProductNumberParts;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
+import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.validation.listing.reviewer.ChplNumberReviewer;
 
 @Service
 public class ProductManagerImpl implements ProductManager {
@@ -51,12 +53,13 @@ public class ProductManagerImpl implements ProductManager {
     private CertificationBodyManager acbManager;
     private ChplProductNumberUtil chplProductNumberUtil;
     private ActivityManager activityManager;
+    private ResourcePermissions resourcePermissions;
 
     @Autowired
-    public ProductManagerImpl(ErrorMessageUtil msgUtil, ProductDAO productDao, ProductVersionDAO versionDao,
-            DeveloperDAO devDao, CertifiedProductDAO cpDao, CertifiedProductDetailsManager cpdManager,
-            CertificationBodyManager acbManager, ChplProductNumberUtil chplProductNumberUtil,
-            ActivityManager activityManager) {
+    public ProductManagerImpl(final ErrorMessageUtil msgUtil, final ProductDAO productDao, final ProductVersionDAO versionDao,
+            final DeveloperDAO devDao, final CertifiedProductDAO cpDao, final CertifiedProductDetailsManager cpdManager,
+            final CertificationBodyManager acbManager, final ChplProductNumberUtil chplProductNumberUtil,
+            final ActivityManager activityManager, final ResourcePermissions resourcePermissions) {
         this.msgUtil = msgUtil;
         this.productDao = productDao;
         this.versionDao = versionDao;
@@ -66,6 +69,7 @@ public class ProductManagerImpl implements ProductManager {
         this.acbManager = acbManager;
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.activityManager = activityManager;
+        this.resourcePermissions = resourcePermissions;
     }
 
     @Override
@@ -94,7 +98,8 @@ public class ProductManagerImpl implements ProductManager {
 
     @Override
     @Transactional(readOnly = false)
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
+            + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).CREATE)")
     public ProductDTO create(final ProductDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
         // check that the developer of this product is Active
@@ -128,7 +133,8 @@ public class ProductManagerImpl implements ProductManager {
 
     @Override
     @Transactional(readOnly = false)
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
+            + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).UPDATE)")
     public ProductDTO update(final ProductDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 
@@ -150,7 +156,7 @@ public class ProductManagerImpl implements ProductManager {
             LOGGER.error(msg);
             throw new EntityCreationException(msg);
         } else if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
-                && !Util.isUserRoleAdmin() && !Util.isUserRoleOnc()) {
+                && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
             String msg = "The product " + dto.getName() + " cannot be updated since the developer " + dev.getName()
                     + " has a status of " + currDevStatus.getStatus().getStatusName();
             LOGGER.error(msg);
@@ -226,12 +232,13 @@ public class ProductManagerImpl implements ProductManager {
             EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class,
             AccessDeniedException.class
     })
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
-    public ProductDTO split(final ProductDTO oldProduct, final ProductDTO productToCreate,
-            final String newProductCode, final List<ProductVersionDTO> newProductVersions)
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
+            + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).SPLIT)")
+    public ProductDTO split(final ProductDTO oldProduct, final ProductDTO productToCreate, final String newProductCode,
+            final List<ProductVersionDTO> newProductVersions)
             throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
         // what ACB does the user have??
-        List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser();
+        List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
 
         // create the new product and log activity
         // this method checks that the related developer is Active and will
