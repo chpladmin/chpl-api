@@ -8,5 +8,6 @@ _Date TBD_
 * Add developer split functionality
 * Display more helpful error message when a Reason for Change is required
 * Modify security to use CHPL managed user/ACB relationship
+* Update validation of test tools based on workflow and ICS
 
 ---

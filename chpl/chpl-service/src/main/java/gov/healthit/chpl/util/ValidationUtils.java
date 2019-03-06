@@ -22,7 +22,8 @@ public final class ValidationUtils {
     private static final Logger LOGGER = LogManager.getLogger(ValidationUtils.class);
     private static UrlValidator urlValidator = new UrlValidator();
 
-    private ValidationUtils() {}
+    private ValidationUtils() {
+    }
 
     /**
      * Check to see if input string has either Windows or *nix flavored new line character.
@@ -30,7 +31,7 @@ public final class ValidationUtils {
      * @return true iff string contains "\n" or "\r\n"
      */
     public static boolean hasNewline(final String input) {
-        //check both windows and unix line separator chars
+        // check both windows and unix line separator chars
         if (input == null || StringUtils.isEmpty(input)) {
             return false;
         }
@@ -89,10 +90,8 @@ public final class ValidationUtils {
         }
 
         if (inputCharset.name().equals(StandardCharsets.UTF_8.name())) {
-            LOGGER.debug("Looking for UTF-8 Replacement Character in " + input);
             return !hasUtf8ReplacementCharacter(input);
         } else {
-            LOGGER.debug("Looking for non UTF-8 character in " + input);
             return hasNonUtf8Character(input.getBytes());
         }
     }
@@ -286,7 +285,7 @@ public final class ValidationUtils {
      * @param certs criteria to check against
      * @return true iff at least one of certToCompare is in certs
      */
-     public static boolean containsCert(final CertificationResult certToCompare, final String[] certs) {
+    public static boolean containsCert(final CertificationResult certToCompare, final String[] certs) {
         boolean hasCert = false;
         for (String cert : certs) {
             if (certToCompare.getNumber().equals(cert)) {
