@@ -8,4 +8,7 @@ _Date TBD_
 * Display more helpful error message when a Reason for Change is required
 * Modify security to use CHPL managed user/ACB relationship
 
+### Bug fixes
+* Use correct ROLE for surveillance authority
+
 ---
