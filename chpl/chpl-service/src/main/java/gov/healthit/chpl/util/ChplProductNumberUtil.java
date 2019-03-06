@@ -12,7 +12,6 @@ import gov.healthit.chpl.dao.ChplProductNumberDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductTestingLabDTO;
@@ -26,6 +25,125 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
  */
 @Component
 public class ChplProductNumberUtil {
+
+    /**
+     * Location of the EDITION in the CHPL_PRODUCT_ID.
+     */
+    public static final int EDITION_CODE_INDEX = 0;
+
+    /**
+     * Location of the ATL in the CHPL_PRODUCT_ID.
+     */
+    public static final int ATL_CODE_INDEX = 1;
+
+    /**
+     * Location of the ACB in the CHPL_PRODUCT_ID.
+     */
+    public static final int ACB_CODE_INDEX = 2;
+
+    /**
+     * Location of the Developer in the CHPL_PRODUCT_ID.
+     */
+    public static final int DEVELOPER_CODE_INDEX = 3;
+
+    /**
+     * Location of the Product in the CHPL_PRODUCT_ID.
+     */
+    public static final int PRODUCT_CODE_INDEX = 4;
+
+    /**
+     * Regex for valid product codes.
+     */
+    public static final String PRODUCT_CODE_REGEX =
+            "^[a-zA-Z0-9_]{" + ChplProductNumberUtil.PRODUCT_CODE_LENGTH + "}$";
+
+    /**
+     * Required length of the PRODUCT code.
+     */
+    public static final int PRODUCT_CODE_LENGTH = 4;
+
+    /**
+     * Location of the Version in the CHPL_PRODUCT_ID.
+     */
+    public static final int VERSION_CODE_INDEX = 5;
+
+    /**
+     * Regex for valid version codes.
+     */
+    public static final String VERSION_CODE_REGEX =
+            "^[a-zA-Z0-9_]{" + ChplProductNumberUtil.VERSION_CODE_LENGTH + "}$";
+    /**
+     * Required length of the VERSION code.
+     */
+    public static final int VERSION_CODE_LENGTH = 2;
+
+    /**
+     * Location of the ICS in the CHPL_PRODUCT_ID.
+     */
+    public static final int ICS_CODE_INDEX = 6;
+
+    /**
+     * Required length of the ICS code.
+     */
+    public static final int ICS_CODE_LENGTH = 2;
+
+    /**
+     * Regex for valid ICS codes.
+     */
+    public static final String ICS_CODE_REGEX =
+            "^[0-9]{" + ChplProductNumberUtil.ICS_CODE_LENGTH + "}$";
+
+    /**
+     * Location of the Additional Software in the CHPL_PRODUCT_ID.
+     */
+    public static final int ADDITIONAL_SOFTWARE_CODE_INDEX = 7;
+
+    /**
+     * Required length of the ADDITIONAL SOFTWARE code.
+     */
+    public static final int ADDITIONAL_SOFTWARE_CODE_LENGTH = 1;
+
+    /**
+     * Regex for valid additional software codes.
+     */
+    public static final String ADDITIONAL_SOFTWARE_CODE_REGEX = "^0|1$";
+
+    /**
+     * Location of the Certification Date in the CHPL_PRODUCT_ID.
+     */
+    public static final int CERTIFIED_DATE_CODE_INDEX = 8;
+
+    /**
+     * Required length of the CERTIFICATION DATE code.
+     */
+    public static final int CERTIFIED_DATE_CODE_LENGTH = 6;
+
+    /**
+     * Regex for valid certified date codes.
+     */
+    public static final String CERTIFIED_DATE_CODE_REGEX =
+            "^[0-9]{" + ChplProductNumberUtil.CERTIFIED_DATE_CODE_LENGTH + "}$";
+
+    /**
+     * How many parts there are in the CHPL Product ID.
+     */
+    public static final int CHPL_PRODUCT_ID_PARTS = 9;
+
+    private static final int CERTIFICATION_EDITION_BEGIN_INDEX = 2;
+
+    private static final int CERTIFICATION_EDITION_END_INDEX = 4;
+
+    private static final int LEGACY_ID_LENGTH = 10;
+    private static final String LEGACY_ID_BEGIN = "CHP-";
+
+    /**
+     * REGEX that matches a CHPL Product ID for searching.
+     * Requires first four components (Edition, ATL, ACB, Developer Code).
+     * Optional for remaining parts.
+     */
+    public static final String CHPL_PRODUCT_NUMBER_SEARCH_REGEX =
+            "(\\d{2}\\.){3}\\d{4}\\.(\\w{4}\\.(\\w{2}\\.(\\d{2}\\.(\\d\\.(\\d{6})?)?)?)?)?";
+
     @Autowired
     private TestingLabDAO testingLabDAO;
 
@@ -40,13 +158,6 @@ public class ChplProductNumberUtil {
 
     @Autowired
     private ChplProductNumberDAO chplProductNumberDAO;
-
-    private static final int CERTIFICATION_EDITION_BEGIN_INDEX = 2;
-
-    private static final int CERTIFICATION_EDITION_END_INDEX = 4;
-
-    private static final int LEGACY_ID_LENGTH = 10;
-    private static final String LEGACY_ID_BEGIN = "CHP-";
 
     /**
      * Gets the CHPL Product Number as calculated by the DB
@@ -77,11 +188,11 @@ public class ChplProductNumberUtil {
         parts.atlCode = getTestingLabCode(testingLabs);
         parts.acbCode = getCertificationBodyCode(certificationBodyId);
         parts.developerCode = getDeveloperCode(developerId);
-        parts.productCode = uniqueIdParts[CertifiedProductDTO.PRODUCT_CODE_INDEX];
-        parts.versionCode = uniqueIdParts[CertifiedProductDTO.VERSION_CODE_INDEX];
-        parts.icsCode = uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX];
-        parts.additionalSoftwareCode = uniqueIdParts[CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_INDEX];
-        parts.certifiedDateCode = uniqueIdParts[CertifiedProductDTO.CERTIFIED_DATE_CODE_INDEX];
+        parts.productCode = uniqueIdParts[ChplProductNumberUtil.PRODUCT_CODE_INDEX];
+        parts.versionCode = uniqueIdParts[ChplProductNumberUtil.VERSION_CODE_INDEX];
+        parts.icsCode = uniqueIdParts[ChplProductNumberUtil.ICS_CODE_INDEX];
+        parts.additionalSoftwareCode = uniqueIdParts[ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_INDEX];
+        parts.certifiedDateCode = uniqueIdParts[ChplProductNumberUtil.CERTIFIED_DATE_CODE_INDEX];
 
         return concatParts(parts);
     }
@@ -151,15 +262,15 @@ public class ChplProductNumberUtil {
         String[] cpnParts = splitUniqueIdParts(chplProductNumber);
 
         ChplProductNumberParts parts = new ChplProductNumberParts();
-        parts.setEditionCode(cpnParts[0]);
-        parts.setAtlCode(cpnParts[1]);
-        parts.setAcbCode(cpnParts[2]);
-        parts.setDeveloperCode(cpnParts[3]);
-        parts.setProductCode(cpnParts[4]);
-        parts.setVersionCode(cpnParts[5]);
-        parts.setIcsCode(cpnParts[6]);
-        parts.setAdditionalSoftwareCode(cpnParts[7]);
-        parts.setCertifiedDateCode(cpnParts[8]);
+        parts.setEditionCode(cpnParts[ChplProductNumberUtil.EDITION_CODE_INDEX]);
+        parts.setAtlCode(cpnParts[ChplProductNumberUtil.ATL_CODE_INDEX]);
+        parts.setAcbCode(cpnParts[ChplProductNumberUtil.ACB_CODE_INDEX]);
+        parts.setDeveloperCode(cpnParts[ChplProductNumberUtil.DEVELOPER_CODE_INDEX]);
+        parts.setProductCode(cpnParts[ChplProductNumberUtil.PRODUCT_CODE_INDEX]);
+        parts.setVersionCode(cpnParts[ChplProductNumberUtil.VERSION_CODE_INDEX]);
+        parts.setIcsCode(cpnParts[ChplProductNumberUtil.ICS_CODE_INDEX]);
+        parts.setAdditionalSoftwareCode(cpnParts[ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_INDEX]);
+        parts.setCertifiedDateCode(cpnParts[ChplProductNumberUtil.CERTIFIED_DATE_CODE_INDEX]);
 
         return parts;
     }
@@ -174,9 +285,9 @@ public class ChplProductNumberUtil {
 
     public Integer getIcsCode(String chplProductNumber) {
         Integer icsCode = null;
-        if(!isLegacy(chplProductNumber)) {
+        if (!isLegacy(chplProductNumber)) {
             String[] uniqueIdParts = chplProductNumber.split("\\.");
-            icsCode = Integer.valueOf(uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX]);
+            icsCode = Integer.valueOf(uniqueIdParts[ChplProductNumberUtil.ICS_CODE_INDEX]);
         }
         return icsCode;
     }
@@ -184,8 +295,8 @@ public class ChplProductNumberUtil {
     public boolean hasIcsConflict(String uniqueId, Boolean hasIcs) {
         boolean hasIcsConflict = false;
         String[] uniqueIdParts = uniqueId.split("\\.");
-        if(uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
-            Integer icsCodeInteger = Integer.valueOf(uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX]);
+        if (uniqueIdParts.length == ChplProductNumberUtil.CHPL_PRODUCT_ID_PARTS) {
+            Integer icsCodeInteger = Integer.valueOf(uniqueIdParts[ChplProductNumberUtil.ICS_CODE_INDEX]);
             if (icsCodeInteger != null && icsCodeInteger.intValue() == 0) {
                 if (hasIcs != null && hasIcs.equals(Boolean.TRUE)) {
                     hasIcsConflict = true;
@@ -201,7 +312,7 @@ public class ChplProductNumberUtil {
 
     private String[] splitUniqueIdParts(final String uniqueId) {
         String[] uniqueIdParts = uniqueId.split("\\.");
-        if (uniqueIdParts == null || uniqueIdParts.length != CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
+        if (uniqueIdParts == null || uniqueIdParts.length != ChplProductNumberUtil.CHPL_PRODUCT_ID_PARTS) {
             return new String[0];  //Maybe an exception??
         }
         return uniqueIdParts;

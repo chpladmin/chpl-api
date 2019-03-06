@@ -27,6 +27,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
+import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.validation.listing.Edition2015ListingValidator;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import gov.healthit.chpl.validation.listing.reviewer.ChplNumberReviewer;
@@ -42,6 +43,9 @@ public class CertifiedProductControllerMockitoTest {
 
     @Mock
     private ChplNumberReviewer chplNumberReviewer;
+
+    @Mock
+    private ChplProductNumberUtil chplProductNumberUtil;
 
     @Mock
     private CertifiedProductDetailsManager cpdManager;
@@ -78,7 +82,7 @@ public class CertifiedProductControllerMockitoTest {
         doReturn(reviewers).when(edition2015Validator).getReviewers();
 
         //use when(mock.method(...)).thenReturn(...) when setting up mocks
-        when(chplNumberReviewer.validateUniqueId(ArgumentMatchers.anyString())).thenReturn(false);
+        when(chplProductNumberUtil.isUnique(ArgumentMatchers.anyString())).thenReturn(false);
         when(certificationResultManager.getCertifiedProductHasAdditionalSoftware(anyLong())).thenReturn(true);
         when(cpdManager.getCertifiedProductDetailsBasic(anyLong())).thenReturn(getCertifiedProductBasicForAdditionalSoftwareTest());
         when(valFactory.getValidator(any(CertifiedProductSearchDetails.class))).thenReturn(edition2015Validator);

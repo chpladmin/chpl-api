@@ -29,6 +29,8 @@ import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.DeveloperTransparency;
+import gov.healthit.chpl.dto.AddressDTO;
+import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
@@ -150,7 +152,7 @@ public class DeveloperManagerTest extends TestCase {
     @Transactional
     @Rollback
     public void testDeveloperStatusChangeAllowedByAdmin()
-            throws EntityRetrievalException, JsonProcessingException, MissingReasonException {
+            throws EntityRetrievalException, JsonProcessingException, MissingReasonException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         DeveloperDTO developer = developerManager.getById(-1L);
         assertNotNull(developer);
@@ -163,7 +165,7 @@ public class DeveloperManagerTest extends TestCase {
 
         boolean failed = false;
         try {
-            developer = developerManager.update(developer);
+            developer = developerManager.update(developer, false);
         } catch (EntityCreationException ex) {
             System.out.println(ex.getMessage());
             failed = true;
@@ -188,9 +190,7 @@ public class DeveloperManagerTest extends TestCase {
         idsToMerge.add(-1L);
         idsToMerge.add(-4L);
 
-        DeveloperDTO toCreate = new DeveloperDTO();
-        toCreate.setName("dev name");
-
+        DeveloperDTO toCreate = createDeveloper();
         DeveloperDTO merged = null;
         try {
             merged = developerManager.merge(idsToMerge, toCreate);
@@ -232,10 +232,12 @@ public class DeveloperManagerTest extends TestCase {
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
+
+
     @Test(expected = ValidationException.class)
     @Transactional
     @Rollback
-    public void testMergeDeveloperDuplicateChplProductNumberValidatioError()
+    public void testMergeDeveloperDuplicateChplProductNumberValidationError()
             throws JsonProcessingException, EntityRetrievalException, EntityCreationException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
@@ -255,7 +257,7 @@ public class DeveloperManagerTest extends TestCase {
     @Transactional
     @Rollback(true)
     public void testNoUpdatesAllowedByNonAdminIfDeveloperIsNotActive()
-            throws EntityRetrievalException, JsonProcessingException, MissingReasonException {
+            throws EntityRetrievalException, JsonProcessingException, MissingReasonException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(testUser3);
         DeveloperDTO developer = developerManager.getById(-3L);
         assertNotNull(developer);
@@ -269,7 +271,7 @@ public class DeveloperManagerTest extends TestCase {
         developer.setName("UPDATE THIS NAME");
         boolean failed = false;
         try {
-            developer = developerManager.update(developer);
+            developer = developerManager.update(developer, false);
         } catch (EntityCreationException ex) {
             System.out.println(ex.getMessage());
             failed = true;
@@ -280,9 +282,47 @@ public class DeveloperManagerTest extends TestCase {
 
     @Test
     @Transactional
+    @Rollback(true)
+    public void testSplitDeveloper_productOwnershipHistoryAdded() throws ValidationException{
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        Long developerIdToSplit = -1L;
+        List<Long> productIdsToMove = new ArrayList<Long>();
+        productIdsToMove.add(-1L);
+
+        DeveloperDTO toCreate = createDeveloper();
+        DeveloperDTO createdDev = null;
+        try {
+            createdDev = developerManager.split(developerManager.getById(developerIdToSplit), toCreate, productIdsToMove);
+        } catch (EntityCreationException | JsonProcessingException | EntityRetrievalException ex) {
+            fail(ex.getMessage());
+        }
+
+        assertNotNull(createdDev);
+        assertNotNull(createdDev.getId());
+
+        try {
+            ProductDTO movedProduct = productManager.getById(-1L);
+            assertNotNull(movedProduct);
+            assertNotNull(movedProduct.getOwnerHistory());
+            assertEquals(2, movedProduct.getOwnerHistory().size());
+            boolean foundNewOwner = false;
+            for (ProductOwnerDTO owner : movedProduct.getOwnerHistory()) {
+                if (owner.getDeveloper() != null && owner.getDeveloper().getId().longValue() == createdDev.getId()) {
+                    foundNewOwner = true;
+                }
+            }
+            assertTrue(foundNewOwner);
+        } catch (EntityRetrievalException ex) {
+            fail(ex.getMessage());
+        }
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    @Test
+    @Transactional
     @Rollback
     public void testDeveloperStatusChangeNotAllowedByNonAdmin()
-            throws EntityRetrievalException, JsonProcessingException, MissingReasonException {
+            throws EntityRetrievalException, JsonProcessingException, MissingReasonException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(testUser3);
         DeveloperDTO developer = developerManager.getById(-1L);
         assertNotNull(developer);
@@ -295,7 +335,7 @@ public class DeveloperManagerTest extends TestCase {
 
         boolean failed = false;
         try {
-            developerManager.update(developer);
+            developerManager.update(developer, false);
         } catch (EntityCreationException ex) {
             System.out.println(ex.getMessage());
             failed = true;
@@ -321,4 +361,31 @@ public class DeveloperManagerTest extends TestCase {
         assertEquals(1, results.size());
     }
 
+    private DeveloperDTO createDeveloper() {
+        DeveloperDTO developer = new DeveloperDTO();
+        developer.setName("dev name");
+        List<DeveloperStatusEventDTO> statusEvents = new ArrayList<DeveloperStatusEventDTO>();
+        DeveloperStatusEventDTO statusEvent = new DeveloperStatusEventDTO();
+        DeveloperStatusDTO status = new DeveloperStatusDTO();
+        status.setId(1L);
+        status.setStatusName(DeveloperStatusType.Active.name());
+        statusEvent.setStatus(status);
+        statusEvent.setStatusDate(new Date());
+        statusEvents.add(statusEvent);
+        developer.setStatusEvents(statusEvents);
+        AddressDTO address = new AddressDTO();
+        address.setStreetLineOne("111 Test Road");
+        address.setCity("Baltimore");
+        address.setState("MD");
+        address.setZipcode("21000");
+        address.setCountry("USA");
+        developer.setAddress(address);
+        ContactDTO contact = new ContactDTO();
+        contact.setEmail("test@test.com");
+        contact.setFriendlyName("Test");
+        contact.setFullName("test test");
+        contact.setPhoneNumber("123-456-7890");
+        developer.setContact(contact);
+        return developer;
+    }
 }

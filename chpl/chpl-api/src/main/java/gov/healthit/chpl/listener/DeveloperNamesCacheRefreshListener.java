@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.caching.CacheRefreshListener;
 import gov.healthit.chpl.caching.updater.DeveloperNamesCacheUpdater;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
+import gov.healthit.chpl.domain.SplitDeveloperRequest;
 import gov.healthit.chpl.domain.UpdateDevelopersRequest;
 
 /**
@@ -37,6 +38,19 @@ public class DeveloperNamesCacheRefreshListener extends CacheRefreshListener {
             + "args(developerInfo,..)")
     public void afterDeveloperUpdate(final UpdateDevelopersRequest developerInfo) {
         LOGGER.debug("A developer was updated or merged. Refreshing developer names cache.");
+        refreshCache();
+    }
+
+    /**
+     * After a developer is split refresh the developer names cache.
+     * @param developerId developer id that is getting split
+     * @param splitRequest the split request data
+     */
+    @AfterReturning(
+            "execution(* gov.healthit.chpl.web.controller.DeveloperController.splitDeveloper(..)) && "
+            + "args(developerId,splitRequest,..)")
+    public void afterDeveloperSplit(final Long developerId, final SplitDeveloperRequest splitRequest) {
+        LOGGER.debug("A developer was split. Refreshing developer names cache.");
         refreshCache();
     }
 
