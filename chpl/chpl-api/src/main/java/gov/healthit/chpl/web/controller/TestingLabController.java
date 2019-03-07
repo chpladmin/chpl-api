@@ -38,6 +38,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.manager.TestingLabManager;
 import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
@@ -56,7 +57,10 @@ public class TestingLabController {
 
     @Autowired
     private UserManager userManager;
-
+    
+    @Autowired
+    private ResourcePermissions resourcePermissions;
+    
     @ApiOperation(value = "List all testing labs (ATLs).",
             notes = "Setting the 'editable' parameter to true will return all ATLs that the logged in user has edit "
                     + "permissions on.  Security Restrictions: When 'editable' is 'true' ROLE_ADMIN or ROLE_ONC can see all ATLs.  ROLE_ATL "
@@ -148,7 +152,7 @@ public class TestingLabController {
         //Retirement and un-retirement is done as a separate manager action because
         //security is different from normal ATL updates - only admins are allowed
         //whereas an ATL admin can update other info
-        TestingLabDTO existingAtl = atlManager.getIfPermissionById(updatedAtl.getId());
+        TestingLabDTO existingAtl =  resourcePermissions.getAtlIfPermissionById(updatedAtl.getId());
         if (updatedAtl.isRetired()) {
             //we are retiring this ATL and no other changes can be made
             TestingLabDTO toRetire = new TestingLabDTO();
@@ -187,7 +191,7 @@ public class TestingLabController {
             atlManager.update(toUpdate);
         }
 
-        TestingLabDTO result = atlManager.getIfPermissionById(updatedAtl.getId());
+        TestingLabDTO result = resourcePermissions.getAtlIfPermissionById(updatedAtl.getId())
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
         TestingLab response = new TestingLab(result);
@@ -210,7 +214,7 @@ public class TestingLabController {
             throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
 
         UserDTO user = userManager.getById(userId);
-        TestingLabDTO atl = atlManager.getIfPermissionById(atlId);
+        TestingLabDTO atl = resourcePermissions.getAtlIfPermissionById(atlId);
 
         if (user == null || atl == null) {
             throw new InvalidArgumentsException("Could not find either ATL or User specified");
@@ -218,6 +222,7 @@ public class TestingLabController {
 
         // delete all permissions on that atl
         atlManager.deleteAllPermissionsOnAtl(atl, new PrincipalSid(user.getSubjectName()));
+        
 
         return "{\"userDeleted\" : true}";
     }
