@@ -192,7 +192,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
             + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).GET_ALL)")
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
-            + "T(gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions).GET_ALL, filterObject)")
+            + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).GET_ALL, filterObject)")
     public List<ChplJob> getAllJobs() throws SchedulerException {
         List<ChplJob> jobs = new ArrayList<ChplJob>();
         Scheduler scheduler = getScheduler();
