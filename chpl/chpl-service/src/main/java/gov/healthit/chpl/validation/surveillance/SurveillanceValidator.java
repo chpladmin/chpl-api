@@ -56,7 +56,7 @@ public class SurveillanceValidator {
 
     /**
      * Validate a surveillance.
-     * 
+     *
      * @param surv
      *            the surveillance to validate
      * @param checkAuthority
@@ -186,7 +186,7 @@ public class SurveillanceValidator {
 
     /**
      * Validate the requirements in a surveillance.
-     * 
+     *
      * @param surv
      *            the surveillance
      * @param certResults
@@ -305,7 +305,7 @@ public class SurveillanceValidator {
 
     /**
      * Validate nonconformities related to the surveillance.
-     * 
+     *
      * @param surv
      *            the surveillance
      * @param certResults

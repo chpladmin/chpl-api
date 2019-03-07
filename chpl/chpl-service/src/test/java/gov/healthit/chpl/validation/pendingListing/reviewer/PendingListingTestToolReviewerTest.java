@@ -16,7 +16,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.healthit.chpl.dao.TestToolDAO;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
@@ -273,7 +272,7 @@ public class PendingListingTestToolReviewerTest {
         PendingCertifiedProductDTO listing = mockUtil.createPending2014Listing();
         listing.setIcs(Boolean.TRUE);
         String updatedListingId =
-                mockUtil.getChangedListingId(listing.getUniqueId(), CertifiedProductDTO.ICS_CODE_INDEX, "01");
+                mockUtil.getChangedListingId(listing.getUniqueId(), ChplProductNumberUtil.ICS_CODE_INDEX, "01");
         listing.setUniqueId(updatedListingId);
         for (PendingCertificationResultDTO certResult : listing.getCertificationCriterion()) {
             if (certResult.getNumber().equals(B_2)) {

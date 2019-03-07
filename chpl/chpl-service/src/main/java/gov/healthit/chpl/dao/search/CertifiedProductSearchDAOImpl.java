@@ -33,9 +33,9 @@ import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.domain.search.NonconformitySearchOptions;
 import gov.healthit.chpl.domain.search.SearchRequest;
 import gov.healthit.chpl.domain.search.SearchSetOperator;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity;
 import gov.healthit.chpl.entity.search.CertifiedProductListingSearchResultEntity;
+import gov.healthit.chpl.util.ChplProductNumberUtil;
 
 
 @Repository("certifiedProductSearchDAO")
@@ -404,7 +404,7 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
         if (!StringUtils.isEmpty(searchRequest.getSearchTerm())) {
             String searchTerm = searchRequest.getSearchTerm();
             if (searchTerm.startsWith("CHP-")
-                    || Pattern.matches(CertifiedProductDTO.CHPL_PRODUCT_NUMBER_SEARCH_REGEX, searchTerm.trim())) {
+                    || Pattern.matches(ChplProductNumberUtil.CHPL_PRODUCT_NUMBER_SEARCH_REGEX, searchTerm.trim())) {
                 sql += "AND "
                         + "UPPER(" + SCHEMA_NAME + ".get_chpl_product_number_as_text(cp.certified_product_id)) LIKE :searchTerm";
             } else {

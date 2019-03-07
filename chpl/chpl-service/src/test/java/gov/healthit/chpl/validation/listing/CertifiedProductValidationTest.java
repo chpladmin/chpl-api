@@ -52,9 +52,6 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.manager.impl.CertificationResultManagerImpl;
-import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
-import gov.healthit.chpl.validation.listing.PendingValidator;
-import gov.healthit.chpl.validation.listing.Validator;
 
 /**
  * Tests of the Certified Product validator.
@@ -115,8 +112,7 @@ class MyCertificationResultManager extends CertificationResultManagerImpl {
 @DatabaseSetup("classpath:data/testData.xml")
 public class CertifiedProductValidationTest {
 
-    private static final String B4_INVALID_TEST_TOOL_NAME_ERROR =
-            "Criteria 170.315 (b)(4) contains an invalid test tool 'DOES NOT EXIST'. It has been removed from the pending listing.";
+    private static final String B4_INVALID_TEST_TOOL_NAME_ERROR = "Criteria 170.315 (b)(4) contains an invalid test tool 'DOES NOT EXIST'. It has been removed from the pending listing.";
     private static final String B4_RETIRED_TEST_TOOL_NOT_ALLOWED = "Test Tool 'Transport Testing Tool' can not "
             + "be used for criteria '170.315 (b)(4)', as it is a retired tool, and this "
             + "Certified Product does not carry ICS.";
@@ -818,8 +814,8 @@ public class CertifiedProductValidationTest {
             validator.validate(listing);
         }
 
-        assertFalse(listing.getWarningMessages().contains(B4_RETIRED_TEST_TOOL_NOT_ALLOWED));
-        assertTrue(listing.getErrorMessages().contains(B4_RETIRED_TEST_TOOL_NOT_ALLOWED));
+        assertTrue(listing.getWarningMessages().contains(B4_RETIRED_TEST_TOOL_NOT_ALLOWED));
+        assertFalse(listing.getErrorMessages().contains(B4_RETIRED_TEST_TOOL_NOT_ALLOWED));
     }
 
     @Transactional
@@ -845,8 +841,8 @@ public class CertifiedProductValidationTest {
             validator.validate(listing);
         }
 
-        assertFalse(listing.getWarningMessages().contains(B4_RETIRED_TEST_TOOL_NOT_ALLOWED));
-        assertTrue(listing.getErrorMessages().contains(B4_RETIRED_TEST_TOOL_NOT_ALLOWED));
+        assertTrue(listing.getWarningMessages().contains(B4_RETIRED_TEST_TOOL_NOT_ALLOWED));
+        assertFalse(listing.getErrorMessages().contains(B4_RETIRED_TEST_TOOL_NOT_ALLOWED));
     }
 
     @Transactional
@@ -873,7 +869,7 @@ public class CertifiedProductValidationTest {
             validator.validate(listing);
         }
 
-        assertFalse(listing.getWarningMessages().contains(B4_RETIRED_TEST_TOOL_NOT_ALLOWED));
+        assertTrue(listing.getWarningMessages().contains(B4_RETIRED_TEST_TOOL_NOT_ALLOWED));
         assertFalse(listing.getErrorMessages().contains(B4_RETIRED_TEST_TOOL_NOT_ALLOWED));
     }
 

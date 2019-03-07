@@ -1,6 +1,7 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -13,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +28,7 @@ import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.DeveloperTransparency;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
@@ -46,12 +49,16 @@ import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
+import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
+import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
+import gov.healthit.chpl.validation.developer.DeveloperCreationValidator;
+import gov.healthit.chpl.validation.developer.DeveloperUpdateValidator;
 
 /**
  * Implementation of DeveloperManager class.
@@ -66,16 +73,20 @@ public class DeveloperManagerImpl implements DeveloperManager {
     private DeveloperDAO developerDao;
     private ProductManager productManager;
     private CertificationBodyManager acbManager;
+    private CertifiedProductManager cpManager;
+    private CertifiedProductDetailsManager cpdManager;
     private CertificationBodyDAO certificationBodyDao;
     private CertifiedProductDAO certifiedProductDAO;
     private ChplProductNumberUtil chplProductNumberUtil;
     private ActivityManager activityManager;
+    private DeveloperCreationValidator creationValidator;
+    private DeveloperUpdateValidator updateValidator;
     private ErrorMessageUtil msgUtil;
     private ResourcePermissions resourcePermissions;
 
     /**
      * Autowired constructor for dependency injection.
-     * 
+     *
      * @param developerDao
      * @param productManager
      * @param acbManager
@@ -87,17 +98,23 @@ public class DeveloperManagerImpl implements DeveloperManager {
      */
     @Autowired
     public DeveloperManagerImpl(final DeveloperDAO developerDao, final ProductManager productManager,
-            final CertificationBodyManager acbManager, final CertificationBodyDAO certificationBodyDao,
+            final CertificationBodyManager acbManager, final CertifiedProductManager cpManager,
+            final CertifiedProductDetailsManager cpdManager, final CertificationBodyDAO certificationBodyDao,
             final CertifiedProductDAO certifiedProductDAO, final ChplProductNumberUtil chplProductNumberUtil,
-            final ActivityManager activityManager, final ErrorMessageUtil msgUtil,
+            final ActivityManager activityManager, final DeveloperCreationValidator creationValidator,
+            final DeveloperUpdateValidator updateValidator, final ErrorMessageUtil msgUtil,
             final ResourcePermissions resourcePermissions) {
         this.developerDao = developerDao;
         this.productManager = productManager;
         this.acbManager = acbManager;
+        this.cpManager = cpManager;
+        this.cpdManager = cpdManager;
         this.certificationBodyDao = certificationBodyDao;
         this.certifiedProductDAO = certifiedProductDAO;
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.activityManager = activityManager;
+        this.creationValidator = creationValidator;
+        this.updateValidator = updateValidator;
         this.msgUtil = msgUtil;
         this.resourcePermissions = resourcePermissions;
     }
@@ -166,8 +183,17 @@ public class DeveloperManagerImpl implements DeveloperManager {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
             CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.GET_DECERTIFIED_DEVELOPERS
     }, allEntries = true)
-    public DeveloperDTO update(final DeveloperDTO updatedDev)
-            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, MissingReasonException {
+    public DeveloperDTO update(final DeveloperDTO updatedDev, final boolean doValidation)
+            throws EntityRetrievalException, JsonProcessingException,
+            EntityCreationException, MissingReasonException, ValidationException {
+        if(doValidation) {
+            //validation is not done during listing update -> developer ban
+            //but should be done at other times
+            Set<String> errors = updateValidator.validate(updatedDev);
+            if (errors != null && errors.size() > 0) {
+                throw new ValidationException(errors, null);
+            }
+        }
 
         DeveloperDTO beforeDev = getById(updatedDev.getId());
         DeveloperStatusEventDTO newDevStatus = updatedDev.getStatus();
@@ -246,7 +272,8 @@ public class DeveloperManagerImpl implements DeveloperManager {
             if (beforeDev.getContact() != null && beforeDev.getContact().getId() != null) {
                 updatedDev.getContact().setId(beforeDev.getContact().getId());
             }
-            // if either the before or updated statuses are active and the user is ROLE_ADMIN
+            // if either the before or updated statuses are active and the user is
+            // ROLE_ADMIN or ROLE_ONC
             // OR if before status is active and user is not ROLE_ADMIN - proceed
             if (((currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
                     || newDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()))
@@ -256,39 +283,48 @@ public class DeveloperManagerImpl implements DeveloperManager {
 
                 developerDao.update(updatedDev);
                 updateStatusHistory(beforeDev, updatedDev);
-
-                List<CertificationBodyDTO> availableAcbs = resourcePermissions.getAllAcbsForCurrentUser();
-                if (availableAcbs != null && availableAcbs.size() > 0) {
-                    for (CertificationBodyDTO acb : availableAcbs) {
-                        DeveloperACBMapDTO existingMap = developerDao.getTransparencyMapping(updatedDev.getId(),
-                                acb.getId());
-                        if (existingMap == null) {
-                            DeveloperACBMapDTO developerMappingToCreate = new DeveloperACBMapDTO();
-                            developerMappingToCreate.setAcbId(acb.getId());
-                            developerMappingToCreate.setDeveloperId(beforeDev.getId());
-                            for (DeveloperACBMapDTO attMap : updatedDev.getTransparencyAttestationMappings()) {
-                                if (attMap.getAcbName().equals(acb.getName())) {
-                                    developerMappingToCreate
-                                            .setTransparencyAttestation(attMap.getTransparencyAttestation());
-                                    developerDao.createTransparencyMapping(developerMappingToCreate);
-                                }
-                            }
-                        } else {
-                            for (DeveloperACBMapDTO attMap : updatedDev.getTransparencyAttestationMappings()) {
-                                if (attMap.getAcbName().equals(acb.getName())) {
-                                    existingMap.setTransparencyAttestation(attMap.getTransparencyAttestation());
-                                    developerDao.updateTransparencyMapping(existingMap);
-                                }
-                            }
-                        }
-                    }
-                }
+                createOrUpdateTransparencyMappings(updatedDev);
             }
         }
         DeveloperDTO after = getById(updatedDev.getId());
         activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, after.getId(),
                 "Developer " + updatedDev.getName() + " was updated.", beforeDev, after);
         return after;
+    }
+
+    /**
+     * Add or edit a transparency mapping between ACB and Developer.
+     * If the current user does not have access to an ACB the mapping
+     * will be ignored.
+     * @param developer
+     */
+    private void createOrUpdateTransparencyMappings(final DeveloperDTO developer) {
+        List<CertificationBodyDTO> availableAcbs = resourcePermissions.getAllAcbsForCurrentUser();
+        if (availableAcbs != null && availableAcbs.size() > 0) {
+            for (CertificationBodyDTO acb : availableAcbs) {
+                DeveloperACBMapDTO existingMap = developerDao.getTransparencyMapping(developer.getId(),
+                        acb.getId());
+                if (existingMap == null) {
+                    DeveloperACBMapDTO developerMappingToCreate = new DeveloperACBMapDTO();
+                    developerMappingToCreate.setAcbId(acb.getId());
+                    developerMappingToCreate.setDeveloperId(developer.getId());
+                    for (DeveloperACBMapDTO attMap : developer.getTransparencyAttestationMappings()) {
+                        if (attMap.getAcbName().equals(acb.getName())) {
+                            developerMappingToCreate
+                            .setTransparencyAttestation(attMap.getTransparencyAttestation());
+                            developerDao.createTransparencyMapping(developerMappingToCreate);
+                        }
+                    }
+                } else {
+                    for (DeveloperACBMapDTO attMap : developer.getTransparencyAttestationMappings()) {
+                        if (attMap.getAcbName().equals(acb.getName())) {
+                            existingMap.setTransparencyAttestation(attMap.getTransparencyAttestation());
+                            developerDao.updateTransparencyMapping(existingMap);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private void updateStatusHistory(final DeveloperDTO beforeDev, final DeveloperDTO updatedDev)
@@ -355,19 +391,8 @@ public class DeveloperManagerImpl implements DeveloperManager {
         }
 
         DeveloperDTO created = developerDao.create(dto);
-
-        List<CertificationBodyDTO> availableAcbs = resourcePermissions.getAllAcbsForCurrentUser();
-        if (availableAcbs != null && availableAcbs.size() > 0) {
-            for (CertificationBodyDTO acb : availableAcbs) {
-                for (DeveloperACBMapDTO attMap : dto.getTransparencyAttestationMappings()) {
-                    if (acb.getId().longValue() == attMap.getAcbId().longValue()
-                            && !StringUtils.isEmpty(attMap.getTransparencyAttestation())) {
-                        attMap.setDeveloperId(created.getId());
-                        developerDao.createTransparencyMapping(attMap);
-                    }
-                }
-            }
-        }
+        dto.setId(created.getId());
+        createOrUpdateTransparencyMappings(dto);
         activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, created.getId(),
                 "Developer " + created.getName() + " has been created.", null, created);
         return created;
@@ -382,6 +407,13 @@ public class DeveloperManagerImpl implements DeveloperManager {
     }, allEntries = true)
     public DeveloperDTO merge(final List<Long> developerIdsToMerge, final DeveloperDTO developerToCreate)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException {
+
+        //merging doesn't require developer address which is why the update validator
+        //is getting used here.
+        Set<String> errors = updateValidator.validate(developerToCreate);
+        if (errors != null && errors.size() > 0) {
+            throw new ValidationException(errors, null);
+        }
 
         List<DeveloperDTO> beforeDevelopers = new ArrayList<DeveloperDTO>();
         for (Long developerId : developerIdsToMerge) {
@@ -470,6 +502,101 @@ public class DeveloperManagerImpl implements DeveloperManager {
                 beforeDevelopers, createdDeveloper);
 
         return createdDeveloper;
+    }
+
+    /**
+     * Splits a developer into two. The new developer will have at least one product assigned to it
+     * that used to be assigned to the original developer along with the versions and listings
+     * associated with those products. At least one product along with its versions and listings
+     * will remain assigned to the original developer.
+     * Since the developer code is auto-generated in the database, any listing that gets
+     * transferred to the new developer will automatically have a unique ID (no other developer
+     * can have the same developer code).
+     */
+    @Override
+    @Transactional(rollbackFor = {
+            EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class,
+            AccessDeniedException.class
+    })
+    @CacheEvict(value = {
+            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
+            CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.GET_DECERTIFIED_DEVELOPERS
+    }, allEntries = true)
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
+    public DeveloperDTO split(final DeveloperDTO oldDeveloper, final DeveloperDTO developerToCreate,
+            final List<Long> productIdsToMove)
+            throws ValidationException, AccessDeniedException, EntityRetrievalException,
+            EntityCreationException, JsonProcessingException {
+        //check developer fields for all valid values
+        Set<String> devErrors = creationValidator.validate(developerToCreate);
+        if (devErrors != null && devErrors.size() > 0) {
+            throw new ValidationException(devErrors, null);
+        }
+
+        //if the user is an ACB then the developer must be Active otherwise the split is not allowed.
+        //ADMIN and ONC can perform a split no matter the developer's status
+        DeveloperStatusEventDTO currDevStatus = oldDeveloper.getStatus();
+        if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
+                && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
+            String msg = msgUtil.getMessage("developer.notActiveNotAdminCantSplit",
+                    Util.getUsername(), oldDeveloper.getName());
+            LOGGER.error(msg);
+            throw new EntityCreationException(msg);
+        }
+
+        // create the new developer and log activity
+        DeveloperDTO createdDeveloper = create(developerToCreate);
+
+        // re-assign products to the new developer
+        // log activity for all listings whose ID will have changed
+        Date splitDate = new Date();
+        List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
+        for (Long productIdToMove : productIdsToMove) {
+            List<CertifiedProductDetailsDTO> affectedListings = cpManager.getByProduct(productIdToMove);
+            //need to get details for affected listings now before the product is re-assigned
+            //so that any listings with a generated new-style CHPL ID have the old developer code
+            Map<Long, CertifiedProductSearchDetails> beforeListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
+            for (CertifiedProductDetailsDTO affectedListing : affectedListings) {
+                CertifiedProductSearchDetails beforeListing = cpdManager.getCertifiedProductDetails(affectedListing.getId());
+
+                // make sure each listing associated with the new developer
+                boolean hasAccessToAcb = false;
+                for (CertificationBodyDTO allowedAcb : allowedAcbs) {
+                    if (allowedAcb.getId().longValue() == affectedListing.getCertificationBodyId().longValue()) {
+                        hasAccessToAcb = true;
+                    }
+                }
+                if (!hasAccessToAcb) {
+                    throw new AccessDeniedException(msgUtil.getMessage("acb.accessDenied.listingUpdate",
+                            beforeListing.getChplProductNumber(),
+                            beforeListing.getCertifyingBody().get("name")));
+                }
+
+                beforeListingDetails.put(beforeListing.getId(), beforeListing);
+            }
+
+            //move the product to be owned by the new developer
+            ProductDTO productToMove = productManager.getById(productIdToMove);
+            productToMove.setDeveloperId(createdDeveloper.getId());
+            ProductOwnerDTO newOwner = new ProductOwnerDTO();
+            newOwner.setProductId(productToMove.getId());
+            newOwner.setDeveloper(createdDeveloper);
+            newOwner.setTransferDate(splitDate.getTime());
+            productToMove.getOwnerHistory().add(newOwner);
+            productManager.update(productToMove);
+
+            //get the listing details again - this time they will have the new developer code
+            //so the change will show up in activity reports
+            for (CertifiedProductDetailsDTO affectedListing : affectedListings) {
+                CertifiedProductSearchDetails afterListing = cpdManager.getCertifiedProductDetails(affectedListing.getId());
+                CertifiedProductSearchDetails beforeListing = beforeListingDetails.get(afterListing.getId());
+                activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, beforeListing.getId(),
+                        "Updated certified product " + afterListing.getChplProductNumber() + ".", beforeListing,
+                        afterListing);
+            }
+        }
+
+        return getById(createdDeveloper.getId());
     }
 
     /**
