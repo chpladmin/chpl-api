@@ -60,11 +60,9 @@ public class TestToolReviewer implements Reviewer {
                                 listing.getWarningMessages()
                                         .add(msgUtil.getMessage("listing.criteria.retiredTestToolNotAllowed",
                                                 testTool.getTestToolName(), cert.getNumber()));
-                            } else {
-                                listing.getErrorMessages()
-                                        .add(msgUtil.getMessage("listing.criteria.testToolNotFoundAndRemoved",
-                                                cert.getNumber(), testTool.getTestToolName()));
-                                testToolIter.remove();
+                            } else if (tt == null) {
+                                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.testToolNotFound",
+                                        cert.getNumber(), testTool.getTestToolName()));
                             }
                         }
                     }
