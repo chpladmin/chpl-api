@@ -519,11 +519,12 @@ public class SurveillanceValidator {
      * @param surv the surveillance to check
      */
     public void validateSurveillanceAuthority(final Surveillance surv) {
-        if (StringUtils.isEmpty(surv.getAuthority())
-                || (!surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ONC)
-                        && !surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB))) {
-            surv.getErrorMessages().add(msgUtil.getMessage("surveillance.authorityRequired",
-                    Authority.ROLE_ONC, Authority.ROLE_ACB));
+        if (!StringUtils.isEmpty(surv.getAuthority())) {
+            if (!surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ONC)
+                    && !surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB)) {
+                surv.getErrorMessages().add(msgUtil.getMessage("surveillance.authorityRequired",
+                        Authority.ROLE_ONC, Authority.ROLE_ACB));
+            }
         }
     }
 
