@@ -9,7 +9,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -341,7 +340,8 @@ public class InvitationManagerImpl implements InvitationManager {
         }
         TestingLabDTO userAtl = null;
         if (invitation.getTestingLabId() != null) {
-            userAtl = atlManager.getIfPermissionById(invitation.getTestingLabId());
+            // userAtl = atlManager.getIfPermissionById(invitation.getTestingLabId());
+            userAtl = resourcePermissions.getAtlIfPermissionById(invitation.getTestingLabId());
             if (userAtl == null) {
                 throw new InvalidArgumentsException(
                         "Could not find the testing lab with id " + invitation.getTestingLabId());
@@ -376,7 +376,8 @@ public class InvitationManagerImpl implements InvitationManager {
         }
         // give them access to the invited atl
         if (userAtl != null) {
-            atlManager.addPermission(userAtl, user.getId(), BasePermission.ADMINISTRATION);
+            // atlManager.addPermission(userAtl, user.getId(), BasePermission.ADMINISTRATION);
+            userPermissionsManager.addAtlPermission(userAtl, user.getId());
         }
     }
 

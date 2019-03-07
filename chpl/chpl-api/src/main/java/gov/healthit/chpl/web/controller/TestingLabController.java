@@ -37,6 +37,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.manager.TestingLabManager;
+import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
@@ -60,6 +61,9 @@ public class TestingLabController {
     
     @Autowired
     private ResourcePermissions resourcePermissions;
+    
+    @Autowired 
+    private UserPermissionsManager userPermissionsManager;
     
     @ApiOperation(value = "List all testing labs (ATLs).",
             notes = "Setting the 'editable' parameter to true will return all ATLs that the logged in user has edit "
@@ -191,7 +195,7 @@ public class TestingLabController {
             atlManager.update(toUpdate);
         }
 
-        TestingLabDTO result = resourcePermissions.getAtlIfPermissionById(updatedAtl.getId())
+        TestingLabDTO result = resourcePermissions.getAtlIfPermissionById(updatedAtl.getId());
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
         TestingLab response = new TestingLab(result);
@@ -221,7 +225,7 @@ public class TestingLabController {
         }
 
         // delete all permissions on that atl
-        atlManager.deleteAllPermissionsOnAtl(atl, new PrincipalSid(user.getSubjectName()));
+        userPermissionsManager.deleteAtlPermission(atl, userId);
         
 
         return "{\"userDeleted\" : true}";
@@ -234,13 +238,13 @@ public class TestingLabController {
     produces = "application/json; charset=utf-8")
     public @ResponseBody PermittedUserResults getUsers(@PathVariable("atlId") final Long atlId)
             throws InvalidArgumentsException, EntityRetrievalException {
-        TestingLabDTO atl = atlManager.getIfPermissionById(atlId);
+        TestingLabDTO atl = resourcePermissions.getAtlIfPermissionById(atlId);
         if (atl == null) {
             throw new InvalidArgumentsException("Could not find the ATL specified.");
         }
 
         List<PermittedUser> atlUsers = new ArrayList<PermittedUser>();
-        List<UserDTO> users = atlManager.getAllUsersOnAtl(atl);
+        List<UserDTO> users = resourcePermissions.getAllUsersOnAtl(atl);
         for (UserDTO user : users) {
 
             // only show users that have ROLE_ATL
@@ -258,19 +262,8 @@ public class TestingLabController {
                     roleNames.add(role.getAuthority());
                 }
 
-                List<Permission> permissions = atlManager.getPermissionsForUser(atl,
-                        new PrincipalSid(user.getSubjectName()));
-                List<String> atlPerm = new ArrayList<String>(permissions.size());
-                for (Permission permission : permissions) {
-                    ChplPermission perm = ChplPermission.fromPermission(permission);
-                    if (perm != null) {
-                        atlPerm.add(perm.toString());
-                    }
-                }
-
                 PermittedUser userInfo = new PermittedUser();
                 userInfo.setUser(new User(user));
-                userInfo.setPermissions(atlPerm);
                 userInfo.setRoles(roleNames);
                 atlUsers.add(userInfo);
             }
