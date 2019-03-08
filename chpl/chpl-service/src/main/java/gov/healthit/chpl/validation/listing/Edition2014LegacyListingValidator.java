@@ -12,13 +12,13 @@ import gov.healthit.chpl.validation.listing.reviewer.CertificationStatusReviewer
 import gov.healthit.chpl.validation.listing.reviewer.DeveloperStatusReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.FieldLengthReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
+import gov.healthit.chpl.validation.listing.reviewer.TestToolReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnattestedCriteriaWithDataReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnsupportedCharacterReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UrlReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ValidDataReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.RequiredData2014Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.TestFunctionality2014Reviewer;
-import gov.healthit.chpl.validation.listing.reviewer.legacy.LegacyTestToolReviewer;
 
 /**
  * Validation interface for any 2014 listing with CHPL number beginning with CHP-.
@@ -60,8 +60,8 @@ public class Edition2014LegacyListingValidator extends Validator {
     private UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer;
 
     @Autowired
-    @Qualifier("legacyTestToolReviewer")
-    private LegacyTestToolReviewer ttReviewer;
+    @Qualifier("testToolReviewer")
+    private TestToolReviewer ttReviewer;
 
     @Autowired
     @Qualifier("testFunctionality2014Reviewer")

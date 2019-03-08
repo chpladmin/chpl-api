@@ -77,7 +77,7 @@ public class PendingListingTestToolReviewerTest {
                 ArgumentMatchers.eq("listing.criteria.missingTestToolVersion"), ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyString());
         Mockito.doReturn(RETIRED_TEST_TOOL_NOT_ALLOWED_ERROR).when(msgUtil).getMessage(
-                ArgumentMatchers.eq("listing.criteria.retiredTestToolNotAllowed"), ArgumentMatchers.anyString(),
+                ArgumentMatchers.eq("listing.criteria.retiredTestToolNoIcsNotAllowed"), ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyString());
         Mockito.doReturn(TEST_TOOL_NOT_FOUND_AND_REMOVED_ERROR).when(msgUtil).getMessage(
                 ArgumentMatchers.eq("listing.criteria.testToolNotFoundAndRemoved"), ArgumentMatchers.anyString(),
