@@ -64,7 +64,8 @@ public class TestToolReviewer implements Reviewer {
                                 if (foundTestTool.isRetired()) {
                                     if (!hasIcs(listing) || hasIcsMismatch(listing)) {
                                         listing.getErrorMessages()
-                                                .add(msgUtil.getMessage("listing.criteria.retiredTestToolNotAllowed",
+                                                .add(msgUtil.getMessage(
+                                                        "listing.criteria.retiredTestToolNoIcsNotAllowed",
                                                         testTool.getName(), cert.getNumber()));
                                     }
                                 }
