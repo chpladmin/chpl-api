@@ -20,31 +20,31 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.listing.ListingMockUtil;
 import gov.healthit.chpl.manager.CertificationResultManager;
+import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
 public class ChplNumberReviewerTest {
     private static final String PRODUCT_CODE_ERROR = "The product code is required and must be "
-            + CertifiedProductDTO.PRODUCT_CODE_LENGTH
+            + ChplProductNumberUtil.PRODUCT_CODE_LENGTH
             + " characters in length containing only the characters A-Z, a-z, 0-9, and _.";
     private static final String VERSION_CODE_ERROR = "The version code is required and must be "
-            + CertifiedProductDTO.VERSION_CODE_LENGTH
+            + ChplProductNumberUtil.VERSION_CODE_LENGTH
             + " characters in length containing only the characters A-Z, a-z, 0-9, and _.";
     private static final String ICS_CODE_ERROR = "The ICS code is required and must be "
-            + CertifiedProductDTO.ICS_CODE_LENGTH
+            + ChplProductNumberUtil.ICS_CODE_LENGTH
             + " characters in length with a value between 00-99. "
             + "If you have exceeded the maximum inheritance level of 99, please contact the CHPL team for further assistance.";
     private static final String ADDSOFT_CODE_ERROR = "The additional software code is required and must be "
-            + CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_LENGTH
+            + ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_LENGTH
             + " character in length containing only the characters 0 or 1.";
     private static final String CERTDATE_CODE_ERROR = "The certified date code is required and must be "
-            + CertifiedProductDTO.CERTIFIED_DATE_CODE_LENGTH
+            + ChplProductNumberUtil.CERTIFIED_DATE_CODE_LENGTH
             + " characters in length containing only the characters 0-9.";
     private static final String ICS_CODE_0_HAS_PARENTS_ERROR =
             "ICS Code is 00, which means this Listing must not inherit from any other Listings";
@@ -60,8 +60,11 @@ public class ChplNumberReviewerTest {
     @Autowired
     private MessageSource messageSource;
 
+//    @Spy
+//    private CertifiedProductDAO listingDao;
+
     @Spy
-    private CertifiedProductDAO listingDao;
+    private ChplProductNumberUtil chplProductNumberUtil;
 
     @Spy
     private CertificationResultManager certResultManager;
@@ -78,7 +81,7 @@ public class ChplNumberReviewerTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        chplNumberReviewer = new ChplNumberReviewer(listingDao, certificationResultManager, msgUtil);
+        chplNumberReviewer = new ChplNumberReviewer(certificationResultManager, chplProductNumberUtil, msgUtil);
 
         Mockito.doReturn(PRODUCT_CODE_ERROR)
         .when(msgUtil).getMessage(
@@ -105,6 +108,7 @@ public class ChplNumberReviewerTest {
         .when(msgUtil).getMessage(
                 ArgumentMatchers.eq("listing.icsCodeTrueValueFalse"));
 
+        Mockito.doReturn(true).when(chplProductNumberUtil).isUnique(ArgumentMatchers.anyString());
         Mockito.doReturn(false).when(certificationResultManager).getCertifiedProductHasAdditionalSoftware(ArgumentMatchers.anyLong());
         Mockito.when(
                 certResultManager.getCertifiedProductHasAdditionalSoftware(ArgumentMatchers.anyLong()))
@@ -129,7 +133,7 @@ public class ChplNumberReviewerTest {
     public void testBadProductCodeLength_HasError() {
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         listing.setChplProductNumber(mockUtil.getChangedListingId(
-                listing.getChplProductNumber(), CertifiedProductDTO.PRODUCT_CODE_INDEX, "012"));
+                listing.getChplProductNumber(), ChplProductNumberUtil.PRODUCT_CODE_INDEX, "012"));
         chplNumberReviewer.review(listing);
         assertTrue(listing.getErrorMessages().contains(PRODUCT_CODE_ERROR));
         assertFalse(listing.getErrorMessages().contains(VERSION_CODE_ERROR));
@@ -145,7 +149,7 @@ public class ChplNumberReviewerTest {
     public void testBadProductCodeCharacter_HasError() {
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         listing.setChplProductNumber(mockUtil.getChangedListingId(
-                listing.getChplProductNumber(), CertifiedProductDTO.PRODUCT_CODE_INDEX, "0!23"));
+                listing.getChplProductNumber(), ChplProductNumberUtil.PRODUCT_CODE_INDEX, "0!23"));
         chplNumberReviewer.review(listing);
         assertTrue(listing.getErrorMessages().contains(PRODUCT_CODE_ERROR));
         assertFalse(listing.getErrorMessages().contains(VERSION_CODE_ERROR));
@@ -161,7 +165,7 @@ public class ChplNumberReviewerTest {
     public void testBadVersionCodeLength_HasError() {
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         listing.setChplProductNumber(mockUtil.getChangedListingId(
-                listing.getChplProductNumber(), CertifiedProductDTO.VERSION_CODE_INDEX, "012"));
+                listing.getChplProductNumber(), ChplProductNumberUtil.VERSION_CODE_INDEX, "012"));
         chplNumberReviewer.review(listing);
         assertFalse(listing.getErrorMessages().contains(PRODUCT_CODE_ERROR));
         assertTrue(listing.getErrorMessages().contains(VERSION_CODE_ERROR));
@@ -177,7 +181,7 @@ public class ChplNumberReviewerTest {
     public void testBadVersionCodeCharacter_HasError() {
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         listing.setChplProductNumber(mockUtil.getChangedListingId(
-                listing.getChplProductNumber(), CertifiedProductDTO.VERSION_CODE_INDEX, "0!"));
+                listing.getChplProductNumber(), ChplProductNumberUtil.VERSION_CODE_INDEX, "0!"));
         chplNumberReviewer.review(listing);
         assertFalse(listing.getErrorMessages().contains(PRODUCT_CODE_ERROR));
         assertTrue(listing.getErrorMessages().contains(VERSION_CODE_ERROR));
@@ -193,7 +197,7 @@ public class ChplNumberReviewerTest {
     public void testBadIcsCodeLength_HasError() {
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         listing.setChplProductNumber(mockUtil.getChangedListingId(
-                listing.getChplProductNumber(), CertifiedProductDTO.ICS_CODE_INDEX, "1"));
+                listing.getChplProductNumber(), ChplProductNumberUtil.ICS_CODE_INDEX, "1"));
         chplNumberReviewer.review(listing);
         assertFalse(listing.getErrorMessages().contains(PRODUCT_CODE_ERROR));
         assertFalse(listing.getErrorMessages().contains(VERSION_CODE_ERROR));
@@ -209,7 +213,7 @@ public class ChplNumberReviewerTest {
     public void testBadIcsCodeCharacter_HasError() {
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         listing.setChplProductNumber(mockUtil.getChangedListingId(
-                listing.getChplProductNumber(), CertifiedProductDTO.ICS_CODE_INDEX, "0Y"));
+                listing.getChplProductNumber(), ChplProductNumberUtil.ICS_CODE_INDEX, "0Y"));
         chplNumberReviewer.review(listing);
         assertFalse(listing.getErrorMessages().contains(PRODUCT_CODE_ERROR));
         assertFalse(listing.getErrorMessages().contains(VERSION_CODE_ERROR));
@@ -226,7 +230,7 @@ public class ChplNumberReviewerTest {
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         //our listing doesn't have ICS so change it to true
         listing.setChplProductNumber(mockUtil.getChangedListingId(
-                listing.getChplProductNumber(), CertifiedProductDTO.ICS_CODE_INDEX, "01"));
+                listing.getChplProductNumber(), ChplProductNumberUtil.ICS_CODE_INDEX, "01"));
         listing.getIcs().setInherits(Boolean.FALSE);
         chplNumberReviewer.review(listing);
         assertFalse(listing.getErrorMessages().contains(PRODUCT_CODE_ERROR));
@@ -245,7 +249,7 @@ public class ChplNumberReviewerTest {
         listing.getIcs().setInherits(Boolean.TRUE);
         CertifiedProduct parentListing = new CertifiedProduct();
         String parentUniqueId = mockUtil.getChangedListingId(
-                listing.getChplProductNumber(), CertifiedProductDTO.ICS_CODE_INDEX, "00");
+                listing.getChplProductNumber(), ChplProductNumberUtil.ICS_CODE_INDEX, "00");
         parentListing.setChplProductNumber(parentUniqueId);
         parentListing.setEdition("2015");
         parentListing.setId(0L);
@@ -265,7 +269,7 @@ public class ChplNumberReviewerTest {
     public void testBadAdditionalSoftwareCodeLength_HasError() {
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         listing.setChplProductNumber(mockUtil.getChangedListingId(
-                listing.getChplProductNumber(), CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_INDEX, "00"));
+                listing.getChplProductNumber(), ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_INDEX, "00"));
         chplNumberReviewer.review(listing);
         assertFalse(listing.getErrorMessages().contains(PRODUCT_CODE_ERROR));
         assertFalse(listing.getErrorMessages().contains(VERSION_CODE_ERROR));
@@ -281,7 +285,7 @@ public class ChplNumberReviewerTest {
     public void testBadAdditionalSoftwareCodeCharacter_HasError() {
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         listing.setChplProductNumber(mockUtil.getChangedListingId(
-                listing.getChplProductNumber(), CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_INDEX, "Y"));
+                listing.getChplProductNumber(), ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_INDEX, "Y"));
         chplNumberReviewer.review(listing);
         assertFalse(listing.getErrorMessages().contains(PRODUCT_CODE_ERROR));
         assertFalse(listing.getErrorMessages().contains(VERSION_CODE_ERROR));
@@ -297,7 +301,7 @@ public class ChplNumberReviewerTest {
     public void testBadCertifiedDateCodeLength_HasError() {
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         listing.setChplProductNumber(mockUtil.getChangedListingId(
-                listing.getChplProductNumber(), CertifiedProductDTO.CERTIFIED_DATE_CODE_INDEX, "20150701"));
+                listing.getChplProductNumber(), ChplProductNumberUtil.CERTIFIED_DATE_CODE_INDEX, "20150701"));
         chplNumberReviewer.review(listing);
         assertFalse(listing.getErrorMessages().contains(PRODUCT_CODE_ERROR));
         assertFalse(listing.getErrorMessages().contains(VERSION_CODE_ERROR));
@@ -313,7 +317,7 @@ public class ChplNumberReviewerTest {
     public void testBadCertifiedDateCodeCharacter_HasError() {
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         listing.setChplProductNumber(mockUtil.getChangedListingId(
-                listing.getChplProductNumber(), CertifiedProductDTO.CERTIFIED_DATE_CODE_INDEX, "15JUL1"));
+                listing.getChplProductNumber(), ChplProductNumberUtil.CERTIFIED_DATE_CODE_INDEX, "15JUL1"));
         chplNumberReviewer.review(listing);
         assertFalse(listing.getErrorMessages().contains(PRODUCT_CODE_ERROR));
         assertFalse(listing.getErrorMessages().contains(VERSION_CODE_ERROR));
@@ -327,11 +331,6 @@ public class ChplNumberReviewerTest {
 
     @Test
     public void testAdditionalSoftwareCodeChanged_IsNotDuplicate_HasNoErrors() {
-        try {
-            Mockito.when(listingDao.getByChplUniqueId(ArgumentMatchers.anyString()))
-            .thenReturn(null);
-        } catch (EntityRetrievalException ex) { }
-
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         //the mock listing does not have additional software;
         //add some to a criteria that was met.
@@ -361,14 +360,11 @@ public class ChplNumberReviewerTest {
 
     @Test
     public void testAdditionalSoftwareCodeChanged_IsDuplicate_HasError() {
-        try {
-            Mockito.when(listingDao.getByChplUniqueId(ArgumentMatchers.anyString()))
-            .thenReturn(new CertifiedProductDetailsDTO());
+        Mockito.doReturn(false).when(chplProductNumberUtil).isUnique(ArgumentMatchers.anyString());
 
-            Mockito.doReturn(true)
-            .when(certificationResultManager).getCertifiedProductHasAdditionalSoftware(ArgumentMatchers.anyLong());
+        Mockito.doReturn(true)
+        .when(certificationResultManager).getCertifiedProductHasAdditionalSoftware(ArgumentMatchers.anyLong());
 
-        } catch (EntityRetrievalException ex) { }
         Mockito.when(
                 certResultManager.getCertifiedProductHasAdditionalSoftware(ArgumentMatchers.anyLong()))
         .thenReturn(Boolean.TRUE);
@@ -402,11 +398,6 @@ public class ChplNumberReviewerTest {
 
     @Test
     public void testCertificationDateChanged_IsNotDuplicate_HasNoErrors() {
-        try {
-            Mockito.when(listingDao.getByChplUniqueId(ArgumentMatchers.anyString()))
-            .thenReturn(null);
-        } catch(EntityRetrievalException ex) { }
-
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         listing.setCertificationDate(System.currentTimeMillis());
         chplNumberReviewer.review(listing);
@@ -423,10 +414,7 @@ public class ChplNumberReviewerTest {
 
     @Test
     public void testCertificationDateChanged_IsDuplicate_HasError() {
-        try {
-            Mockito.when(listingDao.getByChplUniqueId(ArgumentMatchers.anyString()))
-            .thenReturn(new CertifiedProductDetailsDTO());
-        } catch (EntityRetrievalException ex) { }
+        Mockito.doReturn(false).when(chplProductNumberUtil).isUnique(ArgumentMatchers.anyString());
 
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         listing.setCertificationDate(System.currentTimeMillis());

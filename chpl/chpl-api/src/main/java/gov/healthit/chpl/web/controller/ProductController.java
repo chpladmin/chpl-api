@@ -401,13 +401,11 @@ public class ProductController {
         if (possibleChangedChplIds != null && possibleChangedChplIds.size() > 0) {
             StringBuffer buf = new StringBuffer();
             for (CertifiedProductDetailsDTO possibleChanged : possibleChangedChplIds) {
-                CertifiedProduct prodWithChplNumber = new CertifiedProduct(possibleChanged);
-                if (!StringUtils.isEmpty(prodWithChplNumber.getChplProductNumber())
-                        && prodWithChplNumber.getChplProductNumber().split("\\.").length > 1) {
+                if (!chplProductNumberUtil.isLegacy(possibleChanged.getChplProductNumber())) {
                     if (buf.length() > 0) {
                         buf.append(",");
                     }
-                    buf.append(prodWithChplNumber.getChplProductNumber());
+                    buf.append(possibleChanged.getChplProductNumber());
                 }
             }
             responseHeaders.set("CHPL-Id-Changed", buf.toString());

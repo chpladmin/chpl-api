@@ -29,12 +29,12 @@ import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.scheduler.InheritanceErrorsReportDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.scheduler.DataCollectorAsyncSchedulerHelper;
+import gov.healthit.chpl.util.ChplProductNumberUtil;
 
 /**
  * Initiates and runs the the Quartz job that generates the data that is used to to create
@@ -191,10 +191,10 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
     private String breaksIcsRules(final CertifiedProductSearchDetails listing) {
         String uniqueId = listing.getChplProductNumber();
         String[] uniqueIdParts = uniqueId.split("\\.");
-        if (uniqueIdParts.length != CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
+        if (uniqueIdParts.length != ChplProductNumberUtil.CHPL_PRODUCT_ID_PARTS) {
             return null;
         }
-        String icsCodePart = uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX];
+        String icsCodePart = uniqueIdParts[ChplProductNumberUtil.ICS_CODE_INDEX];
         try {
             Integer icsCode = Integer.valueOf(icsCodePart);
             boolean hasIcs = icsCode.intValue() == 1

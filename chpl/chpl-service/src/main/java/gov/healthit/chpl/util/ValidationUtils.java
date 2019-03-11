@@ -22,7 +22,8 @@ public final class ValidationUtils {
     private static final Logger LOGGER = LogManager.getLogger(ValidationUtils.class);
     private static UrlValidator urlValidator = new UrlValidator();
 
-    private ValidationUtils() {}
+    private ValidationUtils() {
+    }
 
     /**
      * Check to see if input string has either Windows or *nix flavored new line character.
@@ -30,7 +31,7 @@ public final class ValidationUtils {
      * @return true iff string contains "\n" or "\r\n"
      */
     public static boolean hasNewline(final String input) {
-        //check both windows and unix line separator chars
+        // check both windows and unix line separator chars
         if (input == null || StringUtils.isEmpty(input)) {
             return false;
         }
@@ -44,6 +45,28 @@ public final class ValidationUtils {
      */
     public static boolean isWellFormedUrl(final String input) {
         return urlValidator.isValid(input);
+    }
+
+    /**
+     * Validation utility to check if a part of the chpl product number
+     * matches a specific regex. Useful to determine if any other than the
+     * allowed characters are present.
+     * @param chplProductNumber the chpl product number to test
+     * @param partIndex the index, 0-8
+     * @param regexToMatch regex like ^[0-9]$
+     * @return true of the part matches the regex and false otherwise
+     */
+    public static boolean chplNumberPartIsValid(final String chplProductNumber,
+            final int partIndex, final String regexToMatch) {
+        String[] uniqueIdParts = chplProductNumber.split("\\.");
+        if (uniqueIdParts.length == ChplProductNumberUtil.CHPL_PRODUCT_ID_PARTS) {
+            String chplNumberPart = uniqueIdParts[partIndex];
+            if (StringUtils.isEmpty(chplNumberPart)
+                    || !chplNumberPart.matches(regexToMatch)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -67,10 +90,8 @@ public final class ValidationUtils {
         }
 
         if (inputCharset.name().equals(StandardCharsets.UTF_8.name())) {
-            LOGGER.debug("Looking for UTF-8 Replacement Character in " + input);
             return !hasUtf8ReplacementCharacter(input);
         } else {
-            LOGGER.debug("Looking for non UTF-8 character in " + input);
             return hasNonUtf8Character(input.getBytes());
         }
     }
@@ -264,7 +285,7 @@ public final class ValidationUtils {
      * @param certs criteria to check against
      * @return true iff at least one of certToCompare is in certs
      */
-     public static boolean containsCert(final CertificationResult certToCompare, final String[] certs) {
+    public static boolean containsCert(final CertificationResult certToCompare, final String[] certs) {
         boolean hasCert = false;
         for (String cert : certs) {
             if (certToCompare.getNumber().equals(cert)) {
