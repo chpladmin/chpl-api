@@ -10,7 +10,4 @@ _Date TBD_
 * Modify security to use CHPL managed user/ACB relationship
 * Update validation of test tools based on workflow and ICS
 
-### Bug Fixes
-* Fixed error on banned developer page when banned developer has listings without meaningful use counts.
-
 ---
