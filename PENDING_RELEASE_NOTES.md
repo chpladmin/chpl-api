@@ -1,8 +1,8 @@
 
-## Version 20.5.1
+## Version 20.6.0
 _Date TBD_
 
-### Bug Fixes
-* Fix incorrect developer appearing in product owner history after developer split.
+### New features
+* Add error message for unparseable certification date on Listing upload
 
 ---
