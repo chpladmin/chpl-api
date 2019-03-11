@@ -26,12 +26,8 @@ public class DecertifiedDeveloperResult implements Serializable {
         this.certifyingBody = certifyingBody;
         this.decertificationDate = decertificationDate;
         this.estimatedUsers = estimatedUsers;
-        if (earliestMeaningfulUseDate != null) {
-            this.earliestMeaningfulUseDate = earliestMeaningfulUseDate.getTime();
-        }
-        if (latestMeaningfulUseDate != null) {
-            this.latestMeaningfulUseDate = latestMeaningfulUseDate.getTime();
-        }
+        this.earliestMeaningfulUseDate = earliestMeaningfulUseDate.getTime();
+        this.latestMeaningfulUseDate = latestMeaningfulUseDate.getTime();
     }
 
     public DecertifiedDeveloperResult(DeveloperDTO developerDTO, List<CertificationBody> certifyingBody,
@@ -41,12 +37,8 @@ public class DecertifiedDeveloperResult implements Serializable {
         this.certifyingBody = certifyingBody;
         this.decertificationDate = decertificationDate;
         this.estimatedUsers = estimatedUsers;
-        if (earliestMeaningfulUseDate != null) {
-            this.earliestMeaningfulUseDate = earliestMeaningfulUseDate.getTime();
-        }
-        if (latestMeaningfulUseDate != null) {
-            this.latestMeaningfulUseDate = latestMeaningfulUseDate.getTime();
-        }
+        this.earliestMeaningfulUseDate = earliestMeaningfulUseDate.getTime();
+        this.latestMeaningfulUseDate = latestMeaningfulUseDate.getTime();
     }
 
     public Developer getDeveloper() {
