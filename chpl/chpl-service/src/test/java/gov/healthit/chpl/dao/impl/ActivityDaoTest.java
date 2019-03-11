@@ -28,7 +28,7 @@ import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
-import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;

@@ -33,7 +33,7 @@ import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.TestingLabDAO;
-import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;

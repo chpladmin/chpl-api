@@ -19,7 +19,7 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertificationIdDAO;
 import gov.healthit.chpl.domain.SimpleCertificationId;
 import gov.healthit.chpl.domain.SimpleCertificationIdWithProducts;
-import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CQMMetDTO;
 import gov.healthit.chpl.dto.CertificationIdAndCertifiedProductDTO;
 import gov.healthit.chpl.dto.CertificationIdDTO;

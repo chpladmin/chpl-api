@@ -21,7 +21,7 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.dao.MeaningfulUseUserDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.MeaningfulUseUserRecord;
-import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.MeaningfulUseUserDTO;
 import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.entity.job.JobStatusType;

@@ -43,7 +43,7 @@ import gov.healthit.chpl.domain.SimpleExplainableAction;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformityDocument;
 import gov.healthit.chpl.domain.SurveillanceUploadResult;
-import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.CertificationBodyAccessException;
 import gov.healthit.chpl.exception.EntityCreationException;

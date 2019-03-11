@@ -51,7 +51,7 @@ import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.IdListContainer;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
-import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;

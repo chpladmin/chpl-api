@@ -31,7 +31,7 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.DeveloperTransparency;
-import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;

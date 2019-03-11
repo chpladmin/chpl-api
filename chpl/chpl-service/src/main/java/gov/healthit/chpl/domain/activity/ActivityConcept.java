@@ -1,4 +1,4 @@
-package gov.healthit.chpl.domain.concept;
+package gov.healthit.chpl.domain.activity;
 
 import java.io.Serializable;
 

@@ -17,7 +17,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.AnnouncementDAO;
-import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.AnnouncementDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;

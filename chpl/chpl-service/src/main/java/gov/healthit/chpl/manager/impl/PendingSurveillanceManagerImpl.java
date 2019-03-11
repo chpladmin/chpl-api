@@ -43,7 +43,7 @@ import gov.healthit.chpl.domain.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.domain.SurveillanceUploadResult;
-import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.concept.JobTypeConcept;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;

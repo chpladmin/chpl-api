@@ -17,7 +17,7 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.ProductVersionDAO;
-import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;

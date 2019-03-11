@@ -29,7 +29,7 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
-import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;

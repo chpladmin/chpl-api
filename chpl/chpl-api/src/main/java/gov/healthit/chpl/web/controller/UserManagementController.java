@@ -51,7 +51,7 @@ import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.domain.AuthorizeCredentials;
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
-import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;

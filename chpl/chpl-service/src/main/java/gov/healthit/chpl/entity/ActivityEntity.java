@@ -22,7 +22,7 @@ import org.hibernate.annotations.FetchMode;
 
 import gov.healthit.chpl.auth.entity.UserEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.util.Util;
 
 @Entity

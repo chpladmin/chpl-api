@@ -11,7 +11,7 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.ActivityDAO;
-import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;

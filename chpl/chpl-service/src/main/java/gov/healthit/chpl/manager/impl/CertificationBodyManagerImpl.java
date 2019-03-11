@@ -21,7 +21,7 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;

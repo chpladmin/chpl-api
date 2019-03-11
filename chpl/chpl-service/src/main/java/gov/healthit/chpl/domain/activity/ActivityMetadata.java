@@ -1,4 +1,4 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.domain.activity;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -6,21 +6,19 @@ import java.util.Date;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import gov.healthit.chpl.auth.json.User;
-import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.util.Util;
 
-public class ActivityEvent implements Serializable {
-    private static final long serialVersionUID = -8220712127605295980L;
+public class ActivityMetadata implements Serializable {
+    private static final long serialVersionUID = -3855142961571082535L;
+
     private Long id;
     private String description;
-    private JsonNode originalData;
-    private JsonNode newData;
     private Date activityDate;
     private Long activityObjectId;
     private ActivityConcept concept;
     private User responsibleUser;
 
-    public ActivityEvent() {
+    public ActivityMetadata() {
     }
 
     public Long getId() {
@@ -61,22 +59,6 @@ public class ActivityEvent implements Serializable {
 
     public void setConcept(final ActivityConcept concept) {
         this.concept = concept;
-    }
-
-    public JsonNode getOriginalData() {
-        return originalData;
-    }
-
-    public void setOriginalData(final JsonNode originalData) {
-        this.originalData = originalData;
-    }
-
-    public JsonNode getNewData() {
-        return newData;
-    }
-
-    public void setNewData(final JsonNode newData) {
-        this.newData = newData;
     }
 
     public User getResponsibleUser() {
