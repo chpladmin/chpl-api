@@ -578,9 +578,10 @@ public class DeveloperManagerImpl implements DeveloperManager {
             //move the product to be owned by the new developer
             ProductDTO productToMove = productManager.getById(productIdToMove);
             productToMove.setDeveloperId(createdDeveloper.getId());
+            //add owner history for old developer
             ProductOwnerDTO newOwner = new ProductOwnerDTO();
             newOwner.setProductId(productToMove.getId());
-            newOwner.setDeveloper(createdDeveloper);
+            newOwner.setDeveloper(oldDeveloper);
             newOwner.setTransferDate(splitDate.getTime());
             productToMove.getOwnerHistory().add(newOwner);
             productManager.update(productToMove);
