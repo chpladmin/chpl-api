@@ -4,10 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.security.acls.domain.PrincipalSid;
-import org.springframework.security.acls.model.Permission;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,16 +24,20 @@ import gov.healthit.chpl.auth.json.User;
 import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.ChplPermission;
 import gov.healthit.chpl.domain.PermittedUser;
-import gov.healthit.chpl.domain.UpdateUserAndAcbRequest;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertificationBodyManager;
+import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
+import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.web.controller.annotation.CacheControl;
+import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
+import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import gov.healthit.chpl.web.controller.results.CertificationBodyResults;
 import gov.healthit.chpl.web.controller.results.PermittedUserResults;
 import io.swagger.annotations.Api;
@@ -49,20 +52,26 @@ public class CertificationBodyController {
     private CertificationBodyManager acbManager;
 
     @Autowired
+    private ResourcePermissions resourcePermissions;
+    
+    @Autowired
+    private UserPermissionsManager userPermissionsManager;
+    
+    @Autowired
     private UserManager userManager;
 
     @ApiOperation(value = "List all certification bodies (ACBs).",
             notes = "Setting the 'editable' parameter to true will return all ACBs that the logged in user has "
-                    + "edit permissions on. The logged in user must have ROLE_ADMIN or ROLE_ONC to see retired ACBs."
-                    + "The default behavior of this service is to list all of the ACBs in the system that are not retired.")
+                    + "edit permissions on. Security Restrictions:  All users can see all active ACBs.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertificationBodyResults getAcbs(
             @RequestParam(required = false, defaultValue = "false") final boolean editable) {
         //TODO confirm a user is logged in here
         CertificationBodyResults results = new CertificationBodyResults();
-            List<CertificationBodyDTO> acbs = null;
+        List<CertificationBodyDTO> acbs = null;
         if (editable) {
-            acbs = acbManager.getAllForUser();
+            acbs = resourcePermissions.getAllAcbsForCurrentUser();
         } else {
             acbs = acbManager.getAll();
         }
@@ -76,8 +85,7 @@ public class CertificationBodyController {
     }
 
     @ApiOperation(value = "Get details about a specific certification body (ACB).",
-            notes = "The logged in user must either have ROLE_ADMIN or have ROLE_ACB "
-                    + " for the ACB with the provided ID.")
+            notes = "")
     @RequestMapping(value = "/{acbId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody CertificationBody getAcbById(@PathVariable("acbId") final Long acbId)
             throws EntityRetrievalException {
@@ -86,9 +94,10 @@ public class CertificationBodyController {
         return new CertificationBody(acb);
     }
 
-    @ApiOperation(value = "Create a new ACB.", notes = "The logged in user must have ROLE_ADMIN to create a new ACB.")
+    @ApiOperation(value = "Create a new ACB.",
+            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public CertificationBody createAcb(@RequestBody final CertificationBody acbInfo)
             throws InvalidArgumentsException, UserRetrievalException, EntityRetrievalException, EntityCreationException,
             JsonProcessingException {
@@ -126,29 +135,33 @@ public class CertificationBodyController {
 
 
     @ApiOperation(value = "Update an existing ACB.",
-            notes = "The logged in user must either have ROLE_ADMIN or have ROLE_ACB "
-                    + " to update an existing ACB.")
+            notes = "Security Restriction:  ROLE_ADMIN, ROLE_ONC, or ROLE_ACB with administrative authority")
     @RequestMapping(value = "/{acbId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public CertificationBody updateAcb(@RequestBody final CertificationBody acbInfo) throws InvalidArgumentsException,
-            EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
+            EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException,
+            SchedulerException, ValidationException {
 
         return update(acbInfo);
     }
 
     private CertificationBody update(final CertificationBody updatedAcb) throws InvalidArgumentsException,
-            EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
+            EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException,
+            SchedulerException, ValidationException {
         //Get the ACB as it is currently in the database to find out if
         //the retired flag was changed.
         //Retirement and un-retirement is done as a separate manager action because
         //security is different from normal ACB updates - only admins are allowed
         //whereas an ACB admin can update other info
-        CertificationBodyDTO existingAcb = acbManager.getIfPermissionById(updatedAcb.getId());
-        if (existingAcb.isRetired() != updatedAcb.isRetired() && updatedAcb.isRetired()) {
+        CertificationBodyDTO existingAcb = resourcePermissions.getAcbIfPermissionById(updatedAcb.getId());
+        if (updatedAcb.isRetired()) {
             //we are retiring this ACB - no other updates can happen
-            acbManager.retire(updatedAcb.getId());
+            CertificationBodyDTO toRetire = new CertificationBodyDTO();
+            toRetire.setRetirementDate(updatedAcb.getRetirementDate());
+            toRetire.setId(updatedAcb.getId());
+            acbManager.retire(toRetire);
         } else {
-            if (existingAcb.isRetired() != updatedAcb.isRetired() && !updatedAcb.isRetired()) {
+            if (existingAcb.isRetired()) {
                 //unretire the ACB
                 acbManager.unretire(updatedAcb.getId());
             }
@@ -156,7 +169,8 @@ public class CertificationBodyController {
             toUpdate.setId(updatedAcb.getId());
             toUpdate.setAcbCode(updatedAcb.getAcbCode());
             toUpdate.setName(updatedAcb.getName());
-            toUpdate.setRetired(updatedAcb.isRetired());
+            toUpdate.setRetired(false);
+            toUpdate.setRetirementDate(null);
             if (StringUtils.isEmpty(updatedAcb.getWebsite())) {
                 throw new InvalidArgumentsException("A website is required to update the certification body");
             }
@@ -185,7 +199,7 @@ public class CertificationBodyController {
                     + " specified ACB. The user specified in the request will have all authorities "
                     + " removed that are associated with the specified ACB.")
     @RequestMapping(value = "{acbId}/users/{userId}", method = RequestMethod.DELETE,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public String deleteUserFromAcb(@PathVariable final Long acbId, @PathVariable final Long userId)
             throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
 
@@ -196,32 +210,32 @@ public class CertificationBodyController {
             throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
 
         UserDTO user = userManager.getById(userId);
-        CertificationBodyDTO acb = acbManager.getIfPermissionById(acbId);
+        CertificationBodyDTO acb = resourcePermissions.getAcbIfPermissionById(acbId);
 
         if (user == null || acb == null) {
             throw new InvalidArgumentsException("Could not find either ACB or User specified");
         }
 
         // delete all permissions on that acb
-        acbManager.deleteAllPermissionsOnAcb(acb, new PrincipalSid(user.getSubjectName()));
+        userPermissionsManager.deleteAcbPermission(acb, userId);
 
         return "{\"userDeleted\" : true}";
     }
 
     @ApiOperation(value = "List users with permissions on a specified ACB.",
-            notes = "The logged in user must have ROLE_ADMIN or have administrative or read authority on the "
-                    + " specified ACB.")
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or have administrative "
+                    + "or read authority on the specified ACB")
     @RequestMapping(value = "/{acbId}/users", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody PermittedUserResults getUsers(@PathVariable("acbId") final Long acbId)
             throws InvalidArgumentsException, EntityRetrievalException {
-        CertificationBodyDTO acb = acbManager.getIfPermissionById(acbId);
+        CertificationBodyDTO acb = resourcePermissions.getAcbIfPermissionById(acbId);
         if (acb == null) {
             throw new InvalidArgumentsException("Could not find the ACB specified.");
         }
 
         List<PermittedUser> acbUsers = new ArrayList<PermittedUser>();
-        List<UserDTO> users = acbManager.getAllUsersOnAcb(acb);
+        List<UserDTO> users = resourcePermissions.getAllUsersOnAcb(acb);
         for (UserDTO user : users) {
 
             // only show users that have ROLE_ACB
@@ -239,19 +253,8 @@ public class CertificationBodyController {
                     roleNames.add(role.getAuthority());
                 }
 
-                List<Permission> permissions = acbManager.getPermissionsForUser(acb,
-                        new PrincipalSid(user.getSubjectName()));
-                List<String> acbPerm = new ArrayList<String>(permissions.size());
-                for (Permission permission : permissions) {
-                    ChplPermission perm = ChplPermission.fromPermission(permission);
-                    if (perm != null) {
-                        acbPerm.add(perm.toString());
-                    }
-                }
-
                 PermittedUser userInfo = new PermittedUser();
                 userInfo.setUser(new User(user));
-                userInfo.setPermissions(acbPerm);
                 userInfo.setRoles(roleNames);
                 acbUsers.add(userInfo);
             }

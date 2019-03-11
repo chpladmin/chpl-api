@@ -7,8 +7,10 @@ import static org.quartz.TriggerBuilder.newTrigger;
 import static org.quartz.TriggerKey.triggerKey;
 import static org.quartz.impl.matchers.GroupMatcher.groupEquals;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -17,10 +19,12 @@ import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.TriggerKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -28,15 +32,18 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.domain.schedule.ChplJob;
-import gov.healthit.chpl.domain.schedule.ChplTrigger;
+import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
+import gov.healthit.chpl.domain.schedule.ChplRepeatableTrigger;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.SchedulerManager;
+import gov.healthit.chpl.permissions.Permissions;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.scheduler.ChplSchedulerReference;
 
 /**
  * Implementation of Scheduler Manager.
+ *
  * @author alarned
  *
  */
@@ -44,38 +51,39 @@ import gov.healthit.chpl.scheduler.ChplSchedulerReference;
 public class SchedulerManagerImpl implements SchedulerManager {
 
     private static final String AUTHORITY_DELIMITER = ";";
+    private static final String DATA_DELIMITER = "\u263A";
 
-    @Autowired
     private ChplSchedulerReference chplScheduler;
+    private Permissions permissions;
+    private ResourcePermissions resourcePermissions;
 
     @Autowired
-    private CertificationBodyManager acbManager;
+
+    public SchedulerManagerImpl(final ChplSchedulerReference chplScheduler, final Permissions permissions,
+            ResourcePermissions resourcePermissions) {
+        this.chplScheduler = chplScheduler;
+        this.permissions = permissions;
+        this.resourcePermissions = resourcePermissions;
+    }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
-    public ChplTrigger createTrigger(final ChplTrigger trigger) throws SchedulerException, ValidationException {
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
+            + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).CREATE_TRIGGER)")
+    public ChplRepeatableTrigger createTrigger(final ChplRepeatableTrigger trigger)
+            throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
 
-        TriggerKey triggerId = triggerKey(createTriggerName(trigger), createTriggerGroup(trigger));
+        TriggerKey triggerId = triggerKey(createTriggerName(trigger), createTriggerGroup(trigger.getJob()));
         JobKey jobId = jobKey(trigger.getJob().getName(), trigger.getJob().getGroup());
         if (doesUserHavePermissionToJob(scheduler.getJobDetail(jobId))) {
             Trigger qzTrigger = null;
             if (trigger.getJob().getJobDataMap().getBooleanValue("acbSpecific")) {
-                qzTrigger = newTrigger()
-                        .withIdentity(triggerId)
-                        .startNow()
-                        .forJob(jobId)
-                        .usingJobData("email", trigger.getEmail())
-                        .usingJobData("acb", trigger.getAcb())
-                        .withSchedule(cronSchedule(trigger.getCronSchedule()))
-                        .build();
+                qzTrigger = newTrigger().withIdentity(triggerId).startNow().forJob(jobId)
+                        .usingJobData("email", trigger.getEmail()).usingJobData("acb", trigger.getAcb())
+                        .withSchedule(cronSchedule(trigger.getCronSchedule())).build();
             } else {
-                qzTrigger = newTrigger()
-                        .withIdentity(triggerId)
-                        .startNow()
-                        .forJob(jobId)
-                        .usingJobData("email", trigger.getEmail())
-                        .withSchedule(cronSchedule(trigger.getCronSchedule()))
+                qzTrigger = newTrigger().withIdentity(triggerId).startNow().forJob(jobId)
+                        .usingJobData("email", trigger.getEmail()).withSchedule(cronSchedule(trigger.getCronSchedule()))
                         .build();
             }
 
@@ -85,7 +93,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
                 throw new AccessDeniedException("Can not create this trigger");
             }
 
-            ChplTrigger newTrigger = new ChplTrigger((CronTrigger) scheduler.getTrigger(triggerId));
+            ChplRepeatableTrigger newTrigger = new ChplRepeatableTrigger((CronTrigger) scheduler.getTrigger(triggerId));
             return newTrigger;
         } else {
             throw new AccessDeniedException("Can not create this trigger");
@@ -93,7 +101,26 @@ public class SchedulerManagerImpl implements SchedulerManager {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ONC', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
+            + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).CREATE_ONE_TIME_TRIGGER)")
+    public ChplOneTimeTrigger createOneTimeTrigger(ChplOneTimeTrigger chplTrigger)
+            throws SchedulerException, ValidationException {
+        Scheduler scheduler = getScheduler();
+
+        SimpleTrigger trigger = (SimpleTrigger) newTrigger()
+                .withIdentity(createTriggerName(chplTrigger), createTriggerGroup(chplTrigger.getJob()))
+                .startAt(new Date(chplTrigger.getRunDateMillis()))
+                .forJob(chplTrigger.getJob().getName(), chplTrigger.getJob().getGroup())
+                .usingJobData(chplTrigger.getJob().getJobDataMap()).build();
+
+        scheduler.scheduleJob(trigger);
+
+        return chplTrigger;
+    }
+
+    @Override
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
+            + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).DELETE_TRIGGER)")
     public void deleteTrigger(final String triggerGroup, final String triggerName)
             throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
@@ -107,17 +134,18 @@ public class SchedulerManagerImpl implements SchedulerManager {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ONC', 'ROLE_ACB')")
-    public List<ChplTrigger> getAllTriggers() throws SchedulerException {
-        ArrayList<ChplTrigger> triggers = new ArrayList<ChplTrigger>();
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
+            + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).GET_ALL_TRIGGERS)")
+    public List<ChplRepeatableTrigger> getAllTriggers() throws SchedulerException {
+        ArrayList<ChplRepeatableTrigger> triggers = new ArrayList<ChplRepeatableTrigger>();
         Scheduler scheduler = getScheduler();
-        for (String group: scheduler.getTriggerGroupNames()) {
+        for (String group : scheduler.getTriggerGroupNames()) {
             // enumerate each trigger in group
             for (TriggerKey triggerKey : scheduler.getTriggerKeys(groupEquals(group))) {
                 if (scheduler.getTrigger(triggerKey).getJobKey().getGroup().equalsIgnoreCase("chplJobs")) {
                     if (doesUserHavePermissionToTrigger(scheduler.getTrigger(triggerKey))
                             && getScheduler().getTrigger(triggerKey) instanceof CronTrigger) {
-                        ChplTrigger newTrigger = getChplTrigger(triggerKey);
+                        ChplRepeatableTrigger newTrigger = getChplTrigger(triggerKey);
                         triggers.add(newTrigger);
                     }
                 }
@@ -127,76 +155,72 @@ public class SchedulerManagerImpl implements SchedulerManager {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
-    public ChplTrigger updateTrigger(final ChplTrigger trigger) throws SchedulerException, ValidationException {
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
+            + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).UPDATE_TRIGGER)")
+    public ChplRepeatableTrigger updateTrigger(final ChplRepeatableTrigger trigger)
+            throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
         Trigger oldTrigger = scheduler.getTrigger(triggerKey(trigger.getName(), trigger.getGroup()));
         Trigger qzTrigger = null;
         if (doesUserHavePermissionToTrigger(oldTrigger)) {
             if (trigger.getJob().getJobDataMap().getBooleanValue("acbSpecific")) {
-                qzTrigger = newTrigger()
-                        .withIdentity(oldTrigger.getKey())
-                        .startNow()
-                        .forJob(oldTrigger.getJobKey())
-                        .usingJobData(oldTrigger.getJobDataMap())
-                        .usingJobData("acb", trigger.getAcb())
-                        .withSchedule(cronSchedule(trigger.getCronSchedule()))
-                        .build();
+                qzTrigger = newTrigger().withIdentity(oldTrigger.getKey()).startNow().forJob(oldTrigger.getJobKey())
+                        .usingJobData(oldTrigger.getJobDataMap()).usingJobData("acb", trigger.getAcb())
+                        .withSchedule(cronSchedule(trigger.getCronSchedule())).build();
             } else {
-                qzTrigger = newTrigger()
-                        .withIdentity(oldTrigger.getKey())
-                        .startNow()
-                        .forJob(oldTrigger.getJobKey())
-                        .usingJobData(oldTrigger.getJobDataMap())
-                        .withSchedule(cronSchedule(trigger.getCronSchedule()))
+                qzTrigger = newTrigger().withIdentity(oldTrigger.getKey()).startNow().forJob(oldTrigger.getJobKey())
+                        .usingJobData(oldTrigger.getJobDataMap()).withSchedule(cronSchedule(trigger.getCronSchedule()))
                         .build();
             }
             scheduler.rescheduleJob(oldTrigger.getKey(), qzTrigger);
 
-            ChplTrigger newTrigger = getChplTrigger(qzTrigger.getKey());
+            ChplRepeatableTrigger newTrigger = getChplTrigger(qzTrigger.getKey());
             return newTrigger;
         } else {
             throw new AccessDeniedException("Can not update this trigger");
         }
     }
 
-    /* (non-Javadoc)
-     * @see gov.healthit.chpl.manager.SchedulerManager#getAllJobs()
-     * As new jobs are added that have authorities other than ROLE_ADMIN, those authorities
+    /*
+     * (non-Javadoc)
+     * 
+     * @see gov.healthit.chpl.manager.SchedulerManager#getAllJobs() As new jobs
+     * are added that have authorities other than ROLE_ADMIN, those authorities
      * will need to be added to the list.
      */
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ONC', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
+            + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).GET_ALL)")
+    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
+            + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).GET_ALL, filterObject)")
     public List<ChplJob> getAllJobs() throws SchedulerException {
         List<ChplJob> jobs = new ArrayList<ChplJob>();
         Scheduler scheduler = getScheduler();
+
+        // Get all the jobs (no security - it is handled with @PostFilter)
         for (String group : scheduler.getJobGroupNames()) {
-            if (group.equals("chplJobs")) {
-                for (JobKey jobKey : scheduler.getJobKeys(groupEquals(group))) {
-                    JobDetail jobDetail = scheduler.getJobDetail(jobKey);
-                    if (doesUserHavePermissionToJob(jobDetail)) {
-                        jobs.add(new ChplJob(jobDetail));
-                    }
-                }
+            for (JobKey jobKey : scheduler.getJobKeys(groupEquals(group))) {
+                JobDetail jobDetail = scheduler.getJobDetail(jobKey);
+                ChplJob chplJob = new ChplJob(jobDetail);
+                chplJob.setJobDataMap(jobDetail.getJobDataMap());
+                jobs.add(chplJob);
             }
         }
+
         return jobs;
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ONC', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
+            + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).UPDATE_JOB)")
     public ChplJob updateJob(final ChplJob job) throws SchedulerException {
         Scheduler scheduler = getScheduler();
         JobKey jobId = jobKey(job.getName(), job.getGroup());
         JobDetail oldJob = scheduler.getJobDetail(jobId);
         if (doesUserHavePermissionToJob(oldJob)) {
-            JobDetail newJob = newJob(oldJob.getJobClass())
-                    .withIdentity(jobId)
-                    .withDescription(oldJob.getDescription())
-                    .usingJobData(job.getJobDataMap())
-                    .storeDurably(oldJob.isDurable())
-                    .requestRecovery(oldJob.requestsRecovery())
-                    .build();
+            JobDetail newJob = newJob(oldJob.getJobClass()).withIdentity(jobId).withDescription(oldJob.getDescription())
+                    .usingJobData(job.getJobDataMap()).storeDurably(oldJob.isDurable())
+                    .requestRecovery(oldJob.requestsRecovery()).build();
 
             scheduler.addJob(newJob, true);
             ChplJob newChplJob = new ChplJob(newJob);
@@ -206,12 +230,47 @@ public class SchedulerManagerImpl implements SchedulerManager {
         }
     }
 
+    @Override
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
+    public void retireAcb(final String acb) throws SchedulerException, ValidationException {
+        List<ChplRepeatableTrigger> allTriggers = getAllTriggers();
+        for (ChplRepeatableTrigger trigger : allTriggers) {
+            if (!StringUtils.isEmpty(trigger.getAcb()) && trigger.getAcb().indexOf(acb) > -1) {
+                ArrayList<String> acbs = new ArrayList<String>(Arrays.asList(trigger.getAcb().split(DATA_DELIMITER)));
+                acbs.remove(acb);
+                if (acbs.size() > 0) {
+                    trigger.setAcb(String.join(DATA_DELIMITER, acbs));
+                    createTrigger(trigger);
+                }
+                deleteTrigger(trigger.getGroup(), trigger.getName());
+            }
+        }
+    }
+
+    @Override
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
+            + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).UPDATE_ACB_NAME)")
+    public void changeAcbName(final String oldAcb, final String newAcb) throws SchedulerException, ValidationException {
+        List<ChplRepeatableTrigger> allTriggers = getAllTriggers();
+        for (ChplRepeatableTrigger trigger : allTriggers) {
+            if (!StringUtils.isEmpty(trigger.getAcb()) && trigger.getAcb().indexOf(oldAcb) > -1) {
+                ArrayList<String> acbs = new ArrayList<String>(Arrays.asList(trigger.getAcb().split(DATA_DELIMITER)));
+                acbs.remove(oldAcb);
+                acbs.add(newAcb);
+                trigger.setAcb(String.join(DATA_DELIMITER, acbs));
+                createTrigger(trigger);
+                deleteTrigger(trigger.getGroup(), trigger.getName());
+            }
+        }
+    }
+
     private Scheduler getScheduler() throws SchedulerException {
         return chplScheduler.getScheduler();
     }
 
-    private ChplTrigger getChplTrigger(final TriggerKey triggerKey) throws SchedulerException {
-        ChplTrigger chplTrigger = new ChplTrigger((CronTrigger) getScheduler().getTrigger(triggerKey));
+    private ChplRepeatableTrigger getChplTrigger(final TriggerKey triggerKey) throws SchedulerException {
+        ChplRepeatableTrigger chplTrigger = new ChplRepeatableTrigger(
+                (CronTrigger) getScheduler().getTrigger(triggerKey));
 
         JobDetail jobDetail = getScheduler().getJobDetail(getScheduler().getTrigger(triggerKey).getJobKey());
         ChplJob chplJob = new ChplJob(jobDetail);
@@ -220,7 +279,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
     }
 
     private Boolean doesUserHavePermissionToJob(final JobDetail jobDetail) {
-        //Get the authorities from the job
+        // Get the authorities from the job
         if (jobDetail.getJobDataMap().containsKey("authorities")) {
             List<String> authorities = new ArrayList<String>(
                     Arrays.asList(jobDetail.getJobDataMap().get("authorities").toString().split(AUTHORITY_DELIMITER)));
@@ -233,11 +292,13 @@ public class SchedulerManagerImpl implements SchedulerManager {
                 }
             }
         } else {
-            //If no authorities are present, we assume there are no permissions on the job
-            //and everyone has access
+            // If no authorities are present, we assume there are no permissions
+            // on the job
+            // and everyone has access
             return true;
         }
-        //At this point we have fallen through all of the logic, and the user does not have the appropriate rights
+        // At this point we have fallen through all of the logic, and the user
+        // does not have the appropriate rights
         return false;
     }
 
@@ -246,8 +307,8 @@ public class SchedulerManagerImpl implements SchedulerManager {
         if (doesUserHavePermissionToJob(getScheduler().getJobDetail(trigger.getJobKey()))) {
             if (!StringUtils.isEmpty(trigger.getJobDataMap().getString("acb"))) {
                 // get acbs user has access to
-                List<CertificationBodyDTO> validAcbs = acbManager.getAllForUser();
-                for (String acb : trigger.getJobDataMap().getString("acb").split("\u263A")) {
+                List<CertificationBodyDTO> validAcbs = resourcePermissions.getAllAcbsForCurrentUser();
+                for (String acb : trigger.getJobDataMap().getString("acb").split(DATA_DELIMITER)) {
                     boolean found = false;
                     for (CertificationBodyDTO validAcb : validAcbs) {
                         if (acb.equalsIgnoreCase(validAcb.getName())) {
@@ -265,17 +326,27 @@ public class SchedulerManagerImpl implements SchedulerManager {
         return false;
     }
 
-    private String createTriggerGroup(final ChplTrigger trigger) {
-        String group = trigger.getJob().getName().replaceAll(" ", "");
+    private String createTriggerGroup(final ChplJob job) {
+        return createTriggerGroup(job.getName());
+    }
+
+    private String createTriggerGroup(final String triggerName) {
+        String group = triggerName.replaceAll(" ", "");
         group += "Trigger";
         return group;
     }
 
-    private String createTriggerName(final ChplTrigger trigger) {
-        String name = trigger.getEmail().replaceAll("\\.",  "_");
+    private String createTriggerName(final ChplRepeatableTrigger trigger) {
+        String name = trigger.getEmail().replaceAll("\\.", "_");
         if (!StringUtils.isEmpty(trigger.getAcb())) {
             name += trigger.getAcb();
         }
         return name;
+    }
+
+    private String createTriggerName(final ChplOneTimeTrigger trigger) {
+        Date toFormat = new Date(trigger.getRunDateMillis());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
+        return sdf.format(toFormat);
     }
 }

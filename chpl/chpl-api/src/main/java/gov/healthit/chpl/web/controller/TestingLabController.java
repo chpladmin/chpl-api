@@ -31,7 +31,6 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.ChplPermission;
 import gov.healthit.chpl.domain.PermittedUser;
 import gov.healthit.chpl.domain.TestingLab;
-import gov.healthit.chpl.domain.UpdateUserAndAtlRequest;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -39,6 +38,9 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.manager.TestingLabManager;
 import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
+import gov.healthit.chpl.web.controller.annotation.CacheControl;
+import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
+import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import gov.healthit.chpl.web.controller.results.PermittedUserResults;
 import gov.healthit.chpl.web.controller.results.TestingLabResults;
 import io.swagger.annotations.Api;
@@ -57,10 +59,10 @@ public class TestingLabController {
 
     @ApiOperation(value = "List all testing labs (ATLs).",
             notes = "Setting the 'editable' parameter to true will return all ATLs that the logged in user has edit "
-                    + "permissions on.  Setting 'showDeleted' to true will include even those ATLs that have been "
-                    + "deleted. The logged in user must have ROLE_ADMIN to see deleted ATLs. The default behavior of "
-                    + "this service is to list all of the ATLs in the system that are not deleted.")
+                    + "permissions on.  Security Restrictions: When 'editable' is 'true' ROLE_ADMIN or ROLE_ONC can see all ATLs.  ROLE_ATL "
+                    + "can see their own ATL.  When 'editable' is 'false' all users can see all ATLs.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody TestingLabResults getAtls(
             @RequestParam(required = false, defaultValue = "false") final boolean editable) {
         TestingLabResults results = new TestingLabResults();
@@ -80,8 +82,7 @@ public class TestingLabController {
     }
 
     @ApiOperation(value = "Get details about a specific testing lab (ATL).",
-            notes = "The logged in user must have ROLE_ADMIN or have either read or"
-                    + "administrative authority on the testing lab with the ID specified.")
+            notes = "")
     @RequestMapping(value = "/{atlId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody TestingLab getAtlById(@PathVariable("atlId") final Long atlId)
             throws EntityRetrievalException {
@@ -91,7 +92,7 @@ public class TestingLabController {
     }
 
     @ApiOperation(value = "Create a new testing lab.",
-            notes = "The logged in user must have ROLE_ADMIN to create a new testing lab.")
+            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC to create a new testing lab.")
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public TestingLab createAtl(@RequestBody final TestingLab atlInfo)
@@ -129,7 +130,7 @@ public class TestingLabController {
     }
 
     @ApiOperation(value = "Update an existing ATL.",
-            notes = "The logged in user must either have ROLE_ADMIN or have administrative "
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ATL and have administrative "
                     + "authority on the testing lab whose data is being updated.")
     @RequestMapping(value = "/{atlId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
@@ -148,18 +149,22 @@ public class TestingLabController {
         //security is different from normal ATL updates - only admins are allowed
         //whereas an ATL admin can update other info
         TestingLabDTO existingAtl = atlManager.getIfPermissionById(updatedAtl.getId());
-        if (existingAtl.isRetired() != updatedAtl.isRetired() && updatedAtl.isRetired()) {
+        if (updatedAtl.isRetired()) {
             //we are retiring this ATL and no other changes can be made
-            atlManager.retire(updatedAtl.getId());
+            TestingLabDTO toRetire = new TestingLabDTO();
+            toRetire.setRetirementDate(updatedAtl.getRetirementDate());
+            toRetire.setId(updatedAtl.getId());
+            atlManager.retire(toRetire);
         } else {
-            if (existingAtl.isRetired() != updatedAtl.isRetired() && !updatedAtl.isRetired()) {
+            if (existingAtl.isRetired()) {
                 //unretire the ATL
                 atlManager.unretire(updatedAtl.getId());
             }
             TestingLabDTO toUpdate = new TestingLabDTO();
             toUpdate.setId(updatedAtl.getId());
             toUpdate.setTestingLabCode(updatedAtl.getAtlCode());
-            toUpdate.setRetired(updatedAtl.isRetired());
+            toUpdate.setRetired(false);
+            toUpdate.setRetirementDate(null);
             toUpdate.setAccredidationNumber(updatedAtl.getAccredidationNumber());
             if (StringUtils.isEmpty(updatedAtl.getName())) {
                 throw new InvalidArgumentsException("A name is required for a testing lab");
@@ -190,10 +195,10 @@ public class TestingLabController {
     }
 
     @ApiOperation(value = "Remove user permissions from an ATL.",
-            notes = "The logged in user must have ROLE_ADMIN or ROLE_ATL and have administrative authority on the "
-                    + " specified ATL. The user specified in the request will have all authorities "
-                    + " removed that are associated with the specified ATL.")
-    @RequestMapping(value = "{atlId}/users/{userId}", method = RequestMethod.DELETE, 
+            notes = "The user specified in the request will have all authorities "
+                    + "removed that are associated with the specified ATL.  Security Restrictions: ROLE_ADMIN, "
+                    + "ROLE_ONC, or ROLE_ATL and have administrative authority on the specified ATL.")
+    @RequestMapping(value = "{atlId}/users/{userId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public String deleteUserFromAtl(@PathVariable final Long atlId, @PathVariable final Long userId)
             throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
@@ -218,8 +223,8 @@ public class TestingLabController {
     }
 
     @ApiOperation(value = "List users with permissions on a specified ATL.",
-            notes = "The logged in user must have ROLE_ADMIN or have administrative or read authority on the "
-                    + " specified ATL.")
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or have administrative "
+                    + "or read authority on the specified ATL.")
     @RequestMapping(value = "/{atlId}/users", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody PermittedUserResults getUsers(@PathVariable("atlId") final Long atlId)

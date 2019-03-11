@@ -1,9 +1,6 @@
 package gov.healthit.chpl.web.controller;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +23,12 @@ import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
+import gov.healthit.chpl.domain.Product;
+import gov.healthit.chpl.domain.SplitDeveloperRequest;
 import gov.healthit.chpl.domain.TransparencyAttestationMap;
 import gov.healthit.chpl.domain.UpdateDevelopersRequest;
 import gov.healthit.chpl.dto.AddressDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
@@ -39,8 +39,12 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
+import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.web.controller.results.DeveloperResults;
+import gov.healthit.chpl.web.controller.results.SplitDeveloperResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -51,8 +55,16 @@ public class DeveloperController {
 
     @Autowired
     private DeveloperManager developerManager;
+    @Autowired
+    private CertifiedProductManager cpManager;
+    @Autowired
+    private ErrorMessageUtil msgUtil;
+    @Autowired
+    private ChplProductNumberUtil chplProductNumberUtil;
 
-    @ApiOperation(value = "List all developers in the system.", notes = "")
+    @ApiOperation(value = "List all developers in the system.",
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, and ROLE_ACB can see deleted "
+                    + "developers.  Everyone else can only see active developers.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody DeveloperResults getDevelopers(
             @RequestParam(value = "showDeleted", required = false, defaultValue = "false") final boolean showDeleted) {
@@ -78,7 +90,7 @@ public class DeveloperController {
 
     @ApiOperation(value = "Get information about a specific developer.", notes = "")
     @RequestMapping(value = "/{developerId}", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody Developer getDeveloperById(@PathVariable("developerId") final Long developerId)
             throws EntityRetrievalException {
         DeveloperDTO developer = developerManager.getById(developerId);
@@ -97,14 +109,108 @@ public class DeveloperController {
                     + "meaning that a new developer is created with all of the information provided (name, address, "
                     + "etc.) and all of the prodcuts previously assigned to the developerId's specified are "
                     + "reassigned to the newly created developer. The old developers are then deleted. "
-                    + " The logged in user must have ROLE_ADMIN, ROLE_ONC, or ROLE_ACB. ")
+                    + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB")
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public ResponseEntity<Developer> updateDeveloper(
             @RequestBody(required = true) final UpdateDevelopersRequest developerInfo) throws InvalidArgumentsException,
-            EntityCreationException, EntityRetrievalException, JsonProcessingException,
-            ValidationException, MissingReasonException {
+    EntityCreationException, EntityRetrievalException, JsonProcessingException,
+    ValidationException, MissingReasonException {
         return update(developerInfo);
+    }
+
+    @ApiOperation(
+            value = "Split a developer - some products stay with the existing developer and some products are moved "
+                    + "to a new developer.",
+                    notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB")
+    @RequestMapping(value = "/{developerId}/split", method = RequestMethod.POST,
+    consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+    public ResponseEntity<SplitDeveloperResponse> splitDeveloper(@PathVariable("developerId") final Long developerId,
+            @RequestBody(required = true) final SplitDeveloperRequest splitRequest)
+                    throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
+                    ValidationException, JsonProcessingException {
+
+        //validate required fields are present in the split request
+        //new developer product ids cannot be empty
+        if (splitRequest.getNewProducts() == null || splitRequest.getNewProducts().size() == 0) {
+            String error = msgUtil.getMessage("developer.split.missingNewDeveloperProducts");
+            throw new InvalidArgumentsException(error);
+        }
+        //old developer product ids cannot be empty
+        if (splitRequest.getOldProducts() == null || splitRequest.getOldProducts().size() == 0) {
+            String error = msgUtil.getMessage("developer.split.missingOldDeveloperProducts");
+            throw new InvalidArgumentsException(error);
+        }
+        //new and old developers cannot be empty
+        if (splitRequest.getNewDeveloper() == null || splitRequest.getOldDeveloper() == null) {
+            String error = msgUtil.getMessage("developer.split.newAndOldDeveloperRequired");
+            throw new InvalidArgumentsException(error);
+        }
+        //make sure the developer id in the split request matches the developer id on the url path
+        if (splitRequest.getOldDeveloper().getDeveloperId() != null
+                && developerId.longValue() != splitRequest.getOldDeveloper().getDeveloperId().longValue()) {
+            throw new InvalidArgumentsException(msgUtil.getMessage("developer.split.requestMismatch"));
+        }
+
+        DeveloperDTO oldDeveloper = developerManager.getById(splitRequest.getOldDeveloper().getDeveloperId());
+        DeveloperDTO newDeveloper = new DeveloperDTO();
+        newDeveloper.setName(splitRequest.getNewDeveloper().getName());
+        newDeveloper.setWebsite(splitRequest.getNewDeveloper().getWebsite());
+        for (TransparencyAttestationMap attMap : splitRequest.getNewDeveloper().getTransparencyAttestations()) {
+            DeveloperACBMapDTO devMap = new DeveloperACBMapDTO();
+            devMap.setAcbId(attMap.getAcbId());
+            devMap.setAcbName(attMap.getAcbName());
+            devMap.setTransparencyAttestation(attMap.getAttestation());
+            newDeveloper.getTransparencyAttestationMappings().add(devMap);
+        }
+        if (splitRequest.getNewDeveloper().getAddress() != null) {
+            AddressDTO developerAddress = new AddressDTO();
+            developerAddress.setStreetLineOne(splitRequest.getNewDeveloper().getAddress().getLine1());
+            developerAddress.setStreetLineTwo(splitRequest.getNewDeveloper().getAddress().getLine2());
+            developerAddress.setCity(splitRequest.getNewDeveloper().getAddress().getCity());
+            developerAddress.setState(splitRequest.getNewDeveloper().getAddress().getState());
+            developerAddress.setZipcode(splitRequest.getNewDeveloper().getAddress().getZipcode());
+            developerAddress.setCountry(splitRequest.getNewDeveloper().getAddress().getCountry());
+            newDeveloper.setAddress(developerAddress);
+        }
+        if (splitRequest.getNewDeveloper().getContact() != null) {
+            ContactDTO developerContact = new ContactDTO();
+            developerContact.setFullName(splitRequest.getNewDeveloper().getContact().getFullName());
+            developerContact.setFriendlyName(splitRequest.getNewDeveloper().getContact().getFriendlyName());
+            developerContact.setEmail(splitRequest.getNewDeveloper().getContact().getEmail());
+            developerContact.setPhoneNumber(splitRequest.getNewDeveloper().getContact().getPhoneNumber());
+            developerContact.setTitle(splitRequest.getNewDeveloper().getContact().getTitle());
+            newDeveloper.setContact(developerContact);
+        }
+        List<Long> newDeveloperProductIds = new ArrayList<Long>(splitRequest.getNewProducts().size());
+        for (Product newDeveloperProduct : splitRequest.getNewProducts()) {
+            newDeveloperProductIds.add(newDeveloperProduct.getProductId());
+        }
+
+        DeveloperDTO createdDeveloper = developerManager.split(oldDeveloper, newDeveloper, newDeveloperProductIds);
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+        DeveloperDTO originalDeveloper = developerManager.getById(oldDeveloper.getId());
+        SplitDeveloperResponse response = new SplitDeveloperResponse();
+        response.setNewDeveloper(new Developer(createdDeveloper));
+        response.setOldDeveloper(new Developer(originalDeveloper));
+
+        // find out which CHPL product numbers would have changed (only
+        // new-style ones) and add them to the response header
+        List<CertifiedProductDetailsDTO> possibleChangedChplIds = cpManager.getByDeveloperId(originalDeveloper.getId());
+        if (possibleChangedChplIds != null && possibleChangedChplIds.size() > 0) {
+            StringBuffer buf = new StringBuffer();
+            for (CertifiedProductDetailsDTO possibleChanged : possibleChangedChplIds) {
+                if (!chplProductNumberUtil.isLegacy(possibleChanged.getChplProductNumber())) {
+                    if (buf.length() > 0) {
+                        buf.append(",");
+                    }
+                    buf.append(possibleChanged.getChplProductNumber());
+                }
+            }
+            responseHeaders.set("CHPL-Id-Changed", buf.toString());
+        }
+        return new ResponseEntity<SplitDeveloperResponse>(response, responseHeaders, HttpStatus.OK);
     }
 
     private synchronized ResponseEntity<Developer> update(final UpdateDevelopersRequest developerInfo)
@@ -115,24 +221,16 @@ public class DeveloperController {
         DeveloperDTO result = null;
         HttpHeaders responseHeaders = new HttpHeaders();
 
+        // Merge these developers into one.
+        // create a new developer with the rest of the passed in
+        // information; first validate the new developer
         if (developerInfo.getDeveloperIds().size() > 1) {
-            // merge these developers into one
-            // - create a new developer with the rest of the passed in
-            // information
             DeveloperDTO toCreate = new DeveloperDTO();
             toCreate.setDeveloperCode(developerInfo.getDeveloper().getDeveloperCode());
             toCreate.setName(developerInfo.getDeveloper().getName());
             toCreate.setWebsite(developerInfo.getDeveloper().getWebsite());
-
             if (developerInfo.getDeveloper().getStatusEvents() != null
                     && developerInfo.getDeveloper().getStatusEvents().size() > 0) {
-                List<String> statusErrors = validateDeveloperStatusEvents(
-                        developerInfo.getDeveloper().getStatusEvents());
-                if (statusErrors.size() > 0) {
-                    // can only have one error message here for the status text
-                    // so just pick the first one
-                    throw new InvalidArgumentsException(statusErrors.get(0));
-                }
                 for (DeveloperStatusEvent providedStatusHistory : developerInfo.getDeveloper().getStatusEvents()) {
                     DeveloperStatusDTO status = new DeveloperStatusDTO();
                     status.setStatusName(providedStatusHistory.getStatus().getStatus());
@@ -142,8 +240,7 @@ public class DeveloperController {
                     toCreate.getStatusEvents().add(toCreateHistory);
                 }
                 // if no history is passed in, an Active status gets added in
-                // the DAO
-                // when the new developer is created
+                // the DAO when the new developer is created
             }
 
             Address developerAddress = developerInfo.getDeveloper().getAddress();
@@ -173,7 +270,7 @@ public class DeveloperController {
             result = developerManager.getById(result.getId());
         } else if (developerInfo.getDeveloperIds().size() == 1) {
             // update the information for the developer id supplied in the
-            // database
+            // database.
             DeveloperDTO toUpdate = new DeveloperDTO();
             toUpdate.setDeveloperCode(developerInfo.getDeveloper().getDeveloperCode());
             toUpdate.setId(developerInfo.getDeveloperIds().get(0));
@@ -189,14 +286,6 @@ public class DeveloperController {
 
             if (developerInfo.getDeveloper().getStatusEvents() != null
                     && developerInfo.getDeveloper().getStatusEvents().size() > 0) {
-                List<String> statusErrors = validateDeveloperStatusEvents(
-                        developerInfo.getDeveloper().getStatusEvents());
-                if (statusErrors.size() > 0) {
-                    // can only have one error message here for the status text
-                    // so just pick the first one
-                    throw new InvalidArgumentsException(statusErrors.get(0));
-                }
-
                 for (DeveloperStatusEvent providedStatusHistory : developerInfo.getDeveloper().getStatusEvents()) {
                     DeveloperStatusDTO status = new DeveloperStatusDTO();
                     status.setId(providedStatusHistory.getStatus().getId());
@@ -209,8 +298,6 @@ public class DeveloperController {
                     toCreateHistory.setReason(providedStatusHistory.getReason());
                     toUpdate.getStatusEvents().add(toCreateHistory);
                 }
-            } else {
-                throw new InvalidArgumentsException("The developer must have a current status specified.");
             }
 
             if (developerInfo.getDeveloper().getAddress() != null) {
@@ -235,7 +322,7 @@ public class DeveloperController {
                 toUpdate.setContact(toUpdateContact);
             }
 
-            result = developerManager.update(toUpdate);
+            result = developerManager.update(toUpdate, true);
             responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
         }
 
@@ -244,54 +331,5 @@ public class DeveloperController {
         }
         Developer restResult = new Developer(result);
         return new ResponseEntity<Developer>(restResult, responseHeaders, HttpStatus.OK);
-    }
-
-    private List<String> validateDeveloperStatusEvents(final List<DeveloperStatusEvent> statusEvents) {
-        List<String> errors = new ArrayList<String>();
-        if (statusEvents == null || statusEvents.size() == 0) {
-            errors.add("The developer must have at least a current status specified.");
-        } else {
-            // sort the status events by date
-            statusEvents.sort(new DeveloperStatusEventComparator());
-
-            // now that the list is sorted by date, make sure no two statuses
-            // next to each other are the same
-            Iterator<DeveloperStatusEvent> iter = statusEvents.iterator();
-            DeveloperStatusEvent prev = null, curr = null;
-            while (iter.hasNext()) {
-                if (prev == null) {
-                    prev = iter.next();
-                } else if (curr == null) {
-                    curr = iter.next();
-                } else {
-                    prev = curr;
-                    curr = iter.next();
-                }
-
-                if (prev != null && curr != null
-                        && prev.getStatus().getStatus().equalsIgnoreCase(curr.getStatus().getStatus())) {
-                    errors.add("The status '" + prev.getStatus().getStatus() + "' cannot be listed twice in a row.");
-                }
-            }
-        }
-        return errors;
-    }
-
-    static class DeveloperStatusEventComparator implements Comparator<DeveloperStatusEvent>, Serializable {
-        private static final long serialVersionUID = 7816629342251138939L;
-
-        @Override
-        public int compare(final DeveloperStatusEvent o1, final DeveloperStatusEvent o2) {
-            if (o1 != null && o2 != null) {
-                // neither are null, compare the dates
-                return o1.getStatusDate().compareTo(o2.getStatusDate());
-            } else if (o1 == null && o2 != null) {
-                return -1;
-            } else if (o1 != null && o2 == null) {
-                return 1;
-            } else {  // o1 and o2 are both null
-                return 0;
-            }
-        }
     }
 }

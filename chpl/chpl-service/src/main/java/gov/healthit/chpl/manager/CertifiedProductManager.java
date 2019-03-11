@@ -16,6 +16,7 @@ import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.ValidationException;
 
 public interface CertifiedProductManager {
 
@@ -41,7 +42,7 @@ public interface CertifiedProductManager {
 
     CertifiedProductDTO update(Long acbId, ListingUpdateRequest updateRequest,
             CertifiedProductSearchDetails existingListing) throws EntityRetrievalException, JsonProcessingException,
-            EntityCreationException, InvalidArgumentsException, IOException;
+            EntityCreationException, InvalidArgumentsException, IOException, ValidationException;
 
     void sanitizeUpdatedListingData(Long acbId, CertifiedProductSearchDetails listing)
             throws EntityNotFoundException;

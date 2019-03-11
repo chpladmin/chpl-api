@@ -43,6 +43,7 @@ import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.MissingReasonException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
@@ -329,15 +330,9 @@ public class ProductManagerTest extends TestCase {
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
-    //i had this method in here to test for updates being allowed
-    //when then developer is Active, but it fails because it triggers
-    //a suspicious activity event and tries to send email.
-    //we're missing the email properties but i don't think we want to
-    //have one sent anyway.. so excluding that test.
     @Test
     @Transactional
     @Rollback
-    @Ignore
     public void testAllowedToUpdateProductWithActiveDeveloper()
             throws EntityRetrievalException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -359,8 +354,8 @@ public class ProductManagerTest extends TestCase {
     @Test
     @Transactional
     @Rollback
-    public void testNotAllowedToUpdateProductWithInactiveDeveloper()
-            throws EntityRetrievalException, JsonProcessingException, MissingReasonException {
+    public void testUpdateProductWithInactiveDeveloper_adminAllowed()
+            throws EntityRetrievalException, JsonProcessingException, MissingReasonException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         //change dev to suspended
@@ -375,7 +370,7 @@ public class ProductManagerTest extends TestCase {
 
         boolean failed = false;
         try {
-            developer = developerManager.update(developer);
+            developer = developerManager.update(developer, false);
         } catch (EntityCreationException ex) {
             System.out.println(ex.getMessage());
             failed = true;
@@ -399,7 +394,7 @@ public class ProductManagerTest extends TestCase {
             System.out.println(ex.getMessage());
             failed = true;
         }
-        assertTrue(failed);
+        assertFalse(failed);
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
@@ -459,7 +454,7 @@ public class ProductManagerTest extends TestCase {
     @Rollback
     public void testProductSplitFailsWithSuspendedDeveloper()
             throws EntityRetrievalException, EntityCreationException,
-            JsonProcessingException, MissingReasonException {
+            JsonProcessingException, MissingReasonException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         DeveloperDTO developer = developerManager.getById(-1L);
         //suspended by ONC
@@ -469,7 +464,7 @@ public class ProductManagerTest extends TestCase {
         newStatusHistory.setStatus(newStatus);
         newStatusHistory.setStatusDate(new Date());
         developer.getStatusEvents().add(newStatusHistory);
-        developer = developerManager.update(developer);
+        developer = developerManager.update(developer, false);
 
         ProductDTO origProduct = productManager.getById(-2L);
         ProductDTO newProduct = new ProductDTO();

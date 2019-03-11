@@ -52,6 +52,8 @@ import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.manager.TestingLabManager;
+import gov.healthit.chpl.manager.UserPermissionsManager;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import io.swagger.annotations.Api;
@@ -93,11 +95,15 @@ public class ActivityController {
     private ChplProductNumberUtil chplProductNumberUtil;
     @Autowired
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
-
+    @Autowired
+    private ResourcePermissions resourcePermissions;
+    
     @Autowired private MessageSource messageSource;
 
     @ApiOperation(value = "Get auditable data for certification bodies.",
-            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "
+                    + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all certification bodies.  "
+                    + "ROLE_ACB can see their own information.")
     @RequestMapping(value = "/acbs", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForACBs(@RequestParam final Long start,
             @RequestParam final Long end)
@@ -106,22 +112,24 @@ public class ActivityController {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
-        if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
+        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
             return activityManager.getAllAcbActivity(startDate, endDate);
         }
-        List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser();
+        List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
         return activityManager.getAcbActivity(allowedAcbs, startDate, endDate);
     }
 
     @ApiOperation(value = "Get auditable data for a specific certification body.",
-            notes = "A start and end date may optionally be provided to limit activity results.")
+            notes = "A start and end date may optionally be provided to limit activity results.  "
+                    + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all certification bodies.  "
+                    + "ROLE_ACB can see their own information.")
     @RequestMapping(value = "/acbs/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
 
     public List<ActivityEvent> activityForACBById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
-        CertificationBodyDTO acb = acbManager.getIfPermissionById(id); // throws 404 if ACB doesn't exist
-        if (acb != null && acb.isRetired() && !Util.isUserRoleAdmin() && !Util.isUserRoleOnc()) {
+        CertificationBodyDTO acb = resourcePermissions.getAcbIfPermissionById(id); // throws 404 if ACB doesn't exist
+        if (acb != null && acb.isRetired() && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
             LOGGER.warn("Non-admin user " + Util.getUsername()
             + " tried to see activity for retired ACB " + acb.getName());
             throw new AccessDeniedException("Only Admins can see retired ACBs.");
@@ -145,7 +153,7 @@ public class ActivityController {
                     LocaleContextHolder.getLocale()));
         }
 
-        List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser();
+        List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
         acb = null;
         for (CertificationBodyDTO allowedAcb : allowedAcbs) {
             if (allowedAcb.getId().longValue() == id.longValue()) {
@@ -178,8 +186,9 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get auditable data for a specific announcement",
-            notes = "Anonymous users are only allowed to see activity for public announcements."
-                    + "A start and end date may optionally be provided to limit activity results.")
+            notes = "A start and end date may optionally be provided to limit activity results.  "
+                    + "Security Restrictions: Anonymous users are only allowed to see activity for public "
+                    + "announcements.  All other roles can see private and public announcements.")
     @RequestMapping(value = "/announcements/{id}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForAnnouncementById(@PathVariable("id") final Long id,
@@ -209,14 +218,16 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get auditable data for testing labs.",
-            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "
+                    + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all testing labs.  "
+                    + "ROLE_ATL can see their own information.")
     @RequestMapping(value = "/atls", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityforATLs(@RequestParam final Long start, @RequestParam final Long end)
             throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
-        if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
+        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
             return activityManager.getAllAtlActivity(startDate, endDate);
         }
         List<TestingLabDTO> allowedAtls = atlManager.getAllForUser();
@@ -224,13 +235,15 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get auditable data for a specific testing lab.",
-            notes = "A start and end date may optionally be provided to limit activity results.")
+            notes = "A start and end date may optionally be provided to limit activity results.  "
+                    + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all testing labs.  "
+                    + "ROLE_ATL can see their own information.")
     @RequestMapping(value = "/atls/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForATLById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
         TestingLabDTO atl = atlManager.getIfPermissionById(id); // throws 404 if bad id
-        if (atl != null && atl.isRetired() && !Util.isUserRoleAdmin() && !Util.isUserRoleOnc()) {
+        if (atl != null && atl.isRetired() && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
             LOGGER.warn("Non-admin user " + Util.getUsername()
             + " tried to see activity for retired ATL " + atl.getName());
             throw new AccessDeniedException("Only Admins can see retired ATLs.");
@@ -271,7 +284,8 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get auditable data for all API keys",
-            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
+                    + "Security Restrictions: Only ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/api_keys", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForApiKeys(@RequestParam final Long start,
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
@@ -421,7 +435,8 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get auditable data for all pending certified products",
-            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.  "
+                    + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB (specific to own ACB).")
     @RequestMapping(value = "/pending_certified_products", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForPendingCertifiedProducts(@RequestParam final Long start,
@@ -429,15 +444,16 @@ public class ActivityController {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
-        if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
+        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
             return activityManager.getAllPendingListingActivity(startDate, endDate);
         }
-        List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser();
+        List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
         return activityManager.getPendingListingActivityByAcb(allowedAcbs, startDate, endDate);
     }
 
     @ApiOperation(value = "Get auditable data for a specific pending certified product.",
-            notes = "A start and end date may optionally be provided to limit activity results.")
+            notes = "A start and end date may optionally be provided to limit activity results.  "
+                    + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB (specific to own ACB).")
     @RequestMapping(value = "/pending_certified_products/{id}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForPendingCertifiedProductById(@PathVariable("id") final Long id,
@@ -454,7 +470,7 @@ public class ActivityController {
             //make sure the user has permissions on the pending listings acb
             //will throw access denied if they do not have the permissions
             Long pendingListingAcbId = new Long(pendingListing.getCertifyingBody().get("id").toString());
-            acbManager.getIfPermissionById(pendingListingAcbId);
+            resourcePermissions.getAcbIfPermissionById(pendingListingAcbId);
         }
 
         //if one of start of end is provided then the other must also be provided.
@@ -476,7 +492,7 @@ public class ActivityController {
         }
 
         //admin can get anything
-        if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
+        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
             return activityManager.getPendingListingActivity(id, startDate, endDate);
         }
         return activityManager.getPendingListingActivity(pendingListing.getId(), startDate, endDate);
@@ -565,7 +581,9 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get auditable data about all CHPL user accounts",
-            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.  "
+                    + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_CMS_STAFF "
+                    + "(of ROLE_CMS_STAFF Users), ROLE_ACB (of their own), or ROLE_ATL (of their own).")
     @RequestMapping(value = "/users", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @PreAuthorize("isAuthenticated()")
     public List<ActivityEvent> activityForUsers(@RequestParam final Long start,
@@ -573,7 +591,7 @@ public class ActivityController {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
-        if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
+        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
             return activityManager.getAllUserActivity(startDate, endDate);
         }
         Set<Long> userIdsToSearch = getAllowedUsersForActivitySearch();
@@ -581,7 +599,9 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get auditable data about a specific CHPL user account.",
-            notes = "A start and end date may optionally be provided to limit activity results.")
+            notes = "A start and end date may optionally be provided to limit activity results.  "
+                    + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_CMS_STAFF "
+                    + "(of ROLE_CMS_STAFF Users), ROLE_ACB (of their own), or ROLE_ATL (of their own).")
     @RequestMapping(value = "/users/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForUsers(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start,
@@ -609,7 +629,7 @@ public class ActivityController {
 
         //ROLE_ADMIN can get user activity on any user; other roles must
         //have some association to the user so check if this request is allowed.
-        if (!Util.isUserRoleAdmin() && !Util.isUserRoleOnc()) {
+        if (!resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
             Set<Long> allowedUserIds = getAllowedUsersForActivitySearch();
             if (!allowedUserIds.contains(id)) {
                 throw new AccessDeniedException("User " + Util.getUsername()
@@ -664,8 +684,8 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Track the actions of all users in the system",
-            notes = "The authenticated user calling this method must have ROLE_ADMIN or ROLE_ONC. "
-                    + "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
+                    + "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/user_activities", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<UserActivity> activityByUser(@RequestParam final Long start,
@@ -678,8 +698,8 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Track the actions of a specific user in the system",
-            notes = "The authenticated user calling this method must have ROLE_ADMIN or ROLE_ONC. "
-                    + "A start and end date may optionally be provided to limit activity results.")
+            notes = "A start and end date may optionally be provided to limit activity results."
+                    + "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/user_activities/{id}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityByUser(@PathVariable("id") final Long id,
@@ -715,17 +735,17 @@ public class ActivityController {
 
         //user can see activity for other users in the same acb
 
-        if (Util.isUserRoleAcbAdmin()) {
-            List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser();
+        if (resourcePermissions.isUserRoleAcbAdmin()) {
+            List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
             for (CertificationBodyDTO acb : allowedAcbs) {
-                List<UserDTO> acbUsers = acbManager.getAllUsersOnAcb(acb);
+                List<UserDTO> acbUsers = resourcePermissions.getAllUsersOnAcb(acb);
                 for (UserDTO user : acbUsers) {
                     allowedUserIds.add(user.getId());
                 }
             }
         }
         //user can see activity for other users in the same atl
-        if (Util.isUserRoleAtlAdmin()) {
+        if (resourcePermissions.isUserRoleAtlAdmin()) {
             List<TestingLabDTO> allowedAtls = atlManager.getAllForUser();
             for (TestingLabDTO atl : allowedAtls) {
                 List<UserDTO> atlUsers = atlManager.getAllUsersOnAtl(atl);
@@ -735,7 +755,7 @@ public class ActivityController {
             }
         }
         //user can see activity for other users with role cms_staff
-        if (Util.isUserRoleCmsStaff()) {
+        if (resourcePermissions.isUserRoleCmsStaff()) {
             List<UserDTO> cmsStaffUsers = userManager.getUsersWithPermission("ROLE_CMS_STAFF");
             for (UserDTO user : cmsStaffUsers) {
                 allowedUserIds.add(user.getId());

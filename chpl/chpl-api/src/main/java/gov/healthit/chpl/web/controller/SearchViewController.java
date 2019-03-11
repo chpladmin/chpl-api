@@ -33,14 +33,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import gov.healthit.chpl.auth.domain.Authority;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.FuzzyChoices;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
-import gov.healthit.chpl.domain.PopulateSearchOptions;
 import gov.healthit.chpl.domain.SearchOption;
+import gov.healthit.chpl.domain.SearchableDimensionalData;
 import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
@@ -56,8 +57,12 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.DeveloperManager;
-import gov.healthit.chpl.manager.SearchMenuManager;
+import gov.healthit.chpl.manager.DimensionalDataManager;
+import gov.healthit.chpl.manager.FuzzyChoicesManager;
 import gov.healthit.chpl.util.FileUtils;
+import gov.healthit.chpl.web.controller.annotation.CacheControl;
+import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
+import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -83,7 +88,10 @@ public class SearchViewController {
     private MessageSource messageSource;
 
     @Autowired
-    private SearchMenuManager searchMenuManager;
+    private DimensionalDataManager dimensionalDataManager;
+
+    @Autowired
+    private FuzzyChoicesManager fuzzyChoicesManager;
 
     @Autowired
     private CertifiedProductSearchManager certifiedProductSearchManager;
@@ -207,12 +215,12 @@ public class SearchViewController {
      */
     @SuppressWarnings({"checkstyle:methodlength","checkstyle:parameternumber"})
     @ApiOperation(value = "Search the CHPL",
-            notes = "If paging parameters are not specified, the first 20 records are returned by default. "
-                    + "All parameters are optional. "
-                    + "Any parameter that can accept multiple things (i.e. certificationStatuses) expects "
-                    + "a comma-delimited list of those things (i.e. certificationStatuses = Active,Suspended). "
-                    + "Date parameters are required to be in the format "
-                    + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT + ". ")
+    notes = "If paging parameters are not specified, the first 20 records are returned by default. "
+            + "All parameters are optional. "
+            + "Any parameter that can accept multiple things (i.e. certificationStatuses) expects "
+            + "a comma-delimited list of those things (i.e. certificationStatuses = Active,Suspended). "
+            + "Date parameters are required to be in the format "
+            + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT + ". ")
     @ApiImplicitParams({
         @ApiImplicitParam(name = "searchTerm",
                 value = "CHPL ID, Developer (or previous developer) Name, Product Name, ONC-ACB Certification ID",
@@ -254,7 +262,7 @@ public class SearchViewController {
                 required = false, dataType = "string", paramType = "query"),
         @ApiImplicitParam(name = "nonconformityOptionsOperator",
         value = "Either AND or OR. Defaults to OR."
-                 + "Indicates whether a listing must have met all nonconformityOptions "
+                + "Indicates whether a listing must have met all nonconformityOptions "
                 + "specified or may have met any one or more of the nonconformityOptions",
                 required = false, dataType = "string", paramType = "query"),
         @ApiImplicitParam(name = "hasHadSurveillance",
@@ -344,7 +352,7 @@ public class SearchViewController {
                 String[] certificationStatusArr = certificationStatusesDelimitedTrimmed.split(",");
                 if (certificationStatusArr.length > 0) {
                     Set<String> certificationStatuses = new HashSet<String>();
-                    Set<KeyValueModel> availableCertificationStatuses = searchMenuManager.getCertificationStatuses();
+                    Set<KeyValueModel> availableCertificationStatuses = dimensionalDataManager.getCertificationStatuses();
 
                     for (int i = 0; i < certificationStatusArr.length; i++) {
                         String certStatusParam = certificationStatusArr[i].trim();
@@ -362,7 +370,7 @@ public class SearchViewController {
                 String[] certificationEditionsArr = certificationEditionsDelimitedTrimmed.split(",");
                 if (certificationEditionsArr.length > 0) {
                     Set<String> certificationEditions = new HashSet<String>();
-                    Set<KeyValueModel> availableCertificationEditions = searchMenuManager.getEditionNames(false);
+                    Set<KeyValueModel> availableCertificationEditions = dimensionalDataManager.getEditionNames(false);
 
                     for (int i = 0; i < certificationEditionsArr.length; i++) {
                         String certEditionParam = certificationEditionsArr[i].trim();
@@ -381,7 +389,7 @@ public class SearchViewController {
                 String[] certificationCriteriaArr = certificationCriteriaDelimitedTrimmed.split(",");
                 if (certificationCriteriaArr.length > 0) {
                     Set<String> certificationCriterion = new HashSet<String>();
-                    Set<DescriptiveModel> availableCriterion = searchMenuManager
+                    Set<DescriptiveModel> availableCriterion = dimensionalDataManager
                             .getCertificationCriterionNumbers(false);
 
                     for (int i = 0; i < certificationCriteriaArr.length; i++) {
@@ -406,7 +414,7 @@ public class SearchViewController {
                 String[] cqmsArr = cqmsDelimitedTrimmed.split(",");
                 if (cqmsArr.length > 0) {
                     Set<String> cqms = new HashSet<String>();
-                    Set<DescriptiveModel> availableCqms = searchMenuManager.getCQMCriterionNumbers(false);
+                    Set<DescriptiveModel> availableCqms = dimensionalDataManager.getCQMCriterionNumbers(false);
 
                     for (int i = 0; i < cqmsArr.length; i++) {
                         String cqmParam = cqmsArr[i].trim();
@@ -430,7 +438,7 @@ public class SearchViewController {
                 String[] certificationBodiesArr = certificationBodiesDelimitedTrimmed.split(",");
                 if (certificationBodiesArr.length > 0) {
                     Set<String> certBodies = new HashSet<String>();
-                    Set<KeyValueModel> availableCertBodies = searchMenuManager.getCertBodyNames();
+                    Set<CertificationBody> availableCertBodies = dimensionalDataManager.getCertBodyNames();
 
                     for (int i = 0; i < certificationBodiesArr.length; i++) {
                         String certBodyParam = certificationBodiesArr[i].trim();
@@ -572,21 +580,21 @@ public class SearchViewController {
         searchRequest.cleanAllParameters();
 
         if (searchRequest.getCertificationStatuses() != null && searchRequest.getCertificationStatuses().size() > 0) {
-            Set<KeyValueModel> availableCertificationStatuses = searchMenuManager.getCertificationStatuses();
+            Set<KeyValueModel> availableCertificationStatuses = dimensionalDataManager.getCertificationStatuses();
             for (String certStatusName : searchRequest.getCertificationStatuses()) {
                 validateCertificationStatus(certStatusName, availableCertificationStatuses);
             }
         }
 
         if (searchRequest.getCertificationEditions() != null && searchRequest.getCertificationEditions().size() > 0) {
-            Set<KeyValueModel> availableCertificationEditions = searchMenuManager.getEditionNames(false);
+            Set<KeyValueModel> availableCertificationEditions = dimensionalDataManager.getEditionNames(false);
             for (String certEditionName : searchRequest.getCertificationEditions()) {
                 validateCertificationEdition(certEditionName, availableCertificationEditions);
             }
         }
 
         if (searchRequest.getCertificationCriteria() != null && searchRequest.getCertificationCriteria().size() > 0) {
-            Set<DescriptiveModel> availableCriterion = searchMenuManager
+            Set<DescriptiveModel> availableCriterion = dimensionalDataManager
                     .getCertificationCriterionNumbers(false);
             for (String criteria : searchRequest.getCertificationCriteria()) {
                 validateCertificationCriteria(criteria, availableCriterion);
@@ -594,14 +602,14 @@ public class SearchViewController {
         }
 
         if (searchRequest.getCqms() != null && searchRequest.getCqms().size() > 0) {
-            Set<DescriptiveModel> availableCqms = searchMenuManager.getCQMCriterionNumbers(false);
+            Set<DescriptiveModel> availableCqms = dimensionalDataManager.getCQMCriterionNumbers(false);
             for (String cqm : searchRequest.getCqms()) {
                 validateCqm(cqm, availableCqms);
             }
         }
 
         if (searchRequest.getCertificationBodies() != null && searchRequest.getCertificationBodies().size() > 0) {
-            Set<KeyValueModel> availableCertBodies = searchMenuManager.getCertBodyNames();
+            Set<CertificationBody> availableCertBodies = dimensionalDataManager.getCertBodyNames();
             for (String certBody : searchRequest.getCertificationBodies()) {
                 validateCertificationBody(certBody, availableCertBodies);
             }
@@ -616,9 +624,9 @@ public class SearchViewController {
     }
 
     private void validateCertificationBody(final String certBodyParam,
-            final Set<KeyValueModel> availableCertBodies) throws InvalidArgumentsException {
+            final Set<CertificationBody> availableCertBodies) throws InvalidArgumentsException {
         boolean found = false;
-        for (KeyValueModel currAvailableCertBody : availableCertBodies) {
+        for (CertificationBody currAvailableCertBody : availableCertBodies) {
             if (currAvailableCertBody.getName().equalsIgnoreCase(certBodyParam)) {
                 found = true;
             }
@@ -731,7 +739,7 @@ public class SearchViewController {
 
     private void validatePracticeTypeParameter(final String practiceType) throws InvalidArgumentsException {
         if (!StringUtils.isEmpty(practiceType)) {
-            Set<KeyValueModel> availablePracticeTypes = searchMenuManager.getPracticeTypeNames();
+            Set<KeyValueModel> availablePracticeTypes = dimensionalDataManager.getPracticeTypeNames();
             boolean found = false;
             for (KeyValueModel currAvailablePracticeType : availablePracticeTypes) {
                 if (currAvailablePracticeType.getName().equalsIgnoreCase(practiceType)) {
@@ -803,8 +811,9 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible types of jobs that can be created in the system.")
     @RequestMapping(value = "/data/job_types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<KeyValueModel> getJobTypes() {
-        return searchMenuManager.getJobTypes();
+        return dimensionalDataManager.getJobTypes();
     }
 
     @Secured({
@@ -813,13 +822,14 @@ public class SearchViewController {
     @ApiOperation(value = "Get all fuzzy matching choices for the items that be fuzzy matched.")
     @RequestMapping(value = "/data/fuzzy_choices", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<FuzzyChoices> getFuzzyChoices()
             throws EntityRetrievalException, JsonParseException, JsonMappingException, IOException {
-        return searchMenuManager.getFuzzyChoices();
+        return fuzzyChoicesManager.getFuzzyChoices();
     }
 
     @ApiOperation(value = "Change existing fuzzy matching choices.",
-            notes = "Only CHPL users with ROLE_ADMIN or ROLE_ONC are able to update fuzzy matching choices.")
+            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/data/fuzzy_choices/{fuzzyChoiceId}", method = RequestMethod.PUT,
     consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public FuzzyChoices updateFuzzyChoicesForSearching(@RequestBody final FuzzyChoices fuzzyChoices)
@@ -838,7 +848,7 @@ public class SearchViewController {
         toUpdate.setFuzzyType(FuzzyType.getValue(fuzzyChoices.getFuzzyType()));
         toUpdate.setChoices(fuzzyChoices.getChoices());
 
-        FuzzyChoices result = searchMenuManager.updateFuzzyChoices(toUpdate);
+        FuzzyChoices result = fuzzyChoicesManager.updateFuzzyChoices(toUpdate);
         return result;
         //return new FuzzyChoices(result);
     }
@@ -847,64 +857,72 @@ public class SearchViewController {
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/classification_types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<KeyValueModel> getClassificationNames() {
-        return searchMenuManager.getClassificationNames();
+        return dimensionalDataManager.getClassificationNames();
     }
 
     @ApiOperation(value = "Get all possible certificaiton editions in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/certification_editions", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<KeyValueModel> getEditionNames() {
-        return searchMenuManager.getEditionNames(false);
+        return dimensionalDataManager.getEditionNames(false);
     }
 
     @ApiOperation(value = "Get all possible certification statuses in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/certification_statuses", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<KeyValueModel> getCertificationStatuses() {
-        return searchMenuManager.getCertificationStatuses();
+        return dimensionalDataManager.getCertificationStatuses();
     }
 
     @ApiOperation(value = "Get all possible practice types in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/practice_types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<KeyValueModel> getPracticeTypeNames() {
-        return searchMenuManager.getPracticeTypeNames();
+        return dimensionalDataManager.getPracticeTypeNames();
     }
 
     @ApiOperation(value = "Get all possible product names in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/products", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<KeyValueModelStatuses> getProductNames() {
-        return searchMenuManager.getProductNames();
+        return dimensionalDataManager.getProductNames();
     }
 
     @ApiOperation(value = "Get all possible developer names in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/developers", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<KeyValueModelStatuses> getDeveloperNames() {
-        return searchMenuManager.getDeveloperNames();
+        return dimensionalDataManager.getDeveloperNames();
     }
 
     @ApiOperation(value = "Get all possible ACBs in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/certification_bodies", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
-    public @ResponseBody Set<KeyValueModel> getCertBodyNames() {
-        return searchMenuManager.getCertBodyNames();
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody Set<CertificationBody> getCertBodyNames() {
+        return dimensionalDataManager.getCertBodyNames();
     }
 
     @ApiOperation(value = "Get all possible education types in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/education_types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getEducationTypes() {
-        Set<KeyValueModel> data = searchMenuManager.getEducationTypes();
+        Set<KeyValueModel> data = dimensionalDataManager.getEducationTypes();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);
@@ -915,8 +933,9 @@ public class SearchViewController {
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/age_ranges", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getAgeRanges() {
-        Set<KeyValueModel> data = searchMenuManager.getAgeRanges();
+        Set<KeyValueModel> data = dimensionalDataManager.getAgeRanges();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);
@@ -927,8 +946,9 @@ public class SearchViewController {
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/test_functionality", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getTestFunctionality() {
-        Set<TestFunctionality> data = searchMenuManager.getTestFunctionality();
+        Set<TestFunctionality> data = dimensionalDataManager.getTestFunctionality();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);
@@ -939,8 +959,9 @@ public class SearchViewController {
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/test_tools", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getTestTools() {
-        Set<KeyValueModel> data = searchMenuManager.getTestTools();
+        Set<KeyValueModel> data = dimensionalDataManager.getTestTools();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);
@@ -951,8 +972,9 @@ public class SearchViewController {
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/test_procedures", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getTestProcedures() {
-        Set<CriteriaSpecificDescriptiveModel> data = searchMenuManager.getTestProcedures();
+        Set<CriteriaSpecificDescriptiveModel> data = dimensionalDataManager.getTestProcedures();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);
@@ -963,8 +985,9 @@ public class SearchViewController {
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/test_data", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getTestData() {
-        Set<CriteriaSpecificDescriptiveModel> data = searchMenuManager.getTestData();
+        Set<CriteriaSpecificDescriptiveModel> data = dimensionalDataManager.getTestData();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);
@@ -975,8 +998,9 @@ public class SearchViewController {
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/test_standards", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getTestStandards() {
-        Set<TestStandard> data = searchMenuManager.getTestStandards();
+        Set<TestStandard> data = dimensionalDataManager.getTestStandards();
         SearchOption result = new SearchOption();
         result.setExpandable(true);
         result.setData(data);
@@ -987,8 +1011,9 @@ public class SearchViewController {
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/qms_standards", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getQmsStandards() {
-        Set<KeyValueModel> data = searchMenuManager.getQmsStandards();
+        Set<KeyValueModel> data = dimensionalDataManager.getQmsStandards();
         SearchOption result = new SearchOption();
         result.setExpandable(true);
         result.setData(data);
@@ -999,8 +1024,9 @@ public class SearchViewController {
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/targeted_users", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getTargetedUsers() {
-        Set<KeyValueModel> data = searchMenuManager.getTargetedUesrs();
+        Set<KeyValueModel> data = dimensionalDataManager.getTargetedUesrs();
         SearchOption result = new SearchOption();
         result.setExpandable(true);
         result.setData(data);
@@ -1011,8 +1037,9 @@ public class SearchViewController {
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/ucd_processes", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getUcdProcesses() {
-        Set<KeyValueModel> data = searchMenuManager.getUcdProcesses();
+        Set<KeyValueModel> data = dimensionalDataManager.getUcdProcesses();
         SearchOption result = new SearchOption();
         result.setExpandable(true);
         result.setData(data);
@@ -1023,8 +1050,9 @@ public class SearchViewController {
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/accessibility_standards", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getAccessibilityStandards() {
-        Set<KeyValueModel> data = searchMenuManager.getAccessibilityStandards();
+        Set<KeyValueModel> data = dimensionalDataManager.getAccessibilityStandards();
         SearchOption result = new SearchOption();
         result.setExpandable(true);
         result.setData(data);
@@ -1035,8 +1063,9 @@ public class SearchViewController {
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/macra_measures", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getMacraMeasures() {
-        Set<CriteriaSpecificDescriptiveModel> data = searchMenuManager.getMacraMeasures();
+        Set<CriteriaSpecificDescriptiveModel> data = dimensionalDataManager.getMacraMeasures();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);
@@ -1046,8 +1075,9 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible developer status options in the CHPL")
     @RequestMapping(value = "/data/developer_statuses", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getDeveloperStatuses() {
-        Set<KeyValueModel> data = searchMenuManager.getDeveloperStatuses();
+        Set<KeyValueModel> data = dimensionalDataManager.getDeveloperStatuses();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);
@@ -1057,8 +1087,9 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible surveillance type options in the CHPL")
     @RequestMapping(value = "/data/surveillance_types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getSurveillanceTypes() {
-        Set<KeyValueModel> data = searchMenuManager.getSurveillanceTypes();
+        Set<KeyValueModel> data = dimensionalDataManager.getSurveillanceTypes();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);
@@ -1068,8 +1099,9 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible surveillance result type options in the CHPL")
     @RequestMapping(value = "/data/surveillance_result_types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getSurveillanceResultTypes() {
-        Set<KeyValueModel> data = searchMenuManager.getSurveillanceResultTypes();
+        Set<KeyValueModel> data = dimensionalDataManager.getSurveillanceResultTypes();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);
@@ -1079,8 +1111,9 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible surveillance requirement type options in the CHPL")
     @RequestMapping(value = "/data/surveillance_requirement_types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getSurveillanceRequirementTypes() {
-        Set<KeyValueModel> data = searchMenuManager.getSurveillanceRequirementTypes();
+        Set<KeyValueModel> data = dimensionalDataManager.getSurveillanceRequirementTypes();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);
@@ -1090,16 +1123,18 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible surveillance requirement options in the CHPL")
     @RequestMapping(value = "/data/surveillance_requirements", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SurveillanceRequirementOptions getSurveillanceRequirementOptions() {
-        SurveillanceRequirementOptions data = searchMenuManager.getSurveillanceRequirementOptions();
+        SurveillanceRequirementOptions data = dimensionalDataManager.getSurveillanceRequirementOptions();
         return data;
     }
 
     @ApiOperation(value = "Get all possible nonconformity status type options in the CHPL")
     @RequestMapping(value = "/data/nonconformity_status_types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getNonconformityStatusTypes() {
-        Set<KeyValueModel> data = searchMenuManager.getNonconformityStatusTypes();
+        Set<KeyValueModel> data = dimensionalDataManager.getNonconformityStatusTypes();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);
@@ -1109,8 +1144,9 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible nonconformity type options in the CHPL")
     @RequestMapping(value = "/data/nonconformity_types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getNonconformityTypeOptions() {
-        Set<KeyValueModel> data = searchMenuManager.getNonconformityTypeOptions();
+        Set<KeyValueModel> data = dimensionalDataManager.getNonconformityTypeOptions();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);
@@ -1120,8 +1156,9 @@ public class SearchViewController {
     @ApiOperation(value = "Get all available pending listing upload template versions.")
     @RequestMapping(value = "/data/upload_template_versions", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getUploadTemplateVersions() {
-        Set<UploadTemplateVersion> data = searchMenuManager.getUploadTemplateVersions();
+        Set<UploadTemplateVersion> data = dimensionalDataManager.getUploadTemplateVersions();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);
@@ -1139,28 +1176,19 @@ public class SearchViewController {
             notes = "This returns all of the other /data/{something} results in one single response.")
     @RequestMapping(value = "/data/search_options", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
-    public @ResponseBody PopulateSearchOptions getPopulateSearchData(
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody SearchableDimensionalData getSearchOptions(
             @RequestParam(value = "simple", required = false, defaultValue = "false") final Boolean simple)
                     throws EntityRetrievalException {
 
-        PopulateSearchOptions searchOptions = new PopulateSearchOptions();
-        searchOptions.setCertBodyNames(searchMenuManager.getCertBodyNames());
-        searchOptions.setEditions(searchMenuManager.getEditionNames(simple));
-        searchOptions.setCertificationStatuses(searchMenuManager.getCertificationStatuses());
-        searchOptions.setPracticeTypeNames(searchMenuManager.getPracticeTypeNames());
-        searchOptions.setProductClassifications(searchMenuManager.getClassificationNames());
-        searchOptions.setProductNames(searchMenuManager.getProductNames());
-        searchOptions.setDeveloperNames(searchMenuManager.getDeveloperNames());
-        searchOptions.setCqmCriterionNumbers(searchMenuManager.getCQMCriterionNumbers(simple));
-        searchOptions.setCertificationCriterionNumbers(searchMenuManager.getCertificationCriterionNumbers(simple));
-
-        return searchOptions;
+        return dimensionalDataManager.getSearchableDimensionalData(simple);
     }
 
     @ApiOperation(value = "Get all developer decertifications in the CHPL",
             notes = "This returns all decertified developers.")
     @RequestMapping(value = "/decertifications/developers", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody DecertifiedDeveloperResults getDecertifiedDevelopers() throws EntityRetrievalException {
         DecertifiedDeveloperResults ddr = new DecertifiedDeveloperResults();
         List<DecertifiedDeveloperResult> results = developerManager.getDecertifiedDevelopers();

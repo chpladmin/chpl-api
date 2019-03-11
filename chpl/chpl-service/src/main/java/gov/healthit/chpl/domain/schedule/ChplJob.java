@@ -80,4 +80,10 @@ public class ChplJob implements Serializable {
     public void setJobDataMap(final JobDataMap jobDataMap) {
         this.jobDataMap = jobDataMap;
     }
+
+    @Override
+    public String toString() {
+        return "ChplJob [description=" + description + ", group=" + group + ", name=" + name + ", frequency="
+                + frequency + ", jobDataMap=" + jobDataMap + "]";
+    }
 }

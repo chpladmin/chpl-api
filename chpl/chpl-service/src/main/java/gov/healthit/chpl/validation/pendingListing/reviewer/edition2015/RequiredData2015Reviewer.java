@@ -88,6 +88,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
 
     private static final String G1_CRITERIA_NUMBER = "170.315 (g)(1)";
     private static final String G2_CRITERIA_NUMBER = "170.315 (g)(2)";
+    private static final int MINIMIMUM_PARTICIPANTS = 10;
     private List<String> e2e3Criterion = new ArrayList<String>();
     private List<String> g7g8g9Criterion = new ArrayList<String>();
     private List<String> d2d10Criterion = new ArrayList<String>();
@@ -98,7 +99,9 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     private TestDataDAO testDataDao;
 
     @Autowired
-    public RequiredData2015Reviewer(MacraMeasureDAO macraDao, TestFunctionalityDAO testFuncDao, TestProcedureDAO testProcDao, TestDataDAO testDataDao, ErrorMessageUtil msgUtil, CertificationResultRules certRules) {
+    public RequiredData2015Reviewer(final MacraMeasureDAO macraDao, final TestFunctionalityDAO testFuncDao,
+            final TestProcedureDAO testProcDao, final TestDataDAO testDataDao, final ErrorMessageUtil msgUtil,
+            final CertificationResultRules certRules) {
         super(msgUtil, certRules);
 
         this.macraDao = macraDao;
@@ -201,12 +204,14 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
 
         // check for (e)(2) or (e)(3) required complimentary certs
         List<String> e2e3ComplimentaryErrors =
-                ValidationUtils.checkComplimentaryCriteriaAllRequired(e2e3Criterion, Arrays.asList(E2E3_RELATED_CERTS), allMetCerts);
+                ValidationUtils.checkComplimentaryCriteriaAllRequired(e2e3Criterion,
+                        Arrays.asList(E2E3_RELATED_CERTS), allMetCerts);
         listing.getErrorMessages().addAll(e2e3ComplimentaryErrors);
 
         // check for (g)(7) or (g)(8) or (g)(9) required complimentary certs
         List<String> g7g8g9ComplimentaryErrors =
-                ValidationUtils.checkComplimentaryCriteriaAllRequired(g7g8g9Criterion, Arrays.asList(G7G8G9_RELATED_CERTS), allMetCerts);
+                ValidationUtils.checkComplimentaryCriteriaAllRequired(g7g8g9Criterion,
+                        Arrays.asList(G7G8G9_RELATED_CERTS), allMetCerts);
         listing.getErrorMessages().addAll(g7g8g9ComplimentaryErrors);
 
         //if g7, g8, or g9 is found then one of d2 or d10 is required
@@ -272,7 +277,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                             for (PendingCertificationResultTestTaskDTO certResultTask : certCriteria.getTestTasks()) {
                                 PendingTestTaskDTO task = certResultTask.getPendingTestTask();
                                 if (certResultTask.getTaskParticipants() == null
-                                        || certResultTask.getTaskParticipants().size() < 10) {
+                                        || certResultTask.getTaskParticipants().size() < MINIMIMUM_PARTICIPANTS) {
                                     listing.getErrorMessages().add(
                                             msgUtil.getMessage("listing.criteria.badTestTaskParticipantsSize",
                                                     task.getUniqueId(), certCriteria.getNumber()));
@@ -286,51 +291,187 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                     listing.getErrorMessages().add(
                                             msgUtil.getMessage("listing.criteria.badTestTaskSuccessAverage",
                                                     task.getUniqueId(), certCriteria.getNumber()));
+                                } else {
+                                    try {
+                                        Float.valueOf(task.getTaskSuccessAverage());
+                                    } catch (final Exception e) {
+                                        listing.getErrorMessages().add(
+                                                msgUtil.getMessage("listing.criteria.badTestTaskNumber",
+                                                        task.getUniqueId(), "Task Success Average",
+                                                        task.getTaskSuccessAverage()));
+                                    }
                                 }
                                 if (task.getTaskSuccessStddev() == null) {
                                     listing.getErrorMessages().add(
                                             msgUtil.getMessage("listing.criteria.badTestTaskSuccessStddev",
                                                     task.getUniqueId(), certCriteria.getNumber()));
+                                } else {
+                                    try {
+                                        Float.valueOf(task.getTaskSuccessStddev());
+                                    } catch (final Exception e) {
+                                        listing.getErrorMessages().add(
+                                                msgUtil.getMessage("listing.criteria.badTestTaskNumber",
+                                                        task.getUniqueId(), "Task Success Standard Deviation",
+                                                        task.getTaskSuccessStddev()));
+                                    }
                                 }
                                 if (task.getTaskPathDeviationObserved() == null) {
                                     listing.getErrorMessages().add(
                                             msgUtil.getMessage("listing.criteria.badTestTaskPathDeviationObserved",
                                                     task.getUniqueId(), certCriteria.getNumber()));
+                                } else {
+                                    try {
+                                        Integer.valueOf(task.getTaskPathDeviationObserved());
+                                    } catch (final Exception e) {
+                                        try {
+                                            int val = Math.round(Float.valueOf(task.getTaskPathDeviationObserved()));
+                                            listing.getWarningMessages().add(
+                                                    msgUtil.getMessage("listing.criteria.roundedTestTaskNumber",
+                                                            task.getUniqueId(), "Task Path Deviation Observed",
+                                                            task.getTaskPathDeviationObserved(), String.valueOf(val)));
+                                        } catch (final Exception ex) {
+                                            listing.getErrorMessages().add(
+                                                    msgUtil.getMessage("listing.criteria.badTestTaskNumber",
+                                                            task.getUniqueId(), "Task Path Deviation Observed",
+                                                            task.getTaskPathDeviationObserved()));
+                                        }
+                                    }
                                 }
                                 if (task.getTaskPathDeviationOptimal() == null) {
                                     listing.getErrorMessages().add(
                                             msgUtil.getMessage("listing.criteria.badTestTaskPathDeviationOptimal",
                                                     task.getUniqueId(), certCriteria.getNumber()));
+                                } else {
+                                    try {
+                                        Integer.valueOf(task.getTaskPathDeviationOptimal());
+                                    } catch (final Exception e) {
+                                        try {
+                                            int val = Math.round(Float.valueOf(task.getTaskPathDeviationOptimal()));
+                                            listing.getWarningMessages().add(
+                                                    msgUtil.getMessage("listing.criteria.roundedTestTaskNumber",
+                                                            task.getUniqueId(), "Task Path Deviation Optimal",
+                                                            task.getTaskPathDeviationOptimal(), String.valueOf(val)));
+                                        } catch (final Exception ex) {
+                                            listing.getErrorMessages().add(
+                                                    msgUtil.getMessage("listing.criteria.badTestTaskNumber",
+                                                            task.getUniqueId(), "Task Path Deviation Optimal",
+                                                            task.getTaskPathDeviationOptimal()));
+                                        }
+                                    }
                                 }
                                 if (task.getTaskTimeAvg() == null) {
                                     listing.getErrorMessages().add(
                                             msgUtil.getMessage("listing.criteria.badTestTaskTimeAvg",
                                                     task.getUniqueId(), certCriteria.getNumber()));
+                                } else {
+                                    try {
+                                        Long.valueOf(task.getTaskTimeAvg());
+                                    } catch (final Exception e) {
+                                        try {
+                                            int val = Math.round(Float.valueOf(task.getTaskTimeAvg()));
+                                            listing.getWarningMessages().add(
+                                                    msgUtil.getMessage("listing.criteria.roundedTestTaskNumber",
+                                                            task.getUniqueId(), "Task Time Average",
+                                                            task.getTaskTimeAvg(), String.valueOf(val)));
+                                        } catch (final Exception ex) {
+                                            listing.getErrorMessages().add(
+                                                    msgUtil.getMessage("listing.criteria.badTestTaskNumber",
+                                                            task.getUniqueId(), "Task Time Average", task.getTaskTimeAvg()));
+                                        }
+                                    }
                                 }
                                 if (task.getTaskTimeStddev() == null) {
                                     listing.getErrorMessages().add(
                                             msgUtil.getMessage("listing.criteria.badTestTaskTimeStddev",
                                                     task.getUniqueId(), certCriteria.getNumber()));
+                                } else {
+                                    try {
+                                        Integer.valueOf(task.getTaskTimeStddev());
+                                    } catch (final Exception e) {
+                                        try {
+                                            int val = Math.round(Float.valueOf(task.getTaskTimeStddev()));
+                                            listing.getWarningMessages().add(
+                                                    msgUtil.getMessage("listing.criteria.roundedTestTaskNumber",
+                                                            task.getUniqueId(), "Task Time Standard Deviation",
+                                                            task.getTaskTimeStddev(), String.valueOf(val)));
+                                        } catch (final Exception ex) {
+                                            listing.getErrorMessages().add(
+                                                    msgUtil.getMessage("listing.criteria.badTestTaskNumber",
+                                                            task.getUniqueId(), "Task Time Standard Deviation",
+                                                            task.getTaskTimeStddev()));
+                                        }
+                                    }
                                 }
                                 if (task.getTaskTimeDeviationObservedAvg() == null) {
                                     listing.getErrorMessages().add(
                                             msgUtil.getMessage("listing.criteria.badTestTaskTimeDeviationObservedAvg",
                                                     task.getUniqueId(), certCriteria.getNumber()));
+                                } else {
+                                    try {
+                                        Integer.valueOf(task.getTaskTimeDeviationObservedAvg());
+                                    } catch (final Exception e) {
+                                        try {
+                                            int val = Math.round(Float.valueOf(task.getTaskTimeDeviationObservedAvg()));
+                                            listing.getWarningMessages().add(
+                                                    msgUtil.getMessage("listing.criteria.roundedTestTaskNumber",
+                                                            task.getUniqueId(), "Task Time Deviation Observed Average",
+                                                            task.getTaskTimeDeviationObservedAvg(), String.valueOf(val)));
+                                        } catch (final Exception ex) {
+                                            listing.getErrorMessages().add(
+                                                    msgUtil.getMessage("listing.criteria.badTestTaskNumber",
+                                                            task.getUniqueId(), "Task Time Deviation Observed Average",
+                                                            task.getTaskTimeDeviationObservedAvg()));
+                                        }
+                                    }
                                 }
                                 if (task.getTaskTimeDeviationOptimalAvg() == null) {
                                     listing.getErrorMessages().add(
                                             msgUtil.getMessage("listing.criteria.badTestTaskTimeDeviationOptimalAvg",
                                                     task.getUniqueId(), certCriteria.getNumber()));
+                                } else {
+                                    try {
+                                        Integer.valueOf(task.getTaskTimeDeviationOptimalAvg());
+                                    } catch (final Exception e) {
+                                        try {
+                                            int val = Math.round(Float.valueOf(task.getTaskTimeDeviationOptimalAvg()));
+                                            listing.getWarningMessages().add(
+                                                    msgUtil.getMessage("listing.criteria.roundedTestTaskNumber",
+                                                            task.getUniqueId(), "Task Time Deviation Optimal Average",
+                                                            task.getTaskTimeDeviationOptimalAvg(), String.valueOf(val)));
+                                        } catch (final Exception ex) {
+                                            listing.getErrorMessages().add(
+                                                    msgUtil.getMessage("listing.criteria.badTestTaskNumber",
+                                                            task.getUniqueId(), "Task Time Deviation Optimal Average",
+                                                            task.getTaskTimeDeviationOptimalAvg()));
+                                        }
+                                    }
                                 }
                                 if (task.getTaskErrors() == null) {
                                     listing.getErrorMessages().add(
                                             msgUtil.getMessage("listing.criteria.badTestTaskErrors",
                                                     task.getUniqueId(), certCriteria.getNumber()));
+                                } else {
+                                    try {
+                                        Float.valueOf(task.getTaskErrors());
+                                    } catch (final Exception e) {
+                                        listing.getErrorMessages().add(
+                                                msgUtil.getMessage("listing.criteria.badTestTaskNumber",
+                                                        task.getUniqueId(), "Task Errors", task.getTaskErrors()));
+                                    }
                                 }
                                 if (task.getTaskErrorsStddev() == null) {
                                     listing.getErrorMessages().add(
                                             msgUtil.getMessage("listing.criteria.badTestTaskErrorsStddev",
                                                     task.getUniqueId(), certCriteria.getNumber()));
+                                } else {
+                                    try {
+                                        Float.valueOf(task.getTaskErrorsStddev());
+                                    } catch (final Exception e) {
+                                        listing.getErrorMessages().add(
+                                                msgUtil.getMessage("listing.criteria.badTestTaskNumber",
+                                                        task.getUniqueId(), "Task Errors Standard Deviation",
+                                                        task.getTaskErrorsStddev()));
+                                    }
                                 }
                                 if (StringUtils.isEmpty(task.getTaskRatingScale())) {
                                     listing.getErrorMessages().add(
@@ -341,11 +482,28 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                     listing.getErrorMessages().add(
                                             msgUtil.getMessage("listing.criteria.badTestTaskRating",
                                                     task.getUniqueId(), certCriteria.getNumber()));
+                                } else {
+                                    try {
+                                        Float.valueOf(task.getTaskRating());
+                                    } catch (final Exception e) {
+                                        listing.getErrorMessages().add(
+                                                msgUtil.getMessage("listing.criteria.badTestTaskNumber",
+                                                        task.getUniqueId(), "Task Rating", task.getTaskRating()));
+                                    }
                                 }
                                 if (task.getTaskRatingStddev() == null) {
                                     listing.getErrorMessages().add(
                                             msgUtil.getMessage("listing.criteria.badTestTaskRatingStddev",
                                                     task.getUniqueId(), certCriteria.getNumber()));
+                                } else {
+                                    try {
+                                        Float.valueOf(task.getTaskRatingStddev());
+                                    } catch (final Exception e) {
+                                        listing.getErrorMessages().add(
+                                                msgUtil.getMessage("listing.criteria.badTestTaskNumber",
+                                                        task.getUniqueId(), "Task Rating Standard Deviation",
+                                                        task.getTaskRatingStddev()));
+                                    }
                                 }
                                 for (PendingCertificationResultTestTaskParticipantDTO part : certResultTask
                                         .getTaskParticipants()) {
@@ -385,16 +543,79 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                         listing.getErrorMessages().add(
                                                 msgUtil.getMessage("listing.criteria.badParticipantProfessionalExperienceMonths",
                                                         part.getTestParticipant().getUniqueId()));
+                                    } else {
+                                        try {
+                                            Integer.parseInt(part.getTestParticipant().getProfessionalExperienceMonths());
+                                        } catch (Exception e) {
+                                            try {
+                                                int val = Math.round(Float.valueOf(part.getTestParticipant()
+                                                        .getProfessionalExperienceMonths()));
+                                                listing.getWarningMessages().add(
+                                                        msgUtil.getMessage("listing.criteria.roundedParticipantNumber",
+                                                                part.getTestParticipant().getUniqueId(),
+                                                                "Professional Experience Months",
+                                                                part.getTestParticipant().getProfessionalExperienceMonths(),
+                                                                String.valueOf(val)));
+                                            } catch (final Exception ex) {
+                                                listing.getErrorMessages().add(
+                                                        msgUtil.getMessage("listing.criteria.badParticipantNumber",
+                                                                part.getTestParticipant().getUniqueId(),
+                                                                "Professional Experience Months",
+                                                                part.getTestParticipant().getProfessionalExperienceMonths()));
+                                            }
+                                        }
                                     }
                                     if (part.getTestParticipant().getProductExperienceMonths() == null) {
                                         listing.getErrorMessages().add(
                                                 msgUtil.getMessage("listing.criteria.badParticipantProductExperienceMonths",
                                                         part.getTestParticipant().getUniqueId()));
+                                    } else {
+                                        try {
+                                            Integer.parseInt(part.getTestParticipant().getProductExperienceMonths());
+                                        } catch (Exception e) {
+                                            try {
+                                                int val = Math.round(Float.valueOf(part.getTestParticipant()
+                                                        .getProductExperienceMonths()));
+                                                listing.getWarningMessages().add(
+                                                        msgUtil.getMessage("listing.criteria.roundedParticipantNumber",
+                                                                part.getTestParticipant().getUniqueId(),
+                                                                "Product Experience Months",
+                                                                part.getTestParticipant().getProductExperienceMonths(),
+                                                                String.valueOf(val)));
+                                            } catch (final Exception ex) {
+                                                listing.getErrorMessages().add(
+                                                        msgUtil.getMessage("listing.criteria.badParticipantNumber",
+                                                                part.getTestParticipant().getUniqueId(),
+                                                                "Product Experience Months",
+                                                                part.getTestParticipant().getProductExperienceMonths()));
+                                            }
+                                        }
                                     }
                                     if (part.getTestParticipant().getComputerExperienceMonths() == null) {
                                         listing.getErrorMessages().add(
                                                 msgUtil.getMessage("listing.criteria.badParticipantComputerExperienceMonths",
                                                         part.getTestParticipant().getUniqueId()));
+                                    } else {
+                                        try {
+                                            Integer.parseInt(part.getTestParticipant().getComputerExperienceMonths());
+                                        } catch (Exception e) {
+                                            try {
+                                                int val = Math.round(Float.valueOf(part.getTestParticipant()
+                                                        .getComputerExperienceMonths()));
+                                                listing.getWarningMessages().add(
+                                                        msgUtil.getMessage("listing.criteria.roundedParticipantNumber",
+                                                                part.getTestParticipant().getUniqueId(),
+                                                                "Computer Experience Months",
+                                                                part.getTestParticipant().getComputerExperienceMonths(),
+                                                                String.valueOf(val)));
+                                            } catch (final Exception ex) {
+                                                listing.getErrorMessages().add(
+                                                        msgUtil.getMessage("listing.criteria.badParticipantNumber",
+                                                                part.getTestParticipant().getUniqueId(),
+                                                                "Computer Experience Months",
+                                                                part.getTestParticipant().getComputerExperienceMonths()));
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -554,10 +775,12 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                     for (PendingCertificationResultTestProcedureDTO crTestProc : cert.getTestProcedures()) {
                         if (crTestProc.getTestProcedure() == null || crTestProc.getTestProcedureId() == null) {
                             listing.getErrorMessages().add(
-                                    msgUtil.getMessage("listing.criteria.badTestProcedureName", cert.getNumber(), crTestProc.getEnteredName()));
+                                    msgUtil.getMessage("listing.criteria.badTestProcedureName",
+                                            cert.getNumber(), crTestProc.getEnteredName()));
                         } else if (crTestProc.getTestProcedure() != null && crTestProc.getTestProcedure().getId() == null) {
                             TestProcedureDTO foundTestProc =
-                                    testProcDao.getByCriteriaNumberAndValue(cert.getNumber(), crTestProc.getTestProcedure().getName());
+                                    testProcDao.getByCriteriaNumberAndValue(cert.getNumber(),
+                                            crTestProc.getTestProcedure().getName());
                             if(foundTestProc == null || foundTestProc.getId() == null) {
                                 listing.getErrorMessages().add(
                                         msgUtil.getMessage("listing.criteria.badTestProcedureName",
@@ -590,7 +813,8 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                             if (foundTestData == null || foundTestData.getId() == null) {
                                 listing.getWarningMessages().add(
                                         msgUtil.getMessage("listing.criteria.badTestDataName",
-                                                crTestData.getTestData().getName(), cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA));
+                                                crTestData.getTestData().getName(), cert.getNumber(),
+                                                TestDataDTO.DEFALUT_TEST_DATA));
                                 foundTestData =
                                         testDataDao.getByCriteriaNumberAndValue(cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA);
                                 crTestData.getTestData().setId(foundTestData.getId());

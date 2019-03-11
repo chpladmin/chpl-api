@@ -11,13 +11,10 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
-import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
@@ -29,10 +26,10 @@ import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.ValidationUtils;
 
 @Component("pendingChplNumberReviewer")
 public class ChplNumberReviewer implements Reviewer {
-    @Autowired private CertifiedProductDAO cpDao;
     @Autowired private TestingLabDAO atlDao;
     @Autowired private CertificationBodyDAO acbDao;
     @Autowired private DeveloperDAO developerDao;
@@ -46,21 +43,21 @@ public class ChplNumberReviewer implements Reviewer {
      * May change the CHPL ID if necessary (if additional software was added or certification date was changed)
      * and if the CHPL ID is changed, confirms that the new ID is unique.
      */
-    public void review(PendingCertifiedProductDTO listing) {
+    public void review(final PendingCertifiedProductDTO listing) {
         String uniqueId = listing.getUniqueId();
         String[] uniqueIdParts = uniqueId.split("\\.");
-        if (uniqueIdParts.length != CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
+        if (uniqueIdParts.length != ChplProductNumberUtil.CHPL_PRODUCT_ID_PARTS) {
             listing.getErrorMessages().add("The unique CHPL ID '" + uniqueId + "' must have "
-                    + CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS + " parts separated by '.'");
+                    + ChplProductNumberUtil.CHPL_PRODUCT_ID_PARTS + " parts separated by '.'");
             return;
         }
         // validate that these pieces match up with data
-        String editionCode = uniqueIdParts[CertifiedProductDTO.EDITION_CODE_INDEX];
-        String atlCode = uniqueIdParts[CertifiedProductDTO.ATL_CODE_INDEX];
-        String acbCode = uniqueIdParts[CertifiedProductDTO.ACB_CODE_INDEX];
-        String developerCode = uniqueIdParts[CertifiedProductDTO.DEVELOPER_CODE_INDEX];
-        String additionalSoftwareCode = uniqueIdParts[CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_INDEX];
-        String certifiedDateCode = uniqueIdParts[CertifiedProductDTO.CERTIFIED_DATE_CODE_INDEX];
+        String editionCode = uniqueIdParts[ChplProductNumberUtil.EDITION_CODE_INDEX];
+        String atlCode = uniqueIdParts[ChplProductNumberUtil.ATL_CODE_INDEX];
+        String acbCode = uniqueIdParts[ChplProductNumberUtil.ACB_CODE_INDEX];
+        String developerCode = uniqueIdParts[ChplProductNumberUtil.DEVELOPER_CODE_INDEX];
+        String additionalSoftwareCode = uniqueIdParts[ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_INDEX];
+        String certifiedDateCode = uniqueIdParts[ChplProductNumberUtil.CERTIFIED_DATE_CODE_INDEX];
 
         //Ensure the new chpl product number is unique
         String chplProductNumber;
@@ -179,24 +176,30 @@ public class ChplNumberReviewer implements Reviewer {
             listing.getErrorMessages().add(ex.getMessage());
         }
 
-        if (!validateProductCodeCharacters(listing.getUniqueId())) {
+        if (!ValidationUtils.chplNumberPartIsValid(listing.getUniqueId(),
+                ChplProductNumberUtil.PRODUCT_CODE_INDEX,
+                ChplProductNumberUtil.PRODUCT_CODE_REGEX)) {
             listing.getErrorMessages()
             .add(msgUtil.getMessage("listing.badProductCodeChars",
-                    CertifiedProductDTO.PRODUCT_CODE_LENGTH));
+                    ChplProductNumberUtil.PRODUCT_CODE_LENGTH));
         }
 
-        if (!validateVersionCodeCharacters(listing.getUniqueId())) {
+        if (!ValidationUtils.chplNumberPartIsValid(listing.getUniqueId(),
+                ChplProductNumberUtil.VERSION_CODE_INDEX,
+                ChplProductNumberUtil.VERSION_CODE_REGEX)) {
             listing.getErrorMessages()
             .add(msgUtil.getMessage("listing.badVersionCodeChars",
-                    CertifiedProductDTO.VERSION_CODE_LENGTH));
+                    ChplProductNumberUtil.VERSION_CODE_LENGTH));
         }
 
-        if (!validateIcsCodeCharacters(listing.getUniqueId())) {
+        if (!ValidationUtils.chplNumberPartIsValid(listing.getUniqueId(),
+                ChplProductNumberUtil.ICS_CODE_INDEX,
+                ChplProductNumberUtil.ICS_CODE_REGEX)) {
             listing.getErrorMessages()
             .add(msgUtil.getMessage("listing.badIcsCodeChars",
-                    CertifiedProductDTO.ICS_CODE_LENGTH));
+                    ChplProductNumberUtil.ICS_CODE_LENGTH));
         } else {
-            Integer icsCodeInteger = Integer.valueOf(uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX]);
+            Integer icsCodeInteger = Integer.valueOf(uniqueIdParts[ChplProductNumberUtil.ICS_CODE_INDEX]);
             if (icsCodeInteger != null) {
                 if (icsCodeInteger.intValue() == 0 && listing.getIcs() != null
                         && listing.getIcs().equals(Boolean.TRUE)) {
@@ -210,10 +213,12 @@ public class ChplNumberReviewer implements Reviewer {
             }
         }
 
-        if (!validateAdditionalSoftwareCodeCharacters(listing.getUniqueId())) {
+        if (!ValidationUtils.chplNumberPartIsValid(listing.getUniqueId(),
+                ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_INDEX,
+                ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_REGEX)) {
             listing.getErrorMessages()
             .add(msgUtil.getMessage("listing.badAdditionalSoftwareCodeChars",
-                    CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_LENGTH));
+                    ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_LENGTH));
         } else {
             if (additionalSoftwareCode.equals("0")) {
                 boolean hasAS = false;
@@ -240,10 +245,12 @@ public class ChplNumberReviewer implements Reviewer {
             }
         }
 
-        if (!validateCertifiedDateCodeCharacters(listing.getUniqueId())) {
+        if (!ValidationUtils.chplNumberPartIsValid(listing.getUniqueId(),
+                ChplProductNumberUtil.CERTIFIED_DATE_CODE_INDEX,
+                ChplProductNumberUtil.CERTIFIED_DATE_CODE_REGEX)) {
             listing.getErrorMessages()
             .add(msgUtil.getMessage("listing.badCertifiedDateCodeChars",
-                    CertifiedProductDTO.CERTIFIED_DATE_CODE_LENGTH));
+                    ChplProductNumberUtil.CERTIFIED_DATE_CODE_LENGTH));
         }
         SimpleDateFormat idDateFormat = new SimpleDateFormat("yyMMdd");
         try {
@@ -258,82 +265,4 @@ public class ChplNumberReviewer implements Reviewer {
             .add("Could not parse the certification date part of the product id: " + certifiedDateCode);
         }
     }
-
-    private boolean validateUniqueId(final String chplProductNumber) {
-        try {
-            CertifiedProductDetailsDTO dup = cpDao.getByChplUniqueId(chplProductNumber);
-            if (dup != null) {
-                return false;
-            }
-        } catch (final EntityRetrievalException ex) {
-        }
-        return true;
-    }
-
-    private boolean validateProductCodeCharacters(final String chplProductNumber) {
-        String[] uniqueIdParts = chplProductNumber.split("\\.");
-        if (uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
-
-            // validate that these pieces match up with data
-            String productCode = uniqueIdParts[CertifiedProductDTO.PRODUCT_CODE_INDEX];
-            if (StringUtils.isEmpty(productCode)
-                    || !productCode.matches("^[a-zA-Z0-9_]{" + CertifiedProductDTO.PRODUCT_CODE_LENGTH + "}$")) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private boolean validateVersionCodeCharacters(final String chplProductNumber) {
-        String[] uniqueIdParts = chplProductNumber.split("\\.");
-        if (uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
-
-            // validate that these pieces match up with data
-            String versionCode = uniqueIdParts[CertifiedProductDTO.VERSION_CODE_INDEX];
-            if (StringUtils.isEmpty(versionCode)
-                    || !versionCode.matches("^[a-zA-Z0-9_]{" + CertifiedProductDTO.VERSION_CODE_LENGTH + "}$")) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private boolean validateIcsCodeCharacters(final String chplProductNumber) {
-        String[] uniqueIdParts = chplProductNumber.split("\\.");
-        if (uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
-            // validate that these pieces match up with data
-            String icsCode = uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX];
-            if (StringUtils.isEmpty(icsCode)
-                    || !icsCode.matches("^[0-9]{" + CertifiedProductDTO.ICS_CODE_LENGTH + "}$")) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private boolean validateAdditionalSoftwareCodeCharacters(final String chplProductNumber) {
-        String[] uniqueIdParts = chplProductNumber.split("\\.");
-        if (uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
-            // validate that these pieces match up with data
-            String additionalSoftwareCode = uniqueIdParts[CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_INDEX];
-            if (StringUtils.isEmpty(additionalSoftwareCode) || !additionalSoftwareCode.matches("^0|1$")) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private boolean validateCertifiedDateCodeCharacters(final String chplProductNumber) {
-        String[] uniqueIdParts = chplProductNumber.split("\\.");
-        if (uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
-            // validate that these pieces match up with data
-            String certifiedDateCode = uniqueIdParts[CertifiedProductDTO.CERTIFIED_DATE_CODE_INDEX];
-            if (StringUtils.isEmpty(certifiedDateCode)
-                    || !certifiedDateCode.matches("^[0-9]{" + CertifiedProductDTO.CERTIFIED_DATE_CODE_LENGTH + "}$")) {
-                return false;
-            }
-        }
-        return true;
-    }
-
 }

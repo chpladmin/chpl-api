@@ -21,11 +21,6 @@
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
-        <dependency>
-            <groupId>gov.healthit.chpl</groupId>
-            <artifactId>chpl-auth</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
 
         <!-- Core utilities used by other modules. Define this if you use Spring 
             Utility APIs (org.springframework.core.*/org.springframework.util.*) -->
@@ -99,6 +94,38 @@
             <artifactId>javax.mail</artifactId>
             <version>1.5.4</version>
         </dependency>
+
+		<!-- Spring Security -->
+		<dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
+            <version>4.0.0.RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+            <version>4.0.0.RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-web</artifactId>
+            <version>4.0.0.RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-taglibs</artifactId>
+            <version>4.0.0.RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-acl</artifactId>
+            <version>4.0.0.RELEASE</version>
+        </dependency>
+		
 
         <!-- Optional for caching. Used to log stuff <dependency> <groupId>ch.qos.logback</groupId> 
             <artifactId>logback-classic</artifactId> <version>1.0.13</version> </dependency> -->
@@ -321,12 +348,37 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        
+        <!-- Password strength checking library -->
+        <dependency>
+            <groupId>com.nulab-inc</groupId>
+            <artifactId>zxcvbn</artifactId>
+            <version>1.2.5</version>
+        </dependency>
     </dependencies>
 
     <build>
         <finalName>chpl-service</finalName>
         <!-- <pluginManagement> -->
         <plugins>
+            <!-- create test jar to use shared config -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <excludes>
+                        <exclude>*.template</exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                  <execution>
+                    <goals>
+                      <goal>test-jar</goal>
+                    </goals>
+                  </execution>
+                </executions>
+          </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>

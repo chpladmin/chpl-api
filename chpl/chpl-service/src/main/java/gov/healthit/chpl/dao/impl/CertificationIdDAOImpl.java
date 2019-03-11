@@ -11,6 +11,8 @@ import java.util.regex.Pattern;
 
 import javax.persistence.Query;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
@@ -34,6 +36,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
  */
 @Repository("certificationIdDAO")
 public class CertificationIdDAOImpl extends BaseDAOImpl implements CertificationIdDAO {
+    private static final Logger LOGGER = LogManager.getLogger(CertificationIdDAOImpl.class);
 
     // Note that in the ALPHA string the characters O and I have been removed.
     // This is to
@@ -213,8 +216,9 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 
     @Override
     public List<CertificationIdAndCertifiedProductDTO> getAllCertificationIdsWithProducts() {
+        LOGGER.debug("Starting query to get all certification ids with products.");
         List<CertificationIdAndCertifiedProductEntity> entities = getAllCertificationIdsWithProductsEntities();
-
+        LOGGER.debug("Completed query to get all certification ids with products.");
         List<CertificationIdAndCertifiedProductDTO> results = new ArrayList<CertificationIdAndCertifiedProductDTO>();
         for (CertificationIdAndCertifiedProductEntity entity : entities) {
             CertificationIdAndCertifiedProductDTO dto = new CertificationIdAndCertifiedProductDTO(entity);

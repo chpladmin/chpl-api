@@ -2,6 +2,8 @@ package gov.healthit.chpl.manager;
 
 import java.util.List;
 
+import org.springframework.security.access.AccessDeniedException;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
@@ -21,15 +23,19 @@ public interface DeveloperManager {
 
     List<DeveloperTransparency> getDeveloperCollection();
 
-    DeveloperDTO update(DeveloperDTO developer)
+    DeveloperDTO update(DeveloperDTO developer, boolean doValidation)
             throws EntityRetrievalException, JsonProcessingException,
-            EntityCreationException, MissingReasonException;
+            EntityCreationException, MissingReasonException, ValidationException;
 
     DeveloperDTO create(DeveloperDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 
     DeveloperDTO merge(List<Long> developerIdsToMerge, DeveloperDTO developerToCreate)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException;
+
+    DeveloperDTO split(DeveloperDTO oldDeveloper, DeveloperDTO developerToCreate, List<Long> productIdsToMove)
+            throws AccessDeniedException, EntityRetrievalException, EntityCreationException,
+            JsonProcessingException, ValidationException;
 
     List<DecertifiedDeveloperResult> getDecertifiedDevelopers() throws EntityRetrievalException;
 }

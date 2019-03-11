@@ -61,6 +61,8 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.InvitationManager;
 import gov.healthit.chpl.manager.TestingLabManager;
+import gov.healthit.chpl.manager.UserPermissionsManager;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -72,9 +74,6 @@ public class UserManagementController {
 
     @Autowired
     private UserManager userManager;
-
-    @Autowired
-    private CertificationBodyManager acbManager;
 
     @Autowired
     private TestingLabManager atlManager;
@@ -94,6 +93,12 @@ public class UserManagementController {
     @Autowired
     private ErrorMessageUtil errorMessageUtil;
 
+    @Autowired
+    private UserPermissionsManager userPermissionsManager;
+    
+    @Autowired 
+    private ResourcePermissions resourcePermissions;
+    
     @Autowired private MessageSource messageSource;
 
     private static final Logger LOGGER = LogManager.getLogger(UserManagementController.class);
@@ -232,7 +237,8 @@ public class UserManagementController {
     @ApiOperation(value = "Update an existing user account with new permissions.",
             notes = "Adds all permissions from the invitation identified by the user key "
                     + "to the appropriate existing user account." + "The correct order to call invitation requests is "
-                    + "the following: 1) /invite 2) /create or /authorize 3) /confirm ")
+                    + "the following: 1) /invite 2) /create or /authorize 3) /confirm.  Security Restrictions: ROLE_ADMIN "
+                    + "or ROLE_ONC.")
     @RequestMapping(value = "/{userId}/authorize", method = RequestMethod.POST,
     consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
@@ -289,7 +295,9 @@ public class UserManagementController {
                     + "or add the permissions contained within the invitation to an existing account "
                     + "if they have one. Said another way, an invitation can be used to create or "
                     + "modify CHPL user accounts." + "The correct order to call invitation requests is "
-                    + "the following: 1) /invite 2) /create or /authorize 3) /confirm. ")
+                    + "the following: 1) /invite 2) /create or /authorize 3) /confirm. "
+                    + "Security Restrictions: ROLE_ADMIN and ROLE_ONC can invite users to any organization.  "
+                    + "ROLE_ACB and ROLE_ATL can add users to their own organization.")
     @RequestMapping(value = "/invite", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public UserInvitation inviteUser(@RequestBody final UserInvitation invitation)
@@ -380,7 +388,7 @@ public class UserManagementController {
 
     @ApiOperation(value = "Delete a user.",
             notes = "Deletes a user account and all associated authorities on ACBs and ATLs. "
-                    + "The logged in user must have ROLE_ADMIN.")
+                    + "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/{userId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public String deleteUser(@PathVariable("userId") final Long userId)
@@ -403,7 +411,7 @@ public class UserManagementController {
         }
 
         // delete the acb permissions for that user
-        acbManager.deletePermissionsForUser(toDelete);
+        userPermissionsManager.deleteAllAcbPermissionsForUser(userId);
         atlManager.deletePermissionsForUser(toDelete);
 
         // delete the user
@@ -418,7 +426,8 @@ public class UserManagementController {
 
     @ApiOperation(value = "Give additional roles to a user.",
             notes = "Users may be given ROLE_ADMIN, ROLE_ONC, ROLE_ACB, or "
-                    + "ROLE_ATL roles within the system.")
+                    + "ROLE_ATL roles within the system.  Security Restrictions: ROLE_ADMIN or "
+                    + "ROLE_ONC.")
     @RequestMapping(value = "/{userName}/roles/{roleName}", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
     public String grantUserRole(@PathVariable("userName") final String userName,
@@ -465,7 +474,8 @@ public class UserManagementController {
 
     @ApiOperation(value = "Remove roles previously granted to a user.",
             notes = "Users may be given ROLE_ADMIN, ROLE_ACB, or "
-                    + "ROLE_ATL roles within the system.")
+                    + "ROLE_ATL roles within the system.  Security Restrictions: ROLE_ADMIN and "
+                    + "ROLE_ONC.")
     @RequestMapping(value = "/{userName}/roles/{roleName}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public String revokeUserRole(@PathVariable("userName") final String userName,
@@ -502,10 +512,9 @@ public class UserManagementController {
 
                 // if they were an acb admin then they need to have all ACB
                 // access removed
-                List<CertificationBodyDTO> acbs = acbManager.getAllForUser();
+                List<CertificationBodyDTO> acbs = resourcePermissions.getAllAcbsForCurrentUser();
                 for (CertificationBodyDTO acb : acbs) {
-                    acbManager.deletePermission(acb, new PrincipalSid(user.getSubjectName()),
-                            BasePermission.ADMINISTRATION);
+                    userPermissionsManager.deleteAcbPermission(acb, user.getId());
                 }
             } catch (final AccessDeniedException adEx) {
                 LOGGER.error("User " + Util.getUsername() + " does not have access to revoke ROLE_ADMIN");
@@ -526,7 +535,8 @@ public class UserManagementController {
     }
 
     @ApiOperation(value = "View users of the system.",
-            notes = "Only ROLE_ADMIN and ROLE_ONC will be able to see all users.")
+            notes = "Security Restrictions: ROLE_ADMIN and ROLE_ONC can see all users.  ROLE_ACB, ROLE_ATL, "
+                    + "and ROLE_CMS_STAFF can see their self.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @PreAuthorize("isAuthenticated()")
     public @ResponseBody UserListJSONObject getUsers() {

@@ -30,7 +30,7 @@ public interface TestingLabManager {
     TestingLabDTO update(TestingLabDTO atl) throws EntityRetrievalException, JsonProcessingException,
             EntityCreationException, UpdateTestingLabException;
 
-    TestingLabDTO retire(Long atlId) throws EntityRetrievalException,
+    TestingLabDTO retire(TestingLabDTO atl) throws EntityRetrievalException,
         JsonProcessingException, EntityCreationException, UpdateTestingLabException;
 
     TestingLabDTO unretire(Long atlId) throws EntityRetrievalException,
@@ -42,7 +42,7 @@ public interface TestingLabManager {
 
     TestingLabDTO getById(Long id) throws EntityRetrievalException;
 
-    TestingLabDTO getIfPermissionById(final Long id) throws EntityRetrievalException;
+    TestingLabDTO getIfPermissionById(Long id) throws EntityRetrievalException;
 
     List<UserDTO> getAllUsersOnAtl(TestingLabDTO atl);
 

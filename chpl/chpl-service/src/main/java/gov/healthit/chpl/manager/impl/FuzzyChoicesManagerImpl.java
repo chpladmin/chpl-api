@@ -1,20 +1,26 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.core.env.Environment;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import gov.healthit.chpl.dao.FuzzyChoicesDAO;
+import gov.healthit.chpl.domain.FuzzyChoices;
 import gov.healthit.chpl.dto.FuzzyChoicesDTO;
 import gov.healthit.chpl.entity.FuzzyType;
+import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.FuzzyChoicesManager;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
@@ -58,7 +64,26 @@ public class FuzzyChoicesManagerImpl extends ApplicationObjectSupport implements
         return fuzzyChoicesDao.getByType(type);
     }
 
-    public void setFuzzyChoicesDAO(final FuzzyChoicesDAO FuzzyChoicesDAO) {
-        this.fuzzyChoicesDao = FuzzyChoicesDAO;
+    @Transactional
+    @Override
+    public Set<FuzzyChoices> getFuzzyChoices() throws EntityRetrievalException, JsonParseException,
+    JsonMappingException, IOException {
+        List<FuzzyChoicesDTO> fuzzyChoices = fuzzyChoicesDao.findAllTypes();
+        Set<FuzzyChoices> results = new HashSet<FuzzyChoices>();
+        for (FuzzyChoicesDTO dto : fuzzyChoices) {
+            results.add(new FuzzyChoices(dto));
+        }
+        return results;
+    }
+
+    @Transactional
+    @Override
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
+    public FuzzyChoices updateFuzzyChoices(final FuzzyChoicesDTO fuzzyChoicesDTO)
+        throws EntityRetrievalException, JsonProcessingException, EntityCreationException, IOException {
+
+        FuzzyChoices result = null;
+        result = new FuzzyChoices(fuzzyChoicesDao.update(fuzzyChoicesDTO));
+        return result;
     }
 }

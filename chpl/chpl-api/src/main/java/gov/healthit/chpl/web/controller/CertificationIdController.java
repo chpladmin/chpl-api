@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.certificationId.Validator;
 import gov.healthit.chpl.certificationId.ValidatorFactory;
 import gov.healthit.chpl.domain.SimpleCertificationId;
@@ -33,6 +32,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.manager.CertificationIdManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.web.controller.results.CertificationIdLookupResults;
 import gov.healthit.chpl.web.controller.results.CertificationIdResults;
 import gov.healthit.chpl.web.controller.results.CertificationIdVerifyResults;
@@ -49,6 +49,8 @@ public class CertificationIdController {
 
     @Autowired
     private CertificationIdManager certificationIdManager;
+    
+    @Autowired ResourcePermissions resourcePermissions;
 
     // **********************************************************************************************************
     // getAll
@@ -58,16 +60,17 @@ public class CertificationIdController {
     // Retrieves all CMS Certification IDs and their date of creation.
     // **********************************************************************************************************
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_CMS_STAFF')")
-    @ApiOperation(value = "Retrieves a list of all CMS EHR Certification IDs along with the date they were created.")
+    @ApiOperation(value = "Retrieves a list of all CMS EHR Certification IDs along with the date they were created.",
+    notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_CMS_STAFF")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = {
             MediaType.APPLICATION_JSON_VALUE
     })
     public List<SimpleCertificationId> getAll() throws IOException {
         List<SimpleCertificationId> results = null;
-        if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
+        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
             results = certificationIdManager.getAllWithProducts();
         } else {
-            results = certificationIdManager.getAll();
+            results = certificationIdManager.getAllCached();
         }
 
         return results;

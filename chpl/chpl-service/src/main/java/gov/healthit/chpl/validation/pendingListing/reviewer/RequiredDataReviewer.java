@@ -24,13 +24,13 @@ public class RequiredDataReviewer implements Reviewer {
     protected CertificationResultRules certRules;
 
     @Autowired
-    public RequiredDataReviewer(ErrorMessageUtil msgUtil, CertificationResultRules certRules) {
+    public RequiredDataReviewer(final ErrorMessageUtil msgUtil, final CertificationResultRules certRules) {
         this.msgUtil = msgUtil;
         this.certRules = certRules;
     }
 
     @Override
-    public void review(PendingCertifiedProductDTO listing) {
+    public void review(final PendingCertifiedProductDTO listing) {
         if (listing.getCertificationEditionId() == null && StringUtils.isEmpty(listing.getCertificationEdition())) {
             listing.getErrorMessages().add("Certification edition is required but was not found.");
         }
@@ -44,7 +44,7 @@ public class RequiredDataReviewer implements Reviewer {
             listing.getErrorMessages().add("The product unique id is required.");
         }
         if (StringUtils.isEmpty(listing.getDeveloperName())) {
-            listing.getErrorMessages().add("A developer name is required.");
+            listing.getErrorMessages().add(msgUtil.getMessage("developer.nameRequired"));
         }
         if (StringUtils.isEmpty(listing.getProductName())) {
             listing.getErrorMessages().add("A product name is required.");
@@ -54,42 +54,42 @@ public class RequiredDataReviewer implements Reviewer {
         }
         if (listing.getDeveloperAddress() != null) {
             if (StringUtils.isEmpty(listing.getDeveloperAddress().getStreetLineOne())) {
-                listing.getErrorMessages().add("Developer street address is required.");
+                listing.getErrorMessages().add(msgUtil.getMessage("developer.address.streetRequired"));
             }
             if (StringUtils.isEmpty(listing.getDeveloperAddress().getCity())) {
-                listing.getErrorMessages().add("Developer city is required.");
+                listing.getErrorMessages().add(msgUtil.getMessage("developer.address.cityRequired"));
             }
             if (StringUtils.isEmpty(listing.getDeveloperAddress().getState())) {
-                listing.getErrorMessages().add("Developer state is required.");
+                listing.getErrorMessages().add(msgUtil.getMessage("developer.address.stateRequired"));
             }
             if (StringUtils.isEmpty(listing.getDeveloperAddress().getZipcode())) {
-                listing.getErrorMessages().add("Developer zip code is required.");
+                listing.getErrorMessages().add(msgUtil.getMessage("developer.address.zipRequired"));
             }
         } else {
             if (StringUtils.isEmpty(listing.getDeveloperStreetAddress())) {
-                listing.getErrorMessages().add("Developer street address is required.");
+                listing.getErrorMessages().add(msgUtil.getMessage("developer.address.streetRequired"));
             }
             if (StringUtils.isEmpty(listing.getDeveloperCity())) {
-                listing.getErrorMessages().add("Developer city is required.");
+                listing.getErrorMessages().add(msgUtil.getMessage("developer.address.cityRequired"));
             }
             if (StringUtils.isEmpty(listing.getDeveloperState())) {
-                listing.getErrorMessages().add("Developer state is required.");
+                listing.getErrorMessages().add(msgUtil.getMessage("developer.address.stateRequired"));
             }
             if (StringUtils.isEmpty(listing.getDeveloperZipCode())) {
-                listing.getErrorMessages().add("Developer zip code is required.");
+                listing.getErrorMessages().add(msgUtil.getMessage("developer.address.zipRequired"));
             }
         }
         if (StringUtils.isEmpty(listing.getDeveloperWebsite())) {
-            listing.getErrorMessages().add("Developer website is required.");
+            listing.getErrorMessages().add(msgUtil.getMessage("developer.websiteRequired"));
         }
         if (StringUtils.isEmpty(listing.getDeveloperEmail())) {
-            listing.getErrorMessages().add("Developer contact email address is required.");
+            listing.getErrorMessages().add(msgUtil.getMessage("developer.contact.emailRequired"));
         }
         if (StringUtils.isEmpty(listing.getDeveloperPhoneNumber())) {
-            listing.getErrorMessages().add("Developer contact phone number is required.");
+            listing.getErrorMessages().add(msgUtil.getMessage("developer.contact.phoneRequired"));
         }
         if (StringUtils.isEmpty(listing.getDeveloperContactName())) {
-            listing.getErrorMessages().add("Developer contact name is required.");
+            listing.getErrorMessages().add(msgUtil.getMessage("developer.contact.nameRequired"));
         }
 
         for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
@@ -112,23 +112,25 @@ public class RequiredDataReviewer implements Reviewer {
                     listing.getErrorMessages()
                             .add(msgUtil.getMessage("listing.criteria.missingTestProcedure", cert.getNumber()));
                 }
+            }
 
-                if (cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 1) {
-                    List<String> g1Warnings =
-                            validateMacraMeasuresAreUniqueForCertificationResult(cert.getG1MacraMeasures(), cert.getNumber(), "listing.criteria.duplicateG1MacraMeasure");
-                    if (g1Warnings.size() > 0) {
-                        listing.getWarningMessages().addAll(g1Warnings);
-                        cert.setG1MacraMeasures(removeDuplicateMacraMeasures(cert.getG1MacraMeasures()));
-                    }
+            //macra measures are saved regardless of whether the criteria has been met
+            //so check for duplicates no matter what
+            if (cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 1) {
+                List<String> g1Warnings =
+                        validateMacraMeasuresAreUniqueForCertificationResult(cert.getG1MacraMeasures(), cert.getNumber(), "listing.criteria.duplicateG1MacraMeasure");
+                if (g1Warnings.size() > 0) {
+                    listing.getWarningMessages().addAll(g1Warnings);
+                    cert.setG1MacraMeasures(removeDuplicateMacraMeasures(cert.getG1MacraMeasures()));
                 }
+            }
 
-                if (cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 1) {
-                    List<String> g2Warnings =
-                            validateMacraMeasuresAreUniqueForCertificationResult(cert.getG2MacraMeasures(), cert.getNumber(), "listing.criteria.duplicateG2MacraMeasure");
-                    if (g2Warnings.size() > 0) {
-                        listing.getWarningMessages().addAll(g2Warnings);
-                        cert.setG2MacraMeasures(removeDuplicateMacraMeasures(cert.getG2MacraMeasures()));
-                    }
+            if (cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 1) {
+                List<String> g2Warnings =
+                        validateMacraMeasuresAreUniqueForCertificationResult(cert.getG2MacraMeasures(), cert.getNumber(), "listing.criteria.duplicateG2MacraMeasure");
+                if (g2Warnings.size() > 0) {
+                    listing.getWarningMessages().addAll(g2Warnings);
+                    cert.setG2MacraMeasures(removeDuplicateMacraMeasures(cert.getG2MacraMeasures()));
                 }
             }
         }

@@ -23,6 +23,9 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.manager.AnnouncementManager;
 import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
+import gov.healthit.chpl.web.controller.annotation.CacheControl;
+import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
+import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import gov.healthit.chpl.web.controller.results.AnnouncementResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -36,13 +39,11 @@ public class AnnouncementController {
     private AnnouncementManager announcementManager;
 
     @ApiOperation(value = "Get all announcements.",
-            notes = "The announcement listing is open to anyone, however announcements may be both public and "
-                    + "private and only public announcements will be returned if a non-authenticated user "
-                    + "calls this method. Both public and private announcements will be returned to an "
-                    + "authenticated user.  Scheduled future announcements can be retrieved by setting the "
-                    + "'future' flag to true and only CHPL users with ROLE_ADMIN or ROLE_ONC will be granted access to "
-                    + "that data.")
+            notes = "Security Restrictions: ROLE_ADMIN and ROLE_ONC can retrieve future scheduled announcements "
+                    + "and private announcements.  ROLE_ACB, ROLE_ATL, and ROLE_CMS_STAFF can retrieve private "
+                    + "announcements.  All users can retrieve public announcements.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.FOUR_HOURS)
     public @ResponseBody AnnouncementResults getAnnouncements(
             @RequestParam(required = false, defaultValue = "false") final boolean future) {
         AnnouncementResults results = new AnnouncementResults();
@@ -60,9 +61,13 @@ public class AnnouncementController {
         return results;
     }
 
-    @ApiOperation(value = "Get a specific announcement.")
+    @ApiOperation(value = "Get a specific announcement.",
+            notes = "Security Restrictions: ROLE_ADMIN and ROLE_ONC can retrieve future scheduled "
+                    + "announcements and private announcements.  ROLE_ACB, ROLE_ATL, and ROLE_CMS_STAFF "
+                    + "can retrieve private announcements.  All users can retrieve public announcements.")
     @RequestMapping(value = "/{announcementId}", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.FOUR_HOURS)
     public @ResponseBody Announcement getAnnouncementById(@PathVariable("announcementId") final Long announcementId)
             throws EntityRetrievalException {
         AnnouncementDTO announcement = announcementManager.getById(announcementId);
@@ -71,17 +76,17 @@ public class AnnouncementController {
     }
 
     @ApiOperation(value = "Create a new announcement.",
-            notes = "Only CHPL users with ROLE_ADMIN and ROLE_ONC are able to create announcements.")
+            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public Announcement create(@RequestBody final Announcement announcementInfo) throws InvalidArgumentsException,
-            UserRetrievalException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
+    UserRetrievalException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
 
         return createAnnouncement(announcementInfo);
     }
 
     private Announcement createAnnouncement(final Announcement announcementInfo) throws InvalidArgumentsException,
-        UserRetrievalException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
+    UserRetrievalException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
 
         AnnouncementDTO toCreate = new AnnouncementDTO();
         if (StringUtils.isEmpty(announcementInfo.getTitle())) {
@@ -106,10 +111,10 @@ public class AnnouncementController {
     }
 
     @ApiOperation(value = "Change an existing announcement.",
-            notes = "Only CHPL users with ROLE_ADMIN or ROLE_ONC are able to update announcements.")
+            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/{announcementId}", method = RequestMethod.PUT,
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
+    consumes = MediaType.APPLICATION_JSON_VALUE,
+    produces = "application/json; charset=utf-8")
     public Announcement updateAnnouncement(@RequestBody final Announcement announcementInfo)
             throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
             EntityCreationException, UpdateCertifiedBodyException {
@@ -118,7 +123,7 @@ public class AnnouncementController {
     }
 
     private Announcement update(final Announcement announcementInfo) throws InvalidArgumentsException,
-            EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
+    EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
         AnnouncementDTO toUpdate = new AnnouncementDTO();
         toUpdate.setId(announcementInfo.getId());
         toUpdate.setTitle(announcementInfo.getTitle());
@@ -132,9 +137,9 @@ public class AnnouncementController {
     }
 
     @ApiOperation(value = "Delete an existing announcement.",
-            notes = "Only CHPL users with ROLE_ADMIN or ROLE_ONC are able to delete announcements.")
+            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/{announcementId}", method = RequestMethod.DELETE,
-            produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public String deleteAnnouncement(@PathVariable("announcementId") final Long announcementId)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
 
