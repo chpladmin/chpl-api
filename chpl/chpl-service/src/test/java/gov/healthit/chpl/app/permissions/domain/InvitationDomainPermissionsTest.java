@@ -10,8 +10,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.healthit.chpl.permissions.domains.InvitationDomainPermissions;
 import gov.healthit.chpl.permissions.domains.invitation.InviteAcbActionPermissions;
-import gov.healthit.chpl.permissions.domains.invitation.InviteAcbAtlActionPermissions;
 import gov.healthit.chpl.permissions.domains.invitation.InviteAdminActionPermissions;
+import gov.healthit.chpl.permissions.domains.invitation.InviteAtlActionPermissions;
 import gov.healthit.chpl.permissions.domains.invitation.InviteOncActionPermissions;
 import gov.healthit.chpl.permissions.domains.invitation.InviteRoleNoAccessActionPermissions;
 
@@ -31,9 +31,6 @@ public class InvitationDomainPermissionsTest {
                 .get(InvitationDomainPermissions.INVITE_ACB) instanceof InviteAcbActionPermissions);
 
         assertTrue(permissions.getActionPermissions()
-                .get(InvitationDomainPermissions.INVITE_ACB_ATL) instanceof InviteAcbAtlActionPermissions);
-
-        assertTrue(permissions.getActionPermissions()
                 .get(InvitationDomainPermissions.INVITE_ADMIN) instanceof InviteAdminActionPermissions);
 
         assertTrue(permissions.getActionPermissions()
@@ -41,6 +38,9 @@ public class InvitationDomainPermissionsTest {
 
         assertTrue(permissions.getActionPermissions()
                 .get(InvitationDomainPermissions.INVITE_ROLE_NO_ACCESS) instanceof InviteRoleNoAccessActionPermissions);
+
+        assertTrue(permissions.getActionPermissions()
+                .get(InvitationDomainPermissions.INVITE_ACB) instanceof InviteAtlActionPermissions);
 
     }
 }

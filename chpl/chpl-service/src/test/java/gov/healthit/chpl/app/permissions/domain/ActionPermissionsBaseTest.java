@@ -10,6 +10,7 @@ import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
 public abstract class ActionPermissionsBaseTest {
@@ -35,6 +36,18 @@ public abstract class ActionPermissionsBaseTest {
         for (Long acbId : acbIds) {
             CertificationBodyDTO dto = new CertificationBodyDTO();
             dto.setId(acbId);
+            dtos.add(dto);
+        }
+
+        return dtos;
+    }
+
+    public List<TestingLabDTO> getAllAtlForUser(Long... atlIds) {
+        List<TestingLabDTO> dtos = new ArrayList<TestingLabDTO>();
+
+        for (Long atlId : atlIds) {
+            TestingLabDTO dto = new TestingLabDTO();
+            dto.setId(atlId);
             dtos.add(dto);
         }
 
