@@ -36,6 +36,7 @@ import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTestingLa
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("certifiedProductHandler")
 public abstract class CertifiedProductHandler extends CertifiedProductUploadHandlerImpl {
@@ -47,14 +48,16 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
     protected static final String CRITERIA_COL_HEADING_BEGIN = "CRITERIA_";
 
     @Autowired
-    MessageSource messageSource;
+    private MessageSource messageSource;
+    @Autowired
+    private ErrorMessageUtil msgUtil;
 
     @Override
     public abstract PendingCertifiedProductEntity handle() throws InvalidArgumentsException;
     public abstract TemplateColumnIndexMap getColumnIndexMap();
     public abstract String[] getCriteriaNames();
 
-    public String getErrorMessage(String errorField) {
+    public String getErrorMessage(final String errorField) {
         return String.format(
                 messageSource.getMessage(new DefaultMessageSourceResolvable(errorField),
                         LocaleContextHolder.getLocale()));
@@ -243,6 +246,7 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
             Date certificationDate = dateFormatter.parse(dateStr);
             pendingCertifiedProduct.setCertificationDate(certificationDate);
         } catch (final ParseException ex) {
+            pendingCertifiedProduct.getErrorMessages().add(msgUtil.getMessage("listing.badCertificationDate", dateStr));
             pendingCertifiedProduct.setCertificationDate(null);
         }
     }
@@ -315,23 +319,10 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         return result;
     }
 
-    //    protected Boolean asBooleanEmpty(String value) {
-    //        value = value.trim();
-    //
-    //        if (StringUtils.isEmpty(value)) {
-    //            return null;
-    //        }
-    //
-    //        return parseBoolean(value);
-    //    }
-
-    protected Boolean asBoolean(String value) {
-        value = value.trim();
-
-        if (StringUtils.isEmpty(value)) {
+    protected Boolean asBoolean(final String value) {
+        if (StringUtils.isEmpty(value.trim())) {
             return false;
         }
-
         return parseBoolean(value);
     }
 
