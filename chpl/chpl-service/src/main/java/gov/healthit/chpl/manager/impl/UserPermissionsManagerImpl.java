@@ -108,7 +108,7 @@ public class UserPermissionsManagerImpl implements UserPermissionsManager {
     @Override
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).USER_PERMISSIONS, "
-            + "T(gov.healthit.chpl.permissions.domains.UserPermissionsDomainPermissions).ADD_Atl, #atl)")
+            + "T(gov.healthit.chpl.permissions.domains.UserPermissionsDomainPermissions).ADD_ATL, #atl)")
     public void addAtlPermission(TestingLabDTO atl, Long userId)
             throws EntityRetrievalException, UserRetrievalException {
 

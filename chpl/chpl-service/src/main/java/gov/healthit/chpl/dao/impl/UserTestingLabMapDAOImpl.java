@@ -57,12 +57,12 @@ public class UserTestingLabMapDAOImpl extends BaseDAOImpl implements UserTesting
     }
 
     @Override
-    public List<UserTestingLabMapDTO> getByAtlId(Long acbId) {
+    public List<UserTestingLabMapDTO> getByAtlId(Long atlId) {
         Query query = entityManager.createQuery(
-                "from UserTestingLabMapEntity utlm " + "join fetch ucbm.testingLab tl "
-                        + "join fetch utlm.user u where (utlm.deleted != true) AND (cb.id = :acbId) ",
+                "from UserTestingLabMapEntity utlm " + "join fetch utlm.testingLab tl "
+                        + "join fetch utlm.user u where (utlm.deleted != true) AND (tl.id = :atlId) ",
                 UserTestingLabMapEntity.class);
-        query.setParameter("acbId", acbId);
+        query.setParameter("atlId", atlId);
         List<UserTestingLabMapEntity> result = query.getResultList();
 
         List<UserTestingLabMapDTO> dtos = new ArrayList<UserTestingLabMapDTO>();

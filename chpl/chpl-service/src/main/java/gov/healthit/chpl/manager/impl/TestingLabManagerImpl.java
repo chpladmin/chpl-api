@@ -80,7 +80,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).TESTING_LAB, "
-            + "T(gov.healthit.chpl.permissions.domains.TestingLabDomainPermissions).CREATE, #atl)")
+            + "T(gov.healthit.chpl.permissions.domains.TestingLabDomainPermissions).UPDATE, #atl)")
     public TestingLabDTO update(final TestingLabDTO atl) throws EntityRetrievalException, JsonProcessingException,
             EntityCreationException, UpdateTestingLabException {
 
@@ -95,7 +95,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).TESTING_LAB, "
-            + "T(gov.healthit.chpl.permissions.domains.TestingLabDomainPermissions).CREATE)")
+            + "T(gov.healthit.chpl.permissions.domains.TestingLabDomainPermissions).RETIRE)")
     public TestingLabDTO retire(final TestingLabDTO atl) throws EntityRetrievalException, JsonProcessingException,
             EntityCreationException, UpdateTestingLabException {
         Date now = new Date();
@@ -116,7 +116,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).TESTING_LAB, "
-            + "T(gov.healthit.chpl.permissions.domains.TestingLabDomainPermissions).CREATE)")
+            + "T(gov.healthit.chpl.permissions.domains.TestingLabDomainPermissions).UNRETIRE)")
     public TestingLabDTO unretire(final Long atlId) throws EntityRetrievalException, JsonProcessingException,
             EntityCreationException, UpdateTestingLabException {
         TestingLabDTO result = null;
@@ -143,7 +143,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 
     @Transactional(readOnly = true)
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).TESTING_LAB, "
-            + "T(gov.healthit.chpl.permissions.domains.TestingLabDomainPermissions).CREATE, filterObject)")
+            + "T(gov.healthit.chpl.permissions.domains.TestingLabDomainPermissions).GET_ALL, filterObject)")
     public List<TestingLabDTO> getAllForUser() {
         return testingLabDAO.findAll();
     }
