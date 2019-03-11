@@ -40,7 +40,7 @@ public class InvitationDomainPermissionsTest {
                 .get(InvitationDomainPermissions.INVITE_ROLE_NO_ACCESS) instanceof InviteRoleNoAccessActionPermissions);
 
         assertTrue(permissions.getActionPermissions()
-                .get(InvitationDomainPermissions.INVITE_ACB) instanceof InviteAtlActionPermissions);
+                .get(InvitationDomainPermissions.INVITE_ATL) instanceof InviteAtlActionPermissions);
 
     }
 }
