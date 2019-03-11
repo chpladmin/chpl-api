@@ -15,9 +15,10 @@ import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 /**
- * Makes sure a valid test tool was entered by the user - otherwise removes it and includes
- * an error. Makes sure the version is included with a test tool.
+ * Makes sure a valid test tool was entered by the user - otherwise removes it and includes an error.
+ * Makes sure the version is included with a test tool.
  * Checks that retired test tools are not used if not appropriate.
+ * 
  * @author kekey
  *
  */
@@ -37,8 +38,6 @@ public class TestToolReviewer implements Reviewer {
 
     @Override
     public void review(final CertifiedProductSearchDetails listing) {
-        Integer icsCodeInteger = productNumUtil.getIcsCode(listing.getChplProductNumber());
-
         for (CertificationResult cert : listing.getCertificationResults()) {
             if (cert.isSuccess()) {
                 if (cert.getTestToolsUsed() != null && cert.getTestToolsUsed().size() > 0) {
@@ -46,41 +45,24 @@ public class TestToolReviewer implements Reviewer {
                     while (testToolIter.hasNext()) {
                         CertificationResultTestTool testTool = testToolIter.next();
                         if (StringUtils.isEmpty(testTool.getTestToolName())) {
-                            listing.getErrorMessages().add(
-                                    msgUtil.getMessage("listing.criteria.missingTestToolName", cert.getNumber()));
+                            listing.getErrorMessages()
+                                    .add(msgUtil.getMessage("listing.criteria.missingTestToolName", cert.getNumber()));
                         } else {
-                            //require test tool version if there is a name
+                            // require test tool version if there is a name
                             if (StringUtils.isEmpty(testTool.getTestToolVersion())) {
-                                listing.getErrorMessages().add(
-                                        msgUtil.getMessage("listing.criteria.missingTestToolVersion",
+                                listing.getErrorMessages()
+                                        .add(msgUtil.getMessage("listing.criteria.missingTestToolVersion",
                                                 testTool.getTestToolName(), cert.getNumber()));
                             }
 
                             TestToolDTO tt = testToolDao.getByName(testTool.getTestToolName());
-                            if (tt != null) {
-                                if (tt.isRetired() && icsCodeInteger != null && icsCodeInteger.intValue() == 0) {
-                                    if (productNumUtil.hasIcsConflict(listing.getChplProductNumber(),
-                                            (listing.getIcs() == null ? Boolean.FALSE : listing.getIcs().getInherits()))) {
-                                        listing.getErrorMessages().add(
-                                                msgUtil.getMessage("listing.criteria.retiredTestToolNotAllowed",
-                                                        testTool.getTestToolName(), cert.getNumber()));
-                                    } else {
-                                        listing.getErrorMessages().add(
-                                                msgUtil.getMessage("listing.criteria.retiredTestToolNotAllowed",
-                                                        testTool.getTestToolName(), cert.getNumber()));
-                                    }
-                                } else if (tt.isRetired()
-                                        && (listing.getIcs() == null || listing.getIcs().getInherits() == null
-                                        || listing.getIcs().getInherits().equals(Boolean.FALSE))) {
-                                    listing.getErrorMessages().add(
-                                            msgUtil.getMessage("listing.criteria.retiredTestToolNotAllowed",
-                                                    testTool.getTestToolName(), cert.getNumber()));
-                                }
-                            } else {
-                                listing.getErrorMessages().add(
-                                        msgUtil.getMessage("listing.criteria.testToolNotFoundAndRemoved",
-                                                cert.getNumber(), testTool.getTestToolName()));
-                                testToolIter.remove();
+                            if (tt != null && tt.isRetired()) {
+                                listing.getWarningMessages()
+                                        .add(msgUtil.getMessage("listing.criteria.retiredTestToolNotAllowed",
+                                                testTool.getTestToolName(), cert.getNumber()));
+                            } else if (tt == null) {
+                                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.testToolNotFound",
+                                        cert.getNumber(), testTool.getTestToolName()));
                             }
                         }
                     }

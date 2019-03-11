@@ -19,6 +19,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
  * Test tool name must match a test tool in the database.
  * Test tool version is required
  * Listings shouldn't use retired test tools.
+ * 
  * @author kekey
  *
  */
@@ -47,34 +48,30 @@ public class TestToolReviewer implements Reviewer {
                     while (testToolIter.hasNext()) {
                         PendingCertificationResultTestToolDTO testTool = testToolIter.next();
                         if (StringUtils.isEmpty(testTool.getName())) {
-                            listing.getErrorMessages().add(
-                                    msgUtil.getMessage("listing.criteria.missingTestToolName", cert.getNumber()));
+                            listing.getErrorMessages()
+                                    .add(msgUtil.getMessage("listing.criteria.missingTestToolName", cert.getNumber()));
                         } else {
-                            //require test tool version
+                            // require test tool version
                             if (StringUtils.isEmpty(testTool.getVersion())) {
-                                listing.getErrorMessages().add(
-                                        msgUtil.getMessage("listing.criteria.missingTestToolVersion",
+                                listing.getErrorMessages()
+                                        .add(msgUtil.getMessage("listing.criteria.missingTestToolVersion",
                                                 testTool.getName(), cert.getNumber()));
                             }
 
                             TestToolDTO foundTestTool = testToolDao.getByName(testTool.getName());
                             if (foundTestTool != null) {
-                                //retired tools aren't allowed
-                                if (foundTestTool.isRetired() && icsCodeInteger != null
-                                        && icsCodeInteger.intValue() == 0) {
-                                    if (productNumUtil.hasIcsConflict(listing.getUniqueId(), listing.getIcs())) {
-                                        listing.getErrorMessages().add(
-                                                msgUtil.getMessage("listing.criteria.retiredTestToolNotAllowed",
-                                                        testTool.getName(), cert.getNumber()));
-                                    } else {
-                                        listing.getErrorMessages().add(
-                                                msgUtil.getMessage("listing.criteria.retiredTestToolNotAllowed",
+                                // retired tools aren't allowed if there is ICS or an ICS Mismatch
+                                if (foundTestTool.isRetired()) {
+                                    if (!hasIcs(listing) || hasIcsMismatch(listing)) {
+                                        listing.getErrorMessages()
+                                                .add(msgUtil.getMessage(
+                                                        "listing.criteria.retiredTestToolNoIcsNotAllowed",
                                                         testTool.getName(), cert.getNumber()));
                                     }
                                 }
                             } else {
-                                listing.getErrorMessages().add(
-                                        msgUtil.getMessage("listing.criteria.testToolNotFoundAndRemoved",
+                                listing.getErrorMessages()
+                                        .add(msgUtil.getMessage("listing.criteria.testToolNotFoundAndRemoved",
                                                 cert.getNumber(), testTool.getName()));
                                 testToolIter.remove();
                             }
@@ -83,5 +80,14 @@ public class TestToolReviewer implements Reviewer {
                 }
             }
         }
+    }
+
+    private Boolean hasIcs(final PendingCertifiedProductDTO listing) {
+        Integer icsCodeInteger = productNumUtil.getIcsCode(listing.getUniqueId());
+        return listing.getIcs() && !icsCodeInteger.equals(0);
+    }
+
+    private Boolean hasIcsMismatch(final PendingCertifiedProductDTO listing) {
+        return productNumUtil.hasIcsConflict(listing.getUniqueId(), listing.getIcs());
     }
 }

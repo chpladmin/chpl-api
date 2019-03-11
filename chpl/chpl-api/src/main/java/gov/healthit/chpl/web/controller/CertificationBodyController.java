@@ -7,8 +7,6 @@ import java.util.Set;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.security.acls.domain.PrincipalSid;
-import org.springframework.security.acls.model.Permission;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,7 +24,6 @@ import gov.healthit.chpl.auth.json.User;
 import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.ChplPermission;
 import gov.healthit.chpl.domain.PermittedUser;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -35,7 +32,12 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertificationBodyManager;
+import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
+import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.web.controller.annotation.CacheControl;
+import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
+import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import gov.healthit.chpl.web.controller.results.CertificationBodyResults;
 import gov.healthit.chpl.web.controller.results.PermittedUserResults;
 import io.swagger.annotations.Api;
@@ -50,19 +52,26 @@ public class CertificationBodyController {
     private CertificationBodyManager acbManager;
 
     @Autowired
+    private ResourcePermissions resourcePermissions;
+    
+    @Autowired
+    private UserPermissionsManager userPermissionsManager;
+    
+    @Autowired
     private UserManager userManager;
 
     @ApiOperation(value = "List all certification bodies (ACBs).",
             notes = "Setting the 'editable' parameter to true will return all ACBs that the logged in user has "
                     + "edit permissions on. Security Restrictions:  All users can see all active ACBs.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertificationBodyResults getAcbs(
             @RequestParam(required = false, defaultValue = "false") final boolean editable) {
         //TODO confirm a user is logged in here
         CertificationBodyResults results = new CertificationBodyResults();
         List<CertificationBodyDTO> acbs = null;
         if (editable) {
-            acbs = acbManager.getAllForUser();
+            acbs = resourcePermissions.getAllAcbsForCurrentUser();
         } else {
             acbs = acbManager.getAll();
         }
@@ -144,7 +153,7 @@ public class CertificationBodyController {
         //Retirement and un-retirement is done as a separate manager action because
         //security is different from normal ACB updates - only admins are allowed
         //whereas an ACB admin can update other info
-        CertificationBodyDTO existingAcb = acbManager.getIfPermissionById(updatedAcb.getId());
+        CertificationBodyDTO existingAcb = resourcePermissions.getAcbIfPermissionById(updatedAcb.getId());
         if (updatedAcb.isRetired()) {
             //we are retiring this ACB - no other updates can happen
             CertificationBodyDTO toRetire = new CertificationBodyDTO();
@@ -201,14 +210,14 @@ public class CertificationBodyController {
             throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
 
         UserDTO user = userManager.getById(userId);
-        CertificationBodyDTO acb = acbManager.getIfPermissionById(acbId);
+        CertificationBodyDTO acb = resourcePermissions.getAcbIfPermissionById(acbId);
 
         if (user == null || acb == null) {
             throw new InvalidArgumentsException("Could not find either ACB or User specified");
         }
 
         // delete all permissions on that acb
-        acbManager.deleteAllPermissionsOnAcb(acb, new PrincipalSid(user.getSubjectName()));
+        userPermissionsManager.deleteAcbPermission(acb, userId);
 
         return "{\"userDeleted\" : true}";
     }
@@ -220,13 +229,13 @@ public class CertificationBodyController {
     produces = "application/json; charset=utf-8")
     public @ResponseBody PermittedUserResults getUsers(@PathVariable("acbId") final Long acbId)
             throws InvalidArgumentsException, EntityRetrievalException {
-        CertificationBodyDTO acb = acbManager.getIfPermissionById(acbId);
+        CertificationBodyDTO acb = resourcePermissions.getAcbIfPermissionById(acbId);
         if (acb == null) {
             throw new InvalidArgumentsException("Could not find the ACB specified.");
         }
 
         List<PermittedUser> acbUsers = new ArrayList<PermittedUser>();
-        List<UserDTO> users = acbManager.getAllUsersOnAcb(acb);
+        List<UserDTO> users = resourcePermissions.getAllUsersOnAcb(acb);
         for (UserDTO user : users) {
 
             // only show users that have ROLE_ACB
@@ -244,19 +253,8 @@ public class CertificationBodyController {
                     roleNames.add(role.getAuthority());
                 }
 
-                List<Permission> permissions = acbManager.getPermissionsForUser(acb,
-                        new PrincipalSid(user.getSubjectName()));
-                List<String> acbPerm = new ArrayList<String>(permissions.size());
-                for (Permission permission : permissions) {
-                    ChplPermission perm = ChplPermission.fromPermission(permission);
-                    if (perm != null) {
-                        acbPerm.add(perm.toString());
-                    }
-                }
-
                 PermittedUser userInfo = new PermittedUser();
                 userInfo.setUser(new User(user));
-                userInfo.setPermissions(acbPerm);
                 userInfo.setRoles(roleNames);
                 acbUsers.add(userInfo);
             }

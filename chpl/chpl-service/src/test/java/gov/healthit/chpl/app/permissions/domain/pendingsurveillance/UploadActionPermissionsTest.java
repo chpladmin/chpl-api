@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
@@ -20,15 +21,17 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.manager.CertificationBodyManager;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domains.pendingsurveillance.UploadActionPermissions;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
 public class UploadActionPermissionsTest extends ActionPermissionsBaseTest {
 
-    @Spy
-    private CertificationBodyManager acbManager;
+    @Mock
+    private ResourcePermissions resourcePermissions;
 
     @Spy
     private CertifiedProductDAO cpDAO;
@@ -40,17 +43,15 @@ public class UploadActionPermissionsTest extends ActionPermissionsBaseTest {
     public void setup() throws EntityRetrievalException {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(acbManager.getAllForUser())
-        .thenReturn(getAllAcbForUser(2l, 4l));
+        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
 
-        Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong()))
-        .thenReturn(getCertifiedProduct(1l, 2l));
+        Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getCertifiedProduct(1l, 2l));
     }
 
     @Override
     @Test
     public void hasAccess_Admin() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getAdminUser());
+        setupForAdminUser(resourcePermissions);
 
         assertTrue(permissions.hasAccess());
 
@@ -61,7 +62,7 @@ public class UploadActionPermissionsTest extends ActionPermissionsBaseTest {
     @Override
     @Test
     public void hasAccess_Onc() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getOncUser());
+        setupForOncUser(resourcePermissions);
 
         assertTrue(permissions.hasAccess());
 
@@ -72,7 +73,7 @@ public class UploadActionPermissionsTest extends ActionPermissionsBaseTest {
     @Override
     @Test
     public void hasAccess_Acb() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getAcbUser());
+        setupForAcbUser(resourcePermissions);
 
         assertTrue(permissions.hasAccess());
 
@@ -80,19 +81,17 @@ public class UploadActionPermissionsTest extends ActionPermissionsBaseTest {
         surv.setCertifiedProduct(new CertifiedProduct());
         surv.getCertifiedProduct().setId(1l);
 
-        Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong()))
-        .thenReturn(getCertifiedProduct(1l, 2l));
+        Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getCertifiedProduct(1l, 2l));
         assertTrue(permissions.hasAccess(surv));
 
-        Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong()))
-        .thenReturn(getCertifiedProduct(1l, 3l));
+        Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getCertifiedProduct(1l, 3l));
         assertFalse(permissions.hasAccess(surv));
     }
 
     @Override
     @Test
     public void hasAccess_Atl() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getAtlUser());
+        setupForAtlUser(resourcePermissions);
 
         assertFalse(permissions.hasAccess());
 
@@ -103,7 +102,7 @@ public class UploadActionPermissionsTest extends ActionPermissionsBaseTest {
     @Override
     @Test
     public void hasAccess_Cms() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(getCmsUser());
+        setupForCmsUser(resourcePermissions);
 
         assertFalse(permissions.hasAccess());
 
@@ -114,7 +113,7 @@ public class UploadActionPermissionsTest extends ActionPermissionsBaseTest {
     @Override
     @Test
     public void hasAccess_Anon() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(null);
+        setupForAnonUser(resourcePermissions);
 
         assertFalse(permissions.hasAccess());
 

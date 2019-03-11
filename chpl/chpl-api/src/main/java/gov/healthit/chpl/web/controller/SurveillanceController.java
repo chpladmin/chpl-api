@@ -58,7 +58,9 @@ import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.PendingSurveillanceManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
+import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 import gov.healthit.chpl.web.controller.results.SurveillanceResults;
@@ -85,11 +87,11 @@ public class SurveillanceController implements MessageSourceAware {
     @Autowired
     private CertifiedProductDetailsManager cpdetailsManager;
     @Autowired
-    private CertificationBodyManager acbManager;
-    @Autowired
     private SurveillanceValidator survValidator;
     @Autowired
     private PendingSurveillanceManager pendingSurveillanceManager;
+    @Autowired
+    private ResourcePermissions resourcePermissions;
 
     @ApiOperation(value = "Get the listing of all pending surveillance items that this user has access to.",
             notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority on the ACB associated "
@@ -176,15 +178,12 @@ public class SurveillanceController implements MessageSourceAware {
                 .getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
         CertificationBodyDTO owningAcb = null;
         try {
-            owningAcb = acbManager.getIfPermissionById(Long.valueOf(beforeCp.getCertifyingBody().get("id").toString()));
+            owningAcb = resourcePermissions.getAcbIfPermissionById(Long.valueOf(beforeCp.getCertifyingBody().get("id").toString()));
         } catch (final AccessDeniedException ex) {
             throw new CertificationBodyAccessException(
                     "User does not have permission to add surveillance to a certified product under ACB "
                             + beforeCp.getCertifyingBody().get("name"));
-        } catch (final EntityRetrievalException ex) {
-            LOGGER.error("Error looking up ACB associated with surveillance.", ex);
-            throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
-        }
+        } 
 
         // insert the surveillance
         HttpHeaders responseHeaders = new HttpHeaders();
@@ -249,7 +248,7 @@ public class SurveillanceController implements MessageSourceAware {
 
         CertificationBodyDTO owningAcb = null;
         try {
-            owningAcb = acbManager.getIfPermissionById(Long.valueOf(beforeCp.getCertifyingBody().get("id").toString()));
+            owningAcb = resourcePermissions.getAcbIfPermissionById(Long.valueOf(beforeCp.getCertifyingBody().get("id").toString()));
         } catch (Exception ex) {
             LOGGER.error("Error looking up ACB associated with surveillance.", ex);
             throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
@@ -302,7 +301,7 @@ public class SurveillanceController implements MessageSourceAware {
                 .getCertifiedProductDetails(survToUpdate.getCertifiedProduct().getId());
         CertificationBodyDTO owningAcb = null;
         try {
-            owningAcb = acbManager.getIfPermissionById(Long.valueOf(beforeCp.getCertifyingBody().get("id").toString()));
+            owningAcb = resourcePermissions.getAcbIfPermissionById(Long.valueOf(beforeCp.getCertifyingBody().get("id").toString()));
         } catch (Exception ex) {
             LOGGER.error("Error looking up ACB associated with surveillance.", ex);
             throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
@@ -365,7 +364,7 @@ public class SurveillanceController implements MessageSourceAware {
         CertifiedProductSearchDetails beforeCp = cpdetailsManager
                 .getCertifiedProductDetails(survToDelete.getCertifiedProduct().getId());
         CertificationBodyDTO owningAcb =
-                acbManager.getIfPermissionById(Long.valueOf(beforeCp.getCertifyingBody().get("id").toString()));
+                resourcePermissions.getAcbIfPermissionById(Long.valueOf(beforeCp.getCertifyingBody().get("id").toString()));
 
         HttpHeaders responseHeaders = new HttpHeaders();
         // delete it
@@ -415,7 +414,7 @@ public class SurveillanceController implements MessageSourceAware {
                 .getCertifiedProductDetails(surv.getCertifiedProduct().getId());
         CertificationBodyDTO owningAcb = null;
         try {
-            owningAcb = acbManager.getIfPermissionById(Long.valueOf(beforeCp.getCertifyingBody().get("id").toString()));
+            owningAcb = resourcePermissions.getAcbIfPermissionById(Long.valueOf(beforeCp.getCertifyingBody().get("id").toString()));
         } catch (Exception ex) {
             LOGGER.error("Error looking up ACB associated with surveillance.", ex);
             throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
@@ -466,7 +465,7 @@ public class SurveillanceController implements MessageSourceAware {
         }
 
         ObjectsMissingValidationException possibleExceptions = new ObjectsMissingValidationException();
-        List<CertificationBodyDTO> acbs = acbManager.getAllForUser();
+        List<CertificationBodyDTO> acbs = resourcePermissions.getAllAcbsForCurrentUser();
         for (Long id : idList.getIds()) {
             try {
                 pendingSurveillanceManager.rejectPendingSurveillance(id);

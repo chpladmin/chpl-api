@@ -79,7 +79,7 @@ public class ActivityManagerTest extends TestCase {
 
         atlUser = new JWTAuthenticatedUser();
         atlUser.setFullName("ATL");
-        atlUser.setId(3L);
+        atlUser.setId(4L);
         atlUser.setFriendlyName("User");
         atlUser.setSubjectName("atlUser");
         atlUser.getPermissions().add(new GrantedPermission("ROLE_ATL"));
@@ -306,6 +306,7 @@ public class ActivityManagerTest extends TestCase {
      * /activity/user_activities?start=milliValue?end=milliValue When an
      * activity exists for a valid user Then the authenticated user's activity
      * is returned.
+     * 
      * @throws JsonParseException
      * @throws IOException
      * @throws UserRetrievalException

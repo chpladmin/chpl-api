@@ -1,5 +1,30 @@
 # Release Notes
 
+## Version 20.5.0
+_11 March 2019_
+
+### New Features
+* HTTP caching of several resources that are pretty static
+* Update subject and email text of overnight surveillance broken rules report and all surveillance broken rules report
+* Add developer split functionality
+* Display more helpful error message when a Reason for Change is required
+* Modify security to use CHPL managed user/ACB relationship
+* Update validation of test tools based on workflow and ICS
+
+---
+
+## Version 20.4.0
+_25 February 2019_
+
+### New features
+* Allow upload / confirm of macra measures RT 13, 14, 15
+* Update behavior of pre-loaded caches which will affect the /cache_status call.
+  * All pre-loaded caches have an additional copy loaded in the background when their data changes. The background cache is then swapped with the live cache when necessary.
+  * The /cache_status call was reporting OK after initial startup but would later report INITIALIZING if user actions changed any cached data. Now once it reports OK it should continue to do so.
+* Save uploaded SED task/participant numbers as text; give error when cannot be parsed to numbers
+
+---
+
 ## Version 20.3.0
 _11 February 2019_
 

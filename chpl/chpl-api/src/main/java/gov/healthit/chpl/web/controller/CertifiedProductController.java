@@ -70,6 +70,8 @@ import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
+import gov.healthit.chpl.manager.UserPermissionsManager;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandler;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandlerFactory;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
@@ -78,6 +80,9 @@ import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import gov.healthit.chpl.validation.listing.PendingValidator;
 import gov.healthit.chpl.validation.listing.Validator;
+import gov.healthit.chpl.web.controller.annotation.CacheControl;
+import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
+import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import gov.healthit.chpl.web.controller.results.CQMResultDetailResults;
 import gov.healthit.chpl.web.controller.results.CertificationResults;
 import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
@@ -103,9 +108,12 @@ public class CertifiedProductController {
     @Autowired
     private CertifiedProductManager cpManager;
 
-    @Autowired
-    private CertificationBodyManager acbManager;
-
+    @Autowired 
+    private UserPermissionsManager userPermissionsManager;
+    
+    @Autowired 
+    private ResourcePermissions resourcePermissions;
+    
     @Autowired
     private PendingCertifiedProductManager pcpManager;
 
@@ -129,7 +137,8 @@ public class CertifiedProductController {
 
     @Autowired
     private ChplProductNumberUtil chplProductNumberUtil;
-
+    
+    
     /**
      * List all certified products.
      * @param versionId if entered, filters list to only listings under given version
@@ -178,6 +187,7 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/details",
     method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductById(
             @PathVariable("certifiedProductId") final Long certifiedProductId) throws EntityRetrievalException {
 
@@ -212,6 +222,7 @@ public class CertifiedProductController {
             + "{addlSoftwareCode}.{certDateCode}/details",
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByChplProductNumber(
             @PathVariable("year") final String year,
             @PathVariable("testingLab") final String testingLab,
@@ -245,6 +256,7 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{chplPrefix}-{identifier}/details",
     method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByChplProductNumber2(
             @PathVariable("chplPrefix") final String chplPrefix,
             @PathVariable("identifier") final String identifier) throws EntityRetrievalException {
@@ -266,6 +278,7 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}",
     method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByIdBasic(
             @PathVariable("certifiedProductId") final Long certifiedProductId) throws EntityRetrievalException {
 
@@ -303,6 +316,7 @@ public class CertifiedProductController {
             + "{addlSoftwareCode}.{certDateCode}",
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByChplProductNumberBasic(
             @PathVariable("year") final String year,
             @PathVariable("testingLab") final String testingLab,
@@ -335,6 +349,7 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{chplPrefix}-{identifier}",
     method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByChplProductNumberBasic2(
             @PathVariable("chplPrefix") final String chplPrefix,
             @PathVariable("identifier") final String identifier) throws EntityRetrievalException {
@@ -353,6 +368,7 @@ public class CertifiedProductController {
             notes = "Returns all of the CQM results in the CHPL related to the specified certified product.")
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/cqm_results", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CQMResultDetailResults getCqmsByCertifiedProductId(
             @PathVariable("certifiedProductId") final Long certifiedProductId) throws EntityRetrievalException {
 
@@ -371,6 +387,7 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
             + "{addlSoftwareCode}.{certDateCode}/cqm_results", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CQMResultDetailResults getCqmsByCertifiedProductId(
             @PathVariable("year") final String year,
             @PathVariable("testingLab") final String testingLab,
@@ -398,6 +415,7 @@ public class CertifiedProductController {
                     + "to this service would look like /certified_products/CHP-999999/cqm_results.")
     @RequestMapping(value = "/{chplPrefix}-{identifier}/cqm_results", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CQMResultDetailResults getCqmsByCertifiedProductId(
             @PathVariable("chplPrefix") final String chplPrefix,
             @PathVariable("identifier") final String identifier) throws EntityRetrievalException  {
@@ -413,6 +431,7 @@ public class CertifiedProductController {
             notes = "Returns all of the certifiection results in the CHPL related to the specified certified product.")
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/certification_results", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertificationResults getCertificationResultssByCertifiedProductId(
             @PathVariable("certifiedProductId") final Long certifiedProductId) throws EntityRetrievalException {
 
@@ -438,6 +457,7 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}"
             + ".{certDateCode}/certification_results", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertificationResults getCertificationResultssByCertifiedProductId(
             @PathVariable("year") final String year,
             @PathVariable("testingLab") final String testingLab,
@@ -466,6 +486,7 @@ public class CertifiedProductController {
                     + "service would look like /certified_products/CHP-999999/certification_results.")
     @RequestMapping(value = "/{chplPrefix}-{identifier}/certification_results", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertificationResults getCertificationResultssByCertifiedProductId(
             @PathVariable("chplPrefix") final String chplPrefix,
             @PathVariable("identifier") final String identifier) throws EntityRetrievalException  {
@@ -503,6 +524,7 @@ public class CertifiedProductController {
             notes = "Returns all member of the family tree conected to the specified certified product.")
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/ics_relationships", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody List<IcsFamilyTreeNode> getIcsFamilyTreeById(
             @PathVariable("certifiedProductId") final Long certifiedProductId) throws EntityRetrievalException {
         List<IcsFamilyTreeNode> familyTree = cpManager.getIcsFamilyTree(certifiedProductId);
@@ -519,6 +541,7 @@ public class CertifiedProductController {
             + "{addlSoftwareCode}.{certDateCode}/ics_relationships",
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody List<IcsFamilyTreeNode> getIcsFamilyTreeByChplProductNumber(
             @PathVariable("year") final String year,
             @PathVariable("testingLab") final String testingLab,
@@ -544,6 +567,7 @@ public class CertifiedProductController {
                     + "service would look like /certified_products/CHP-999999/ics_relationships.")
     @RequestMapping(value = "/{chplPrefix}-{identifier}/ics_relationships", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody List<IcsFamilyTreeNode> getIcsFamilyTreeByChplProductNumber(
             @PathVariable("chplPrefix") final String chplPrefix,
             @PathVariable("identifier") final String identifier) throws EntityRetrievalException  {
@@ -604,8 +628,8 @@ public class CertifiedProductController {
                     .equals(CertificationStatusType.TerminatedByOnc.toString())
                     || updatedListing.getCurrentStatus().getStatus().getName()
                     .equals(CertificationStatusType.TerminatedByOnc.toString()))
-                    && !Util.isUserRoleOnc()
-                    && !Util.isUserRoleAdmin()) {
+                    && !resourcePermissions.isUserRoleOnc()
+                    && !resourcePermissions.isUserRoleAdmin()) {
                 updatedListing.getErrorMessages()
                 .add("User " + Util.getUsername()
                 + " does not have permission to change certification status of "
@@ -680,10 +704,10 @@ public class CertifiedProductController {
             throws EntityRetrievalException, AccessDeniedException {
 
         List<PendingCertifiedProductDTO> pcps = new ArrayList<PendingCertifiedProductDTO>();
-        if (Util.isUserRoleAdmin()) {
+        if (resourcePermissions.isUserRoleAdmin()) {
             pcps = pcpManager.getAllPendingCertifiedProducts();
-        } else if (Util.isUserRoleAcbAdmin()) {
-            List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser();
+        } else if (resourcePermissions.isUserRoleAcbAdmin()) {
+            List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
             for (CertificationBodyDTO acb : allowedAcbs) {
                 pcps.addAll(pcpManager.getPendingCertifiedProducts(acb.getId()));
             }
@@ -728,7 +752,7 @@ public class CertifiedProductController {
             //make sure the user has permissions on the pending listings acb
             //will throw access denied if they do not have the permissions
             Long pendingListingAcbId = new Long(details.getCertifyingBody().get("id").toString());
-            acbManager.getIfPermissionById(pendingListingAcbId);
+            resourcePermissions.getAcbIfPermissionById(pendingListingAcbId);
         }
         return details;
     }
@@ -749,7 +773,7 @@ public class CertifiedProductController {
             //make sure the user has permissions on the pending listings acb
             //will throw access denied if they do not have the permissions
             pendingListingAcbId = new Long(pcp.getCertifyingBody().get("id").toString());
-            acbManager.getIfPermissionById(pendingListingAcbId);
+            resourcePermissions.getAcbIfPermissionById(pendingListingAcbId);
         }
         pcpManager.deletePendingCertifiedProduct(pendingListingAcbId, pcpId);
         return "{\"success\" : true}";
