@@ -57,10 +57,6 @@ public class UserAuthenticator implements Authenticator {
                 throw new BadCredentialsException(
                         "Account for user " + user.getSubjectName() + " has not been confirmed.");
             }
-            if (user.getComplianceSignatureDate() == null) {
-                throw new BadCredentialsException("Account for user " + user.getSubjectName()
-                        + " has not accepted the compliance terms and conditions.");
-            }
 
             if (checkPassword(credentials.getPassword(), userManager.getEncodedPassword(user))) {
 
