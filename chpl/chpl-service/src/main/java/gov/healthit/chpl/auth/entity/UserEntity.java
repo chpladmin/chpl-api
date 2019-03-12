@@ -49,9 +49,6 @@ public class UserEntity {
     @Column(name = "account_enabled")
     private boolean accountEnabled;
 
-    @Column(name = "compliance_signature")
-    private Date complianceSignature;
-
     @Column(name = "password_reset_required")
     private boolean passwordResetRequired;
 
@@ -250,14 +247,6 @@ public class UserEntity {
 
     public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
-    }
-
-    public Date getComplianceSignature() {
-        return complianceSignature;
-    }
-
-    public void setComplianceSignature(final Date complianceSignature) {
-        this.complianceSignature = complianceSignature;
     }
 
     public int getFailedLoginCount() {

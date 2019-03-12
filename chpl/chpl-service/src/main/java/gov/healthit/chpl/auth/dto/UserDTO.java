@@ -22,7 +22,6 @@ public class UserDTO implements UserDetails {
     private String phoneNumber;
     private String title;
     private Date signatureDate;
-    private Date complianceSignatureDate;
 
     private int failedLoginCount;
     private boolean accountExpired;
@@ -50,7 +49,6 @@ public class UserDTO implements UserDetails {
             this.phoneNumber = entity.getContact().getPhoneNumber();
             this.title = entity.getContact().getTitle();
             this.signatureDate = entity.getContact().getSignatureDate();
-            this.complianceSignatureDate = entity.getComplianceSignature();
             this.failedLoginCount = entity.getFailedLoginCount();
             this.accountExpired = !entity.isAccountNonExpired();
             this.accountLocked = !entity.isAccountNonLocked();
@@ -192,14 +190,6 @@ public class UserDTO implements UserDetails {
         this.signatureDate = signatureDate;
     }
 
-    public Date getComplianceSignatureDate() {
-        return complianceSignatureDate;
-    }
-
-    public void setComplianceSignatureDate(final Date complianceSignatureDate) {
-        this.complianceSignatureDate = complianceSignatureDate;
-    }
-
     public int getFailedLoginCount() {
         return failedLoginCount;
     }
@@ -231,7 +221,6 @@ public class UserDTO implements UserDetails {
                 + "[phoneNumber: " + this.phoneNumber + "]"
                 + "[title: " + this.title + "]"
                 + "[signatureDate: " + this.signatureDate + "]"
-                + "[complianceSignatureDate: " + this.complianceSignatureDate + "]"
                 + "[failedLoginCount: " + this.failedLoginCount + "]"
                 + "[accountExpired: " + this.accountExpired + "]"
                 + "[accountLocked: " + this.accountLocked + "]"
