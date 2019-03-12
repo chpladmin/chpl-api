@@ -64,7 +64,7 @@ public abstract class CertifiedProductUploadHandlerImpl implements CertifiedProd
     @Autowired
     protected ProductClassificationTypeDAO classificationDao;
     @Autowired
-    protected CertificationCriterionDAO certDao;;
+    protected CertificationCriterionDAO certDao;
     @Autowired
     protected CQMCriterionDAO cqmDao;
     @Autowired

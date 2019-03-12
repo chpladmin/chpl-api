@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version 20.5.1
+_11 March 2019_
+
+### Bug Fixes
+* Fix incorrect developer appearing in product owner history after developer split.
+
+---
+
 ## Version 20.5.0
 _11 March 2019_
 
