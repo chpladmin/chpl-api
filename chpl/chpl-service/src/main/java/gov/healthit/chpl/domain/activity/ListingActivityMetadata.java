@@ -22,7 +22,7 @@ public class ListingActivityMetadata extends ActivityMetadata {
         return chplProductNumber;
     }
 
-    public void setChplProductNumber(String chplProductNumber) {
+    public void setChplProductNumber(final String chplProductNumber) {
         this.chplProductNumber = chplProductNumber;
     }
 
@@ -30,7 +30,7 @@ public class ListingActivityMetadata extends ActivityMetadata {
         return abcName;
     }
 
-    public void setAbcName(String abcName) {
+    public void setAbcName(final String abcName) {
         this.abcName = abcName;
     }
 
@@ -38,7 +38,7 @@ public class ListingActivityMetadata extends ActivityMetadata {
         return developerName;
     }
 
-    public void setDeveloperName(String developerName) {
+    public void setDeveloperName(final String developerName) {
         this.developerName = developerName;
     }
 
@@ -46,7 +46,7 @@ public class ListingActivityMetadata extends ActivityMetadata {
         return productName;
     }
 
-    public void setProductName(String productName) {
+    public void setProductName(final String productName) {
         this.productName = productName;
     }
 
@@ -54,7 +54,7 @@ public class ListingActivityMetadata extends ActivityMetadata {
         return edition;
     }
 
-    public void setEdition(String edition) {
+    public void setEdition(final String edition) {
         this.edition = edition;
     }
 
@@ -62,7 +62,7 @@ public class ListingActivityMetadata extends ActivityMetadata {
         return certificationDate;
     }
 
-    public void setCertificationDate(Long certificationDate) {
+    public void setCertificationDate(final Long certificationDate) {
         this.certificationDate = certificationDate;
     }
 

@@ -1,7 +1,9 @@
 package gov.healthit.chpl.domain.activity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import gov.healthit.chpl.auth.json.User;
 import gov.healthit.chpl.util.Util;
@@ -16,10 +18,10 @@ public class ActivityMetadata implements Serializable {
     private static final long serialVersionUID = -3855142961571082535L;
 
     private Long id;
-    private String description;
-    private Date activityDate;
-    private Long activityObjectId;
     private ActivityConcept concept;
+    private List<ActivityCategory> categories = new ArrayList<ActivityCategory>();
+    private Date date;
+    private Long objectId;
     private User responsibleUser;
 
     public ActivityMetadata() {
@@ -33,28 +35,20 @@ public class ActivityMetadata implements Serializable {
         this.id = id;
     }
 
-    public String getDescription() {
-        return description;
+    public Date getDate() {
+        return Util.getNewDate(date);
     }
 
-    public void setDescription(final String description) {
-        this.description = description;
+    public void setDate(final Date date) {
+        this.date = Util.getNewDate(date);
     }
 
-    public Date getActivityDate() {
-        return Util.getNewDate(activityDate);
+    public Long getObjectId() {
+        return objectId;
     }
 
-    public void setActivityDate(final Date activityDate) {
-        this.activityDate = Util.getNewDate(activityDate);
-    }
-
-    public Long getActivityObjectId() {
-        return activityObjectId;
-    }
-
-    public void setActivityObjectId(final Long activityObjectId) {
-        this.activityObjectId = activityObjectId;
+    public void setObjectId(final Long objectId) {
+        this.objectId = objectId;
     }
 
     public ActivityConcept getConcept() {
@@ -71,5 +65,13 @@ public class ActivityMetadata implements Serializable {
 
     public void setResponsibleUser(final User responsibleUser) {
         this.responsibleUser = responsibleUser;
+    }
+
+    public List<ActivityCategory> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(final List<ActivityCategory> categories) {
+        this.categories = categories;
     }
 }

@@ -16,6 +16,11 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+
 import gov.healthit.chpl.util.Util;
 
 /**
@@ -23,6 +28,7 @@ import gov.healthit.chpl.util.Util;
  */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CertifiedProductSearchDetails implements Serializable {
     private static final long serialVersionUID = 2903219171127034775L;
 
@@ -295,6 +301,18 @@ public class CertifiedProductSearchDetails implements Serializable {
     @XmlElementWrapper(name = "cqmResults", nillable = true, required = false)
     @XmlElement(name = "cqmResult")
     private List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
+
+    /**
+     * This property exists solely to be able to deserialize listing
+     * activity events from very old data. Since we care about certification status
+     * changes when categorizing listing activity we need to be able to read
+     * this value in old listing activity event data. Not all old listing properties
+     * need to be present for this reason. This property should not be visible
+     * in the generated XSD or any response from an API call.
+     */
+    @JsonProperty(access = Access.WRITE_ONLY)
+    @XmlTransient
+    private LegacyCertificationStatus certificationStatus;
 
     /**
      * All current and historical certification status of this listing.
@@ -725,5 +743,13 @@ public class CertifiedProductSearchDetails implements Serializable {
             }
         }
         return newest;
+    }
+
+    public LegacyCertificationStatus getCertificationStatus() {
+        return certificationStatus;
+    }
+
+    public void setCertificationStatus(LegacyCertificationStatus certificationStatus) {
+        this.certificationStatus = certificationStatus;
     }
 }

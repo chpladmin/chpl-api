@@ -28,10 +28,12 @@ import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.ProductActivityEvent;
 import gov.healthit.chpl.domain.UserActivity;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.activity.ActivityDetails;
+import gov.healthit.chpl.domain.activity.ActivityMetadata;
+import gov.healthit.chpl.domain.activity.ListingActivityMetadata;
+import gov.healthit.chpl.domain.activity.ProductActivityEvent;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
@@ -191,7 +193,7 @@ public class ActivityManagerImpl implements ActivityManager {
         List<ActivityDetails> events = new ArrayList<ActivityDetails>();
 
         for (ActivityDTO dto : dtos) {
-            ActivityDetails event = getActivityEventFromDTO(dto);
+            ActivityDetails event = getActivityDetailsFromDTO(dto);
             events.add(event);
         }
         return events;
@@ -206,7 +208,7 @@ public class ActivityManagerImpl implements ActivityManager {
         List<ActivityDetails> events = new ArrayList<ActivityDetails>();
 
         for (ActivityDTO dto : dtos) {
-            ActivityDetails event = getActivityEventFromDTO(dto);
+            ActivityDetails event = getActivityDetailsFromDTO(dto);
             events.add(event);
         }
         return events;
@@ -224,7 +226,7 @@ public class ActivityManagerImpl implements ActivityManager {
         List<ActivityDetails> events = new ArrayList<ActivityDetails>();
 
         for (ActivityDTO dto : dtos) {
-            ActivityDetails event = getActivityEventFromDTO(dto);
+            ActivityDetails event = getActivityDetailsFromDTO(dto);
             events.add(event);
         }
         return events;
@@ -243,7 +245,7 @@ public class ActivityManagerImpl implements ActivityManager {
         List<ActivityDetails> events = new ArrayList<ActivityDetails>();
 
         for (ActivityDTO dto : dtos) {
-            ActivityDetails event = getActivityEventFromDTO(dto);
+            ActivityDetails event = getActivityDetailsFromDTO(dto);
             events.add(event);
         }
         return events;
@@ -265,7 +267,7 @@ public class ActivityManagerImpl implements ActivityManager {
 
         List<ActivityDetails> events = new ArrayList<ActivityDetails>();
         for (ActivityDTO dto : acbActivity) {
-            ActivityDetails event = getActivityEventFromDTO(dto);
+            ActivityDetails event = getActivityDetailsFromDTO(dto);
             events.add(event);
         }
         return events;
@@ -281,7 +283,7 @@ public class ActivityManagerImpl implements ActivityManager {
         List<ActivityDTO> acbActivity = activityDAO.findAcbActivity(acbs, startDate, endDate);
         List<ActivityDetails> events = new ArrayList<ActivityDetails>();
         for (ActivityDTO dto : acbActivity) {
-            ActivityDetails event = getActivityEventFromDTO(dto);
+            ActivityDetails event = getActivityDetailsFromDTO(dto);
             events.add(event);
         }
         return events;
@@ -296,7 +298,7 @@ public class ActivityManagerImpl implements ActivityManager {
 
         List<ActivityDetails> events = new ArrayList<ActivityDetails>();
         for (ActivityDTO dto : atlActivity) {
-            ActivityDetails event = getActivityEventFromDTO(dto);
+            ActivityDetails event = getActivityDetailsFromDTO(dto);
             events.add(event);
         }
         return events;
@@ -311,7 +313,7 @@ public class ActivityManagerImpl implements ActivityManager {
 
         List<ActivityDetails> events = new ArrayList<ActivityDetails>();
         for (ActivityDTO dto : atlActivity) {
-            ActivityDetails event = getActivityEventFromDTO(dto);
+            ActivityDetails event = getActivityDetailsFromDTO(dto);
             events.add(event);
         }
         return events;
@@ -327,7 +329,7 @@ public class ActivityManagerImpl implements ActivityManager {
 
         List<ActivityDetails> events = new ArrayList<ActivityDetails>();
         for (ActivityDTO dto : pendingListingActivity) {
-            ActivityDetails event = getActivityEventFromDTO(dto);
+            ActivityDetails event = getActivityDetailsFromDTO(dto);
             events.add(event);
         }
         return events;
@@ -343,7 +345,7 @@ public class ActivityManagerImpl implements ActivityManager {
 
         List<ActivityDetails> events = new ArrayList<ActivityDetails>();
         for (ActivityDTO dto : pendingListingActivity) {
-            ActivityDetails event = getActivityEventFromDTO(dto);
+            ActivityDetails event = getActivityDetailsFromDTO(dto);
             events.add(event);
         }
         return events;
@@ -360,7 +362,7 @@ public class ActivityManagerImpl implements ActivityManager {
 
         List<ActivityDetails> events = new ArrayList<ActivityDetails>();
         for (ActivityDTO dto : pendingListingActivity) {
-            ActivityDetails event = getActivityEventFromDTO(dto);
+            ActivityDetails event = getActivityDetailsFromDTO(dto);
             events.add(event);
         }
         return events;
@@ -385,7 +387,7 @@ public class ActivityManagerImpl implements ActivityManager {
 
         List<ActivityDetails> events = new ArrayList<ActivityDetails>();
         for (ActivityDTO dto : userActivity) {
-            ActivityDetails event = getActivityEventFromDTO(dto);
+            ActivityDetails event = getActivityDetailsFromDTO(dto);
             events.add(event);
         }
         return events;
@@ -408,7 +410,7 @@ public class ActivityManagerImpl implements ActivityManager {
                 List<ActivityDetails> userActivityEvents = new ArrayList<ActivityDetails>();
 
                 for (ActivityDTO userEventDTO : userEntry.getValue()) {
-                    ActivityDetails event = getActivityEventFromDTO(userEventDTO);
+                    ActivityDetails event = getActivityDetailsFromDTO(userEventDTO);
                     userActivityEvents.add(event);
                 }
 
@@ -430,13 +432,13 @@ public class ActivityManagerImpl implements ActivityManager {
         List<ActivityDetails> userActivityEvents = new ArrayList<ActivityDetails>();
 
         for (ActivityDTO userEventDTO : activityDAO.findByUserId(userId, startDate, endDate)) {
-            ActivityDetails event = getActivityEventFromDTO(userEventDTO);
+            ActivityDetails event = getActivityDetailsFromDTO(userEventDTO);
             userActivityEvents.add(event);
         }
         return userActivityEvents;
     }
 
-    private ActivityDetails getActivityEventFromDTO(final ActivityDTO dto) throws JsonParseException, IOException {
+    private ActivityDetails getActivityDetailsFromDTO(final ActivityDTO dto) throws JsonParseException, IOException {
         ActivityDetails event = null;
         if (dto.getConcept() == ActivityConcept.PRODUCT) {
             event = new ProductActivityEvent();

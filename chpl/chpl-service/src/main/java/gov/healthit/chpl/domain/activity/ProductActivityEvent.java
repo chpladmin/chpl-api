@@ -1,8 +1,8 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.domain.activity;
 
 import java.io.Serializable;
 
-import gov.healthit.chpl.domain.activity.ActivityDetails;
+import gov.healthit.chpl.domain.Developer;
 
 public class ProductActivityEvent extends ActivityDetails implements Serializable {
     private static final long serialVersionUID = 6724369230954969251L;
