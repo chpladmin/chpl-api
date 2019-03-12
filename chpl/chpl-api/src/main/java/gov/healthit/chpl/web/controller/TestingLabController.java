@@ -226,7 +226,6 @@ public class TestingLabController {
 
         // delete all permissions on that atl
         userPermissionsManager.deleteAtlPermission(atl, userId);
-        
 
         return "{\"userDeleted\" : true}";
     }

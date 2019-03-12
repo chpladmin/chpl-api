@@ -332,7 +332,6 @@ public class InvitationManagerImpl implements InvitationManager {
         }
         TestingLabDTO userAtl = null;
         if (invitation.getTestingLabId() != null) {
-            // userAtl = atlManager.getIfPermissionById(invitation.getTestingLabId());
             userAtl = resourcePermissions.getAtlIfPermissionById(invitation.getTestingLabId());
             if (userAtl == null) {
                 throw new InvalidArgumentsException(
