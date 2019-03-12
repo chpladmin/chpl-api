@@ -42,7 +42,7 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
         ApiKeyDTO created = apiKeyDAO.create(toCreate);
 
         String activityMsg = "API Key " + created.getApiKey() + " was created.";
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_API_KEY, created.getId(), activityMsg, null,
+        activityManager.addActivity(ActivityConcept.API_KEY, created.getId(), activityMsg, null,
                 created);
         return created;
 
@@ -65,7 +65,7 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
         String activityMsg = "API Key " + toDelete.getApiKey() + " was revoked.";
 
         apiKeyDAO.delete(keyId);
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_API_KEY, toDelete.getId(), activityMsg, toDelete,
+        activityManager.addActivity(ActivityConcept.API_KEY, toDelete.getId(), activityMsg, toDelete,
                 null);
     }
 
@@ -80,7 +80,7 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
         String activityMsg = "API Key " + toDelete.getApiKey() + " was revoked.";
 
         apiKeyDAO.delete(toDelete.getId());
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_API_KEY, toDelete.getId(), activityMsg, toDelete,
+        activityManager.addActivity(ActivityConcept.API_KEY, toDelete.getId(), activityMsg, toDelete,
                 null);
     }
 

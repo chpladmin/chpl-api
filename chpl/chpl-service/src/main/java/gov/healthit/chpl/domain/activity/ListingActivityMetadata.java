@@ -1,5 +1,10 @@
 package gov.healthit.chpl.domain.activity;
 
+/**
+ * Listing specific activity summary fields.
+ * @author kekey
+ *
+ */
 public class ListingActivityMetadata extends ActivityMetadata {
     private static final long serialVersionUID = 5473773376581297578L;
 

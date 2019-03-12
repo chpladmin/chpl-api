@@ -287,7 +287,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
             }
         }
         DeveloperDTO after = getById(updatedDev.getId());
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, after.getId(),
+        activityManager.addActivity(ActivityConcept.DEVELOPER, after.getId(),
                 "Developer " + updatedDev.getName() + " was updated.", beforeDev, after);
         return after;
     }
@@ -393,7 +393,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
         DeveloperDTO created = developerDao.create(dto);
         dto.setId(created.getId());
         createOrUpdateTransparencyMappings(dto);
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, created.getId(),
+        activityManager.addActivity(ActivityConcept.DEVELOPER, created.getId(),
                 "Developer " + created.getName() + " has been created.", null, created);
         return created;
     }
@@ -497,7 +497,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
             developerDao.delete(developerId);
         }
 
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, createdDeveloper.getId(), "Merged "
+        activityManager.addActivity(ActivityConcept.DEVELOPER, createdDeveloper.getId(), "Merged "
                 + developerIdsToMerge.size() + " developers into new developer '" + createdDeveloper.getName() + "'.",
                 beforeDevelopers, createdDeveloper);
 
@@ -591,7 +591,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
             for (CertifiedProductDetailsDTO affectedListing : affectedListings) {
                 CertifiedProductSearchDetails afterListing = cpdManager.getCertifiedProductDetails(affectedListing.getId());
                 CertifiedProductSearchDetails beforeListing = beforeListingDetails.get(afterListing.getId());
-                activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, beforeListing.getId(),
+                activityManager.addActivity(ActivityConcept.DEVELOPER, beforeListing.getId(),
                         "Updated certified product " + afterListing.getChplProductNumber() + ".", beforeListing,
                         afterListing);
             }

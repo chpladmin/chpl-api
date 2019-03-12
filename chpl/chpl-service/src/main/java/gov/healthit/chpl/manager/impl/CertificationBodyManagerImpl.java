@@ -93,7 +93,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 
         String activityMsg = "Created Certification Body " + result.getName();
 
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, result.getId(), activityMsg,
+        activityManager.addActivity(ActivityConcept.CERTIFICATION_BODY, result.getId(), activityMsg,
                 null, result);
 
         return result;
@@ -120,7 +120,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
         }
 
         String activityMsg = "Updated acb " + acb.getName();
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, result.getId(), activityMsg,
+        activityManager.addActivity(ActivityConcept.CERTIFICATION_BODY, result.getId(), activityMsg,
                 toUpdate, result);
         return result;
     }
@@ -144,7 +144,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
         schedulerManager.retireAcb(toUpdate.getName());
 
         String activityMsg = "Retired acb " + toUpdate.getName();
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, result.getId(), activityMsg,
+        activityManager.addActivity(ActivityConcept.CERTIFICATION_BODY, result.getId(), activityMsg,
                 toUpdate, result);
         return result;
     }
@@ -162,7 +162,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
         result = certificationBodyDao.update(toUpdate);
 
         String activityMsg = "Unretired acb " + toUpdate.getName();
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, result.getId(), activityMsg,
+        activityManager.addActivity(ActivityConcept.CERTIFICATION_BODY, result.getId(), activityMsg,
                 toUpdate, result);
         return result;
     }

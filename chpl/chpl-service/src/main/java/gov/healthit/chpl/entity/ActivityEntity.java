@@ -22,7 +22,6 @@ import org.hibernate.annotations.FetchMode;
 
 import gov.healthit.chpl.auth.entity.UserEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.util.Util;
 
 @Entity
@@ -32,10 +31,12 @@ import gov.healthit.chpl.util.Util;
             name = "getPublicAnnouncementActivityByDate",
             query = "SELECT * "
                     + "FROM " + BaseDAOImpl.SCHEMA_NAME + ".activity a "
+                    + "JOIN " + BaseDAOImpl.SCHEMA_NAME + ".activity_concept ac "
+                    + "ON a.activity_object_concept_id = ac.activity_concept_id "
+                    + "AND ac.concept = :conceptName "
                     + "LEFT OUTER JOIN " + BaseDAOImpl.SCHEMA_NAME + ".user u "
                     + "ON a.last_modified_user = u.user_id "
-                    + "WHERE a.activity_object_concept_id = :conceptId "
-                    + "AND a.original_data IS NOT NULL AND cast(a.original_data as json)->>'isPublic'= 'true' "
+                    + "WHERE a.original_data IS NOT NULL AND cast(a.original_data as json)->>'isPublic'= 'true' "
                     + "AND a.new_data IS NOT NULL AND cast(a.new_data as json)->>'isPublic' = 'true' "
                     + "AND (a.activity_date >= :startDate) "
                     + "AND (a.activity_date <= :endDate)",
@@ -45,10 +46,12 @@ import gov.healthit.chpl.util.Util;
             name = "getPublicAnnouncementActivityByIdAndDate",
             query = "SELECT * "
                     + "FROM " + BaseDAOImpl.SCHEMA_NAME + ".activity a "
+                    + "JOIN " + BaseDAOImpl.SCHEMA_NAME + ".activity_concept ac "
+                    + "ON a.activity_object_concept_id = ac.activity_concept_id "
+                    + "AND ac.concept = :conceptName "
                     + "LEFT OUTER JOIN " + BaseDAOImpl.SCHEMA_NAME + ".user u "
                     + "ON a.last_modified_user = u.user_id "
                     + "WHERE a.activity_object_id = :announcementId "
-                    + "AND a.activity_object_concept_id = :conceptId "
                     + "AND a.original_data IS NOT NULL AND cast(a.original_data as json)->>'isPublic'= 'true' "
                     + "AND a.new_data IS NOT NULL AND cast(a.new_data as json)->>'isPublic' = 'true' "
                     + "AND (a.activity_date >= :startDate) "
@@ -59,10 +62,12 @@ import gov.healthit.chpl.util.Util;
             name = "getPendingListingActivityByAcbIdsAndDate",
             query = "SELECT * "
                     + "FROM " + BaseDAOImpl.SCHEMA_NAME + ".activity a "
+                    + "JOIN " + BaseDAOImpl.SCHEMA_NAME + ".activity_concept ac "
+                    + "ON a.activity_object_concept_id = ac.activity_concept_id "
+                    + "AND ac.concept = :conceptName "
                     + "LEFT OUTER JOIN " + BaseDAOImpl.SCHEMA_NAME + ".user u "
                     + "ON a.last_modified_user = u.user_id "
-                    + "WHERE a.activity_object_concept_id = :conceptId "
-                    + "AND ( "
+                    + "WHERE ( "
                     + "cast(a.original_data as json)->>'certificationBodyId' IN (:acbIds) "
                     + "OR cast(a.new_data as json)->>'certificationBodyId' IN (:acbIds) "
                     + ")"
@@ -105,6 +110,11 @@ public class ActivityEntity {
     private Long activityObjectConceptId;
 
     @Basic(optional = false)
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "activity_object_concept_id", unique = true, nullable = true, insertable = false, updatable = false)
+    private ActivityConceptEntity concept;
+
+    @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)
     private Date creationDate;
 
@@ -124,8 +134,6 @@ public class ActivityEntity {
     @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "last_modified_user", unique = true, nullable = true, insertable = false, updatable = false)
     private UserEntity user;
-
-    transient ActivityConcept concept;
 
     public Long getId() {
         return id;
@@ -157,40 +165,6 @@ public class ActivityEntity {
 
     public void setActivityObjectId(final Long activityObjectId) {
         this.activityObjectId = activityObjectId;
-    }
-
-    public Long getActivityObjectConceptId() {
-        return activityObjectConceptId;
-    }
-
-    public void setActivityObjectConceptId(final Long activityObjectClassId) {
-
-        for (ActivityConcept concept : ActivityConcept.values()) {
-            if (concept.getId().equals(activityObjectClassId)) {
-                this.concept = concept;
-                break;
-            }
-        }
-        this.activityObjectConceptId = activityObjectClassId;
-    }
-
-    public ActivityConcept getConcept() {
-
-        if (this.concept == null) {
-
-            for (ActivityConcept concept : ActivityConcept.values()) {
-                if (concept.getId().equals(this.getActivityObjectConceptId())) {
-                    this.concept = concept;
-                    break;
-                }
-            }
-        }
-        return this.concept;
-    }
-
-    public void setConcept(final ActivityConcept concept) {
-        this.activityObjectConceptId = concept.getId();
-        this.concept = concept;
     }
 
     public Date getCreationDate() {
@@ -247,6 +221,22 @@ public class ActivityEntity {
 
     public void setUser(final UserEntity user) {
         this.user = user;
+    }
+
+    public Long getActivityObjectConceptId() {
+        return activityObjectConceptId;
+    }
+
+    public void setActivityObjectConceptId(Long activityObjectConceptId) {
+        this.activityObjectConceptId = activityObjectConceptId;
+    }
+
+    public ActivityConceptEntity getConcept() {
+        return concept;
+    }
+
+    public void setConcept(ActivityConceptEntity concept) {
+        this.concept = concept;
     }
 
 }

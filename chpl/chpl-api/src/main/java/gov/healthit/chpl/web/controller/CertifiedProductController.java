@@ -667,7 +667,7 @@ public class CertifiedProductController {
             cpManager.changeOwnership(updatedListing.getId(), newAcbId);
             CertifiedProductSearchDetails changedProduct = cpdManager
                     .getCertifiedProductDetails(updatedListing.getId());
-            activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, existingListing.getId(),
+            activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, existingListing.getId(),
                     "Changed ACB ownership.", existingListing, changedProduct);
             existingListing = changedProduct;
         }
@@ -677,7 +677,7 @@ public class CertifiedProductController {
 
         // search for the product by id to get it with all the updates
         CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updatedListing.getId());
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, existingListing.getId(),
+        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, existingListing.getId(),
                 "Updated certified product " + changedProduct.getChplProductNumber() + ".", existingListing,
                 changedProduct, updateRequest.getReason());
 
@@ -860,7 +860,7 @@ public class CertifiedProductController {
             CertifiedProductDTO createdProduct = cpManager.createFromPending(acbId, pcpDto);
             pcpManager.confirm(acbId, pendingCp.getId());
             CertifiedProductSearchDetails result = cpdManager.getCertifiedProductDetails(createdProduct.getId());
-            activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, result.getId(),
+            activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, result.getId(),
                     "Created a certified product", null, result);
 
             HttpHeaders responseHeaders = new HttpHeaders();

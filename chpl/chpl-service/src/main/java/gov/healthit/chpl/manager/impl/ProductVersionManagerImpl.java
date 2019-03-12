@@ -100,7 +100,7 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
         }
 
         ProductVersionDTO created = dao.create(dto);
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_VERSION, created.getId(),
+        activityManager.addActivity(ActivityConcept.VERSION, created.getId(),
                 "Product Version " + dto.getVersion() + " added for product " + dto.getProductId(), null, created);
         return created;
     }
@@ -133,7 +133,7 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 
         ProductVersionEntity result = dao.update(dto);
         ProductVersionDTO after = new ProductVersionDTO(result);
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_VERSION, after.getId(),
+        activityManager.addActivity(ActivityConcept.VERSION, after.getId(),
                 "Product Version " + dto.getVersion() + " updated for product " + dto.getProductId(), before, after);
         return after;
     }
@@ -190,7 +190,7 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
             dao.delete(versionId);
         }
 
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_VERSION, createdVersion.getId(),
+        activityManager.addActivity(ActivityConcept.VERSION, createdVersion.getId(),
                 "Merged " + versionIdsToMerge.size() + " versions into '" + createdVersion.getVersion() + "'.",
                 beforeVersions, createdVersion);
 

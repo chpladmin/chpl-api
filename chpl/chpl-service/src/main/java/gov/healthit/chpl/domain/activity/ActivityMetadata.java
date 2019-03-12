@@ -3,11 +3,15 @@ package gov.healthit.chpl.domain.activity;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
 import gov.healthit.chpl.auth.json.User;
 import gov.healthit.chpl.util.Util;
 
+/**
+ * Summary data about an activity event. This is intended to be a superclass
+ * containing fields that could be applicable to activity on any type of object.
+ * @author kekey
+ *
+ */
 public class ActivityMetadata implements Serializable {
     private static final long serialVersionUID = -3855142961571082535L;
 

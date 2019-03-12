@@ -11,7 +11,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.domain.UserActivity;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.domain.activity.ActivityEvent;
+import gov.healthit.chpl.domain.activity.ActivityDetails;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -34,52 +34,52 @@ public interface ActivityManager {
             Object newData, Date timestamp)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
 
-    List<ActivityEvent> getActivityForObject(ActivityConcept concept, Long objectId,
+    List<ActivityDetails> getActivityForObject(ActivityConcept concept, Long objectId,
             Date startDate, Date endDate) throws JsonParseException, IOException;
 
-    List<ActivityEvent> getActivityForConcept(ActivityConcept concept, Date startDate,
+    List<ActivityDetails> getActivityForConcept(ActivityConcept concept, Date startDate,
             Date endDate) throws JsonParseException, IOException;
 
-    List<ActivityEvent> getPublicAnnouncementActivity(Date startDate,
+    List<ActivityDetails> getPublicAnnouncementActivity(Date startDate,
             Date endDate) throws JsonParseException, IOException;
 
-    List<ActivityEvent> getPublicAnnouncementActivity(Long id, Date startDate,
+    List<ActivityDetails> getPublicAnnouncementActivity(Long id, Date startDate,
             Date endDate) throws JsonParseException, IOException;
 
-    List<ActivityEvent> getAllAcbActivity(Date startDate,
+    List<ActivityDetails> getAllAcbActivity(Date startDate,
             Date endDate) throws JsonParseException, IOException;
 
-    List<ActivityEvent> getAcbActivity(List<CertificationBodyDTO> acbs,
+    List<ActivityDetails> getAcbActivity(List<CertificationBodyDTO> acbs,
             Date startDate, Date endDate) throws JsonParseException, IOException;
 
-    List<ActivityEvent> getAllAtlActivity(Date startDate,
+    List<ActivityDetails> getAllAtlActivity(Date startDate,
             Date endDate) throws JsonParseException, IOException;
 
-    List<ActivityEvent> getAtlActivity(List<TestingLabDTO> atls, Date startDate,
+    List<ActivityDetails> getAtlActivity(List<TestingLabDTO> atls, Date startDate,
             Date endDate) throws JsonParseException, IOException;
 
-    List<ActivityEvent> getAllPendingListingActivity(Date startDate,
+    List<ActivityDetails> getAllPendingListingActivity(Date startDate,
             Date endDate) throws JsonParseException, IOException;
 
-    List<ActivityEvent> getPendingListingActivityByAcb(List<CertificationBodyDTO> acbs,
+    List<ActivityDetails> getPendingListingActivityByAcb(List<CertificationBodyDTO> acbs,
             Date startDate, Date endDate) throws JsonParseException, IOException;
 
-    List<ActivityEvent> getPendingListingActivity(Long pendingListingId,
+    List<ActivityDetails> getPendingListingActivity(Long pendingListingId,
             Date startDate, Date endDate) throws JsonParseException, IOException, EntityRetrievalException;
 
-    List<ActivityEvent> getAllUserActivity(Date startDate, Date endDate)
+    List<ActivityDetails> getAllUserActivity(Date startDate, Date endDate)
             throws JsonParseException, IOException;
 
-    List<ActivityEvent> getUserActivity(Set<Long> userIds,
+    List<ActivityDetails> getUserActivity(Set<Long> userIds,
             Date startDate, Date endDate) throws JsonParseException, IOException;
 
-    List<ActivityEvent> getApiKeyActivity(Date startDate,
+    List<ActivityDetails> getApiKeyActivity(Date startDate,
             Date endDate) throws JsonParseException, IOException;
 
     List<UserActivity> getActivityByUserInDateRange(Date startDate, Date endDate)
             throws JsonParseException, IOException, UserRetrievalException;
 
-    List<ActivityEvent> getActivityForUserInDateRange(Long userId, Date startDate, Date endDate)
+    List<ActivityDetails> getActivityForUserInDateRange(Long userId, Date startDate, Date endDate)
             throws JsonParseException, IOException;
 
 }

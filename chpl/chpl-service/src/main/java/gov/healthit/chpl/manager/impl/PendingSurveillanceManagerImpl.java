@@ -248,7 +248,7 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
         CertifiedProductSearchDetails afterCp = cpDetailsManager
                 .getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
 
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, afterCp.getId(),
+        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, afterCp.getId(),
                 "Surveillance upload was confirmed for certified product " + afterCp.getChplProductNumber(), beforeCp,
                 afterCp);
 
@@ -443,7 +443,7 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
             } else {
                 activityMsg.append("rejected.");
             }
-            activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_SURVEILLANCE, toDelete.getId(),
+            activityManager.addActivity(ActivityConcept.PENDING_SURVEILLANCE, toDelete.getId(),
                     activityMsg.toString(), toDelete, null);
         }
 

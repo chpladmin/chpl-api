@@ -180,7 +180,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
         }
 
         String activityMsg = "Certified product " + pendingCpDto.getProductName() + " is pending.";
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCpDto.getId(),
+        activityManager.addActivity(ActivityConcept.PENDING_CERTIFIED_PRODUCT, pendingCpDto.getId(),
                 activityMsg, null, pendingCpDto);
 
         return pendingCpDto;
@@ -202,7 +202,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
         if (isPendingListingAvailableForUpdate(pendingCp.getCertificationBodyId(), pendingCp)) {
             pcpDao.delete(pendingProductId);
             String activityMsg = "Pending certified product " + pendingCp.getProductName() + " has been rejected.";
-            activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCp.getId(),
+            activityManager.addActivity(ActivityConcept.PENDING_CERTIFIED_PRODUCT, pendingCp.getId(),
                     activityMsg, pendingCp, null);
         }
     }
@@ -217,7 +217,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
         pcpDao.delete(pendingProductId);
 
         String activityMsg = "Pending certified product " + pendingCp.getProductName() + " has been confirmed.";
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCp.getId(),
+        activityManager.addActivity(ActivityConcept.PENDING_CERTIFIED_PRODUCT, pendingCp.getId(),
                 activityMsg, pendingCp, pendingCp);
 
     }

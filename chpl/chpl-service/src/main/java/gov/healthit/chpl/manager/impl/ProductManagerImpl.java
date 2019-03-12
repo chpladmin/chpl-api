@@ -126,7 +126,7 @@ public class ProductManagerImpl implements ProductManager {
 
         ProductDTO result = productDao.create(dto);
         String activityMsg = "Product " + dto.getName() + " was created.";
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, result.getId(), activityMsg, null,
+        activityManager.addActivity(ActivityConcept.PRODUCT, result.getId(), activityMsg, null,
                 result);
         return getById(result.getId());
     }
@@ -170,7 +170,7 @@ public class ProductManagerImpl implements ProductManager {
         result.setDeveloperName(devDto.getName());
 
         String activityMsg = "Product " + dto.getName() + " was updated.";
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, result.getId(), activityMsg, beforeDTO,
+        activityManager.addActivity(ActivityConcept.PRODUCT, result.getId(), activityMsg, beforeDTO,
                 result);
         return result;
 
@@ -221,7 +221,7 @@ public class ProductManagerImpl implements ProductManager {
 
         String activityMsg = "Merged " + productIdsToMerge.size() + " products into new product '"
                 + createdProduct.getName() + "'.";
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, createdProduct.getId(), activityMsg,
+        activityManager.addActivity(ActivityConcept.PRODUCT, createdProduct.getId(), activityMsg,
                 beforeProducts, createdProduct);
 
         return createdProduct;
@@ -255,7 +255,7 @@ public class ProductManagerImpl implements ProductManager {
             versionDao.update(affectedVersion);
             ProductVersionDTO afterVersion = versionDao.getById(affectedVersion.getId());
             activityManager.addActivity(
-                    ActivityConcept.ACTIVITY_CONCEPT_VERSION, afterVersion.getId(), "Product Version "
+                    ActivityConcept.VERSION, afterVersion.getId(), "Product Version "
                             + afterVersion.getVersion() + " product owner updated to " + afterVersion.getProductName(),
                     beforeVersion, afterVersion);
             affectedVersionIds.add(affectedVersion.getId());
@@ -307,7 +307,7 @@ public class ProductManagerImpl implements ProductManager {
             // do the update and add activity
             cpDao.update(affectedCp);
             CertifiedProductSearchDetails afterProduct = cpdManager.getCertifiedProductDetails(affectedCp.getId());
-            activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, beforeProduct.getId(),
+            activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, beforeProduct.getId(),
                     "Updated certified product " + afterProduct.getChplProductNumber() + ".", beforeProduct,
                     afterProduct);
         }

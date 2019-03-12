@@ -202,7 +202,7 @@ public class SurveillanceController implements MessageSourceAware {
 
         CertifiedProductSearchDetails afterCp = cpdetailsManager
                 .getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, afterCp.getId(),
+        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, afterCp.getId(),
                 "Surveillance was added to certified product " + afterCp.getChplProductNumber(), beforeCp, afterCp);
 
         // query the inserted surveillance
@@ -261,7 +261,7 @@ public class SurveillanceController implements MessageSourceAware {
 
         CertifiedProductSearchDetails afterCp = cpdetailsManager
                 .getCertifiedProductDetails(surv.getCertifiedProduct().getId());
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT,
+        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT,
                 beforeCp.getId(), "Documentation " + toInsert.getFileName()
                 + " was added to a nonconformity for certified product " + afterCp.getChplProductNumber(),
                 beforeCp, afterCp);
@@ -321,7 +321,7 @@ public class SurveillanceController implements MessageSourceAware {
 
         CertifiedProductSearchDetails afterCp = cpdetailsManager
                 .getCertifiedProductDetails(survToUpdate.getCertifiedProduct().getId());
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, afterCp.getId(),
+        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, afterCp.getId(),
                 "Surveillance was updated on certified product " + afterCp.getChplProductNumber(), beforeCp, afterCp);
 
         // query the inserted surveillance
@@ -380,7 +380,7 @@ public class SurveillanceController implements MessageSourceAware {
 
         CertifiedProductSearchDetails afterCp = cpdetailsManager
                 .getCertifiedProductDetails(survToDelete.getCertifiedProduct().getId());
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, afterCp.getId(),
+        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, afterCp.getId(),
                 "Surveillance was delete from certified product " + afterCp.getChplProductNumber(),
                 beforeCp, afterCp, requestBody.getReason());
 
@@ -428,7 +428,7 @@ public class SurveillanceController implements MessageSourceAware {
 
         CertifiedProductSearchDetails afterCp = cpdetailsManager
                 .getCertifiedProductDetails(surv.getCertifiedProduct().getId());
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, beforeCp.getId(),
+        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, beforeCp.getId(),
                 "A document was removed from a nonconformity for certified product " + afterCp.getChplProductNumber(),
                 beforeCp, afterCp);
         return "{\"success\": \"true\"}";

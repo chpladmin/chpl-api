@@ -169,7 +169,7 @@ public class CertificationIdManagerImpl implements CertificationIdManager {
         CertificationIdDTO result = certificationIdDao.create(productIds, year);
 
         String activityMsg = "CertificationId " + result.getCertificationId() + " was created.";
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATIONID, result.getId(), activityMsg, null,
+        activityManager.addActivity(ActivityConcept.CERTIFICATION_ID, result.getId(), activityMsg, null,
                 result);
         return result;
     }

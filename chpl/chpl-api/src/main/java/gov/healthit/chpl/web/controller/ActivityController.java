@@ -37,7 +37,7 @@ import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.UserActivity;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.domain.activity.ActivityEvent;
+import gov.healthit.chpl.domain.activity.ActivityDetails;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
@@ -105,7 +105,7 @@ public class ActivityController {
                     + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all certification bodies.  "
                     + "ROLE_ACB can see their own information.")
     @RequestMapping(value = "/acbs", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ActivityEvent> activityForACBs(@RequestParam final Long start,
+    public List<ActivityDetails> activityForACBs(@RequestParam final Long start,
             @RequestParam final Long end)
                     throws JsonParseException, IOException, ValidationException {
 
@@ -125,7 +125,7 @@ public class ActivityController {
                     + "ROLE_ACB can see their own information.")
     @RequestMapping(value = "/acbs/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
 
-    public List<ActivityEvent> activityForACBById(@PathVariable("id") final Long id,
+    public List<ActivityDetails> activityForACBById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
         CertificationBodyDTO acb = resourcePermissions.getAcbIfPermissionById(id); // throws 404 if ACB doesn't exist
@@ -177,7 +177,7 @@ public class ActivityController {
                     + "announcements.")
     @RequestMapping(value = "/announcements", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
-    public List<ActivityEvent> activityForAnnoucements(@RequestParam final Long start,
+    public List<ActivityDetails> activityForAnnoucements(@RequestParam final Long start,
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
@@ -191,7 +191,7 @@ public class ActivityController {
                     + "announcements.  All other roles can see private and public announcements.")
     @RequestMapping(value = "/announcements/{id}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
-    public List<ActivityEvent> activityForAnnouncementById(@PathVariable("id") final Long id,
+    public List<ActivityDetails> activityForAnnouncementById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
         announcementManager.getById(id, true); // throws 404 if bad id
@@ -222,7 +222,7 @@ public class ActivityController {
                     + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all testing labs.  "
                     + "ROLE_ATL can see their own information.")
     @RequestMapping(value = "/atls", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ActivityEvent> activityforATLs(@RequestParam final Long start, @RequestParam final Long end)
+    public List<ActivityDetails> activityforATLs(@RequestParam final Long start, @RequestParam final Long end)
             throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
@@ -239,7 +239,7 @@ public class ActivityController {
                     + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all testing labs.  "
                     + "ROLE_ATL can see their own information.")
     @RequestMapping(value = "/atls/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ActivityEvent> activityForATLById(@PathVariable("id") final Long id,
+    public List<ActivityDetails> activityForATLById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
         TestingLabDTO atl = atlManager.getIfPermissionById(id); // throws 404 if bad id
@@ -287,7 +287,7 @@ public class ActivityController {
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
                     + "Security Restrictions: Only ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/api_keys", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ActivityEvent> activityForApiKeys(@RequestParam final Long start,
+    public List<ActivityDetails> activityForApiKeys(@RequestParam final Long start,
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
@@ -299,7 +299,7 @@ public class ActivityController {
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
     @RequestMapping(value = "/certified_products", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
-    public List<ActivityEvent> activityForCertifiedProducts(@RequestParam final Long start,
+    public List<ActivityDetails> activityForCertifiedProducts(@RequestParam final Long start,
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
@@ -311,7 +311,7 @@ public class ActivityController {
             notes = "A start and end date may optionally be provided to limit activity results.")
     @RequestMapping(value = "/certified_products/{id:^-?\\d+$}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
-    public List<ActivityEvent> activityForCertifiedProductById(@PathVariable("id") final Long id,
+    public List<ActivityDetails> activityForCertifiedProductById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
         cpManager.getById(id); // throws 404 if bad id
@@ -345,7 +345,7 @@ public class ActivityController {
     @RequestMapping(value = "/certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}",
     method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
-    public List<ActivityEvent> activityForCertifiedProductByChplProductNumber(
+    public List<ActivityDetails> activityForCertifiedProductByChplProductNumber(
             @PathVariable("year") final String year,
             @PathVariable("testingLab") final String testingLab,
             @PathVariable("certBody") final String certBody,
@@ -398,7 +398,7 @@ public class ActivityController {
     @RequestMapping(value = "/certified_products/{chplPrefix}-{identifier}",
     method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
-    public List<ActivityEvent> activityForCertifiedProductByChplProductNumber(
+    public List<ActivityDetails> activityForCertifiedProductByChplProductNumber(
             @PathVariable("chplPrefix") final String chplPrefix,
             @PathVariable("identifier") final String identifier,
             @RequestParam(required = false) final Long start,
@@ -439,7 +439,7 @@ public class ActivityController {
                     + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB (specific to own ACB).")
     @RequestMapping(value = "/pending_certified_products", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
-    public List<ActivityEvent> activityForPendingCertifiedProducts(@RequestParam final Long start,
+    public List<ActivityDetails> activityForPendingCertifiedProducts(@RequestParam final Long start,
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
@@ -456,7 +456,7 @@ public class ActivityController {
                     + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB (specific to own ACB).")
     @RequestMapping(value = "/pending_certified_products/{id}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
-    public List<ActivityEvent> activityForPendingCertifiedProductById(@PathVariable("id") final Long id,
+    public List<ActivityDetails> activityForPendingCertifiedProductById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start,
             @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
@@ -501,7 +501,7 @@ public class ActivityController {
     @ApiOperation(value = "Get auditable data for all products",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
     @RequestMapping(value = "/products", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ActivityEvent> activityForProducts(@RequestParam final Long start,
+    public List<ActivityDetails> activityForProducts(@RequestParam final Long start,
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
@@ -513,7 +513,7 @@ public class ActivityController {
             notes = "A start and end date may optionally be provided to limit activity results.")
     @RequestMapping(value = "/products/{id}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
-    public List<ActivityEvent> activityForProducts(@PathVariable("id") final Long id,
+    public List<ActivityDetails> activityForProducts(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start,
             @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
@@ -542,7 +542,7 @@ public class ActivityController {
     @ApiOperation(value = "Get auditable data for all versions",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
     @RequestMapping(value = "/versions", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ActivityEvent> activityForVersions(@RequestParam final Long start,
+    public List<ActivityDetails> activityForVersions(@RequestParam final Long start,
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
@@ -554,7 +554,7 @@ public class ActivityController {
             notes = "A start and end date may optionally be provided to limit activity results.")
     @RequestMapping(value = "/versions/{id}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
-    public List<ActivityEvent> activityForVersions(@PathVariable("id") final Long id,
+    public List<ActivityDetails> activityForVersions(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start,
             @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
@@ -586,7 +586,7 @@ public class ActivityController {
                     + "(of ROLE_CMS_STAFF Users), ROLE_ACB (of their own), or ROLE_ATL (of their own).")
     @RequestMapping(value = "/users", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @PreAuthorize("isAuthenticated()")
-    public List<ActivityEvent> activityForUsers(@RequestParam final Long start,
+    public List<ActivityDetails> activityForUsers(@RequestParam final Long start,
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
@@ -603,7 +603,7 @@ public class ActivityController {
                     + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_CMS_STAFF "
                     + "(of ROLE_CMS_STAFF Users), ROLE_ACB (of their own), or ROLE_ATL (of their own).")
     @RequestMapping(value = "/users/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ActivityEvent> activityForUsers(@PathVariable("id") final Long id,
+    public List<ActivityDetails> activityForUsers(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start,
             @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, UserRetrievalException, ValidationException {
@@ -644,7 +644,7 @@ public class ActivityController {
     @ApiOperation(value = "Get auditable data about all developers",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
     @RequestMapping(value = "/developers", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ActivityEvent> activityForDevelopers(@RequestParam final Long start,
+    public List<ActivityDetails> activityForDevelopers(@RequestParam final Long start,
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
 
         Date startDate = new Date(start);
@@ -657,7 +657,7 @@ public class ActivityController {
             notes = "A start and end date may optionally be provided to limit activity results.")
     @RequestMapping(value = "/developers/{id}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
-    public List<ActivityEvent> activityForDeveloperById(@PathVariable("id") final Long id,
+    public List<ActivityDetails> activityForDeveloperById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start,
             @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
@@ -702,7 +702,7 @@ public class ActivityController {
                     + "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/user_activities/{id}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
-    public List<ActivityEvent> activityByUser(@PathVariable("id") final Long id,
+    public List<ActivityDetails> activityByUser(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start,
             @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, UserRetrievalException, ValidationException {
@@ -764,93 +764,93 @@ public class ActivityController {
         return allowedUserIds;
     }
 
-    private List<ActivityEvent> getActivityEventsForCertifiedProductsByIdAndDateRange(final Long id,
+    private List<ActivityDetails> getActivityEventsForCertifiedProductsByIdAndDateRange(final Long id,
             final Date startDate, final Date endDate)
                     throws JsonParseException, IOException {
 
-        List<ActivityEvent> events = null;
-        ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT;
+        List<ActivityDetails> events = null;
+        ActivityConcept concept = ActivityConcept.CERTIFIED_PRODUCT;
         events = getActivityEventsForObject(concept, id, startDate, endDate);
         return events;
     }
 
-    private List<ActivityEvent> getActivityEventsForProducts(final Long id, final Date startDate, final Date endDate)
+    private List<ActivityDetails> getActivityEventsForProducts(final Long id, final Date startDate, final Date endDate)
             throws JsonParseException, IOException {
 
-        List<ActivityEvent> events = null;
-        ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_PRODUCT;
+        List<ActivityDetails> events = null;
+        ActivityConcept concept = ActivityConcept.PRODUCT;
         events = getActivityEventsForObject(concept, id, startDate, endDate);
         return events;
     }
 
-    private List<ActivityEvent> getActivityEventsForDevelopers(final Long id, final Date startDate, final Date endDate)
+    private List<ActivityDetails> getActivityEventsForDevelopers(final Long id, final Date startDate, final Date endDate)
             throws JsonParseException, IOException {
 
-        List<ActivityEvent> events = null;
-        ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER;
+        List<ActivityDetails> events = null;
+        ActivityConcept concept = ActivityConcept.DEVELOPER;
         events = getActivityEventsForObject(concept, id, startDate, endDate);
         return events;
     }
 
-    private List<ActivityEvent> getActivityEventsForVersions(final Long id, final Date startDate, final Date endDate)
+    private List<ActivityDetails> getActivityEventsForVersions(final Long id, final Date startDate, final Date endDate)
             throws JsonParseException, IOException {
 
-        List<ActivityEvent> events = null;
-        ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_VERSION;
+        List<ActivityDetails> events = null;
+        ActivityConcept concept = ActivityConcept.VERSION;
         events = getActivityEventsForObject(concept, id, startDate, endDate);
         return events;
 
     }
 
-    private List<ActivityEvent> getActivityEventsForCertifiedProducts(final Date startDate, final Date endDate)
+    private List<ActivityDetails> getActivityEventsForCertifiedProducts(final Date startDate, final Date endDate)
             throws JsonParseException, IOException {
         LOGGER.info("User " + Util.getUsername() + " requested certified product activity between " + startDate
                 + " and " + endDate);
 
-        List<ActivityEvent> events = null;
-        ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT;
+        List<ActivityDetails> events = null;
+        ActivityConcept concept = ActivityConcept.CERTIFIED_PRODUCT;
         events = getActivityEventsForConcept(concept, startDate, endDate);
 
         return events;
     }
 
-    private List<ActivityEvent> getActivityEventsForProducts(final Date startDate, final Date endDate)
+    private List<ActivityDetails> getActivityEventsForProducts(final Date startDate, final Date endDate)
             throws JsonParseException, IOException {
         LOGGER.info(
                 "User " + Util.getUsername() + " requested product activity between " + startDate + " and " + endDate);
 
-        List<ActivityEvent> events = null;
-        ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_PRODUCT;
+        List<ActivityDetails> events = null;
+        ActivityConcept concept = ActivityConcept.PRODUCT;
         events = getActivityEventsForConcept(concept, startDate, endDate);
 
         return events;
     }
 
-    private List<ActivityEvent> getActivityEventsForDevelopers(final Date startDate, final Date endDate)
+    private List<ActivityDetails> getActivityEventsForDevelopers(final Date startDate, final Date endDate)
             throws JsonParseException, IOException {
         LOGGER.info("User " + Util.getUsername() + " requested developer activity between " + startDate + " and "
                 + endDate);
 
-        List<ActivityEvent> events = null;
-        ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER;
+        List<ActivityDetails> events = null;
+        ActivityConcept concept = ActivityConcept.DEVELOPER;
         events = getActivityEventsForConcept(concept, startDate, endDate);
 
         return events;
     }
 
-    private List<ActivityEvent> getActivityEventsForVersions(final Date startDate, final Date endDate)
+    private List<ActivityDetails> getActivityEventsForVersions(final Date startDate, final Date endDate)
             throws JsonParseException, IOException {
         LOGGER.info(
                 "User " + Util.getUsername() + " requested version activity between " + startDate + " and " + endDate);
 
-        List<ActivityEvent> events = null;
-        ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_VERSION;
+        List<ActivityDetails> events = null;
+        ActivityConcept concept = ActivityConcept.VERSION;
         events = getActivityEventsForConcept(concept, startDate, endDate);
         return events;
 
     }
 
-    private List<ActivityEvent> getActivityEventsForAnnouncements(final Date startDate, final Date endDate)
+    private List<ActivityDetails> getActivityEventsForAnnouncements(final Date startDate, final Date endDate)
             throws JsonParseException, IOException {
         if (Util.getCurrentUser() == null) {
             LOGGER.info("Anonymous user requested public announcement activity between " + startDate + " and "
@@ -860,14 +860,14 @@ public class ActivityController {
 
         LOGGER.info("User " + Util.getUsername() + " requested all announcement activity between " + startDate + " and "
                 + endDate);
-        List<ActivityEvent> events = null;
-        ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_ANNOUNCEMENT;
+        List<ActivityDetails> events = null;
+        ActivityConcept concept = ActivityConcept.ANNOUNCEMENT;
         events = getActivityEventsForConcept(concept, startDate, endDate);
 
         return events;
     }
 
-    private List<ActivityEvent> getActivityEventsForAnnouncement(final Long id,
+    private List<ActivityDetails> getActivityEventsForAnnouncement(final Long id,
             final Date startDate, final Date endDate)
                     throws JsonParseException, IOException {
         if (Util.getCurrentUser() == null) {
@@ -881,19 +881,19 @@ public class ActivityController {
                 + "for announcement id " + id + " between " + startDate + " and "
                 + endDate);
 
-        List<ActivityEvent> events = null;
-        ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_ANNOUNCEMENT;
+        List<ActivityDetails> events = null;
+        ActivityConcept concept = ActivityConcept.ANNOUNCEMENT;
         events = getActivityEventsForObject(concept, id, startDate, endDate);
 
         return events;
     }
 
-    private List<ActivityEvent> getActivityEventsForConcept(final ActivityConcept concept,
+    private List<ActivityDetails> getActivityEventsForConcept(final ActivityConcept concept,
             final Date startDate, final Date endDate) throws JsonParseException, IOException {
         return activityManager.getActivityForConcept(concept, startDate, endDate);
     }
 
-    private List<ActivityEvent> getActivityEventsForObject(final ActivityConcept concept, final Long objectId,
+    private List<ActivityDetails> getActivityEventsForObject(final ActivityConcept concept, final Long objectId,
             final Date startDate, final Date endDate) throws JsonParseException, IOException {
         return activityManager.getActivityForObject(concept, objectId, startDate, endDate);
     }

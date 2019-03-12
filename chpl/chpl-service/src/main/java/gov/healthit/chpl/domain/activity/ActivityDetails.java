@@ -8,8 +8,17 @@ import com.fasterxml.jackson.databind.JsonNode;
 import gov.healthit.chpl.auth.json.User;
 import gov.healthit.chpl.util.Util;
 
-public class ActivityEvent implements Serializable {
-    private static final long serialVersionUID = -8220712127605295980L;
+/**
+ * All information about the activity event including the original
+ * and updated json object(s). One of those objects can be null if
+ * and item was created or deleted. Both may not be null if an item
+ * was updated. The json objects can be quite large.
+ * @author kekey
+ *
+ */
+public class ActivityDetails implements Serializable {
+    private static final long serialVersionUID = -2870230141890372965L;
+
     private Long id;
     private String description;
     private JsonNode originalData;
@@ -19,7 +28,7 @@ public class ActivityEvent implements Serializable {
     private ActivityConcept concept;
     private User responsibleUser;
 
-    public ActivityEvent() {
+    public ActivityDetails() {
     }
 
     public Long getId() {

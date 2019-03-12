@@ -83,7 +83,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 
         String activityMsg = "Created Testing Lab " + result.getName();
 
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_ATL, result.getId(), activityMsg, null, result);
+        activityManager.addActivity(ActivityConcept.ATL, result.getId(), activityMsg, null, result);
 
         return result;
     }
@@ -98,7 +98,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
         TestingLabDTO result = testingLabDAO.update(atl);
 
         String activityMsg = "Updated testing lab " + atl.getName();
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_ATL, result.getId(), activityMsg, toUpdate,
+        activityManager.addActivity(ActivityConcept.ATL, result.getId(), activityMsg, toUpdate,
                 result);
         return result;
     }
@@ -118,7 +118,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
         result = testingLabDAO.update(toUpdate);
 
         String activityMsg = "Retired atl " + toUpdate.getName();
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_ATL, result.getId(), activityMsg,
+        activityManager.addActivity(ActivityConcept.ATL, result.getId(), activityMsg,
                 toUpdate, result);
         return result;
     }
@@ -134,7 +134,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
         result = testingLabDAO.update(toUpdate);
 
         String activityMsg = "Unretired atl " + toUpdate.getName();
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_ATL, result.getId(), activityMsg,
+        activityManager.addActivity(ActivityConcept.ATL, result.getId(), activityMsg,
                 toUpdate, result);
         return result;
     }
