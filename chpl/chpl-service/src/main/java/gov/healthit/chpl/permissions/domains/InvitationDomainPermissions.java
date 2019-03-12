@@ -16,7 +16,6 @@ public class InvitationDomainPermissions extends DomainPermissions {
     public static final String INVITE_ONC = "INVITE_ONC";
     public static final String INVITE_ROLE_NO_ACCESS = "INVITE_ROLE_NO_ACCESS";
     public static final String INVITE_ACB = "INVITE_ACB";
-    public static final String INVITE_ACB_ATL = "INVITE_ACB_ATL";
     public static final String INVITE_ATL = "INVITE_ATL";
 
     @Autowired

@@ -74,8 +74,6 @@ public class ActivityController {
     @Autowired
     private ActivityManager activityManager;
     @Autowired
-    private CertificationBodyManager acbManager;
-    @Autowired
     private AnnouncementManager announcementManager;
     @Autowired
     private TestingLabManager atlManager;

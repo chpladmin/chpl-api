@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
@@ -32,9 +31,6 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 
     @Autowired
     private TestingLabDAO testingLabDAO;
-
-    @Autowired
-    private UserDAO userDAO;
 
     @Autowired
     private ActivityManager activityManager;

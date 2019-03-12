@@ -76,9 +76,6 @@ public class UserManagementController {
     private UserManager userManager;
 
     @Autowired
-    private TestingLabManager atlManager;
-
-    @Autowired
     private InvitationManager invitationManager;
 
     @Autowired

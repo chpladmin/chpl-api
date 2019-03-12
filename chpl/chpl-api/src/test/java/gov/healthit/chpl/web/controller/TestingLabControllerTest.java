@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -71,7 +72,7 @@ public class TestingLabControllerTest {
     }
 
     @Transactional
-    @Test(expected = EntityRetrievalException.class)
+    @Test(expected = AccessDeniedException.class)
     @Rollback
     public void testRemoveUserFromAtlByBadAtlId() throws EntityRetrievalException, IOException,
             InvalidArgumentsException, ValidationException, EntityCreationException, UserRetrievalException {
