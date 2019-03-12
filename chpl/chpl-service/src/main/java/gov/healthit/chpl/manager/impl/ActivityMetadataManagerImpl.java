@@ -44,11 +44,12 @@ import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.manager.ActivityMetadataManager;
 import gov.healthit.chpl.permissions.Permissions;
 import gov.healthit.chpl.util.JSONUtils;
 
 @Service("activityMetadataManager")
-public class ActivityMetadataManagerImpl {
+public class ActivityMetadataManagerImpl implements ActivityMetadataManager {
     private static final Logger LOGGER = LogManager.getLogger(ActivityMetadataManagerImpl.class);
 
     private ActivityDAO activityDAO;
@@ -66,6 +67,7 @@ public class ActivityMetadataManagerImpl {
     public List<ActivityMetadata> getListingActivityMetadata(final Date startDate, final Date endDate)
             throws JsonParseException, IOException {
 
+        LOGGER.info("Getting listing activity from " + startDate + " through " + endDate);
         //get the activity
         List<ActivityDTO> activityDtos = activityDAO.findByConcept(ActivityConcept.CERTIFIED_PRODUCT,
                 startDate, endDate);
