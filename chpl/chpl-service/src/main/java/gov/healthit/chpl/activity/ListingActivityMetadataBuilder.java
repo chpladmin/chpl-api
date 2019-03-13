@@ -109,53 +109,54 @@ public class ListingActivityMetadataBuilder extends ActivityMetadataBuilder {
             } else if (origListing.getSurveillance() != null && newListing.getSurveillance() != null) {
                 if (origListing.getSurveillance().size() != newListing.getSurveillance().size()) {
                     listingMetadata.getCategories().add(ActivityCategory.SURVEILLANCE);
-                }
-            } else {
-                //there are surveillances for both orig and new listing activity
-                //check for new surveillance, deleted surveillance, or any updates
+                } else {
+                    //there are the same amount of surveillances for both orig and
+                    //new listing activity;
+                    //check for new surveillance, deleted surveillance, or any updates
 
-                //look for surveillance added
-                for (Surveillance newSurv : newListing.getSurveillance()) {
-                    boolean foundInOrigListing = false;
-                    for (Surveillance origSurv : origListing.getSurveillance()) {
-                        if (origSurv.getId().longValue() == newSurv.getId().longValue()) {
-                            foundInOrigListing = true;
-                        }
-                    }
-                    if (!foundInOrigListing) {
-                        //surv is in the new listing but not the original one = was added
-                        listingMetadata.getCategories().add(ActivityCategory.SURVEILLANCE);
-                    }
-                }
-
-                //if there's a surveillance change already detected we don't need to look any farther
-                //if not keep looking for one - look for surveillance deleted
-                if (listingMetadata.getCategories().contains(ActivityCategory.SURVEILLANCE)) {
-                    for (Surveillance origSurv : origListing.getSurveillance()) {
-                        boolean foundInNewListing = false;
-                        for (Surveillance newSurv : newListing.getSurveillance()) {
+                    //look for surveillance added
+                    for (Surveillance newSurv : newListing.getSurveillance()) {
+                        boolean foundInOrigListing = false;
+                        for (Surveillance origSurv : origListing.getSurveillance()) {
                             if (origSurv.getId().longValue() == newSurv.getId().longValue()) {
-                                foundInNewListing = true;
+                                foundInOrigListing = true;
                             }
                         }
-                        if (!foundInNewListing) {
-                            //surv is in the original listing but not the new one = was deleted
+                        if (!foundInOrigListing) {
+                            //surv is in the new listing but not the original one = was added
                             listingMetadata.getCategories().add(ActivityCategory.SURVEILLANCE);
                         }
                     }
-                }
 
-                //if there's a surveillance change already detected we don't need to look any farther
-                //if not keep looking for one - look for surveillance updated
-                if (listingMetadata.getCategories().contains(ActivityCategory.SURVEILLANCE)) {
-                    for (Surveillance origSurv : origListing.getSurveillance()) {
-                        for (Surveillance newSurv : newListing.getSurveillance()) {
-                            if (origSurv.getId().longValue() == newSurv.getId().longValue()
-                                    && !origSurv.matches(newSurv)) {
+                    //if there's a surveillance change already detected we don't need to look any farther
+                    //if not keep looking for one - look for surveillance deleted
+                    if (!listingMetadata.getCategories().contains(ActivityCategory.SURVEILLANCE)) {
+                        for (Surveillance origSurv : origListing.getSurveillance()) {
+                            boolean foundInNewListing = false;
+                            for (Surveillance newSurv : newListing.getSurveillance()) {
+                                if (origSurv.getId().longValue() == newSurv.getId().longValue()) {
+                                    foundInNewListing = true;
+                                }
+                            }
+                            if (!foundInNewListing) {
+                                //surv is in the original listing but not the new one = was deleted
                                 listingMetadata.getCategories().add(ActivityCategory.SURVEILLANCE);
-                                //if we add a surveillance category there's no need to keep looking
-                                //for more differences.
-                                return;
+                            }
+                        }
+                    }
+
+                    //if there's a surveillance change already detected we don't need to look any farther
+                    //if not keep looking for one - look for surveillance updated
+                    if (!listingMetadata.getCategories().contains(ActivityCategory.SURVEILLANCE)) {
+                        for (Surveillance origSurv : origListing.getSurveillance()) {
+                            for (Surveillance newSurv : newListing.getSurveillance()) {
+                                if (origSurv.getId().longValue() == newSurv.getId().longValue()
+                                        && !origSurv.matches(newSurv)) {
+                                    listingMetadata.getCategories().add(ActivityCategory.SURVEILLANCE);
+                                    //if we add a surveillance category there's no need to keep looking
+                                    //for more differences.
+                                    return;
+                                }
                             }
                         }
                     }
