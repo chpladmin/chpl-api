@@ -25,6 +25,7 @@ public class UserDTO implements UserDetails {
     private Date complianceSignatureDate;
     private UserDTO impersonatedBy;
 
+
     private int failedLoginCount;
     private boolean accountExpired;
     private boolean accountLocked;
@@ -51,7 +52,6 @@ public class UserDTO implements UserDetails {
             this.phoneNumber = entity.getContact().getPhoneNumber();
             this.title = entity.getContact().getTitle();
             this.signatureDate = entity.getContact().getSignatureDate();
-            this.complianceSignatureDate = entity.getComplianceSignature();
             this.failedLoginCount = entity.getFailedLoginCount();
             this.accountExpired = !entity.isAccountNonExpired();
             this.accountLocked = !entity.isAccountNonLocked();
@@ -193,14 +193,6 @@ public class UserDTO implements UserDetails {
         this.signatureDate = signatureDate;
     }
 
-    public Date getComplianceSignatureDate() {
-        return complianceSignatureDate;
-    }
-
-    public void setComplianceSignatureDate(final Date complianceSignatureDate) {
-        this.complianceSignatureDate = complianceSignatureDate;
-    }
-
     public UserDTO getImpersonatedBy() {
         return impersonatedBy;
     }
@@ -209,7 +201,7 @@ public class UserDTO implements UserDetails {
         this.impersonatedBy = impersonatedBy;
     }
 
-    public int getFailedLoginCount() {
+  public int getFailedLoginCount() {
         return failedLoginCount;
     }
 
@@ -240,7 +232,6 @@ public class UserDTO implements UserDetails {
                 + "[phoneNumber: " + this.phoneNumber + "]"
                 + "[title: " + this.title + "]"
                 + "[signatureDate: " + this.signatureDate + "]"
-                + "[complianceSignatureDate: " + this.complianceSignatureDate + "]"
                 + "[failedLoginCount: " + this.failedLoginCount + "]"
                 + "[accountExpired: " + this.accountExpired + "]"
                 + "[accountLocked: " + this.accountLocked + "]"
