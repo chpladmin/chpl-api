@@ -15,6 +15,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.env.Environment;
@@ -96,8 +97,9 @@ public class SearchViewController {
     @Autowired
     private CertifiedProductSearchManager certifiedProductSearchManager;
 
-    //@Autowired
-    //private DeveloperManager developerManager;
+    @Lazy
+    @Autowired
+    private DeveloperManager developerManager;
 
     @Autowired private FileUtils fileUtils;
 
@@ -1184,15 +1186,15 @@ public class SearchViewController {
         return dimensionalDataManager.getSearchableDimensionalData(simple);
     }
 
-//    @ApiOperation(value = "Get all developer decertifications in the CHPL",
-//            notes = "This returns all decertified developers.")
-//    @RequestMapping(value = "/decertifications/developers", method = RequestMethod.GET,
-//    produces = "application/json; charset=utf-8")
-//    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-//    public @ResponseBody DecertifiedDeveloperResults getDecertifiedDevelopers() throws EntityRetrievalException {
-//        DecertifiedDeveloperResults ddr = new DecertifiedDeveloperResults();
-//        List<DecertifiedDeveloperResult> results = developerManager.getDecertifiedDevelopers();
-//        ddr.setDecertifiedDeveloperResults(results);
-//        return ddr;
-//    }
+    @ApiOperation(value = "Get all developer decertifications in the CHPL",
+            notes = "This returns all decertified developers.")
+    @RequestMapping(value = "/decertifications/developers", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody DecertifiedDeveloperResults getDecertifiedDevelopers() throws EntityRetrievalException {
+        DecertifiedDeveloperResults ddr = new DecertifiedDeveloperResults();
+        List<DecertifiedDeveloperResult> results = developerManager.getDecertifiedDevelopers();
+        ddr.setDecertifiedDeveloperResults(results);
+        return ddr;
+    }
 }
