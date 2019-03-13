@@ -34,11 +34,13 @@ import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.domain.UserActivity;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.activity.ActivityDetails;
+import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.manager.ActivityMetadataManager;
 import gov.healthit.chpl.util.JSONUtils;
 import junit.framework.TestCase;
 
@@ -53,7 +55,7 @@ import junit.framework.TestCase;
 @DatabaseSetup("classpath:data/testData.xml")
 public class ActivityMetadataManagerTest extends TestCase {
     @Autowired
-    private ActivityManager activityManager;
+    private ActivityMetadataManager metadataManager;
 
     private static JWTAuthenticatedUser adminUser, acbUser, atlUser;
 
@@ -87,248 +89,42 @@ public class ActivityMetadataManagerTest extends TestCase {
 
     @Test
     @Transactional
-    @Rollback
-    public void testAddActivity() throws EntityCreationException, EntityRetrievalException, IOException {
-
+    public void testGetActivityMetadataForAllListingsLoggedIn() throws JsonParseException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        Date startDate = new Date();
-        DeveloperDTO developer = new DeveloperDTO();
-        developer.setCreationDate(new Date());
-        developer.setId(-1L);
-        developer.setName("Test");
-        developer.setWebsite("www.zombo.com");
+        Calendar start = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        start.set(2015, 9, 1, 0, 0);
+        Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        end.set(2015, 9, 20, 0, 0);
 
-        activityManager.addActivity(ActivityConcept.DEVELOPER, developer.getId(), "Test Activity",
-                null, developer);
-        Date endDate = new Date();
-        List<ActivityDetails> events = activityManager.getActivityForObject(ActivityConcept.DEVELOPER,
-                -1L, startDate, endDate);
+        List<ActivityMetadata> metadatas = metadataManager.getListingActivityMetadata(start.getTime(), end.getTime());
+        assertEquals(3, metadatas.size());
 
-        ActivityDetails event = events.get(events.size() - 1);
-
-        assertEquals(event.getConcept(), ActivityConcept.DEVELOPER);
-        assertEquals(event.getOriginalData(), null);
-        assertEquals(event.getNewData().toString(), JSONUtils.toJSON(developer));
-        assertEquals(event.getActivityObjectId(), developer.getId());
+        for (ActivityMetadata metadata : metadatas) {
+            assertNotNull(metadata.getId());
+            assertNotNull(metadata.getDate());
+            assertNotNull(metadata.getObjectId());
+            assertEquals(ActivityConcept.CERTIFIED_PRODUCT, metadata.getConcept());
+        }
     }
 
     @Test
     @Transactional
-    @Rollback
-    public void testAddActivityWithTimeStamp() throws EntityCreationException, EntityRetrievalException, IOException {
-
+    public void testGetActivityMetadataForListingLoggedIn() throws JsonParseException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-        DeveloperDTO developer = new DeveloperDTO();
-        developer.setCreationDate(new Date());
-        developer.setId(-1L);
-        developer.setName("Test");
-        developer.setWebsite("www.zombo.com");
-
-        Date timestamp = new Date();
-
-        activityManager.addActivity(ActivityConcept.DEVELOPER, developer.getId(), "Test Activity",
-                null, developer, timestamp);
-        Date endDate = new Date();
-        List<ActivityDetails> events = activityManager.getActivityForObject(ActivityConcept.DEVELOPER,
-                -1L, timestamp, endDate);
-
-        ActivityDetails event = events.get(events.size() - 1);
-
-        assertEquals(ActivityConcept.DEVELOPER, event.getConcept());
-        assertEquals(null, event.getOriginalData());
-        assertEquals(JSONUtils.toJSON(developer), event.getNewData().toString());
-        assertEquals(developer.getId(), event.getActivityObjectId());
-    }
-
-    @Test
-    @Transactional
-    public void testGetActivityForListingLoggedIn() throws JsonParseException, IOException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-        ActivityConcept concept = ActivityConcept.CERTIFIED_PRODUCT;
         Long objectId = 1L;
         Calendar start = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         start.set(2015, 9, 1, 0, 0);
         Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         end.set(2015, 9, 20, 0, 0);
 
-        List<ActivityDetails> events = activityManager.getActivityForObject(concept, objectId, start.getTime(),
-                end.getTime());
-        assertEquals(3, events.size());
+        List<ActivityMetadata> metadatas = metadataManager.getListingActivityMetadata(objectId, start.getTime(), end.getTime());
+        assertEquals(3, metadatas.size());
 
-        for (ActivityDetails event : events) {
-            assertEquals(concept, event.getConcept());
-            assertEquals(objectId, event.getActivityObjectId());
+        for (ActivityMetadata metadata : metadatas) {
+            assertNotNull(metadata.getId());
+            assertNotNull(metadata.getDate());
+            assertEquals(ActivityConcept.CERTIFIED_PRODUCT, metadata.getConcept());
+            assertEquals(objectId, metadata.getObjectId());
         }
-
     }
-
-    @Test
-    @Transactional
-    public void testGetActivityForAcbsAsAdmin() throws JsonParseException, IOException, EntityRetrievalException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-        Calendar start = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        start.set(2015, 9, 1, 0, 0);
-        Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        end.set(2015, 9, 20, 0, 0);
-        CertificationBodyDTO acb = new CertificationBodyDTO();
-        acb.setId(-1L);
-        List<CertificationBodyDTO> acbs = new ArrayList<CertificationBodyDTO>();
-        acbs.add(acb);
-        List<ActivityDetails> events = activityManager.getAcbActivity(acbs, start.getTime(), end.getTime());
-        assertEquals(0, events.size());
-    }
-
-    @Test
-    @Transactional
-    public void testGetActivityForAcbsAsAcbAdmin() throws JsonParseException, IOException, EntityRetrievalException {
-        SecurityContextHolder.getContext().setAuthentication(acbUser);
-        Calendar start = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        start.set(2015, 9, 1, 0, 0);
-        Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        end.set(2015, 9, 20, 0, 0);
-        CertificationBodyDTO acb = new CertificationBodyDTO();
-        acb.setId(-1L);
-        List<CertificationBodyDTO> acbs = new ArrayList<CertificationBodyDTO>();
-        acbs.add(acb);
-        List<ActivityDetails> events = activityManager.getAcbActivity(acbs, start.getTime(), end.getTime());
-        assertEquals(0, events.size());
-    }
-
-    @Test(expected = AccessDeniedException.class)
-    @Transactional
-    public void testGetActivityForAcbsAsAtlAdmin() throws JsonParseException, IOException, EntityRetrievalException {
-        SecurityContextHolder.getContext().setAuthentication(atlUser);
-        Calendar start = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        start.set(2015, 9, 1, 0, 0);
-        Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        end.set(2015, 9, 20, 0, 0);
-        CertificationBodyDTO acb = new CertificationBodyDTO();
-        acb.setId(-1L);
-        List<CertificationBodyDTO> acbs = new ArrayList<CertificationBodyDTO>();
-        acbs.add(acb);
-        activityManager.getAcbActivity(acbs, start.getTime(), end.getTime());
-    }
-
-    @Test
-    @Transactional
-    @Rollback
-    public void testGetActivityForObjectDateRange()
-            throws EntityCreationException, EntityRetrievalException, IOException {
-
-        Date fiveDaysAgo = new Date(System.currentTimeMillis() - (5 * 24 * 60 * 60 * 1000));
-
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-        DeveloperDTO developer = new DeveloperDTO();
-        developer.setCreationDate(new Date());
-        developer.setId(1L);
-        developer.setName("Test");
-        developer.setWebsite("www.zombo.com");
-
-        Date timestamp = new Date();
-
-        activityManager.addActivity(ActivityConcept.DEVELOPER, developer.getId(), "Test Activity",
-                "Before", "Test", timestamp);
-        List<ActivityDetails> events = activityManager.getActivityForObject(ActivityConcept.DEVELOPER,
-                developer.getId(), fiveDaysAgo, null);
-
-        assertEquals(1, events.size());
-    }
-
-    @Test
-    @Transactional
-    public void testGetActivityForConceptLastNDays()
-            throws EntityCreationException, EntityRetrievalException, JsonParseException, IOException {
-
-        ActivityConcept concept = ActivityConcept.CERTIFIED_PRODUCT;
-        Date fiveDaysAgo = new Date(System.currentTimeMillis() - (5 * 24 * 60 * 60 * 1000));
-
-        List<ActivityDetails> events = activityManager.getActivityForConcept(concept, fiveDaysAgo, null);
-        assertEquals(0, events.size());
-
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-        DeveloperDTO developer = new DeveloperDTO();
-        developer.setCreationDate(new Date());
-        developer.setId(1L);
-        developer.setName("Test");
-        developer.setWebsite("www.zombo.com");
-
-        Date timestamp = new Date();
-
-        activityManager.addActivity(ActivityConcept.DEVELOPER, developer.getId(), "Test Activity",
-                "Before", "Test", timestamp);
-
-        DeveloperDTO developer2 = new DeveloperDTO();
-        developer2.setCreationDate(new Date());
-        developer2.setId(2L);
-        developer2.setName("Test");
-        developer2.setWebsite("www.zombo.com");
-
-        Date timestamp2 = new Date(100);
-
-        activityManager.addActivity(ActivityConcept.DEVELOPER, developer2.getId(), "Test Activity",
-                "Before", "Test", timestamp2);
-
-        List<ActivityDetails> events2 = activityManager.getActivityForConcept(ActivityConcept.DEVELOPER,
-                fiveDaysAgo, new Date());
-
-        assertEquals(1, events2.size());
-    }
-
-    @Test
-    @Transactional
-    public void testGetActivityForUserInDateRange() throws JsonParseException, IOException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-        List<ActivityDetails> eventsForUser = activityManager.getActivityForUserInDateRange(1L, new Date(0), new Date());
-        assertEquals(5, eventsForUser.size());
-    }
-
-    @Test(expected = AccessDeniedException.class)
-    @Transactional
-    public void testGetActivityForUserInDateRangeAcbAdmin() throws JsonParseException, IOException {
-        SecurityContextHolder.getContext().setAuthentication(acbUser);
-        List<ActivityDetails> eventsForUser = activityManager.getActivityForUserInDateRange(1L, new Date(0), new Date());
-        assertEquals(5, eventsForUser.size());
-    }
-
-    @Test(expected = AccessDeniedException.class)
-    @Transactional
-    public void testGetActivityForUserInDateRangeAtlAdmin() throws JsonParseException, IOException {
-        SecurityContextHolder.getContext().setAuthentication(atlUser);
-        List<ActivityDetails> eventsForUser = activityManager.getActivityForUserInDateRange(1L, new Date(0), new Date());
-        assertEquals(5, eventsForUser.size());
-    }
-
-    /**
-     * Given the API call is made for
-     * /activity/user_activities?start=milliValue?end=milliValue When an
-     * activity exists for a valid user Then the authenticated user's activity
-     * is returned.
-     * 
-     * @throws JsonParseException
-     * @throws IOException
-     * @throws UserRetrievalException
-     */
-    @Test
-    @Transactional
-    public void testFindAllByUserInDateRange_returnsResult()
-            throws JsonParseException, IOException, UserRetrievalException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-        Date startDate = new Date(1489550400000L); // 2017-03-15
-        Date endDate = new Date(1489723200000L); // 2017-03-17
-        // Create a user activity for a user that does not exist
-        List<UserActivity> eventsForUser = activityManager.getActivityByUserInDateRange(startDate, endDate);
-
-        List<UserActivity> forUser = new ArrayList<UserActivity>();
-
-        for (UserActivity activity : eventsForUser) {
-            if (activity.getUser().getUserId().equals(-2L)) {
-                forUser.add(activity);
-            }
-        }
-        assertEquals(1, forUser.get(0).getEvents().size());
-    }
-
 }
