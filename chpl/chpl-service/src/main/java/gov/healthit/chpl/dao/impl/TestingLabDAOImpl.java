@@ -64,7 +64,7 @@ public class TestingLabDAOImpl extends BaseDAOImpl implements TestingLabDAO {
             entity.setTestingLabCode(dto.getTestingLabCode());
             entity.setRetired(dto.isRetired());
             entity.setRetirementDate(dto.getRetirementDate());
-            entity.setLastModifiedUser(Util.getCurrentUser().getId());
+            entity.setLastModifiedUser(Util.getAuditId());
             create(entity);
             return new TestingLabDTO(entity);
         }
@@ -105,7 +105,7 @@ public class TestingLabDAOImpl extends BaseDAOImpl implements TestingLabDAO {
         if (dto.getTestingLabCode() != null) {
             entity.setTestingLabCode(dto.getTestingLabCode());
         }
-        entity.setLastModifiedUser(Util.getCurrentUser().getId());
+        entity.setLastModifiedUser(Util.getAuditId());
         update(entity);
         return new TestingLabDTO(entity);
     }

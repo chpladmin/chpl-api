@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
 
+import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 
 public class JWTAuthenticatedUser implements User {
@@ -22,13 +23,14 @@ public class JWTAuthenticatedUser implements User {
     private final boolean accountEnabled = true;
     private boolean passwordResetRequired = false;
     private boolean authenticated = true;
+    private UserDTO impersonatingUser;
 
     /** Default constructor. */
     public JWTAuthenticatedUser() {
         this.subjectName = null;
     }
 
-    public JWTAuthenticatedUser(String subjectName) {
+    public JWTAuthenticatedUser(final String subjectName) {
         this.subjectName = subjectName;
     }
 
@@ -60,17 +62,17 @@ public class JWTAuthenticatedUser implements User {
         return this.permissions;
     }
 
-    public void addPermission(GrantedPermission permission){
+    public void addPermission(final GrantedPermission permission) {
         this.permissions.add(permission);
     }
 
-    public void addPermission(String permissionValue) {
+    public void addPermission(final String permissionValue) {
         GrantedPermission permission = new GrantedPermission(permissionValue);
         this.permissions.add(permission);
     }
 
     @Override
-    public void removePermission(final String permissionValue){
+    public void removePermission(final String permissionValue) {
         this.permissions.remove(new GrantedPermission(permissionValue));
     }
 
@@ -102,6 +104,14 @@ public class JWTAuthenticatedUser implements User {
     @Override
     public void setAuthenticated(final boolean arg0) throws IllegalArgumentException {
         this.authenticated = arg0;
+    }
+
+    public UserDTO getImpersonatingUser() {
+        return impersonatingUser;
+    }
+
+    public void setImpersonatingUser(final UserDTO impersonatingUser) {
+        this.impersonatingUser = impersonatingUser;
     }
 
     @Override

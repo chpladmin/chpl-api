@@ -22,6 +22,9 @@ public class UserDTO implements UserDetails {
     private String phoneNumber;
     private String title;
     private Date signatureDate;
+    private Date complianceSignatureDate;
+    private UserDTO impersonatedBy;
+
 
     private int failedLoginCount;
     private boolean accountExpired;
@@ -190,7 +193,15 @@ public class UserDTO implements UserDetails {
         this.signatureDate = signatureDate;
     }
 
-    public int getFailedLoginCount() {
+    public UserDTO getImpersonatedBy() {
+        return impersonatedBy;
+    }
+
+    public void setImpersonatedBy(UserDTO impersonatedBy) {
+        this.impersonatedBy = impersonatedBy;
+    }
+
+  public int getFailedLoginCount() {
         return failedLoginCount;
     }
 

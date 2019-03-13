@@ -20,7 +20,7 @@ public class UserResetTokenDAOImpl extends BaseDAOImpl implements UserResetToken
         entity.setUserResetToken(resetToken);
         entity.setUserId(userId);
         if (Util.getCurrentUser() != null) {
-            entity.setLastModifiedUser(Util.getCurrentUser().getId());
+            entity.setLastModifiedUser(Util.getAuditId());
         } else {
             entity.setLastModifiedUser(userId);
         }

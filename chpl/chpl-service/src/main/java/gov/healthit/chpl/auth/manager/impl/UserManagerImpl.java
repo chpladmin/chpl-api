@@ -302,7 +302,7 @@ public class UserManagerImpl implements UserManager {
         UserDTO dto = securedUserManager.getBySubjectName(userName);
         return dto;
     }
-    
+
     @Override
     public UserDTO getByNameUnsecured(final String userName) throws UserRetrievalException {
         return userDAO.getByName(userName);

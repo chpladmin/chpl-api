@@ -43,7 +43,7 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
             entity.setDescription(dto.getDescription());
             // entity.setId(dto.getId());
             entity.setLastModifiedDate(dto.getLastModifiedDate());
-            entity.setLastModifiedUser(Util.getCurrentUser().getId());
+            entity.setLastModifiedUser(Util.getAuditId());
             entity.setNqfNumber(dto.getNqfNumber());
             entity.setNumber(dto.getNumber());
             entity.setTitle(dto.getTitle());
@@ -73,7 +73,7 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
         entity.setDescription(dto.getDescription());
         // entity.setId(dto.getId());
         entity.setLastModifiedDate(dto.getLastModifiedDate());
-        entity.setLastModifiedUser(Util.getCurrentUser().getId());
+        entity.setLastModifiedUser(Util.getAuditId());
         entity.setNqfNumber(dto.getNqfNumber());
         entity.setNumber(dto.getNumber());
         entity.setTitle(dto.getTitle());
