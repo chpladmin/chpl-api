@@ -26,6 +26,7 @@ import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
@@ -387,7 +388,8 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
     @Override
     public void addAllVersionsToCmsCriterion(final PendingCertifiedProductDetails pcpDetails) {
         // now add allVersions for CMSs
-        String certificationEdition = pcpDetails.getCertificationEdition().get("name").toString();
+        String certificationEdition =
+                pcpDetails.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString();
         if (!certificationEdition.startsWith("2011")) {
             List<CQMCriterion> cqms = getAvailableCQMVersions();
             for (CQMCriterion cqm : cqms) {
@@ -430,7 +432,8 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
     public void addAvailableTestFunctionalities(final PendingCertifiedProductDetails pcpDetails) {
         // now add allMeasures for criteria
         for (CertificationResult cert : pcpDetails.getCertificationResults()) {
-            String edition = pcpDetails.getCertificationEdition().get("name").toString();
+            String edition =
+                    pcpDetails.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString();
             Long practiceTypeId = null;
             if (pcpDetails.getPracticeType().containsKey("id")) {
                 if (pcpDetails.getPracticeType().get("id") != null) {

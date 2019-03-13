@@ -569,7 +569,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
                 if (!hasAccessToAcb) {
                     throw new AccessDeniedException(msgUtil.getMessage("acb.accessDenied.listingUpdate",
                             beforeListing.getChplProductNumber(),
-                            beforeListing.getCertifyingBody().get("name")));
+                            beforeListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY)));
                 }
 
                 beforeListingDetails.put(beforeListing.getId(), beforeListing);

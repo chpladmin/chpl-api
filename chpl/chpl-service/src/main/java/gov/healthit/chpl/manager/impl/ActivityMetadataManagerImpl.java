@@ -63,6 +63,7 @@ public class ActivityMetadataManagerImpl implements ActivityMetadataManager {
         listingActivityBuilder = new ListingActivityMetadataBuilder();
     }
 
+    //TODO: SECURITY
     @Transactional
     public List<ActivityMetadata> getListingActivityMetadata(final Date startDate, final Date endDate)
             throws JsonParseException, IOException {
@@ -70,6 +71,24 @@ public class ActivityMetadataManagerImpl implements ActivityMetadataManager {
         LOGGER.info("Getting listing activity from " + startDate + " through " + endDate);
         //get the activity
         List<ActivityDTO> activityDtos = activityDAO.findByConcept(ActivityConcept.CERTIFIED_PRODUCT,
+                startDate, endDate);
+        //convert to domain object
+        List<ActivityMetadata> activityMetas = new ArrayList<ActivityMetadata>();
+        for (ActivityDTO dto : activityDtos) {
+            ActivityMetadata activityMeta = listingActivityBuilder.build(dto);
+            activityMetas.add(activityMeta);
+        }
+        return activityMetas;
+    }
+
+    //TODO: SECURITY
+    @Transactional
+    public List<ActivityMetadata> getListingActivityMetadata(final Long listingId, final Date startDate, final Date endDate)
+            throws JsonParseException, IOException {
+
+        LOGGER.info("Getting activity for listing " + listingId + " from " + startDate + " through " + endDate);
+        //get the activity
+        List<ActivityDTO> activityDtos = activityDAO.findByObjectId(listingId, ActivityConcept.CERTIFIED_PRODUCT,
                 startDate, endDate);
         //convert to domain object
         List<ActivityMetadata> activityMetas = new ArrayList<ActivityMetadata>();

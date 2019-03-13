@@ -629,7 +629,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             List<CertificationResultTestStandard> existingTestStandards,
             List<CertificationResultTestStandard> updatedTestStandards) throws EntityCreationException {
         int numChanges = 0;
-        String editionIdString = listing.getCertificationEdition().get("id").toString();
+        String editionIdString = listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY).toString();
         List<CertificationResultTestStandardDTO> testStandardsToAdd = new ArrayList<CertificationResultTestStandardDTO>();
         List<Long> idsToRemove = new ArrayList<Long>();
 
@@ -963,7 +963,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             List<CertificationResultTestFunctionality> existingTestFunctionality,
             List<CertificationResultTestFunctionality> updatedTestFunctionality) throws EntityCreationException {
         int numChanges = 0;
-        String editionIdString = listing.getCertificationEdition().get("id").toString();
+        String editionIdString = listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY).toString();
         List<CertificationResultTestFunctionalityDTO> testFuncToAdd = new ArrayList<CertificationResultTestFunctionalityDTO>();
         List<Long> idsToRemove = new ArrayList<Long>();
 

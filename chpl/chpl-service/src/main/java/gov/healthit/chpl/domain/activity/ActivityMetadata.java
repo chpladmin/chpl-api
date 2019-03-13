@@ -3,7 +3,9 @@ package gov.healthit.chpl.domain.activity;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import gov.healthit.chpl.auth.json.User;
 import gov.healthit.chpl.util.Util;
@@ -19,7 +21,7 @@ public class ActivityMetadata implements Serializable {
 
     private Long id;
     private ActivityConcept concept;
-    private List<ActivityCategory> categories = new ArrayList<ActivityCategory>();
+    private Set<ActivityCategory> categories = new HashSet<ActivityCategory>();
     private Date date;
     private Long objectId;
     private User responsibleUser;
@@ -67,11 +69,11 @@ public class ActivityMetadata implements Serializable {
         this.responsibleUser = responsibleUser;
     }
 
-    public List<ActivityCategory> getCategories() {
+    public Set<ActivityCategory> getCategories() {
         return categories;
     }
 
-    public void setCategories(final List<ActivityCategory> categories) {
+    public void setCategories(final Set<ActivityCategory> categories) {
         this.categories = categories;
     }
 }

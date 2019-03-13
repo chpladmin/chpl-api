@@ -279,7 +279,7 @@ public class ProductManagerImpl implements ProductManager {
             if (!hasAccessToAcb) {
                     throw new AccessDeniedException(msgUtil.getMessage("acb.accessDenied.listingUpdate",
                             beforeProduct.getChplProductNumber(),
-                            beforeProduct.getCertifyingBody().get("name")));
+                            beforeProduct.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY)));
             }
 
             // make sure the updated CHPL product number is unique and that the

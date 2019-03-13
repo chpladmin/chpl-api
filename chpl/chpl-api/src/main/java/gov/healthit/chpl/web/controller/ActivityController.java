@@ -34,16 +34,19 @@ import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.UserActivity;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.activity.ActivityDetails;
+import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.manager.ActivityMetadataManager;
 import gov.healthit.chpl.manager.AnnouncementManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
@@ -52,7 +55,6 @@ import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.manager.TestingLabManager;
-import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -74,7 +76,7 @@ public class ActivityController {
     @Autowired
     private ActivityManager activityManager;
     @Autowired
-    private CertificationBodyManager acbManager;
+    private ActivityMetadataManager activityMetadataManager;
     @Autowired
     private AnnouncementManager announcementManager;
     @Autowired
@@ -97,8 +99,147 @@ public class ActivityController {
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
     @Autowired
     private ResourcePermissions resourcePermissions;
-    
+
     @Autowired private MessageSource messageSource;
+
+    @ApiOperation(value = "Get detailed audit data for a specific activity event.",
+            notes = "Security Restrictions: ROLE_ADMIN and ROLE_ONC may any activity event. "
+                + "Other users may be restricted in what they can see.")
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public ActivityDetails activityById(@PathVariable("id") final Long id)
+                    throws EntityRetrievalException, JsonParseException, IOException, ValidationException {
+        ActivityDetails details = activityManager.getActivityById(id);
+        return details;
+    }
+
+    @ApiOperation(value = "Get metadata about auditable records in the system for listings.",
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+    @RequestMapping(value = "/metadata/listings", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public List<ActivityMetadata> metadataForListings(@RequestParam final Long start,
+            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
+        Date startDate = new Date(start);
+        Date endDate = new Date(end);
+        validateActivityDates(start, end);
+        return activityMetadataManager.getListingActivityMetadata(startDate, endDate);
+    }
+
+    @ApiOperation(value = "Get metadata about auditable records in the system for a specific listing.",
+            notes = "A start and end date may optionally be provided to limit activity results.")
+    @RequestMapping(value = "/metadata/listings/{id:^-?\\d+$}", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public List<ActivityMetadata> metadataForListingById(@PathVariable("id") final Long id,
+            @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
+                    throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
+        cpManager.getById(id); // throws 404 if bad id
+
+        //if one of start of end is provided then the other must also be provided.
+        //if neither is provided then query all dates
+        Date startDate = new Date(0);
+        Date endDate = new Date();
+        if (start != null && end != null) {
+            validateActivityDates(start, end);
+            startDate = new Date(start);
+            endDate = new Date(end);
+        } else if (start == null && end != null) {
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
+        } else if (start != null && end == null) {
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
+        }
+
+        return activityMetadataManager.getListingActivityMetadata(id, startDate, endDate);
+    }
+
+    @ApiOperation(value = "Get metadata about auditable records in the system for a specific listing given its "
+            + "new-style CHPL product number.",
+            notes = "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} "
+                    + "represents a valid CHPL Product Number.  A valid call to this service would look like "
+                    + "activity/certified_products/YY.99.99.9999.XXXX.99.99.9.YYMMDD. "
+                    + "A start and end date may optionally be provided to limit activity results.")
+    @RequestMapping(value = "/metadata/listings/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}",
+    method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public List<ActivityMetadata> metadataForListingByChplProductNumber(
+            @PathVariable("year") final String year,
+            @PathVariable("testingLab") final String testingLab,
+            @PathVariable("certBody") final String certBody,
+            @PathVariable("vendorCode") final String vendorCode,
+            @PathVariable("productCode") final String productCode,
+            @PathVariable("versionCode") final String versionCode,
+            @PathVariable("icsCode") final String icsCode,
+            @PathVariable("addlSoftwareCode") final String addlSoftwareCode,
+            @PathVariable("certDateCode") final String certDateCode,
+            @RequestParam(required = false) final Long start,
+            @RequestParam(required = false) final Long end)
+                    throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
+
+        String chplProductNumber =
+                chplProductNumberUtil.getChplProductNumber(year, testingLab, certBody, vendorCode, productCode,
+                        versionCode, icsCode, addlSoftwareCode, certDateCode);
+
+        List<CertifiedProductDetailsDTO> dtos =
+                certifiedProductSearchResultDAO.getByChplProductNumber(chplProductNumber);
+        if (dtos.size() == 0) {
+            throw new EntityRetrievalException("Could not retrieve CertifiedProductSearchDetails.");
+        }
+
+        //if one of start of end is provided then the other must also be provided.
+        //if neither is provided then query all dates
+        Date startDate = new Date(0);
+        Date endDate = new Date();
+        if (start != null && end != null) {
+            validateActivityDates(start, end);
+            startDate = new Date(start);
+            endDate = new Date(end);
+        } else if (start == null && end != null) {
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
+        } else if (start != null && end == null) {
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
+        }
+
+        return activityMetadataManager.getListingActivityMetadata(dtos.get(0).getId(), startDate, endDate);
+    }
+
+    @ApiOperation(value = "Get metadata about auditable records in the system for a specific listing given its "
+            + "legacy CHPL Number.",
+            notes = "{chplPrefix}-{identifier} represents a valid CHPL Product Number.  "
+                    + "A valid call to this service "
+                    + "would look like activity/certified_products/CHP-999999. "
+                    + "A start and end date may optionally be provided to limit activity results.")
+    @RequestMapping(value = "/metadata/listings/{chplPrefix}-{identifier}",
+    method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public List<ActivityMetadata> metadataForListingByChplProductNumber(
+            @PathVariable("chplPrefix") final String chplPrefix,
+            @PathVariable("identifier") final String identifier,
+            @RequestParam(required = false) final Long start,
+            @RequestParam(required = false) final Long end)
+                    throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
+
+        String chplProductNumber = chplProductNumberUtil.getChplProductNumber(chplPrefix, identifier);
+
+        List<CertifiedProductDetailsDTO> dtos =
+                certifiedProductSearchResultDAO.getByChplProductNumber(chplProductNumber);
+        if (dtos.size() == 0) {
+            throw new EntityRetrievalException("Could not retrieve CertifiedProductSearchDetails.");
+        }
+
+        //if one of start of end is provided then the other must also be provided.
+        //if neither is provided then query all dates
+        Date startDate = new Date(0);
+        Date endDate = new Date();
+        if (start != null && end != null) {
+            validateActivityDates(start, end);
+            startDate = new Date(start);
+            endDate = new Date(end);
+        } else if (start == null && end != null) {
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
+        } else if (start != null && end == null) {
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
+        }
+
+        return activityMetadataManager.getListingActivityMetadata(dtos.get(0).getId(), startDate, endDate);
+    }
 
     @ApiOperation(value = "Get auditable data for certification bodies.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "
@@ -469,7 +610,8 @@ public class ActivityController {
         } else {
             //make sure the user has permissions on the pending listings acb
             //will throw access denied if they do not have the permissions
-            Long pendingListingAcbId = new Long(pendingListing.getCertifyingBody().get("id").toString());
+            Long pendingListingAcbId =
+                    new Long(pendingListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString());
             resourcePermissions.getAcbIfPermissionById(pendingListingAcbId);
         }
 

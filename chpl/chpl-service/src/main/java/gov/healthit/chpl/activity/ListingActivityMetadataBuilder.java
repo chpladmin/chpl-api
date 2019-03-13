@@ -5,8 +5,8 @@ import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.healthit.chpl.dao.impl.AddressDAOImpl;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.activity.ActivityCategory;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.ListingActivityMetadata;
@@ -30,7 +30,6 @@ public class ListingActivityMetadataBuilder extends ActivityMetadataBuilder {
         //parse listing specific metadata
         CertifiedProductSearchDetails origListing = null;
         if (dto.getOriginalData() != null) {
-            LOGGER.debug("Activity ID " + dto.getId() + " origData not null. Parsing as CertifiedProductSearchDetails.");
             try {
                 origListing =
                     jsonMapper.readValue(dto.getOriginalData(), CertifiedProductSearchDetails.class);
@@ -42,7 +41,6 @@ public class ListingActivityMetadataBuilder extends ActivityMetadataBuilder {
 
         CertifiedProductSearchDetails newListing = null;
         if (dto.getNewData() != null) {
-            LOGGER.debug("Activity ID " + dto.getId() + " newData not null. Parsing as CertifiedProductSearchDetails.");
             try {
                 newListing =
                     jsonMapper.readValue(dto.getNewData(), CertifiedProductSearchDetails.class);
@@ -66,8 +64,9 @@ public class ListingActivityMetadataBuilder extends ActivityMetadataBuilder {
     private void parseListingMetadata(
             final ListingActivityMetadata listingMetadata, final CertifiedProductSearchDetails listing) {
         listingMetadata.setChplProductNumber(listing.getChplProductNumber());
-        if (listing.getCertifyingBody() != null && listing.getCertifyingBody().get("name") != null) {
-            listingMetadata.setAbcName(listing.getCertifyingBody().get("name").toString());
+        if (listing.getCertifyingBody() != null
+                && listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY) != null) {
+            listingMetadata.setAbcName(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString());
         }
         //there is at least one activity record that has a null certification date field
         //due to a bug in the system at the time of the activity
@@ -75,8 +74,10 @@ public class ListingActivityMetadataBuilder extends ActivityMetadataBuilder {
         if (listing.getDeveloper() != null) {
             listingMetadata.setDeveloperName(listing.getDeveloper().getName());
         }
-        if (listing.getCertificationEdition() != null && listing.getCertificationEdition().get("name") != null) {
-            listingMetadata.setEdition(listing.getCertificationEdition().get("name").toString());
+        if (listing.getCertificationEdition() != null
+                && listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY) != null) {
+            listingMetadata.setEdition(listing.getCertificationEdition()
+                    .get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString());
         }
         if (listing.getProduct() != null) {
             listingMetadata.setProductName(listing.getProduct().getName());
@@ -92,24 +93,72 @@ public class ListingActivityMetadataBuilder extends ActivityMetadataBuilder {
             if (origListing.getCertificationStatus() != null && newListing.getCertificationStatus() != null
                     && origListing.getCertificationStatus().getId() != newListing.getCertificationStatus().getId()) {
                 listingMetadata.getCategories().add(ActivityCategory.LISTING_STATUS_CHANGE);
-            } else if(origListing.getCurrentStatus() != null && newListing.getCurrentStatus() != null
+            } else if (origListing.getCurrentStatus() != null && newListing.getCurrentStatus() != null
                     && origListing.getCurrentStatus().getStatus() != null
                     && newListing.getCurrentStatus().getStatus() != null
-                    && !origListing.getCurrentStatus().getStatus().getName().equals(newListing.getCurrentStatus().getStatus().getName())) {
+                    && !origListing.getCurrentStatus().getStatus().getName()
+                    .equals(newListing.getCurrentStatus().getStatus().getName())) {
                 listingMetadata.getCategories().add(ActivityCategory.LISTING_STATUS_CHANGE);
             }
             //surveillance change?
             //check for surveillance added or removed
-            if( (origListing.getSurveillance() != null && newListing.getSurveillance() == null)
+            if ((origListing.getSurveillance() != null && newListing.getSurveillance() == null)
                     || (origListing.getSurveillance() == null && newListing.getSurveillance() != null)) {
                 listingMetadata.getCategories().add(ActivityCategory.SURVEILLANCE);
-            } else if(origListing.getSurveillance() != null && newListing.getSurveillance() != null) {
-                if(origListing.getSurveillance().size() != newListing.getSurveillance().size()) {
+            } else if (origListing.getSurveillance() != null && newListing.getSurveillance() != null) {
+                if (origListing.getSurveillance().size() != newListing.getSurveillance().size()) {
                     listingMetadata.getCategories().add(ActivityCategory.SURVEILLANCE);
                 }
             } else {
                 //there are surveillances for both orig and new listing activity
-                //check all fields for equality
+                //check for new surveillance, deleted surveillance, or any updates
+
+                //look for surveillance added
+                for (Surveillance newSurv : newListing.getSurveillance()) {
+                    boolean foundInOrigListing = false;
+                    for (Surveillance origSurv : origListing.getSurveillance()) {
+                        if (origSurv.getId().longValue() == newSurv.getId().longValue()) {
+                            foundInOrigListing = true;
+                        }
+                    }
+                    if (!foundInOrigListing) {
+                        //surv is in the new listing but not the original one = was added
+                        listingMetadata.getCategories().add(ActivityCategory.SURVEILLANCE);
+                    }
+                }
+
+                //if there's a surveillance change already detected we don't need to look any farther
+                //if not keep looking for one - look for surveillance deleted
+                if (listingMetadata.getCategories().contains(ActivityCategory.SURVEILLANCE)) {
+                    for (Surveillance origSurv : origListing.getSurveillance()) {
+                        boolean foundInNewListing = false;
+                        for (Surveillance newSurv : newListing.getSurveillance()) {
+                            if (origSurv.getId().longValue() == newSurv.getId().longValue()) {
+                                foundInNewListing = true;
+                            }
+                        }
+                        if (!foundInNewListing) {
+                            //surv is in the original listing but not the new one = was deleted
+                            listingMetadata.getCategories().add(ActivityCategory.SURVEILLANCE);
+                        }
+                    }
+                }
+
+                //if there's a surveillance change already detected we don't need to look any farther
+                //if not keep looking for one - look for surveillance updated
+                if (listingMetadata.getCategories().contains(ActivityCategory.SURVEILLANCE)) {
+                    for (Surveillance origSurv : origListing.getSurveillance()) {
+                        for (Surveillance newSurv : newListing.getSurveillance()) {
+                            if (origSurv.getId().longValue() == newSurv.getId().longValue()
+                                    && !origSurv.matches(newSurv)) {
+                                listingMetadata.getCategories().add(ActivityCategory.SURVEILLANCE);
+                                //if we add a surveillance category there's no need to keep looking
+                                //for more differences.
+                                return;
+                            }
+                        }
+                    }
+                }
             }
         }
     }

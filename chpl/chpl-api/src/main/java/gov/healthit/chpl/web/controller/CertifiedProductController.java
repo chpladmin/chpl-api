@@ -602,7 +602,7 @@ public class CertifiedProductController {
 
         // clean up what was sent in - some necessary IDs or other fields may be
         // missing
-        Long newAcbId = Long.valueOf(updatedListing.getCertifyingBody().get("id").toString());
+        Long newAcbId = Long.valueOf(updatedListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString());
         cpManager.sanitizeUpdatedListingData(newAcbId, updatedListing);
 
         // validate
@@ -659,7 +659,7 @@ public class CertifiedProductController {
             throw new ValidationException(updatedListing.getErrorMessages(), updatedListing.getWarningMessages());
         }
 
-        Long acbId = Long.parseLong(existingListing.getCertifyingBody().get("id").toString());
+        Long acbId = Long.parseLong(existingListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString());
 
         // if the ACB owner is changed this is a separate action with different
         // security
@@ -751,7 +751,8 @@ public class CertifiedProductController {
         } else {
             //make sure the user has permissions on the pending listings acb
             //will throw access denied if they do not have the permissions
-            Long pendingListingAcbId = new Long(details.getCertifyingBody().get("id").toString());
+            Long pendingListingAcbId =
+                    new Long(details.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString());
             resourcePermissions.getAcbIfPermissionById(pendingListingAcbId);
         }
         return details;
@@ -772,7 +773,7 @@ public class CertifiedProductController {
         } else {
             //make sure the user has permissions on the pending listings acb
             //will throw access denied if they do not have the permissions
-            pendingListingAcbId = new Long(pcp.getCertifyingBody().get("id").toString());
+            pendingListingAcbId = new Long(pcp.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString());
             resourcePermissions.getAcbIfPermissionById(pendingListingAcbId);
         }
         pcpManager.deletePendingCertifiedProduct(pendingListingAcbId, pcpId);
@@ -842,7 +843,7 @@ public class CertifiedProductController {
     EntityCreationException, EntityRetrievalException, ObjectMissingValidationException,
     IOException {
 
-        String acbIdStr = pendingCp.getCertifyingBody().get("id").toString();
+        String acbIdStr = pendingCp.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString();
         if (StringUtils.isEmpty(acbIdStr)) {
             throw new InvalidArgumentsException("An ACB ID must be supplied in the request body");
         }

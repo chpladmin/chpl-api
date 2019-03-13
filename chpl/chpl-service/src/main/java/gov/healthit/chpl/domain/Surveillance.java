@@ -13,8 +13,11 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import gov.healthit.chpl.domain.activity.ActivityCategory;
 import gov.healthit.chpl.util.Util;
 
 /**
@@ -105,6 +108,118 @@ public class Surveillance implements Serializable {
         this.requirements = new LinkedHashSet<SurveillanceRequirement>();
         this.errorMessages = new HashSet<String>();
         this.warningMessages = new HashSet<String>();
+    }
+
+    /**
+     * Determines if this surveillance matches another surveillance.
+     * Not overriding equals and hashCode out of fear of messing something up.
+     * @param anotherSurveillance
+     * @return whether the two surveillance objects are the same
+     */
+    public boolean matches(final Surveillance anotherSurveillance) {
+        if (this.id == null && anotherSurveillance.id != null
+                || this.id != null && anotherSurveillance.id == null) {
+            return false;
+        } else if (this.id != null && anotherSurveillance.id != null
+                && this.id.longValue() != anotherSurveillance.id.longValue()) {
+            return false;
+        }
+        if (StringUtils.isEmpty(this.friendlyId) && !StringUtils.isEmpty(anotherSurveillance.friendlyId)
+                || !StringUtils.isEmpty(this.friendlyId) && StringUtils.isEmpty(anotherSurveillance.friendlyId)) {
+            return false;
+        } else if (!StringUtils.isEmpty(this.friendlyId) && !StringUtils.isEmpty(anotherSurveillance.friendlyId)
+                && !this.friendlyId.equalsIgnoreCase(anotherSurveillance.friendlyId)) {
+            return false;
+        }
+        if (this.startDate == null && anotherSurveillance.startDate != null
+                || this.startDate != null && anotherSurveillance.startDate == null) {
+            return false;
+        } else if (this.startDate != null && anotherSurveillance.startDate != null
+                && this.startDate.getTime() != anotherSurveillance.startDate.getTime()) {
+            return false;
+        }
+        if (this.endDate == null && anotherSurveillance.endDate != null
+                || this.endDate != null && anotherSurveillance.endDate == null) {
+            return false;
+        } else if (this.endDate != null && anotherSurveillance.endDate != null
+                && this.endDate.getTime() != anotherSurveillance.endDate.getTime()) {
+            return false;
+        }
+        if (this.randomizedSitesUsed == null && anotherSurveillance.randomizedSitesUsed != null ||
+                this.randomizedSitesUsed != null && anotherSurveillance.randomizedSitesUsed == null) {
+            return false;
+        } else if (this.randomizedSitesUsed != null && anotherSurveillance.randomizedSitesUsed != null
+                && this.randomizedSitesUsed.intValue() != anotherSurveillance.randomizedSitesUsed.intValue()) {
+            return false;
+        }
+        if (StringUtils.isEmpty(this.authority) && !StringUtils.isEmpty(anotherSurveillance.authority)
+                || !StringUtils.isEmpty(this.authority) && StringUtils.isEmpty(anotherSurveillance.authority)) {
+            return false;
+        } else if (!StringUtils.isEmpty(this.authority) && !StringUtils.isEmpty(anotherSurveillance.authority)
+                && !this.authority.equalsIgnoreCase(anotherSurveillance.authority)) {
+            return false;
+        }
+        if (this.certifiedProduct == null && anotherSurveillance.certifiedProduct != null
+                || this.certifiedProduct != null && anotherSurveillance.certifiedProduct == null) {
+            return false;
+        } else if (this.certifiedProduct != null && anotherSurveillance.certifiedProduct != null
+                && !this.certifiedProduct.matches(anotherSurveillance.certifiedProduct)) {
+            return false;
+        }
+        if (this.type == null && anotherSurveillance.type != null
+                || this.type != null && anotherSurveillance.type == null) {
+            return false;
+        } else if (this.type != null && anotherSurveillance.type != null
+                && !this.type.matches(anotherSurveillance.type)) {
+            return false;
+        }
+
+        if (this.requirements == null && anotherSurveillance.requirements != null
+                || this.requirements != null && anotherSurveillance.requirements == null) {
+            return false;
+        } else if (this.requirements != null && anotherSurveillance.requirements != null
+                && this.requirements.size() != anotherSurveillance.requirements.size()) {
+            //easy check if the sizes are different
+            return false;
+        } else {
+            //surveillance requirements - were any removed?
+            for (SurveillanceRequirement thisReq : this.requirements) {
+                boolean foundInOtherSurveillance = false;
+                for (SurveillanceRequirement otherReq : anotherSurveillance.requirements) {
+                    if (thisReq.getId().longValue() == otherReq.getId().longValue()) {
+                        foundInOtherSurveillance = true;
+                    }
+                }
+                if (!foundInOtherSurveillance) {
+                    return false;
+                }
+            }
+            //surveillance requirements - were any added?
+            for (SurveillanceRequirement otherReq : anotherSurveillance.requirements) {
+                boolean foundInThisSurveillance = false;
+                for (SurveillanceRequirement thisReq : this.requirements) {
+                    if (thisReq.getId().longValue() == otherReq.getId().longValue()) {
+                        foundInThisSurveillance = true;
+                    }
+                }
+                if (!foundInThisSurveillance) {
+                    return false;
+                }
+            }
+            //surveillance requirements - were any changed?
+            for (SurveillanceRequirement otherReq : anotherSurveillance.requirements) {
+                for (SurveillanceRequirement thisReq : this.requirements) {
+                    if (thisReq.getId().longValue() == otherReq.getId().longValue()) {
+                        if (!thisReq.matches(otherReq)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        //all checks passed and turned out to be matching
+        //so the two surveillances must be identical
+        return true;
     }
 
     public Set<String> getErrorMessages() {

@@ -11,4 +11,6 @@ import gov.healthit.chpl.domain.activity.ActivityMetadata;
 public interface ActivityMetadataManager {
     List<ActivityMetadata> getListingActivityMetadata(final Date startDate, final Date endDate)
             throws JsonParseException, IOException;
+    List<ActivityMetadata> getListingActivityMetadata(final Long listingId, final Date startDate, final Date endDate)
+            throws JsonParseException, IOException;
 }

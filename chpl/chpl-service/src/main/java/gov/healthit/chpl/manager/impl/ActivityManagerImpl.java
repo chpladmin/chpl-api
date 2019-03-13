@@ -184,6 +184,16 @@ public class ActivityManagerImpl implements ActivityManager {
         }
     }
 
+    //TODO: SECURITY
+    @Override
+    @Transactional
+    public ActivityDetails getActivityById(final Long activityId)
+            throws EntityRetrievalException, JsonParseException, IOException {
+        ActivityDTO result = activityDAO.getById(activityId);
+        ActivityDetails event = getActivityDetailsFromDTO(result);
+        return event;
+    }
+
     @Override
     @Transactional
     public List<ActivityDetails> getActivityForObject(ActivityConcept concept, Long objectId, Date startDate,
