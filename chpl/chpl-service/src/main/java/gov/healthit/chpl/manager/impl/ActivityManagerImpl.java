@@ -92,7 +92,7 @@ public class ActivityManagerImpl implements ActivityManager {
             dto.setCreationDate(new Date());
             dto.setLastModifiedDate(new Date());
             if (Util.getCurrentUser() != null) {
-                dto.setLastModifiedUser(Util.getCurrentUser().getId());
+                dto.setLastModifiedUser(Util.getAuditId());
             }
             dto.setDeleted(false);
 
@@ -177,7 +177,7 @@ public class ActivityManagerImpl implements ActivityManager {
             dto.setActivityObjectId(objectId);
             dto.setCreationDate(new Date());
             dto.setLastModifiedDate(new Date());
-            dto.setLastModifiedUser(Util.getCurrentUser().getId());
+            dto.setLastModifiedUser(Util.getAuditId());
             dto.setDeleted(false);
 
             activityDAO.create(dto);

@@ -305,13 +305,13 @@ public class DeveloperManagerTest extends TestCase {
             assertNotNull(movedProduct);
             assertNotNull(movedProduct.getOwnerHistory());
             assertEquals(2, movedProduct.getOwnerHistory().size());
-            boolean foundNewOwner = false;
+            boolean foundOldOwner = false;
             for (ProductOwnerDTO owner : movedProduct.getOwnerHistory()) {
-                if (owner.getDeveloper() != null && owner.getDeveloper().getId().longValue() == createdDev.getId()) {
-                    foundNewOwner = true;
+                if (owner.getDeveloper() != null && owner.getDeveloper().getId().longValue() == developerIdToSplit.longValue()) {
+                    foundOldOwner = true;
                 }
             }
-            assertTrue(foundNewOwner);
+            assertTrue(foundOldOwner);
         } catch (EntityRetrievalException ex) {
             fail(ex.getMessage());
         }

@@ -12,4 +12,5 @@ public interface JWTUserConverter {
      * @throws JWTValidationException if JWT cannot be validated
      */
     User getAuthenticatedUser(String jwt) throws JWTValidationException;
+    User getImpersonatingUser(String jwt) throws JWTValidationException;
 }

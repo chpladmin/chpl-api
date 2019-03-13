@@ -55,7 +55,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
             entity.setReportFileLocation(dto.getReportFileLocation());
             entity.setDeveloperId(dto.getDeveloperId());
             entity.setDeleted(false);
-            entity.setLastModifiedUser(Util.getCurrentUser().getId());
+            entity.setLastModifiedUser(Util.getAuditId());
 
             if (dto.getContact() != null) {
                 if (dto.getContact().getId() != null) {
@@ -96,7 +96,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
         entity.setName(dto.getName());
         entity.setDeveloperId(dto.getDeveloperId());
         entity.setDeleted(dto.getDeleted() == null ?  Boolean.FALSE : dto.getDeleted());
-        entity.setLastModifiedUser(Util.getCurrentUser().getId());
+        entity.setLastModifiedUser(Util.getAuditId());
         if (dto.getContact() != null) {
             if (dto.getContact().getId() == null) {
                 // if there is not contact id then it must not exist - create it
@@ -130,7 +130,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
                 for (ProductActiveOwnerEntity existingPrevOwner : entity.getOwnerHistory()) {
                     existingPrevOwner.setDeleted(true);
                     existingPrevOwner.setLastModifiedDate(new Date());
-                    existingPrevOwner.setLastModifiedUser(Util.getCurrentUser().getId());
+                    existingPrevOwner.setLastModifiedUser(Util.getAuditId());
                     entityManager.merge(existingPrevOwner);
                     entityManager.flush();
                 }
@@ -172,7 +172,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
                 if (!isInUpdate) {
                     existingPrevOwner.setDeleted(true);
                     existingPrevOwner.setLastModifiedDate(new Date());
-                    existingPrevOwner.setLastModifiedUser(Util.getCurrentUser().getId());
+                    existingPrevOwner.setLastModifiedUser(Util.getAuditId());
                     entityManager.merge(existingPrevOwner);
                     entityManager.flush();
                 }
@@ -216,14 +216,14 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
             for (ProductActiveOwnerEntity prevOwner : toDelete.getOwnerHistory()) {
                 prevOwner.setDeleted(true);
                 prevOwner.setLastModifiedDate(new Date());
-                prevOwner.setLastModifiedUser(Util.getCurrentUser().getId());
+                prevOwner.setLastModifiedUser(Util.getAuditId());
                 entityManager.merge(prevOwner);
                 entityManager.flush();
             }
         }
         toDelete.setDeleted(true);
         toDelete.setLastModifiedDate(new Date());
-        toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+        toDelete.setLastModifiedUser(Util.getAuditId());
         update(toDelete);
     }
 
@@ -234,7 +234,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
         entityToAdd.setCreationDate(new Date());
         entityToAdd.setLastModifiedDate(new Date());
         entityToAdd.setDeleted(false);
-        entityToAdd.setLastModifiedUser(Util.getCurrentUser().getId());
+        entityToAdd.setLastModifiedUser(Util.getAuditId());
         if (toAdd.getDeveloper() != null) {
             entityToAdd.setDeveloperId(toAdd.getDeveloper().getId());
         }
@@ -253,7 +253,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
         }
         toDelete.setDeleted(true);
         toDelete.setLastModifiedDate(new Date());
-        toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+        toDelete.setLastModifiedUser(Util.getAuditId());
         entityManager.merge(toDelete);
         entityManager.flush();
     }

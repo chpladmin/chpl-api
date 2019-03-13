@@ -35,7 +35,7 @@ public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO 
         entity.setChildId(toCreate.getChildId());
         entity.setParentId(toCreate.getParentId());
         entity.setDeleted(false);
-        entity.setLastModifiedUser(Util.getCurrentUser().getId());
+        entity.setLastModifiedUser(Util.getAuditId());
         try {
             entityManager.persist(entity);
             entityManager.flush();
@@ -63,7 +63,7 @@ public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO 
 
         if (entity != null) {
             entity.setDeleted(true);
-            entity.setLastModifiedUser(Util.getCurrentUser().getId());
+            entity.setLastModifiedUser(Util.getAuditId());
             entityManager.merge(entity);
             entityManager.flush();
         }

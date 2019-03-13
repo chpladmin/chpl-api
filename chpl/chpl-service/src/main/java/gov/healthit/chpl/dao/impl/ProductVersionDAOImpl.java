@@ -61,7 +61,7 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
             if (dto.getLastModifiedUser() != null) {
                 entity.setLastModifiedUser(dto.getLastModifiedUser());
             } else {
-                entity.setLastModifiedUser(Util.getCurrentUser().getId());
+                entity.setLastModifiedUser(Util.getAuditId());
             }
             create(entity);
         }
@@ -101,7 +101,7 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
         if (dto.getLastModifiedUser() != null) {
             entity.setLastModifiedUser(dto.getLastModifiedUser());
         } else {
-            entity.setLastModifiedUser(Util.getCurrentUser().getId());
+            entity.setLastModifiedUser(Util.getAuditId());
         }
 
         update(entity);
@@ -115,7 +115,7 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
         if (toDelete != null) {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+            toDelete.setLastModifiedUser(Util.getAuditId());
             update(toDelete);
         }
     }

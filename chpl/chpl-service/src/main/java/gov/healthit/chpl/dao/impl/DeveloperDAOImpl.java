@@ -99,7 +99,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
             if (dto.getLastModifiedUser() != null) {
                 entity.setLastModifiedUser(dto.getLastModifiedUser());
             } else {
-                entity.setLastModifiedUser(Util.getCurrentUser().getId());
+                entity.setLastModifiedUser(Util.getAuditId());
             }
 
             if (dto.getLastModifiedDate() != null) {
@@ -174,7 +174,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
         mapping.setCreationDate(new Date());
         mapping.setDeleted(false);
         mapping.setLastModifiedDate(new Date());
-        mapping.setLastModifiedUser(Util.getCurrentUser().getId());
+        mapping.setLastModifiedUser(Util.getAuditId());
         entityManager.persist(mapping);
         entityManager.flush();
         return new DeveloperACBMapDTO(mapping);
@@ -232,7 +232,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
         if (dto.getLastModifiedUser() != null) {
             entity.setLastModifiedUser(dto.getLastModifiedUser());
         } else {
-            entity.setLastModifiedUser(Util.getCurrentUser().getId());
+            entity.setLastModifiedUser(Util.getAuditId());
         }
 
         if (dto.getLastModifiedDate() != null) {
@@ -260,7 +260,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
                 statusEvent.setDeveloperStatusId(defaultStatus.getId());
                 statusEvent.setReason(statusEventDto.getReason());
                 statusEvent.setStatusDate(statusEventDto.getStatusDate());
-                statusEvent.setLastModifiedUser(Util.getCurrentUser().getId());
+                statusEvent.setLastModifiedUser(Util.getAuditId());
                 statusEvent.setDeleted(Boolean.FALSE);
                 entityManager.persist(statusEvent);
                 entityManager.flush();
@@ -330,7 +330,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 
         mapping.setTransparencyAttestation(AttestationType.getValue(dto.getTransparencyAttestation()));
         mapping.setLastModifiedDate(new Date());
-        mapping.setLastModifiedUser(Util.getCurrentUser().getId());
+        mapping.setLastModifiedUser(Util.getAuditId());
         entityManager.persist(mapping);
         entityManager.flush();
         return new DeveloperACBMapDTO(mapping);
@@ -344,7 +344,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
         if (toDelete != null) {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+            toDelete.setLastModifiedUser(Util.getAuditId());
             update(toDelete);
         }
     }
@@ -355,7 +355,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
         if (toDelete != null) {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+            toDelete.setLastModifiedUser(Util.getAuditId());
             entityManager.persist(toDelete);
             entityManager.flush();
         }

@@ -42,7 +42,7 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
         if (dto.getLastModifiedUser() != null) {
             toInsert.setLastModifiedUser(dto.getLastModifiedUser());
         } else {
-            toInsert.setLastModifiedUser(Util.getCurrentUser().getId());
+            toInsert.setLastModifiedUser(Util.getAuditId());
         }
         if (dto.getLastModifiedDate() != null) {
             toInsert.setLastModifiedDate(dto.getLastModifiedDate());
@@ -93,7 +93,7 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
         if (addressDto.getLastModifiedUser() != null) {
             address.setLastModifiedUser(addressDto.getLastModifiedUser());
         } else {
-            address.setLastModifiedUser(Util.getCurrentUser().getId());
+            address.setLastModifiedUser(Util.getAuditId());
         }
         if (addressDto.getLastModifiedDate() != null) {
             address.setLastModifiedDate(addressDto.getLastModifiedDate());
@@ -113,7 +113,7 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
         if (toDelete != null) {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+            toDelete.setLastModifiedUser(Util.getAuditId());
             entityManager.merge(toDelete);
         }
     }
