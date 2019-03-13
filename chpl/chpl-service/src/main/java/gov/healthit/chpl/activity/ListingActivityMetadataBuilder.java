@@ -86,6 +86,7 @@ public class ListingActivityMetadataBuilder extends ActivityMetadataBuilder {
 
     private void categorizeActivity(final ListingActivityMetadata listingMetadata,
             final CertifiedProductSearchDetails origListing, final CertifiedProductSearchDetails newListing) {
+        listingMetadata.getCategories().add(ActivityCategory.LISTING);
         if (origListing == null && newListing != null) {
             listingMetadata.getCategories().add(ActivityCategory.LISTING_UPLOAD);
         } else if (origListing != null && newListing != null) {
