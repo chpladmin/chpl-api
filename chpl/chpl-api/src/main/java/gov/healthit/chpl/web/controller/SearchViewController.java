@@ -96,8 +96,8 @@ public class SearchViewController {
     @Autowired
     private CertifiedProductSearchManager certifiedProductSearchManager;
 
-    @Autowired
-    private DeveloperManager developerManager;
+    //@Autowired
+    //private DeveloperManager developerManager;
 
     @Autowired private FileUtils fileUtils;
 
@@ -1184,15 +1184,15 @@ public class SearchViewController {
         return dimensionalDataManager.getSearchableDimensionalData(simple);
     }
 
-    @ApiOperation(value = "Get all developer decertifications in the CHPL",
-            notes = "This returns all decertified developers.")
-    @RequestMapping(value = "/decertifications/developers", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody DecertifiedDeveloperResults getDecertifiedDevelopers() throws EntityRetrievalException {
-        DecertifiedDeveloperResults ddr = new DecertifiedDeveloperResults();
-        List<DecertifiedDeveloperResult> results = developerManager.getDecertifiedDevelopers();
-        ddr.setDecertifiedDeveloperResults(results);
-        return ddr;
-    }
+//    @ApiOperation(value = "Get all developer decertifications in the CHPL",
+//            notes = "This returns all decertified developers.")
+//    @RequestMapping(value = "/decertifications/developers", method = RequestMethod.GET,
+//    produces = "application/json; charset=utf-8")
+//    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+//    public @ResponseBody DecertifiedDeveloperResults getDecertifiedDevelopers() throws EntityRetrievalException {
+//        DecertifiedDeveloperResults ddr = new DecertifiedDeveloperResults();
+//        List<DecertifiedDeveloperResult> results = developerManager.getDecertifiedDevelopers();
+//        ddr.setDecertifiedDeveloperResults(results);
+//        return ddr;
+//    }
 }
