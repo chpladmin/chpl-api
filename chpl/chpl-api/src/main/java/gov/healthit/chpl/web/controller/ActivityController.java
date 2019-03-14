@@ -436,7 +436,8 @@ public class ActivityController {
         return activityManager.getApiKeyActivity(startDate, endDate);
     }
 
-    @ApiOperation(value = "Get auditable data for certified products",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED. Get auditable data for certified products",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
     @RequestMapping(value = "/certified_products", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
@@ -448,7 +449,8 @@ public class ActivityController {
         return getActivityEventsForCertifiedProducts(startDate, endDate);
     }
 
-    @ApiOperation(value = "Get auditable data for a specific certified product.",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED. Get auditable data for a specific certified product.",
             notes = "A start and end date may optionally be provided to limit activity results.")
     @RequestMapping(value = "/certified_products/{id:^-?\\d+$}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
@@ -478,7 +480,8 @@ public class ActivityController {
         return getActivityEventsForCertifiedProductsByIdAndDateRange(id, startDate, endDate);
     }
 
-    @ApiOperation(value = "Get auditable data for a specific certified product based on CHPL Product Number.",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED Get auditable data for a specific certified product based on CHPL Product Number.",
             notes = "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} "
                     + "represents a valid CHPL Product Number.  A valid call to this service would look like "
                     + "activity/certified_products/YY.99.99.9999.XXXX.99.99.9.YYMMDD. "
@@ -531,7 +534,8 @@ public class ActivityController {
         return getActivityEventsForCertifiedProductsByIdAndDateRange(dtos.get(0).getId(), startDate, endDate);
     }
 
-    @ApiOperation(value = "Get auditable data for a specific certified product based on a legacy CHPL Product Number.",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED. Get auditable data for a specific certified product based on a legacy CHPL Product Number.",
             notes = "{chplPrefix}-{identifier} represents a valid CHPL Product Number.  "
                     + "A valid call to this service "
                     + "would look like activity/certified_products/CHP-999999. "
@@ -575,7 +579,8 @@ public class ActivityController {
         return getActivityEventsForCertifiedProductsByIdAndDateRange(dtos.get(0).getId(), startDate, endDate);
     }
 
-    @ApiOperation(value = "Get auditable data for all pending certified products",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED. Get auditable data for all pending certified products",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.  "
                     + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB (specific to own ACB).")
     @RequestMapping(value = "/pending_certified_products", method = RequestMethod.GET,
@@ -592,7 +597,8 @@ public class ActivityController {
         return activityManager.getPendingListingActivityByAcb(allowedAcbs, startDate, endDate);
     }
 
-    @ApiOperation(value = "Get auditable data for a specific pending certified product.",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED. Get auditable data for a specific pending certified product.",
             notes = "A start and end date may optionally be provided to limit activity results.  "
                     + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB (specific to own ACB).")
     @RequestMapping(value = "/pending_certified_products/{id}", method = RequestMethod.GET,
