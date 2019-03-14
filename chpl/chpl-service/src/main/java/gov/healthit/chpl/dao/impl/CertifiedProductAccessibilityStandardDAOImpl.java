@@ -27,7 +27,7 @@ public class CertifiedProductAccessibilityStandardDAOImpl extends BaseDAOImpl
         toCreateEntity.setCertifiedProductId(toCreate.getCertifiedProductId());
         toCreateEntity.setAccessibilityStandardId(toCreate.getAccessibilityStandardId());
         toCreateEntity.setLastModifiedDate(new Date());
-        toCreateEntity.setLastModifiedUser(Util.getCurrentUser().getId());
+        toCreateEntity.setLastModifiedUser(Util.getAuditId());
         toCreateEntity.setCreationDate(new Date());
         toCreateEntity.setDeleted(false);
         entityManager.persist(toCreateEntity);
@@ -46,7 +46,7 @@ public class CertifiedProductAccessibilityStandardDAOImpl extends BaseDAOImpl
         }
         curr.setDeleted(true);
         curr.setLastModifiedDate(new Date());
-        curr.setLastModifiedUser(Util.getCurrentUser().getId());
+        curr.setLastModifiedUser(Util.getAuditId());
         entityManager.persist(curr);
         entityManager.flush();
 

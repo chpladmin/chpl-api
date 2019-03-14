@@ -19,8 +19,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.acls.domain.BasePermission;
-import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -58,7 +56,6 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
-import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.InvitationManager;
 import gov.healthit.chpl.manager.TestingLabManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
@@ -95,10 +92,10 @@ public class UserManagementController {
 
     @Autowired
     private UserPermissionsManager userPermissionsManager;
-    
+
     @Autowired 
     private ResourcePermissions resourcePermissions;
-    
+
     @Autowired private MessageSource messageSource;
 
     private static final Logger LOGGER = LogManager.getLogger(UserManagementController.class);
@@ -280,8 +277,11 @@ public class UserManagementController {
         } else {
             // add authorization to the currently logged in user
             UserDTO userToUpdate = userManager.getById(loggedInUser.getId());
+            if (userToUpdate.getImpersonatedBy() != null) {
+                userToUpdate = userToUpdate.getImpersonatedBy();
+            }
             invitationManager.updateUserFromInvitation(invitation, userToUpdate);
-            UserDTO updatedUser = userManager.getById(loggedInUser.getId());
+            UserDTO updatedUser = userManager.getById(userToUpdate.getId());
             jwtToken = authenticator.getJWT(updatedUser);
         }
 

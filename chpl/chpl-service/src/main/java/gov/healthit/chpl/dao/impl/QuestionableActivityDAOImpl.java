@@ -74,7 +74,7 @@ public class QuestionableActivityDAOImpl extends BaseDAOImpl implements Question
         toCreate.setTriggerId(dto.getTriggerId());
         toCreate.setUserId(dto.getUserId());
         toCreate.setDeleted(false);
-        toCreate.setLastModifiedUser(Util.getCurrentUser().getId());
+        toCreate.setLastModifiedUser(Util.getAuditId());
         entityManager.persist(toCreate);
         entityManager.flush();
         entityManager.clear();

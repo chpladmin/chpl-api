@@ -26,6 +26,7 @@ import org.quartz.TriggerKey;
 import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -220,6 +221,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     @Autowired
     private DeveloperStatusDAO devStatusDao;
 
+    @Lazy
     @Autowired
     private DeveloperManager developerManager;
 
@@ -464,7 +466,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         toCreate.setCreationDate(new Date());
         toCreate.setDeleted(false);
         toCreate.setLastModifiedDate(new Date());
-        toCreate.setLastModifiedUser(Util.getCurrentUser().getId());
+        toCreate.setLastModifiedUser(Util.getAuditId());
 
         if (pendingCp.getCertificationBodyId() == null) {
             throw new EntityCreationException("ACB ID must be specified.");
@@ -900,16 +902,20 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                                 tt.setDescription(pendingTask.getDescription());
                                 tt.setTaskErrors(Float.valueOf(pendingTask.getTaskErrors()));
                                 tt.setTaskErrorsStddev(Float.valueOf(pendingTask.getTaskErrorsStddev()));
-                                tt.setTaskPathDeviationObserved(Integer.valueOf(pendingTask.getTaskPathDeviationObserved()));
-                                tt.setTaskPathDeviationOptimal(Integer.valueOf(pendingTask.getTaskPathDeviationOptimal()));
+                                tt.setTaskPathDeviationObserved(
+                                        Integer.valueOf(pendingTask.getTaskPathDeviationObserved()));
+                                tt.setTaskPathDeviationOptimal(
+                                        Integer.valueOf(pendingTask.getTaskPathDeviationOptimal()));
                                 tt.setTaskRating(Float.valueOf(pendingTask.getTaskRating()));
                                 tt.setTaskRatingScale(pendingTask.getTaskRatingScale());
                                 tt.setTaskRatingStddev(Float.valueOf(pendingTask.getTaskRatingStddev()));
                                 tt.setTaskSuccessAverage(Float.valueOf(pendingTask.getTaskSuccessAverage()));
                                 tt.setTaskSuccessStddev(Float.valueOf(pendingTask.getTaskSuccessStddev()));
                                 tt.setTaskTimeAvg(Long.valueOf(pendingTask.getTaskTimeAvg()));
-                                tt.setTaskTimeDeviationObservedAvg(Integer.valueOf(pendingTask.getTaskTimeDeviationObservedAvg()));
-                                tt.setTaskTimeDeviationOptimalAvg(Integer.valueOf(pendingTask.getTaskTimeDeviationOptimalAvg()));
+                                tt.setTaskTimeDeviationObservedAvg(
+                                        Integer.valueOf(pendingTask.getTaskTimeDeviationObservedAvg()));
+                                tt.setTaskTimeDeviationOptimalAvg(
+                                        Integer.valueOf(pendingTask.getTaskTimeDeviationOptimalAvg()));
                                 tt.setTaskTimeStddev(Integer.valueOf(pendingTask.getTaskTimeStddev()));
 
                                 // add test task
@@ -943,11 +949,13 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                                             TestParticipantDTO tp = new TestParticipantDTO();
                                             tp.setAgeRangeId(certPart.getAgeRangeId());
                                             tp.setAssistiveTechnologyNeeds(certPart.getAssistiveTechnologyNeeds());
-                                            tp.setComputerExperienceMonths(Integer.valueOf(certPart.getComputerExperienceMonths()));
+                                            tp.setComputerExperienceMonths(
+                                                    Integer.valueOf(certPart.getComputerExperienceMonths()));
                                             tp.setEducationTypeId(certPart.getEducationTypeId());
                                             tp.setGender(certPart.getGender());
                                             tp.setOccupation(certPart.getOccupation());
-                                            tp.setProductExperienceMonths(Integer.valueOf(certPart.getProductExperienceMonths()));
+                                            tp.setProductExperienceMonths(
+                                                    Integer.valueOf(certPart.getProductExperienceMonths()));
                                             tp.setProfessionalExperienceMonths(
                                                     Integer.valueOf(certPart.getProfessionalExperienceMonths()));
 
@@ -1072,8 +1080,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     @CacheEvict(value = {
             CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.GET_DECERTIFIED_DEVELOPERS
     }, allEntries = true)
-    //listings collection is not evicted here because it's pre-fetched and handled in a listener
-    //no other caches have ACB data so we do not need to clear all
+    // listings collection is not evicted here because it's pre-fetched and handled in a listener
+    // no other caches have ACB data so we do not need to clear all
     public CertifiedProductDTO changeOwnership(final Long certifiedProductId, final Long acbId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         CertifiedProductDTO toUpdate = cpDao.getById(certifiedProductId);
@@ -1138,8 +1146,9 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS
     }, allEntries = true)
     public CertifiedProductDTO update(final Long acbId, final ListingUpdateRequest updateRequest,
-            final CertifiedProductSearchDetails existingListing) throws AccessDeniedException, EntityRetrievalException,
-            JsonProcessingException, EntityCreationException, InvalidArgumentsException, IOException, ValidationException {
+            final CertifiedProductSearchDetails existingListing)
+            throws AccessDeniedException, EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            InvalidArgumentsException, IOException, ValidationException {
 
         CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
         Long listingId = updatedListing.getId();

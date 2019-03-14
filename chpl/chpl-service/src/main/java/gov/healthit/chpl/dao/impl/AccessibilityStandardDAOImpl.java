@@ -44,7 +44,7 @@ public class AccessibilityStandardDAOImpl extends BaseDAOImpl implements Accessi
                 entity.setCreationDate(new Date());
                 entity.setDeleted(false);
                 entity.setLastModifiedDate(new Date());
-                entity.setLastModifiedUser(Util.getCurrentUser().getId());
+                entity.setLastModifiedUser(Util.getAuditId());
                 entity.setName(dto.getName());
                 create(entity);
             } catch (Exception ex) {
@@ -81,7 +81,7 @@ public class AccessibilityStandardDAOImpl extends BaseDAOImpl implements Accessi
         if (toDelete != null) {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+            toDelete.setLastModifiedUser(Util.getAuditId());
             update(toDelete);
         }
     }

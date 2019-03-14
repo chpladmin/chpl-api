@@ -14,7 +14,6 @@ public class User implements Serializable {
     private String email;
     private String phoneNumber;
     private String title;
-    private Boolean complianceTermsAccepted;
     private Boolean accountLocked;
     private Boolean accountEnabled;
     private Boolean credentialsExpired;
@@ -38,7 +37,6 @@ public class User implements Serializable {
         this.setTitle(dto.getTitle());
         this.setAccountLocked(dto.isAccountLocked());
         this.setAccountEnabled(dto.isAccountEnabled());
-        this.setComplianceTermsAccepted(dto.getComplianceSignatureDate() == null ? false : true);
         this.setCredentialsExpired(dto.isCredentialsExpired());
         this.setPasswordResetRequired(dto.getPasswordResetRequired());
     }
@@ -121,14 +119,6 @@ public class User implements Serializable {
 
     public void setHash(final String hash) {
         this.hash = hash;
-    }
-
-    public Boolean getComplianceTermsAccepted() {
-        return complianceTermsAccepted;
-    }
-
-    public void setComplianceTermsAccepted(final Boolean complianceTermsAccepted) {
-        this.complianceTermsAccepted = complianceTermsAccepted;
     }
 
     public Boolean getCredentialsExpired() {

@@ -36,7 +36,7 @@ public class ContactDAOImpl extends BaseDAOImpl implements ContactDAO {
         toInsert.setDeleted(false);
         toInsert.setCreationDate(new Date());
         toInsert.setLastModifiedDate(new Date());
-        toInsert.setLastModifiedUser(Util.getCurrentUser().getId());
+        toInsert.setLastModifiedUser(Util.getAuditId());
         entityManager.persist(toInsert);
         entityManager.flush();
         return toInsert;
@@ -55,7 +55,7 @@ public class ContactDAOImpl extends BaseDAOImpl implements ContactDAO {
         contact.setSignatureDate(dto.getSignatureDate());
 
         contact.setLastModifiedDate(new Date());
-        contact.setLastModifiedUser(Util.getCurrentUser().getId());
+        contact.setLastModifiedUser(Util.getAuditId());
         entityManager.merge(contact);
         return contact;
     }
@@ -68,7 +68,7 @@ public class ContactDAOImpl extends BaseDAOImpl implements ContactDAO {
         if (toDelete != null) {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+            toDelete.setLastModifiedUser(Util.getAuditId());
             entityManager.merge(toDelete);
         }
     }

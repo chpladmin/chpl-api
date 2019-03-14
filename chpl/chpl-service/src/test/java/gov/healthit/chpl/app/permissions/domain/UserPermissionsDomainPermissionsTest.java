@@ -9,6 +9,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.healthit.chpl.permissions.domains.UserPermissionsDomainPermissions;
+import gov.healthit.chpl.permissions.domains.secureduser.ImpersonateUserActionPermissions;
 import gov.healthit.chpl.permissions.domains.userpermissions.AddAcbActionPermissions;
 import gov.healthit.chpl.permissions.domains.userpermissions.DeleteAcbActionPermissions;
 import gov.healthit.chpl.permissions.domains.userpermissions.DeleteAllAcbPermissionsForUserActionPermissions;
@@ -23,7 +24,7 @@ public class UserPermissionsDomainPermissionsTest {
 
     @Test
     public void setupTest() {
-        assertTrue(permissions.getActionPermissions().size() == 3);
+        assertTrue(permissions.getActionPermissions().size() == 4);
 
         assertTrue(permissions.getActionPermissions()
                 .get(UserPermissionsDomainPermissions.ADD_ACB) instanceof AddAcbActionPermissions);
@@ -33,5 +34,8 @@ public class UserPermissionsDomainPermissionsTest {
 
         assertTrue(permissions.getActionPermissions().get(
                 UserPermissionsDomainPermissions.DELETE_ALL_ACBS_FOR_USER) instanceof DeleteAllAcbPermissionsForUserActionPermissions);
+
+        assertTrue(permissions.getActionPermissions().get(
+                UserPermissionsDomainPermissions.IMPERSONATE_USER) instanceof ImpersonateUserActionPermissions);
     }
 }
