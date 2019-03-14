@@ -9,4 +9,7 @@ _Date TBD_
 ### Refactoring changes
 * Removed unused "compliance terms accepted" references
 
+### Bug Fixes
+* Fixed error on banned developer page when banned developer has listings without meaningful use counts.
+
 ---
