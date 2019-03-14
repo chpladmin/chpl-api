@@ -9,7 +9,7 @@ public class ListingActivityMetadata extends ActivityMetadata {
     private static final long serialVersionUID = 5473773376581297578L;
 
     private String chplProductNumber;
-    private String abcName;
+    private String acbName;
     private String developerName;
     private String productName;
     private String edition;
@@ -26,12 +26,12 @@ public class ListingActivityMetadata extends ActivityMetadata {
         this.chplProductNumber = chplProductNumber;
     }
 
-    public String getAbcName() {
-        return abcName;
+    public String getAcbName() {
+        return acbName;
     }
 
-    public void setAbcName(final String abcName) {
-        this.abcName = abcName;
+    public void setAcbName(final String acbName) {
+        this.acbName = acbName;
     }
 
     public String getDeveloperName() {
