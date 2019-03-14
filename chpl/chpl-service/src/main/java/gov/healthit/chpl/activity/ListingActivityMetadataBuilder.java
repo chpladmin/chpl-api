@@ -66,7 +66,7 @@ public class ListingActivityMetadataBuilder extends ActivityMetadataBuilder {
         listingMetadata.setChplProductNumber(listing.getChplProductNumber());
         if (listing.getCertifyingBody() != null
                 && listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY) != null) {
-            listingMetadata.setAbcName(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString());
+            listingMetadata.setAcbName(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString());
         }
         //there is at least one activity record that has a null certification date field
         //due to a bug in the system at the time of the activity
