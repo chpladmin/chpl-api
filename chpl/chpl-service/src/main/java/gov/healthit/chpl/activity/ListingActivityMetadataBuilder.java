@@ -2,6 +2,7 @@ package gov.healthit.chpl.activity;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -12,6 +13,7 @@ import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.ListingActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
 
+@Component("listingActivityMetadataBuilder")
 public class ListingActivityMetadataBuilder extends ActivityMetadataBuilder {
     private static final Logger LOGGER = LogManager.getLogger(ListingActivityMetadataBuilder.class);
     private ObjectMapper jsonMapper;

@@ -22,6 +22,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.healthit.chpl.activity.ActivityMetadataBuilder;
+import gov.healthit.chpl.activity.ActivityMetadataBuilderFactory;
+import gov.healthit.chpl.activity.DeveloperActivityMetadataBuilder;
 import gov.healthit.chpl.activity.ListingActivityMetadataBuilder;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dto.UserDTO;
@@ -53,48 +56,61 @@ public class ActivityMetadataManagerImpl implements ActivityMetadataManager {
     private static final Logger LOGGER = LogManager.getLogger(ActivityMetadataManagerImpl.class);
 
     private ActivityDAO activityDAO;
-    private ListingActivityMetadataBuilder listingActivityBuilder;
+    private ActivityMetadataBuilderFactory metadataBuilderFactory;
     private Permissions permissions;
 
     @Autowired
-    public ActivityMetadataManagerImpl(final ActivityDAO activityDAO, final Permissions permissions) {
+    public ActivityMetadataManagerImpl(final ActivityDAO activityDAO,
+            final ActivityMetadataBuilderFactory metadataBuilderFactory,
+            final Permissions permissions) {
         this.activityDAO = activityDAO;
         this.permissions = permissions;
-        listingActivityBuilder = new ListingActivityMetadataBuilder();
+        this.metadataBuilderFactory = metadataBuilderFactory;
     }
 
-    //TODO: SECURITY
     @Transactional
-    public List<ActivityMetadata> getListingActivityMetadata(final Date startDate, final Date endDate)
+    public List<ActivityMetadata> getActivityMetadataByConcept(
+            final ActivityConcept concept, final Date startDate, final Date endDate)
             throws JsonParseException, IOException {
 
-        LOGGER.info("Getting listing activity from " + startDate + " through " + endDate);
+        LOGGER.info("Getting " + concept.name() + " activity from " + startDate + " through " + endDate);
         //get the activity
-        List<ActivityDTO> activityDtos = activityDAO.findByConcept(ActivityConcept.CERTIFIED_PRODUCT,
-                startDate, endDate);
-        //convert to domain object
+        List<ActivityDTO> activityDtos = activityDAO.findByConcept(concept, startDate, endDate);
         List<ActivityMetadata> activityMetas = new ArrayList<ActivityMetadata>();
-        for (ActivityDTO dto : activityDtos) {
-            ActivityMetadata activityMeta = listingActivityBuilder.build(dto);
-            activityMetas.add(activityMeta);
+        ActivityMetadataBuilder builder = null;
+        if (activityDtos != null && activityDtos.size() > 0) {
+            //excpect all dtos to have the same
+            //since we've searched based on activity concept
+            builder = metadataBuilderFactory.getBuilder(activityDtos.get(0));
+            //convert to domain object
+            for (ActivityDTO dto : activityDtos) {
+                ActivityMetadata activityMeta = builder.build(dto);
+                activityMetas.add(activityMeta);
+            }
         }
         return activityMetas;
     }
 
-    //TODO: SECURITY
     @Transactional
-    public List<ActivityMetadata> getListingActivityMetadata(final Long listingId, final Date startDate, final Date endDate)
+    public List<ActivityMetadata> getActivityMetadataByObject(
+            final Long objectId, final ActivityConcept concept,
+            final Date startDate, final Date endDate)
             throws JsonParseException, IOException {
 
-        LOGGER.info("Getting activity for listing " + listingId + " from " + startDate + " through " + endDate);
+        LOGGER.info("Getting " + concept.name() + " activity for id " + objectId + " from " + startDate + " through " + endDate);
         //get the activity
-        List<ActivityDTO> activityDtos = activityDAO.findByObjectId(listingId, ActivityConcept.CERTIFIED_PRODUCT,
-                startDate, endDate);
-        //convert to domain object
+        List<ActivityDTO> activityDtos = activityDAO.findByObjectId(objectId, concept, startDate, endDate);
         List<ActivityMetadata> activityMetas = new ArrayList<ActivityMetadata>();
-        for (ActivityDTO dto : activityDtos) {
-            ActivityMetadata activityMeta = listingActivityBuilder.build(dto);
-            activityMetas.add(activityMeta);
+        ActivityMetadataBuilder builder = null;
+        if (activityDtos != null && activityDtos.size() > 0) {
+            //excpect all dtos to have the same
+            //since we've searched based on activity concept
+            builder = metadataBuilderFactory.getBuilder(activityDtos.get(0));
+            //convert to domain object
+            for (ActivityDTO dto : activityDtos) {
+                ActivityMetadata activityMeta = builder.build(dto);
+                activityMetas.add(activityMeta);
+            }
         }
         return activityMetas;
     }

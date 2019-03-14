@@ -2,6 +2,7 @@ package gov.healthit.chpl.activity;
 
 import gov.healthit.chpl.auth.json.User;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
+import gov.healthit.chpl.domain.activity.DeveloperActivityMetadata;
 import gov.healthit.chpl.domain.activity.ListingActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
 
@@ -45,6 +46,9 @@ public abstract class ActivityMetadataBuilder {
         switch (dto.getConcept()) {
         case CERTIFIED_PRODUCT:
             metadata = new ListingActivityMetadata();
+            break;
+        case DEVELOPER:
+            metadata = new DeveloperActivityMetadata();
             break;
         default:
             break;

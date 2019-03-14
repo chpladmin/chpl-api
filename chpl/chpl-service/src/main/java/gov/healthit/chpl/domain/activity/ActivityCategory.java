@@ -28,5 +28,10 @@ public enum ActivityCategory implements Serializable {
     /**
      * Something about surveillance associated with a listing has changed.
      */
-    SURVEILLANCE;
+    SURVEILLANCE,
+
+    /**
+     * A developer was changed.
+     */
+    DEVELOPER;
 }

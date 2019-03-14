@@ -6,11 +6,15 @@ import java.util.List;
 
 import com.fasterxml.jackson.core.JsonParseException;
 
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 
 public interface ActivityMetadataManager {
-    List<ActivityMetadata> getListingActivityMetadata(final Date startDate, final Date endDate)
+    List<ActivityMetadata> getActivityMetadataByConcept(
+            ActivityConcept concept, Date startDate, Date endDate)
             throws JsonParseException, IOException;
-    List<ActivityMetadata> getListingActivityMetadata(final Long listingId, final Date startDate, final Date endDate)
+    List<ActivityMetadata> getActivityMetadataByObject(
+            Long objectId, ActivityConcept concept,
+            Date startDate, Date endDate)
             throws JsonParseException, IOException;
 }

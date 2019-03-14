@@ -1,7 +1,6 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -12,7 +11,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -29,7 +27,6 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -44,15 +41,11 @@ import gov.healthit.chpl.domain.SurveillanceRequirement;
 import gov.healthit.chpl.domain.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
-import gov.healthit.chpl.domain.UserActivity;
 import gov.healthit.chpl.domain.activity.ActivityCategory;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.domain.activity.ActivityDetails;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -63,7 +56,6 @@ import gov.healthit.chpl.manager.ActivityMetadataManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
-import gov.healthit.chpl.util.JSONUtils;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -131,7 +123,8 @@ public class ListingActivityMetadataTest extends TestCase {
         Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         end.set(2015, 9, 20, 0, 0);
 
-        List<ActivityMetadata> metadatas = metadataManager.getListingActivityMetadata(start.getTime(), end.getTime());
+        List<ActivityMetadata> metadatas = metadataManager.getActivityMetadataByConcept(
+                ActivityConcept.CERTIFIED_PRODUCT, start.getTime(), end.getTime());
         assertEquals(3, metadatas.size());
 
         for (ActivityMetadata metadata : metadatas) {
@@ -152,7 +145,8 @@ public class ListingActivityMetadataTest extends TestCase {
         Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         end.set(2015, 9, 20, 0, 0);
 
-        List<ActivityMetadata> metadatas = metadataManager.getListingActivityMetadata(objectId, start.getTime(), end.getTime());
+        List<ActivityMetadata> metadatas = metadataManager.getActivityMetadataByObject(
+                objectId, ActivityConcept.CERTIFIED_PRODUCT, start.getTime(), end.getTime());
         assertEquals(3, metadatas.size());
 
         for (ActivityMetadata metadata : metadatas) {
@@ -194,17 +188,10 @@ public class ListingActivityMetadataTest extends TestCase {
         activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, listingId,
                 "Updated certification status", beforeListing, afterListing);
 
-        Calendar start = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        start.set(Calendar.HOUR, 0);
-        start.set(Calendar.MINUTE, 0);
-        start.set(Calendar.SECOND, 0);
-        start.set(Calendar.MILLISECOND, 0);
-        Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        end.set(Calendar.HOUR, 23);
-        end.set(Calendar.MINUTE, 59);
-        end.set(Calendar.SECOND, 59);
-        end.set(Calendar.MILLISECOND, 999);
-        List<ActivityMetadata> metadatas = metadataManager.getListingActivityMetadata(start.getTime(), end.getTime());
+        Calendar start = getBeginningOfToday();
+        Calendar end = getEndOfToday();
+        List<ActivityMetadata> metadatas = metadataManager.getActivityMetadataByConcept(
+                ActivityConcept.CERTIFIED_PRODUCT, start.getTime(), end.getTime());
         assertEquals(1, metadatas.size());
         ActivityMetadata metadata = metadatas.get(0);
         assertEquals(listingId.longValue(), metadata.getObjectId().longValue());
@@ -253,17 +240,10 @@ public class ListingActivityMetadataTest extends TestCase {
         activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, listingId,
                 "Added surveillance", beforeListing, afterListing);
 
-        Calendar start = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        start.set(Calendar.HOUR, 0);
-        start.set(Calendar.MINUTE, 0);
-        start.set(Calendar.SECOND, 0);
-        start.set(Calendar.MILLISECOND, 0);
-        Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        end.set(Calendar.HOUR, 23);
-        end.set(Calendar.MINUTE, 59);
-        end.set(Calendar.SECOND, 59);
-        end.set(Calendar.MILLISECOND, 999);
-        List<ActivityMetadata> metadatas = metadataManager.getListingActivityMetadata(start.getTime(), end.getTime());
+        Calendar start = getBeginningOfToday();
+        Calendar end = getEndOfToday();
+        List<ActivityMetadata> metadatas = metadataManager.getActivityMetadataByConcept(
+                ActivityConcept.CERTIFIED_PRODUCT, start.getTime(), end.getTime());
         assertEquals(1, metadatas.size());
         ActivityMetadata metadata = metadatas.get(0);
         assertEquals(listingId.longValue(), metadata.getObjectId().longValue());
@@ -295,17 +275,10 @@ public class ListingActivityMetadataTest extends TestCase {
         activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, listingId,
                 "Deleted surveillance", beforeListing, afterListing);
 
-        Calendar start = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        start.set(Calendar.HOUR, 0);
-        start.set(Calendar.MINUTE, 0);
-        start.set(Calendar.SECOND, 0);
-        start.set(Calendar.MILLISECOND, 0);
-        Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        end.set(Calendar.HOUR, 23);
-        end.set(Calendar.MINUTE, 59);
-        end.set(Calendar.SECOND, 59);
-        end.set(Calendar.MILLISECOND, 999);
-        List<ActivityMetadata> metadatas = metadataManager.getListingActivityMetadata(start.getTime(), end.getTime());
+        Calendar start = getBeginningOfToday();
+        Calendar end = getEndOfToday();
+        List<ActivityMetadata> metadatas = metadataManager.getActivityMetadataByConcept(
+                ActivityConcept.CERTIFIED_PRODUCT, start.getTime(), end.getTime());
         assertEquals(1, metadatas.size());
         ActivityMetadata metadata = metadatas.get(0);
         assertEquals(listingId.longValue(), metadata.getObjectId().longValue());
@@ -339,17 +312,10 @@ public class ListingActivityMetadataTest extends TestCase {
         activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, listingId,
                 "Updated surveillance", beforeListing, afterListing);
 
-        Calendar start = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        start.set(Calendar.HOUR, 0);
-        start.set(Calendar.MINUTE, 0);
-        start.set(Calendar.SECOND, 0);
-        start.set(Calendar.MILLISECOND, 0);
-        Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        end.set(Calendar.HOUR, 23);
-        end.set(Calendar.MINUTE, 59);
-        end.set(Calendar.SECOND, 59);
-        end.set(Calendar.MILLISECOND, 999);
-        List<ActivityMetadata> metadatas = metadataManager.getListingActivityMetadata(start.getTime(), end.getTime());
+        Calendar start = getBeginningOfToday();
+        Calendar end = getEndOfToday();
+        List<ActivityMetadata> metadatas = metadataManager.getActivityMetadataByConcept(
+                ActivityConcept.CERTIFIED_PRODUCT, start.getTime(), end.getTime());
         assertEquals(1, metadatas.size());
         ActivityMetadata metadata = metadatas.get(0);
         assertEquals(listingId.longValue(), metadata.getObjectId().longValue());
@@ -358,5 +324,23 @@ public class ListingActivityMetadataTest extends TestCase {
         assertFalse(metadata.getCategories().contains(ActivityCategory.LISTING_STATUS_CHANGE));
         assertFalse(metadata.getCategories().contains(ActivityCategory.LISTING_UPLOAD));
         SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    private Calendar getBeginningOfToday() {
+        Calendar start = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        start.set(Calendar.HOUR, 0);
+        start.set(Calendar.MINUTE, 0);
+        start.set(Calendar.SECOND, 0);
+        start.set(Calendar.MILLISECOND, 0);
+        return start;
+    }
+
+    private Calendar getEndOfToday() {
+        Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        end.set(Calendar.HOUR, 23);
+        end.set(Calendar.MINUTE, 59);
+        end.set(Calendar.SECOND, 59);
+        end.set(Calendar.MILLISECOND, 999);
+        return end;
     }
 }

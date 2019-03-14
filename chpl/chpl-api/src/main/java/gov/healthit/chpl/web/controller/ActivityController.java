@@ -121,7 +121,8 @@ public class ActivityController {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
-        return activityMetadataManager.getListingActivityMetadata(startDate, endDate);
+        return activityMetadataManager.getActivityMetadataByConcept(
+                ActivityConcept.CERTIFIED_PRODUCT, startDate, endDate);
     }
 
     @ApiOperation(value = "Get metadata about auditable records in the system for a specific listing.",
@@ -147,7 +148,8 @@ public class ActivityController {
             throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
         }
 
-        return activityMetadataManager.getListingActivityMetadata(id, startDate, endDate);
+        return activityMetadataManager.getActivityMetadataByObject(
+                id, ActivityConcept.CERTIFIED_PRODUCT, startDate, endDate);
     }
 
     @ApiOperation(value = "Get metadata about auditable records in the system for a specific listing given its "
@@ -197,8 +199,8 @@ public class ActivityController {
             throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
         }
 
-        return activityMetadataManager.getListingActivityMetadata(dtos.get(0).getId(), startDate, endDate);
-    }
+        return activityMetadataManager.getActivityMetadataByObject(
+                dtos.get(0).getId(), ActivityConcept.CERTIFIED_PRODUCT, startDate, endDate);    }
 
     @ApiOperation(value = "Get metadata about auditable records in the system for a specific listing given its "
             + "legacy CHPL Number.",
@@ -238,8 +240,50 @@ public class ActivityController {
             throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
         }
 
-        return activityMetadataManager.getListingActivityMetadata(dtos.get(0).getId(), startDate, endDate);
+        return activityMetadataManager.getActivityMetadataByObject(
+                dtos.get(0).getId(), ActivityConcept.CERTIFIED_PRODUCT, startDate, endDate);
     }
+
+    @ApiOperation(value = "Get metadata about auditable records in the system for developers.",
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+    @RequestMapping(value = "/metadata/developers", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public List<ActivityMetadata> metadataForDevelopers(@RequestParam final Long start,
+            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
+        Date startDate = new Date(start);
+        Date endDate = new Date(end);
+        validateActivityDates(start, end);
+        return activityMetadataManager.getActivityMetadataByConcept(
+                ActivityConcept.DEVELOPER, startDate, endDate);
+    }
+
+    @ApiOperation(value = "Get metadata about auditable records in the system for a specific developer.",
+            notes = "A start and end date may optionally be provided to limit activity results.")
+    @RequestMapping(value = "/metadata/developers/{id:^-?\\d+$}", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public List<ActivityMetadata> metadataForDeveloperById(@PathVariable("id") final Long id,
+            @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
+                    throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
+        cpManager.getById(id); // throws 404 if bad id
+
+        //if one of start of end is provided then the other must also be provided.
+        //if neither is provided then query all dates
+        Date startDate = new Date(0);
+        Date endDate = new Date();
+        if (start != null && end != null) {
+            validateActivityDates(start, end);
+            startDate = new Date(start);
+            endDate = new Date(end);
+        } else if (start == null && end != null) {
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
+        } else if (start != null && end == null) {
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
+        }
+
+        return activityMetadataManager.getActivityMetadataByObject(
+                id, ActivityConcept.DEVELOPER, startDate, endDate);
+    }
+
 
     @ApiOperation(value = "Get auditable data for certification bodies.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "
@@ -789,7 +833,8 @@ public class ActivityController {
         return activityManager.getUserActivity(userIdsToSearch, startDate, endDate);
     }
 
-    @ApiOperation(value = "Get auditable data about all developers",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED. Get auditable data about all developers",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
     @RequestMapping(value = "/developers", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityForDevelopers(@RequestParam final Long start,
@@ -801,7 +846,8 @@ public class ActivityController {
         return getActivityEventsForDevelopers(startDate, endDate);
     }
 
-    @ApiOperation(value = "Get auditable data for a specific developer.",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED. Get auditable data for a specific developer.",
             notes = "A start and end date may optionally be provided to limit activity results.")
     @RequestMapping(value = "/developers/{id}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
