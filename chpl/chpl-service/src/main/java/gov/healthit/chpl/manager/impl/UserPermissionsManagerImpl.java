@@ -171,7 +171,6 @@ public class UserPermissionsManagerImpl implements UserPermissionsManager {
         List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByUserId(userId);
 
         if (dtos == null || dtos.size() == 0) {
-            // TODO: throw an exception throw exception...
             LOGGER.error(
                     "Could not locate the UserCertificationBodyMap object for Userid: " + userId + ", ACB: " + acbId);
         }
@@ -191,7 +190,6 @@ public class UserPermissionsManagerImpl implements UserPermissionsManager {
         List<UserTestingLabMapDTO> dtos = userTestingLabMapDAO.getByUserId(userId);
 
         if (dtos == null || dtos.size() == 0) {
-            // TODO: throw an exception throw exception...
             LOGGER.error("Could not locate the UserTestingLabyMap object for Userid: " + userId + ", ATL: " + atlId);
         }
 
