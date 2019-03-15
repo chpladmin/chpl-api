@@ -103,7 +103,7 @@ public class ActivityController {
     @Autowired private MessageSource messageSource;
 
     @ApiOperation(value = "Get detailed audit data for a specific activity event.",
-            notes = "Security Restrictions: ROLE_ADMIN and ROLE_ONC may any activity event. "
+            notes = "Security Restrictions: ROLE_ADMIN and ROLE_ONC may view any activity event. "
                 + "Other users may be restricted in what they can see.")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public ActivityDetails activityById(@PathVariable("id") final Long id)
