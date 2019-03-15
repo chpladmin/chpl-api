@@ -9,7 +9,7 @@ public class UserTestingLabMapDTO implements Serializable {
     private static final long serialVersionUID = -4237553934302170475L;
 
     private Long id;
-    private gov.healthit.chpl.auth.dto.UserDTO user;
+    private UserDTO user;
     private TestingLabDTO testingLab;
     private Boolean retired;
 
