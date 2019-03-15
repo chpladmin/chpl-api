@@ -367,7 +367,6 @@ public class InvitationManagerImpl implements InvitationManager {
         }
         // give them access to the invited atl
         if (userAtl != null) {
-            // atlManager.addPermission(userAtl, user.getId(), BasePermission.ADMINISTRATION);
             userPermissionsManager.addAtlPermission(userAtl, user.getId());
         }
     }
