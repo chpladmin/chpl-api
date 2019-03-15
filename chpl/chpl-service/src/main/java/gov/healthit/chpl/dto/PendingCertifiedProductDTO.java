@@ -9,6 +9,8 @@ import java.util.Set;
 
 import org.springframework.util.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationCriterion;
@@ -45,6 +47,7 @@ import gov.healthit.chpl.util.Util;
  * @author alarned
  *
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PendingCertifiedProductDTO implements Serializable {
     private static final long serialVersionUID = 8778880570983282001L;
     private Long id;

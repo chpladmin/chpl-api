@@ -185,8 +185,8 @@ public class ActivityManagerImpl implements ActivityManager {
         }
     }
 
-    //TODO: SECURITY
-    @PostAuthorize("hasAnyRole(ROLE_ADMIN, ROLE_ONC)")
+    @PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_ACTIVITY_DETAILS, returnObject)")
     @Override
     @Transactional
     public ActivityDetails getActivityById(final Long activityId)

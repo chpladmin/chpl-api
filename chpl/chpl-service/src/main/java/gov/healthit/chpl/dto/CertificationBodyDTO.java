@@ -3,6 +3,8 @@ package gov.healthit.chpl.dto;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import gov.healthit.chpl.entity.CertificationBodyEntity;
 
 /**
@@ -10,6 +12,7 @@ import gov.healthit.chpl.entity.CertificationBodyEntity;
  * @author kekey
  *
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CertificationBodyDTO implements Serializable {
     private static final long serialVersionUID = 6650934397742636530L;
     private Long id;

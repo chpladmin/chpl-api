@@ -4,49 +4,22 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.converter.json.GsonFactoryBean;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.activity.ListingActivityMetadataBuilder;
-import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.auth.json.User;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.ActivityDAO;
-import gov.healthit.chpl.dao.DeveloperDAO;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.UserActivity;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.domain.activity.ActivityDetails;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
-import gov.healthit.chpl.domain.activity.ListingActivityMetadata;
-import gov.healthit.chpl.domain.activity.ProductActivityEvent;
 import gov.healthit.chpl.dto.ActivityDTO;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.TestingLabDTO;
-import gov.healthit.chpl.exception.EntityCreationException;
-import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.ActivityMetadataManager;
 import gov.healthit.chpl.permissions.Permissions;
-import gov.healthit.chpl.util.JSONUtils;
 
 @Service("activityMetadataManager")
 public class ActivityMetadataManagerImpl implements ActivityMetadataManager {
@@ -63,7 +36,6 @@ public class ActivityMetadataManagerImpl implements ActivityMetadataManager {
         listingActivityBuilder = new ListingActivityMetadataBuilder();
     }
 
-    //TODO: SECURITY
     @Transactional
     public List<ActivityMetadata> getListingActivityMetadata(final Date startDate, final Date endDate)
             throws JsonParseException, IOException {
@@ -81,7 +53,6 @@ public class ActivityMetadataManagerImpl implements ActivityMetadataManager {
         return activityMetas;
     }
 
-    //TODO: SECURITY
     @Transactional
     public List<ActivityMetadata> getListingActivityMetadata(final Long listingId, final Date startDate, final Date endDate)
             throws JsonParseException, IOException {

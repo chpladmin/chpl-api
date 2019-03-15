@@ -1,5 +1,8 @@
 package gov.healthit.chpl.permissions.domains.activity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +14,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.domain.activity.ActivityDetails;
-import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.dto.AnnouncementDTO;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
@@ -25,6 +30,10 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
 
     @Autowired
     private PermissionEvaluator permissionEvaluator;
+
+    @Autowired
+    private UserManager userManager;
+
     private ObjectMapper jsonMapper;
 
     public GetActivityDetailsActionPermissions() {
@@ -37,14 +46,15 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
     }
 
     @Override
-    public boolean hasAccess(Object obj) {
+    public boolean hasAccess(final Object obj) {
         if (!(obj instanceof ActivityDetails)) {
             return false;
         } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
             return true;
         } else {
             ActivityDetails details = (ActivityDetails) obj;
-            //Check security based on the activity concept
+            //There are different security rules depending on what type
+            //of activity this is.
             switch (details.getConcept()) {
             case ANNOUNCEMENT:
                 if (details.getNewData() != null) {
@@ -54,38 +64,37 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
                 }
                 break;
             case ATL:
-                return getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()
-                        || isAtlValidForCurrentUser(atlId);
+                if (details.getNewData() != null) {
+                    return hasAccessToTestingLab(details.getNewData());
+                } else if (details.getOriginalData() != null) {
+                    return hasAccessToTestingLab(details.getOriginalData());
+                }
                 break;
             case CERTIFICATION_BODY:
-                //Admin and onc can see all acb activity
-                //including for retired acbs.
-                //Acb user can see activity for their own acb.
-                //Others should get access denied.
-                return getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()
-                        || isAcbValidForCurrentUser(acbId);
+                if (details.getNewData() != null) {
+                    return hasAccessToCertificationBody(details.getNewData());
+                } else if (details.getOriginalData() != null) {
+                    return hasAccessToCertificationBody(details.getOriginalData());
+                }
                 break;
             case API_KEY:
                 //Admin and Onc can see this activity.
                 //Others should get access denied.
                 return (getResourcePermissions().isUserRoleAdmin()
                         || getResourcePermissions().isUserRoleOnc());
-                break;
             case PENDING_CERTIFIED_PRODUCT:
-                //Admin and Onc can see this activity.
-                //Acb user can see activity for listing uploaded to their Acb.
-                //Others should get access denied.
-                return getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()
-                        || isAcbValidForCurrentUser(acbId);
+                if (details.getNewData() != null) {
+                    return hasAccessToPendingListing(details.getNewData());
+                } else if (details.getOriginalData() != null) {
+                    return hasAccessToPendingListing(details.getOriginalData());
+                }
                 break;
             case USER:
-                //Admin and Onc can see activity for any user.
-                //Acb, Atl, and Cms staff users can see activity for any user
-                //they have access to.
-                //Non-logged in users get access denied.
-                return getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()
-                        || permissionEvaluator.hasPermission(Util.getCurrentUser(), userDto,
-                                BasePermission.ADMINISTRATION);
+                if (details.getNewData() != null) {
+                    return hasAccessToUser(details.getNewData());
+                } else if (details.getOriginalData() != null) {
+                    return hasAccessToUser(details.getOriginalData());
+                }
                 break;
             default:
                 //all other types of activity
@@ -134,7 +143,7 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
         boolean hasAccess = getResourcePermissions().isUserRoleAdmin()
                 || getResourcePermissions().isUserRoleOnc();
 
-        if (hasAccess = false) {
+        if (!hasAccess) {
             TestingLabDTO atl = null;
             try {
                 atl =
@@ -145,7 +154,122 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
             }
 
             if (atl != null && atl.getId() != null) {
-                hasAccess = isAtlValidForCurrentUser(atl.getId());
+                //TODO: need Todd's PR merged in to have this method available
+                //hasAccess = isAtlValidForCurrentUser(atl.getId());
+            }
+        }
+        return hasAccess;
+    }
+
+    /**
+     * Admin and onc can see all acb activity
+     * including for retired acbs.
+     * Acb user can see activity for their own acb.
+     * Others should get access denied.
+     * @param acbJson
+     * @return
+     */
+    private boolean hasAccessToCertificationBody(final JsonNode acbJson) {
+        boolean hasAccess = getResourcePermissions().isUserRoleAdmin()
+                || getResourcePermissions().isUserRoleOnc();
+
+        if (!hasAccess) {
+            CertificationBodyDTO acb = null;
+            try {
+                acb =
+                    jsonMapper.convertValue(acbJson, CertificationBodyDTO.class);
+            } catch (final Exception ex) {
+                LOGGER.error("Could not parse activity as CertificationBodyDTO. "
+                        + "JSON was: " + acbJson, ex);
+            }
+
+            if (acb != null && acb.getId() != null) {
+                hasAccess = isAcbValidForCurrentUser(acb.getId());
+            }
+        }
+        return hasAccess;
+    }
+
+    /**
+     * Admin and onc can see all pending listing activity.
+     * Acb user can see activity for listing uploaded to their Acb.
+     * Others should get access denied.
+     * @param pendingListingJson
+     * @return
+     */
+    private boolean hasAccessToPendingListing(final JsonNode pendingListingJson) {
+        boolean hasAccess = getResourcePermissions().isUserRoleAdmin()
+                || getResourcePermissions().isUserRoleOnc();
+
+        if (!hasAccess) {
+            PendingCertifiedProductDTO pcp = null;
+            try {
+                pcp =
+                    jsonMapper.convertValue(pendingListingJson, PendingCertifiedProductDTO.class);
+            } catch (final Exception ex) {
+                LOGGER.error("Could not parse activity as PendingCertifiedProductDTO. "
+                        + "JSON was: " + pendingListingJson, ex);
+            }
+
+            if (pcp != null && pcp.getCertificationBodyId() != null) {
+                hasAccess = isAcbValidForCurrentUser(pcp.getCertificationBodyId());
+            }
+        }
+        return hasAccess;
+    }
+
+    /**
+     * Admin and Onc can see activity for any user.
+     * Acb, Atl, and Cms staff users can see activity for any user
+     * they have access to.
+     * Non-logged in users get access denied.
+     * @param userJson
+     * @return
+     */
+    private boolean hasAccessToUser(final JsonNode userJson) {
+        boolean hasAccess = getResourcePermissions().isUserRoleAdmin()
+                || getResourcePermissions().isUserRoleOnc();
+
+        if (!hasAccess) {
+            UserDTO user = null;
+            try {
+                user =
+                    jsonMapper.convertValue(userJson, UserDTO.class);
+            } catch (final Exception ex) {
+                LOGGER.error("Could not parse activity as UserDTO. "
+                        + "JSON was: " + userJson, ex);
+            }
+
+            if (user != null) {
+                List<UserDTO> accessibleUsers = new ArrayList<UserDTO>();
+                if (getResourcePermissions().isUserRoleAcbAdmin()) {
+                    //find all users on the acbs that this user has access to
+                    //and see if the user in the activity is in that list
+                    List<CertificationBodyDTO> accessibleAcbs = getResourcePermissions().getAllAcbsForCurrentUser();
+                    for (CertificationBodyDTO acb : accessibleAcbs) {
+                        accessibleUsers.addAll(getResourcePermissions().getAllUsersOnAcb(acb));
+                    }
+                }
+                if (getResourcePermissions().isUserRoleAtlAdmin()) {
+                    //find all users on the atls that this user has access to
+                    //and see if the user in the activity is in that list
+
+                    //TODO: needs Todd's PR merged in to use this code
+//                    List<TestingLabDTO> accessibleAtls = getResourcePermissions().getAllAtlsForCurrentUser();
+//                    for (TestingLabDTO atl : accessibleAtls) {
+//                        accessibleUsers.addAll(getResourcePermissions().getAllUsersOnAtl(atl));
+//                    }
+                }
+                if (getResourcePermissions().isUserRoleCmsStaff()) {
+                    List<UserDTO> cmsUsers = userManager.getUsersWithPermission(Authority.ROLE_CMS_STAFF);
+                    accessibleUsers.addAll(cmsUsers);
+                }
+
+                for (UserDTO accessibleUser : accessibleUsers) {
+                    if (accessibleUser.getId().longValue() == user.getId().longValue()) {
+                        hasAccess = true;
+                    }
+                }
             }
         }
         return hasAccess;
