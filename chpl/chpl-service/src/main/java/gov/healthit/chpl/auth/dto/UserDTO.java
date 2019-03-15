@@ -22,7 +22,6 @@ public class UserDTO implements UserDetails {
     private String phoneNumber;
     private String title;
     private Date signatureDate;
-    private Date complianceSignatureDate;
     private UserDTO impersonatedBy;
 
 

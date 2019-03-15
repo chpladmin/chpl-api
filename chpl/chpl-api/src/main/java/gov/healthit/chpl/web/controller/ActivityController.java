@@ -449,8 +449,9 @@ public class ActivityController {
         return getActivityEventsForCertifiedProducts(startDate, endDate);
     }
 
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED. Get auditable data for a specific certified product.",
+    //this is left undeprecated intentionally because
+    //the UI uses it on the details page to load the "eye" data
+    @ApiOperation(value = "Get auditable data for a specific certified product.",
             notes = "A start and end date may optionally be provided to limit activity results.")
     @RequestMapping(value = "/certified_products/{id:^-?\\d+$}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")

@@ -135,6 +135,10 @@ public class ResourcePermissions {
         return doesAuthenticationHaveRole(Authority.ROLE_INVITED_USER_CREATOR);
     }
 
+    public boolean isUserAnonymous() {
+        return Util.getCurrentUser() == null;
+    }
+
     private boolean doesUserHaveRole(final String authority) {
         User user = Util.getCurrentUser();
         if (user == null) {

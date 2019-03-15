@@ -10,6 +10,7 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -185,45 +186,12 @@ public class ActivityManagerImpl implements ActivityManager {
     }
 
     //TODO: SECURITY
+    @PostAuthorize("hasAnyRole(ROLE_ADMIN, ROLE_ONC)")
     @Override
     @Transactional
     public ActivityDetails getActivityById(final Long activityId)
             throws EntityRetrievalException, JsonParseException, IOException {
         ActivityDTO result = activityDAO.getById(activityId);
-        //Check security based on the activity concept
-        switch(result.getConcept()) {
-        case ANNOUNCEMENT:
-            //Non-logged in user can only see activity for public announcements.
-            //Other users can see all activity.
-            break;
-        case ATL:
-            //Admin and onc can see all atl activity
-            //including for retired atls.
-            //Atl user can see activity for their own atl.
-            //Others should get access denied.
-            break;
-        case CERTIFICATION_BODY:
-            //Admin and onc can see all acb activity
-            //including for retired acbs.
-            //Acb user can see activity for their own acb.
-            //Others should get access denied.
-            break;
-        case API_KEY:
-            //Admin and Onc can see this activity.
-            //Others should get access denied.
-            break;
-        case PENDING_CERTIFIED_PRODUCT:
-            //Admin and Onc can see this activity.
-            //Acb user can see activity for listing uploaded to their Acb.
-            //Others should get access denied.
-            break;
-        case USER:
-            //Admin and Onc can see activity for any user.
-            //Acb, Atl, and Cms staff users can see activity for any user
-            //they have access to.
-            //Non-logged in users get access denied.
-            break;
-        }
         ActivityDetails event = getActivityDetailsFromDTO(result);
         return event;
     }

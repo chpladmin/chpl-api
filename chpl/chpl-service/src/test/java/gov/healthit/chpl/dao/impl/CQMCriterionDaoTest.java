@@ -85,7 +85,7 @@ public class CQMCriterionDaoTest {
         dto.setCreationDate(new Date());
         dto.setDeleted(false);
         dto.setLastModifiedDate(new Date());
-        dto.setLastModifiedUser(Util.getCurrentUser().getId());
+        dto.setLastModifiedUser(Util.getAuditId());
         dto.setRetired(false);
 
         CQMCriterionDTO result = cqmCriterionDAO.create(dto);
@@ -133,7 +133,7 @@ public class CQMCriterionDaoTest {
         dto.setCreationDate(new Date());
         dto.setDeleted(false);
         dto.setLastModifiedDate(new Date());
-        dto.setLastModifiedUser(Util.getCurrentUser().getId());
+        dto.setLastModifiedUser(Util.getAuditId());
         dto.setRetired(false);
 
         CQMCriterionDTO result = cqmCriterionDAO.create(dto);
@@ -151,7 +151,7 @@ public class CQMCriterionDaoTest {
         result.setCreationDate(new Date());
         result.setDeleted(false);
         result.setLastModifiedDate(new Date());
-        result.setLastModifiedUser(Util.getCurrentUser().getId());
+        result.setLastModifiedUser(Util.getAuditId());
 
         cqmCriterionDAO.update(result);
 
@@ -199,7 +199,7 @@ public class CQMCriterionDaoTest {
         dto.setCreationDate(new Date());
         dto.setDeleted(false);
         dto.setLastModifiedDate(new Date());
-        dto.setLastModifiedUser(Util.getCurrentUser().getId());
+        dto.setLastModifiedUser(Util.getAuditId());
         dto.setRetired(false);
 
         CQMCriterionDTO result = cqmCriterionDAO.create(dto);
@@ -259,7 +259,7 @@ public class CQMCriterionDaoTest {
         dto.setCreationDate(new Date());
         dto.setDeleted(false);
         dto.setLastModifiedDate(new Date());
-        dto.setLastModifiedUser(Util.getCurrentUser().getId());
+        dto.setLastModifiedUser(Util.getAuditId());
         dto.setRetired(false);
 
         CQMCriterionDTO result = cqmCriterionDAO.create(dto);
