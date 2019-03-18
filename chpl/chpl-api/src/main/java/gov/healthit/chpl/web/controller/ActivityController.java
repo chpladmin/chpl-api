@@ -730,7 +730,8 @@ public class ActivityController {
         return activityManager.getPendingListingActivity(pendingListing.getId(), startDate, endDate);
     }
 
-    @ApiOperation(value = "Get auditable data for all products",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED. Get auditable data for all products",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
     @RequestMapping(value = "/products", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityForProducts(@RequestParam final Long start,
@@ -741,7 +742,8 @@ public class ActivityController {
         return getActivityEventsForProducts(startDate, endDate);
     }
 
-    @ApiOperation(value = "Get auditable data for a specific product.",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED. Get auditable data for a specific product.",
             notes = "A start and end date may optionally be provided to limit activity results.")
     @RequestMapping(value = "/products/{id}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
