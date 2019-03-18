@@ -81,7 +81,7 @@ public class QuestionableActivityListener implements EnvironmentAware {
 
         //all questionable activity from this action should have the exact same date and user id
         Date activityDate = new Date();
-        Long activityUser = Util.getCurrentUser().getId();
+        Long activityUser = Util.getAuditId();
 
         if (originalData instanceof CertifiedProductSearchDetails
                 && newData instanceof CertifiedProductSearchDetails) {
@@ -140,7 +140,7 @@ public class QuestionableActivityListener implements EnvironmentAware {
 
         //all questionable activity from this action should have the exact same date and user id
         Date activityDate = new Date();
-        Long activityUser = Util.getCurrentUser().getId();
+        Long activityUser = Util.getAuditId();
 
         if (originalData instanceof DeveloperDTO && newData instanceof DeveloperDTO) {
             DeveloperDTO origDeveloper = (DeveloperDTO) originalData;

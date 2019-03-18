@@ -129,7 +129,7 @@ public class CertificationBodyDaoTest extends TestCase {
         address.setCountry("USA");
         address.setDeleted(false);
         address.setLastModifiedDate(new Date());
-        address.setLastModifiedUser(Util.getCurrentUser().getId());
+        address.setLastModifiedUser(Util.getAuditId());
         acb.setAddress(address);
         acb = acbDao.create(acb);
 

@@ -6,11 +6,14 @@ import java.util.Date;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import gov.healthit.chpl.auth.entity.UserEntity;
 
 /**
  * User data transfer object.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserDTO implements UserDetails {
 
     private static final long serialVersionUID = 1L;
@@ -22,7 +25,6 @@ public class UserDTO implements UserDetails {
     private String phoneNumber;
     private String title;
     private Date signatureDate;
-    private Date complianceSignatureDate;
     private UserDTO impersonatedBy;
 
 

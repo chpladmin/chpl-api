@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -66,6 +67,7 @@ import gov.healthit.chpl.validation.developer.DeveloperUpdateValidator;
  * @author TYoung
  *
  */
+@Lazy
 @Service
 public class DeveloperManagerImpl implements DeveloperManager {
     private static final Logger LOGGER = LogManager.getLogger(DeveloperManagerImpl.class);
@@ -180,15 +182,15 @@ public class DeveloperManagerImpl implements DeveloperManager {
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).UPDATE)")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
-            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
-            CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.GET_DECERTIFIED_DEVELOPERS
+            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
+            CacheNames.GET_DECERTIFIED_DEVELOPERS
     }, allEntries = true)
     public DeveloperDTO update(final DeveloperDTO updatedDev, final boolean doValidation)
-            throws EntityRetrievalException, JsonProcessingException,
-            EntityCreationException, MissingReasonException, ValidationException {
-        if(doValidation) {
-            //validation is not done during listing update -> developer ban
-            //but should be done at other times
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, MissingReasonException,
+            ValidationException {
+        if (doValidation) {
+            // validation is not done during listing update -> developer ban
+            // but should be done at other times
             Set<String> errors = updateValidator.validate(updatedDev);
             if (errors != null && errors.size() > 0) {
                 throw new ValidationException(errors, null);
@@ -302,16 +304,14 @@ public class DeveloperManagerImpl implements DeveloperManager {
         List<CertificationBodyDTO> availableAcbs = resourcePermissions.getAllAcbsForCurrentUser();
         if (availableAcbs != null && availableAcbs.size() > 0) {
             for (CertificationBodyDTO acb : availableAcbs) {
-                DeveloperACBMapDTO existingMap = developerDao.getTransparencyMapping(developer.getId(),
-                        acb.getId());
+                DeveloperACBMapDTO existingMap = developerDao.getTransparencyMapping(developer.getId(), acb.getId());
                 if (existingMap == null) {
                     DeveloperACBMapDTO developerMappingToCreate = new DeveloperACBMapDTO();
                     developerMappingToCreate.setAcbId(acb.getId());
                     developerMappingToCreate.setDeveloperId(developer.getId());
                     for (DeveloperACBMapDTO attMap : developer.getTransparencyAttestationMappings()) {
                         if (attMap.getAcbName().equals(acb.getName())) {
-                            developerMappingToCreate
-                            .setTransparencyAttestation(attMap.getTransparencyAttestation());
+                            developerMappingToCreate.setTransparencyAttestation(attMap.getTransparencyAttestation());
                             developerDao.createTransparencyMapping(developerMappingToCreate);
                         }
                     }
@@ -374,8 +374,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).CREATE)")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
-            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
-            CacheNames.COLLECTIONS_DEVELOPERS
+            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS
     }, allEntries = true)
     public DeveloperDTO create(final DeveloperDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
@@ -402,14 +401,14 @@ public class DeveloperManagerImpl implements DeveloperManager {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
-            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
-            CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.GET_DECERTIFIED_DEVELOPERS
+            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
+            CacheNames.GET_DECERTIFIED_DEVELOPERS
     }, allEntries = true)
     public DeveloperDTO merge(final List<Long> developerIdsToMerge, final DeveloperDTO developerToCreate)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException {
 
-        //merging doesn't require developer address which is why the update validator
-        //is getting used here.
+        // merging doesn't require developer address which is why the update validator
+        // is getting used here.
         Set<String> errors = updateValidator.validate(developerToCreate);
         if (errors != null && errors.size() > 0) {
             throw new ValidationException(errors, null);
@@ -519,27 +518,26 @@ public class DeveloperManagerImpl implements DeveloperManager {
             AccessDeniedException.class
     })
     @CacheEvict(value = {
-            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
-            CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.GET_DECERTIFIED_DEVELOPERS
+            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
+            CacheNames.GET_DECERTIFIED_DEVELOPERS
     }, allEntries = true)
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
     public DeveloperDTO split(final DeveloperDTO oldDeveloper, final DeveloperDTO developerToCreate,
-            final List<Long> productIdsToMove)
-            throws ValidationException, AccessDeniedException, EntityRetrievalException,
-            EntityCreationException, JsonProcessingException {
-        //check developer fields for all valid values
+            final List<Long> productIdsToMove) throws ValidationException, AccessDeniedException,
+            EntityRetrievalException, EntityCreationException, JsonProcessingException {
+        // check developer fields for all valid values
         Set<String> devErrors = creationValidator.validate(developerToCreate);
         if (devErrors != null && devErrors.size() > 0) {
             throw new ValidationException(devErrors, null);
         }
 
-        //if the user is an ACB then the developer must be Active otherwise the split is not allowed.
-        //ADMIN and ONC can perform a split no matter the developer's status
+        // if the user is an ACB then the developer must be Active otherwise the split is not allowed.
+        // ADMIN and ONC can perform a split no matter the developer's status
         DeveloperStatusEventDTO currDevStatus = oldDeveloper.getStatus();
         if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
                 && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
-            String msg = msgUtil.getMessage("developer.notActiveNotAdminCantSplit",
-                    Util.getUsername(), oldDeveloper.getName());
+            String msg = msgUtil.getMessage("developer.notActiveNotAdminCantSplit", Util.getUsername(),
+                    oldDeveloper.getName());
             LOGGER.error(msg);
             throw new EntityCreationException(msg);
         }
@@ -553,11 +551,12 @@ public class DeveloperManagerImpl implements DeveloperManager {
         List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
         for (Long productIdToMove : productIdsToMove) {
             List<CertifiedProductDetailsDTO> affectedListings = cpManager.getByProduct(productIdToMove);
-            //need to get details for affected listings now before the product is re-assigned
-            //so that any listings with a generated new-style CHPL ID have the old developer code
+            // need to get details for affected listings now before the product is re-assigned
+            // so that any listings with a generated new-style CHPL ID have the old developer code
             Map<Long, CertifiedProductSearchDetails> beforeListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
             for (CertifiedProductDetailsDTO affectedListing : affectedListings) {
-                CertifiedProductSearchDetails beforeListing = cpdManager.getCertifiedProductDetails(affectedListing.getId());
+                CertifiedProductSearchDetails beforeListing = cpdManager
+                        .getCertifiedProductDetails(affectedListing.getId());
 
                 // make sure each listing associated with the new developer
                 boolean hasAccessToAcb = false;
@@ -575,10 +574,10 @@ public class DeveloperManagerImpl implements DeveloperManager {
                 beforeListingDetails.put(beforeListing.getId(), beforeListing);
             }
 
-            //move the product to be owned by the new developer
+            // move the product to be owned by the new developer
             ProductDTO productToMove = productManager.getById(productIdToMove);
             productToMove.setDeveloperId(createdDeveloper.getId());
-            //add owner history for old developer
+            // add owner history for old developer
             ProductOwnerDTO newOwner = new ProductOwnerDTO();
             newOwner.setProductId(productToMove.getId());
             newOwner.setDeveloper(oldDeveloper);
@@ -586,10 +585,11 @@ public class DeveloperManagerImpl implements DeveloperManager {
             productToMove.getOwnerHistory().add(newOwner);
             productManager.update(productToMove);
 
-            //get the listing details again - this time they will have the new developer code
-            //so the change will show up in activity reports
+            // get the listing details again - this time they will have the new developer code
+            // so the change will show up in activity reports
             for (CertifiedProductDetailsDTO affectedListing : affectedListings) {
-                CertifiedProductSearchDetails afterListing = cpdManager.getCertifiedProductDetails(affectedListing.getId());
+                CertifiedProductSearchDetails afterListing = cpdManager
+                        .getCertifiedProductDetails(affectedListing.getId());
                 CertifiedProductSearchDetails beforeListing = beforeListingDetails.get(afterListing.getId());
                 activityManager.addActivity(ActivityConcept.DEVELOPER, beforeListing.getId(),
                         "Updated certified product " + afterListing.getChplProductNumber() + ".", beforeListing,

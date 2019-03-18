@@ -44,6 +44,7 @@ import gov.healthit.chpl.auth.json.UserListJSONObject;
 import gov.healthit.chpl.auth.jwt.JWTCreationException;
 import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
@@ -251,7 +252,7 @@ public class UserManagementController {
             throw new InvalidArgumentsException("User key is required.");
         }
 
-        gov.healthit.chpl.auth.user.User loggedInUser = Util.getCurrentUser();
+        JWTAuthenticatedUser loggedInUser = (JWTAuthenticatedUser) Util.getCurrentUser();
         if (loggedInUser == null
                 && (StringUtils.isEmpty(credentials.getUserName()) || StringUtils.isEmpty(credentials.getPassword()))) {
             throw new InvalidArgumentsException(
@@ -277,8 +278,8 @@ public class UserManagementController {
         } else {
             // add authorization to the currently logged in user
             UserDTO userToUpdate = userManager.getById(loggedInUser.getId());
-            if (userToUpdate.getImpersonatedBy() != null) {
-                userToUpdate = userToUpdate.getImpersonatedBy();
+            if (loggedInUser.getImpersonatingUser() != null) {
+                userToUpdate = loggedInUser.getImpersonatingUser();
             }
             invitationManager.updateUserFromInvitation(invitation, userToUpdate);
             UserDTO updatedUser = userManager.getById(userToUpdate.getId());
