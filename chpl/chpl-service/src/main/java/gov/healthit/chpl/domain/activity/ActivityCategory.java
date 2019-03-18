@@ -33,5 +33,10 @@ public enum ActivityCategory implements Serializable {
     /**
      * A developer was changed.
      */
-    DEVELOPER;
+    DEVELOPER,
+
+    /**
+     * A product was changed.
+     */
+    PRODUCT;
 }

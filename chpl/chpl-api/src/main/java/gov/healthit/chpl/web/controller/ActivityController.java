@@ -264,7 +264,7 @@ public class ActivityController {
     public List<ActivityMetadata> metadataForDeveloperById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
-        cpManager.getById(id); // throws 404 if bad id
+        developerManager.getById(id); // returns 404 if bad id
 
         //if one of start of end is provided then the other must also be provided.
         //if neither is provided then query all dates
@@ -282,6 +282,46 @@ public class ActivityController {
 
         return activityMetadataManager.getActivityMetadataByObject(
                 id, ActivityConcept.DEVELOPER, startDate, endDate);
+    }
+
+    @ApiOperation(value = "Get metadata about auditable records in the system for products.",
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+    @RequestMapping(value = "/metadata/products", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public List<ActivityMetadata> metadataForProducts(@RequestParam final Long start,
+            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
+        Date startDate = new Date(start);
+        Date endDate = new Date(end);
+        validateActivityDates(start, end);
+        return activityMetadataManager.getActivityMetadataByConcept(
+                ActivityConcept.PRODUCT, startDate, endDate);
+    }
+
+    @ApiOperation(value = "Get metadata about auditable records in the system for a specific product.",
+            notes = "A start and end date may optionally be provided to limit activity results.")
+    @RequestMapping(value = "/metadata/products/{id:^-?\\d+$}", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public List<ActivityMetadata> metadataForProductById(@PathVariable("id") final Long id,
+            @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
+                    throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
+        productManager.getById(id); // returns 404 if bad id
+
+        //if one of start of end is provided then the other must also be provided.
+        //if neither is provided then query all dates
+        Date startDate = new Date(0);
+        Date endDate = new Date();
+        if (start != null && end != null) {
+            validateActivityDates(start, end);
+            startDate = new Date(start);
+            endDate = new Date(end);
+        } else if (start == null && end != null) {
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
+        } else if (start != null && end == null) {
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
+        }
+
+        return activityMetadataManager.getActivityMetadataByObject(
+                id, ActivityConcept.PRODUCT, startDate, endDate);
     }
 
     @ApiOperation(value = "Get auditable data for certification bodies.",

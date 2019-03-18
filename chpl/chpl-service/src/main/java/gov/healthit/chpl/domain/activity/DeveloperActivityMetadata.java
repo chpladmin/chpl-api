@@ -18,7 +18,7 @@ public class DeveloperActivityMetadata extends ActivityMetadata {
         return developerName;
     }
 
-    public void setDeveloperName(String developerName) {
+    public void setDeveloperName(final String developerName) {
         this.developerName = developerName;
     }
 
@@ -26,7 +26,7 @@ public class DeveloperActivityMetadata extends ActivityMetadata {
         return developerCode;
     }
 
-    public void setDeveloperCode(String developerCode) {
+    public void setDeveloperCode(final String developerCode) {
         this.developerCode = developerCode;
     }
 }

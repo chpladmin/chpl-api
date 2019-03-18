@@ -34,7 +34,7 @@ import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.activity.ActivityDetails;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.ListingActivityMetadata;
-import gov.healthit.chpl.domain.activity.ProductActivityEvent;
+import gov.healthit.chpl.domain.activity.ProductActivityDetails;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
@@ -453,7 +453,7 @@ public class ActivityManagerImpl implements ActivityManager {
     private ActivityDetails getActivityDetailsFromDTO(final ActivityDTO dto) throws JsonParseException, IOException {
         ActivityDetails event = null;
         if (dto.getConcept() == ActivityConcept.PRODUCT) {
-            event = new ProductActivityEvent();
+            event = new ProductActivityDetails();
         } else {
             event = new ActivityDetails();
         }
@@ -483,14 +483,14 @@ public class ActivityManagerImpl implements ActivityManager {
         event.setOriginalData(originalJSON);
         event.setNewData(newJSON);
 
-        if (event instanceof ProductActivityEvent && event.getNewData() != null) {
+        if (event instanceof ProductActivityDetails && event.getNewData() != null) {
             JsonNode devIdNode = event.getNewData().get("developerId");
             Long devId = devIdNode.asLong();
             if (devId != null) {
                 try {
                     DeveloperDTO dev = devDao.getById(devId);
                     if (dev != null) {
-                        ((ProductActivityEvent) event).setDeveloper(new Developer(dev));
+                        ((ProductActivityDetails) event).setDeveloper(new Developer(dev));
                     }
                 } catch (final EntityRetrievalException ex) {
                     LOGGER.error("Could not get developer with id " + devId);
