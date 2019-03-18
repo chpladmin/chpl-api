@@ -40,7 +40,7 @@ public class TestParticipantDAOImpl extends BaseDAOImpl implements TestParticipa
             entity.setCreationDate(new Date());
             entity.setDeleted(false);
             entity.setLastModifiedDate(new Date());
-            entity.setLastModifiedUser(Util.getCurrentUser().getId());
+            entity.setLastModifiedUser(Util.getAuditId());
             entity.setAgeRangeId(dto.getAgeRangeId());
             entity.setAssistiveTechnologyNeeds(dto.getAssistiveTechnologyNeeds());
             entity.setComputerExperienceMonths(dto.getComputerExperienceMonths());
@@ -79,7 +79,7 @@ public class TestParticipantDAOImpl extends BaseDAOImpl implements TestParticipa
         entity.setOccupation(dto.getOccupation());
         entity.setProductExperienceMonths(dto.getProductExperienceMonths());
         entity.setProfessionalExperienceMonths(dto.getProfessionalExperienceMonths());
-        entity.setLastModifiedUser(Util.getCurrentUser().getId());
+        entity.setLastModifiedUser(Util.getAuditId());
         entity.setLastModifiedDate(new Date());
 
         entity = update(entity);
@@ -94,7 +94,7 @@ public class TestParticipantDAOImpl extends BaseDAOImpl implements TestParticipa
         if (toDelete != null) {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+            toDelete.setLastModifiedUser(Util.getAuditId());
             update(toDelete);
         }
     }

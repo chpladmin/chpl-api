@@ -122,29 +122,29 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
         // This should always return false
         assertFalse(permissions.hasAccess());
 
-        Long id = 1l;
+        Long id = 1L;
 
-        // The user does not have access to this acb
-        Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))
-                .thenReturn(getPendingSurveillanceEntity(1l, 1l, 3l, ROLE_ACB_ID));
+        //The user does not have access to this acb
+        Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+        .thenReturn(getPendingSurveillanceEntity(1L, 1L, 3L, ROLE_ACB_ID));
 
         Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))
                 .thenReturn(getUserPermissionDTO("ROLE_ACB", "", ""));
 
         assertFalse(permissions.hasAccess(id));
 
-        // Should work...
+       //Should work...
         Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
-                .thenReturn(getPendingSurveillanceEntity(1l, 1l, 4l, ROLE_ACB_ID));
+                .thenReturn(getPendingSurveillanceEntity(1L, 1L, 4L, ROLE_ACB_ID));
 
         Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))
                 .thenReturn(getUserPermissionDTO("ROLE_ACB", "", ""));
 
         assertTrue(permissions.hasAccess(id));
 
-        // This one belongs to the wrong authority....
-        Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))
-                .thenReturn(getPendingSurveillanceEntity(1l, 1l, 4l, ROLE_ONC_ID));
+        //This one belongs to the wrong authority....
+        Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+                .thenReturn(getPendingSurveillanceEntity(1L, 1L, 4L, ROLE_ONC_ID));
 
         Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))
                 .thenReturn(getUserPermissionDTO("ROLE_ONC", "", ""));

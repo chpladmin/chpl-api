@@ -41,7 +41,7 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
             entity.setCertifiedProductId(cqmResult.getCertifiedProductId());
             entity.setSuccess(cqmResult.getSuccess());
 
-            entity.setLastModifiedUser(Util.getCurrentUser().getId());
+            entity.setLastModifiedUser(Util.getAuditId());
             entity.setLastModifiedDate(new Date());
             entity.setCreationDate(new Date());
             entity.setDeleted(false);
@@ -66,7 +66,7 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
         newMapping.setCreationDate(new Date());
         newMapping.setDeleted(false);
         newMapping.setLastModifiedDate(new Date());
-        newMapping.setLastModifiedUser(Util.getCurrentUser().getId());
+        newMapping.setLastModifiedUser(Util.getAuditId());
         entityManager.persist(newMapping);
         entityManager.flush();
         return new CQMResultCriteriaDTO(newMapping);
@@ -77,7 +77,7 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 
         CQMResultEntity entity = this.getEntityById(cqmResult.getId());
         entity.setLastModifiedDate(new Date());
-        entity.setLastModifiedUser(Util.getCurrentUser().getId());
+        entity.setLastModifiedUser(Util.getAuditId());
         entity.setSuccess(cqmResult.getSuccess());
 
         update(entity);
@@ -93,7 +93,7 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
         toUpdate.setCqmResultId(dto.getCqmResultId());
         toUpdate.setCertificationCriterionId(dto.getCriterionId());
         toUpdate.setLastModifiedDate(new Date());
-        toUpdate.setLastModifiedUser(Util.getCurrentUser().getId());
+        toUpdate.setLastModifiedUser(Util.getAuditId());
         entityManager.merge(toUpdate);
         entityManager.flush();
         return new CQMResultCriteriaDTO(toUpdate);
@@ -127,7 +127,7 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
         if (toDelete != null) {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+            toDelete.setLastModifiedUser(Util.getAuditId());
             entityManager.persist(toDelete);
             entityManager.flush();
         }

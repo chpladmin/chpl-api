@@ -40,7 +40,7 @@ public class TestTaskDAOImpl extends BaseDAOImpl implements TestTaskDAO {
             entity.setCreationDate(new Date());
             entity.setDeleted(false);
             entity.setLastModifiedDate(new Date());
-            entity.setLastModifiedUser(Util.getCurrentUser().getId());
+            entity.setLastModifiedUser(Util.getAuditId());
             entity.setDescription(dto.getDescription());
             entity.setTaskErrors(dto.getTaskErrors());
             entity.setTaskErrorsStddev(dto.getTaskErrorsStddev());
@@ -92,7 +92,7 @@ public class TestTaskDAOImpl extends BaseDAOImpl implements TestTaskDAO {
         entity.setTaskTimeDeviationObservedAvg(dto.getTaskTimeDeviationObservedAvg());
         entity.setTaskTimeDeviationOptimalAvg(dto.getTaskTimeDeviationOptimalAvg());
         entity.setTaskTimeStddev(dto.getTaskTimeStddev());
-        entity.setLastModifiedUser(Util.getCurrentUser().getId());
+        entity.setLastModifiedUser(Util.getAuditId());
         entity.setLastModifiedDate(new Date());
 
         update(entity);
@@ -107,7 +107,7 @@ public class TestTaskDAOImpl extends BaseDAOImpl implements TestTaskDAO {
         if (toDelete != null) {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+            toDelete.setLastModifiedUser(Util.getAuditId());
             entityManager.merge(toDelete);
             entityManager.flush();
         }

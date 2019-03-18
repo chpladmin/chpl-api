@@ -19,8 +19,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.acls.domain.BasePermission;
-import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,6 +44,7 @@ import gov.healthit.chpl.auth.json.UserListJSONObject;
 import gov.healthit.chpl.auth.jwt.JWTCreationException;
 import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
@@ -58,7 +57,6 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
-import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.InvitationManager;
 import gov.healthit.chpl.manager.TestingLabManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
@@ -92,10 +90,10 @@ public class UserManagementController {
 
     @Autowired
     private UserPermissionsManager userPermissionsManager;
-    
+
     @Autowired 
     private ResourcePermissions resourcePermissions;
-    
+
     @Autowired private MessageSource messageSource;
 
     private static final Logger LOGGER = LogManager.getLogger(UserManagementController.class);
@@ -251,7 +249,7 @@ public class UserManagementController {
             throw new InvalidArgumentsException("User key is required.");
         }
 
-        gov.healthit.chpl.auth.user.User loggedInUser = Util.getCurrentUser();
+        JWTAuthenticatedUser loggedInUser = (JWTAuthenticatedUser) Util.getCurrentUser();
         if (loggedInUser == null
                 && (StringUtils.isEmpty(credentials.getUserName()) || StringUtils.isEmpty(credentials.getPassword()))) {
             throw new InvalidArgumentsException(
@@ -277,8 +275,11 @@ public class UserManagementController {
         } else {
             // add authorization to the currently logged in user
             UserDTO userToUpdate = userManager.getById(loggedInUser.getId());
+            if (loggedInUser.getImpersonatingUser() != null) {
+                userToUpdate = loggedInUser.getImpersonatingUser();
+            }
             invitationManager.updateUserFromInvitation(invitation, userToUpdate);
-            UserDTO updatedUser = userManager.getById(loggedInUser.getId());
+            UserDTO updatedUser = userManager.getById(userToUpdate.getId());
             jwtToken = authenticator.getJWT(updatedUser);
         }
 

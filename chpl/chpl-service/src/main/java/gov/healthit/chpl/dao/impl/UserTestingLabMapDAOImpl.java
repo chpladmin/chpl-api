@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
@@ -16,9 +17,17 @@ import gov.healthit.chpl.dto.UserTestingLabMapDTO;
 import gov.healthit.chpl.entity.TestingLabEntity;
 import gov.healthit.chpl.entity.UserTestingLabMapEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Repository(value = "userTestingLabMapDAO")
 public class UserTestingLabMapDAOImpl extends BaseDAOImpl implements UserTestingLabMapDAO {
+    private ErrorMessageUtil errorMessageUtil;
+
+    @Autowired
+    public UserTestingLabMapDAOImpl(final ErrorMessageUtil errorMessageUtil) {
+        this.errorMessageUtil = errorMessageUtil;
+    }
+
     @Override
     public UserTestingLabMapDTO create(UserTestingLabMapDTO dto) throws EntityRetrievalException {
         UserTestingLabMapEntity entity = new UserTestingLabMapEntity();
@@ -116,8 +125,7 @@ public class UserTestingLabMapDAOImpl extends BaseDAOImpl implements UserTesting
         List<TestingLabEntity> result = query.getResultList();
 
         if (result == null || result.size() == 0) {
-            String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("acb.notFound"),
-                    LocaleContextHolder.getLocale()));
+            String msg = errorMessageUtil.getMessage("atl.notFound");
             throw new EntityRetrievalException(msg);
         } else if (result.size() > 1) {
             throw new EntityRetrievalException("Data error. Duplicate certificaiton body id in database.");

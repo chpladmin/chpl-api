@@ -62,7 +62,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
         TestingLabDTO result = testingLabDAO.create(atl);
 
         // Grant the user administrative permission to the ATL
-        userPermissionsManager.addAtlPermission(result, Util.getCurrentUser().getId());
+        userPermissionsManager.addAtlPermission(result, Util.getAuditId());
 
         LOGGER.debug("Created testing lab " + result + " and granted admin permission to recipient "
                 + gov.healthit.chpl.auth.Util.getUsername());

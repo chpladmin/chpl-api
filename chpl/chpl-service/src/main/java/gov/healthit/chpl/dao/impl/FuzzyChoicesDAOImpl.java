@@ -35,7 +35,7 @@ public class FuzzyChoicesDAOImpl extends BaseDAOImpl implements FuzzyChoicesDAO 
         entity.setCreationDate(new Date());
         entity.setDeleted(false);
         entity.setLastModifiedDate(new Date());
-        entity.setLastModifiedUser(Util.getCurrentUser().getId());
+        entity.setLastModifiedUser(Util.getAuditId());
         create(entity);
         return new FuzzyChoicesDTO(entity);
     }
@@ -76,7 +76,7 @@ public class FuzzyChoicesDAOImpl extends BaseDAOImpl implements FuzzyChoicesDAO 
 
         String toJSON = new ObjectMapper().writeValueAsString(dto.getChoices());
         entity.setChoices(toJSON);
-        entity.setLastModifiedUser(Util.getCurrentUser().getId());
+        entity.setLastModifiedUser(Util.getAuditId());
 
         update(entity);
         return new FuzzyChoicesDTO(entity);

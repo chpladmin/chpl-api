@@ -338,9 +338,9 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
                 throw new SurveillanceAuthorityAccessDeniedException(errorMsg);
             }
         } else {
-            // Cannot have surveillance authority as ROLE_ADMIN for user lacking ROLE_ADMIN
-            if (surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ADMIN) && !hasOncAdmin) {
-                String errorMsg = "User must have authority " + Authority.ROLE_ADMIN;
+            // Cannot have surveillance authority as ROLE_ONC for user lacking ROLE_ADMIN or ROLE_ONC
+            if (surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ONC) && !hasOncAdmin) {
+                String errorMsg = "User must have authority " + Authority.ROLE_ADMIN + " or " + Authority.ROLE_ONC;
                 LOGGER.error(errorMsg);
                 throw new SurveillanceAuthorityAccessDeniedException(errorMsg);
             } else if (surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB)) {

@@ -40,7 +40,7 @@ public class ActivityConceptDAOImpl extends BaseDAOImpl implements ActivityConce
             entity.setClassName(dto.getClassName());
             entity.setCreationDate(new Date());
             entity.setLastModifiedDate(new Date());
-            entity.setLastModifiedUser(Util.getCurrentUser().getId());
+            entity.setLastModifiedUser(Util.getAuditId());
             entity.setDeleted(dto.getDeleted());
 
             create(entity);
@@ -62,7 +62,7 @@ public class ActivityConceptDAOImpl extends BaseDAOImpl implements ActivityConce
         entity.setClassName(dto.getClassName());
         entity.setCreationDate(new Date());
         entity.setLastModifiedDate(new Date());
-        entity.setLastModifiedUser(Util.getCurrentUser().getId());
+        entity.setLastModifiedUser(Util.getAuditId());
         entity.setDeleted(dto.getDeleted());
 
         update(entity);

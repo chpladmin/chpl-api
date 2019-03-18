@@ -68,7 +68,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
             userEntity.setAccountLocked(user.isAccountLocked());
             userEntity.setCredentialsExpired(!user.isCredentialsNonExpired());
             userEntity.setPasswordResetRequired(user.getPasswordResetRequired());
-            userEntity.setLastModifiedUser(Util.getCurrentUser().getId());
+            userEntity.setLastModifiedUser(Util.getAuditId());
             userEntity.setLastModifiedDate(new Date());
             userEntity.setDeleted(false);
 
@@ -78,7 +78,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
             contact.setFriendlyName(user.getFriendlyName());
             contact.setPhoneNumber(user.getPhoneNumber());
             contact.setTitle(user.getTitle());
-            contact.setLastModifiedUser(Util.getCurrentUser().getId());
+            contact.setLastModifiedUser(Util.getAuditId());
             contact.setLastModifiedDate(new Date());
             contact.setDeleted(false);
             contact.setSignatureDate(null); // null for new user, must confirm
@@ -110,8 +110,8 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
         userEntity.setAccountLocked(user.isAccountLocked());
         userEntity.setCredentialsExpired(!user.isCredentialsNonExpired());
         userEntity.setPasswordResetRequired(user.getPasswordResetRequired());
-        userEntity.setLastModifiedUser(Util.getCurrentUser().getId());
-        userEntity.getContact().setLastModifiedUser(Util.getCurrentUser().getId());
+        userEntity.setLastModifiedUser(Util.getAuditId());
+        userEntity.getContact().setLastModifiedUser(Util.getAuditId());
 
         update(userEntity);
         return new UserDTO(userEntity);
@@ -163,8 +163,8 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
             userContactDAO.delete(toDelete.getContact());
         }
 
-        // delete the user
-        toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+        //delete the user
+        toDelete.setLastModifiedUser(Util.getAuditId());
         toDelete.setLastModifiedDate(new Date());
         toDelete.setDeleted(true);
         update(toDelete);

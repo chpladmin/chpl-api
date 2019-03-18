@@ -10,6 +10,7 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -25,8 +26,10 @@ import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.jwt.JWTAuthor;
 import gov.healthit.chpl.auth.jwt.JWTCreationException;
+import gov.healthit.chpl.auth.manager.SecuredUserManager;
 import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
@@ -40,6 +43,9 @@ public class UserAuthenticator implements Authenticator {
 
     @Autowired
     protected UserManager userManager;
+
+    @Autowired
+    private SecuredUserManager securedUserManager;
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -114,6 +120,10 @@ public class UserAuthenticator implements Authenticator {
         identity.add(user.getId().toString());
         identity.add(user.getUsername());
         identity.add(user.getFullName());
+        if (user.getImpersonatedBy() != null) {
+            identity.add(user.getImpersonatedBy().getId().toString());
+            identity.add(user.getImpersonatedBy().getSubjectName());
+        }
 
         claims.put("Identity", identity);
 
@@ -123,35 +133,19 @@ public class UserAuthenticator implements Authenticator {
     }
 
     @Override
-    public String refreshJWT() throws JWTCreationException {
+    public String refreshJWT() throws JWTCreationException, UserRetrievalException {
 
-        User user = Util.getCurrentUser();
-        String jwt = null;
+        JWTAuthenticatedUser user = (JWTAuthenticatedUser) Util.getCurrentUser();
 
         if (user != null) {
-            Map<String, List<String>> claims = new HashMap<String, List<String>>();
-            List<String> claimStrings = new ArrayList<String>();
-
-            Set<GrantedPermission> permissions = user.getPermissions();
-
-            for (GrantedPermission claim : permissions) {
-                claimStrings.add(claim.getAuthority());
+            UserDTO userDto = getUserByName(user.getSubjectName());
+            if (user.getImpersonatingUser() != null) {
+                userDto.setImpersonatedBy(user.getImpersonatingUser());
             }
-            claims.put("Authorities", claimStrings);
-
-            List<String> identity = new ArrayList<String>();
-
-            identity.add(user.getId().toString());
-            identity.add(user.getUsername());
-            identity.add(user.getFullName());
-
-            claims.put("Identity", identity);
-
-            jwt = jwtAuthor.createJWT(user.getSubjectName(), claims);
+            return getJWT(userDto);
         } else {
             throw new JWTCreationException("Cannot generate token for Anonymous user.");
         }
-        return jwt;
     }
 
     @Override
@@ -342,4 +336,24 @@ public class UserAuthenticator implements Authenticator {
         this.jwtAuthor = jwtAuthor;
     }
 
+    @Override
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).USER_PERMISSIONS, "
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).IMPERSONATE_USER, #username)")
+    public String impersonateUser(final String username) throws UserRetrievalException,
+    JWTCreationException, UserManagementException {
+        JWTAuthenticatedUser user = (JWTAuthenticatedUser) Util.getCurrentUser();
+        if (user.getImpersonatingUser() != null) {
+            throw new UserManagementException("Unable to impersonate user while already impersonating");
+        }
+        UserDTO impersonatingUser = getUserByName(user.getSubjectName());
+        UserDTO impersonatedUser = getUserByName(username);
+
+        impersonatedUser.setImpersonatedBy(impersonatingUser);
+        return getJWT(impersonatedUser);
+    }
+
+    @Override
+    public String unimpersonateUser(final User user) throws JWTCreationException, UserRetrievalException {
+        return getJWT(getUserByName(user.getSubjectName()));
+    }
 }

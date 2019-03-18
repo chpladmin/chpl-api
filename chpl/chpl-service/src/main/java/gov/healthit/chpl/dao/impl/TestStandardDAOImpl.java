@@ -56,7 +56,7 @@ public class TestStandardDAOImpl extends BaseDAOImpl implements TestStandardDAO 
                 }
             }
             entity.setDeleted(false);
-            entity.setLastModifiedUser(Util.getCurrentUser().getId());
+            entity.setLastModifiedUser(Util.getAuditId());
 
             try {
                 entityManager.persist(entity);
