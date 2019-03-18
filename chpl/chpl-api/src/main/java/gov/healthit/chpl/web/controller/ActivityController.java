@@ -284,7 +284,6 @@ public class ActivityController {
                 id, ActivityConcept.DEVELOPER, startDate, endDate);
     }
 
-
     @ApiOperation(value = "Get auditable data for certification bodies.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "
                     + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all certification bodies.  "

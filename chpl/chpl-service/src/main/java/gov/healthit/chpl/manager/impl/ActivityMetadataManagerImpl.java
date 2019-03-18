@@ -15,8 +15,6 @@ import com.fasterxml.jackson.core.JsonParseException;
 
 import gov.healthit.chpl.activity.ActivityMetadataBuilder;
 import gov.healthit.chpl.activity.ActivityMetadataBuilderFactory;
-import gov.healthit.chpl.activity.DeveloperActivityMetadataBuilder;
-import gov.healthit.chpl.activity.ListingActivityMetadataBuilder;
 import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
