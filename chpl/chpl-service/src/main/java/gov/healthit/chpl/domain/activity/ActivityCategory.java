@@ -43,5 +43,10 @@ public enum ActivityCategory implements Serializable {
     /**
      * A version was changed.
      */
-    VERSION;
+    VERSION,
+
+    /**
+     * An ACB was changed.
+     */
+    CERTIFICATION_BODY;
 }

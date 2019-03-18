@@ -29,6 +29,10 @@ public class ActivityMetadataBuilderFactory {
     @Qualifier("versionActivityMetadataBuilder")
     private VersionActivityMetadataBuilder versionBuilder;
 
+    @Autowired
+    @Qualifier("acbActivityMetadataBuilder")
+    private CertificationBodyActivityMetadataBuilder acbBuilder;
+
     public ActivityMetadataBuilder getBuilder(final ActivityDTO dto) {
         ActivityMetadataBuilder builder = null;
         switch (dto.getConcept()) {
@@ -43,6 +47,9 @@ public class ActivityMetadataBuilderFactory {
             break;
         case VERSION:
             builder = versionBuilder;
+            break;
+        case CERTIFICATION_BODY:
+            builder = acbBuilder;
             break;
         default:
             break;

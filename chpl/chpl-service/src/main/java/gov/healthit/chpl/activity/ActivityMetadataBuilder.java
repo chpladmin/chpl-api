@@ -2,6 +2,7 @@ package gov.healthit.chpl.activity;
 
 import gov.healthit.chpl.auth.json.User;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
+import gov.healthit.chpl.domain.activity.CertificationBodyActivityMetadata;
 import gov.healthit.chpl.domain.activity.DeveloperActivityMetadata;
 import gov.healthit.chpl.domain.activity.ListingActivityMetadata;
 import gov.healthit.chpl.domain.activity.ProductActivityMetadata;
@@ -58,6 +59,8 @@ public abstract class ActivityMetadataBuilder {
         case VERSION:
             metadata = new VersionActivityMetadata();
             break;
+        case CERTIFICATION_BODY:
+            metadata = new CertificationBodyActivityMetadata();
         default:
             break;
         }

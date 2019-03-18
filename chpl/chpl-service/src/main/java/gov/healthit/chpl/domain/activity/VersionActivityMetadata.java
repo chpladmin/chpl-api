@@ -1,7 +1,7 @@
 package gov.healthit.chpl.domain.activity;
 
 /**
- * Product specific activity summary fields.
+ * Version specific activity summary fields.
  * @author kekey
  *
  */
