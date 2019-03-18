@@ -6,8 +6,6 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.entity.UserEntity;
@@ -145,8 +143,7 @@ public class UserTestingLabMapDAOImpl extends BaseDAOImpl implements UserTesting
         List<UserEntity> result = query.getResultList();
 
         if (result == null || result.size() == 0) {
-            String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("user.notFound"),
-                    LocaleContextHolder.getLocale()));
+            String msg = errorMessageUtil.getMessage("user.notFound");
             throw new EntityRetrievalException(msg);
         } else if (result.size() > 1) {
             throw new EntityRetrievalException("Data error. Duplicate user id in database.");
