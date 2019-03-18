@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.dto.ActivityDTO;
 
 /**
- * Creates an appropriate metadata buidler object for the type of activity
+ * Creates an appropriate metadata buidler object for the type of activity.
  * @author kekey
  *
  */
@@ -25,6 +25,10 @@ public class ActivityMetadataBuilderFactory {
     @Qualifier("productActivityMetadataBuilder")
     private ProductActivityMetadataBuilder productBuilder;
 
+    @Autowired
+    @Qualifier("versionActivityMetadataBuilder")
+    private VersionActivityMetadataBuilder versionBuilder;
+
     public ActivityMetadataBuilder getBuilder(final ActivityDTO dto) {
         ActivityMetadataBuilder builder = null;
         switch (dto.getConcept()) {
@@ -36,6 +40,9 @@ public class ActivityMetadataBuilderFactory {
             break;
         case PRODUCT:
             builder = productBuilder;
+            break;
+        case VERSION:
+            builder = versionBuilder;
             break;
         default:
             break;

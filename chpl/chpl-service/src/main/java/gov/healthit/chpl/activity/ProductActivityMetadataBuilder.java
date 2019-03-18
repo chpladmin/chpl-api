@@ -74,7 +74,6 @@ public class ProductActivityMetadataBuilder extends ActivityMetadataBuilder {
 
     private void parseProductMetadata(
             final ProductActivityMetadata productMetadata, final ProductDTO product) {
-        productMetadata.setDeveloperName(product.getDeveloperName());
         //Developer id is always filled in the activity object
         //but the name does not seem to be. If the name is available
         //use it but if not look up the developer by ID
@@ -89,6 +88,6 @@ public class ProductActivityMetadataBuilder extends ActivityMetadataBuilder {
                         + "in activity for product " + product.getId());
             }
         }
-        productMetadata.setProudctName(product.getName());
+        productMetadata.setProductName(product.getName());
     }
 }

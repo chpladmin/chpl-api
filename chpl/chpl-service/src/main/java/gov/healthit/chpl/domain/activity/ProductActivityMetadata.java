@@ -9,7 +9,7 @@ public class ProductActivityMetadata extends ActivityMetadata {
     private static final long serialVersionUID = 9069117187924463180L;
 
     private String developerName;
-    private String proudctName;
+    private String productName;
 
     public ProductActivityMetadata() {
     }
@@ -22,11 +22,11 @@ public class ProductActivityMetadata extends ActivityMetadata {
         this.developerName = developerName;
     }
 
-    public String getProudctName() {
-        return proudctName;
+    public String getProductName() {
+        return productName;
     }
 
-    public void setProudctName(String proudctName) {
-        this.proudctName = proudctName;
+    public void setProductName(final String productName) {
+        this.productName = productName;
     }
 }

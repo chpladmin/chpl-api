@@ -38,5 +38,10 @@ public enum ActivityCategory implements Serializable {
     /**
      * A product was changed.
      */
-    PRODUCT;
+    PRODUCT,
+
+    /**
+     * A version was changed.
+     */
+    VERSION;
 }

@@ -324,6 +324,46 @@ public class ActivityController {
                 id, ActivityConcept.PRODUCT, startDate, endDate);
     }
 
+    @ApiOperation(value = "Get metadata about auditable records in the system for version.",
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+    @RequestMapping(value = "/metadata/versions", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public List<ActivityMetadata> metadataForVersions(@RequestParam final Long start,
+            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
+        Date startDate = new Date(start);
+        Date endDate = new Date(end);
+        validateActivityDates(start, end);
+        return activityMetadataManager.getActivityMetadataByConcept(
+                ActivityConcept.VERSION, startDate, endDate);
+    }
+
+    @ApiOperation(value = "Get metadata about auditable records in the system for a specific version.",
+            notes = "A start and end date may optionally be provided to limit activity results.")
+    @RequestMapping(value = "/metadata/versions/{id:^-?\\d+$}", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public List<ActivityMetadata> metadataForVersionById(@PathVariable("id") final Long id,
+            @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
+                    throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
+        versionManager.getById(id); // returns 404 if bad id
+
+        //if one of start of end is provided then the other must also be provided.
+        //if neither is provided then query all dates
+        Date startDate = new Date(0);
+        Date endDate = new Date();
+        if (start != null && end != null) {
+            validateActivityDates(start, end);
+            startDate = new Date(start);
+            endDate = new Date(end);
+        } else if (start == null && end != null) {
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
+        } else if (start != null && end == null) {
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
+        }
+
+        return activityMetadataManager.getActivityMetadataByObject(
+                id, ActivityConcept.VERSION, startDate, endDate);
+    }
+
     @ApiOperation(value = "Get auditable data for certification bodies.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "
                     + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all certification bodies.  "
@@ -773,7 +813,8 @@ public class ActivityController {
         return getActivityEventsForProducts(id, startDate, endDate);
     }
 
-    @ApiOperation(value = "Get auditable data for all versions",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED. Get auditable data for all versions",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
     @RequestMapping(value = "/versions", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityForVersions(@RequestParam final Long start,
@@ -784,7 +825,8 @@ public class ActivityController {
         return getActivityEventsForVersions(startDate, endDate);
     }
 
-    @ApiOperation(value = "Get auditable data for a specific version.",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED. Get auditable data for a specific version.",
             notes = "A start and end date may optionally be provided to limit activity results.")
     @RequestMapping(value = "/versions/{id}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")

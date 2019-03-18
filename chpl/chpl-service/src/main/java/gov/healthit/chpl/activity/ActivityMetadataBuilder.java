@@ -5,6 +5,7 @@ import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.DeveloperActivityMetadata;
 import gov.healthit.chpl.domain.activity.ListingActivityMetadata;
 import gov.healthit.chpl.domain.activity.ProductActivityMetadata;
+import gov.healthit.chpl.domain.activity.VersionActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
 
 /**
@@ -53,6 +54,9 @@ public abstract class ActivityMetadataBuilder {
             break;
         case PRODUCT:
             metadata = new ProductActivityMetadata();
+            break;
+        case VERSION:
+            metadata = new VersionActivityMetadata();
             break;
         default:
             break;
