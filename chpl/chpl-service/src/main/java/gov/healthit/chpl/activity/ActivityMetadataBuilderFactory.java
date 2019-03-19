@@ -13,22 +13,29 @@ import gov.healthit.chpl.dto.ActivityDTO;
  */
 @Component
 public class ActivityMetadataBuilderFactory {
-    @Autowired
-    @Qualifier("listingActivityMetadataBuilder")
     private ListingActivityMetadataBuilder listingBuilder;
-
-    @Autowired
-    @Qualifier("developerActivityMetadataBuilder")
     private DeveloperActivityMetadataBuilder developerBuilder;
-
-    @Autowired
-    @Qualifier("productActivityMetadataBuilder")
     private ProductActivityMetadataBuilder productBuilder;
-
-    @Autowired
-    @Qualifier("versionActivityMetadataBuilder")
     private VersionActivityMetadataBuilder versionBuilder;
 
+    @Autowired
+    public ActivityMetadataBuilderFactory(
+            @Qualifier("listingActivityMetadataBuilder") final ListingActivityMetadataBuilder listingBuilder,
+            @Qualifier("developerActivityMetadataBuilder") final DeveloperActivityMetadataBuilder developerBuilder,
+            @Qualifier("productActivityMetadataBuilder") final ProductActivityMetadataBuilder productBuilder,
+            @Qualifier("versionActivityMetadataBuilder") final VersionActivityMetadataBuilder versionBuilder) {
+        this.listingBuilder = listingBuilder;
+        this.developerBuilder = developerBuilder;
+        this.productBuilder = productBuilder;
+        this.versionBuilder = versionBuilder;
+    }
+
+    /**
+     * Factory method to get a metadata builder of the appropriate class
+     * based on what type of activity object is passed in.
+     * @param dto the activity object
+     * @return the appropriate builder
+     */
     public ActivityMetadataBuilder getBuilder(final ActivityDTO dto) {
         ActivityMetadataBuilder builder = null;
         switch (dto.getConcept()) {
