@@ -8,6 +8,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import org.apache.commons.lang3.StringUtils;
+
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SurveillanceNonconformityDocument implements Serializable {
@@ -33,6 +35,23 @@ public class SurveillanceNonconformityDocument implements Serializable {
 
     @XmlTransient
     private byte[] fileContents;
+
+    /**
+     * Determines if this document matches another document.
+     * Expects ID and/or document name to be filled in.
+     * @param anotherDocument
+     * @return whether the two document objects are the same
+     */
+    public boolean matches(final SurveillanceNonconformityDocument anotherDocument) {
+        if (this.id != null && anotherDocument.id != null
+                && this.id.longValue() == anotherDocument.id.longValue()) {
+            return true;
+        } else if (!StringUtils.isEmpty(this.fileName) && !StringUtils.isEmpty(anotherDocument.fileName)
+                && this.fileName.equalsIgnoreCase(anotherDocument.fileName)) {
+            return true;
+        }
+        return false;
+    }
 
     public Long getId() {
         return id;

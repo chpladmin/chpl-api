@@ -10,6 +10,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * Safety Enhanced Design data that is relied upon by this Health IT Module to
  * demonstrate its compliance with a certification criterion or criteria. The
@@ -17,6 +19,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CertifiedProductSed implements Serializable {
     private static final long serialVersionUID = -4131156681875211447L;
 

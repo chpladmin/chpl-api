@@ -13,6 +13,8 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 
 /**
@@ -20,6 +22,7 @@ import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
  */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CertificationResult implements Serializable {
     private static final long serialVersionUID = -4917413876078419868L;
     public static final String PRIVACY_SECURITY_FRAMEWORK_DELIMITER = ";";
