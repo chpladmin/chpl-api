@@ -107,6 +107,7 @@ public class ActivityMetadataManagerImpl implements ActivityMetadataManager {
         return getActivityMetadataByConcept(ActivityConcept.CERTIFICATION_BODY, startDate, endDate);
     }
 
+    @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or "
             + "@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_METADATA_BY_ACB, #acbId)")
@@ -114,8 +115,6 @@ public class ActivityMetadataManagerImpl implements ActivityMetadataManager {
     public List<ActivityMetadata> getCertificationBodyActivityMetadata(final Long acbId, final Date startDate, final Date endDate)
             throws EntityRetrievalException, JsonParseException, IOException {
         acbDao.getById(acbId); //throws not found exception for invalid id
-        //there is very little ACB activity so just get it all for the date range
-        //and apply a post filter to remove whatever the current user should not see.
         return getActivityMetadataByObject(acbId, ActivityConcept.CERTIFICATION_BODY, startDate, endDate);
     }
 }
