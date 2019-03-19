@@ -149,7 +149,7 @@
             <property name="hibernate.format_sql" value="false" />
             <property name="hibernate.driver_class" value="org.postgresql.Driver" />
             <property name="hibernate.connection.datasource"
-                value="java:comp/env/jdbc/openchpl" />
+                value="java:comp/env/jdbc/openchpl_test" />
             <property name="hibernate.dialect"
                 value="org.hibernate.dialect.PostgreSQLDialect" />
             <property name="hibernate.flush_before_completion"
