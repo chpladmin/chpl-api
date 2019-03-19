@@ -9,10 +9,13 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.springframework.util.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CertifiedProduct implements Serializable {
     private static final long serialVersionUID = -6634520925641244762L;
 
@@ -64,6 +67,24 @@ public class CertifiedProduct implements Serializable {
         this.setLastModifiedDate(dto.getLastModifiedDate() != null ? dto.getLastModifiedDate().getTime() + "" : "");
         this.edition = dto.getYear();
         this.certificationDate = (dto.getCertificationDate() != null ? dto.getCertificationDate().getTime() : -1);
+    }
+
+    /**
+     * Check for sameness here by first trying to compare the two IDs
+     * or if one of them isn't filled in try comparing the chpl product numbers.
+     * Expect one or the other (or both) of those fields always filled in.
+     * @param anotherCp
+     * @return whether the two certified products are the same
+     */
+    public boolean matches(final CertifiedProduct anotherCp) {
+        if (this.id != null && anotherCp.id != null
+                && this.id.longValue() == anotherCp.id.longValue()) {
+            return true;
+        } else if (!StringUtils.isEmpty(this.chplProductNumber) && !StringUtils.isEmpty(anotherCp.chplProductNumber)
+                && this.chplProductNumber.equalsIgnoreCase(anotherCp.chplProductNumber)) {
+            return true;
+        }
+        return false;
     }
 
     public Long getId() {
