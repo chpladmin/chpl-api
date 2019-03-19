@@ -9,6 +9,8 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.springframework.util.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 
 /**
@@ -17,6 +19,7 @@ import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
  */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CertificationResultTestData implements Serializable {
     private static final long serialVersionUID = -7272525145274770518L;
 

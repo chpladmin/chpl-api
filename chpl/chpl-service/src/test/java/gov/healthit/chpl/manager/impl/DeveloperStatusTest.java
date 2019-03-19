@@ -55,6 +55,7 @@ import gov.healthit.chpl.validation.developer.DeveloperUpdateValidator;
 })
 public class DeveloperStatusTest {
     private static final String MISSING_REASON_ERROR = "A reason must be given for marking this developer as banned on %s.";
+    private static final String NO_ADMIN_NO_STATUS_CHANGE_ERROR = "User cannot change developer status to %s without ROLE_ADMIN";
 
     private JWTAuthenticatedUser adminUser;
 
@@ -113,6 +114,9 @@ public class DeveloperStatusTest {
         Mockito.when(acbManager.getAll()).thenReturn(new ArrayList<CertificationBodyDTO>());
         Mockito.doReturn(MISSING_REASON_ERROR).when(msgUtil)
                 .getMessage(ArgumentMatchers.eq("developer.missingReasonForBan"), ArgumentMatchers.anyString());
+        Mockito.doReturn(NO_ADMIN_NO_STATUS_CHANGE_ERROR).when(msgUtil)
+            .getMessage(ArgumentMatchers.eq("developer.statusChangeNotAllowedWithoutAdmin"),
+                    ArgumentMatchers.eq(DeveloperStatusType.UnderCertificationBanByOnc.toString()));
     }
 
     @Test
