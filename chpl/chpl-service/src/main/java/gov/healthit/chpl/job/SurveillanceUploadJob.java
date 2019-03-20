@@ -104,7 +104,7 @@ public class SurveillanceUploadJob extends RunnableJob {
                 }
             } else {
                 // figure out how many surveillances are in the file,
-                //this is like 2% of the work
+                // this is like 2% of the work
                 int survCount = 0;
                 try {
                     survCount = survUploadManager.countSurveillanceRecords(job.getData());
@@ -116,7 +116,7 @@ public class SurveillanceUploadJob extends RunnableJob {
                     jobPercentComplete = 2.0;
                     updateStatus(jobPercentComplete, JobStatusType.In_Progress);
 
-                    //now do the actual parsing
+                    // now do the actual parsing
                     List<String> parserErrors = new ArrayList<String>();
                     CSVRecord heading = null;
                     List<CSVRecord> rows = new ArrayList<CSVRecord>();
@@ -130,23 +130,29 @@ public class SurveillanceUploadJob extends RunnableJob {
                             if (!StringUtils.isEmpty(currRecord.get(0).trim())) {
                                 String currRecordStatus = currRecord.get(0).trim();
 
-                                if (currRecordStatus.equalsIgnoreCase(SurveillanceUploadManager.NEW_SURVEILLANCE_BEGIN_INDICATOR)
+                                if (currRecordStatus
+                                        .equalsIgnoreCase(SurveillanceUploadManager.NEW_SURVEILLANCE_BEGIN_INDICATOR)
                                         || currRecordStatus.equalsIgnoreCase(
                                                 SurveillanceUploadManager.UPDATE_SURVEILLANCE_BEGIN_INDICATOR)) {
                                     // parse the previous recordset because we hit a new surveillance item
                                     // if this is the last recordset, we'll handle that later
                                     if (rows.size() > 0) {
                                         try {
-                                            SurveillanceUploadHandler handler = uploadHandlerFactory.getHandler(heading, rows);
+                                            SurveillanceUploadHandler handler = uploadHandlerFactory.getHandler(heading,
+                                                    rows);
                                             Surveillance pendingSurv = handler.handle();
-                                            List<String> errors =
-                                                    survUploadManager.checkUploadedSurveillanceOwnership(pendingSurv);
+                                            List<String> errors = survUploadManager
+                                                    .checkUploadedSurveillanceOwnership(pendingSurv);
+
+                                            errors.addAll(pendingSurv.getErrorMessages());
+
                                             for (String error : errors) {
                                                 parserErrors.add(error);
                                             }
+
                                             pendingSurvs.add(pendingSurv);
 
-                                            //Add some percent complete between 2 and 50
+                                            // Add some percent complete between 2 and 50
                                             jobPercentComplete += 48.0 / survCount;
                                             updateStatus(jobPercentComplete, JobStatusType.In_Progress);
                                         } catch (final InvalidArgumentsException ex) {
@@ -156,7 +162,8 @@ public class SurveillanceUploadJob extends RunnableJob {
                                     }
                                     rows.clear();
                                     rows.add(currRecord);
-                                } else if (currRecordStatus.equalsIgnoreCase(SurveillanceUploadManager.SUBELEMENT_INDICATOR)) {
+                                } else if (currRecordStatus
+                                        .equalsIgnoreCase(SurveillanceUploadManager.SUBELEMENT_INDICATOR)) {
                                     rows.add(currRecord);
                                 } // ignore blank rows
                             }
@@ -180,7 +187,7 @@ public class SurveillanceUploadJob extends RunnableJob {
                     }
 
                     if (parserErrors != null && parserErrors.size() > 0) {
-                        for (String error: parserErrors) {
+                        for (String error : parserErrors) {
                             addJobMessage(error);
                         }
                         updateStatus(100, JobStatusType.Error);
@@ -199,35 +206,39 @@ public class SurveillanceUploadJob extends RunnableJob {
         // now load everything that was parsed
         for (Surveillance surv : pendingSurvs) {
             CertifiedProductDTO owningCp = null;
-            try {
-                owningCp = cpManager.getById(surv.getCertifiedProduct().getId());
-                survValidator.validate(surv, false);
-                surveillanceDAO.insertPendingSurveillance(surv);
+            if (surv != null && surv.getCertifiedProduct() != null && surv.getCertifiedProduct().getId() != null) {
+                try {
+                    owningCp = cpManager.getById(surv.getCertifiedProduct().getId());
 
-                jobPercentComplete += 50.0 / pendingSurvs.size();
-                updateStatus(jobPercentComplete, JobStatusType.In_Progress);
-            } catch (final AccessDeniedException denied) {
-                String msg = "";
-                if (owningCp != null && owningCp.getCertificationBodyId() != null) {
-                    try {
-                        CertificationBodyDTO acbDTO = acbDAO.getById(owningCp.getCertificationBodyId());
-                        msg = errorMessageUtil.getMessage("surveillance.permissionErrorWithAcb",
-                                Util.getCurrentUser().getSubjectName(), owningCp.getChplProductNumber(), acbDTO.getName());
-                    } catch (Exception e) {
+                    survValidator.validate(surv, false);
+                    surveillanceDAO.insertPendingSurveillance(surv);
+
+                    jobPercentComplete += 50.0 / pendingSurvs.size();
+                    updateStatus(jobPercentComplete, JobStatusType.In_Progress);
+                } catch (final AccessDeniedException denied) {
+                    String msg = "";
+                    if (owningCp != null && owningCp.getCertificationBodyId() != null) {
+                        try {
+                            CertificationBodyDTO acbDTO = acbDAO.getById(owningCp.getCertificationBodyId());
+                            msg = errorMessageUtil.getMessage("surveillance.permissionErrorWithAcb",
+                                    Util.getCurrentUser().getSubjectName(), owningCp.getChplProductNumber(),
+                                    acbDTO.getName());
+                        } catch (Exception e) {
+                            msg = errorMessageUtil.getMessage("surveillance.permissionError",
+                                    Util.getCurrentUser().getSubjectName());
+                        }
+                    } else {
                         msg = errorMessageUtil.getMessage("surveillance.permissionError",
                                 Util.getCurrentUser().getSubjectName());
                     }
-                } else {
-                    msg = errorMessageUtil.getMessage("surveillance.permissionError",
-                            Util.getCurrentUser().getSubjectName());
-                }
 
-                LOGGER.error(msg);
-                addJobMessage(msg);
-            } catch (Exception ex) {
-                String msg = errorMessageUtil.getMessage("surveillance.errorAdding");
-                LOGGER.error(msg);
-                addJobMessage(msg);
+                    LOGGER.error(msg);
+                    addJobMessage(msg);
+                } catch (Exception ex) {
+                    String msg = errorMessageUtil.getMessage("surveillance.errorAdding");
+                    LOGGER.error(msg);
+                    addJobMessage(msg);
+                }
             }
         }
         this.complete();
