@@ -9,7 +9,7 @@ import org.springframework.security.access.AccessDeniedException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
-import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;

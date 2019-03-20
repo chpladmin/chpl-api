@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 

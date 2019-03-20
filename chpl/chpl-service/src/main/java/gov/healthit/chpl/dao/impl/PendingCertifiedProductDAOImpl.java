@@ -20,7 +20,7 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
-import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultAdditionalSoftwareEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultG1MacraMeasureEntity;
@@ -56,8 +56,6 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
     private static final Logger LOGGER = LogManager.getLogger(PendingCertifiedProductDAOImpl.class);
     @Autowired
     private MessageSource messageSource;
-//    @Autowired
-//    private ContactDAO contactDao;
 
     @Override
     @Transactional

@@ -1,26 +1,26 @@
-package gov.healthit.chpl.dto;
+package gov.healthit.chpl.dto.listing.pending;
 
 import java.io.Serializable;
 
-import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTargetedUserEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductAccessibilityStandardEntity;
 
-public class PendingCertifiedProductTargetedUserDTO implements Serializable {
-    private static final long serialVersionUID = 8450020346312080499L;
+public class PendingCertifiedProductAccessibilityStandardDTO implements Serializable {
+    private static final long serialVersionUID = 3848620066733249423L;
     private Long id;
     private Long pendingCertifiedProductId;
-    private Long targetedUserId;
+    private Long accessibilityStandardId;
     private String name;
 
-    public PendingCertifiedProductTargetedUserDTO() {
+    public PendingCertifiedProductAccessibilityStandardDTO() {
     }
 
-    public PendingCertifiedProductTargetedUserDTO(PendingCertifiedProductTargetedUserEntity entity) {
+    public PendingCertifiedProductAccessibilityStandardDTO(PendingCertifiedProductAccessibilityStandardEntity entity) {
         this.setId(entity.getId());
 
         if (entity.getMappedProduct() != null) {
             this.setPendingCertifiedProductId(entity.getMappedProduct().getId());
         }
-        this.setTargetedUserId(entity.getTargetedUserId());
+        this.setAccessibilityStandardId(entity.getAccessibilityStandardId());
         this.setName(entity.getName());
     }
 
@@ -48,11 +48,11 @@ public class PendingCertifiedProductTargetedUserDTO implements Serializable {
         this.name = name;
     }
 
-    public Long getTargetedUserId() {
-        return targetedUserId;
+    public Long getAccessibilityStandardId() {
+        return accessibilityStandardId;
     }
 
-    public void setTargetedUserId(final Long targetedUserId) {
-        this.targetedUserId = targetedUserId;
+    public void setAccessibilityStandardId(final Long accessibilityStandardId) {
+        this.accessibilityStandardId = accessibilityStandardId;
     }
 }

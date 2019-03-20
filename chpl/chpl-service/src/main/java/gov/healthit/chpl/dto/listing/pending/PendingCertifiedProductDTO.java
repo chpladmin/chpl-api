@@ -1,4 +1,4 @@
-package gov.healthit.chpl.dto;
+package gov.healthit.chpl.dto.listing.pending;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -29,6 +29,13 @@ import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.UcdProcess;
+import gov.healthit.chpl.dto.AddressDTO;
+import gov.healthit.chpl.dto.AgeRangeDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.EducationTypeDTO;
+import gov.healthit.chpl.dto.MacraMeasureDTO;
+import gov.healthit.chpl.dto.TestDataDTO;
+import gov.healthit.chpl.dto.TestProcedureDTO;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductAccessibilityStandardEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;

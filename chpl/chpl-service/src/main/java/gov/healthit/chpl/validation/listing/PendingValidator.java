@@ -2,7 +2,7 @@ package gov.healthit.chpl.validation.listing;
 
 import java.util.List;
 
-import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
 
 /**
