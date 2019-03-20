@@ -143,13 +143,12 @@ public class SurveillanceUploadJob extends RunnableJob {
                                             Surveillance pendingSurv = handler.handle();
                                             List<String> errors = survUploadManager
                                                     .checkUploadedSurveillanceOwnership(pendingSurv);
-
+                                            // Add any errors that were found when getting the Surveillance
                                             errors.addAll(pendingSurv.getErrorMessages());
 
                                             for (String error : errors) {
                                                 parserErrors.add(error);
                                             }
-
                                             pendingSurvs.add(pendingSurv);
 
                                             // Add some percent complete between 2 and 50
