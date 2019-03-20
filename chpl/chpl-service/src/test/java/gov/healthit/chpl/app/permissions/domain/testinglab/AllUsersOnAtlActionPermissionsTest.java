@@ -1,4 +1,4 @@
-package gov.healthit.chpl.app.permissions.domain.invitation;
+package gov.healthit.chpl.app.permissions.domain.testinglab;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -10,30 +10,31 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.healthit.chpl.app.permissions.domain.ActionPermissionsBaseTest;
+import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
-import gov.healthit.chpl.permissions.domains.invitation.InviteAcbAtlActionPermissions;
+import gov.healthit.chpl.permissions.domains.testinglab.AllUsersOnAtlActionPermissions;
+import gov.healthit.chpl.permissions.domains.testinglab.UpdateActionPermissions;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
         gov.healthit.chpl.CHPLTestConfig.class
 })
-public class InviteAcbAtlActionPermissionsTest extends ActionPermissionsBaseTest {
+public class AllUsersOnAtlActionPermissionsTest extends ActionPermissionsBaseTest {
     @Mock
-    private ResourcePermissions resourcePermissions;
+    private ResourcePermissions resourcePermissions;;
 
     @InjectMocks
-    private InviteAcbAtlActionPermissions permissions;
+    private AllUsersOnAtlActionPermissions permissions;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
+        Mockito.when(resourcePermissions.getAllAtlsForCurrentUser()).thenReturn(getAllAtlForUser(2l, 4l));
     }
 
     @Override
@@ -41,11 +42,12 @@ public class InviteAcbAtlActionPermissionsTest extends ActionPermissionsBaseTest
     public void hasAccess_Admin() throws Exception {
         setupForAdminUser(resourcePermissions);
 
-        // This should always be false
+        // This is not used
         assertFalse(permissions.hasAccess());
 
-        // Since it is admin it has access to all - param value does not matter.
-        assertTrue(permissions.hasAccess(1L));
+        TestingLabDTO dto = new TestingLabDTO();
+        dto.setId(1L);
+        assertTrue(permissions.hasAccess(dto));
     }
 
     @Override
@@ -53,11 +55,12 @@ public class InviteAcbAtlActionPermissionsTest extends ActionPermissionsBaseTest
     public void hasAccess_Onc() throws Exception {
         setupForOncUser(resourcePermissions);
 
-        // This should always be false
+        // This is not used
         assertFalse(permissions.hasAccess());
 
-        // Since it is ONC it has access to all - param value does not matter.
-        assertTrue(permissions.hasAccess(1L));
+        TestingLabDTO dto = new TestingLabDTO();
+        dto.setId(1L);
+        assertTrue(permissions.hasAccess(dto));
     }
 
     @Override
@@ -65,12 +68,12 @@ public class InviteAcbAtlActionPermissionsTest extends ActionPermissionsBaseTest
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
 
-        // This should always be false
+        // This is not used
         assertFalse(permissions.hasAccess());
 
-        assertFalse(permissions.hasAccess(1L));
-
-        assertTrue(permissions.hasAccess(2L));
+        TestingLabDTO dto = new TestingLabDTO();
+        dto.setId(1L);
+        assertFalse(permissions.hasAccess(dto));
     }
 
     @Override
@@ -78,11 +81,16 @@ public class InviteAcbAtlActionPermissionsTest extends ActionPermissionsBaseTest
     public void hasAccess_Atl() throws Exception {
         setupForAtlUser(resourcePermissions);
 
-        // This should always be false
+        // This is not used
         assertFalse(permissions.hasAccess());
 
-        // Atl has no access - the param shouldn't even matter
-        assertFalse(permissions.hasAccess(1L));
+        TestingLabDTO dto = new TestingLabDTO();
+        dto.setId(1L);
+        assertFalse(permissions.hasAccess(dto));
+
+        dto = new TestingLabDTO();
+        dto.setId(2L);
+        assertTrue(permissions.hasAccess(dto));
     }
 
     @Override
@@ -90,11 +98,16 @@ public class InviteAcbAtlActionPermissionsTest extends ActionPermissionsBaseTest
     public void hasAccess_Cms() throws Exception {
         setupForCmsUser(resourcePermissions);
 
-        // This should always be false
+        // This is not used
         assertFalse(permissions.hasAccess());
 
-        // Cms has no access - the param shouldn't even matter
-        assertFalse(permissions.hasAccess(1L));
+        TestingLabDTO dto = new TestingLabDTO();
+        dto.setId(1L);
+        assertFalse(permissions.hasAccess(dto));
+
+        dto = new TestingLabDTO();
+        dto.setId(2L);
+        assertTrue(permissions.hasAccess(dto));
     }
 
     @Override
@@ -102,10 +115,12 @@ public class InviteAcbAtlActionPermissionsTest extends ActionPermissionsBaseTest
     public void hasAccess_Anon() throws Exception {
         setupForAnonUser(resourcePermissions);
 
-        // This should always be false
+        // This is not used
         assertFalse(permissions.hasAccess());
 
-        // Anon has no access - the param shouldn't even matter
-        assertFalse(permissions.hasAccess(1L));
+        TestingLabDTO dto = new TestingLabDTO();
+        dto.setId(1L);
+        assertFalse(permissions.hasAccess(dto));
     }
+
 }

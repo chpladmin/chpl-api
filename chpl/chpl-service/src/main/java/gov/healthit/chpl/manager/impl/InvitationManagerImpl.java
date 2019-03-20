@@ -9,14 +9,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.auth.authentication.Authenticator;
 import gov.healthit.chpl.auth.dao.InvitationDAO;
 import gov.healthit.chpl.auth.dao.InvitationPermissionDAO;
 import gov.healthit.chpl.auth.dao.UserDAO;
@@ -39,9 +37,7 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
-import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.InvitationManager;
-import gov.healthit.chpl.manager.TestingLabManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.Util;
@@ -62,13 +58,7 @@ public class InvitationManagerImpl implements InvitationManager {
     private InvitationPermissionDAO invitationPermissionDao;
 
     @Autowired
-    private Authenticator userAuthenticator;
-    @Autowired
     private UserManager userManager;
-    @Autowired
-    private CertificationBodyManager acbManager;
-    @Autowired
-    private TestingLabManager atlManager;
 
     @Autowired
     private UserPermissionsManager userPermissionsManager;
@@ -140,8 +130,8 @@ public class InvitationManagerImpl implements InvitationManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or "
-            + "(hasRole('ROLE_ATL') and hasPermission(#atlId, 'gov.healthit.chpl.dto.TestingLabDTO', admin))")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
+            + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_ATL, #atlId)")
     public InvitationDTO inviteWithAtlAccess(final String emailAddress, final Long atlId,
             final List<String> permissions)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
@@ -160,7 +150,8 @@ public class InvitationManagerImpl implements InvitationManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
             + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_ACB_ATL, #acbId) and "
-            + "hasRole('ROLE_ATL') and hasPermission(#atlId, 'gov.healthit.chpl.dto.TestingLabDTO', admin)")
+            + "@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
+            + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_ATL, #atlId)")
     public InvitationDTO inviteWithAcbAndAtlAccess(final String emailAddress, final Long acbId, final Long atlId,
             final List<String> permissions)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
@@ -341,7 +332,7 @@ public class InvitationManagerImpl implements InvitationManager {
         }
         TestingLabDTO userAtl = null;
         if (invitation.getTestingLabId() != null) {
-            userAtl = atlManager.getIfPermissionById(invitation.getTestingLabId());
+            userAtl = resourcePermissions.getAtlIfPermissionById(invitation.getTestingLabId());
             if (userAtl == null) {
                 throw new InvalidArgumentsException(
                         "Could not find the testing lab with id " + invitation.getTestingLabId());
@@ -376,7 +367,7 @@ public class InvitationManagerImpl implements InvitationManager {
         }
         // give them access to the invited atl
         if (userAtl != null) {
-            atlManager.addPermission(userAtl, user.getId(), BasePermission.ADMINISTRATION);
+            userPermissionsManager.addAtlPermission(userAtl, user.getId());
         }
     }
 

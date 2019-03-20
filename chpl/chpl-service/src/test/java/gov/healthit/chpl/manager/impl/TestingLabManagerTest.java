@@ -1,127 +1,222 @@
 package gov.healthit.chpl.manager.impl;
 
-import java.util.List;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-import org.junit.BeforeClass;
-import org.junit.Rule;
+import java.util.Calendar;
+import java.util.Date;
+
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.acls.domain.BasePermission;
-import org.springframework.security.acls.domain.PrincipalSid;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.annotation.Rollback;
+import org.mockito.AdditionalAnswers;
+import org.mockito.ArgumentMatchers;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
-import org.springframework.transaction.annotation.Transactional;
 
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
-import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.TestingUsers;
 import gov.healthit.chpl.auth.dao.UserDAO;
-import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
-import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.TestingLabDAO;
+import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.TestingLabDTO;
+import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.manager.TestingLabManager;
-import junit.framework.TestCase;
+import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.manager.UserPermissionsManager;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
         gov.healthit.chpl.CHPLTestConfig.class
 })
-@TestExecutionListeners({
-        DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
-        TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
-})
-@DatabaseSetup("classpath:data/testData.xml")
-public class TestingLabManagerTest extends TestCase {
+public class TestingLabManagerTest extends TestingUsers {
 
-    @Autowired
-    private TestingLabManager atlManager;
-    @Autowired
+    @InjectMocks
+    private TestingLabManagerImpl atlManager;
+
+    @Mock
     private TestingLabDAO atlDao;
-    @Autowired
+
+    @Mock
     private UserDAO userDao;
 
-    @Rule
-    @Autowired
-    public UnitTestRules cacheInvalidationRule;
+    @Mock
+    private ResourcePermissions resourcePermissions;
 
-    private static JWTAuthenticatedUser adminUser;
+    @Mock
+    private UserPermissionsManager userPermissionsManager;
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        adminUser = new JWTAuthenticatedUser();
-        adminUser.setFullName("Administrator");
-        adminUser.setId(-2L);
-        adminUser.setFriendlyName("Administrator");
-        adminUser.setSubjectName("admin");
-        adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+    @Mock
+    private ActivityManager activityManager;
+
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
     }
 
     @Test
-    @Transactional
-    public void testGetUsersOnAtl() throws EntityRetrievalException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-        TestingLabDTO atl = atlDao.getById(-1L);
-        List<UserDTO> users = atlManager.getAllUsersOnAtl(atl);
+    public void createTest()
+            throws EntityCreationException, EntityRetrievalException, UserRetrievalException, JsonProcessingException {
+        setupForAdminUser(resourcePermissions);
 
-        assertEquals(2, users.size());
-        SecurityContextHolder.getContext().setAuthentication(null);
+        TestingLabDTO dto = new TestingLabDTO();
+        dto.setAccredidationNumber("ACC_NBR");
+        dto.setName("Testing Name");
+        dto.setWebsite("http://www.abc.com");
+        dto.setId(-99L);
+
+        Mockito.when(atlDao.getMaxCode()).thenReturn("05");
+        Mockito.when(atlDao.create(ArgumentMatchers.any(TestingLabDTO.class))).thenReturn(dto);
+
+        atlManager.create(dto);
+
+        Mockito.verify(atlDao).create(ArgumentMatchers.any(TestingLabDTO.class));
+        Mockito.verify(userPermissionsManager).addAtlPermission(ArgumentMatchers.any(TestingLabDTO.class),
+                ArgumentMatchers.anyLong());
+        Mockito.verify(activityManager).addActivity(ArgumentMatchers.any(ActivityConcept.class),
+                ArgumentMatchers.anyLong(), ArgumentMatchers.anyString(), ArgumentMatchers.isNull(),
+                ArgumentMatchers.any(TestingLabDTO.class));
+
+        assertTrue(dto.getTestingLabCode().contentEquals("06"));
+    }
+
+    @Test(expected = EntityCreationException.class)
+    public void createTest_tooManyAtls()
+            throws EntityRetrievalException, UserRetrievalException, JsonProcessingException, EntityCreationException {
+        setupForAdminUser(resourcePermissions);
+
+        TestingLabDTO dto = new TestingLabDTO();
+        dto.setAccredidationNumber("ACC_NBR");
+        dto.setName("Testing Name");
+        dto.setWebsite("http://www.abc.com");
+        dto.setId(-99L);
+
+        Mockito.when(atlDao.getMaxCode()).thenReturn("99");
+        Mockito.when(atlDao.create(ArgumentMatchers.any(TestingLabDTO.class))).thenReturn(dto);
+
+        atlManager.create(dto);
     }
 
     @Test
-    @Transactional
-    @Rollback
-    public void testAddReadUserToAtl() throws UserRetrievalException, EntityRetrievalException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
+    public void updateTest() throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            UpdateTestingLabException {
+        setupForAdminUser(resourcePermissions);
 
-        // add to the atl
-        TestingLabDTO atl = atlDao.getById(-1L);
-        Long userId = 2L;
-        atlManager.addPermission(atl, userId, BasePermission.READ);
+        TestingLabDTO original = new TestingLabDTO();
+        original.setId(-99l);
+        original.setName("Testing Lab");
+        original.setRetired(false);
+        original.setTestingLabCode("05");
+        original.setAccredidationNumber("accr_nbr");
 
-        // confirm one user is in the acb
-        List<UserDTO> users = atlManager.getAllUsersOnAtl(atl);
-        boolean userIsOnAtl = false;
-        for (UserDTO foundUser : users) {
-            if (foundUser.getId().equals(userId)) {
-                userIsOnAtl = true;
-            }
-        }
-        assertTrue(userIsOnAtl);
-        SecurityContextHolder.getContext().setAuthentication(null);
+        TestingLabDTO updated = new TestingLabDTO();
+        updated.setId(-99l);
+        updated.setName("Testing Lab New Name");
+        updated.setRetired(false);
+        updated.setTestingLabCode("05");
+        updated.setAccredidationNumber("accr_nbr");
+
+        Mockito.when(atlDao.getById(ArgumentMatchers.anyLong())).thenReturn(original);
+        Mockito.when(atlDao.update(ArgumentMatchers.any(TestingLabDTO.class))).thenReturn(updated);
+
+        updated = atlManager.update(updated);
+
+        Mockito.verify(activityManager).addActivity(ArgumentMatchers.any(ActivityConcept.class),
+                ArgumentMatchers.anyLong(), ArgumentMatchers.anyString(), ArgumentMatchers.any(TestingLabDTO.class),
+                ArgumentMatchers.any(TestingLabDTO.class));
     }
 
     @Test
-    @Transactional
-    @Rollback
-    public void testDeleteUserFromAtl() throws UserRetrievalException, EntityRetrievalException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
+    public void retireTest() throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            UpdateTestingLabException {
+        setupForAdminUser(resourcePermissions);
 
-        // add to the atl
-        TestingLabDTO atl = atlDao.getById(-1L);
-        UserDTO user = userDao.getById(4L);
-        atlManager.deletePermission(atl, new PrincipalSid(user.getSubjectName()), BasePermission.ADMINISTRATION);
+        TestingLabDTO original = new TestingLabDTO();
+        original.setId(-99l);
+        original.setName("Testing Lab");
+        original.setRetired(false);
+        original.setTestingLabCode("05");
+        original.setAccredidationNumber("accr_nbr");
+        original.setRetirementDate(new Date());
 
-        // confirm one user is in the atl
-        List<UserDTO> users = atlManager.getAllUsersOnAtl(atl);
-        boolean userIsOnAtl = false;
-        for (UserDTO foundUser : users) {
-            if (foundUser.getId().longValue() == user.getId().longValue()) {
-                userIsOnAtl = true;
-            }
-        }
-        assertFalse(userIsOnAtl);
-        SecurityContextHolder.getContext().setAuthentication(null);
+        Mockito.when(atlDao.getById(ArgumentMatchers.anyLong())).thenReturn(original);
+        Mockito.when(atlDao.update(ArgumentMatchers.any(TestingLabDTO.class)))
+                .then(AdditionalAnswers.returnsFirstArg());
+
+        original = atlManager.retire(original);
+
+        assertTrue(original.isRetired());
+
+        Mockito.verify(activityManager).addActivity(ArgumentMatchers.any(ActivityConcept.class),
+                ArgumentMatchers.anyLong(), ArgumentMatchers.anyString(), ArgumentMatchers.any(TestingLabDTO.class),
+                ArgumentMatchers.any(TestingLabDTO.class));
+    }
+
+    @Test(expected = UpdateTestingLabException.class)
+    public void retireTest_invalidDate() throws EntityRetrievalException, JsonProcessingException,
+            EntityCreationException, UpdateTestingLabException {
+        setupForAdminUser(resourcePermissions);
+
+        // Create a date in the future
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, 1);
+
+        TestingLabDTO original = new TestingLabDTO();
+        original.setId(-99l);
+        original.setName("Testing Lab");
+        original.setRetired(false);
+        original.setTestingLabCode("05");
+        original.setAccredidationNumber("accr_nbr");
+        original.setRetirementDate(cal.getTime());
+
+        Mockito.when(atlDao.getById(ArgumentMatchers.anyLong())).thenReturn(original);
+        Mockito.when(atlDao.update(ArgumentMatchers.any(TestingLabDTO.class)))
+                .then(AdditionalAnswers.returnsFirstArg());
+
+        original = atlManager.retire(original);
+
+        assertTrue(original.isRetired());
+
+        Mockito.verify(activityManager).addActivity(ArgumentMatchers.any(ActivityConcept.class),
+                ArgumentMatchers.anyLong(), ArgumentMatchers.anyString(), ArgumentMatchers.any(TestingLabDTO.class),
+                ArgumentMatchers.any(TestingLabDTO.class));
+    }
+
+    @Test
+    public void unretireTest() throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            UpdateTestingLabException {
+        setupForAdminUser(resourcePermissions);
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.YEAR, -1);
+
+        TestingLabDTO original = new TestingLabDTO();
+        original.setId(-99l);
+        original.setName("Testing Lab");
+        original.setRetired(false);
+        original.setTestingLabCode("05");
+        original.setAccredidationNumber("accr_nbr");
+        original.setRetirementDate(cal.getTime());
+        original.setRetired(true);
+
+        Mockito.when(atlDao.getById(ArgumentMatchers.anyLong())).thenReturn(original);
+        Mockito.when(atlDao.update(ArgumentMatchers.any(TestingLabDTO.class)))
+                .then(AdditionalAnswers.returnsFirstArg());
+
+        original = atlManager.unretire(-99L);
+
+        assertFalse(original.isRetired());
+        assertNull(original.getRetirementDate());
+
+        Mockito.verify(activityManager).addActivity(ArgumentMatchers.any(ActivityConcept.class),
+                ArgumentMatchers.anyLong(), ArgumentMatchers.anyString(), ArgumentMatchers.any(TestingLabDTO.class),
+                ArgumentMatchers.any(TestingLabDTO.class));
     }
 }

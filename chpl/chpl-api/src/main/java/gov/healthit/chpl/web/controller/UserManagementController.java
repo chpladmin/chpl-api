@@ -74,9 +74,6 @@ public class UserManagementController {
     private UserManager userManager;
 
     @Autowired
-    private TestingLabManager atlManager;
-
-    @Autowired
     private InvitationManager invitationManager;
 
     @Autowired
@@ -412,9 +409,8 @@ public class UserManagementController {
         }
 
         // delete the acb permissions for that user
-        userPermissionsManager.deleteAllAcbPermissionsForUser(userId);
-        atlManager.deletePermissionsForUser(toDelete);
-
+        userPermissionsManager.deleteAllAtlPermissionsForUser(userId);
+        
         // delete the user
         userManager.delete(toDelete);
 

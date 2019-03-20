@@ -17,12 +17,16 @@ import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.dao.UserCertificationBodyMapDAO;
 import gov.healthit.chpl.dao.UserRoleMapDAO;
+import gov.healthit.chpl.dao.UserTestingLabMapDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.RoleDTO;
+import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
 import gov.healthit.chpl.dto.UserRoleMapDTO;
+import gov.healthit.chpl.dto.UserTestingLabMapDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
@@ -31,15 +35,20 @@ public class ResourcePermissions {
     private UserRoleMapDAO userRoleMapDAO;
     private ErrorMessageUtil errorMessageUtil;
     private CertificationBodyDAO acbDAO;
+    private UserTestingLabMapDAO userTestingLabMapDAO;
+    private TestingLabDAO atlDAO;
 
     @Autowired
     public ResourcePermissions(final UserCertificationBodyMapDAO userCertificationBodyMapDAO,
             final UserRoleMapDAO userRoleMapDAO, final CertificationBodyDAO acbDAO,
+            final UserTestingLabMapDAO userTestingLabMapDAO, final TestingLabDAO atlDAO,
             final ErrorMessageUtil errorMessageUtil) {
 
         this.userCertificationBodyMapDAO = userCertificationBodyMapDAO;
         this.userRoleMapDAO = userRoleMapDAO;
         this.acbDAO = acbDAO;
+        this.userTestingLabMapDAO = userTestingLabMapDAO;
+        this.atlDAO = atlDAO;
         this.errorMessageUtil = errorMessageUtil;
     }
 
@@ -49,6 +58,18 @@ public class ResourcePermissions {
         List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByAcbId(acb.getId());
 
         for (UserCertificationBodyMapDTO dto : dtos) {
+            userDtos.add(dto.getUser());
+        }
+
+        return userDtos;
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserDTO> getAllUsersOnAtl(final TestingLabDTO atl) {
+        List<UserDTO> userDtos = new ArrayList<UserDTO>();
+        List<UserTestingLabMapDTO> dtos = userTestingLabMapDAO.getByAtlId(atl.getId());
+
+        for (UserTestingLabMapDTO dto : dtos) {
             userDtos.add(dto.getUser());
         }
 
@@ -74,12 +95,48 @@ public class ResourcePermissions {
     }
 
     @Transactional(readOnly = true)
+    public List<TestingLabDTO> getAllAtlsForCurrentUser() {
+        User user = Util.getCurrentUser();
+        List<TestingLabDTO> atls = new ArrayList<TestingLabDTO>();
+
+        if (user != null) {
+            if (isUserRoleAdmin() || isUserRoleOnc()) {
+                atls = atlDAO.findAll();
+            } else {
+                List<UserTestingLabMapDTO> dtos = userTestingLabMapDAO.getByUserId(user.getId());
+                for (UserTestingLabMapDTO dto : dtos) {
+                    atls.add(dto.getTestingLab());
+                }
+            }
+        }
+        return atls;
+    }
+
+    @Transactional(readOnly = true)
     public CertificationBodyDTO getAcbIfPermissionById(final Long id) {
         List<CertificationBodyDTO> dtos = getAllAcbsForCurrentUser();
 
         CollectionUtils.filter(dtos, new Predicate<CertificationBodyDTO>() {
             @Override
             public boolean evaluate(CertificationBodyDTO object) {
+                return object.getId().equals(id);
+            }
+
+        });
+
+        if (dtos.size() == 0) {
+            throw new AccessDeniedException(errorMessageUtil.getMessage("access.denied"));
+        }
+        return dtos.get(0);
+    }
+
+    @Transactional(readOnly = true)
+    public TestingLabDTO getAtlIfPermissionById(final Long id) {
+        List<TestingLabDTO> dtos = getAllAtlsForCurrentUser();
+
+        CollectionUtils.filter(dtos, new Predicate<TestingLabDTO>() {
+            @Override
+            public boolean evaluate(TestingLabDTO object) {
                 return object.getId().equals(id);
             }
 
