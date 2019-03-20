@@ -4,7 +4,6 @@ _Date TBD_
 
 ### New features
 * Add error message for unparseable certification date on Listing upload
-* Modify security to use CHPL managed user/ATL relationship
 * Allow certain users to impersonate certain other ones
 
 ### Refactoring changes
