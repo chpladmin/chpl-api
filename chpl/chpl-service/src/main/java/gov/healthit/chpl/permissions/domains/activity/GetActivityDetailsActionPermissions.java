@@ -7,13 +7,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.PermissionEvaluator;
-import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.manager.UserManager;
@@ -154,8 +152,7 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
             }
 
             if (atl != null && atl.getId() != null) {
-                //TODO: need Todd's PR merged in to have this method available
-                //hasAccess = isAtlValidForCurrentUser(atl.getId());
+                hasAccess = isAtlValidForCurrentUser(atl.getId());
             }
         }
         return hasAccess;
@@ -253,12 +250,10 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
                 if (getResourcePermissions().isUserRoleAtlAdmin()) {
                     //find all users on the atls that this user has access to
                     //and see if the user in the activity is in that list
-
-                    //TODO: needs Todd's PR merged in to use this code
-//                    List<TestingLabDTO> accessibleAtls = getResourcePermissions().getAllAtlsForCurrentUser();
-//                    for (TestingLabDTO atl : accessibleAtls) {
-//                        accessibleUsers.addAll(getResourcePermissions().getAllUsersOnAtl(atl));
-//                    }
+                    List<TestingLabDTO> accessibleAtls = getResourcePermissions().getAllAtlsForCurrentUser();
+                    for (TestingLabDTO atl : accessibleAtls) {
+                        accessibleUsers.addAll(getResourcePermissions().getAllUsersOnAtl(atl));
+                    }
                 }
                 if (getResourcePermissions().isUserRoleCmsStaff()) {
                     List<UserDTO> cmsUsers = userManager.getUsersWithPermission(Authority.ROLE_CMS_STAFF);

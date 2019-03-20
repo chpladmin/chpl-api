@@ -505,7 +505,7 @@ public class ActivityController {
     public List<ActivityDetails> activityForATLById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
-        TestingLabDTO atl = atlManager.getIfPermissionById(id); // throws 404 if bad id
+        TestingLabDTO atl = resourcePermissions.getAtlIfPermissionById(id); // throws 404 if bad id
         if (atl != null && atl.isRetired() && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
             LOGGER.warn("Non-admin user " + Util.getUsername()
             + " tried to see activity for retired ATL " + atl.getName());
@@ -1025,7 +1025,7 @@ public class ActivityController {
         if (resourcePermissions.isUserRoleAtlAdmin()) {
             List<TestingLabDTO> allowedAtls = atlManager.getAllForUser();
             for (TestingLabDTO atl : allowedAtls) {
-                List<UserDTO> atlUsers = atlManager.getAllUsersOnAtl(atl);
+                List<UserDTO> atlUsers = resourcePermissions.getAllUsersOnAtl(atl);
                 for (UserDTO user : atlUsers) {
                     allowedUserIds.add(user.getId());
                 }

@@ -4,8 +4,8 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
-@Component("invitationInviteAcbAtlActionPermissions")
-public class InviteAcbAtlActionPermissions extends ActionPermissions {
+@Component("invitationInviteAtlActionPermissions")
+public class InviteAtlActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess() {
@@ -18,9 +18,9 @@ public class InviteAcbAtlActionPermissions extends ActionPermissions {
             return false;
         } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
             return true;
-        } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
-            Long acbId = (Long) obj;
-            return isAcbValidForCurrentUser(acbId);
+        } else if (getResourcePermissions().isUserRoleAtlAdmin()) {
+            Long atlId = (Long) obj;
+            return isAtlValidForCurrentUser(atlId);
         } else {
             return false;
         }
