@@ -3,6 +3,7 @@ package gov.healthit.chpl.dao;
 import java.util.List;
 
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductMetadataDTO;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -23,11 +24,30 @@ public interface PendingCertifiedProductDAO {
     PendingCertifiedProductDTO create(PendingCertifiedProductEntity product) throws EntityCreationException;
 
     /**
+     * Update the number of errors and warnings in the pending listing.
+     * The pending listing itself doesn't change but we update this
+     * in case our validation logic has changed.
+     * @param pcpId
+     * @param errorCount
+     * @param warningCount
+     * @return
+     * @throws EntityRetrievalException
+     */
+    void updateErrorAndWarningCounts(Long pcpId, Integer errorCount, Integer warningCount)
+            throws EntityRetrievalException;
+
+    /**
      * Delete a pending Certified Product.
      * @param pendingProductId the product's id
      * @throws EntityRetrievalException if entity retrieval fails
      */
     void delete(Long pendingProductId) throws EntityRetrievalException;
+
+    /**
+     * Gets all metadata for all pending listings.
+     * @return
+     */
+    List<PendingCertifiedProductMetadataDTO> getAllMetadata();
 
     /**
      * Return all of the pending Certified Products.

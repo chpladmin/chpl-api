@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +36,7 @@ import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductMetadataDTO;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -122,6 +124,17 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
         addAllVersionsToCmsCriterion(pcpDetails);
         addAllMeasuresToCertificationCriteria(pcpDetails);
         return pcpDetails;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_CERTIFIED_PRODUCT, "
+            + "T(gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions).GET_ALL_METADATA)")
+    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_CERTIFIED_PRODUCT, "
+            + "T(gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions).GET_ALL_METADATA, filterObject)")
+    public List<PendingCertifiedProductMetadataDTO> getAllPendingCertifiedProductMetadata() {
+        List<PendingCertifiedProductMetadataDTO> products = pcpDao.getAllMetadata();
+        return products;
     }
 
     @Override

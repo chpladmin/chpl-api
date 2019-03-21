@@ -3,7 +3,7 @@ package gov.healthit.chpl.dto.listing.pending;
 import java.io.Serializable;
 import java.util.Date;
 
-import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductMetadataEntity;
 
 /**
  * Pending Certified Product Metadata DTO.
@@ -35,7 +35,7 @@ public class PendingCertifiedProductMetadataDTO implements Serializable {
      * Construct with entity.
      * @param entity the entity
      */
-    public PendingCertifiedProductMetadataDTO(final PendingCertifiedProductEntity entity) {
+    public PendingCertifiedProductMetadataDTO(final PendingCertifiedProductMetadataEntity entity) {
         this();
         this.id = entity.getId();
         this.errorCount = entity.getErrorCount();

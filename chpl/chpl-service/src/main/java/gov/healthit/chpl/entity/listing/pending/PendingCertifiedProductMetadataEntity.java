@@ -59,6 +59,9 @@ public class PendingCertifiedProductMetadataEntity {
     @Column(name = "certification_date")
     private Date certificationDate;
 
+    @Column(name = "deleted")
+    private Boolean deleted;
+
     public Long getId() {
         return id;
     }
@@ -153,6 +156,14 @@ public class PendingCertifiedProductMetadataEntity {
 
     public void setCertificationBodyId(final Long certificationBodyId) {
         this.certificationBodyId = certificationBodyId;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
     }
 
 }
