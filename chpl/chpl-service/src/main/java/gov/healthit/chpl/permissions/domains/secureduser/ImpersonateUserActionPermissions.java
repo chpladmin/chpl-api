@@ -5,9 +5,9 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.auth.dao.UserPermissionDAO;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
-import gov.healthit.chpl.auth.manager.SecuredUserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
@@ -19,9 +19,7 @@ import gov.healthit.chpl.permissions.domains.ActionPermissions;
 @Component(value = "userPermissionsImpersonateUserActionPermissions")
 public class ImpersonateUserActionPermissions extends ActionPermissions {
     private static final Logger LOGGER = LogManager.getLogger(ImpersonateUserActionPermissions.class);
-    @Autowired
-    private SecuredUserManager securedUserManager;
-
+    
     @Override
     public boolean hasAccess() {
         return false;
@@ -40,20 +38,20 @@ public class ImpersonateUserActionPermissions extends ActionPermissions {
         }
         UserDTO target;
         try {
-            target = securedUserManager.getBySubjectName((String) obj);
+            target = getResourcePermissions().getUserByName((String) obj);
         } catch (UserRetrievalException e) {
             LOGGER.error("Unable to get user by name %s", (String) obj);
             return false;
         }
         if (getResourcePermissions().isUserRoleAdmin() && !getResourcePermissions().isUserRoleOnc()) {
-            for (UserPermissionDTO t : securedUserManager.getGrantedPermissionsForUser(target)) {
+            for (UserPermissionDTO t : getResourcePermissions().getPermissionsByUserId(target.getId())) {
                 if (t.getName().equalsIgnoreCase("ADMIN")) {
                     return false;
                 }
             }
             return true;
         }
-        for (UserPermissionDTO t : securedUserManager.getGrantedPermissionsForUser(target)) {
+        for (UserPermissionDTO t : userPermissionDAO.findPermissionsForUser(target.getId())) {
             if (t.getName().equalsIgnoreCase("ADMIN") || t.getName().equalsIgnoreCase("ONC")) {
                 return false;
             }

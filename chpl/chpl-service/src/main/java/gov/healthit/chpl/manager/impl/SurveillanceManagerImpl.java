@@ -37,13 +37,12 @@ import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceRequirementEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SurveillanceManager;
-import gov.healthit.chpl.permissions.Permissions;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 
 @Service
-public class SurveillanceManagerImpl implements SurveillanceManager {
+public class SurveillanceManagerImpl extends SecuredManager implements SurveillanceManager {
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceManagerImpl.class);
 
     private SurveillanceDAO survDao;
@@ -52,20 +51,18 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     private UserPermissionDAO userPermissionDao;
     private FileUtils fileUtils;
     private Environment env;
-    private Permissions permissions;
     private ResourcePermissions resourcePermissions;
 
     @Autowired
     public SurveillanceManagerImpl(final SurveillanceDAO survDao, final CertifiedProductDAO cpDao,
             final SurveillanceValidator validator, final UserPermissionDAO userPermissionDao, final FileUtils fileUtils,
-            final Environment env, final Permissions permissions, final ResourcePermissions resourcePermissions) {
+            final Environment env, final ResourcePermissions resourcePermissions) {
         this.survDao = survDao;
         this.cpDao = cpDao;
         this.validator = validator;
         this.userPermissionDao = userPermissionDao;
         this.fileUtils = fileUtils;
         this.env = env;
-        this.permissions = permissions;
         this.resourcePermissions = resourcePermissions;
     }
 

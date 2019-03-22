@@ -43,12 +43,11 @@ import gov.healthit.chpl.permissions.Permissions;
 import gov.healthit.chpl.util.JSONUtils;
 
 @Service("activityManager")
-public class ActivityManagerImpl implements ActivityManager {
+public class ActivityManagerImpl extends SecuredManager implements ActivityManager {
     private static final Logger LOGGER = LogManager.getLogger(ActivityManagerImpl.class);
 
     private ActivityDAO activityDAO;
     private DeveloperDAO devDao;
-    private Permissions permissions;
     private ObjectMapper jsonMapper = new ObjectMapper();
     private JsonFactory factory = jsonMapper.getFactory();
 
