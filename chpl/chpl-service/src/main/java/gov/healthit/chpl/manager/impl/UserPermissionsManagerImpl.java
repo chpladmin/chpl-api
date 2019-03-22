@@ -22,25 +22,22 @@ import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
 import gov.healthit.chpl.dto.UserTestingLabMapDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.UserPermissionsManager;
-import gov.healthit.chpl.permissions.Permissions;
 
 @Component
-public class UserPermissionsManagerImpl implements UserPermissionsManager {
+public class UserPermissionsManagerImpl extends SecuredManager implements UserPermissionsManager {
     private static final Logger LOGGER = LogManager.getLogger(UserPermissionsManagerImpl.class);
 
     private UserCertificationBodyMapDAO userCertificationBodyMapDAO;
     private UserTestingLabMapDAO userTestingLabMapDAO;
     private UserDAO userDAO;
-    private Permissions permissions;
 
     @Autowired
     public UserPermissionsManagerImpl(final UserCertificationBodyMapDAO userCertificationBodyMapDAO,
-            final UserTestingLabMapDAO userTestingLabMapDAO, final UserDAO userDAO, final Permissions permissions) {
+            final UserTestingLabMapDAO userTestingLabMapDAO, final UserDAO userDAO) {
 
         this.userCertificationBodyMapDAO = userCertificationBodyMapDAO;
         this.userTestingLabMapDAO = userTestingLabMapDAO;
         this.userDAO = userDAO;
-        this.permissions = permissions;
     }
 
     @Override

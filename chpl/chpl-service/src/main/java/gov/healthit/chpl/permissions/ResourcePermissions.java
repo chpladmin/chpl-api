@@ -2,6 +2,7 @@ package gov.healthit.chpl.permissions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
@@ -13,9 +14,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.dao.UserDAO;
+import gov.healthit.chpl.auth.dao.UserPermissionDAO;
 import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.dao.UserCertificationBodyMapDAO;
@@ -37,12 +42,14 @@ public class ResourcePermissions {
     private CertificationBodyDAO acbDAO;
     private UserTestingLabMapDAO userTestingLabMapDAO;
     private TestingLabDAO atlDAO;
+    private UserDAO userDAO;
+    private UserPermissionDAO userPermissionDAO;
 
     @Autowired
     public ResourcePermissions(final UserCertificationBodyMapDAO userCertificationBodyMapDAO,
             final UserRoleMapDAO userRoleMapDAO, final CertificationBodyDAO acbDAO,
             final UserTestingLabMapDAO userTestingLabMapDAO, final TestingLabDAO atlDAO,
-            final ErrorMessageUtil errorMessageUtil) {
+            final ErrorMessageUtil errorMessageUtil, final UserDAO userDAO, final UserPermissionDAO userPermissionDAO) {
 
         this.userCertificationBodyMapDAO = userCertificationBodyMapDAO;
         this.userRoleMapDAO = userRoleMapDAO;
@@ -50,6 +57,18 @@ public class ResourcePermissions {
         this.userTestingLabMapDAO = userTestingLabMapDAO;
         this.atlDAO = atlDAO;
         this.errorMessageUtil = errorMessageUtil;
+        this.userDAO = userDAO;
+        this.userPermissionDAO = userPermissionDAO;
+    }
+
+    @Transactional(readOnly = true)
+    public UserDTO getUserByName(String userName) throws UserRetrievalException {
+        return userDAO.getByName(userName);
+    }
+
+    @Transactional(readOnly = true)
+    public Set<UserPermissionDTO> getPermissionsByUserId(Long userID) {
+        return userPermissionDAO.findPermissionsForUser(userID);
     }
 
     @Transactional(readOnly = true)
