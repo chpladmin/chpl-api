@@ -43,7 +43,9 @@ import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.Util;
 
 @Service
-public class InvitationManagerImpl implements InvitationManager {
+public class InvitationManagerImpl extends SecuredManager implements InvitationManager {
+
+    private static final Logger LOGGER = LogManager.getLogger(InvitationManagerImpl.class);
 
     @Autowired
     private UserPermissionDAO userPermissionDao;
@@ -65,8 +67,6 @@ public class InvitationManagerImpl implements InvitationManager {
 
     @Autowired
     private ResourcePermissions resourcePermissions;
-
-    private static final Logger LOGGER = LogManager.getLogger(InvitationManagerImpl.class);
 
     @Override
     @Transactional

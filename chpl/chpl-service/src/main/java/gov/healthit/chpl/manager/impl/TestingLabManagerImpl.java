@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -26,7 +25,7 @@ import gov.healthit.chpl.manager.TestingLabManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
 
 @Service
-public class TestingLabManagerImpl extends ApplicationObjectSupport implements TestingLabManager {
+public class TestingLabManagerImpl extends SecuredManager implements TestingLabManager {
     private static final Logger LOGGER = LogManager.getLogger(TestingLabManagerImpl.class);
 
     @Autowired

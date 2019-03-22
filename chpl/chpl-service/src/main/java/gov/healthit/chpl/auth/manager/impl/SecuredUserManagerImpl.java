@@ -31,21 +31,24 @@ import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.manager.impl.SecuredManager;
 
 @Service
-public class SecuredUserManagerImpl implements SecuredUserManager {
+public class SecuredUserManagerImpl extends SecuredManager implements SecuredUserManager {
 
-    @Autowired
     private UserDAO userDAO;
-
-    @Autowired
     private UserContactDAO userContactDAO;
-
-    @Autowired
     private UserPermissionDAO userPermissionDAO;
+    private MutableAclService mutableAclService;
 
     @Autowired
-    private MutableAclService mutableAclService;
+    public SecuredUserManagerImpl(UserDAO userDAO, UserContactDAO userContactDAO, UserPermissionDAO userPermissionDAO,
+            MutableAclService mutableAclService) {
+        this.userDAO = userDAO;
+        this.userContactDAO = userContactDAO;
+        this.userPermissionDAO = userPermissionDAO;
+        this.mutableAclService = mutableAclService;
+    }
 
     @Override
     @Transactional

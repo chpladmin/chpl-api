@@ -6,9 +6,9 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.jwt.JWTConsumer;
 import gov.healthit.chpl.auth.jwt.JWTValidationException;
-import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.User;
@@ -27,9 +27,11 @@ public class JWTUserConverterImpl implements JWTUserConverter {
     private JWTConsumer jwtConsumer;
 
     @Autowired
-    private UserManager userManager;
+    private UserDAO userDAO;
+    // private UserManager userManager;
 
-    public JWTUserConverterImpl() {}
+    public JWTUserConverterImpl() {
+    }
 
     public User getAuthenticatedUser(final String jwt) throws JWTValidationException {
 
@@ -48,7 +50,7 @@ public class JWTUserConverterImpl implements JWTUserConverter {
             List<String> authorities = (List<String>) validatedClaims.get("Authorities");
             List<String> identityInfo = (List<String>) validatedClaims.get("Identity");
 
-            for (String claim: authorities) {
+            for (String claim : authorities) {
                 GrantedPermission permission = new GrantedPermission(claim);
                 user.addPermission(permission);
             }
@@ -60,7 +62,8 @@ public class JWTUserConverterImpl implements JWTUserConverter {
             if (identityInfo.size() > FIELDS_WHEN_NOT_IMPERSONATING) {
                 String impersonatingSubjectName = identityInfo.get(IMPERSONATING_USER_SUBJECT_NAME);
                 try {
-                    user.setImpersonatingUser(userManager.getByName(impersonatingSubjectName));
+                    // user.setImpersonatingUser(userManager.getByName(impersonatingSubjectName));
+                    user.setImpersonatingUser(userDAO.getByName(impersonatingSubjectName));
                 } catch (UserRetrievalException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
@@ -84,7 +87,7 @@ public class JWTUserConverterImpl implements JWTUserConverter {
             List<String> authorities = (List<String>) validatedClaims.get("Authorities");
             List<String> identityInfo = (List<String>) validatedClaims.get("Identity");
 
-            for (String claim: authorities) {
+            for (String claim : authorities) {
                 GrantedPermission permission = new GrantedPermission(claim);
                 user.addPermission(permission);
             }
