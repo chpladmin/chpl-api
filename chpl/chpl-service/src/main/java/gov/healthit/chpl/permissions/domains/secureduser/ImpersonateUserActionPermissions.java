@@ -2,10 +2,8 @@ package gov.healthit.chpl.permissions.domains.secureduser;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.auth.dao.UserPermissionDAO;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
@@ -19,7 +17,7 @@ import gov.healthit.chpl.permissions.domains.ActionPermissions;
 @Component(value = "userPermissionsImpersonateUserActionPermissions")
 public class ImpersonateUserActionPermissions extends ActionPermissions {
     private static final Logger LOGGER = LogManager.getLogger(ImpersonateUserActionPermissions.class);
-    
+
     @Override
     public boolean hasAccess() {
         return false;
@@ -51,7 +49,7 @@ public class ImpersonateUserActionPermissions extends ActionPermissions {
             }
             return true;
         }
-        for (UserPermissionDTO t : userPermissionDAO.findPermissionsForUser(target.getId())) {
+        for (UserPermissionDTO t : getResourcePermissions().getPermissionsByUserId(target.getId())) {
             if (t.getName().equalsIgnoreCase("ADMIN") || t.getName().equalsIgnoreCase("ONC")) {
                 return false;
             }
