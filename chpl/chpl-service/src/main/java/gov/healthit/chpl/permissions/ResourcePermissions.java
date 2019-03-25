@@ -114,6 +114,16 @@ public class ResourcePermissions {
     }
 
     @Transactional(readOnly = true)
+    public List<CertificationBodyDTO> getAllAcbsForUser(Long userID) {
+        List<CertificationBodyDTO> acbs = new ArrayList<CertificationBodyDTO>();
+        List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByUserId(userID);
+        for (UserCertificationBodyMapDTO dto : dtos) {
+            acbs.add(dto.getCertificationBody());
+        }
+        return acbs;
+    }
+
+    @Transactional(readOnly = true)
     public List<TestingLabDTO> getAllAtlsForCurrentUser() {
         User user = Util.getCurrentUser();
         List<TestingLabDTO> atls = new ArrayList<TestingLabDTO>();
@@ -127,6 +137,16 @@ public class ResourcePermissions {
                     atls.add(dto.getTestingLab());
                 }
             }
+        }
+        return atls;
+    }
+
+    @Transactional(readOnly = true)
+    public List<TestingLabDTO> getAllAtlsForUser(Long userId) {
+        List<TestingLabDTO> atls = new ArrayList<TestingLabDTO>();
+        List<UserTestingLabMapDTO> dtos = userTestingLabMapDAO.getByUserId(userId);
+        for (UserTestingLabMapDTO dto : dtos) {
+            atls.add(dto.getTestingLab());
         }
         return atls;
     }
