@@ -28,7 +28,7 @@ public class DeleteAllAcbPermissionsForUserActionPermissions extends ActionPermi
             return false;
         } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
             return true;
-        } else if (getResourcePermissions().isUserRoleAtlAdmin()) {
+        } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             Long targetUserId = (Long) obj;
             List<CertificationBodyDTO> targetAcbs = getAcbsUser(targetUserId);
             for (CertificationBodyDTO targetAcb : targetAcbs) {
