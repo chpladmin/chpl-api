@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import gov.healthit.chpl.caching.CacheInitializor;
 import gov.healthit.chpl.domain.status.CacheStatus;
 import gov.healthit.chpl.domain.status.CacheStatusName;
+import gov.healthit.chpl.domain.status.SystemStatus;
 import gov.healthit.chpl.domain.status.ServerStatus;
 import gov.healthit.chpl.domain.status.ServerStatusName;
 
@@ -31,11 +32,35 @@ public class StatusController {
     private static final Logger LOGGER = LogManager.getLogger(StatusController.class);
 
     /**
-     * Get the status, indicating if the server is running at all.
+     * Get the current status of the system. Response indicates whether the system is up
+     * and whether the caches are initializing or complete.
      * @return JSON value that indicates the server is running
      */
     @ApiOperation(
-            value = "Check that the rest services are up and running."
+            value = "Check that the rest services are up and running and indicate whether "
+                    + "the pre-loaded caches are initializing or have completed."
+                    + "{\"running\":\"OK\", \"cache\":\"OK\"} is returned if all is well."
+                    + "If the cache is still initializing, the returned value will be "
+                    + "{\"running\":\"OK\", \"cache\":\"INITIALIZING\"}.",
+                    notes = "")
+    @RequestMapping(value = "/system-status", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody SystemStatus getCombinedStatus() {
+        SystemStatus response = new SystemStatus();
+        //if this code is running then the server is up.
+        response.setRunning(ServerStatusName.OK.name());
+        //calculate the cache status
+        response.setCache(determineCacheStatus().name());
+        return response;
+    }
+
+    /**
+     * Get the status, indicating if the server is running at all.
+     * @return JSON value that indicates the server is running
+     */
+    @Deprecated
+    @ApiOperation(
+            value = "DEPRECATED. Use /system-status instead. "
+                    + "Check that the rest services are up and running."
                     + "{\"status\":\"OK\"} is returned if all is well.",
                     notes = "")
     @RequestMapping(value = "/status", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
@@ -50,14 +75,21 @@ public class StatusController {
      * Get information about the basic search cache, including whether it's completed loading and its "age".
      * @return JSON object with status of load and "age"
      */
+    @Deprecated
     @ApiOperation(
-            value = "Check the status of every cache. "
+            value = "DEPRECATED. Use /system-status instead. "
+                    + "Check the status of every cache. "
                     + "{\"status\":\"OK\"} is returned if all caches are loaded and "
                     + "{\"status\":\"INITIALIZING\"} is returned if not. ",
                     notes = "")
     @RequestMapping(value = "/cache_status", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody CacheStatus getCacheStatus() {
         CacheStatus response = new CacheStatus();
+        response.setStatus(determineCacheStatus().name());
+        return response;
+    }
+
+    private CacheStatusName determineCacheStatus() {
         CacheManager manager = CacheManager.getInstance();
         boolean anyPending = false;
         List<String> cacheNames = CacheInitializor.getPreInitializedCaches();
@@ -67,11 +99,7 @@ public class StatusController {
                 anyPending = true;
             }
         }
-        if (anyPending) {
-            response.setStatus(CacheStatusName.INITIALIZING.name());
-        } else {
-            response.setStatus(CacheStatusName.OK.name());
-        }
-        return response;
+
+        return anyPending ? CacheStatusName.INITIALIZING : CacheStatusName.OK;
     }
 }
