@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.core.env.Environment;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,7 +26,7 @@ import gov.healthit.chpl.manager.JobManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
 @Service
-public class JobManagerImpl extends ApplicationObjectSupport implements JobManager {
+public class JobManagerImpl extends SecuredManager implements JobManager {
     private static final Logger LOGGER = LogManager.getLogger(JobManagerImpl.class);
     private static final long MILLIS_PER_DAY = 24 * 60 * 60 * 1000;
 

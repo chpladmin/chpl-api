@@ -37,7 +37,6 @@ import gov.healthit.chpl.domain.schedule.ChplRepeatableTrigger;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.SchedulerManager;
-import gov.healthit.chpl.permissions.Permissions;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.scheduler.ChplSchedulerReference;
 
@@ -48,21 +47,18 @@ import gov.healthit.chpl.scheduler.ChplSchedulerReference;
  *
  */
 @Service
-public class SchedulerManagerImpl implements SchedulerManager {
+public class SchedulerManagerImpl extends SecuredManager implements SchedulerManager {
 
     private static final String AUTHORITY_DELIMITER = ";";
     private static final String DATA_DELIMITER = "\u263A";
 
     private ChplSchedulerReference chplScheduler;
-    private Permissions permissions;
     private ResourcePermissions resourcePermissions;
 
     @Autowired
 
-    public SchedulerManagerImpl(final ChplSchedulerReference chplScheduler, final Permissions permissions,
-            ResourcePermissions resourcePermissions) {
+    public SchedulerManagerImpl(final ChplSchedulerReference chplScheduler, ResourcePermissions resourcePermissions) {
         this.chplScheduler = chplScheduler;
-        this.permissions = permissions;
         this.resourcePermissions = resourcePermissions;
     }
 
@@ -184,9 +180,8 @@ public class SchedulerManagerImpl implements SchedulerManager {
     /*
      * (non-Javadoc)
      * 
-     * @see gov.healthit.chpl.manager.SchedulerManager#getAllJobs() As new jobs
-     * are added that have authorities other than ROLE_ADMIN, those authorities
-     * will need to be added to the list.
+     * @see gov.healthit.chpl.manager.SchedulerManager#getAllJobs() As new jobs are added that have authorities other than
+     * ROLE_ADMIN, those authorities will need to be added to the list.
      */
     @Override
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "

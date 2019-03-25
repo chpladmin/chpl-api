@@ -44,13 +44,12 @@ import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.manager.TestingFunctionalityManager;
-import gov.healthit.chpl.permissions.Permissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import gov.healthit.chpl.validation.listing.PendingValidator;
 
 @Service
-public class PendingCertifiedProductManagerImpl implements PendingCertifiedProductManager {
+public class PendingCertifiedProductManagerImpl extends SecuredManager implements PendingCertifiedProductManager {
     private static final Logger LOGGER = LogManager.getLogger(PendingCertifiedProductManagerImpl.class);
 
     @Autowired
@@ -68,9 +67,6 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
     private CQMCriterionDAO cqmCriterionDAO;
     @Autowired
     private MacraMeasureDAO macraDao;
-
-    @Autowired
-    private Permissions permissions;
 
     private List<CQMCriterion> cqmCriteria = new ArrayList<CQMCriterion>();
     private List<MacraMeasure> macraMeasures = new ArrayList<MacraMeasure>();
