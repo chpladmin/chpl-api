@@ -408,8 +408,11 @@ public class UserManagementController {
             throw new UserRetrievalException("Could not find user with id " + userId);
         }
 
-        // delete the acb permissions for that user
+        // delete the atl permissions for that user
         userPermissionsManager.deleteAllAtlPermissionsForUser(userId);
+        
+        // delete the acb permissions for that user
+        userPermissionsManager.deleteAllAcbPermissionsForUser(userId);
         
         // delete the user
         userManager.delete(toDelete);

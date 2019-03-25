@@ -89,7 +89,7 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
     @Override
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).USER_PERMISSIONS, "
-            + "T(gov.healthit.chpl.permissions.domains.UserPermissionsDomainPermissions).DELETE_ALL_ACBS_FOR_USER)")
+            + "T(gov.healthit.chpl.permissions.domains.UserPermissionsDomainPermissions).DELETE_ALL_ACBS_FOR_USER, #userId)")
     public void deleteAllAcbPermissionsForUser(final Long userId) throws EntityRetrievalException {
         // Get the UserCertBodyMapDTO
         List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByUserId(userId);
@@ -151,7 +151,7 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
     @Override
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).USER_PERMISSIONS, "
-            + "T(gov.healthit.chpl.permissions.domains.UserPermissionsDomainPermissions).DELETE_ALL_ATLS_FOR_USER)")
+            + "T(gov.healthit.chpl.permissions.domains.UserPermissionsDomainPermissions).DELETE_ALL_ATLS_FOR_USER, #userId)")
     public void deleteAllAtlPermissionsForUser(final Long userId) throws EntityRetrievalException {
         // Get the UserTestingLabMapDTO
         List<UserTestingLabMapDTO> dtos = userTestingLabMapDAO.getByUserId(userId);
