@@ -43,7 +43,7 @@ import gov.healthit.chpl.domain.SimpleExplainableAction;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformityDocument;
 import gov.healthit.chpl.domain.SurveillanceUploadResult;
-import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.CertificationBodyAccessException;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -178,11 +178,12 @@ public class SurveillanceController implements MessageSourceAware {
                 .getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
         CertificationBodyDTO owningAcb = null;
         try {
-            owningAcb = resourcePermissions.getAcbIfPermissionById(Long.valueOf(beforeCp.getCertifyingBody().get("id").toString()));
+            owningAcb = resourcePermissions.getAcbIfPermissionById(
+                    Long.valueOf(beforeCp.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()));
         } catch (final AccessDeniedException ex) {
             throw new CertificationBodyAccessException(
                     "User does not have permission to add surveillance to a certified product under ACB "
-                            + beforeCp.getCertifyingBody().get("name"));
+                            + beforeCp.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY));
         } 
 
         // insert the surveillance
@@ -202,7 +203,7 @@ public class SurveillanceController implements MessageSourceAware {
 
         CertifiedProductSearchDetails afterCp = cpdetailsManager
                 .getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, afterCp.getId(),
+        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, afterCp.getId(),
                 "Surveillance was added to certified product " + afterCp.getChplProductNumber(), beforeCp, afterCp);
 
         // query the inserted surveillance
@@ -248,7 +249,8 @@ public class SurveillanceController implements MessageSourceAware {
 
         CertificationBodyDTO owningAcb = null;
         try {
-            owningAcb = resourcePermissions.getAcbIfPermissionById(Long.valueOf(beforeCp.getCertifyingBody().get("id").toString()));
+            owningAcb = resourcePermissions.getAcbIfPermissionById(
+                    Long.valueOf(beforeCp.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()));
         } catch (Exception ex) {
             LOGGER.error("Error looking up ACB associated with surveillance.", ex);
             throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
@@ -261,7 +263,7 @@ public class SurveillanceController implements MessageSourceAware {
 
         CertifiedProductSearchDetails afterCp = cpdetailsManager
                 .getCertifiedProductDetails(surv.getCertifiedProduct().getId());
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT,
+        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT,
                 beforeCp.getId(), "Documentation " + toInsert.getFileName()
                 + " was added to a nonconformity for certified product " + afterCp.getChplProductNumber(),
                 beforeCp, afterCp);
@@ -301,7 +303,8 @@ public class SurveillanceController implements MessageSourceAware {
                 .getCertifiedProductDetails(survToUpdate.getCertifiedProduct().getId());
         CertificationBodyDTO owningAcb = null;
         try {
-            owningAcb = resourcePermissions.getAcbIfPermissionById(Long.valueOf(beforeCp.getCertifyingBody().get("id").toString()));
+            owningAcb = resourcePermissions.getAcbIfPermissionById(
+                    Long.valueOf(beforeCp.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()));
         } catch (Exception ex) {
             LOGGER.error("Error looking up ACB associated with surveillance.", ex);
             throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
@@ -321,7 +324,7 @@ public class SurveillanceController implements MessageSourceAware {
 
         CertifiedProductSearchDetails afterCp = cpdetailsManager
                 .getCertifiedProductDetails(survToUpdate.getCertifiedProduct().getId());
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, afterCp.getId(),
+        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, afterCp.getId(),
                 "Surveillance was updated on certified product " + afterCp.getChplProductNumber(), beforeCp, afterCp);
 
         // query the inserted surveillance
@@ -364,7 +367,8 @@ public class SurveillanceController implements MessageSourceAware {
         CertifiedProductSearchDetails beforeCp = cpdetailsManager
                 .getCertifiedProductDetails(survToDelete.getCertifiedProduct().getId());
         CertificationBodyDTO owningAcb =
-                resourcePermissions.getAcbIfPermissionById(Long.valueOf(beforeCp.getCertifyingBody().get("id").toString()));
+                resourcePermissions.getAcbIfPermissionById(
+                        Long.valueOf(beforeCp.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()));
 
         HttpHeaders responseHeaders = new HttpHeaders();
         // delete it
@@ -380,7 +384,7 @@ public class SurveillanceController implements MessageSourceAware {
 
         CertifiedProductSearchDetails afterCp = cpdetailsManager
                 .getCertifiedProductDetails(survToDelete.getCertifiedProduct().getId());
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, afterCp.getId(),
+        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, afterCp.getId(),
                 "Surveillance was delete from certified product " + afterCp.getChplProductNumber(),
                 beforeCp, afterCp, requestBody.getReason());
 
@@ -414,7 +418,8 @@ public class SurveillanceController implements MessageSourceAware {
                 .getCertifiedProductDetails(surv.getCertifiedProduct().getId());
         CertificationBodyDTO owningAcb = null;
         try {
-            owningAcb = resourcePermissions.getAcbIfPermissionById(Long.valueOf(beforeCp.getCertifyingBody().get("id").toString()));
+            owningAcb = resourcePermissions.getAcbIfPermissionById(
+                    Long.valueOf(beforeCp.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()));
         } catch (Exception ex) {
             LOGGER.error("Error looking up ACB associated with surveillance.", ex);
             throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
@@ -428,7 +433,7 @@ public class SurveillanceController implements MessageSourceAware {
 
         CertifiedProductSearchDetails afterCp = cpdetailsManager
                 .getCertifiedProductDetails(surv.getCertifiedProduct().getId());
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, beforeCp.getId(),
+        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, beforeCp.getId(),
                 "A document was removed from a nonconformity for certified product " + afterCp.getChplProductNumber(),
                 beforeCp, afterCp);
         return "{\"success\": \"true\"}";

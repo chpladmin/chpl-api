@@ -511,7 +511,8 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                     for (CertificationResultTestFunctionality funcMap : cert.getTestFunctionality()) {
                         if (funcMap.getTestFunctionalityId() == null) {
                             TestFunctionalityDTO foundTestFunc = testFuncDao.getByNumberAndEdition(funcMap.getName(),
-                                    Long.valueOf(listing.getCertificationEdition().get("id").toString()));
+                                    Long.valueOf(listing.getCertificationEdition()
+                                            .get(CertifiedProductSearchDetails.EDITION_ID_KEY).toString()));
                             if (foundTestFunc == null || foundTestFunc.getId() == null) {
                                 listing.getErrorMessages().add("Certification " + cert.getNumber()
                                 + " contains invalid test functionality: '" + funcMap.getName() + "'.");
