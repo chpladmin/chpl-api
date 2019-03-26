@@ -34,14 +34,10 @@ public class UserTestingLabMapDAOImpl extends BaseDAOImpl implements UserTesting
     }
 
     @Override
-    public UserTestingLabMapDTO update(UserTestingLabMapDTO dto) throws EntityRetrievalException {
-        UserTestingLabMapEntity entity = new UserTestingLabMapEntity();
-        entity = update(getEntityById(dto.getId()));
-        return new UserTestingLabMapDTO(entity);
-    }
-
     public void delete(UserTestingLabMapDTO dto) throws EntityRetrievalException {
-        update(getEntityById(dto.getId()));
+        UserTestingLabMapEntity entity = getEntityById(dto.getId());
+        entity.setDeleted(true);
+        update(entity);
     }
 
     @Override
