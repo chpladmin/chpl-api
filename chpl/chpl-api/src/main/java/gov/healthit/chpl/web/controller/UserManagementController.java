@@ -59,7 +59,6 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.InvitationManager;
-import gov.healthit.chpl.manager.TestingLabManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -416,18 +415,21 @@ public class UserManagementController {
             userManager.delete(toDelete);
             userPermissionsManager.deleteAllAcbPermissionsForUser(userId);
             userPermissionsManager.deleteAllAtlPermissionsForUser(userId);
-        } else if (resourcePermissions.isUserRoleAcbAdmin()) {
-            List<CertificationBodyDTO> targetUserAcbs = resourcePermissions.getAllAcbsForUser(userId);
-            for (CertificationBodyDTO dto : resourcePermissions.getAllAcbsForCurrentUser()) {
-                if (isAcbInList(dto, targetUserAcbs)) {
-                    userPermissionsManager.deleteAcbPermission(dto, userId);
+        } else {
+            if (resourcePermissions.isUserRoleAcbAdmin()) {
+                List<CertificationBodyDTO> targetUserAcbs = resourcePermissions.getAllAcbsForUser(userId);
+                for (CertificationBodyDTO dto : resourcePermissions.getAllAcbsForCurrentUser()) {
+                    if (isAcbInList(dto, targetUserAcbs)) {
+                        userPermissionsManager.deleteAcbPermission(dto, userId);
+                    }
                 }
-            }
-        } else if (resourcePermissions.isUserRoleAtlAdmin()) {
-            List<TestingLabDTO> targetUserAtls = resourcePermissions.getAllAtlsForUser(userId);
-            for (TestingLabDTO dto : resourcePermissions.getAllAtlsForCurrentUser()) {
-                if (isAtlInList(dto, targetUserAtls)) {
-                    userPermissionsManager.deleteAtlPermission(dto, userId);
+            } 
+            if (resourcePermissions.isUserRoleAtlAdmin()) {
+                List<TestingLabDTO> targetUserAtls = resourcePermissions.getAllAtlsForUser(userId);
+                for (TestingLabDTO dto : resourcePermissions.getAllAtlsForCurrentUser()) {
+                    if (isAtlInList(dto, targetUserAtls)) {
+                        userPermissionsManager.deleteAtlPermission(dto, userId);
+                    }
                 }
             }
         }
