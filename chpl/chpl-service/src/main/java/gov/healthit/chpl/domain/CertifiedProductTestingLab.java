@@ -7,6 +7,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
 
 /**
@@ -15,6 +17,7 @@ import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
  */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CertifiedProductTestingLab implements Serializable {
     private static final long serialVersionUID = -2078691100124619582L;
 

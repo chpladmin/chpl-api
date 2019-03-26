@@ -17,6 +17,7 @@
         <class>gov.healthit.chpl.auth.entity.UserResetTokenEntity</class>
         <class>gov.healthit.chpl.entity.AccessibilityStandardEntity</class>
         <class>gov.healthit.chpl.entity.ActivityEntity</class>
+        <class>gov.healthit.chpl.entity.ActivityConceptEntity</class>
         <class>gov.healthit.chpl.entity.AddressEntity</class>
         <class>gov.healthit.chpl.entity.AgeRangeEntity</class>
         <class>gov.healthit.chpl.entity.AnnouncementEntity</class>

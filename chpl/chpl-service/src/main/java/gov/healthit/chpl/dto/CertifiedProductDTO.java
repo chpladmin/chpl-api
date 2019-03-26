@@ -101,7 +101,8 @@ public class CertifiedProductDTO implements Serializable {
      */
     public CertifiedProductDTO(final CertifiedProductSearchDetails from) throws InvalidArgumentsException {
         this.setId(from.getId());
-        this.setCertificationBodyId(Long.valueOf(from.getCertifyingBody().get("id").toString()));
+        this.setCertificationBodyId(
+                Long.valueOf(from.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()));
         if (from.getPracticeType() != null && from.getPracticeType().get("id") != null) {
             this.setPracticeTypeId(Long.valueOf(from.getPracticeType().get("id").toString()));
         }
@@ -116,7 +117,8 @@ public class CertifiedProductDTO implements Serializable {
             this.certificationStatus.setId(fromStatus.getId());
             this.certificationStatus.setStatus(fromStatus.getName());
         }
-        this.setCertificationEditionId(Long.valueOf(from.getCertificationEdition().get("id").toString()));
+        this.setCertificationEditionId(
+                Long.valueOf(from.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY).toString()));
         this.setReportFileLocation(from.getReportFileLocation());
         this.setSedReportFileLocation(from.getSedReportFileLocation());
         this.setSedIntendedUserDescription(from.getSedIntendedUserDescription());

@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.entity.ActivityEntity;
 import gov.healthit.chpl.util.Util;
 
@@ -34,12 +34,14 @@ public class ActivityDTO implements Serializable {
         this.newData = entity.getNewData();
         this.activityDate = entity.getActivityDate();
         this.activityObjectId = entity.getActivityObjectId();
-        this.concept = entity.getConcept();
         this.creationDate = entity.getCreationDate();
         this.lastModifiedDate = entity.getLastModifiedDate();
         this.lastModifiedUser = entity.getLastModifiedUser();
         this.deleted = entity.getDeleted();
 
+        if (entity.getConcept() != null) {
+            this.concept = ActivityConcept.valueOf(entity.getConcept().getConcept());
+        }
         if (entity.getUser() != null) {
             this.user = new UserDTO(entity.getUser());
         }

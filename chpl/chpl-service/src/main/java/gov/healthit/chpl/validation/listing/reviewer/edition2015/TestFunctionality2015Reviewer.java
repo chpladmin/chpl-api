@@ -129,8 +129,8 @@ public class TestFunctionality2015Reviewer implements Reviewer {
 
     private String getEditionFromListing(final CertifiedProductSearchDetails listing) {
         String edition = "";
-        if (listing.getCertificationEdition().containsKey("name")) {
-            edition = listing.getCertificationEdition().get("name").toString();
+        if (listing.getCertificationEdition().containsKey(CertifiedProductSearchDetails.EDITION_NAME_KEY)) {
+            edition = listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString();
         }
         return edition;
     }

@@ -110,7 +110,7 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
         }
         productDetailsUrl += "#/product/" + data.getId();
         survFields.add(productDetailsUrl);
-        survFields.add(data.getCertifyingBody().get("name").toString());
+        survFields.add(data.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString());
         survFields.add(data.getCurrentStatus().getStatus().getName());
         Long lastCertificationChangeMillis = data.getCurrentStatus().getEventDate();
         if (lastCertificationChangeMillis.longValue() == data.getCertificationDate().longValue()) {

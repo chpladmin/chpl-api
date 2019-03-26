@@ -90,7 +90,7 @@ public final class Util {
         return input;
     }
 
-    public static Date getNewDate(Date orig) {
+    public static Date getNewDate(final Date orig) {
         if (orig != null) {
             return new Date(orig.getTime());
         } else {

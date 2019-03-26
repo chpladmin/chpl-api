@@ -22,7 +22,8 @@ public class RequiredDataReviewer implements Reviewer {
 
     @Override
     public void review(final CertifiedProductSearchDetails listing) {
-        if (listing.getCertificationEdition() == null || listing.getCertificationEdition().get("id") == null) {
+        if (listing.getCertificationEdition() == null
+                || listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY) == null) {
             listing.getErrorMessages().add("Certification edition is required but was not found.");
         }
         if (StringUtils.isEmpty(listing.getAcbCertificationId())) {
