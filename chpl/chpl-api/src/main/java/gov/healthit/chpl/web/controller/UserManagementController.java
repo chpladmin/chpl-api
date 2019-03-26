@@ -52,13 +52,13 @@ import gov.healthit.chpl.domain.AuthorizeCredentials;
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.InvitationManager;
-import gov.healthit.chpl.manager.TestingLabManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -408,11 +408,31 @@ public class UserManagementController {
             throw new UserRetrievalException("Could not find user with id " + userId);
         }
 
-        // delete the acb permissions for that user
-        userPermissionsManager.deleteAllAtlPermissionsForUser(userId);
-        
-        // delete the user
-        userManager.delete(toDelete);
+        //If the current user is ROLE_ADMIN or ROLE_ONC, delete the user and access to all ACB and ATLS
+        //If the current user is ROLE_ACB, remove all of the ACBs that the current user has from the target user
+        //If the current user is ROLE_ATL, remove all of the ATLs that the current user has from the target user
+        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
+            userManager.delete(toDelete);
+            userPermissionsManager.deleteAllAcbPermissionsForUser(userId);
+            userPermissionsManager.deleteAllAtlPermissionsForUser(userId);
+        } else {
+            if (resourcePermissions.isUserRoleAcbAdmin()) {
+                List<CertificationBodyDTO> targetUserAcbs = resourcePermissions.getAllAcbsForUser(userId);
+                for (CertificationBodyDTO dto : resourcePermissions.getAllAcbsForCurrentUser()) {
+                    if (isAcbInList(dto, targetUserAcbs)) {
+                        userPermissionsManager.deleteAcbPermission(dto, userId);
+                    }
+                }
+            } 
+            if (resourcePermissions.isUserRoleAtlAdmin()) {
+                List<TestingLabDTO> targetUserAtls = resourcePermissions.getAllAtlsForUser(userId);
+                for (TestingLabDTO dto : resourcePermissions.getAllAtlsForCurrentUser()) {
+                    if (isAtlInList(dto, targetUserAtls)) {
+                        userPermissionsManager.deleteAtlPermission(dto, userId);
+                    }
+                }
+            }
+        }
 
         String activityDescription = "User " + toDelete.getSubjectName() + " was deleted.";
         activityManager.addActivity(ActivityConcept.USER, toDelete.getId(), activityDescription,
@@ -420,7 +440,7 @@ public class UserManagementController {
 
         return "{\"deletedUser\" : true}";
     }
-
+    
     @ApiOperation(value = "Give additional roles to a user.",
             notes = "Users may be given ROLE_ADMIN, ROLE_ONC, ROLE_ACB, or "
                     + "ROLE_ATL roles within the system.  Security Restrictions: ROLE_ADMIN or "
@@ -566,6 +586,24 @@ public class UserManagementController {
             throws UserRetrievalException {
 
         return userManager.getUserInfo(userName);
-
     }
+    
+    private boolean isAcbInList(CertificationBodyDTO acb, List<CertificationBodyDTO> acbs) {
+        for (CertificationBodyDTO dto : acbs) {
+            if (dto.getId().equals(acb.getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean isAtlInList(TestingLabDTO atl, List<TestingLabDTO> atls) {
+        for (TestingLabDTO dto : atls) {
+            if (dto.getId().equals(atl.getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

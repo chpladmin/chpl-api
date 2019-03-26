@@ -34,14 +34,10 @@ public class UserTestingLabMapDAOImpl extends BaseDAOImpl implements UserTesting
     }
 
     @Override
-    public UserTestingLabMapDTO update(UserTestingLabMapDTO dto) throws EntityRetrievalException {
-        UserTestingLabMapEntity entity = new UserTestingLabMapEntity();
-        entity = update(getUserTestingLabMapEntity(dto));
-        return new UserTestingLabMapDTO(entity);
-    }
-
     public void delete(UserTestingLabMapDTO dto) throws EntityRetrievalException {
-        update(getUserTestingLabMapEntity(dto));
+        UserTestingLabMapEntity entity = getEntityById(dto.getId());
+        entity.setDeleted(true);
+        update(entity);
     }
 
     @Override
@@ -81,9 +77,18 @@ public class UserTestingLabMapDAOImpl extends BaseDAOImpl implements UserTesting
 
     @Override
     public UserTestingLabMapDTO getById(Long id) {
+        UserTestingLabMapEntity result = getEntityById(id);
+
+        if (result == null) {
+            return null;
+        }
+        return new UserTestingLabMapDTO(result);
+    }
+
+    private UserTestingLabMapEntity getEntityById(Long id) {
         Query query = entityManager.createQuery(
                 "from UserTestingLabMapEntity utlm " + "join fetch utlm.testingLab TestingLabEntity "
-                        + "join fetch utlm.user UserEntity" + "where (utlm.deleted != true) AND (utlm.id = :id) ",
+                        + "join fetch utlm.user UserEntity " + "where (utlm.deleted != true) AND (utlm.id = :id) ",
                 UserTestingLabMapEntity.class);
         query.setParameter("id", id);
         List<UserTestingLabMapEntity> result = query.getResultList();
@@ -91,7 +96,7 @@ public class UserTestingLabMapDAOImpl extends BaseDAOImpl implements UserTesting
         if (result.size() == 0) {
             return null;
         }
-        return new UserTestingLabMapDTO(result.get(0));
+        return (UserTestingLabMapEntity) result.get(0);
     }
 
     private UserTestingLabMapEntity create(UserTestingLabMapEntity entity) {

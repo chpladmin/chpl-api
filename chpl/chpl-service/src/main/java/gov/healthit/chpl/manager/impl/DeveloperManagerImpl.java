@@ -69,7 +69,7 @@ import gov.healthit.chpl.validation.developer.DeveloperUpdateValidator;
  */
 @Lazy
 @Service
-public class DeveloperManagerImpl implements DeveloperManager {
+public class DeveloperManagerImpl extends SecuredManager implements DeveloperManager {
     private static final Logger LOGGER = LogManager.getLogger(DeveloperManagerImpl.class);
 
     private DeveloperDAO developerDao;

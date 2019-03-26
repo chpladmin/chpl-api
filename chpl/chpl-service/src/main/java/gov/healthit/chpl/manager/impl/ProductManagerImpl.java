@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.ProductDAO;
@@ -33,15 +32,14 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.ProductManager;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil.ChplProductNumberParts;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
-import gov.healthit.chpl.permissions.ResourcePermissions;
-import gov.healthit.chpl.validation.listing.reviewer.ChplNumberReviewer;
 
 @Service
-public class ProductManagerImpl implements ProductManager {
+public class ProductManagerImpl extends SecuredManager implements ProductManager {
     private static final Logger LOGGER = LogManager.getLogger(ProductManagerImpl.class);
 
     private ErrorMessageUtil msgUtil;
@@ -56,10 +54,11 @@ public class ProductManagerImpl implements ProductManager {
     private ResourcePermissions resourcePermissions;
 
     @Autowired
-    public ProductManagerImpl(final ErrorMessageUtil msgUtil, final ProductDAO productDao, final ProductVersionDAO versionDao,
-            final DeveloperDAO devDao, final CertifiedProductDAO cpDao, final CertifiedProductDetailsManager cpdManager,
-            final CertificationBodyManager acbManager, final ChplProductNumberUtil chplProductNumberUtil,
-            final ActivityManager activityManager, final ResourcePermissions resourcePermissions) {
+    public ProductManagerImpl(final ErrorMessageUtil msgUtil, final ProductDAO productDao,
+            final ProductVersionDAO versionDao, final DeveloperDAO devDao, final CertifiedProductDAO cpDao,
+            final CertifiedProductDetailsManager cpdManager, final CertificationBodyManager acbManager,
+            final ChplProductNumberUtil chplProductNumberUtil, final ActivityManager activityManager,
+            final ResourcePermissions resourcePermissions) {
         this.msgUtil = msgUtil;
         this.productDao = productDao;
         this.versionDao = versionDao;
@@ -287,19 +286,18 @@ public class ProductManagerImpl implements ProductManager {
             String chplNumber = beforeProduct.getChplProductNumber();
             if (!chplProductNumberUtil.isLegacy(chplNumber)) {
                 ChplProductNumberParts parts = chplProductNumberUtil.parseChplProductNumber(chplNumber);
-                String potentialChplNumber = chplProductNumberUtil.getChplProductNumber(
-                        parts.getEditionCode(), parts.getAtlCode(), parts.getAcbCode(),
-                        parts.getDeveloperCode(), newProductCode, parts.getVersionCode(),
-                        parts.getIcsCode(), parts.getAdditionalSoftwareCode(), parts.getCertifiedDateCode());
+                String potentialChplNumber = chplProductNumberUtil.getChplProductNumber(parts.getEditionCode(),
+                        parts.getAtlCode(), parts.getAcbCode(), parts.getDeveloperCode(), newProductCode,
+                        parts.getVersionCode(), parts.getIcsCode(), parts.getAdditionalSoftwareCode(),
+                        parts.getCertifiedDateCode());
                 if (!chplProductNumberUtil.isUnique(potentialChplNumber)) {
                     throw new EntityCreationException("Cannot update certified product " + chplNumber + " to "
                             + potentialChplNumber + " because a certified product with that CHPL ID already exists.");
                 }
                 if (!ValidationUtils.chplNumberPartIsValid(potentialChplNumber,
-                        ChplProductNumberUtil.PRODUCT_CODE_INDEX,
-                        ChplProductNumberUtil.PRODUCT_CODE_REGEX)) {
-                    throw new EntityCreationException(
-                            msgUtil.getMessage("listing.badProductCodeChars", ChplProductNumberUtil.PRODUCT_CODE_LENGTH));
+                        ChplProductNumberUtil.PRODUCT_CODE_INDEX, ChplProductNumberUtil.PRODUCT_CODE_REGEX)) {
+                    throw new EntityCreationException(msgUtil.getMessage("listing.badProductCodeChars",
+                            ChplProductNumberUtil.PRODUCT_CODE_LENGTH));
                 }
                 affectedCp.setProductCode(newProductCode);
             }

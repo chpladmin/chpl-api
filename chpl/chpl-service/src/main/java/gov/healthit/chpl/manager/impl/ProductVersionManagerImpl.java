@@ -31,7 +31,7 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 
 @Service
-public class ProductVersionManagerImpl implements ProductVersionManager {
+public class ProductVersionManagerImpl extends SecuredManager implements ProductVersionManager {
     private static final Logger LOGGER = LogManager.getLogger(ProductVersionManagerImpl.class);
     @Autowired
     private ProductVersionDAO dao;
