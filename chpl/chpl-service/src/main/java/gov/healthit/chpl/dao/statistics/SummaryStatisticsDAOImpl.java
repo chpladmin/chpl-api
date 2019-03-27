@@ -48,11 +48,6 @@ public class SummaryStatisticsDAOImpl extends BaseDAOImpl implements SummaryStat
     @Override
     public void deleteAll() {
         try {
-            // String hql = "UPDATE SummaryStatisticsEntity SET deleted = true";
-            // Query query = entityManager.createQuery(hql);
-            // int updatedRecs = query.executeUpdate();
-            // LOGGER.info(String.format("Update %s record", updatedRecs));
-
             List<SummaryStatisticsEntity> entities = getAllSummaryStatistics();
             if (entities != null) {
                 for (SummaryStatisticsEntity entity : entities) {

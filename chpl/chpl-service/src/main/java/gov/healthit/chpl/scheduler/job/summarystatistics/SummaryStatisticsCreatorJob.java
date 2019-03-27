@@ -66,7 +66,6 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
      */
     public SummaryStatisticsCreatorJob() throws Exception {
         super();
-        // setLocalContext();
         loadProperties();
     }
 
