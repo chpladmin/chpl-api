@@ -6,15 +6,14 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.domain.activity.ActivityDetails;
 import gov.healthit.chpl.dto.AnnouncementDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -27,10 +26,7 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
     private static final Logger LOGGER = LogManager.getLogger(GetActivityDetailsActionPermissions.class);
 
     @Autowired
-    private PermissionEvaluator permissionEvaluator;
-
-    @Autowired
-    private UserManager userManager;
+    private UserDAO userDao;
 
     private ObjectMapper jsonMapper;
 
@@ -256,7 +252,7 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
                     }
                 }
                 if (getResourcePermissions().isUserRoleCmsStaff()) {
-                    List<UserDTO> cmsUsers = userManager.getUsersWithPermission(Authority.ROLE_CMS_STAFF);
+                    List<UserDTO> cmsUsers = userDao.getUsersWithPermission(Authority.ROLE_CMS_STAFF);
                     accessibleUsers.addAll(cmsUsers);
                 }
 

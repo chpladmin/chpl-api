@@ -32,20 +32,18 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.FileUtils;
 
 @Service
-public class SurveillanceUploadManagerImpl implements SurveillanceUploadManager {
+public class SurveillanceUploadManagerImpl extends SecuredManager implements SurveillanceUploadManager {
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceUploadManagerImpl.class);
 
     private FileUtils fileUtils;
     private SurveillanceUploadHandlerFactory uploadHandlerFactory;
-    private Permissions permissions;
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
     public SurveillanceUploadManagerImpl(FileUtils fileUtils, SurveillanceUploadHandlerFactory uploadHandlerFactory,
-            Permissions permissions, ErrorMessageUtil errorMessageUtil) {
+            ErrorMessageUtil errorMessageUtil) {
         this.fileUtils = fileUtils;
         this.uploadHandlerFactory = uploadHandlerFactory;
-        this.permissions = permissions;
         this.errorMessageUtil = errorMessageUtil;
     }
 

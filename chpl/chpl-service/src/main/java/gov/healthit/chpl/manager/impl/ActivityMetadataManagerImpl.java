@@ -28,14 +28,11 @@ public class ActivityMetadataManagerImpl implements ActivityMetadataManager {
 
     private ActivityDAO activityDAO;
     private ActivityMetadataBuilderFactory metadataBuilderFactory;
-    private Permissions permissions;
 
     @Autowired
     public ActivityMetadataManagerImpl(final ActivityDAO activityDAO,
-            final ActivityMetadataBuilderFactory metadataBuilderFactory,
-            final Permissions permissions) {
+            final ActivityMetadataBuilderFactory metadataBuilderFactory) {
         this.activityDAO = activityDAO;
-        this.permissions = permissions;
         this.metadataBuilderFactory = metadataBuilderFactory;
     }
 
