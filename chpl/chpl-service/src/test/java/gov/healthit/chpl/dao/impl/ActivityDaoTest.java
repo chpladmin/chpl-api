@@ -96,7 +96,7 @@ public class ActivityDaoTest extends TestCase {
         assertEquals(created.getOriginalData(), check.getOriginalData());
         assertEquals(created.getActivityDate(), check.getActivityDate());
         assertEquals(created.getActivityObjectId(), check.getActivityObjectId());
-        assertEquals(created.getConcept(), check.getConcept());
+        assertEquals(ActivityConcept.ATL, check.getConcept());
         assertEquals(created.getId(), check.getId());
 
         SecurityContextHolder.getContext().setAuthentication(null);
