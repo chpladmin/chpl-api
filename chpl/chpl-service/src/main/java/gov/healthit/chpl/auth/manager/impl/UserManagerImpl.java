@@ -121,14 +121,6 @@ public class UserManagerImpl implements UserManager {
             userDTO.setPasswordResetRequired(false);
         }
 
-        if (Boolean.TRUE.equals(userInfo.getComplianceTermsAccepted())) {
-            if (userDTO.getComplianceSignatureDate() == null) {
-                userDTO.setComplianceSignatureDate(new Date());
-            }
-        } else {
-            userDTO.setComplianceSignatureDate(null);
-        }
-
         userDTO.setTitle(userInfo.getTitle());
         return securedUserManager.update(userDTO);
     }
@@ -310,7 +302,7 @@ public class UserManagerImpl implements UserManager {
         UserDTO dto = securedUserManager.getBySubjectName(userName);
         return dto;
     }
-    
+
     @Override
     public UserDTO getByNameUnsecured(final String userName) throws UserRetrievalException {
         return userDAO.getByName(userName);

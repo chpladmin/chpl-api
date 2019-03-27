@@ -39,7 +39,7 @@ public class ProductClassificationTypeDAOImpl extends BaseDAOImpl implements Pro
             entity.setId(dto.getId());
             entity.setName(dto.getName());
             // entity.setLastModifiedDate(result.getLastModifiedDate());
-            entity.setLastModifiedUser(Util.getCurrentUser().getId());
+            entity.setLastModifiedUser(Util.getAuditId());
 
             create(entity);
         }
@@ -55,7 +55,7 @@ public class ProductClassificationTypeDAOImpl extends BaseDAOImpl implements Pro
         entity.setId(dto.getId());
         entity.setName(dto.getName());
         // entity.setLastModifiedDate(result.getLastModifiedDate());
-        entity.setLastModifiedUser(Util.getCurrentUser().getId());
+        entity.setLastModifiedUser(Util.getAuditId());
 
         update(entity);
     }

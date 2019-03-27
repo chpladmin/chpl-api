@@ -93,7 +93,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
                 message.setDeleted(true);
                 message.setLastModifiedDate(new Date());
                 message.setLastModifiedUser(
-                        Util.getCurrentUser() != null ? Util.getCurrentUser().getId() : jobEntity.getUserId());
+                        Util.getCurrentUser() != null ? Util.getAuditId() : jobEntity.getUserId());
                 entityManager.merge(message);
             }
             entityManager.flush();
@@ -175,7 +175,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
         entity.setData(dto.getData());
         entity.setStartTime(dto.getStartTime());
         entity.setEndTime(dto.getEndTime());
-        entity.setLastModifiedUser(Util.getCurrentUser() != null ? Util.getCurrentUser().getId() : entity.getUserId());
+        entity.setLastModifiedUser(Util.getCurrentUser() != null ? Util.getAuditId() : entity.getUserId());
         entity.setLastModifiedDate(new Date());
         entityManager.merge(entity);
         entityManager.flush();
@@ -191,7 +191,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedDate(new Date());
             toDelete.setLastModifiedUser(
-                    Util.getCurrentUser() != null ? Util.getCurrentUser().getId() : toDelete.getUserId());
+                    Util.getCurrentUser() != null ? Util.getAuditId() : toDelete.getUserId());
             entityManager.merge(toDelete);
 
             if (toDelete.getStatus() != null) {
@@ -199,7 +199,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
                 status.setDeleted(true);
                 status.setLastModifiedDate(new Date());
                 status.setLastModifiedUser(
-                        Util.getCurrentUser() != null ? Util.getCurrentUser().getId() : toDelete.getUserId());
+                        Util.getCurrentUser() != null ? Util.getAuditId() : toDelete.getUserId());
                 entityManager.merge(status);
             }
 
@@ -208,7 +208,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
                     message.setDeleted(true);
                     message.setLastModifiedDate(new Date());
                     message.setLastModifiedUser(
-                            Util.getCurrentUser() != null ? Util.getCurrentUser().getId() : toDelete.getUserId());
+                            Util.getCurrentUser() != null ? Util.getAuditId() : toDelete.getUserId());
                     entityManager.merge(message);
                 }
             }

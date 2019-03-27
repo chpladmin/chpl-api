@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
 public abstract class ActionPermissions {
@@ -19,6 +20,16 @@ public abstract class ActionPermissions {
         List<CertificationBodyDTO> acbs = resourcePermissions.getAllAcbsForCurrentUser();
         for (CertificationBodyDTO dto : acbs) {
             if (dto.getId().equals(acbId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isAtlValidForCurrentUser(Long atlId) {
+        List<TestingLabDTO> atls = resourcePermissions.getAllAtlsForCurrentUser();
+        for (TestingLabDTO dto : atls) {
+            if (dto.getId().equals(atlId)) {
                 return true;
             }
         }

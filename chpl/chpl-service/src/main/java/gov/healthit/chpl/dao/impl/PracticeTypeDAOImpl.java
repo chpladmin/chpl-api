@@ -40,7 +40,7 @@ public class PracticeTypeDAOImpl extends BaseDAOImpl implements PracticeTypeDAO 
             entity.setName(dto.getName());
             entity.setDescription(dto.getDescription());
             // entity.setLastModifiedDate(result.getLastModifiedDate());
-            entity.setLastModifiedUser(Util.getCurrentUser().getId());
+            entity.setLastModifiedUser(Util.getAuditId());
 
             create(entity);
         }
@@ -57,7 +57,7 @@ public class PracticeTypeDAOImpl extends BaseDAOImpl implements PracticeTypeDAO 
         entity.setName(dto.getName());
         entity.setDescription(dto.getDescription());
         // entity.setLastModifiedDate(result.getLastModifiedDate());
-        entity.setLastModifiedUser(Util.getCurrentUser().getId());
+        entity.setLastModifiedUser(Util.getAuditId());
 
         update(entity);
     }

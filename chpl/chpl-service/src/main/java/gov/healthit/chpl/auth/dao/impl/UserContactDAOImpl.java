@@ -37,7 +37,7 @@ public class UserContactDAOImpl extends BaseDAOImpl implements UserContactDAO {
 		Query query = entityManager.createQuery("UPDATE UserContact "
 				+ "SET deleted = true, "
 				+ " last_updated_date = NOW(), "
-				+ " last_updated_user = " + Util.getCurrentUser().getId() 
+				+ " last_updated_user = " + Util.getAuditId()
 				+ "WHERE contact_id = :contactid");
 		query.setParameter("contactid", contactId);
 		query.executeUpdate();
@@ -46,7 +46,7 @@ public class UserContactDAOImpl extends BaseDAOImpl implements UserContactDAO {
 	@Override 
 	public void delete(UserContactEntity contact) {
 		contact.setLastModifiedDate(new Date());
-		contact.setLastModifiedUser(Util.getCurrentUser().getId());
+		contact.setLastModifiedUser(Util.getAuditId());
 		contact.setDeleted(true);
 		update(contact);
 	}

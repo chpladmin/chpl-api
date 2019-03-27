@@ -65,7 +65,7 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 throws EntityCreationException {
 
         toCreate.setLastModifiedDate(new Date());
-        toCreate.setLastModifiedUser(Util.getCurrentUser().getId());
+        toCreate.setLastModifiedUser(Util.getAuditId());
         toCreate.setCreationDate(new Date());
         toCreate.setDeleted(false);
         try {
@@ -81,7 +81,7 @@ throws EntityCreationException {
         for (PendingCertifiedProductTestingLabMapEntity testingLab : toCreate.getTestingLabs()) {
             testingLab.setPendingCertifiedProductId(toCreate.getId());
             testingLab.setLastModifiedDate(new Date());
-            testingLab.setLastModifiedUser(Util.getCurrentUser().getId());
+            testingLab.setLastModifiedUser(Util.getAuditId());
             testingLab.setCreationDate(new Date());
             testingLab.setDeleted(false);
             try {
@@ -98,7 +98,7 @@ throws EntityCreationException {
         for (PendingCertifiedProductQmsStandardEntity qmsStandard : toCreate.getQmsStandards()) {
             qmsStandard.setPendingCertifiedProductId(toCreate.getId());
             qmsStandard.setLastModifiedDate(new Date());
-            qmsStandard.setLastModifiedUser(Util.getCurrentUser().getId());
+            qmsStandard.setLastModifiedUser(Util.getAuditId());
             qmsStandard.setCreationDate(new Date());
             qmsStandard.setDeleted(false);
             try {
@@ -115,7 +115,7 @@ throws EntityCreationException {
         for (PendingCertifiedProductAccessibilityStandardEntity accStandard : toCreate.getAccessibilityStandards()) {
             accStandard.setPendingCertifiedProductId(toCreate.getId());
             accStandard.setLastModifiedDate(new Date());
-            accStandard.setLastModifiedUser(Util.getCurrentUser().getId());
+            accStandard.setLastModifiedUser(Util.getAuditId());
             accStandard.setCreationDate(new Date());
             accStandard.setDeleted(false);
             try {
@@ -133,7 +133,7 @@ throws EntityCreationException {
         for (PendingCertifiedProductTargetedUserEntity targetedUser : toCreate.getTargetedUsers()) {
             targetedUser.setPendingCertifiedProductId(toCreate.getId());
             targetedUser.setLastModifiedDate(new Date());
-            targetedUser.setLastModifiedUser(Util.getCurrentUser().getId());
+            targetedUser.setLastModifiedUser(Util.getAuditId());
             targetedUser.setCreationDate(new Date());
             targetedUser.setDeleted(false);
             try {
@@ -150,7 +150,7 @@ throws EntityCreationException {
         for (PendingCertifiedProductParentListingEntity parentListing : toCreate.getParentListings()) {
             parentListing.setPendingCertifiedProductId(toCreate.getId());
             parentListing.setLastModifiedDate(new Date());
-            parentListing.setLastModifiedUser(Util.getCurrentUser().getId());
+            parentListing.setLastModifiedUser(Util.getAuditId());
             parentListing.setCreationDate(new Date());
             parentListing.setDeleted(false);
             try {
@@ -167,7 +167,7 @@ throws EntityCreationException {
         for (PendingCertificationResultEntity criterion : toCreate.getCertificationCriterion()) {
             criterion.setPendingCertifiedProductId(toCreate.getId());
             criterion.setLastModifiedDate(new Date());
-            criterion.setLastModifiedUser(Util.getCurrentUser().getId());
+            criterion.setLastModifiedUser(Util.getAuditId());
             criterion.setCreationDate(new Date());
             criterion.setDeleted(false);
             try {
@@ -185,7 +185,7 @@ throws EntityCreationException {
                 for (PendingCertificationResultUcdProcessEntity ucd : criterion.getUcdProcesses()) {
                     ucd.setPendingCertificationResultId(criterion.getId());
                     ucd.setLastModifiedDate(new Date());
-                    ucd.setLastModifiedUser(Util.getCurrentUser().getId());
+                    ucd.setLastModifiedUser(Util.getAuditId());
                     ucd.setCreationDate(new Date());
                     ucd.setDeleted(false);
                     try {
@@ -204,7 +204,7 @@ throws EntityCreationException {
                 for (PendingCertificationResultTestStandardEntity tsEntity : criterion.getTestStandards()) {
                     tsEntity.setPendingCertificationResultId(criterion.getId());
                     tsEntity.setLastModifiedDate(new Date());
-                    tsEntity.setLastModifiedUser(Util.getCurrentUser().getId());
+                    tsEntity.setLastModifiedUser(Util.getAuditId());
                     tsEntity.setCreationDate(new Date());
                     tsEntity.setDeleted(false);
                     try {
@@ -222,7 +222,7 @@ throws EntityCreationException {
                 for (PendingCertificationResultTestFunctionalityEntity tfEntity : criterion.getTestFunctionality()) {
                     tfEntity.setPendingCertificationResultId(criterion.getId());
                     tfEntity.setLastModifiedDate(new Date());
-                    tfEntity.setLastModifiedUser(Util.getCurrentUser().getId());
+                    tfEntity.setLastModifiedUser(Util.getAuditId());
                     tfEntity.setCreationDate(new Date());
                     tfEntity.setDeleted(false);
                     try {
@@ -243,7 +243,7 @@ throws EntityCreationException {
                 for (PendingCertificationResultAdditionalSoftwareEntity asEntity : criterion.getAdditionalSoftware()) {
                     asEntity.setPendingCertificationResultId(criterion.getId());
                     asEntity.setLastModifiedDate(new Date());
-                    asEntity.setLastModifiedUser(Util.getCurrentUser().getId());
+                    asEntity.setLastModifiedUser(Util.getAuditId());
                     asEntity.setCreationDate(new Date());
                     asEntity.setDeleted(false);
                     try {
@@ -265,7 +265,7 @@ throws EntityCreationException {
                 for (PendingCertificationResultTestProcedureEntity tpEntity : criterion.getTestProcedures()) {
                     tpEntity.setPendingCertificationResultId(criterion.getId());
                     tpEntity.setLastModifiedDate(new Date());
-                    tpEntity.setLastModifiedUser(Util.getCurrentUser().getId());
+                    tpEntity.setLastModifiedUser(Util.getAuditId());
                     tpEntity.setCreationDate(new Date());
                     tpEntity.setDeleted(false);
                     try {
@@ -284,7 +284,7 @@ throws EntityCreationException {
                 for (PendingCertificationResultTestDataEntity tdEntity : criterion.getTestData()) {
                     tdEntity.setPendingCertificationResultId(criterion.getId());
                     tdEntity.setLastModifiedDate(new Date());
-                    tdEntity.setLastModifiedUser(Util.getCurrentUser().getId());
+                    tdEntity.setLastModifiedUser(Util.getAuditId());
                     tdEntity.setCreationDate(new Date());
                     tdEntity.setDeleted(false);
                     try {
@@ -303,7 +303,7 @@ throws EntityCreationException {
                 for (PendingCertificationResultTestToolEntity ttEntity : criterion.getTestTools()) {
                     ttEntity.setPendingCertificationResultId(criterion.getId());
                     ttEntity.setLastModifiedDate(new Date());
-                    ttEntity.setLastModifiedUser(Util.getCurrentUser().getId());
+                    ttEntity.setLastModifiedUser(Util.getAuditId());
                     ttEntity.setCreationDate(new Date());
                     ttEntity.setDeleted(false);
                     try {
@@ -322,7 +322,7 @@ throws EntityCreationException {
                 for (PendingCertificationResultG1MacraMeasureEntity mmEntity : criterion.getG1MacraMeasures()) {
                     mmEntity.setPendingCertificationResultId(criterion.getId());
                     mmEntity.setLastModifiedDate(new Date());
-                    mmEntity.setLastModifiedUser(Util.getCurrentUser().getId());
+                    mmEntity.setLastModifiedUser(Util.getAuditId());
                     mmEntity.setCreationDate(new Date());
                     mmEntity.setDeleted(false);
                     try {
@@ -341,7 +341,7 @@ throws EntityCreationException {
                 for (PendingCertificationResultG2MacraMeasureEntity mmEntity : criterion.getG2MacraMeasures()) {
                     mmEntity.setPendingCertificationResultId(criterion.getId());
                     mmEntity.setLastModifiedDate(new Date());
-                    mmEntity.setLastModifiedUser(Util.getCurrentUser().getId());
+                    mmEntity.setLastModifiedUser(Util.getAuditId());
                     mmEntity.setCreationDate(new Date());
                     mmEntity.setDeleted(false);
                     try {
@@ -362,7 +362,7 @@ throws EntityCreationException {
                         PendingTestTaskEntity testTask = ttEntity.getTestTask();
                         if (testTask.getId() == null) {
                             testTask.setLastModifiedDate(new Date());
-                            testTask.setLastModifiedUser(Util.getCurrentUser().getId());
+                            testTask.setLastModifiedUser(Util.getAuditId());
                             testTask.setCreationDate(new Date());
                             testTask.setDeleted(false);
                             try {
@@ -378,7 +378,7 @@ throws EntityCreationException {
                         ttEntity.setPendingTestTaskId(testTask.getId());
                         ttEntity.setPendingCertificationResultId(criterion.getId());
                         ttEntity.setLastModifiedDate(new Date());
-                        ttEntity.setLastModifiedUser(Util.getCurrentUser().getId());
+                        ttEntity.setLastModifiedUser(Util.getAuditId());
                         ttEntity.setCreationDate(new Date());
                         ttEntity.setDeleted(false);
                         entityManager.persist(ttEntity);
@@ -391,7 +391,7 @@ throws EntityCreationException {
                                 PendingTestParticipantEntity partEntity = ttPartEntity.getTestParticipant();
                                 if (partEntity.getId() == null) {
                                     partEntity.setLastModifiedDate(new Date());
-                                    partEntity.setLastModifiedUser(Util.getCurrentUser().getId());
+                                    partEntity.setLastModifiedUser(Util.getAuditId());
                                     partEntity.setCreationDate(new Date());
                                     partEntity.setDeleted(false);
                                     try {
@@ -410,7 +410,7 @@ throws EntityCreationException {
                                 ttPartEntity.setPendingTestParticipantId(partEntity.getId());
                                 ttPartEntity.setPendingCertificationResultTestTaskId(ttEntity.getId());
                                 ttPartEntity.setLastModifiedDate(new Date());
-                                ttPartEntity.setLastModifiedUser(Util.getCurrentUser().getId());
+                                ttPartEntity.setLastModifiedUser(Util.getAuditId());
                                 ttPartEntity.setCreationDate(new Date());
                                 ttPartEntity.setDeleted(false);
                                 entityManager.persist(ttPartEntity);
@@ -427,7 +427,7 @@ throws EntityCreationException {
                 cqm.setLastModifiedDate(new Date());
             }
             if (cqm.getLastModifiedUser() == null) {
-                cqm.setLastModifiedUser(Util.getCurrentUser().getId());
+                cqm.setLastModifiedUser(Util.getAuditId());
             }
             cqm.setCreationDate(new Date());
             cqm.setDeleted(false);
@@ -443,7 +443,7 @@ throws EntityCreationException {
                 for (PendingCqmCertificationCriteriaEntity cert : cqm.getCertifications()) {
                     cert.setPendingCqmId(cqm.getId());
                     cert.setDeleted(false);
-                    cert.setLastModifiedUser(Util.getCurrentUser().getId());
+                    cert.setLastModifiedUser(Util.getAuditId());
                     cert.setCreationDate(new Date());
                     cert.setLastModifiedDate(new Date());
                     try {
@@ -468,7 +468,7 @@ throws EntityCreationException {
         entity = getEntityById(pendingProductId, true);
         entity.setDeleted(true);
         entity.setLastModifiedDate(new Date());
-        entity.setLastModifiedUser(Util.getCurrentUser().getId());
+        entity.setLastModifiedUser(Util.getAuditId());
         entityManager.persist(entity);
     }
 

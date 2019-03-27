@@ -152,7 +152,7 @@ public class TestingLabDaoTest extends TestCase {
         address.setCountry("USA");
         address.setDeleted(false);
         address.setLastModifiedDate(new Date());
-        address.setLastModifiedUser(Util.getCurrentUser().getId());
+        address.setLastModifiedUser(Util.getAuditId());
         atl.setAddress(address);
         atl = atlDao.create(atl);
 

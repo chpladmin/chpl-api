@@ -43,12 +43,11 @@ import gov.healthit.chpl.permissions.Permissions;
 import gov.healthit.chpl.util.JSONUtils;
 
 @Service("activityManager")
-public class ActivityManagerImpl implements ActivityManager {
+public class ActivityManagerImpl extends SecuredManager implements ActivityManager {
     private static final Logger LOGGER = LogManager.getLogger(ActivityManagerImpl.class);
 
     private ActivityDAO activityDAO;
     private DeveloperDAO devDao;
-    private Permissions permissions;
     private ObjectMapper jsonMapper = new ObjectMapper();
     private JsonFactory factory = jsonMapper.getFactory();
 
@@ -90,7 +89,7 @@ public class ActivityManagerImpl implements ActivityManager {
             dto.setCreationDate(new Date());
             dto.setLastModifiedDate(new Date());
             if (Util.getCurrentUser() != null) {
-                dto.setLastModifiedUser(Util.getCurrentUser().getId());
+                dto.setLastModifiedUser(Util.getAuditId());
             }
             dto.setDeleted(false);
 
@@ -175,7 +174,7 @@ public class ActivityManagerImpl implements ActivityManager {
             dto.setActivityObjectId(objectId);
             dto.setCreationDate(new Date());
             dto.setLastModifiedDate(new Date());
-            dto.setLastModifiedUser(Util.getCurrentUser().getId());
+            dto.setLastModifiedUser(Util.getAuditId());
             dto.setDeleted(false);
 
             activityDAO.create(dto);

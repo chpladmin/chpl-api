@@ -68,7 +68,7 @@ public class CertificationIdController {
     public List<SimpleCertificationId> getAll() throws IOException {
         List<SimpleCertificationId> results = null;
         if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
-            results = certificationIdManager.getAllWithProducts();
+            results = certificationIdManager.getAllWithProductsCached();
         } else {
             results = certificationIdManager.getAllCached();
         }

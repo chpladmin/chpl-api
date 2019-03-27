@@ -37,13 +37,12 @@ import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceRequirementEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SurveillanceManager;
-import gov.healthit.chpl.permissions.Permissions;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 
 @Service
-public class SurveillanceManagerImpl implements SurveillanceManager {
+public class SurveillanceManagerImpl extends SecuredManager implements SurveillanceManager {
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceManagerImpl.class);
 
     private SurveillanceDAO survDao;
@@ -52,20 +51,18 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     private UserPermissionDAO userPermissionDao;
     private FileUtils fileUtils;
     private Environment env;
-    private Permissions permissions;
     private ResourcePermissions resourcePermissions;
 
     @Autowired
     public SurveillanceManagerImpl(final SurveillanceDAO survDao, final CertifiedProductDAO cpDao,
             final SurveillanceValidator validator, final UserPermissionDAO userPermissionDao, final FileUtils fileUtils,
-            final Environment env, final Permissions permissions, final ResourcePermissions resourcePermissions) {
+            final Environment env, final ResourcePermissions resourcePermissions) {
         this.survDao = survDao;
         this.cpDao = cpDao;
         this.validator = validator;
         this.userPermissionDao = userPermissionDao;
         this.fileUtils = fileUtils;
         this.env = env;
-        this.permissions = permissions;
         this.resourcePermissions = resourcePermissions;
     }
 
@@ -338,9 +335,9 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
                 throw new SurveillanceAuthorityAccessDeniedException(errorMsg);
             }
         } else {
-            // Cannot have surveillance authority as ROLE_ADMIN for user lacking ROLE_ADMIN
-            if (surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ADMIN) && !hasOncAdmin) {
-                String errorMsg = "User must have authority " + Authority.ROLE_ADMIN;
+            // Cannot have surveillance authority as ROLE_ONC for user lacking ROLE_ADMIN or ROLE_ONC
+            if (surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ONC) && !hasOncAdmin) {
+                String errorMsg = "User must have authority " + Authority.ROLE_ADMIN + " or " + Authority.ROLE_ONC;
                 LOGGER.error(errorMsg);
                 throw new SurveillanceAuthorityAccessDeniedException(errorMsg);
             } else if (surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB)) {

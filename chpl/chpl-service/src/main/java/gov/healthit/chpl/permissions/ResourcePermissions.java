@@ -2,6 +2,7 @@ package gov.healthit.chpl.permissions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
@@ -13,16 +14,24 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.dao.UserDAO;
+import gov.healthit.chpl.auth.dao.UserPermissionDAO;
 import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.dao.UserCertificationBodyMapDAO;
 import gov.healthit.chpl.dao.UserRoleMapDAO;
+import gov.healthit.chpl.dao.UserTestingLabMapDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.RoleDTO;
+import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
 import gov.healthit.chpl.dto.UserRoleMapDTO;
+import gov.healthit.chpl.dto.UserTestingLabMapDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
@@ -31,16 +40,35 @@ public class ResourcePermissions {
     private UserRoleMapDAO userRoleMapDAO;
     private ErrorMessageUtil errorMessageUtil;
     private CertificationBodyDAO acbDAO;
+    private UserTestingLabMapDAO userTestingLabMapDAO;
+    private TestingLabDAO atlDAO;
+    private UserDAO userDAO;
+    private UserPermissionDAO userPermissionDAO;
 
     @Autowired
     public ResourcePermissions(final UserCertificationBodyMapDAO userCertificationBodyMapDAO,
             final UserRoleMapDAO userRoleMapDAO, final CertificationBodyDAO acbDAO,
-            final ErrorMessageUtil errorMessageUtil) {
+            final UserTestingLabMapDAO userTestingLabMapDAO, final TestingLabDAO atlDAO,
+            final ErrorMessageUtil errorMessageUtil, final UserDAO userDAO, final UserPermissionDAO userPermissionDAO) {
 
         this.userCertificationBodyMapDAO = userCertificationBodyMapDAO;
         this.userRoleMapDAO = userRoleMapDAO;
         this.acbDAO = acbDAO;
+        this.userTestingLabMapDAO = userTestingLabMapDAO;
+        this.atlDAO = atlDAO;
         this.errorMessageUtil = errorMessageUtil;
+        this.userDAO = userDAO;
+        this.userPermissionDAO = userPermissionDAO;
+    }
+
+    @Transactional(readOnly = true)
+    public UserDTO getUserByName(String userName) throws UserRetrievalException {
+        return userDAO.getByName(userName);
+    }
+
+    @Transactional(readOnly = true)
+    public Set<UserPermissionDTO> getPermissionsByUserId(Long userID) {
+        return userPermissionDAO.findPermissionsForUser(userID);
     }
 
     @Transactional(readOnly = true)
@@ -49,6 +77,18 @@ public class ResourcePermissions {
         List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByAcbId(acb.getId());
 
         for (UserCertificationBodyMapDTO dto : dtos) {
+            userDtos.add(dto.getUser());
+        }
+
+        return userDtos;
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserDTO> getAllUsersOnAtl(final TestingLabDTO atl) {
+        List<UserDTO> userDtos = new ArrayList<UserDTO>();
+        List<UserTestingLabMapDTO> dtos = userTestingLabMapDAO.getByAtlId(atl.getId());
+
+        for (UserTestingLabMapDTO dto : dtos) {
             userDtos.add(dto.getUser());
         }
 
@@ -74,12 +114,68 @@ public class ResourcePermissions {
     }
 
     @Transactional(readOnly = true)
+    public List<CertificationBodyDTO> getAllAcbsForUser(Long userID) {
+        List<CertificationBodyDTO> acbs = new ArrayList<CertificationBodyDTO>();
+        List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByUserId(userID);
+        for (UserCertificationBodyMapDTO dto : dtos) {
+            acbs.add(dto.getCertificationBody());
+        }
+        return acbs;
+    }
+
+    @Transactional(readOnly = true)
+    public List<TestingLabDTO> getAllAtlsForCurrentUser() {
+        User user = Util.getCurrentUser();
+        List<TestingLabDTO> atls = new ArrayList<TestingLabDTO>();
+
+        if (user != null) {
+            if (isUserRoleAdmin() || isUserRoleOnc()) {
+                atls = atlDAO.findAll();
+            } else {
+                List<UserTestingLabMapDTO> dtos = userTestingLabMapDAO.getByUserId(user.getId());
+                for (UserTestingLabMapDTO dto : dtos) {
+                    atls.add(dto.getTestingLab());
+                }
+            }
+        }
+        return atls;
+    }
+
+    @Transactional(readOnly = true)
+    public List<TestingLabDTO> getAllAtlsForUser(Long userId) {
+        List<TestingLabDTO> atls = new ArrayList<TestingLabDTO>();
+        List<UserTestingLabMapDTO> dtos = userTestingLabMapDAO.getByUserId(userId);
+        for (UserTestingLabMapDTO dto : dtos) {
+            atls.add(dto.getTestingLab());
+        }
+        return atls;
+    }
+
+    @Transactional(readOnly = true)
     public CertificationBodyDTO getAcbIfPermissionById(final Long id) {
         List<CertificationBodyDTO> dtos = getAllAcbsForCurrentUser();
 
         CollectionUtils.filter(dtos, new Predicate<CertificationBodyDTO>() {
             @Override
             public boolean evaluate(CertificationBodyDTO object) {
+                return object.getId().equals(id);
+            }
+
+        });
+
+        if (dtos.size() == 0) {
+            throw new AccessDeniedException(errorMessageUtil.getMessage("access.denied"));
+        }
+        return dtos.get(0);
+    }
+
+    @Transactional(readOnly = true)
+    public TestingLabDTO getAtlIfPermissionById(final Long id) {
+        List<TestingLabDTO> dtos = getAllAtlsForCurrentUser();
+
+        CollectionUtils.filter(dtos, new Predicate<TestingLabDTO>() {
+            @Override
+            public boolean evaluate(TestingLabDTO object) {
                 return object.getId().equals(id);
             }
 

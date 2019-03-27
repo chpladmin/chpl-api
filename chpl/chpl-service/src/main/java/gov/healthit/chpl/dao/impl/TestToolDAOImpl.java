@@ -42,7 +42,7 @@ public class TestToolDAOImpl extends BaseDAOImpl implements TestToolDAO {
             entity.setCreationDate(new Date());
             entity.setDeleted(false);
             entity.setLastModifiedDate(new Date());
-            entity.setLastModifiedUser(Util.getCurrentUser().getId());
+            entity.setLastModifiedUser(Util.getAuditId());
             entity.setName(dto.getName());
             entity.setDescription(dto.getDescription());
             entity.setRetired(false);
@@ -72,7 +72,7 @@ public class TestToolDAOImpl extends BaseDAOImpl implements TestToolDAO {
         entity.setName(dto.getName());
         entity.setDescription(dto.getDescription());
         entity.setRetired(dto.isRetired());
-        entity.setLastModifiedUser(Util.getCurrentUser().getId());
+        entity.setLastModifiedUser(Util.getAuditId());
         entity.setLastModifiedDate(new Date());
 
         update(entity);
@@ -87,7 +87,7 @@ public class TestToolDAOImpl extends BaseDAOImpl implements TestToolDAO {
         if (toDelete != null) {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+            toDelete.setLastModifiedUser(Util.getAuditId());
             update(toDelete);
         }
     }
