@@ -32,6 +32,7 @@ import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
 import gov.healthit.chpl.dto.UserRoleMapDTO;
 import gov.healthit.chpl.dto.UserTestingLabMapDTO;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
@@ -152,9 +153,14 @@ public class ResourcePermissions {
     }
 
     @Transactional(readOnly = true)
-    public CertificationBodyDTO getAcbIfPermissionById(final Long id) {
-        List<CertificationBodyDTO> dtos = getAllAcbsForCurrentUser();
+    public CertificationBodyDTO getAcbIfPermissionById(final Long id) throws EntityRetrievalException {
+        try {
+            acbDAO.getById(id);
+        } catch (final EntityRetrievalException ex) {
+            throw new EntityRetrievalException(errorMessageUtil.getMessage("acb.notFound"));
+        }
 
+        List<CertificationBodyDTO> dtos = getAllAcbsForCurrentUser();
         CollectionUtils.filter(dtos, new Predicate<CertificationBodyDTO>() {
             @Override
             public boolean evaluate(CertificationBodyDTO object) {
@@ -170,12 +176,17 @@ public class ResourcePermissions {
     }
 
     @Transactional(readOnly = true)
-    public TestingLabDTO getAtlIfPermissionById(final Long id) {
-        List<TestingLabDTO> dtos = getAllAtlsForCurrentUser();
+    public TestingLabDTO getAtlIfPermissionById(final Long id) throws EntityRetrievalException {
+        try {
+            acbDAO.getById(id);
+        } catch (final EntityRetrievalException ex) {
+            throw new EntityRetrievalException(errorMessageUtil.getMessage("atl.notFound"));
+        }
 
+        List<TestingLabDTO> dtos = getAllAtlsForCurrentUser();
         CollectionUtils.filter(dtos, new Predicate<TestingLabDTO>() {
             @Override
-            public boolean evaluate(TestingLabDTO object) {
+            public boolean evaluate(final TestingLabDTO object) {
                 return object.getId().equals(id);
             }
 
