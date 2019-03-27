@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Set;
 
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,7 @@ import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.caching.UnitTestRules;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
@@ -52,6 +54,10 @@ public class UserDaoTest {
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    @Rule
+    @Autowired
+    public UnitTestRules cacheInvalidationRule;
+
     private static final String ROLE_ACB = "ROLE_ACB";
     private static JWTAuthenticatedUser authUser;
 
@@ -63,13 +69,13 @@ public class UserDaoTest {
         authUser.setFriendlyName("Administrator");
         authUser.setSubjectName("admin");
         authUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
-        SecurityContextHolder.getContext().setAuthentication(authUser);
     }
 
     @Test(expected = UserRetrievalException.class)
     @Transactional
     @Rollback
     public void testCreateAndDeleteUser() throws UserCreationException, UserRetrievalException {
+        SecurityContextHolder.getContext().setAuthentication(authUser);
         String password = "password";
         String encryptedPassword = bCryptPasswordEncoder.encode(password);
 
@@ -97,6 +103,7 @@ public class UserDaoTest {
 
     @Test
     public void testAddAcbAdminPermission() throws UserRetrievalException, UserPermissionRetrievalException {
+        SecurityContextHolder.getContext().setAuthentication(authUser);
         UserDTO toEdit = dao.getByName("TESTUSER");
         assertNotNull(toEdit);
 
@@ -116,6 +123,7 @@ public class UserDaoTest {
 
     @Test
     public void testAddInvalidPermission() throws UserRetrievalException, UserPermissionRetrievalException {
+        SecurityContextHolder.getContext().setAuthentication(authUser);
         UserDTO toEdit = dao.getByName("TESTUSER");
         assertNotNull(toEdit);
 
@@ -131,6 +139,7 @@ public class UserDaoTest {
 
     @Test
     public void testFindUser() {
+        SecurityContextHolder.getContext().setAuthentication(authUser);
         UserDTO toFind = new UserDTO();
         toFind.setSubjectName("TESTUSER");
         toFind.setFullName("TEST");
@@ -154,6 +163,7 @@ public class UserDaoTest {
      */
     @Test(expected = UserRetrievalException.class)
     public void testGetById_returnsNullForDeletedUser() throws UserRetrievalException {
+        SecurityContextHolder.getContext().setAuthentication(authUser);
         dao.getById(-3L);
     }
 
@@ -165,6 +175,7 @@ public class UserDaoTest {
      */
     @Test
     public void testGetById_returnsResultForActiveUser() throws UserRetrievalException {
+        SecurityContextHolder.getContext().setAuthentication(authUser);
         UserDTO userDto = null;
         userDto = dao.getById(-2L);
         assertTrue(userDto != null);
