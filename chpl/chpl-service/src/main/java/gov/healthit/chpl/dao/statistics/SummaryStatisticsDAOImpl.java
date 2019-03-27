@@ -3,8 +3,9 @@ package gov.healthit.chpl.dao.statistics;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -14,9 +15,9 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository("summaryStatisticsDAO")
 public class SummaryStatisticsDAOImpl extends BaseDAOImpl implements SummaryStatisticsDAO {
+    private static final Logger LOGGER = LogManager.getLogger(SummaryStatisticsDAOImpl.class);
 
     @Override
-    @Transactional
     public SummaryStatisticsEntity create(SummaryStatisticsEntity summaryStatistics)
             throws EntityCreationException, EntityRetrievalException {
 
@@ -31,14 +32,10 @@ public class SummaryStatisticsDAOImpl extends BaseDAOImpl implements SummaryStat
     }
 
     @Override
-    public SummaryStatisticsEntity getMostRecent() throws EntityRetrievalException {
+    public SummaryStatisticsEntity getCurrentSummaryStatistics() throws EntityRetrievalException {
         List<SummaryStatisticsEntity> entities = entityManager
-                .createQuery("SELECT stats "
-                            + "FROM SummaryStatisticsEntity stats "
-                            + "WHERE (stats.deleted <> true) "
-                            + "ORDER BY stats.id DESC "
-                            + "LIMIT 1",
-                            SummaryStatisticsEntity.class)
+                .createQuery("SELECT stats " + "FROM SummaryStatisticsEntity stats " + "WHERE (stats.deleted <> true) "
+                        + "ORDER BY stats.id DESC " + "LIMIT 1", SummaryStatisticsEntity.class)
                 .getResultList();
 
         if (entities.size() > 0) {
@@ -47,4 +44,36 @@ public class SummaryStatisticsDAOImpl extends BaseDAOImpl implements SummaryStat
             return null;
         }
     }
+
+    @Override
+    public void deleteAll() {
+        try {
+            // String hql = "UPDATE SummaryStatisticsEntity SET deleted = true";
+            // Query query = entityManager.createQuery(hql);
+            // int updatedRecs = query.executeUpdate();
+            // LOGGER.info(String.format("Update %s record", updatedRecs));
+
+            List<SummaryStatisticsEntity> entities = getAllSummaryStatistics();
+            if (entities != null) {
+                for (SummaryStatisticsEntity entity : entities) {
+                    entity.setDeleted(true);
+                    entity.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
+                    entityManager.merge(entity);
+                    entityManager.flush();
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error(e);
+        }
+    }
+
+    private List<SummaryStatisticsEntity> getAllSummaryStatistics() throws EntityRetrievalException {
+        List<SummaryStatisticsEntity> entities = entityManager
+                .createQuery("SELECT stats " + "FROM SummaryStatisticsEntity stats " + "WHERE (stats.deleted <> true)",
+                        SummaryStatisticsEntity.class)
+                .getResultList();
+
+        return entities;
+    }
+
 }
