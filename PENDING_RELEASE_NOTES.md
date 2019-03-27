@@ -14,5 +14,6 @@ _Date TBD_
   * /activity/metadata/versions/{id}
 * Add new activity details endpoint to get the detailed activity json
   * /activity/details/{id}
+* Quartz jobs that gather data delete old data and insert new data within a single transaction
 
 ---
