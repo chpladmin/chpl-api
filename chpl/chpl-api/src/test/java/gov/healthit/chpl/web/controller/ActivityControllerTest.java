@@ -213,7 +213,7 @@ public class ActivityControllerTest {
     }
 
     @Transactional
-    @Test(expected = AccessDeniedException.class)
+    @Test(expected = EntityRetrievalException.class)
     public void testGetAcbActivityWithBadId() throws EntityRetrievalException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         activityController.activityForACBById(-100L, null, null);

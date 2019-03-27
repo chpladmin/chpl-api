@@ -72,7 +72,7 @@ public class TestingLabControllerTest {
     }
 
     @Transactional
-    @Test(expected = AccessDeniedException.class)
+    @Test(expected = EntityRetrievalException.class)
     @Rollback
     public void testRemoveUserFromAtlByBadAtlId() throws EntityRetrievalException, IOException,
             InvalidArgumentsException, ValidationException, EntityCreationException, UserRetrievalException {
