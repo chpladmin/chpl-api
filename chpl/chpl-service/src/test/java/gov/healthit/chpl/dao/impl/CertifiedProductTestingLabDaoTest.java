@@ -85,10 +85,21 @@ public class CertifiedProductTestingLabDaoTest extends TestCase {
     @Test
     @Transactional
     public void testGetTestingLabWIthTwoATLs() throws EntityRetrievalException {
+        int expectedTestingLabCount = 2;
         List<CertifiedProductTestingLabDTO> testingLabs =
                 cptlDao.getTestingLabsByCertifiedProductId(LISTING_WITH_TWO_ATLS);
-        assertEquals(2, testingLabs.size());
-        assertEquals("ICSA Labs", testingLabs.get(0).getTestingLabName());
-        assertEquals("Drummond Group", testingLabs.get(1).getTestingLabName());
+        assertEquals(expectedTestingLabCount, testingLabs.size());
+        //we don't know what order the testing labs will be in
+        //in the result so just make sure we found them both
+        int foundCount = 0;
+        String[] expectedTestingLabNames = {"ICSA Labs", "Drummond Group"};
+        for (CertifiedProductTestingLabDTO foundTestingLab : testingLabs) {
+            for (String expectedTestingLabName : expectedTestingLabNames) {
+                if (foundTestingLab.getTestingLabName().equals(expectedTestingLabName)) {
+                    foundCount++;
+                }
+            }
+        }
+        assertEquals(expectedTestingLabCount, foundCount);
     }
 }
