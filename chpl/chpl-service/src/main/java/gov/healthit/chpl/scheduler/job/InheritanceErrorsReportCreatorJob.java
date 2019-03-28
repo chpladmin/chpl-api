@@ -94,7 +94,7 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
                 item.setDeveloper(listing.getDeveloper().getName());
                 item.setProduct(listing.getProduct().getName());
                 item.setVersion(listing.getVersion().getVersion());
-                item.setAcb(listing.getCertifyingBody().get("name").toString());
+                item.setAcb(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString());
                 String productDetailsUrl = props.getProperty("chplUrlBegin").trim();
                 if (!productDetailsUrl.endsWith("/")) {
                     productDetailsUrl += "/";

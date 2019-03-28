@@ -28,14 +28,11 @@ public class UserCertificationBodyMapDAOImpl extends BaseDAOImpl implements User
     }
 
     @Override
-    public UserCertificationBodyMapDTO update(UserCertificationBodyMapDTO dto) throws EntityRetrievalException {
-        UserCertificationBodyMapEntity entity = new UserCertificationBodyMapEntity();
-        entity = update(getUserCertificationBodyMapEntity(dto));
-        return new UserCertificationBodyMapDTO(entity);
-    }
-
     public void delete(UserCertificationBodyMapDTO dto) throws EntityRetrievalException {
-        update(getUserCertificationBodyMapEntity(dto));
+        UserCertificationBodyMapEntity entity = getEntityById(dto.getId());
+        entity.setDeleted(true);
+        entity.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
+        update(entity);
     }
 
     @Override
@@ -86,6 +83,21 @@ public class UserCertificationBodyMapDAOImpl extends BaseDAOImpl implements User
             return null;
         }
         return new UserCertificationBodyMapDTO(result.get(0));
+    }
+
+    private UserCertificationBodyMapEntity getEntityById(Long id) {
+        Query query = entityManager.createQuery(
+                "from UserCertificationBodyMapEntity ucbm "
+                        + "join fetch ucbm.certificationBody CertificationBodyEntity "
+                        + "join fetch ucbm.user UserEntity " + "where (ucbm.deleted != true) AND (ucbm.id = :id) ",
+                UserCertificationBodyMapEntity.class);
+        query.setParameter("id", id);
+        List<UserCertificationBodyMapEntity> result = query.getResultList();
+
+        if (result.size() == 0) {
+            return null;
+        }
+        return (UserCertificationBodyMapEntity) result.get(0);
     }
 
     private UserCertificationBodyMapEntity create(UserCertificationBodyMapEntity entity) {

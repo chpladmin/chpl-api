@@ -2245,7 +2245,8 @@ public class CertifiedProductManagerImpl extends SecuredManager implements Certi
                     .usingJobData("dbId", updatedListing.getId())
                     .usingJobData("chplId", updatedListing.getChplProductNumber())
                     .usingJobData("developer", updatedListing.getDeveloper().getName())
-                    .usingJobData("acb", updatedListing.getCertifyingBody().get("name").toString())
+                    .usingJobData("acb",
+                            updatedListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString())
                     .usingJobData("changeDate", new Date().getTime())
                     .usingJobData("fullName", Util.getCurrentUser().getFullName())
                     .usingJobData("effectiveDate", updatedListing.getCurrentStatus().getEventDate())

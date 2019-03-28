@@ -52,7 +52,7 @@ import gov.healthit.chpl.domain.IdListContainer;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.PendingCertifiedProductMetadata;
-import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -68,7 +68,6 @@ import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.exception.ObjectsMissingValidationException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
-import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
@@ -139,8 +138,7 @@ public class CertifiedProductController {
 
     @Autowired
     private ChplProductNumberUtil chplProductNumberUtil;
-    
-    
+
     /**
      * List all certified products.
      * @param versionId if entered, filters list to only listings under given version
@@ -604,7 +602,7 @@ public class CertifiedProductController {
 
         // clean up what was sent in - some necessary IDs or other fields may be
         // missing
-        Long newAcbId = Long.valueOf(updatedListing.getCertifyingBody().get("id").toString());
+        Long newAcbId = Long.valueOf(updatedListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString());
         cpManager.sanitizeUpdatedListingData(newAcbId, updatedListing);
 
         // validate
@@ -661,7 +659,7 @@ public class CertifiedProductController {
             throw new ValidationException(updatedListing.getErrorMessages(), updatedListing.getWarningMessages());
         }
 
-        Long acbId = Long.parseLong(existingListing.getCertifyingBody().get("id").toString());
+        Long acbId = Long.parseLong(existingListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString());
 
         // if the ACB owner is changed this is a separate action with different
         // security
@@ -669,7 +667,7 @@ public class CertifiedProductController {
             cpManager.changeOwnership(updatedListing.getId(), newAcbId);
             CertifiedProductSearchDetails changedProduct = cpdManager
                     .getCertifiedProductDetails(updatedListing.getId());
-            activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, existingListing.getId(),
+            activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, existingListing.getId(),
                     "Changed ACB ownership.", existingListing, changedProduct);
             existingListing = changedProduct;
         }
@@ -679,7 +677,7 @@ public class CertifiedProductController {
 
         // search for the product by id to get it with all the updates
         CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updatedListing.getId());
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, existingListing.getId(),
+        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, existingListing.getId(),
                 "Updated certified product " + changedProduct.getChplProductNumber() + ".", existingListing,
                 changedProduct, updateRequest.getReason());
 
@@ -776,7 +774,8 @@ public class CertifiedProductController {
         } else {
             //make sure the user has permissions on the pending listings acb
             //will throw access denied if they do not have the permissions
-            Long pendingListingAcbId = new Long(details.getCertifyingBody().get("id").toString());
+            Long pendingListingAcbId =
+                    new Long(details.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString());
             resourcePermissions.getAcbIfPermissionById(pendingListingAcbId);
         }
         return details;
@@ -797,7 +796,7 @@ public class CertifiedProductController {
         } else {
             //make sure the user has permissions on the pending listings acb
             //will throw access denied if they do not have the permissions
-            pendingListingAcbId = new Long(pcp.getCertifyingBody().get("id").toString());
+            pendingListingAcbId = new Long(pcp.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString());
             resourcePermissions.getAcbIfPermissionById(pendingListingAcbId);
         }
         pcpManager.deletePendingCertifiedProduct(pendingListingAcbId, pcpId);
@@ -867,7 +866,7 @@ public class CertifiedProductController {
     EntityCreationException, EntityRetrievalException, ObjectMissingValidationException,
     IOException {
 
-        String acbIdStr = pendingCp.getCertifyingBody().get("id").toString();
+        String acbIdStr = pendingCp.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString();
         if (StringUtils.isEmpty(acbIdStr)) {
             throw new InvalidArgumentsException("An ACB ID must be supplied in the request body");
         }
@@ -885,7 +884,7 @@ public class CertifiedProductController {
             CertifiedProductDTO createdProduct = cpManager.createFromPending(acbId, pcpDto);
             pcpManager.confirm(acbId, pendingCp.getId());
             CertifiedProductSearchDetails result = cpdManager.getCertifiedProductDetails(createdProduct.getId());
-            activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, result.getId(),
+            activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, result.getId(),
                     "Created a certified product", null, result);
 
             HttpHeaders responseHeaders = new HttpHeaders();

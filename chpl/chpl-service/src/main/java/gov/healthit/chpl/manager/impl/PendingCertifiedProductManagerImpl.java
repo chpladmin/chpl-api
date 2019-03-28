@@ -28,10 +28,11 @@ import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
-import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
@@ -192,7 +193,7 @@ public class PendingCertifiedProductManagerImpl extends SecuredManager implement
         }
 
         String activityMsg = "Certified product " + pendingCpDto.getProductName() + " is pending.";
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCpDto.getId(),
+        activityManager.addActivity(ActivityConcept.PENDING_CERTIFIED_PRODUCT, pendingCpDto.getId(),
                 activityMsg, null, pendingCpDto);
 
         return pendingCpDto;
@@ -214,7 +215,7 @@ public class PendingCertifiedProductManagerImpl extends SecuredManager implement
         if (isPendingListingAvailableForUpdate(pendingCp.getCertificationBodyId(), pendingCp)) {
             pcpDao.delete(pendingProductId);
             String activityMsg = "Pending certified product " + pendingCp.getProductName() + " has been rejected.";
-            activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCp.getId(),
+            activityManager.addActivity(ActivityConcept.PENDING_CERTIFIED_PRODUCT, pendingCp.getId(),
                     activityMsg, pendingCp, null);
         }
     }
@@ -229,7 +230,7 @@ public class PendingCertifiedProductManagerImpl extends SecuredManager implement
         pcpDao.delete(pendingProductId);
 
         String activityMsg = "Pending certified product " + pendingCp.getProductName() + " has been confirmed.";
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCp.getId(),
+        activityManager.addActivity(ActivityConcept.PENDING_CERTIFIED_PRODUCT, pendingCp.getId(),
                 activityMsg, pendingCp, pendingCp);
 
     }
@@ -399,7 +400,8 @@ public class PendingCertifiedProductManagerImpl extends SecuredManager implement
     @Override
     public void addAllVersionsToCmsCriterion(final PendingCertifiedProductDetails pcpDetails) {
         // now add allVersions for CMSs
-        String certificationEdition = pcpDetails.getCertificationEdition().get("name").toString();
+        String certificationEdition =
+                pcpDetails.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString();
         if (!certificationEdition.startsWith("2011")) {
             List<CQMCriterion> cqms = getAvailableCQMVersions();
             for (CQMCriterion cqm : cqms) {
@@ -442,7 +444,8 @@ public class PendingCertifiedProductManagerImpl extends SecuredManager implement
     public void addAvailableTestFunctionalities(final PendingCertifiedProductDetails pcpDetails) {
         // now add allMeasures for criteria
         for (CertificationResult cert : pcpDetails.getCertificationResults()) {
-            String edition = pcpDetails.getCertificationEdition().get("name").toString();
+            String edition =
+                    pcpDetails.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString();
             Long practiceTypeId = null;
             if (pcpDetails.getPracticeType().containsKey("id")) {
                 if (pcpDetails.getPracticeType().get("id") != null) {

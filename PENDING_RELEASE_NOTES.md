@@ -1,9 +1,19 @@
 
-## Version 20.6.0
+## Version 20.7.0
 _Date TBD_
 
 ### New features
-* Modify security to use CHPL managed user/ATL relationship
 * Add new API call /certified_products/pending/metadata for high-level information about pending listings. /certified_products/pending is now deprecated.
+* Add new endpoints for activity metadata for lisings, developers, products, and versions. Endpoints are:
+  * /activity/metadata/listings
+  * /activity/metadata/listings/{id}
+  * /activity/metadata/developers
+  * /activity/metadata/developers/{id}
+  * /activity/metadata/products
+  * /activity/metadata/products/{id}
+  * /activity/metadata/versions
+  * /activity/metadata/versions/{id}
+* Add new activity details endpoint to get the detailed activity json
+  * /activity/details/{id}
 
 ---

@@ -28,7 +28,7 @@ import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
-import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
@@ -82,7 +82,7 @@ public class ActivityDaoTest extends TestCase {
         ActivityDTO dto = new ActivityDTO();
         dto.setActivityDate(new Date());
         dto.setActivityObjectId(1L);
-        dto.setConcept(ActivityConcept.ACTIVITY_CONCEPT_ATL);
+        dto.setConcept(ActivityConcept.ATL);
         dto.setDeleted(false);
         dto.setDescription("Some activity occurred");
         dto.setOriginalData("Original");
@@ -96,7 +96,7 @@ public class ActivityDaoTest extends TestCase {
         assertEquals(created.getOriginalData(), check.getOriginalData());
         assertEquals(created.getActivityDate(), check.getActivityDate());
         assertEquals(created.getActivityObjectId(), check.getActivityObjectId());
-        assertEquals(created.getConcept(), check.getConcept());
+        assertEquals(ActivityConcept.ATL, check.getConcept());
         assertEquals(created.getId(), check.getId());
 
         SecurityContextHolder.getContext().setAuthentication(null);
@@ -173,14 +173,14 @@ public class ActivityDaoTest extends TestCase {
 
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         Date fiveDaysAgo = new Date(System.currentTimeMillis() - (5 * 24 * 60 * 60 * 1000));
-        List<ActivityDTO> results = activityDAO.findByObjectId(1L, ActivityConcept.ACTIVITY_CONCEPT_ATL, fiveDaysAgo,
+        List<ActivityDTO> results = activityDAO.findByObjectId(1L, ActivityConcept.ATL, fiveDaysAgo,
                 null);
         assertEquals(0, results.size());
 
         ActivityDTO recent = new ActivityDTO();
         recent.setActivityDate(new Date());
         recent.setActivityObjectId(100L);
-        recent.setConcept(ActivityConcept.ACTIVITY_CONCEPT_ATL);
+        recent.setConcept(ActivityConcept.ATL);
         recent.setDescription("Description");
         recent.setOriginalData("Original");
         recent.setNewData("New");
@@ -188,7 +188,7 @@ public class ActivityDaoTest extends TestCase {
         ActivityDTO created = activityDAO.create(recent);
 
         List<ActivityDTO> results3 = activityDAO.findByObjectId(created.getActivityObjectId(),
-                ActivityConcept.ACTIVITY_CONCEPT_ATL, fiveDaysAgo, null);
+                ActivityConcept.ATL, fiveDaysAgo, null);
         assertEquals(1, results3.size());
 
         SecurityContextHolder.getContext().setAuthentication(null);
@@ -201,21 +201,21 @@ public class ActivityDaoTest extends TestCase {
     public void testFindByConceptInLastNDays() throws EntityCreationException, EntityRetrievalException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         Date fiveDaysAgo = new Date(System.currentTimeMillis() - (5 * 24 * 60 * 60 * 1000));
-        List<ActivityDTO> results = activityDAO.findByConcept(ActivityConcept.ACTIVITY_CONCEPT_ATL, fiveDaysAgo,
+        List<ActivityDTO> results = activityDAO.findByConcept(ActivityConcept.ATL, fiveDaysAgo,
                 new Date());
         assertEquals(0, results.size());
 
         ActivityDTO recent = new ActivityDTO();
         recent.setActivityDate(new Date());
         recent.setActivityObjectId(100L);
-        recent.setConcept(ActivityConcept.ACTIVITY_CONCEPT_ATL);
+        recent.setConcept(ActivityConcept.ATL);
         recent.setDescription("Description");
         recent.setOriginalData("Original");
         recent.setNewData("New");
 
         ActivityDTO created = activityDAO.create(recent);
 
-        List<ActivityDTO> results3 = activityDAO.findByConcept(ActivityConcept.ACTIVITY_CONCEPT_ATL, fiveDaysAgo, null);
+        List<ActivityDTO> results3 = activityDAO.findByConcept(ActivityConcept.ATL, fiveDaysAgo, null);
         assertEquals(1, results3.size());
 
         SecurityContextHolder.getContext().setAuthentication(null);

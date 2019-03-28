@@ -899,7 +899,7 @@ public class SurveillanceControllerTest {
         surv.setRandomizedSitesUsed(RANDOMIZED_SITES_USED);
         SurveillanceType type = survDao.findSurveillanceType("Randomized");
         surv.setType(type);
-        surv.setAuthority(Authority.ROLE_ADMIN);
+        surv.setAuthority(Authority.ROLE_ONC);
 
         SurveillanceRequirement req = new SurveillanceRequirement();
         req.setRequirement("170.314 (a)(1)");
@@ -922,7 +922,7 @@ public class SurveillanceControllerTest {
             assertEquals(cpDto.getChplProductNumber(), got.getCertifiedProduct().getChplProductNumber());
             assertEquals(surv.getRandomizedSitesUsed(), got.getRandomizedSitesUsed());
             assertEquals(surv.getAuthority(), got.getAuthority());
-            assertEquals(surv.getAuthority(), Authority.ROLE_ADMIN);
+            assertEquals(surv.getAuthority(), Authority.ROLE_ONC);
         } catch (Exception e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -979,7 +979,7 @@ public class SurveillanceControllerTest {
         surv.setRandomizedSitesUsed(RANDOMIZED_SITES_USED);
         SurveillanceType type = survDao.findSurveillanceType("Randomized");
         surv.setType(type);
-        surv.setAuthority(Authority.ROLE_ADMIN);
+        surv.setAuthority(Authority.ROLE_ONC);
 
         SurveillanceRequirement req = new SurveillanceRequirement();
         req.setRequirement("170.314 (a)(1)");
@@ -1004,7 +1004,7 @@ public class SurveillanceControllerTest {
             assertEquals(cpDto.getChplProductNumber(), got.getCertifiedProduct().getChplProductNumber());
             assertEquals(surv.getRandomizedSitesUsed(), got.getRandomizedSitesUsed());
             assertEquals(surv.getAuthority(), got.getAuthority());
-            assertEquals(surv.getAuthority(), Authority.ROLE_ADMIN);
+            assertEquals(surv.getAuthority(), Authority.ROLE_ONC);
         } catch (Exception e) {
             e.printStackTrace();
             fail(e.getMessage());

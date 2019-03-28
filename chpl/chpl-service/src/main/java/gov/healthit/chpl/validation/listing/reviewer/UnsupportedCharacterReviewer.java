@@ -31,13 +31,18 @@ public class UnsupportedCharacterReviewer implements Reviewer {
         //check all string fields at the listing level
         addListingWarningIfNotValid(listing, listing.getAcbCertificationId(),
                 "ACB Certification ID '" + listing.getAcbCertificationId() + "'");
-        if (listing.getCertifyingBody() != null && listing.getCertifyingBody().get("name") != null) {
-            addListingWarningIfNotValid(listing, listing.getCertifyingBody().get("name").toString(),
-                    "ACB Name '" + listing.getCertifyingBody().get("name").toString() + "'");
+        if (listing.getCertifyingBody() != null
+                && listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY) != null) {
+            addListingWarningIfNotValid(listing,
+                    listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString(),
+                    "ACB Name '" + listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString() + "'");
         }
-        if (listing.getCertificationEdition() != null && listing.getCertificationEdition().get("name") != null) {
-            addListingWarningIfNotValid(listing, listing.getCertificationEdition().get("name").toString(),
-                    "Certification Edition '" + listing.getCertificationEdition().get("name").toString() + "'");
+        if (listing.getCertificationEdition() != null
+                && listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY) != null) {
+            addListingWarningIfNotValid(listing,
+                    listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString(),
+                    "Certification Edition '"
+                    + listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString() + "'");
         }
         addListingWarningIfNotValid(listing, listing.getProductAdditionalSoftware(),
                 "Listing-level Additional Software '" + listing.getProductAdditionalSoftware() + "'");

@@ -20,7 +20,7 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -89,7 +89,7 @@ public class CertificationBodyManagerImpl extends SecuredManager implements Cert
 
         String activityMsg = "Created Certification Body " + result.getName();
 
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, result.getId(), activityMsg,
+        activityManager.addActivity(ActivityConcept.CERTIFICATION_BODY, result.getId(), activityMsg,
                 null, result);
 
         return result;
@@ -116,7 +116,7 @@ public class CertificationBodyManagerImpl extends SecuredManager implements Cert
         }
 
         String activityMsg = "Updated acb " + acb.getName();
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, result.getId(), activityMsg,
+        activityManager.addActivity(ActivityConcept.CERTIFICATION_BODY, result.getId(), activityMsg,
                 toUpdate, result);
         return result;
     }
@@ -140,7 +140,7 @@ public class CertificationBodyManagerImpl extends SecuredManager implements Cert
         schedulerManager.retireAcb(toUpdate.getName());
 
         String activityMsg = "Retired acb " + toUpdate.getName();
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, result.getId(), activityMsg,
+        activityManager.addActivity(ActivityConcept.CERTIFICATION_BODY, result.getId(), activityMsg,
                 toUpdate, result);
         return result;
     }
@@ -158,7 +158,7 @@ public class CertificationBodyManagerImpl extends SecuredManager implements Cert
         result = certificationBodyDao.update(toUpdate);
 
         String activityMsg = "Unretired acb " + toUpdate.getName();
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, result.getId(), activityMsg,
+        activityManager.addActivity(ActivityConcept.CERTIFICATION_BODY, result.getId(), activityMsg,
                 toUpdate, result);
         return result;
     }

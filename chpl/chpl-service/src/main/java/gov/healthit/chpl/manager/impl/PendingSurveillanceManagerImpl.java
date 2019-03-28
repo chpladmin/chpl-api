@@ -43,7 +43,7 @@ import gov.healthit.chpl.domain.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.domain.SurveillanceUploadResult;
-import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.concept.JobTypeConcept;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -245,7 +245,7 @@ public class PendingSurveillanceManagerImpl extends SecuredManager implements Pe
         CertifiedProductSearchDetails afterCp = cpDetailsManager
                 .getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
 
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, afterCp.getId(),
+        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, afterCp.getId(),
                 "Surveillance upload was confirmed for certified product " + afterCp.getChplProductNumber(), beforeCp,
                 afterCp);
 
@@ -440,7 +440,7 @@ public class PendingSurveillanceManagerImpl extends SecuredManager implements Pe
             } else {
                 activityMsg.append("rejected.");
             }
-            activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_SURVEILLANCE, toDelete.getId(),
+            activityManager.addActivity(ActivityConcept.PENDING_SURVEILLANCE, toDelete.getId(),
                     activityMsg.toString(), toDelete, null);
         }
 

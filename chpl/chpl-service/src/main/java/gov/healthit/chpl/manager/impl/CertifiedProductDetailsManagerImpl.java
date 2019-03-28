@@ -730,7 +730,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
     private List<TestFunctionality> getAvailableTestFunctionalities(final CertificationResult cr,
             final CertifiedProductSearchDetails cp) {
 
-        String edition = cp.getCertificationEdition().get("name").toString();
+        String edition = cp.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString();
         Long practiceTypeId = null;
         if (cp.getPracticeType().containsKey("id")) {
             if (cp.getPracticeType().get("id") != null) {
