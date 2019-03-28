@@ -17,7 +17,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.AnnouncementDAO;
-import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.AnnouncementDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -43,7 +43,7 @@ public class AnnouncementManagerImpl extends ApplicationObjectSupport implements
         AnnouncementDTO result = announcementDAO.create(announcement);
 
         String activityMsg = "Created announcement: " + announcement.getTitle();
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_ANNOUNCEMENT, result.getId(), activityMsg, null,
+        activityManager.addActivity(ActivityConcept.ANNOUNCEMENT, result.getId(), activityMsg, null,
                 result);
 
         return result;
@@ -60,7 +60,7 @@ public class AnnouncementManagerImpl extends ApplicationObjectSupport implements
         result = announcementDAO.update(announcement, false);
 
         String activityMsg = "Updated announcement: " + announcement.getTitle();
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_ANNOUNCEMENT, result.getId(), activityMsg,
+        activityManager.addActivity(ActivityConcept.ANNOUNCEMENT, result.getId(), activityMsg,
                 toUpdate, result);
 
         return result;
@@ -75,7 +75,7 @@ public class AnnouncementManagerImpl extends ApplicationObjectSupport implements
         announcementDAO.delete(announcement.getId());
         // log announcement delete activity
         String activityMsg = "Deleted announcement: " + announcement.getTitle();
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_ANNOUNCEMENT, announcement.getId(), activityMsg,
+        activityManager.addActivity(ActivityConcept.ANNOUNCEMENT, announcement.getId(), activityMsg,
                 announcement, null);
     }
 

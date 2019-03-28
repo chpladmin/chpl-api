@@ -75,7 +75,7 @@ public class InheritedCertificationStatusReviewer implements Reviewer {
                 if (parentIds != null && parentIds.size() > 0) {
                     List<CertificationEditionDTO> parentEditions = certEditionDao.getEditions(parentIds);
                     for (CertificationEditionDTO parentEdition : parentEditions) {
-                        if (!listing.getCertificationEdition().get("id").toString()
+                        if (!listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY).toString()
                                 .equals(parentEdition.getId().toString())) {
                             listing.getErrorMessages().add(
                                     msgUtil.getMessage("listing.icsEditionMismatch", parentEdition.getYear()));
@@ -85,7 +85,7 @@ public class InheritedCertificationStatusReviewer implements Reviewer {
                     // this listing's ICS code must be greater than the max of
                     // parent ICS codes
                     Integer largestIcs = inheritanceDao.getLargestIcs(parentIds);
-                    
+
                     //Findbugs says this cannot be null since it used above - an NPE would have been thrown
                     //if (largestIcs != null && icsCodeInteger != null
                     //        && icsCodeInteger.intValue() != (largestIcs.intValue() + 1)) {

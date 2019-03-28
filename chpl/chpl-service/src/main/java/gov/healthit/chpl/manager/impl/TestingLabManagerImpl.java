@@ -16,7 +16,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.TestingLabDAO;
-import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -68,7 +68,7 @@ public class TestingLabManagerImpl extends SecuredManager implements TestingLabM
 
         String activityMsg = "Created Testing Lab " + result.getName();
 
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_ATL, result.getId(), activityMsg, null, result);
+        activityManager.addActivity(ActivityConcept.ATL, result.getId(), activityMsg, null, result);
 
         return result;
     }
@@ -83,7 +83,7 @@ public class TestingLabManagerImpl extends SecuredManager implements TestingLabM
         TestingLabDTO result = testingLabDAO.update(atl);
 
         String activityMsg = "Updated testing lab " + atl.getName();
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_ATL, result.getId(), activityMsg, toUpdate,
+        activityManager.addActivity(ActivityConcept.ATL, result.getId(), activityMsg, toUpdate,
                 result);
         return result;
     }
@@ -104,8 +104,8 @@ public class TestingLabManagerImpl extends SecuredManager implements TestingLabM
         result = testingLabDAO.update(toUpdate);
 
         String activityMsg = "Retired atl " + toUpdate.getName();
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_ATL, result.getId(), activityMsg, toUpdate,
-                result);
+        activityManager.addActivity(ActivityConcept.ATL, result.getId(), activityMsg,
+                toUpdate, result);
         return result;
     }
 
@@ -121,8 +121,8 @@ public class TestingLabManagerImpl extends SecuredManager implements TestingLabM
         result = testingLabDAO.update(toUpdate);
 
         String activityMsg = "Unretired atl " + toUpdate.getName();
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_ATL, result.getId(), activityMsg, toUpdate,
-                result);
+        activityManager.addActivity(ActivityConcept.ATL, result.getId(), activityMsg,
+                toUpdate, result);
         return result;
     }
 

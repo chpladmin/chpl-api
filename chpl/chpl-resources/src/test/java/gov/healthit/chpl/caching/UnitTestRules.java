@@ -47,6 +47,15 @@ public class UnitTestRules extends ExternalResource {
         resetSeqQuery = entityManager.createNativeQuery(
                 "SELECT pg_catalog.setval('certification_result_certification_result_id_seq', 12, true)");
         resetSeqQuery.getSingleResult();
+        resetSeqQuery = entityManager.createNativeQuery(
+                "SELECT pg_catalog.setval('user_user_id_seq', 7, true)");
+        resetSeqQuery.getSingleResult();
+        resetSeqQuery = entityManager.createNativeQuery(
+                "SELECT pg_catalog.setval('acl_sid_id_seq', 7, true)");
+        resetSeqQuery.getSingleResult();
+        resetSeqQuery = entityManager.createNativeQuery(
+                "SELECT pg_catalog.setval('acl_object_identity_id_seq', 16, true)");
+        resetSeqQuery.getSingleResult();
         tx.commit();
         entityManager.close();
     }

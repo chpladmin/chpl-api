@@ -8,6 +8,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * Certification Status Event domain object.
  * @author alarned
@@ -15,6 +17,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CertificationStatusEvent implements Serializable {
     private static final long serialVersionUID = -2498656549844148886L;
 

@@ -2,8 +2,15 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlType;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TestFunctionality implements Serializable {
     private static final long serialVersionUID = 620315627813874301L;
     private Long id;

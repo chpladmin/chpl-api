@@ -14,6 +14,7 @@ import java.util.Set;
 
 import org.junit.BeforeClass;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,7 @@ import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.caching.UnitTestRules;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
@@ -68,6 +70,10 @@ public class UserManagerTest {
 
     @Autowired
     private JWTUserConverter jwtUserConverter;
+
+    @Rule
+    @Autowired
+    public UnitTestRules cacheInvalidationRule;
 
     private static JWTAuthenticatedUser adminUser;
 

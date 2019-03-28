@@ -163,8 +163,8 @@ public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListe
 
     private String getEditionFromListing(final CertifiedProductSearchDetails listing) {
         String edition = "";
-        if (listing.getCertificationEdition().containsKey("name")) {
-            edition = listing.getCertificationEdition().get("name").toString();
+        if (listing.getCertificationEdition().containsKey(CertifiedProductSearchDetails.EDITION_NAME_KEY)) {
+            edition = listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString();
         }
         return edition;
     }

@@ -71,7 +71,7 @@ public class CertificationBodyControllerTest {
     }
 
     @Transactional
-    @Test(expected = AccessDeniedException.class)
+    @Test(expected = EntityRetrievalException.class)
     public void testRemoveUserFromAcbByBadAcbId() throws EntityRetrievalException, IOException,
             InvalidArgumentsException, ValidationException, EntityCreationException, UserRetrievalException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);

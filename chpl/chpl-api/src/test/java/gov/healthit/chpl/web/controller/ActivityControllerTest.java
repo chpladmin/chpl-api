@@ -35,8 +35,8 @@ import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.caching.UnitTestRules;
-import gov.healthit.chpl.domain.ActivityEvent;
 import gov.healthit.chpl.domain.UserActivity;
+import gov.healthit.chpl.domain.activity.ActivityDetails;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -105,18 +105,18 @@ public class ActivityControllerTest {
                           // certification_result_id = 9 with
                           // certification_criterion_id="59"
 
-        List<ActivityEvent> cpActivityEvents = activityController.activityForCertifiedProductById(cpId, null, null);
+        List<ActivityDetails> cpActivityEvents = activityController.activityForCertifiedProductById(cpId, null, null);
         assertEquals(4, cpActivityEvents.size());
 
         Calendar start = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         start.set(2015, 9, 1, 0, 0);
         Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         end.set(2015, 9, 20, 0, 0);
-        List<ActivityEvent> cpActivityEventsInDates = activityController.activityForCertifiedProductById(cpId,
+        List<ActivityDetails> cpActivityEventsInDates = activityController.activityForCertifiedProductById(cpId,
                 start.getTimeInMillis(), end.getTimeInMillis());
         assertEquals(3, cpActivityEventsInDates.size());
 
-        List<ActivityEvent> cp2ActivityEvents = activityController.activityForCertifiedProductById(cpId2, null, null);
+        List<ActivityDetails> cp2ActivityEvents = activityController.activityForCertifiedProductById(cpId2, null, null);
         assertEquals(0, cp2ActivityEvents.size());
     }
 
@@ -213,7 +213,7 @@ public class ActivityControllerTest {
     }
 
     @Transactional
-    @Test(expected = AccessDeniedException.class)
+    @Test(expected = EntityRetrievalException.class)
     public void testGetAcbActivityWithBadId() throws EntityRetrievalException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         activityController.activityForACBById(-100L, null, null);
@@ -223,7 +223,7 @@ public class ActivityControllerTest {
     @Test
     public void testGetAcbActivityAsAdmin() throws EntityRetrievalException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        List<ActivityEvent> userActivity = activityController.activityForACBById(-1L, null, null);
+        List<ActivityDetails> userActivity = activityController.activityForACBById(-1L, null, null);
         assertEquals(0, userActivity.size());
     }
 
@@ -231,7 +231,7 @@ public class ActivityControllerTest {
     @Test
     public void testGetAcbActivityAsAcbUser() throws EntityRetrievalException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(acbUser);
-        List<ActivityEvent> userActivity = activityController.activityForACBById(-1L, null, null);
+        List<ActivityDetails> userActivity = activityController.activityForACBById(-1L, null, null);
         assertEquals(0, userActivity.size());
     }
 
@@ -346,7 +346,7 @@ public class ActivityControllerTest {
     @Test
     public void testGetActivityByUserIdAsAdmin() throws UserRetrievalException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        List<ActivityEvent> userActivity = activityController.activityByUser(1L, null, null);
+        List<ActivityDetails> userActivity = activityController.activityByUser(1L, null, null);
         assertEquals(5, userActivity.size());
     }
 
@@ -354,7 +354,7 @@ public class ActivityControllerTest {
     @Test(expected = AccessDeniedException.class)
     public void testGetActivityByUserIdAsAcbAdmin() throws UserRetrievalException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(acbUser);
-        List<ActivityEvent> userActivity = activityController.activityByUser(1L, null, null);
+        List<ActivityDetails> userActivity = activityController.activityByUser(1L, null, null);
         assertEquals(5, userActivity.size());
     }
 
@@ -362,7 +362,7 @@ public class ActivityControllerTest {
     @Test(expected = AccessDeniedException.class)
     public void testGetActivityByUserIdAsAtlAdmin() throws UserRetrievalException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(atlUser);
-        List<ActivityEvent> userActivity = activityController.activityByUser(1L, null, null);
+        List<ActivityDetails> userActivity = activityController.activityByUser(1L, null, null);
         assertEquals(5, userActivity.size());
     }
 

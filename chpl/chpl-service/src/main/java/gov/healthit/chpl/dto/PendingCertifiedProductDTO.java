@@ -9,6 +9,8 @@ import java.util.Set;
 
 import org.springframework.util.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationCriterion;
@@ -22,6 +24,7 @@ import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.MacraMeasure;
@@ -44,6 +47,7 @@ import gov.healthit.chpl.util.Util;
  * @author alarned
  *
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PendingCertifiedProductDTO implements Serializable {
     private static final long serialVersionUID = 8778880570983282001L;
     private Long id;
@@ -164,17 +168,20 @@ public class PendingCertifiedProductDTO implements Serializable {
         if (details.getVersion() != null && !StringUtils.isEmpty(details.getVersion().getVersion())) {
             this.productVersion = details.getVersion().getVersion();
         }
-        if (details.getCertificationEdition().get("id") != null) {
-            this.certificationEditionId = Long.valueOf(details.getCertificationEdition().get("id").toString());
+        if (details.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY) != null) {
+            this.certificationEditionId =
+                    Long.valueOf(details.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY).toString());
         }
-        if (details.getCertificationEdition().get("name") != null) {
-            this.certificationEdition = details.getCertificationEdition().get("name").toString();
+        if (details.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY) != null) {
+            this.certificationEdition =
+                    details.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString();
         }
-        if (details.getCertifyingBody().get("id") != null) {
-            this.certificationBodyId = Long.valueOf(details.getCertifyingBody().get("id").toString());
+        if (details.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY) != null) {
+            this.certificationBodyId =
+                    Long.valueOf(details.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString());
         }
-        if (details.getCertifyingBody().get("name") != null) {
-            this.certificationBodyName = details.getCertifyingBody().get("name").toString();
+        if (details.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY) != null) {
+            this.certificationBodyName = details.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString();
         }
         if (details.getClassificationType().get("id") != null) {
             String classificationTypeId = details.getClassificationType().get("id").toString();
