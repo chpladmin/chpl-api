@@ -69,8 +69,6 @@ public class CertificationStatusDAOTest extends TestCase {
         assertNotNull(dto);
         dto = certStatusDao.getByStatusName(CertificationStatusType.Retired.getName());
         assertNotNull(dto);
-        dto = certStatusDao.getByStatusName(CertificationStatusType.Pending.getName());
-        assertNotNull(dto);
         dto = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByDeveloper.getName());
         assertNotNull(dto);
         dto = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByDeveloperUnderReview.getName());
