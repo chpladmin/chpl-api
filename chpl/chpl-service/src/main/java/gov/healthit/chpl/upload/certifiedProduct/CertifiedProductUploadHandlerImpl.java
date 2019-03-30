@@ -13,7 +13,6 @@ import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
-import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.ContactDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
@@ -68,8 +67,6 @@ public abstract class CertifiedProductUploadHandlerImpl implements CertifiedProd
     @Autowired
     protected CQMCriterionDAO cqmDao;
     @Autowired
-    protected CertificationStatusDAO statusDao;
-    @Autowired
     protected QmsStandardDAO qmsDao;
     @Autowired
     protected AccessibilityStandardDAO stdDao;
@@ -108,8 +105,6 @@ public abstract class CertifiedProductUploadHandlerImpl implements CertifiedProd
     public abstract PendingCertifiedProductEntity handle() throws InvalidArgumentsException;
 
     public abstract List<CQMCriterion> getApplicableCqmCriterion(List<CQMCriterion> allCqms);
-
-    public abstract Long getDefaultStatusId();
 
     @Override
     public List<CSVRecord> getRecord() {
