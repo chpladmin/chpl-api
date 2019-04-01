@@ -30,6 +30,9 @@ import gov.healthit.chpl.domain.search.CertifiedProductSearchResult;
 import gov.healthit.chpl.domain.search.SearchViews;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.DeveloperManager;
+import gov.healthit.chpl.web.controller.annotation.CacheControl;
+import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
+import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -46,6 +49,7 @@ public class CollectionsController {
     @ApiOperation(value = "Get basic data about all certified products in the system.", notes = "")
     @RequestMapping(value = "/certified_products", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.SIX_HOURS)
     public @ResponseBody String getAllCertifiedProducts(
             @RequestParam(value = "fields", required = false) final String delimitedFieldNames)
             throws JsonProcessingException {
@@ -144,6 +148,7 @@ public class CollectionsController {
     @ApiOperation(value = "Get a list of all developers with transparency attestation URLs" + "and ACB attestations.",
             notes = "")
     @RequestMapping(value = "/developers", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody List<DeveloperTransparency> getDeveloperCollection() {
         List<DeveloperTransparency> developerResults = developerManager.getDeveloperCollection();
         return developerResults;

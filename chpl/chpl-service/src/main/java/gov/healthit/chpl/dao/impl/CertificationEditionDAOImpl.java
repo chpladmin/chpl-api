@@ -42,7 +42,7 @@ public class CertificationEditionDAOImpl extends BaseDAOImpl implements Certific
             entity.setId(dto.getId());
             entity.setYear(dto.getYear());
             // entity.setLastModifiedDate(result.getLastModifiedDate());
-            entity.setLastModifiedUser(Util.getCurrentUser().getId());
+            entity.setLastModifiedUser(Util.getAuditId());
 
             create(entity);
         }
@@ -60,7 +60,7 @@ public class CertificationEditionDAOImpl extends BaseDAOImpl implements Certific
         entity.setId(dto.getId());
         entity.setYear(dto.getYear());
         // entity.setLastModifiedDate(result.getLastModifiedDate());
-        entity.setLastModifiedUser(Util.getCurrentUser().getId());
+        entity.setLastModifiedUser(Util.getAuditId());
 
         update(entity);
     }

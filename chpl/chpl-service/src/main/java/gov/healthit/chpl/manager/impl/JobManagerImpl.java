@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.core.env.Environment;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,9 +23,10 @@ import gov.healthit.chpl.job.NoJobTypeException;
 import gov.healthit.chpl.job.RunnableJob;
 import gov.healthit.chpl.job.RunnableJobFactory;
 import gov.healthit.chpl.manager.JobManager;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 
 @Service
-public class JobManagerImpl extends ApplicationObjectSupport implements JobManager {
+public class JobManagerImpl extends SecuredManager implements JobManager {
     private static final Logger LOGGER = LogManager.getLogger(JobManagerImpl.class);
     private static final long MILLIS_PER_DAY = 24 * 60 * 60 * 1000;
 
@@ -39,8 +39,12 @@ public class JobManagerImpl extends ApplicationObjectSupport implements JobManag
     @Autowired
     private JobDAO jobDao;
 
+    @Autowired
+    private ResourcePermissions resourcePermissions;
+
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).JOB, "
+            + "T(gov.healthit.chpl.permissions.domains.JobDomainPermissions).CREATE)")
     public JobDTO createJob(final JobDTO job) throws EntityCreationException, EntityRetrievalException {
         UserDTO user = job.getUser();
         if (user == null || user.getId() == null) {
@@ -52,7 +56,8 @@ public class JobManagerImpl extends ApplicationObjectSupport implements JobManag
     }
 
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).JOB, "
+            + "T(gov.healthit.chpl.permissions.domains.JobDomainPermissions).GET_BY_ID)")
     public JobDTO getJobById(final Long jobId) {
         return jobDao.getById(jobId);
     }
@@ -75,7 +80,7 @@ public class JobManagerImpl extends ApplicationObjectSupport implements JobManag
         Long earliestCompletedJobMillis = System.currentTimeMillis() - (completedJobThresholdDays * MILLIS_PER_DAY);
 
         Long userId = null;
-        if (!Util.isUserRoleAdmin()) {
+        if (!resourcePermissions.isUserRoleAdmin()) {
             userId = Util.getCurrentUser().getId();
         }
         return jobDao.findAllRunningAndCompletedBetweenDates(new Date(earliestCompletedJobMillis), new Date(), userId);
@@ -83,7 +88,8 @@ public class JobManagerImpl extends ApplicationObjectSupport implements JobManag
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).JOB, "
+            + "T(gov.healthit.chpl.permissions.domains.JobDomainPermissions).GET_BY_USER)")
     public List<JobDTO> getJobsForUser(final UserDTO user) throws EntityRetrievalException {
         if (user == null || user.getId() == null) {
             throw new EntityRetrievalException("A user is required.");
@@ -99,7 +105,8 @@ public class JobManagerImpl extends ApplicationObjectSupport implements JobManag
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).JOB, "
+            + "T(gov.healthit.chpl.permissions.domains.JobDomainPermissions).START)")
     public boolean start(final JobDTO job) throws EntityRetrievalException {
         RunnableJob runnableJob = null;
         try {

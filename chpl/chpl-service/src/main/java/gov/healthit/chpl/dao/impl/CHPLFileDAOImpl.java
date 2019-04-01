@@ -53,7 +53,7 @@ public class CHPLFileDAOImpl extends BaseDAOImpl implements CHPLFileDAO {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedDate(new Date());
             if (Util.getCurrentUser() != null) {
-                toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+                toDelete.setLastModifiedUser(Util.getAuditId());
             } else {
                 toDelete.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
             }

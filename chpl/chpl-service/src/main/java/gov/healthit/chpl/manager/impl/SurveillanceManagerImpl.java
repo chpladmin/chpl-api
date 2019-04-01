@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dao.UserPermissionDAO;
 import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
@@ -38,11 +37,12 @@ import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceRequirementEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SurveillanceManager;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 
 @Service
-public class SurveillanceManagerImpl implements SurveillanceManager {
+public class SurveillanceManagerImpl extends SecuredManager implements SurveillanceManager {
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceManagerImpl.class);
 
     private SurveillanceDAO survDao;
@@ -51,17 +51,19 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     private UserPermissionDAO userPermissionDao;
     private FileUtils fileUtils;
     private Environment env;
+    private ResourcePermissions resourcePermissions;
 
     @Autowired
     public SurveillanceManagerImpl(final SurveillanceDAO survDao, final CertifiedProductDAO cpDao,
-            final SurveillanceValidator validator, final UserPermissionDAO userPermissionDao,
-            final FileUtils fileUtils, final Environment env) {
+            final SurveillanceValidator validator, final UserPermissionDAO userPermissionDao, final FileUtils fileUtils,
+            final Environment env, final ResourcePermissions resourcePermissions) {
         this.survDao = survDao;
         this.cpDao = cpDao;
         this.validator = validator;
         this.userPermissionDao = userPermissionDao;
         this.fileUtils = fileUtils;
         this.env = env;
+        this.resourcePermissions = resourcePermissions;
     }
 
     @Override
@@ -103,8 +105,8 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or (hasRole('ROLE_ACB') "
-            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).CREATE, #acbId)")
     public Long createSurveillance(final Long acbId, final Surveillance surv)
             throws UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
         Long insertedId = null;
@@ -123,11 +125,10 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or " + "(hasRole('ROLE_ACB') "
-            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).ADD_DOCUMENT, #acbId)")
     public Long addDocumentToNonconformity(final Long acbId, final Long nonconformityId,
-            final SurveillanceNonconformityDocument doc)
-                    throws EntityRetrievalException {
+            final SurveillanceNonconformityDocument doc) throws EntityRetrievalException {
         Long insertedId = null;
         insertedId = survDao.insertNonconformityDocument(nonconformityId, doc);
         return insertedId;
@@ -135,10 +136,10 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or (hasRole('ROLE_ACB') "
-            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).UPDATE, #acbId)")
     public void updateSurveillance(final Long acbId, final Surveillance surv) throws EntityRetrievalException,
-    UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
+            UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
         SurveillanceEntity dbSurvEntity = new SurveillanceEntity();
         try {
             dbSurvEntity = survDao.getSurveillanceById(surv.getId());
@@ -160,8 +161,8 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or (hasRole('ROLE_ACB') "
-            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).DELETE, #acbId)")
     public void deleteSurveillance(final Long acbId, final Surveillance surv)
             throws EntityRetrievalException, SurveillanceAuthorityAccessDeniedException {
         checkSurveillanceAuthority(surv);
@@ -170,8 +171,8 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or (hasRole('ROLE_ACB') "
-            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).DELETE_DOCUMENT, #acbId)")
     public void deleteNonconformityDocument(final Long acbId, final Long documentId) throws EntityRetrievalException {
         survDao.deleteNonconformityDocument(documentId);
     }
@@ -183,7 +184,8 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).BASIC_REPORT)")
     public File getBasicReportDownloadFile() throws IOException {
         return fileUtils.getNewestFileMatchingName("^" + env.getProperty("surveillanceBasicReportName") + "-.+\\.csv$");
     }
@@ -195,8 +197,8 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 
     @Override
     public File getSurveillanceWithNonconformitiesDownloadFile() throws IOException {
-        return fileUtils.getNewestFileMatchingName("^" + env.getProperty("surveillanceNonconformitiesReportName")
-        + "-.+\\.csv$");
+        return fileUtils.getNewestFileMatchingName(
+                "^" + env.getProperty("surveillanceNonconformitiesReportName") + "-.+\\.csv$");
     }
 
     private SurveillanceNonconformityDocument convertToDomain(final SurveillanceNonconformityDocumentationEntity entity,
@@ -322,11 +324,10 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     }
 
     private void checkSurveillanceAuthority(final Surveillance surv) throws SurveillanceAuthorityAccessDeniedException {
-        Boolean hasOncAdmin = Util.isUserRoleAdmin() || Util.isUserRoleOnc();
-        Boolean hasAcbAdmin = Util.isUserRoleAcbAdmin();
+        Boolean hasOncAdmin = resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc();
+        Boolean hasAcbAdmin = resourcePermissions.isUserRoleAcbAdmin();
         if (StringUtils.isEmpty(surv.getAuthority())) {
-            // If user has ROLE_ADMIN and ROLE_ACB
-            // return 403
+            // If user has ROLE_ADMIN and ROLE_ACB return 403
             if (hasOncAdmin && hasAcbAdmin) {
                 String errorMsg = "Surveillance cannot be created by user having " + Authority.ROLE_ADMIN + " and "
                         + Authority.ROLE_ACB;
@@ -334,15 +335,13 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
                 throw new SurveillanceAuthorityAccessDeniedException(errorMsg);
             }
         } else {
-            // Cannot have surveillance authority as ROLE_ADMIN for user lacking
-            // ROLE_ADMIN
-            if (surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ADMIN) && !hasOncAdmin) {
-                String errorMsg = "User must have authority " + Authority.ROLE_ADMIN;
+            // Cannot have surveillance authority as ROLE_ONC for user lacking ROLE_ADMIN or ROLE_ONC
+            if (surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ONC) && !hasOncAdmin) {
+                String errorMsg = "User must have authority " + Authority.ROLE_ADMIN + " or " + Authority.ROLE_ONC;
                 LOGGER.error(errorMsg);
                 throw new SurveillanceAuthorityAccessDeniedException(errorMsg);
             } else if (surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB)) {
-                // Cannot have surveillance authority as ACB for user lacking ONC
-                // and ACB roles
+                // Cannot have surveillance authority as ACB for user lacking ONC and ACB roles
                 if (!hasOncAdmin && !hasAcbAdmin) {
                     String errorMsg = "User must have ONC or ACB roles for a surveillance authority created by ACB";
                     LOGGER.error(errorMsg);
@@ -353,8 +352,8 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     }
 
     private void updateNullAuthority(final Surveillance surv) {
-        Boolean hasOncAdmin = Util.isUserRoleAdmin() || Util.isUserRoleOnc();
-        Boolean hasAcbAdmin = Util.isUserRoleAcbAdmin();
+        Boolean hasOncAdmin = resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc();
+        Boolean hasAcbAdmin = resourcePermissions.isUserRoleAcbAdmin();
         if (StringUtils.isEmpty(surv.getAuthority())) {
             if (hasOncAdmin) {
                 surv.setAuthority(Authority.ROLE_ADMIN);

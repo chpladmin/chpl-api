@@ -1,6 +1,10 @@
 package gov.healthit.chpl.web.controller;
 
+import static org.junit.Assert.*;
+
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -9,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -17,6 +22,7 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
@@ -24,7 +30,13 @@ import gov.healthit.chpl.UnitTestUtil;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
+import gov.healthit.chpl.domain.Contact;
+import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.UpdateDevelopersRequest;
+import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -40,10 +52,10 @@ public class DeveloperControllerTest {
     private static JWTAuthenticatedUser adminUser;
 
     @Autowired
-    Environment env;
+    private Environment env;
 
     @Autowired
-    DeveloperController developerController;
+    private DeveloperController developerController;
 
     @Rule
     @Autowired
@@ -64,5 +76,56 @@ public class DeveloperControllerTest {
     public void testGetDeveloperByBadId() throws EntityRetrievalException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         developerController.getDeveloperById(-100L);
+    }
+
+    @Test(expected = ValidationException.class)
+    @Transactional
+    @Rollback
+    public void testUpdateDeveloperWithoutContact() throws
+    EntityCreationException, EntityRetrievalException,
+    ValidationException, InvalidArgumentsException, JsonProcessingException,
+    MissingReasonException, IOException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        Developer devToUpdate = developerController.getDeveloperById(-1L);
+        UpdateDevelopersRequest req = new UpdateDevelopersRequest();
+        devToUpdate.setName("Updated Name");
+        req.setDeveloper(devToUpdate);
+        List<Long> idsToUpdate = new ArrayList<Long>();
+        idsToUpdate.add(-1L);
+        req.setDeveloperIds(idsToUpdate);
+        developerController.updateDeveloper(req);
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void testUpdateDeveloperWithRequiredData() throws
+    EntityCreationException, EntityRetrievalException,
+    ValidationException, InvalidArgumentsException, JsonProcessingException,
+    MissingReasonException, IOException {
+        Long devId = -1L;
+        String updatedName = "Updated Name";
+
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        Developer devToUpdate = developerController.getDeveloperById(devId);
+        UpdateDevelopersRequest req = new UpdateDevelopersRequest();
+        devToUpdate.setName(updatedName);
+        //set other required information
+        Contact contact = new Contact();
+        contact.setEmail("test@test.com");
+        contact.setFullName("Test Fullname");
+        contact.setPhoneNumber("111-222-3333");
+        devToUpdate.setContact(contact);
+        req.setDeveloper(devToUpdate);
+        List<Long> idsToUpdate = new ArrayList<Long>();
+        idsToUpdate.add(-1L);
+        req.setDeveloperIds(idsToUpdate);
+        developerController.updateDeveloper(req);
+
+        Developer updatedDeveloper = developerController.getDeveloperById(devId);
+        assertNotNull(updatedDeveloper);
+        assertEquals(updatedName, updatedDeveloper.getName());
+        SecurityContextHolder.getContext().setAuthentication(null);
     }
 }

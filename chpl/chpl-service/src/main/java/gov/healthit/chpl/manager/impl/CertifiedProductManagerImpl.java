@@ -26,6 +26,7 @@ import org.quartz.TriggerKey;
 import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -155,16 +156,17 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.MissingReasonException;
-import gov.healthit.chpl.manager.CertificationBodyManager;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Service("certifiedProductManager")
-public class CertifiedProductManagerImpl implements CertifiedProductManager {
+public class CertifiedProductManagerImpl extends SecuredManager implements CertifiedProductManager {
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductManagerImpl.class);
 
     @Autowired
@@ -218,6 +220,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     @Autowired
     private DeveloperStatusDAO devStatusDao;
 
+    @Lazy
     @Autowired
     private DeveloperManager developerManager;
 
@@ -270,7 +273,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     private FuzzyChoicesDAO fuzzyChoicesDao;
 
     @Autowired
-    private CertificationBodyManager acbManager;
+    private ResourcePermissions resourcePermissions;
 
     @Autowired
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
@@ -370,7 +373,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     public List<CertifiedProductDetailsDTO> getByVersionWithEditPermission(final Long versionId)
             throws EntityRetrievalException {
         versionManager.getById(versionId); // throws 404 if bad id
-        List<CertificationBodyDTO> userAcbs = acbManager.getAllForUser();
+        List<CertificationBodyDTO> userAcbs = resourcePermissions.getAllAcbsForCurrentUser();
         if (userAcbs == null || userAcbs.size() == 0) {
             return new ArrayList<CertifiedProductDetailsDTO>();
         }
@@ -436,8 +439,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     }
 
     @Override
-    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') "
-            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
+            + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).CREATE_FROM_PENDING, #acbId)")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS
@@ -459,7 +462,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         toCreate.setCreationDate(new Date());
         toCreate.setDeleted(false);
         toCreate.setLastModifiedDate(new Date());
-        toCreate.setLastModifiedUser(Util.getCurrentUser().getId());
+        toCreate.setLastModifiedUser(Util.getAuditId());
 
         if (pendingCp.getCertificationBodyId() == null) {
             throw new EntityCreationException("ACB ID must be specified.");
@@ -895,16 +898,20 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                                 tt.setDescription(pendingTask.getDescription());
                                 tt.setTaskErrors(Float.valueOf(pendingTask.getTaskErrors()));
                                 tt.setTaskErrorsStddev(Float.valueOf(pendingTask.getTaskErrorsStddev()));
-                                tt.setTaskPathDeviationObserved(Integer.valueOf(pendingTask.getTaskPathDeviationObserved()));
-                                tt.setTaskPathDeviationOptimal(Integer.valueOf(pendingTask.getTaskPathDeviationOptimal()));
+                                tt.setTaskPathDeviationObserved(
+                                        Integer.valueOf(pendingTask.getTaskPathDeviationObserved()));
+                                tt.setTaskPathDeviationOptimal(
+                                        Integer.valueOf(pendingTask.getTaskPathDeviationOptimal()));
                                 tt.setTaskRating(Float.valueOf(pendingTask.getTaskRating()));
                                 tt.setTaskRatingScale(pendingTask.getTaskRatingScale());
                                 tt.setTaskRatingStddev(Float.valueOf(pendingTask.getTaskRatingStddev()));
                                 tt.setTaskSuccessAverage(Float.valueOf(pendingTask.getTaskSuccessAverage()));
                                 tt.setTaskSuccessStddev(Float.valueOf(pendingTask.getTaskSuccessStddev()));
                                 tt.setTaskTimeAvg(Long.valueOf(pendingTask.getTaskTimeAvg()));
-                                tt.setTaskTimeDeviationObservedAvg(Integer.valueOf(pendingTask.getTaskTimeDeviationObservedAvg()));
-                                tt.setTaskTimeDeviationOptimalAvg(Integer.valueOf(pendingTask.getTaskTimeDeviationOptimalAvg()));
+                                tt.setTaskTimeDeviationObservedAvg(
+                                        Integer.valueOf(pendingTask.getTaskTimeDeviationObservedAvg()));
+                                tt.setTaskTimeDeviationOptimalAvg(
+                                        Integer.valueOf(pendingTask.getTaskTimeDeviationOptimalAvg()));
                                 tt.setTaskTimeStddev(Integer.valueOf(pendingTask.getTaskTimeStddev()));
 
                                 // add test task
@@ -938,11 +945,13 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                                             TestParticipantDTO tp = new TestParticipantDTO();
                                             tp.setAgeRangeId(certPart.getAgeRangeId());
                                             tp.setAssistiveTechnologyNeeds(certPart.getAssistiveTechnologyNeeds());
-                                            tp.setComputerExperienceMonths(Integer.valueOf(certPart.getComputerExperienceMonths()));
+                                            tp.setComputerExperienceMonths(
+                                                    Integer.valueOf(certPart.getComputerExperienceMonths()));
                                             tp.setEducationTypeId(certPart.getEducationTypeId());
                                             tp.setGender(certPart.getGender());
                                             tp.setOccupation(certPart.getOccupation());
-                                            tp.setProductExperienceMonths(Integer.valueOf(certPart.getProductExperienceMonths()));
+                                            tp.setProductExperienceMonths(
+                                                    Integer.valueOf(certPart.getProductExperienceMonths()));
                                             tp.setProfessionalExperienceMonths(
                                                     Integer.valueOf(certPart.getProfessionalExperienceMonths()));
 
@@ -1067,8 +1076,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     @CacheEvict(value = {
             CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.GET_DECERTIFIED_DEVELOPERS
     }, allEntries = true)
-    //listings collection is not evicted here because it's pre-fetched and handled in a listener
-    //no other caches have ACB data so we do not need to clear all
+    // listings collection is not evicted here because it's pre-fetched and handled in a listener
+    // no other caches have ACB data so we do not need to clear all
     public CertifiedProductDTO changeOwnership(final Long certifiedProductId, final Long acbId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         CertifiedProductDTO toUpdate = cpDao.getById(certifiedProductId);
@@ -1077,8 +1086,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or " + "(hasRole('ROLE_ACB')"
-            + " and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
+            + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).CLEAN_DATA, #acbId)")
     @Transactional(readOnly = false)
     public void sanitizeUpdatedListingData(final Long acbId, final CertifiedProductSearchDetails listing)
             throws EntityNotFoundException {
@@ -1123,8 +1132,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or " + "(hasRole('ROLE_ACB')"
-            + "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
+            + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).UPDATE, #acbId)")
     @Transactional(rollbackFor = {
             EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class,
             AccessDeniedException.class, InvalidArgumentsException.class
@@ -1133,8 +1142,9 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS
     }, allEntries = true)
     public CertifiedProductDTO update(final Long acbId, final ListingUpdateRequest updateRequest,
-            final CertifiedProductSearchDetails existingListing) throws AccessDeniedException, EntityRetrievalException,
-            JsonProcessingException, EntityCreationException, InvalidArgumentsException, IOException {
+            final CertifiedProductSearchDetails existingListing)
+            throws AccessDeniedException, EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            InvalidArgumentsException, IOException, ValidationException {
 
         CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
         Long listingId = updatedListing.getId();
@@ -1159,7 +1169,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             case TerminatedByOnc:
                 // only onc admin can do this and it always triggers developer
                 // ban
-                if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
+                if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
                     // find the new developer status
                     if (updatedStatusDto.getStatus().equals(CertificationStatusType.SuspendedByOnc.toString())) {
                         newDevStatusDto = devStatusDao.getByName(DeveloperStatusType.SuspendedByOnc.toString());
@@ -1168,7 +1178,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                         newDevStatusDto = devStatusDao
                                 .getByName(DeveloperStatusType.UnderCertificationBanByOnc.toString());
                     }
-                } else if (!Util.isUserRoleAdmin() && !Util.isUserRoleOnc()) {
+                } else if (!resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
                     LOGGER.error("User " + Util.getUsername()
                             + " does not have ROLE_ADMIN or ROLE_ONC and cannot change the status of developer for certified "
                             + "product with id " + listingId);
@@ -1195,7 +1205,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                 statusHistoryToAdd.setReason(msgUtil.getMessage("developer.statusAutomaticallyChanged"));
                 cpDeveloper.getStatusEvents().add(statusHistoryToAdd);
                 try {
-                    developerManager.update(cpDeveloper);
+                    developerManager.update(cpDeveloper, false);
                 } catch (MissingReasonException ignore) {
                     // reason will never be missing since we set it above
                 }

@@ -1,5 +1,51 @@
 # Release Notes
 
+## Version 20.7.0
+_1 April 2019_
+
+### Refactoring Changes
+* Removed unused references to certification status in pending listing objects.
+
+---
+
+## Version 20.6.0
+_27 March 2019_
+
+### New features
+* Add error message for unparseable certification date on Listing upload
+* Allow certain users to impersonate certain other ones
+* Modify security to use CHPL managed user/ATL relationship
+
+### Refactoring changes
+* Removed unused "compliance terms accepted" references
+
+### Bug Fixes
+* Fixed error on banned developer page when banned developer has listings without meaningful use counts
+* Use correct ROLE for surveillance authority
+
+---
+
+## Version 20.5.1
+_11 March 2019_
+
+### Bug Fixes
+* Fix incorrect developer appearing in product owner history after developer split.
+
+---
+
+## Version 20.5.0
+_11 March 2019_
+
+### New Features
+* HTTP caching of several resources that are pretty static
+* Update subject and email text of overnight surveillance broken rules report and all surveillance broken rules report
+* Add developer split functionality
+* Display more helpful error message when a Reason for Change is required
+* Modify security to use CHPL managed user/ACB relationship
+* Update validation of test tools based on workflow and ICS
+
+---
+
 ## Version 20.4.0
 _25 February 2019_
 

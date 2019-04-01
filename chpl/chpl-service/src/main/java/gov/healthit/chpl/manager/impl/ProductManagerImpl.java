@@ -6,10 +6,6 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -17,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.ProductDAO;
@@ -37,35 +32,48 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.ProductManager;
-import gov.healthit.chpl.validation.listing.reviewer.ChplNumberReviewer;
+import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.ChplProductNumberUtil.ChplProductNumberParts;
+import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.ValidationUtils;
 
 @Service
-public class ProductManagerImpl implements ProductManager {
+public class ProductManagerImpl extends SecuredManager implements ProductManager {
     private static final Logger LOGGER = LogManager.getLogger(ProductManagerImpl.class);
 
-    @Autowired
-    private MessageSource messageSource;
-    @Autowired
-    ProductDAO productDao;
-    @Autowired
-    ProductVersionDAO versionDao;
-    @Autowired
-    DeveloperDAO devDao;
-    @Autowired
-    CertifiedProductDAO cpDao;
-    @Autowired
-    CertifiedProductDetailsManager cpdManager;
-    @Autowired
-    CertificationBodyManager acbManager;
-    @Autowired
-    ChplNumberReviewer chplNumberReviewer;
+    private ErrorMessageUtil msgUtil;
+    private ProductDAO productDao;
+    private ProductVersionDAO versionDao;
+    private DeveloperDAO devDao;
+    private CertifiedProductDAO cpDao;
+    private CertifiedProductDetailsManager cpdManager;
+    private CertificationBodyManager acbManager;
+    private ChplProductNumberUtil chplProductNumberUtil;
+    private ActivityManager activityManager;
+    private ResourcePermissions resourcePermissions;
 
     @Autowired
-    ActivityManager activityManager;
+    public ProductManagerImpl(final ErrorMessageUtil msgUtil, final ProductDAO productDao,
+            final ProductVersionDAO versionDao, final DeveloperDAO devDao, final CertifiedProductDAO cpDao,
+            final CertifiedProductDetailsManager cpdManager, final CertificationBodyManager acbManager,
+            final ChplProductNumberUtil chplProductNumberUtil, final ActivityManager activityManager,
+            final ResourcePermissions resourcePermissions) {
+        this.msgUtil = msgUtil;
+        this.productDao = productDao;
+        this.versionDao = versionDao;
+        this.devDao = devDao;
+        this.cpDao = cpDao;
+        this.cpdManager = cpdManager;
+        this.acbManager = acbManager;
+        this.chplProductNumberUtil = chplProductNumberUtil;
+        this.activityManager = activityManager;
+        this.resourcePermissions = resourcePermissions;
+    }
 
     @Override
     @Transactional(readOnly = true)
-    public ProductDTO getById(Long id) throws EntityRetrievalException {
+    public ProductDTO getById(final Long id) throws EntityRetrievalException {
         return productDao.getById(id);
     }
 
@@ -77,20 +85,21 @@ public class ProductManagerImpl implements ProductManager {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProductDTO> getByDeveloper(Long developerId) {
+    public List<ProductDTO> getByDeveloper(final Long developerId) {
         return productDao.getByDeveloper(developerId);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProductDTO> getByDevelopers(List<Long> developerIds) {
+    public List<ProductDTO> getByDevelopers(final List<Long> developerIds) {
         return productDao.getByDevelopers(developerIds);
     }
 
     @Override
     @Transactional(readOnly = false)
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
-    public ProductDTO create(ProductDTO dto)
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
+            + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).CREATE)")
+    public ProductDTO create(final ProductDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
         // check that the developer of this product is Active
         if (dto.getDeveloperId() == null) {
@@ -123,8 +132,9 @@ public class ProductManagerImpl implements ProductManager {
 
     @Override
     @Transactional(readOnly = false)
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
-    public ProductDTO update(ProductDTO dto)
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
+            + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).UPDATE)")
+    public ProductDTO update(final ProductDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 
         ProductDTO beforeDTO = productDao.getById(dto.getId());
@@ -144,7 +154,8 @@ public class ProductManagerImpl implements ProductManager {
                     + dev.getName() + " cannot be determined.";
             LOGGER.error(msg);
             throw new EntityCreationException(msg);
-        } else if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
+        } else if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
+                && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
             String msg = "The product " + dto.getName() + " cannot be updated since the developer " + dev.getName()
                     + " has a status of " + currDevStatus.getStatus().getStatusName();
             LOGGER.error(msg);
@@ -167,7 +178,7 @@ public class ProductManagerImpl implements ProductManager {
     @Override
     @Transactional(readOnly = false)
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    public ProductDTO merge(List<Long> productIdsToMerge, ProductDTO toCreate)
+    public ProductDTO merge(final List<Long> productIdsToMerge, final ProductDTO toCreate)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 
         List<ProductDTO> beforeProducts = new ArrayList<ProductDTO>();
@@ -220,25 +231,26 @@ public class ProductManagerImpl implements ProductManager {
             EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class,
             AccessDeniedException.class
     })
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
-    public ProductDTO split(ProductDTO oldProduct, ProductDTO newProduct, String newProductCode,
-            List<ProductVersionDTO> newProductVersions)
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
+            + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).SPLIT)")
+    public ProductDTO split(final ProductDTO oldProduct, final ProductDTO productToCreate, final String newProductCode,
+            final List<ProductVersionDTO> newProductVersions)
             throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
         // what ACB does the user have??
-        List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser();
+        List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
 
         // create the new product and log activity
         // this method checks that the related developer is Active and will
         // throw an exception if they aren't
-        newProduct = create(newProduct);
+        ProductDTO createdProduct = create(productToCreate);
 
         // re-assign versions to the new product and log activity for each
         List<Long> affectedVersionIds = new ArrayList<Long>();
         for (ProductVersionDTO affectedVersion : newProductVersions) {
             // get before and after for activity; update product owner
             ProductVersionDTO beforeVersion = versionDao.getById(affectedVersion.getId());
-            affectedVersion.setProductId(newProduct.getId());
-            affectedVersion.setProductName(newProduct.getName());
+            affectedVersion.setProductId(createdProduct.getId());
+            affectedVersion.setProductName(createdProduct.getName());
             versionDao.update(affectedVersion);
             ProductVersionDTO afterVersion = versionDao.getById(affectedVersion.getId());
             activityManager.addActivity(
@@ -264,31 +276,28 @@ public class ProductManagerImpl implements ProductManager {
                 }
             }
             if (!hasAccessToAcb) {
-                throw new AccessDeniedException(
-                        "Access is denied to update certified product " + beforeProduct.getChplProductNumber()
-                                + " because it is owned by " + beforeProduct.getCertifyingBody().get("name") + ".");
+                throw new AccessDeniedException(msgUtil.getMessage("acb.accessDenied.listingUpdate",
+                        beforeProduct.getChplProductNumber(), beforeProduct.getCertifyingBody().get("name")));
             }
 
-            // make sure the updated CHPL product number is valid
+            // make sure the updated CHPL product number is unique and that the
+            // new product code is valid
             String chplNumber = beforeProduct.getChplProductNumber();
-            String[] splitChplNumber = chplNumber.split("\\.");
-            if (splitChplNumber.length > 1) {
-                String potentialChplNumber = splitChplNumber[0] + "." + splitChplNumber[1] + "." + splitChplNumber[2]
-                        + "." + splitChplNumber[3] + "." + newProductCode + "." + splitChplNumber[5] + "."
-                        + splitChplNumber[6] + "." + splitChplNumber[7] + "." + splitChplNumber[8];
-                if (!chplNumberReviewer.validateUniqueId(potentialChplNumber)) {
+            if (!chplProductNumberUtil.isLegacy(chplNumber)) {
+                ChplProductNumberParts parts = chplProductNumberUtil.parseChplProductNumber(chplNumber);
+                String potentialChplNumber = chplProductNumberUtil.getChplProductNumber(parts.getEditionCode(),
+                        parts.getAtlCode(), parts.getAcbCode(), parts.getDeveloperCode(), newProductCode,
+                        parts.getVersionCode(), parts.getIcsCode(), parts.getAdditionalSoftwareCode(),
+                        parts.getCertifiedDateCode());
+                if (!chplProductNumberUtil.isUnique(potentialChplNumber)) {
                     throw new EntityCreationException("Cannot update certified product " + chplNumber + " to "
                             + potentialChplNumber + " because a certified product with that CHPL ID already exists.");
                 }
-                if (!chplNumberReviewer.validateProductCodeCharacters(potentialChplNumber)) {
-                    throw new EntityCreationException(
-                            String.format(
-                                    messageSource.getMessage(
-                                            new DefaultMessageSourceResolvable("listing.badProductCodeChars"),
-                                            LocaleContextHolder.getLocale()),
-                                    CertifiedProductDTO.PRODUCT_CODE_LENGTH));
+                if (!ValidationUtils.chplNumberPartIsValid(potentialChplNumber,
+                        ChplProductNumberUtil.PRODUCT_CODE_INDEX, ChplProductNumberUtil.PRODUCT_CODE_REGEX)) {
+                    throw new EntityCreationException(msgUtil.getMessage("listing.badProductCodeChars",
+                            ChplProductNumberUtil.PRODUCT_CODE_LENGTH));
                 }
-
                 affectedCp.setProductCode(newProductCode);
             }
 
@@ -300,6 +309,6 @@ public class ProductManagerImpl implements ProductManager {
                     afterProduct);
         }
 
-        return getById(newProduct.getId());
+        return getById(createdProduct.getId());
     }
 }

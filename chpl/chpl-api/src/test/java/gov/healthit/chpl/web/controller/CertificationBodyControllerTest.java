@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -70,7 +71,7 @@ public class CertificationBodyControllerTest {
     }
 
     @Transactional
-    @Test(expected = EntityRetrievalException.class)
+    @Test(expected = AccessDeniedException.class)
     public void testRemoveUserFromAcbByBadAcbId() throws EntityRetrievalException, IOException,
             InvalidArgumentsException, ValidationException, EntityCreationException, UserRetrievalException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);

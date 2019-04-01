@@ -10,7 +10,6 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,20 +39,25 @@ import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.permissions.Permissions;
 import gov.healthit.chpl.util.JSONUtils;
 
 @Service("activityManager")
-public class ActivityManagerImpl implements ActivityManager {
+public class ActivityManagerImpl extends SecuredManager implements ActivityManager {
     private static final Logger LOGGER = LogManager.getLogger(ActivityManagerImpl.class);
 
-    @Autowired
     private ActivityDAO activityDAO;
-
-    @Autowired
     private DeveloperDAO devDao;
-
     private ObjectMapper jsonMapper = new ObjectMapper();
     private JsonFactory factory = jsonMapper.getFactory();
+
+    @Autowired
+    public ActivityManagerImpl(final ActivityDAO activityDAO, final DeveloperDAO devDao,
+            final Permissions permissions) {
+        this.activityDAO = activityDAO;
+        this.devDao = devDao;
+        this.permissions = permissions;
+    }
 
     @Override
     @Transactional
@@ -85,7 +89,7 @@ public class ActivityManagerImpl implements ActivityManager {
             dto.setCreationDate(new Date());
             dto.setLastModifiedDate(new Date());
             if (Util.getCurrentUser() != null) {
-                dto.setLastModifiedUser(Util.getCurrentUser().getId());
+                dto.setLastModifiedUser(Util.getAuditId());
             }
             dto.setDeleted(false);
 
@@ -97,7 +101,8 @@ public class ActivityManagerImpl implements ActivityManager {
     @Override
     @Transactional
     public void addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
-            Object newData, String reason) throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+            Object newData, String reason)
+            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
         this.addActivity(concept, objectId, activityDescription, originalData, newData);
     }
 
@@ -105,7 +110,7 @@ public class ActivityManagerImpl implements ActivityManager {
     @Transactional
     public void addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
             Object newData, Long asUser)
-                    throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
         String originalDataStr = JSONUtils.toJSON(originalData);
         String newDataStr = JSONUtils.toJSON(newData);
@@ -143,7 +148,7 @@ public class ActivityManagerImpl implements ActivityManager {
     @Transactional
     public void addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
             Object newData, Date timestamp)
-                    throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
         String originalDataStr = JSONUtils.toJSON(originalData);
         String newDataStr = JSONUtils.toJSON(newData);
@@ -169,7 +174,7 @@ public class ActivityManagerImpl implements ActivityManager {
             dto.setActivityObjectId(objectId);
             dto.setCreationDate(new Date());
             dto.setLastModifiedDate(new Date());
-            dto.setLastModifiedUser(Util.getCurrentUser().getId());
+            dto.setLastModifiedUser(Util.getAuditId());
             dto.setDeleted(false);
 
             activityDAO.create(dto);
@@ -178,8 +183,8 @@ public class ActivityManagerImpl implements ActivityManager {
 
     @Override
     @Transactional
-    public List<ActivityEvent> getActivityForObject(ActivityConcept concept, Long objectId,
-            Date startDate, Date endDate) throws JsonParseException, IOException {
+    public List<ActivityEvent> getActivityForObject(ActivityConcept concept, Long objectId, Date startDate,
+            Date endDate) throws JsonParseException, IOException {
 
         List<ActivityDTO> dtos = activityDAO.findByObjectId(objectId, concept, startDate, endDate);
         List<ActivityEvent> events = new ArrayList<ActivityEvent>();
@@ -193,8 +198,8 @@ public class ActivityManagerImpl implements ActivityManager {
 
     @Override
     @Transactional
-    public List<ActivityEvent> getActivityForConcept(ActivityConcept concept, Date startDate,
-            Date endDate) throws JsonParseException, IOException {
+    public List<ActivityEvent> getActivityForConcept(ActivityConcept concept, Date startDate, Date endDate)
+            throws JsonParseException, IOException {
 
         List<ActivityDTO> dtos = activityDAO.findByConcept(concept, startDate, endDate);
         List<ActivityEvent> events = new ArrayList<ActivityEvent>();
@@ -207,14 +212,13 @@ public class ActivityManagerImpl implements ActivityManager {
     }
 
     /**
-     * Get activity only for public announcements.
-     * This will return activity where the isPublic flag is true on both the
-     * original and updated data.
+     * Get activity only for public announcements. This will return activity
+     * where the isPublic flag is true on both the original and updated data.
      */
     @Override
     @Transactional
-    public List<ActivityEvent> getPublicAnnouncementActivity(Date startDate,
-            Date endDate) throws JsonParseException, IOException {
+    public List<ActivityEvent> getPublicAnnouncementActivity(Date startDate, Date endDate)
+            throws JsonParseException, IOException {
         List<ActivityDTO> dtos = activityDAO.findPublicAnnouncementActivity(startDate, endDate);
         List<ActivityEvent> events = new ArrayList<ActivityEvent>();
 
@@ -226,14 +230,14 @@ public class ActivityManagerImpl implements ActivityManager {
     }
 
     /**
-     * Get activity only for a specific public announcement.
-     * This will only return activity for the announcement if the isPublic flag
-     * is set to true in both the original data and new data.
+     * Get activity only for a specific public announcement. This will only
+     * return activity for the announcement if the isPublic flag is set to true
+     * in both the original data and new data.
      */
     @Override
     @Transactional
-    public List<ActivityEvent> getPublicAnnouncementActivity(Long id, Date startDate,
-            Date endDate) throws JsonParseException, IOException {
+    public List<ActivityEvent> getPublicAnnouncementActivity(Long id, Date startDate, Date endDate)
+            throws JsonParseException, IOException {
         List<ActivityDTO> dtos = activityDAO.findPublicAnnouncementActivityById(id, startDate, endDate);
         List<ActivityEvent> events = new ArrayList<ActivityEvent>();
 
@@ -247,19 +251,16 @@ public class ActivityManagerImpl implements ActivityManager {
     @Override
     @Transactional
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    public List<ActivityEvent> getApiKeyActivity(Date startDate,
-            Date endDate) throws JsonParseException, IOException {
-        return getActivityForConcept(ActivityConcept.ACTIVITY_CONCEPT_API_KEY,
-                startDate, endDate);
+    public List<ActivityEvent> getApiKeyActivity(Date startDate, Date endDate) throws JsonParseException, IOException {
+        return getActivityForConcept(ActivityConcept.ACTIVITY_CONCEPT_API_KEY, startDate, endDate);
     }
 
     @Override
     @Transactional
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    public List<ActivityEvent> getAllAcbActivity(Date startDate, Date endDate)
-            throws JsonParseException, IOException {
-        List<ActivityDTO> acbActivity = activityDAO.findByConcept(
-                ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, startDate, endDate);
+    public List<ActivityEvent> getAllAcbActivity(Date startDate, Date endDate) throws JsonParseException, IOException {
+        List<ActivityDTO> acbActivity = activityDAO.findByConcept(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY,
+                startDate, endDate);
 
         List<ActivityEvent> events = new ArrayList<ActivityEvent>();
         for (ActivityDTO dto : acbActivity) {
@@ -271,9 +272,10 @@ public class ActivityManagerImpl implements ActivityManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
-    public List<ActivityEvent> getAcbActivity(final List<CertificationBodyDTO> acbs,
-            final Date startDate, final Date endDate) throws JsonParseException, IOException {
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_BY_ACB)")
+    public List<ActivityEvent> getAcbActivity(final List<CertificationBodyDTO> acbs, final Date startDate,
+            final Date endDate) throws JsonParseException, IOException {
 
         List<ActivityDTO> acbActivity = activityDAO.findAcbActivity(acbs, startDate, endDate);
         List<ActivityEvent> events = new ArrayList<ActivityEvent>();
@@ -287,10 +289,9 @@ public class ActivityManagerImpl implements ActivityManager {
     @Override
     @Transactional
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    public List<ActivityEvent> getAllAtlActivity(Date startDate, Date endDate)
-            throws JsonParseException, IOException {
-        List<ActivityDTO> atlActivity = activityDAO.findByConcept(
-                ActivityConcept.ACTIVITY_CONCEPT_ATL, startDate, endDate);
+    public List<ActivityEvent> getAllAtlActivity(Date startDate, Date endDate) throws JsonParseException, IOException {
+        List<ActivityDTO> atlActivity = activityDAO.findByConcept(ActivityConcept.ACTIVITY_CONCEPT_ATL, startDate,
+                endDate);
 
         List<ActivityEvent> events = new ArrayList<ActivityEvent>();
         for (ActivityDTO dto : atlActivity) {
@@ -303,8 +304,8 @@ public class ActivityManagerImpl implements ActivityManager {
     @Override
     @Transactional
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ATL')")
-    public List<ActivityEvent> getAtlActivity(List<TestingLabDTO> atls, Date startDate,
-            Date endDate) throws JsonParseException, IOException {
+    public List<ActivityEvent> getAtlActivity(List<TestingLabDTO> atls, Date startDate, Date endDate)
+            throws JsonParseException, IOException {
         List<ActivityDTO> atlActivity = activityDAO.findAtlActivity(atls, startDate, endDate);
 
         List<ActivityEvent> events = new ArrayList<ActivityEvent>();
@@ -318,10 +319,26 @@ public class ActivityManagerImpl implements ActivityManager {
     @Override
     @Transactional
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    public List<ActivityEvent> getAllPendingListingActivity(Date startDate,
+    public List<ActivityEvent> getAllPendingListingActivity(Date startDate, Date endDate)
+            throws JsonParseException, IOException {
+        List<ActivityDTO> pendingListingActivity = activityDAO
+                .findByConcept(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, startDate, endDate);
+
+        List<ActivityEvent> events = new ArrayList<ActivityEvent>();
+        for (ActivityDTO dto : pendingListingActivity) {
+            ActivityEvent event = getActivityEventFromDTO(dto);
+            events.add(event);
+        }
+        return events;
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_PENDING_LISTING_ACTIVITY_BY_ACB)")
+    public List<ActivityEvent> getPendingListingActivityByAcb(List<CertificationBodyDTO> acbs, Date startDate,
             Date endDate) throws JsonParseException, IOException {
-        List<ActivityDTO> pendingListingActivity = activityDAO.findByConcept(
-                ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, startDate, endDate);
+        List<ActivityDTO> pendingListingActivity = activityDAO.findPendingListingActivity(acbs, startDate, endDate);
 
         List<ActivityEvent> events = new ArrayList<ActivityEvent>();
         for (ActivityDTO dto : pendingListingActivity) {
@@ -333,27 +350,12 @@ public class ActivityManagerImpl implements ActivityManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
-    public List<ActivityEvent> getPendingListingActivityByAcb(List<CertificationBodyDTO> acbs,
-            Date startDate, Date endDate) throws JsonParseException, IOException {
-        List<ActivityDTO> pendingListingActivity =
-                activityDAO.findPendingListingActivity(acbs, startDate, endDate);
-
-        List<ActivityEvent> events = new ArrayList<ActivityEvent>();
-        for (ActivityDTO dto : pendingListingActivity) {
-            ActivityEvent event = getActivityEventFromDTO(dto);
-            events.add(event);
-        }
-        return events;
-    }
-
-    @Override
-    @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
-    public List<ActivityEvent> getPendingListingActivity(Long pendingListingId,
-            Date startDate, Date endDate) throws JsonParseException, IOException, EntityRetrievalException {
-        List<ActivityDTO> pendingListingActivity = activityDAO.findPendingListingActivity(
-                pendingListingId, startDate, endDate);
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_PENDING_LISTING_ACTIVITY)")
+    public List<ActivityEvent> getPendingListingActivity(Long pendingListingId, Date startDate, Date endDate)
+            throws JsonParseException, IOException, EntityRetrievalException {
+        List<ActivityDTO> pendingListingActivity = activityDAO.findPendingListingActivity(pendingListingId, startDate,
+                endDate);
 
         List<ActivityEvent> events = new ArrayList<ActivityEvent>();
         for (ActivityDTO dto : pendingListingActivity) {
@@ -366,20 +368,19 @@ public class ActivityManagerImpl implements ActivityManager {
     @Override
     @Transactional
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    public List<ActivityEvent> getAllUserActivity(Date startDate, Date endDate)
-            throws JsonParseException, IOException {
+    public List<ActivityEvent> getAllUserActivity(Date startDate, Date endDate) throws JsonParseException, IOException {
         return getActivityForConcept(ActivityConcept.ACTIVITY_CONCEPT_USER, startDate, endDate);
     }
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB', 'ROLE_ATL', 'ROLE_CMS_STAFF')")
-    public List<ActivityEvent> getUserActivity(Set<Long> userIds,
-            Date startDate, Date endDate) throws JsonParseException, IOException {
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_USER_ACTIVITY)")
+    public List<ActivityEvent> getUserActivity(Set<Long> userIds, Date startDate, Date endDate)
+            throws JsonParseException, IOException {
         List<Long> userIdList = new ArrayList<Long>();
         userIdList.addAll(userIds);
-        List<ActivityDTO> userActivity =
-                activityDAO.findUserActivity(userIdList, startDate, endDate);
+        List<ActivityDTO> userActivity = activityDAO.findUserActivity(userIdList, startDate, endDate);
 
         List<ActivityEvent> events = new ArrayList<ActivityEvent>();
         for (ActivityDTO dto : userActivity) {
@@ -483,6 +484,5 @@ public class ActivityManagerImpl implements ActivityManager {
         }
         return event;
     }
-
 
 }

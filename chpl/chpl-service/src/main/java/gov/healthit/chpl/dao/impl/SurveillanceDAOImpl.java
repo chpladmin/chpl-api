@@ -45,6 +45,7 @@ import gov.healthit.chpl.entity.surveillance.SurveillanceRequirementTypeEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceResultTypeEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceTypeEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 
 @Repository("surveillanceDAO")
 public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO {
@@ -52,19 +53,21 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 
     private CertificationCriterionDAO criterionDao;
     private UserPermissionDAO userPermissionDao;
+    private ResourcePermissions resourcePermissions;
 
     @Autowired
-    public SurveillanceDAOImpl(final CertificationCriterionDAO criterionDao,
-            final UserPermissionDAO userPermissionDao) {
+    public SurveillanceDAOImpl(final CertificationCriterionDAO criterionDao, final UserPermissionDAO userPermissionDao,
+            final ResourcePermissions resourcePermissions) {
         this.criterionDao = criterionDao;
         this.userPermissionDao = userPermissionDao;
+        this.resourcePermissions = resourcePermissions;
     }
 
     @Override
     public Long insertSurveillance(final Surveillance surv) throws UserPermissionRetrievalException {
         SurveillanceEntity toInsert = new SurveillanceEntity();
         populateSurveillanceEntity(toInsert, surv);
-        toInsert.setLastModifiedUser(Util.getCurrentUser().getId());
+        toInsert.setLastModifiedUser(Util.getAuditId());
         toInsert.setDeleted(false);
         entityManager.persist(toInsert);
         entityManager.flush();
@@ -73,7 +76,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
             SurveillanceRequirementEntity toInsertReq = new SurveillanceRequirementEntity();
             populateSurveillanceRequirementEntity(toInsertReq, req);
             toInsertReq.setSurveillanceId(toInsert.getId());
-            toInsertReq.setLastModifiedUser(Util.getCurrentUser().getId());
+            toInsertReq.setLastModifiedUser(Util.getAuditId());
             toInsertReq.setDeleted(false);
             entityManager.persist(toInsertReq);
             entityManager.flush();
@@ -83,7 +86,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
                 populateSurveillanceNonconformityEntity(toInsertNc, nc);
                 toInsertNc.setSurveillanceRequirementId(toInsertReq.getId());
                 toInsertNc.setDeleted(false);
-                toInsertNc.setLastModifiedUser(Util.getCurrentUser().getId());
+                toInsertNc.setLastModifiedUser(Util.getAuditId());
 
                 entityManager.persist(toInsertNc);
                 entityManager.flush();
@@ -108,7 +111,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
         docEntity.setFileType(doc.getFileType());
         docEntity.setFileName(doc.getFileName());
         docEntity.setDeleted(false);
-        docEntity.setLastModifiedUser(Util.getCurrentUser().getId());
+        docEntity.setLastModifiedUser(Util.getAuditId());
 
         entityManager.persist(docEntity);
         entityManager.flush();
@@ -121,7 +124,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
             throws EntityRetrievalException, UserPermissionRetrievalException {
         SurveillanceEntity oldSurv = fetchSurveillanceById(newSurv.getId());
         populateSurveillanceEntity(oldSurv, newSurv);
-        oldSurv.setLastModifiedUser(Util.getCurrentUser().getId());
+        oldSurv.setLastModifiedUser(Util.getAuditId());
         oldSurv.setDeleted(false);
         entityManager.merge(oldSurv);
         entityManager.flush();
@@ -142,19 +145,19 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
                 for (SurveillanceNonconformityEntity nc : oldReq.getNonconformities()) {
                     if (nc.getDocuments() != null) {
                         for (SurveillanceNonconformityDocumentationEntity ncDoc : nc.getDocuments()) {
-                            ncDoc.setLastModifiedUser(Util.getCurrentUser().getId());
+                            ncDoc.setLastModifiedUser(Util.getAuditId());
                             ncDoc.setDeleted(true);
                             entityManager.merge(ncDoc);
                             entityManager.flush();
                         }
                     }
-                    nc.setLastModifiedUser(Util.getCurrentUser().getId());
+                    nc.setLastModifiedUser(Util.getAuditId());
                     nc.setDeleted(true);
                     entityManager.merge(nc);
                     entityManager.flush();
                 }
                 // delete the req
-                oldReq.setLastModifiedUser(Util.getCurrentUser().getId());
+                oldReq.setLastModifiedUser(Util.getAuditId());
                 oldReq.setDeleted(true);
                 entityManager.merge(oldReq);
                 entityManager.flush();
@@ -168,7 +171,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
                 for (SurveillanceRequirementEntity oldReq : oldSurv.getSurveilledRequirements()) {
                     if (oldReq.getId().longValue() == newReq.getId().longValue()) {
                         populateSurveillanceRequirementEntity(oldReq, newReq);
-                        oldReq.setLastModifiedUser(Util.getCurrentUser().getId());
+                        oldReq.setLastModifiedUser(Util.getAuditId());
                         oldReq.setDeleted(false);
                         entityManager.merge(oldReq);
                         entityManager.flush();
@@ -185,13 +188,13 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
                             if (!isFoundInUpdate) {
                                 if (oldNc.getDocuments() != null) {
                                     for (SurveillanceNonconformityDocumentationEntity ncDoc : oldNc.getDocuments()) {
-                                        ncDoc.setLastModifiedUser(Util.getCurrentUser().getId());
+                                        ncDoc.setLastModifiedUser(Util.getAuditId());
                                         ncDoc.setDeleted(true);
                                         entityManager.merge(ncDoc);
                                         entityManager.flush();
                                     }
                                 }
-                                oldNc.setLastModifiedUser(Util.getCurrentUser().getId());
+                                oldNc.setLastModifiedUser(Util.getAuditId());
                                 oldNc.setDeleted(true);
                                 entityManager.merge(oldNc);
                                 entityManager.flush();
@@ -206,7 +209,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
                                 for (SurveillanceNonconformityEntity oldNc : oldReq.getNonconformities()) {
                                     if (oldNc.getId().longValue() == newNc.getId().longValue()) {
                                         populateSurveillanceNonconformityEntity(oldNc, newNc);
-                                        oldNc.setLastModifiedUser(Util.getCurrentUser().getId());
+                                        oldNc.setLastModifiedUser(Util.getAuditId());
                                         oldNc.setDeleted(false);
                                         entityManager.merge(oldNc);
                                         entityManager.flush();
@@ -218,7 +221,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
                                 populateSurveillanceNonconformityEntity(toInsertNc, newNc);
                                 toInsertNc.setSurveillanceRequirementId(oldReq.getId());
                                 toInsertNc.setDeleted(false);
-                                toInsertNc.setLastModifiedUser(Util.getCurrentUser().getId());
+                                toInsertNc.setLastModifiedUser(Util.getAuditId());
                                 entityManager.persist(toInsertNc);
                                 entityManager.flush();
                             }
@@ -230,7 +233,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
                 SurveillanceRequirementEntity toInsertReq = new SurveillanceRequirementEntity();
                 populateSurveillanceRequirementEntity(toInsertReq, newReq);
                 toInsertReq.setSurveillanceId(oldSurv.getId());
-                toInsertReq.setLastModifiedUser(Util.getCurrentUser().getId());
+                toInsertReq.setLastModifiedUser(Util.getAuditId());
                 toInsertReq.setDeleted(false);
                 entityManager.persist(toInsertReq);
                 entityManager.flush();
@@ -240,7 +243,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
                     populateSurveillanceNonconformityEntity(toInsertNc, nc);
                     toInsertNc.setSurveillanceRequirementId(toInsertReq.getId());
                     toInsertNc.setDeleted(false);
-                    toInsertNc.setLastModifiedUser(Util.getCurrentUser().getId());
+                    toInsertNc.setLastModifiedUser(Util.getAuditId());
 
                     entityManager.persist(toInsertNc);
                     entityManager.flush();
@@ -295,9 +298,9 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
     }
 
     private Long getSurveillanceAuthority() throws UserPermissionRetrievalException {
-        if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
+        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
             return userPermissionDao.getIdFromAuthority(Authority.ROLE_ONC);
-        } else if (Util.isUserRoleAcbAdmin()) {
+        } else if (resourcePermissions.isUserRoleAcbAdmin()) {
             return userPermissionDao.getIdFromAuthority(Authority.ROLE_ACB);
         } else {
             return null;
@@ -318,7 +321,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
         if (surv.getType() != null) {
             toInsert.setSurveillanceType(surv.getType().getName());
         }
-        toInsert.setLastModifiedUser(Util.getCurrentUser().getId());
+        toInsert.setLastModifiedUser(Util.getAuditId());
         toInsert.setDeleted(false);
         toInsert.setUserPermissionId(getSurveillanceAuthority());
 
@@ -331,7 +334,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
             valEntity.setPendingSurveillanceId(toInsert.getId());
             valEntity.setMessage(errorMessage);
             valEntity.setDeleted(false);
-            valEntity.setLastModifiedUser(Util.getCurrentUser().getId());
+            valEntity.setLastModifiedUser(Util.getAuditId());
             entityManager.persist(valEntity);
             entityManager.flush();
         }
@@ -346,7 +349,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
             }
             toInsertReq.setSurveilledRequirement(req.getRequirement());
             toInsertReq.setPendingSurveillanceId(toInsert.getId());
-            toInsertReq.setLastModifiedUser(Util.getCurrentUser().getId());
+            toInsertReq.setLastModifiedUser(Util.getAuditId());
             toInsertReq.setDeleted(false);
 
             entityManager.persist(toInsertReq);
@@ -372,7 +375,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
                 toInsertNc.setTotalSites(nc.getTotalSites());
                 toInsertNc.setType(nc.getNonconformityType());
                 toInsertNc.setDeleted(false);
-                toInsertNc.setLastModifiedUser(Util.getCurrentUser().getId());
+                toInsertNc.setLastModifiedUser(Util.getAuditId());
 
                 entityManager.persist(toInsertNc);
                 entityManager.flush();
@@ -392,7 +395,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
             throw new EntityRetrievalException(msg);
         }
         doc.setDeleted(true);
-        doc.setLastModifiedUser(Util.getCurrentUser().getId());
+        doc.setLastModifiedUser(Util.getAuditId());
         entityManager.merge(doc);
         entityManager.flush();
     }
@@ -408,25 +411,25 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
                         if (ncToDelete.getDocuments() != null) {
                             for (SurveillanceNonconformityDocumentationEntity docToDelete : ncToDelete.getDocuments()) {
                                 docToDelete.setDeleted(true);
-                                docToDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+                                docToDelete.setLastModifiedUser(Util.getAuditId());
                                 entityManager.merge(docToDelete);
                                 entityManager.flush();
                             }
                         }
                         ncToDelete.setDeleted(true);
-                        ncToDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+                        ncToDelete.setLastModifiedUser(Util.getAuditId());
                         entityManager.merge(ncToDelete);
                         entityManager.flush();
                     }
                 }
                 reqToDelete.setDeleted(true);
-                reqToDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+                reqToDelete.setLastModifiedUser(Util.getAuditId());
                 entityManager.merge(reqToDelete);
                 entityManager.flush();
             }
         }
         toDelete.setDeleted(true);
-        toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+        toDelete.setLastModifiedUser(Util.getAuditId());
         entityManager.merge(toDelete);
         entityManager.flush();
     }
@@ -438,7 +441,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
         if (toDelete.getValidation() != null) {
             for (PendingSurveillanceValidationEntity val : toDelete.getValidation()) {
                 val.setDeleted(true);
-                val.setLastModifiedUser(Util.getCurrentUser().getId());
+                val.setLastModifiedUser(Util.getAuditId());
                 entityManager.merge(val);
                 entityManager.flush();
             }
@@ -449,19 +452,19 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
                 if (reqToDelete.getNonconformities() != null) {
                     for (PendingSurveillanceNonconformityEntity ncToDelete : reqToDelete.getNonconformities()) {
                         ncToDelete.setDeleted(true);
-                        ncToDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+                        ncToDelete.setLastModifiedUser(Util.getAuditId());
                         entityManager.merge(ncToDelete);
                         entityManager.flush();
                     }
                 }
                 reqToDelete.setDeleted(true);
-                reqToDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+                reqToDelete.setLastModifiedUser(Util.getAuditId());
                 entityManager.merge(reqToDelete);
                 entityManager.flush();
             }
         }
         toDelete.setDeleted(true);
-        toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+        toDelete.setLastModifiedUser(Util.getAuditId());
         entityManager.merge(toDelete);
         entityManager.flush();
     }

@@ -48,7 +48,7 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
             entity.setDeleted(dto.getDeleted());
             entity.setDescription(dto.getDescription());
             entity.setLastModifiedDate(new Date());
-            entity.setLastModifiedUser(Util.getCurrentUser().getId());
+            entity.setLastModifiedUser(Util.getAuditId());
             entity.setNumber(dto.getNumber());
             entity.setRequiresSed(dto.getRequiresSed());
             entity.setTitle(dto.getTitle());
@@ -72,7 +72,7 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
         entity.setDeleted(dto.getDeleted());
         entity.setDescription(dto.getDescription());
         entity.setId(dto.getId());
-        entity.setLastModifiedUser(Util.getCurrentUser().getId());
+        entity.setLastModifiedUser(Util.getAuditId());
         entity.setNumber(dto.getNumber());
         entity.setRequiresSed(dto.getRequiresSed());
         entity.setTitle(dto.getTitle());

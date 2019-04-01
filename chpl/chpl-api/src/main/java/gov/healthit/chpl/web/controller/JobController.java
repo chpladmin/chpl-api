@@ -18,6 +18,7 @@ import gov.healthit.chpl.domain.Job;
 import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.JobManager;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.web.controller.results.JobResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -30,6 +31,9 @@ public class JobController {
     private static final Logger LOGGER = LogManager.getLogger(JobController.class);
     @Autowired
     private JobManager jobManager;
+    
+    @Autowired
+    private ResourcePermissions resourcePermissions;
 
     @ApiOperation(value = "Get the list of all jobs currently running in the system and those"
             + "that have completed within a configurable amount of time (usually a short window like the last 7 days).")
@@ -37,7 +41,7 @@ public class JobController {
     @PreAuthorize("isAuthenticated()")
     public @ResponseBody JobResults getAllJobs() throws EntityRetrievalException {
         List<JobDTO> jobDtos = null;
-        if (Util.isUserRoleAdmin() || Util.isUserRoleOnc()) {
+        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
             jobDtos = jobManager.getAllJobs();
         } else {
             UserDTO currentUser = new UserDTO();

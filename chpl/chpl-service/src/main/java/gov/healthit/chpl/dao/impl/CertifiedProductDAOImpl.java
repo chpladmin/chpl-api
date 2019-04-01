@@ -110,7 +110,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
             if (dto.getLastModifiedUser() != null) {
                 entity.setLastModifiedUser(dto.getLastModifiedUser());
             } else {
-                entity.setLastModifiedUser(Util.getCurrentUser().getId());
+                entity.setLastModifiedUser(Util.getAuditId());
             }
 
             try {
@@ -155,7 +155,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
         entity.setProductVersionId(dto.getProductVersionId());
 
         entity.setLastModifiedDate(new Date());
-        entity.setLastModifiedUser(Util.getCurrentUser().getId());
+        entity.setLastModifiedUser(Util.getAuditId());
         try {
             update(entity);
         } catch (Exception ex) {

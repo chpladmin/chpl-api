@@ -36,9 +36,8 @@ import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.domain.schedule.ChplRepeatableTrigger;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.SchedulerManager;
-import gov.healthit.chpl.permissions.Permissions;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.scheduler.ChplSchedulerReference;
 
 /**
@@ -48,25 +47,24 @@ import gov.healthit.chpl.scheduler.ChplSchedulerReference;
  *
  */
 @Service
-public class SchedulerManagerImpl implements SchedulerManager {
+public class SchedulerManagerImpl extends SecuredManager implements SchedulerManager {
 
     private static final String AUTHORITY_DELIMITER = ";";
     private static final String DATA_DELIMITER = "\u263A";
 
     private ChplSchedulerReference chplScheduler;
-    private CertificationBodyManager acbManager;
-    private Permissions permissions;
+    private ResourcePermissions resourcePermissions;
 
     @Autowired
-    public SchedulerManagerImpl(final ChplSchedulerReference chplScheduler, final CertificationBodyManager acbManager,
-            final Permissions permissions) {
+
+    public SchedulerManagerImpl(final ChplSchedulerReference chplScheduler, ResourcePermissions resourcePermissions) {
         this.chplScheduler = chplScheduler;
-        this.acbManager = acbManager;
-        this.permissions = permissions;
+        this.resourcePermissions = resourcePermissions;
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
+            + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).CREATE_TRIGGER)")
     public ChplRepeatableTrigger createTrigger(final ChplRepeatableTrigger trigger)
             throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
@@ -117,7 +115,8 @@ public class SchedulerManagerImpl implements SchedulerManager {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ONC', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
+            + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).DELETE_TRIGGER)")
     public void deleteTrigger(final String triggerGroup, final String triggerName)
             throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
@@ -131,7 +130,8 @@ public class SchedulerManagerImpl implements SchedulerManager {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ONC', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
+            + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).GET_ALL_TRIGGERS)")
     public List<ChplRepeatableTrigger> getAllTriggers() throws SchedulerException {
         ArrayList<ChplRepeatableTrigger> triggers = new ArrayList<ChplRepeatableTrigger>();
         Scheduler scheduler = getScheduler();
@@ -151,7 +151,8 @@ public class SchedulerManagerImpl implements SchedulerManager {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
+            + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).UPDATE_TRIGGER)")
     public ChplRepeatableTrigger updateTrigger(final ChplRepeatableTrigger trigger)
             throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
@@ -179,15 +180,14 @@ public class SchedulerManagerImpl implements SchedulerManager {
     /*
      * (non-Javadoc)
      * 
-     * @see gov.healthit.chpl.manager.SchedulerManager#getAllJobs() As new jobs
-     * are added that have authorities other than ROLE_ADMIN, those authorities
-     * will need to be added to the list.
+     * @see gov.healthit.chpl.manager.SchedulerManager#getAllJobs() As new jobs are added that have authorities other than
+     * ROLE_ADMIN, those authorities will need to be added to the list.
      */
     @Override
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
             + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).GET_ALL)")
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
-            + "T(gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions).GET_ALL, filterObject)")
+            + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).GET_ALL, filterObject)")
     public List<ChplJob> getAllJobs() throws SchedulerException {
         List<ChplJob> jobs = new ArrayList<ChplJob>();
         Scheduler scheduler = getScheduler();
@@ -206,7 +206,8 @@ public class SchedulerManagerImpl implements SchedulerManager {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ONC', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
+            + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).UPDATE_JOB)")
     public ChplJob updateJob(final ChplJob job) throws SchedulerException {
         Scheduler scheduler = getScheduler();
         JobKey jobId = jobKey(job.getName(), job.getGroup());
@@ -242,7 +243,8 @@ public class SchedulerManagerImpl implements SchedulerManager {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
+            + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).UPDATE_ACB_NAME)")
     public void changeAcbName(final String oldAcb, final String newAcb) throws SchedulerException, ValidationException {
         List<ChplRepeatableTrigger> allTriggers = getAllTriggers();
         for (ChplRepeatableTrigger trigger : allTriggers) {
@@ -300,7 +302,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
         if (doesUserHavePermissionToJob(getScheduler().getJobDetail(trigger.getJobKey()))) {
             if (!StringUtils.isEmpty(trigger.getJobDataMap().getString("acb"))) {
                 // get acbs user has access to
-                List<CertificationBodyDTO> validAcbs = acbManager.getAllForUser();
+                List<CertificationBodyDTO> validAcbs = resourcePermissions.getAllAcbsForCurrentUser();
                 for (String acb : trigger.getJobDataMap().getString("acb").split(DATA_DELIMITER)) {
                     boolean found = false;
                     for (CertificationBodyDTO validAcb : validAcbs) {

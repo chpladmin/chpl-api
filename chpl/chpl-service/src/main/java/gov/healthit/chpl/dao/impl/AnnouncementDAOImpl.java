@@ -68,7 +68,7 @@ public class AnnouncementDAOImpl extends BaseDAOImpl implements AnnouncementDAO 
             if (dto.getLastModifiedUser() != null) {
                 entity.setLastModifiedUser(dto.getLastModifiedUser());
             } else {
-                entity.setLastModifiedUser(Util.getCurrentUser().getId());
+                entity.setLastModifiedUser(Util.getAuditId());
             }
 
             if (dto.getLastModifiedDate() != null) {
@@ -125,7 +125,7 @@ public class AnnouncementDAOImpl extends BaseDAOImpl implements AnnouncementDAO 
         if (dto.getLastModifiedUser() != null) {
             entity.setLastModifiedUser(dto.getLastModifiedUser());
         } else {
-            entity.setLastModifiedUser(Util.getCurrentUser().getId());
+            entity.setLastModifiedUser(Util.getAuditId());
         }
 
         if (dto.getLastModifiedDate() != null) {
