@@ -1527,8 +1527,7 @@
         product_classification_id="1"
         creation_date="2016-04-01 23:46:27.707"
         last_modified_date="2016-06-07 15:49:23.117772"
-        last_modified_user="1" deleted="true"
-        certification_status_id="3" />
+        last_modified_user="1" deleted="true" />
     <pending_certified_product
         pending_certified_product_id="-2"
         unique_id="15.04.04.2315.SESD.02.0.0.170217" record_status="New"
@@ -1558,8 +1557,7 @@
         product_classification_id="1"
         creation_date="2016-04-01 23:46:27.707"
         last_modified_date="2016-06-07 15:49:23.117772"
-        last_modified_user="1" deleted="false"
-        certification_status_id="3" />
+        last_modified_user="1" deleted="false" />
 
     <pending_certified_product_testing_lab_map
         id="-1" pending_certified_product_id="-1" testing_lab_id="-1"
