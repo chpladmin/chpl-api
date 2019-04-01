@@ -77,10 +77,6 @@ public class PendingCertifiedProductEntity {
     @Column(name = "product_classification_id")
     private Long productClassificationId;
 
-    @Basic(optional = false)
-    @Column(name = "certification_status_id", nullable = false)
-    private Long status;
-
     /**
      * fields directly from the spreadsheet
      **/
@@ -513,14 +509,6 @@ public class PendingCertifiedProductEntity {
 
     public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
-    }
-
-    public Long getStatus() {
-        return status;
-    }
-
-    public void setStatus(final Long status) {
-        this.status = status;
     }
 
     public Boolean getIcs() {

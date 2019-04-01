@@ -69,7 +69,6 @@ public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler
 
     public PendingCertifiedProductEntity handle() {
         PendingCertifiedProductEntity pendingCertifiedProduct = new PendingCertifiedProductEntity();
-        pendingCertifiedProduct.setStatus(getDefaultStatusId());
 
         // get the first row of the certified product
         for (CSVRecord record : getRecord()) {

@@ -36,13 +36,6 @@ public interface PendingCertifiedProductDAO {
     List<PendingCertifiedProductDTO> findAll();
 
     /**
-     * Return all pending Certified Products with a given status.
-     * @param statusId the status id
-     * @return DTOs of the Products
-     */
-    List<PendingCertifiedProductDTO> findByStatus(Long statusId);
-
-    /**
      * Retrieve a pending Certified Product by CHPL ID.
      * @param id the CHPL ID
      * @return the pending Certified Product
