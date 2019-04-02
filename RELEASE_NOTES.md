@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version 20.7.0
+_1 April 2019_
+
+### Refactoring Changes
+* Removed unused references to certification status in pending listing objects.
+
+---
+
 ## Version 20.6.0
 _27 March 2019_
 

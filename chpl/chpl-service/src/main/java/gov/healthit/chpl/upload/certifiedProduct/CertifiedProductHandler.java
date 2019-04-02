@@ -19,7 +19,6 @@ import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
-import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.PracticeTypeDTO;
@@ -61,15 +60,6 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         return String.format(
                 messageSource.getMessage(new DefaultMessageSourceResolvable(errorField),
                         LocaleContextHolder.getLocale()));
-    }
-
-    @Override
-    public Long getDefaultStatusId() {
-        CertificationStatusDTO statusDto = statusDao.getByStatusName("Pending");
-        if (statusDto != null) {
-            return statusDto.getId();
-        }
-        return null;
     }
 
     protected void parseUniqueId(final PendingCertifiedProductEntity pendingCertifiedProduct, final CSVRecord record) {
