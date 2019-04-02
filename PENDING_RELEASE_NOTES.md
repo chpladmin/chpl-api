@@ -3,6 +3,8 @@
 _Date TBD_
 
 ### New features
+* Add /system-status API call which returns the combined server up/down status and the cache initliazing/ok status.
+* Deprecated /status and /cache_status API calls. Will be removed in a future release.
 * Add new API call /certified_products/pending/metadata for high-level information about pending listings. /certified_products/pending is now deprecated.
 * Add new endpoints for activity metadata for lisings, developers, products, and versions. Endpoints are:
   * /activity/metadata/listings
