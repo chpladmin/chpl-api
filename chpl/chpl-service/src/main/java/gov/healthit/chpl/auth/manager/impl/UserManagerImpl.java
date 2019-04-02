@@ -264,8 +264,7 @@ public class UserManagerImpl implements UserManager {
         Date checkDate = userResetToken.getCreationDate();
         Instant now = Instant.now();
         return (!checkDate.toInstant().isBefore(
-                now.minus(Integer.parseInt(env.getProperty("resetLinkExpirationTimeInHours")), ChronoUnit.HOURS)))
-                && ((checkDate.toInstant().isBefore(now) || checkDate.toInstant().equals(now)));
+                now.minus(Integer.parseInt(env.getProperty("resetLinkExpirationTimeInHours")), ChronoUnit.HOURS)));
     }
 
     @Transactional
