@@ -516,19 +516,6 @@ throws EntityCreationException {
     }
 
     @Override
-    @Transactional
-    public List<PendingCertifiedProductDTO> findByStatus(final Long statusId) {
-        List<PendingCertifiedProductEntity> entities = getEntitiesByStatus(statusId);
-        List<PendingCertifiedProductDTO> dtos = new ArrayList<>();
-
-        for (PendingCertifiedProductEntity entity : entities) {
-            PendingCertifiedProductDTO dto = new PendingCertifiedProductDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
-    }
-
-    @Override
     public PendingCertifiedProductDTO findById(final Long pcpId, final boolean includeDeleted)
             throws EntityRetrievalException {
         PendingCertifiedProductEntity entity = getEntityById(pcpId, includeDeleted);
@@ -636,18 +623,6 @@ throws EntityCreationException {
                                 + " where (certification_body_id = :acbId) " + " and not (pcp.deleted = true)",
                                 PendingCertifiedProductEntity.class);
         query.setParameter("acbId", acbId);
-        List<PendingCertifiedProductEntity> result = query.getResultList();
-        return result;
-    }
-
-    private List<PendingCertifiedProductEntity> getEntitiesByStatus(final Long statusId) {
-
-        Query query = entityManager
-                .createQuery(
-                        "SELECT pcp from PendingCertifiedProductEntity pcp "
-                                + " where (certification_status_id = :statusId) " + " and not (pcp.deleted = true)",
-                                PendingCertifiedProductEntity.class);
-        query.setParameter("statusId", statusId);
         List<PendingCertifiedProductEntity> result = query.getResultList();
         return result;
     }

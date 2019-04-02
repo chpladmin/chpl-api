@@ -16,4 +16,7 @@ _Date TBD_
 * Add new activity details endpoint to get the detailed activity json
   * /activity/details/{id}
 
+### Bug Fixes
+* Upload surveillance job properly runs when there is an invalid CHPL Product Number in the upload file
+
 ---
