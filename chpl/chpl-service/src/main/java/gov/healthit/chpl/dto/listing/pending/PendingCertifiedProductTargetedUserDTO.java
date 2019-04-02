@@ -1,26 +1,26 @@
-package gov.healthit.chpl.dto;
+package gov.healthit.chpl.dto.listing.pending;
 
 import java.io.Serializable;
 
-import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductAccessibilityStandardEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTargetedUserEntity;
 
-public class PendingCertifiedProductAccessibilityStandardDTO implements Serializable {
-    private static final long serialVersionUID = 3848620066733249423L;
+public class PendingCertifiedProductTargetedUserDTO implements Serializable {
+    private static final long serialVersionUID = 8450020346312080499L;
     private Long id;
     private Long pendingCertifiedProductId;
-    private Long accessibilityStandardId;
+    private Long targetedUserId;
     private String name;
 
-    public PendingCertifiedProductAccessibilityStandardDTO() {
+    public PendingCertifiedProductTargetedUserDTO() {
     }
 
-    public PendingCertifiedProductAccessibilityStandardDTO(PendingCertifiedProductAccessibilityStandardEntity entity) {
+    public PendingCertifiedProductTargetedUserDTO(PendingCertifiedProductTargetedUserEntity entity) {
         this.setId(entity.getId());
 
         if (entity.getMappedProduct() != null) {
             this.setPendingCertifiedProductId(entity.getMappedProduct().getId());
         }
-        this.setAccessibilityStandardId(entity.getAccessibilityStandardId());
+        this.setTargetedUserId(entity.getTargetedUserId());
         this.setName(entity.getName());
     }
 
@@ -48,11 +48,11 @@ public class PendingCertifiedProductAccessibilityStandardDTO implements Serializ
         this.name = name;
     }
 
-    public Long getAccessibilityStandardId() {
-        return accessibilityStandardId;
+    public Long getTargetedUserId() {
+        return targetedUserId;
     }
 
-    public void setAccessibilityStandardId(final Long accessibilityStandardId) {
-        this.accessibilityStandardId = accessibilityStandardId;
+    public void setTargetedUserId(final Long targetedUserId) {
+        this.targetedUserId = targetedUserId;
     }
 }

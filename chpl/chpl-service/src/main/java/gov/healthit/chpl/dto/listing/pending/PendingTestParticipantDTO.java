@@ -1,7 +1,9 @@
-package gov.healthit.chpl.dto;
+package gov.healthit.chpl.dto.listing.pending;
 
 import java.io.Serializable;
 
+import gov.healthit.chpl.dto.AgeRangeDTO;
+import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.entity.listing.pending.PendingTestParticipantEntity;
 
 public class PendingTestParticipantDTO implements Serializable {

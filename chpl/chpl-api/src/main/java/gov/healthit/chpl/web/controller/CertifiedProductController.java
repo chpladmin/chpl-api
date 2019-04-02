@@ -51,11 +51,13 @@ import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.IdListContainer;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
+import gov.healthit.chpl.domain.PendingCertifiedProductMetadata;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductMetadataDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -66,7 +68,6 @@ import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.exception.ObjectsMissingValidationException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
-import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
@@ -137,8 +138,7 @@ public class CertifiedProductController {
 
     @Autowired
     private ChplProductNumberUtil chplProductNumberUtil;
-    
-    
+
     /**
      * List all certified products.
      * @param versionId if entered, filters list to only listings under given version
@@ -690,12 +690,35 @@ public class CertifiedProductController {
     }
 
     /**
+     * Get metadata for all pending listing that the user has access to.
+     * @return list of pending listing metadata.
+     * @throws AccessDeniedException if user doesn't have access
+     */
+    @ApiOperation(value = "Get metadata for all pending listings the user has access to.",
+            notes = "Pending listings are created via CSV file upload and are left in the 'pending' state "
+                    + " until validated and confirmed.  Security Restrictions: ROLE_ADMIN, ROLE_ACB and have "
+                    + "administrative authority on the ACB that uploaded the product.")
+    @RequestMapping(value = "/pending/metadata", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<PendingCertifiedProductMetadata> getPendingCertifiedProductMetadata()
+            throws AccessDeniedException {
+
+        List<PendingCertifiedProductMetadataDTO> metadataDtos = pcpManager.getAllPendingCertifiedProductMetadata();
+
+        List<PendingCertifiedProductMetadata> result = new ArrayList<PendingCertifiedProductMetadata>();
+        for (PendingCertifiedProductMetadataDTO metadataDto : metadataDtos) {
+            result.add(new PendingCertifiedProductMetadata(metadataDto));
+        }
+        return result;
+    }
+
+    /**
      * Get all pending Certified Products.
      * @return list of pending Listings
      * @throws EntityRetrievalException if cannot retrieve entity
      * @throws AccessDeniedException if user doesn't have access
      */
-    @ApiOperation(value = "List pending certified products.",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED. List pending certified products.",
             notes = "Pending certified products are created via CSV file upload and are left in the 'pending' state "
                     + " until validated and approved.  Security Restrictions: ROLE_ADMIN, ROLE_ACB and have "
                     + "administrative authority on the ACB that uploaded the product.")

@@ -17,7 +17,7 @@ import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.domain.activity.ActivityDetails;
 import gov.healthit.chpl.dto.AnnouncementDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
