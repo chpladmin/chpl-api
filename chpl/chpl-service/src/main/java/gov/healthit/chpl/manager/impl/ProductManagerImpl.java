@@ -125,8 +125,7 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
 
         ProductDTO result = productDao.create(dto);
         String activityMsg = "Product " + dto.getName() + " was created.";
-        activityManager.addActivity(ActivityConcept.PRODUCT, result.getId(), activityMsg, null,
-                result);
+        activityManager.addActivity(ActivityConcept.PRODUCT, result.getId(), activityMsg, null, result);
         return getById(result.getId());
     }
 
@@ -169,15 +168,15 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
         result.setDeveloperName(devDto.getName());
 
         String activityMsg = "Product " + dto.getName() + " was updated.";
-        activityManager.addActivity(ActivityConcept.PRODUCT, result.getId(), activityMsg, beforeDTO,
-                result);
+        activityManager.addActivity(ActivityConcept.PRODUCT, result.getId(), activityMsg, beforeDTO, result);
         return result;
 
     }
 
     @Override
     @Transactional(readOnly = false)
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
+            + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).MERGE)")
     public ProductDTO merge(final List<Long> productIdsToMerge, final ProductDTO toCreate)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 
@@ -220,8 +219,8 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
 
         String activityMsg = "Merged " + productIdsToMerge.size() + " products into new product '"
                 + createdProduct.getName() + "'.";
-        activityManager.addActivity(ActivityConcept.PRODUCT, createdProduct.getId(), activityMsg,
-                beforeProducts, createdProduct);
+        activityManager.addActivity(ActivityConcept.PRODUCT, createdProduct.getId(), activityMsg, beforeProducts,
+                createdProduct);
 
         return createdProduct;
     }
@@ -232,7 +231,7 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
             AccessDeniedException.class
     })
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
-            + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).SPLIT)")
+            + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).SPLIT, #oldProduct)")
     public ProductDTO split(final ProductDTO oldProduct, final ProductDTO productToCreate, final String newProductCode,
             final List<ProductVersionDTO> newProductVersions)
             throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
@@ -254,8 +253,8 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
             versionDao.update(affectedVersion);
             ProductVersionDTO afterVersion = versionDao.getById(affectedVersion.getId());
             activityManager.addActivity(
-                    ActivityConcept.VERSION, afterVersion.getId(), "Product Version "
-                            + afterVersion.getVersion() + " product owner updated to " + afterVersion.getProductName(),
+                    ActivityConcept.VERSION, afterVersion.getId(), "Product Version " + afterVersion.getVersion()
+                            + " product owner updated to " + afterVersion.getProductName(),
                     beforeVersion, afterVersion);
             affectedVersionIds.add(affectedVersion.getId());
         }
@@ -276,9 +275,9 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
                 }
             }
             if (!hasAccessToAcb) {
-                    throw new AccessDeniedException(msgUtil.getMessage("acb.accessDenied.listingUpdate",
-                            beforeProduct.getChplProductNumber(),
-                            beforeProduct.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY)));
+                throw new AccessDeniedException(
+                        msgUtil.getMessage("acb.accessDenied.listingUpdate", beforeProduct.getChplProductNumber(),
+                                beforeProduct.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY)));
             }
 
             // make sure the updated CHPL product number is unique and that the
