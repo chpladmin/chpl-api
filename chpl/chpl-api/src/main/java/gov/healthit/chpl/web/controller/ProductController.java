@@ -171,29 +171,9 @@ public class ProductController {
             }
         } else {
             if (productInfo.getProductIds().size() > 1) {
-                // if a product was sent in, we need to do a "merge" of the new
-                // product and old products
-                // create a new product with the rest of the passed in
-                // information
-                ProductDTO newProduct = new ProductDTO();
-                newProduct.setName(productInfo.getProduct().getName());
-                newProduct.setReportFileLocation(productInfo.getProduct().getReportFileLocation());
-                if (productInfo.getNewDeveloperId() != null) {
-                    newProduct.setDeveloperId(productInfo.getNewDeveloperId());
-                }
-                // new product could be created with ownership history
-                if (productInfo.getProduct().getOwnerHistory() != null) {
-                    for (ProductOwner prevOwner : productInfo.getProduct().getOwnerHistory()) {
-                        ProductOwnerDTO prevOwnerDTO = new ProductOwnerDTO();
-                        prevOwnerDTO.setId(prevOwner.getId());
-                        DeveloperDTO dev = new DeveloperDTO();
-                        dev.setId(prevOwner.getDeveloper().getDeveloperId());
-                        prevOwnerDTO.setDeveloper(dev);
-                        prevOwnerDTO.setTransferDate(prevOwner.getTransferDate());
-                        newProduct.getOwnerHistory().add(prevOwnerDTO);
-                    }
-                }
-                result = productManager.merge(productInfo.getProductIds(), newProduct);
+                // if a product was sent in, we need to do a "merge" of the new product and old products create a new 
+                // product with the rest of the passed in information
+                result = mergeProducts(productInfo);
                 responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
             } else if (productInfo.getProductIds().size() == 1) {
                 if (productInfo.getNewDeveloperId() != null) {
@@ -413,6 +393,28 @@ public class ProductController {
         return new ResponseEntity<SplitProductResponse>(response, responseHeaders, HttpStatus.OK);
     }
 
+    private ProductDTO mergeProducts(final UpdateProductsRequest productInfo) throws JsonProcessingException, EntityRetrievalException, EntityCreationException {
+        ProductDTO newProduct = new ProductDTO();
+        newProduct.setName(productInfo.getProduct().getName());
+        newProduct.setReportFileLocation(productInfo.getProduct().getReportFileLocation());
+        if (productInfo.getNewDeveloperId() != null) {
+            newProduct.setDeveloperId(productInfo.getNewDeveloperId());
+        }
+        // new product could be created with ownership history
+        if (productInfo.getProduct().getOwnerHistory() != null) {
+            for (ProductOwner prevOwner : productInfo.getProduct().getOwnerHistory()) {
+                ProductOwnerDTO prevOwnerDTO = new ProductOwnerDTO();
+                prevOwnerDTO.setId(prevOwner.getId());
+                DeveloperDTO dev = new DeveloperDTO();
+                dev.setId(prevOwner.getDeveloper().getDeveloperId());
+                prevOwnerDTO.setDeveloper(dev);
+                prevOwnerDTO.setTransferDate(prevOwner.getTransferDate());
+                newProduct.getOwnerHistory().add(prevOwnerDTO);
+            }
+        }
+        return productManager.merge(productInfo.getProductIds(), newProduct);
+    }
+    
     private class DuplicateChplProdNumber {
         private String origChplProductNumberA;
         private String origChplProductNumberB;
