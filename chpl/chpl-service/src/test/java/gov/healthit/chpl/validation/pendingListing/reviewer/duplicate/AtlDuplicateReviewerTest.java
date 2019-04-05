@@ -16,8 +16,8 @@ import org.springframework.context.MessageSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
-import gov.healthit.chpl.dto.PendingCertifiedProductTestingLabDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductTestingLabDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)

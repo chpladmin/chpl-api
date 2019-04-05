@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.dto.PendingCertificationResultDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 
 /**
  * Utilities used to validate various basic elements of CHPL domain objects.

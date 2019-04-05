@@ -1,7 +1,8 @@
-package gov.healthit.chpl.dto;
+package gov.healthit.chpl.dto.listing.pending;
 
 import java.io.Serializable;
 
+import gov.healthit.chpl.dto.TestProcedureDTO;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestProcedureEntity;
 
 public class PendingCertificationResultTestProcedureDTO implements Serializable {
