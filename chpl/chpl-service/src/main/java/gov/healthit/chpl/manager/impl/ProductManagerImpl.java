@@ -132,45 +132,21 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
     @Override
     @Transactional(readOnly = false)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
-            + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).UPDATE)")
+            + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).UPDATE_OWNERSHIP, #dto)")
+    public ProductDTO updateProductOwnership(final ProductDTO dto)
+            throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+        // This method was created to provide different security than the update() method
+        // even though it is the same functionality...
+        return updateProduct(dto);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
+            + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).UPDATE, #dto)")
     public ProductDTO update(final ProductDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
-
-        ProductDTO beforeDTO = productDao.getById(dto.getId());
-
-        // check that the developer of this product is Active
-        if (beforeDTO.getDeveloperId() == null) {
-            throw new EntityCreationException("Cannot update a product without a developer ID.");
-        }
-
-        DeveloperDTO dev = devDao.getById(beforeDTO.getDeveloperId());
-        if (dev == null) {
-            throw new EntityRetrievalException("Cannot find developer with id " + beforeDTO.getDeveloperId());
-        }
-        DeveloperStatusEventDTO currDevStatus = dev.getStatus();
-        if (currDevStatus == null || currDevStatus.getStatus() == null) {
-            String msg = "The product " + dto.getName() + " cannot be updated since the status of developer "
-                    + dev.getName() + " cannot be determined.";
-            LOGGER.error(msg);
-            throw new EntityCreationException(msg);
-        } else if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
-                && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
-            String msg = "The product " + dto.getName() + " cannot be updated since the developer " + dev.getName()
-                    + " has a status of " + currDevStatus.getStatus().getStatusName();
-            LOGGER.error(msg);
-            throw new EntityCreationException(msg);
-        }
-
-        ProductDTO result = productDao.update(dto);
-        // the developer name is not updated at this point until after
-        // transaction commit so we have to set it
-        DeveloperDTO devDto = devDao.getById(result.getDeveloperId());
-        result.setDeveloperName(devDto.getName());
-
-        String activityMsg = "Product " + dto.getName() + " was updated.";
-        activityManager.addActivity(ActivityConcept.PRODUCT, result.getId(), activityMsg, beforeDTO, result);
-        return result;
-
+        return updateProduct(dto);
     }
 
     @Override
@@ -311,4 +287,44 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
 
         return getById(createdProduct.getId());
     }
+
+    private ProductDTO updateProduct(final ProductDTO dto)
+            throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+
+        ProductDTO beforeDTO = productDao.getById(dto.getId());
+
+        // check that the developer of this product is Active
+        if (beforeDTO.getDeveloperId() == null) {
+            throw new EntityCreationException("Cannot update a product without a developer ID.");
+        }
+
+        DeveloperDTO dev = devDao.getById(beforeDTO.getDeveloperId());
+        if (dev == null) {
+            throw new EntityRetrievalException("Cannot find developer with id " + beforeDTO.getDeveloperId());
+        }
+        DeveloperStatusEventDTO currDevStatus = dev.getStatus();
+        if (currDevStatus == null || currDevStatus.getStatus() == null) {
+            String msg = "The product " + dto.getName() + " cannot be updated since the status of developer "
+                    + dev.getName() + " cannot be determined.";
+            LOGGER.error(msg);
+            throw new EntityCreationException(msg);
+        } else if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
+                && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
+            String msg = "The product " + dto.getName() + " cannot be updated since the developer " + dev.getName()
+                    + " has a status of " + currDevStatus.getStatus().getStatusName();
+            LOGGER.error(msg);
+            throw new EntityCreationException(msg);
+        }
+
+        ProductDTO result = productDao.update(dto);
+        // the developer name is not updated at this point until after
+        // transaction commit so we have to set it
+        DeveloperDTO devDto = devDao.getById(result.getDeveloperId());
+        result.setDeveloperName(devDto.getName());
+
+        String activityMsg = "Product " + dto.getName() + " was updated.";
+        activityManager.addActivity(ActivityConcept.PRODUCT, result.getId(), activityMsg, beforeDTO, result);
+        return result;
+    }
+
 }

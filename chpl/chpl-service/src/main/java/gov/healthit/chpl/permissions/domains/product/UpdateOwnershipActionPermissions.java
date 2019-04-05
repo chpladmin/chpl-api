@@ -1,20 +1,27 @@
 package gov.healthit.chpl.permissions.domains.product;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
-@Component("productUpdateActionPermissions")
-public class UpdateActionPermissions extends ActionPermissions {
+@Component("productUpdateOwnershipActionPermissions")
+public class UpdateOwnershipActionPermissions extends ActionPermissions {
 
     @Autowired
     private DeveloperDAO developerDao;
+
+    @Autowired
+    private CertifiedProductDAO certifiedProductDao;
 
     @Override
     public boolean hasAccess() {
@@ -29,10 +36,24 @@ public class UpdateActionPermissions extends ActionPermissions {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             ProductDTO dto = (ProductDTO) obj;
-            return isDeveloperActive(dto.getDeveloperId());
+            if (isDeveloperActive(dto.getDeveloperId())) {
+                return doesCurrentUserHaveAccessToAllOfDevelopersListings(dto.getDeveloperId());
+            } else {
+                return false;
+            }
         } else {
             return false;
         }
+    }
+
+    private boolean doesCurrentUserHaveAccessToAllOfDevelopersListings(Long developerId) {
+        List<CertifiedProductDetailsDTO> cpDtos = certifiedProductDao.findByDeveloperId(developerId);
+        for (CertifiedProductDetailsDTO cpDto : cpDtos) {
+            if (!isAcbValidForCurrentUser(cpDto.getCertificationBodyId())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private boolean isDeveloperActive(Long developerId) {
