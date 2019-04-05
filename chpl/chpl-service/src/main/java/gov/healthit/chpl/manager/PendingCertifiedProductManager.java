@@ -31,15 +31,12 @@ public interface PendingCertifiedProductManager {
     PendingCertifiedProductDTO createOrReplace(Long acbId, PendingCertifiedProductEntity toCreate)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 
-    void deletePendingCertifiedProduct(final Long acbId, Long pendingProductId)
+    void deletePendingCertifiedProduct(Long pendingProductId)
             throws EntityRetrievalException, EntityNotFoundException, EntityCreationException, AccessDeniedException,
             JsonProcessingException, ObjectMissingValidationException;
 
     void confirm(Long acbId, Long pendingProductId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
-
-    boolean isPendingListingAvailableForUpdate(Long acbId, PendingCertifiedProductDTO pendingCp)
-            throws EntityRetrievalException, ObjectMissingValidationException;
 
     boolean isPendingListingAvailableForUpdate(Long acbId, Long pendingProductId)
             throws EntityRetrievalException, ObjectMissingValidationException;
