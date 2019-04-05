@@ -202,21 +202,20 @@ public class PendingCertifiedProductManagerImpl extends SecuredManager implement
     @Override
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_CERTIFIED_PRODUCT, "
-            + "T(gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions).DELETE, #acbId)")
-    public void deletePendingCertifiedProduct(final Long acbId, final Long pendingProductId)
+            + "T(gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions).DELETE, #pendingProductId)")
+    public void deletePendingCertifiedProduct(final Long pendingProductId)
             throws EntityRetrievalException, EntityNotFoundException, EntityCreationException, AccessDeniedException,
             JsonProcessingException, ObjectMissingValidationException {
 
         PendingCertifiedProductDTO pendingCp = pcpDao.findById(pendingProductId, true);
-        if (pendingCp == null) {
-            throw new EntityNotFoundException("Could not find pending certified product with id " + pendingProductId);
-        }
-
-        if (isPendingListingAvailableForUpdate(pendingCp.getCertificationBodyId(), pendingCp)) {
-            pcpDao.delete(pendingProductId);
-            String activityMsg = "Pending certified product " + pendingCp.getProductName() + " has been rejected.";
-            activityManager.addActivity(ActivityConcept.PENDING_CERTIFIED_PRODUCT, pendingCp.getId(),
-                    activityMsg, pendingCp, null);
+        //dao throws entity not found exception if bad id
+        if (pendingCp != null) {
+            if (isPendingListingAvailableForUpdate(pendingCp)) {
+                pcpDao.delete(pendingProductId);
+                String activityMsg = "Pending certified product " + pendingCp.getProductName() + " has been rejected.";
+                activityManager.addActivity(ActivityConcept.PENDING_CERTIFIED_PRODUCT, pendingCp.getId(),
+                        activityMsg, pendingCp, null);
+            }
         }
     }
 
@@ -242,14 +241,10 @@ public class PendingCertifiedProductManagerImpl extends SecuredManager implement
     public boolean isPendingListingAvailableForUpdate(final Long acbId, final Long pendingProductId)
             throws EntityRetrievalException, ObjectMissingValidationException {
         PendingCertifiedProductDTO pendingCp = pcpDao.findById(pendingProductId, true);
-        return isPendingListingAvailableForUpdate(acbId, pendingCp);
+        return isPendingListingAvailableForUpdate(pendingCp);
     }
 
-    @Override
-    @Transactional
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_CERTIFIED_PRODUCT, "
-            + "T(gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions).UPDATEABLE, #acbId)")
-    public boolean isPendingListingAvailableForUpdate(final Long acbId, final PendingCertifiedProductDTO pendingCp)
+    private boolean isPendingListingAvailableForUpdate(final PendingCertifiedProductDTO pendingCp)
             throws EntityRetrievalException, ObjectMissingValidationException {
         if (pendingCp.getDeleted().booleanValue()) {
             ObjectMissingValidationException alreadyDeletedEx = new ObjectMissingValidationException();

@@ -773,7 +773,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_PROCEDURE)
                         && cert.getTestProcedures() != null && cert.getTestProcedures().size() > 0) {
                     for (PendingCertificationResultTestProcedureDTO crTestProc : cert.getTestProcedures()) {
-                        if (crTestProc.getTestProcedure() == null || crTestProc.getTestProcedureId() == null) {
+                        if (crTestProc.getTestProcedure() == null && crTestProc.getTestProcedureId() == null) {
                             listing.getErrorMessages().add(
                                     msgUtil.getMessage("listing.criteria.badTestProcedureName",
                                             cert.getNumber(), crTestProc.getEnteredName()));
@@ -781,7 +781,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                             TestProcedureDTO foundTestProc =
                                     testProcDao.getByCriteriaNumberAndValue(cert.getNumber(),
                                             crTestProc.getTestProcedure().getName());
-                            if(foundTestProc == null || foundTestProc.getId() == null) {
+                            if (foundTestProc == null || foundTestProc.getId() == null) {
                                 listing.getErrorMessages().add(
                                         msgUtil.getMessage("listing.criteria.badTestProcedureName",
                                                 cert.getNumber(), crTestProc.getTestProcedure().getName()));
@@ -800,7 +800,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_DATA)
                         && cert.getTestData() != null && cert.getTestData().size() > 0) {
                     for (PendingCertificationResultTestDataDTO crTestData : cert.getTestData()) {
-                        if (crTestData.getTestData() == null || crTestData.getTestDataId() == null) {
+                        if (crTestData.getTestData() == null && crTestData.getTestDataId() == null) {
                             listing.getWarningMessages().add(
                                     msgUtil.getMessage("listing.criteria.badTestDataName",
                                             crTestData.getEnteredName(), cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA));

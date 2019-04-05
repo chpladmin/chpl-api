@@ -789,17 +789,7 @@ public class CertifiedProductController {
     public @ResponseBody String rejectPendingCertifiedProduct(@PathVariable("pcpId") final Long pcpId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
             AccessDeniedException, ObjectMissingValidationException {
-        PendingCertifiedProductDetails pcp = pcpManager.getById(pcpId, true);
-        Long pendingListingAcbId = null;
-        if (pcp == null) {
-            throw new EntityNotFoundException(msgUtil.getMessage("pendingListing.notFound"));
-        } else {
-            //make sure the user has permissions on the pending listings acb
-            //will throw access denied if they do not have the permissions
-            pendingListingAcbId = new Long(pcp.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString());
-            resourcePermissions.getAcbIfPermissionById(pendingListingAcbId);
-        }
-        pcpManager.deletePendingCertifiedProduct(pendingListingAcbId, pcpId);
+        pcpManager.deletePendingCertifiedProduct(pcpId);
         return "{\"success\" : true}";
     }
 
@@ -812,12 +802,6 @@ public class CertifiedProductController {
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
             AccessDeniedException, InvalidArgumentsException, ObjectsMissingValidationException {
 
-        return deletePendingCertifiedProducts(idList);
-    }
-
-    private String deletePendingCertifiedProducts(final IdListContainer idList)
-            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
-            AccessDeniedException, InvalidArgumentsException, ObjectsMissingValidationException {
         if (idList == null || idList.getIds() == null || idList.getIds().size() == 0) {
             throw new InvalidArgumentsException("At least one id must be provided for rejection.");
         }
@@ -825,11 +809,7 @@ public class CertifiedProductController {
         ObjectsMissingValidationException possibleExceptions = new ObjectsMissingValidationException();
         for (Long pcpId : idList.getIds()) {
             try {
-                Long acbId = pcpDao.findAcbIdById(pcpId);
-                if (acbId == null) {
-                    throw new EntityNotFoundException(msgUtil.getMessage("pendingListing.notFound"));
-                }
-                pcpManager.deletePendingCertifiedProduct(acbId, pcpId);
+                pcpManager.deletePendingCertifiedProduct(pcpId);
             } catch (final ObjectMissingValidationException ex) {
                 possibleExceptions.getExceptions().add(ex);
             }
