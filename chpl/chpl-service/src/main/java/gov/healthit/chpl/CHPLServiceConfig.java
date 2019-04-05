@@ -26,6 +26,7 @@ import org.springframework.oxm.castor.CastorMarshaller;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -55,8 +56,8 @@ import gov.healthit.chpl.job.MeaningfulUseUploadJob;
 public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements EnvironmentAware {
 
     private static final Logger LOGGER = LogManager.getLogger(CHPLServiceConfig.class);
-    private static final int MAX_UPLOAD_SIZE_BYTES = 5242880; //5MB
-    private static final int MAX_COOKIE_AGE_SECONDS = 3600; //1 hour
+    private static final int MAX_UPLOAD_SIZE_BYTES = 5242880; // 5MB
+    private static final int MAX_COOKIE_AGE_SECONDS = 3600; // 1 hour
     private static final int CORE_POOL_SIZE = 10;
     private static final int MAX_POOL_SIZE = 100;
     private static final int JOB_CORE_POOL_SIZE = 3;
@@ -83,8 +84,7 @@ public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements Enviro
     @Bean
     public org.springframework.orm.jpa.LocalEntityManagerFactoryBean entityManagerFactory() {
         LOGGER.info("get LocalEntityManagerFactoryBean");
-        org.springframework.orm.jpa.LocalEntityManagerFactoryBean bean =
-                new org.springframework.orm.jpa.LocalEntityManagerFactoryBean();
+        org.springframework.orm.jpa.LocalEntityManagerFactoryBean bean = new org.springframework.orm.jpa.LocalEntityManagerFactoryBean();
         bean.setPersistenceUnitName(env.getRequiredProperty("persistenceUnitName"));
         return bean;
     }
@@ -92,8 +92,7 @@ public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements Enviro
     @Bean
     public org.springframework.orm.jpa.JpaTransactionManager transactionManager() {
         LOGGER.info("get JpaTransactionManager");
-        org.springframework.orm.jpa.JpaTransactionManager bean =
-                new org.springframework.orm.jpa.JpaTransactionManager();
+        org.springframework.orm.jpa.JpaTransactionManager bean = new org.springframework.orm.jpa.JpaTransactionManager();
         bean.setEntityManagerFactory(entityManagerFactory().getObject());
         return bean;
     }
@@ -123,6 +122,14 @@ public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements Enviro
         te.setCorePoolSize(CORE_POOL_SIZE);
         te.setMaxPoolSize(MAX_POOL_SIZE);
         return te;
+    }
+
+    @Bean
+    public ThreadPoolTaskScheduler threadPoolTaskScheduler() {
+        ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
+        threadPoolTaskScheduler.setPoolSize(5);
+        threadPoolTaskScheduler.setThreadNamePrefix("ThreadPoolTaskScheduler");
+        return threadPoolTaskScheduler;
     }
 
     @Bean
@@ -174,9 +181,9 @@ public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements Enviro
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(JOB_CORE_POOL_SIZE);
         executor.setMaxPoolSize(JOB_MAX_POOL_SIZE);
-        //executor.setCorePoolSize(Integer.parseInt(props.getProperty("corePoolSize")));
-        //executor.setMaxPoolSize(Integer.parseInt(props.getProperty("maxPoolSize")));
-        //executor.setQueueCapacity(11);
+        // executor.setCorePoolSize(Integer.parseInt(props.getProperty("corePoolSize")));
+        // executor.setMaxPoolSize(Integer.parseInt(props.getProperty("maxPoolSize")));
+        // executor.setQueueCapacity(11);
         executor.setThreadNamePrefix("jobDataThread");
         executor.initialize();
         return executor;
