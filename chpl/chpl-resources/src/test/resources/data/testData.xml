@@ -1,36 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataset>
-    <user_permission user_permission_id="-2"
-        name="ADMIN" authority="ROLE_ADMIN" description="ADMIN"
-        creation_date="2017-08-28 13:13:24.528"
-        last_modified_date="2017-08-22 13:12:23.525"
-        last_modified_user="-3" deleted="false" />
-    <user_permission user_permission_id="1"
-        name="USER_CREATOR" authority="ROLE_USER_CREATOR" description="USER_CREATOR"
-        creation_date="2017-08-28 13:13:24.528"
-        last_modified_date="2017-08-22 13:12:23.525"
-        last_modified_user="-3" deleted="false" />
-    <user_permission user_permission_id="6"
-        name="CMS_STAFF" authority="ROLE_CMS_STAFF" description="CMS_STAFF"
-        creation_date="2017-08-28 13:13:24.528"
-        last_modified_date="2017-08-22 13:12:23.525"
-        last_modified_user="-3" deleted="false" />
-    <user_permission user_permission_id="2"
-        name="ACB" authority="ROLE_ACB" description="ACB"
-        creation_date="2017-08-28 13:13:24.528"
-        last_modified_date="2017-08-22 13:12:23.525"
-        last_modified_user="-3" deleted="false" />
-    <user_permission user_permission_id="4"
-        name="ATL" authority="ROLE_ATL" description="ATL"
-        creation_date="2017-08-28 13:13:24.528"
-        last_modified_date="2017-08-22 13:12:23.525"
-        last_modified_user="-3" deleted="false" />
-    <user_permission user_permission_id="8"
-        name="ONC" authority="ROLE_ONC" description="ONC"
-        creation_date="2017-08-28 13:13:24.528"
-        last_modified_date="2017-08-22 13:12:23.525"
-        last_modified_user="-3" deleted="false" />
-        
     <address address_id="-1" street_line_1="1 Test Road"
         city="Baltimore" state="MD" zipcode="21220" country="USA"
         last_modified_user="-2" last_modified_date="2015-08-20 13:15:00"
@@ -1932,18 +1901,21 @@
         last_modified_user="2" deleted="FALSE" />
 
     <user user_id="-2" user_name="admin" password="pwd"
+        user_permission_id="-2"
         account_expired="FALSE" account_locked="FALSE"
         credentials_expired="FALSE" account_enabled="TRUE"
         creation_date="2015-08-26 12:43:00.015"
         last_modified_date="2015-08-26 12:43:00.015"
         last_modified_user="-1" deleted="FALSE" contact_id="-2" />
     <user user_id="-3" user_name="admin2" password="pwd"
+        user_permission_id="-2"
         account_expired="FALSE" account_locked="FALSE"
         credentials_expired="FALSE" account_enabled="TRUE"
         creation_date="2017-03-14 12:43:00.015"
         last_modified_date="2017-03-14 12:43:00.015"
         last_modified_user="-3" deleted="TRUE" contact_id="-2" />
     <user user_id="1" user_name="TESTUSER"
+        user_permission_id="2"
         password="$2a$10$hJnf2sF4hTE9W4UdOQcBZ.mGzTyPjHsHHdYXkVCG.2.R8a6b2JjDi"
         account_expired="FALSE" account_locked="FALSE"
         credentials_expired="FALSE" account_enabled="TRUE"
@@ -1951,92 +1923,53 @@
         last_modified_date="2015-08-26 12:43:00.015"
         last_modified_user="-1" deleted="FALSE" contact_id="1" />
     <user user_id="2" user_name="testUser2" password="pwd"
+        user_permission_id="4"
         account_expired="FALSE" account_locked="FALSE"
         credentials_expired="FALSE" account_enabled="TRUE"
         creation_date="2015-08-26 12:43:00.015"
         last_modified_date="2015-08-26 12:43:00.015"
         last_modified_user="-1" deleted="FALSE" contact_id="1" />
     <user user_id="3" user_name="testUser3" password="pwd"
+        user_permission_id="2"
         account_expired="FALSE" account_locked="FALSE"
         credentials_expired="FALSE" account_enabled="TRUE"
         creation_date="2015-08-26 12:43:00.015"
         last_modified_date="2015-08-26 12:43:00.015"
         last_modified_user="-1" deleted="FALSE" contact_id="1" />
     <user user_id="4" user_name="atlUser" password="pwd"
+        user_permission_id="4"
         account_expired="FALSE" account_locked="FALSE"
         credentials_expired="FALSE" account_enabled="TRUE"
         creation_date="2015-08-26 12:43:00.015"
         last_modified_date="2015-08-26 12:43:00.015"
         last_modified_user="-1" deleted="FALSE" contact_id="1" />
     <user user_id="5" user_name="cmsStaffUser" password="pwd"
+        user_permission_id="6"
         account_expired="FALSE" account_locked="FALSE"
         credentials_expired="FALSE" account_enabled="TRUE"
         creation_date="2015-08-26 12:43:00.015"
         last_modified_date="2015-08-26 12:43:00.015"
         last_modified_user="-1" deleted="FALSE" contact_id="1" />
     <user user_id="6" user_name="oncUser" password="pwd"
+        user_permission_id="7"
         account_expired="FALSE" account_locked="FALSE"
         credentials_expired="FALSE" account_enabled="TRUE"
         creation_date="2015-08-26 12:43:00.015"
         last_modified_date="2015-08-26 12:43:00.015"
         last_modified_user="-1" deleted="FALSE" contact_id="1" />
     <user user_id="7" user_name="oncAndAcb" password="pwd"
+        user_permission_id="7"
         account_expired="FALSE" account_locked="FALSE"
         credentials_expired="FALSE" account_enabled="TRUE"
         creation_date="2015-08-26 12:43:00.015"
         last_modified_date="2017-04-26 12:43:00.015"
         last_modified_user="-1" deleted="FALSE" contact_id="1" />
 
-	
-
     <user_reset_token user_reset_token_id="-1"
         user_reset_token="zlhf8n4bfh87kfq" user_id="-2"
         creation_date="2015-08-26 12:43:00.015"
         last_modified_date="2015-08-26 12:43:00.015"
         last_modified_user="-2" deleted="FALSE" />
-
-    <global_user_permission_map
-        global_user_permission_id="1" user_id="-2"
-        user_permission_id_user_permission="-2"
-        creation_date="2015-08-26 12:43:00.015"
-        last_modified_date="2015-08-26 12:43:00.015"
-        last_modified_user="-1" deleted="FALSE" />
-    <global_user_permission_map
-        global_user_permission_id="2" user_id="1"
-        user_permission_id_user_permission="2"
-        creation_date="2015-08-26 12:43:00.015"
-        last_modified_date="2015-08-26 12:43:00.015"
-        last_modified_user="-1" deleted="FALSE" />
-    <global_user_permission_map
-        global_user_permission_id="3" user_id="2"
-        user_permission_id_user_permission="4"
-        creation_date="2015-08-26 12:43:00.015"
-        last_modified_date="2015-08-26 12:43:00.015"
-        last_modified_user="-1" deleted="FALSE" />
-    <global_user_permission_map
-        global_user_permission_id="4" user_id="3"
-        user_permission_id_user_permission="2"
-        creation_date="2015-08-26 12:43:00.015"
-        last_modified_date="2015-08-26 12:43:00.015"
-        last_modified_user="-1" deleted="FALSE" />
-    <global_user_permission_map
-        global_user_permission_id="6" user_id="4"
-        user_permission_id_user_permission="4"
-        creation_date="2015-08-26 12:43:00.015"
-        last_modified_date="2015-08-26 12:43:00.015"
-        last_modified_user="-1" deleted="FALSE" />
-    <global_user_permission_map
-        global_user_permission_id="6" user_id="5"
-        user_permission_id_user_permission="6"
-        creation_date="2015-08-26 12:43:00.015"
-        last_modified_date="2015-08-26 12:43:00.015"
-        last_modified_user="-1" deleted="FALSE" />
-    <global_user_permission_map
-        global_user_permission_id="7" user_id="6"
-        user_permission_id_user_permission="8"
-        creation_date="2015-08-26 12:43:00.015"
-        last_modified_date="2015-08-26 12:43:00.015"
-        last_modified_user="-1" deleted="FALSE" />
 
     <activity activity_id="-1" description="Description Here"
         certification_body="1" original_data='{"test":"test"}'
