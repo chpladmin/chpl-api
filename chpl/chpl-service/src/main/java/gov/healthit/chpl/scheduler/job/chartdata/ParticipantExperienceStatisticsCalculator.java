@@ -9,6 +9,11 @@ import java.util.Map.Entry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.ParticipantExperienceStatisticsDAO;
@@ -32,6 +37,10 @@ public class ParticipantExperienceStatisticsCalculator {
 
     @Autowired
     private ParticipantExperienceStatisticsDAO participantExperienceStatisticsDAO;
+
+    @Autowired
+    private JpaTransactionManager txManager;
+
     private Long experienceTypeId;
 
     public ParticipantExperienceStatisticsCalculator() {
@@ -113,15 +122,30 @@ public class ParticipantExperienceStatisticsCalculator {
     }
 
     private void save(final List<ParticipantExperienceStatisticsEntity> entities) {
-        try {
-            deleteExistingPartcipantExperienceStatistics();
-        } catch (EntityRetrievalException e) {
-            LOGGER.error("Error occured while deleting existing ParticipantExperienceStatistics.", e);
-            return;
-        }
-        for (ParticipantExperienceStatisticsEntity entity : entities) {
-            saveParticipantExperienceStatistic(entity);
-        }
+        // We need to manually create a transaction in this case because of how AOP works. When a method is
+        // annotated with @Transactional, the transaction wrapper is only added if the object's proxy is called.
+        // The object's proxy is not called when the method is called from thin this class. The object's proxy
+        // is called when the method is public and is called from a different object.
+        // https://stackoverflow.com/questions/3037006/starting-new-transaction-in-spring-bean
+        TransactionTemplate txTemplate = new TransactionTemplate(txManager);
+        txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        txTemplate.execute(new TransactionCallbackWithoutResult() {
+
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                try {
+                    deleteExistingPartcipantExperienceStatistics();
+
+                    for (ParticipantExperienceStatisticsEntity entity : entities) {
+                        saveParticipantExperienceStatistic(entity);
+                    }
+                } catch (Exception e) {
+                    LOGGER.error("Error saving ParticipantExperienceStatistics.", e);
+                    status.setRollbackOnly();
+                }
+
+            }
+        });
     }
 
     private List<ParticipantExperienceStatisticsEntity> convertExperienceCountMapToListOfParticipantExperienceStatistics(

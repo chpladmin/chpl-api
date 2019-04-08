@@ -82,7 +82,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
 
             activeAcbs = certificationBodyDAO.findAllActive();
 
-            SummaryStatisticsEntity summaryStatistics = summaryStatisticsDAO.getMostRecent();
+            SummaryStatisticsEntity summaryStatistics = summaryStatisticsDAO.getCurrentSummaryStatistics();
             Statistics stats = getStatistics(summaryStatistics);
             String message = createHtmlMessage(stats, summaryStatistics.getEndDate());
             LOGGER.info("Message to be sent: " + message);
@@ -102,18 +102,14 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         addresses.add(address);
 
         EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipients(addresses)
-                        .subject(subject)
-                        .htmlMessage(message)
-                        .fileAttachments(getSummaryStatisticsFile())
-                        .sendEmail();
+        emailBuilder.recipients(addresses).subject(subject).htmlMessage(message)
+                .fileAttachments(getSummaryStatisticsFile()).sendEmail();
     }
 
     private List<File> getSummaryStatisticsFile() {
         List<File> files = new ArrayList<File>();
-        File file = new File(
-                        System.getenv("downloadFolderPath") + File.separator
-                        + props.getProperty("summaryEmailName", "summaryStatistics.csv"));
+        File file = new File(System.getenv("downloadFolderPath") + File.separator
+                + props.getProperty("summaryEmailName", "summaryStatistics.csv"));
         files.add(file);
         return files;
     }
@@ -188,10 +184,8 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         ret.append("<li>Total # of Developers with 2014 Listings (Regardless of Status) - "
                 + stats.getTotalDevelopersWith2014Listings() + "</li>");
         ret.append("<ul>");
-        for (CertifiedBodyStatistics stat
-                : getStatisticsByEdition(
-                        stats.getTotalDevelopersByCertifiedBodyWithListingsEachYear(),
-                        EDITION2014)) {
+        for (CertifiedBodyStatistics stat : getStatisticsByEdition(
+                stats.getTotalDevelopersByCertifiedBodyWithListingsEachYear(), EDITION2014)) {
             ret.append("<li>Certified by ");
             ret.append(stat.getName());
             ret.append(" - ");
@@ -203,11 +197,9 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
                 + stats.getTotalDevelopersWithActive2014Listings() + "</li>");
         ret.append("<ul>");
 
-        for (CertifiedBodyStatistics stat
-                : getStatisticsByStatusAndEdition(
-                        stats.getTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear(),
-                        "Active",
-                        EDITION2014)) {
+        for (CertifiedBodyStatistics stat : getStatisticsByStatusAndEdition(
+                stats.getTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear(), "Active",
+                EDITION2014)) {
             ret.append("<li>Certified by ");
             ret.append(stat.getName());
             ret.append(" - ");
@@ -215,14 +207,12 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         }
         ret.append("</ul>");
 
-        //Calculate 'Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2014 Listings'
+        // Calculate 'Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2014 Listings'
         StringBuilder suspendedDevs2014 = new StringBuilder();
         Long suspendedDevsTotal = 0L;
-        for (CertifiedBodyStatistics stat
-                : getStatisticsByStatusAndEdition(
-                        stats.getTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear(),
-                        "Suspended",
-                        EDITION2014)) {
+        for (CertifiedBodyStatistics stat : getStatisticsByStatusAndEdition(
+                stats.getTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear(), "Suspended",
+                EDITION2014)) {
             suspendedDevs2014.append("<li>Certified by ");
             suspendedDevs2014.append(stat.getName());
             suspendedDevs2014.append(" - ");
@@ -230,7 +220,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
 
             suspendedDevsTotal += stat.getTotalDevelopersWithListings();
         }
-        //Build the section...
+        // Build the section...
         ret.append("<li>");
         ret.append("Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2014 Listings - ");
         ret.append(suspendedDevsTotal);
@@ -242,9 +232,8 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         ret.append("<li>Total # of Developers with 2015 Listings (Regardless of Status) - "
                 + stats.getTotalDevelopersWith2015Listings() + "</li>");
         ret.append("<ul>");
-        for (CertifiedBodyStatistics stat
-                : getStatisticsByEdition(
-                        stats.getTotalDevelopersByCertifiedBodyWithListingsEachYear(), EDITION2015)) {
+        for (CertifiedBodyStatistics stat : getStatisticsByEdition(
+                stats.getTotalDevelopersByCertifiedBodyWithListingsEachYear(), EDITION2015)) {
             ret.append("<li>Certified by ");
             ret.append(stat.getName());
             ret.append(" - ");
@@ -255,11 +244,9 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         ret.append("<li>Total # of Developers with Active 2015 Listings - "
                 + stats.getTotalDevelopersWithActive2015Listings() + "</li>");
         ret.append("<ul>");
-        for (CertifiedBodyStatistics stat
-                : getStatisticsByStatusAndEdition(
-                        stats.getTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear(),
-                        "Active",
-                        EDITION2015)) {
+        for (CertifiedBodyStatistics stat : getStatisticsByStatusAndEdition(
+                stats.getTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear(), "Active",
+                EDITION2015)) {
             ret.append("<li>Certified by ");
             ret.append(stat.getName());
             ret.append(" - ");
@@ -270,11 +257,9 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
 
         StringBuilder suspendedDevs2015 = new StringBuilder();
         Long suspendedDevsTotal2015 = 0L;
-        for (CertifiedBodyStatistics stat
-                : getStatisticsByStatusAndEdition(
-                        stats.getTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear(),
-                        "Suspended",
-                        EDITION2015)) {
+        for (CertifiedBodyStatistics stat : getStatisticsByStatusAndEdition(
+                stats.getTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear(), "Suspended",
+                EDITION2015)) {
             suspendedDevs2015.append("<li>Certified by ");
             suspendedDevs2015.append(stat.getName());
             suspendedDevs2015.append(" - ");
@@ -283,7 +268,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
             suspendedDevsTotal2015 += stat.getTotalDevelopersWithListings();
         }
 
-        //Build the section...
+        // Build the section...
         ret.append("<li>");
         ret.append("Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2015 Listings - ");
         ret.append(suspendedDevsTotal2015);
@@ -308,8 +293,8 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         ret.append(stats.getTotalCPs2014Listings());
         ret.append("</li>");
         ret.append("<ul>");
-        for (CertifiedBodyStatistics cbStat
-                : getStatisticsByEdition(stats.getTotalCPListingsEachYearByCertifiedBody(), EDITION2014)) {
+        for (CertifiedBodyStatistics cbStat : getStatisticsByEdition(stats.getTotalCPListingsEachYearByCertifiedBody(),
+                EDITION2014)) {
             ret.append("<li>Certified by ");
             ret.append(cbStat.getName());
             ret.append(" - ");
@@ -322,11 +307,8 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         ret.append(stats.getTotalCPsActive2014Listings());
         ret.append("</li>");
         ret.append("<ul>");
-        for (CertifiedBodyStatistics cbStat
-                : getStatisticsByStatusAndEdition(
-                        stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(),
-                        "Active",
-                        EDITION2014)) {
+        for (CertifiedBodyStatistics cbStat : getStatisticsByStatusAndEdition(
+                stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(), "Active", EDITION2014)) {
             ret.append("<li>Certified by ");
             ret.append(cbStat.getName());
             ret.append(" - ");
@@ -339,11 +321,8 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         ret.append(stats.getTotalCPsSuspended2014Listings());
         ret.append("</li>");
         ret.append("<ul>");
-        for (CertifiedBodyStatistics cbStat
-                : getStatisticsByStatusAndEdition(
-                        stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(),
-                        "Suspended",
-                        EDITION2014)) {
+        for (CertifiedBodyStatistics cbStat : getStatisticsByStatusAndEdition(
+                stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(), "Suspended", EDITION2014)) {
             ret.append("<li>Certified by ");
             ret.append(cbStat.getName());
             ret.append(" - ");
@@ -355,8 +334,8 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         ret.append(stats.getTotalCPs2015Listings());
         ret.append("</li>");
         ret.append("<ul>");
-        for (CertifiedBodyStatistics cbStat
-                : getStatisticsByEdition(stats.getTotalCPListingsEachYearByCertifiedBody(), EDITION2015)) {
+        for (CertifiedBodyStatistics cbStat : getStatisticsByEdition(stats.getTotalCPListingsEachYearByCertifiedBody(),
+                EDITION2015)) {
             ret.append("<li>Certified by ");
             ret.append(cbStat.getName());
             ret.append(" - ");
@@ -369,11 +348,8 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         ret.append(stats.getTotalCPsActive2015Listings());
         ret.append("</li>");
         ret.append("<ul>");
-        for (CertifiedBodyStatistics cbStat
-                : getStatisticsByStatusAndEdition(
-                        stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(),
-                        "Active",
-                        EDITION2015)) {
+        for (CertifiedBodyStatistics cbStat : getStatisticsByStatusAndEdition(
+                stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(), "Active", EDITION2015)) {
             ret.append("<li>Certified by ");
             ret.append(cbStat.getName());
             ret.append(" - ");
@@ -386,11 +362,8 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         ret.append(stats.getTotalCPsSuspended2015Listings());
         ret.append("</li>");
         ret.append("<ul>");
-        for (CertifiedBodyStatistics cbStat
-                : getStatisticsByStatusAndEdition(
-                        stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(),
-                        "Suspended",
-                        EDITION2015)) {
+        for (CertifiedBodyStatistics cbStat : getStatisticsByStatusAndEdition(
+                stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(), "Suspended", EDITION2015)) {
             ret.append("<li>Certified by ");
             ret.append(cbStat.getName());
             ret.append(" - ");
@@ -417,8 +390,8 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         ret.append(stats.getTotalActive2014Listings());
         ret.append("</li>");
         ret.append("<ul>");
-        for (CertifiedBodyStatistics cbStat
-                : getStatisticsByEdition(stats.getTotalActiveListingsByCertifiedBody(), EDITION2014)) {
+        for (CertifiedBodyStatistics cbStat : getStatisticsByEdition(stats.getTotalActiveListingsByCertifiedBody(),
+                EDITION2014)) {
             ret.append("<li>Certified by ");
             ret.append(cbStat.getName());
             ret.append(" - ");
@@ -431,8 +404,8 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         ret.append(stats.getTotalActive2015Listings());
         ret.append("</li>");
         ret.append("<ul>");
-        for (CertifiedBodyStatistics cbStat
-                : getStatisticsByEdition(stats.getTotalActiveListingsByCertifiedBody(), EDITION2015)) {
+        for (CertifiedBodyStatistics cbStat : getStatisticsByEdition(stats.getTotalActiveListingsByCertifiedBody(),
+                EDITION2015)) {
             ret.append("<li>Certified by ");
             ret.append(cbStat.getName());
             ret.append(" - ");
@@ -440,7 +413,6 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
             ret.append("</li>");
         }
         ret.append("</ul>");
-
 
         ret.append("<li>Total # of 2015 Listings with Alternative Test Methods -  "
                 + stats.getTotalListingsWithAlternativeTestMethods() + "</li>");
@@ -454,10 +426,8 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         }
         ret.append("</ul>");
 
-        ret.append(
-                "<li>Total # of 2014 Listings (Regardless of Status) - " + stats.getTotal2014Listings() + "</li>");
-        ret.append(
-                "<li>Total # of 2015 Listings (Regardless of Status) - " + stats.getTotal2015Listings() + "</li>");
+        ret.append("<li>Total # of 2014 Listings (Regardless of Status) - " + stats.getTotal2014Listings() + "</li>");
+        ret.append("<li>Total # of 2015 Listings (Regardless of Status) - " + stats.getTotal2015Listings() + "</li>");
         ret.append(
                 "<li>Total # of 2011 Listings (Regardless of Status) - " + stats.getTotal2011Listings() + "</li></ul>");
         return ret.toString();
@@ -466,7 +436,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
 
     private List<CertifiedBodyStatistics> getStatistics(final List<CertifiedBodyStatistics> stats) {
         List<CertifiedBodyStatistics> acbStats = new ArrayList<CertifiedBodyStatistics>();
-        //All the existing stats
+        // All the existing stats
         for (CertifiedBodyStatistics cbStat : stats) {
             acbStats.add(cbStat);
         }
@@ -474,11 +444,11 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         return acbStats;
     }
 
-    private List<CertifiedBodyStatistics> getStatisticsByStatusAndEdition(
-            final List<CertifiedBodyStatistics> stats, final String statusName, final Integer edition) {
+    private List<CertifiedBodyStatistics> getStatisticsByStatusAndEdition(final List<CertifiedBodyStatistics> stats,
+            final String statusName, final Integer edition) {
 
         List<CertifiedBodyStatistics> acbStats = new ArrayList<CertifiedBodyStatistics>();
-        //Filter the existing stats
+        // Filter the existing stats
         for (CertifiedBodyStatistics cbStat : stats) {
             if (cbStat.getYear().equals(edition)
                     && cbStat.getCertificationStatusName().toLowerCase().contains(statusName.toLowerCase())) {
@@ -489,11 +459,11 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         return acbStats;
     }
 
-    private List<CertifiedBodyStatistics> getStatisticsByEdition(
-            final List<CertifiedBodyStatistics> stats, final Integer edition) {
+    private List<CertifiedBodyStatistics> getStatisticsByEdition(final List<CertifiedBodyStatistics> stats,
+            final Integer edition) {
 
         List<CertifiedBodyStatistics> acbStats = new ArrayList<CertifiedBodyStatistics>();
-        //Filter the existing stats
+        // Filter the existing stats
         for (CertifiedBodyStatistics cbStat : stats) {
             if (cbStat.getYear().equals(edition)) {
                 acbStats.add(cbStat);
@@ -503,10 +473,10 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         return acbStats;
     }
 
-    //Parameter intentionally not 'final'.  This way we don;t have to copy the values passed in to a
-    //new list.
+    // Parameter intentionally not 'final'. This way we don;t have to copy the values passed in to a
+    // new list.
     private void addMissingAcbStatistics(List<CertifiedBodyStatistics> acbStats, final Integer edition) {
-        //Add statistics for missing active ACBs
+        // Add statistics for missing active ACBs
         acbStats.addAll(getMissingAcbStats(acbStats, edition));
 
         Collections.sort(acbStats, new Comparator<CertifiedBodyStatistics>() {
@@ -516,11 +486,11 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         });
     }
 
-    private List<CertifiedBodyStatistics> getMissingAcbStats(
-            final List<CertifiedBodyStatistics> statistics, final Integer edition) {
+    private List<CertifiedBodyStatistics> getMissingAcbStats(final List<CertifiedBodyStatistics> statistics,
+            final Integer edition) {
 
         List<CertifiedBodyStatistics> updatedStats = new ArrayList<CertifiedBodyStatistics>();
-        //Make sure all active ACBs are in the resultset
+        // Make sure all active ACBs are in the resultset
         for (CertificationBodyDTO acb : activeAcbs) {
             if (!isAcbInStatistics(acb, statistics)) {
                 updatedStats.add(getNewCertifiedBodyStatistic(acb.getName(), edition));
@@ -549,13 +519,13 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
 
     private List<CertifiedBodyAltTestStatistics> getStatisticsWithAltTestMethods(final Statistics stats) {
         List<CertifiedBodyAltTestStatistics> acbStats = new ArrayList<CertifiedBodyAltTestStatistics>();
-        //Filter the existing stats
-        for (CertifiedBodyAltTestStatistics cbStat
-                : stats.getTotalListingsWithCertifiedBodyAndAlternativeTestMethods()) {
+        // Filter the existing stats
+        for (CertifiedBodyAltTestStatistics cbStat : stats
+                .getTotalListingsWithCertifiedBodyAndAlternativeTestMethods()) {
 
             acbStats.add(cbStat);
         }
-        //Add statistics for missing active ACBs
+        // Add statistics for missing active ACBs
         acbStats.addAll(getMissingAcbWithAltTestMethodsStats(acbStats));
 
         Collections.sort(acbStats, new Comparator<CertifiedBodyAltTestStatistics>() {
@@ -571,7 +541,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
             final List<CertifiedBodyAltTestStatistics> statistics) {
 
         List<CertifiedBodyAltTestStatistics> updatedStats = new ArrayList<CertifiedBodyAltTestStatistics>();
-        //Make sure all active ACBs are in the resultset
+        // Make sure all active ACBs are in the resultset
         for (CertificationBodyDTO acb : activeAcbs) {
             if (!isAcbWithAltTestMethodsInStatistics(acb, statistics)) {
                 updatedStats.add(getNewCertifiedBodyWithAltTestMethodsStatistic(acb.getName()));
@@ -588,8 +558,8 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         return stat;
     }
 
-    private Boolean isAcbWithAltTestMethodsInStatistics(
-            final CertificationBodyDTO acb, final List<CertifiedBodyAltTestStatistics> stats) {
+    private Boolean isAcbWithAltTestMethodsInStatistics(final CertificationBodyDTO acb,
+            final List<CertifiedBodyAltTestStatistics> stats) {
 
         for (CertifiedBodyAltTestStatistics stat : stats) {
             if (stat.getName().equals(acb.getName())) {
@@ -600,8 +570,8 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
     }
 
     private Properties loadProperties() throws IOException {
-        InputStream in =
-                SummaryStatisticsCreatorJob.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
+        InputStream in = SummaryStatisticsCreatorJob.class.getClassLoader()
+                .getResourceAsStream(DEFAULT_PROPERTIES_FILE);
         if (in == null) {
             props = null;
             throw new FileNotFoundException("Environment Properties File not found in class path.");
