@@ -20,6 +20,11 @@ import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -50,6 +55,9 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
     @Autowired
     private SummaryStatisticsDAO summaryStatisticsDAO;
 
+    @Autowired
+    private JpaTransactionManager txManager;
+
     private Properties props;
 
     /**
@@ -58,7 +66,6 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
      */
     public SummaryStatisticsCreatorJob() throws Exception {
         super();
-        //setLocalContext();
         loadProperties();
     }
 
@@ -91,8 +98,8 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         LOGGER.info("********* Completed the Summary Statistics Creation job. *********");
     }
 
-    private void createSummaryStatisticsFile(final Date startDate, final Date endDate,
-            final Integer numDaysInPeriod) throws InterruptedException, ExecutionException {
+    private void createSummaryStatisticsFile(final Date startDate, final Date endDate, final Integer numDaysInPeriod)
+            throws InterruptedException, ExecutionException {
         List<Statistics> csvStats = new ArrayList<Statistics>();
         Calendar startDateCal = Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC));
         startDateCal.setTime(startDate);
@@ -109,8 +116,7 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
             Future<Statistics> futureEmailCsvStats = asynchronousStatisticsInitializor.getStatistics(csvRange);
             historyStat = futureEmailCsvStats.get();
             csvStats.add(historyStat);
-            LOGGER.info("Finished getting csvRecord for start date "
-                    + startDateCal.getTime().toString() + " end date "
+            LOGGER.info("Finished getting csvRecord for start date " + startDateCal.getTime().toString() + " end date "
                     + endDateCal.getTime().toString());
             startDateCal.add(Calendar.DATE, numDaysInPeriod);
             endDateCal.setTime(startDateCal.getTime());
@@ -133,17 +139,37 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         return mapper.writeValueAsString(statistics);
     }
 
-    private void saveSummaryStatistics(final Statistics statistics, final Date endDate)
+    public void saveSummaryStatistics(final Statistics statistics, final Date endDate)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
-        SummaryStatisticsEntity entity = new SummaryStatisticsEntity();
-        entity.setEndDate(endDate);
-        entity.setSummaryStatistics(getJson(statistics));
-        getSummaryStatisticsDAO().create(entity);
+
+        // We need to manually create a transaction in this case because of how AOP works. When a method is
+        // annotated with @Transactional, the transaction wrapper is only added if the object's proxy is called.
+        // The object's proxy is not called when the method is called from thin this class. The object's proxy
+        // is called when the method is public and is called from a different object.
+        // https://stackoverflow.com/questions/3037006/starting-new-transaction-in-spring-bean
+        TransactionTemplate txTemplate = new TransactionTemplate(txManager);
+        txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        txTemplate.execute(new TransactionCallbackWithoutResult() {
+
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                try {
+                    getSummaryStatisticsDAO().deleteAll();
+
+                    SummaryStatisticsEntity entity = new SummaryStatisticsEntity();
+                    entity.setEndDate(endDate);
+                    entity.setSummaryStatistics(getJson(statistics));
+                    getSummaryStatisticsDAO().create(entity);
+                } catch (Exception e) {
+                    status.setRollbackOnly();
+                }
+            }
+        });
     }
 
     private Properties loadProperties() throws IOException {
-        InputStream in =
-                SummaryStatisticsCreatorJob.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
+        InputStream in = SummaryStatisticsCreatorJob.class.getClassLoader()
+                .getResourceAsStream(DEFAULT_PROPERTIES_FILE);
         if (in == null) {
             props = null;
             throw new FileNotFoundException("Environment Properties File not found in class path.");
@@ -157,11 +183,11 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
 
     private Date getStartDate() {
         Calendar startDateCalendar = Calendar.getInstance();
-        //This is a constant date, which marks the beginning of time for
-        //retrieving statistics;
+        // This is a constant date, which marks the beginning of time for
+        // retrieving statistics;
         startDateCalendar.set(2016, 3, 1, 0, 0, 0);
 
-        //What DOW is today?
+        // What DOW is today?
         Calendar now = Calendar.getInstance();
         Integer dow = now.get(Calendar.DAY_OF_WEEK);
         if (startDateCalendar.get(Calendar.DAY_OF_WEEK) == dow) {
