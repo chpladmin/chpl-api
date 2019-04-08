@@ -9,7 +9,6 @@ import javax.persistence.Query;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -18,9 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
-import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductMetadataDTO;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultAdditionalSoftwareEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultG1MacraMeasureEntity;
@@ -35,6 +34,7 @@ import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestTo
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultUcdProcessEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductAccessibilityStandardEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductMetadataEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductParentListingEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductQmsStandardEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTargetedUserEntity;
@@ -56,8 +56,6 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
     private static final Logger LOGGER = LogManager.getLogger(PendingCertifiedProductDAOImpl.class);
     @Autowired
     private MessageSource messageSource;
-//    @Autowired
-//    private ContactDAO contactDao;
 
     @Override
     @Transactional
@@ -461,6 +459,22 @@ throws EntityCreationException {
         return new PendingCertifiedProductDTO(toCreate);
     }
 
+
+    @Override
+    public void updateErrorAndWarningCounts(final Long pcpId, final Integer errorCount, final Integer warningCount)
+            throws EntityRetrievalException {
+        PendingCertifiedProductEntity entity = getEntityById(pcpId, true);
+        if (entity != null) {
+            entity.setErrorCount(errorCount);
+            entity.setWarningCount(warningCount);
+            entity.setLastModifiedDate(new Date());
+            entity.setLastModifiedUser(Util.getAuditId());
+            entityManager.persist(entity);
+            entityManager.flush();
+            entityManager.clear();
+        }
+    }
+
     @Override
     @Transactional
     public void delete(final Long pendingProductId) throws EntityRetrievalException {
@@ -473,21 +487,25 @@ throws EntityCreationException {
     }
 
     @Override
-    public List<PendingCertifiedProductDTO> findAll() {
-        List<PendingCertifiedProductEntity> entities = getAllEntities();
-        List<PendingCertifiedProductDTO> dtos = new ArrayList<>();
+    public List<PendingCertifiedProductMetadataDTO> getAllMetadata() {
+        List<PendingCertifiedProductMetadataEntity> entities = entityManager
+                .createQuery("SELECT pcp "
+                        + "FROM PendingCertifiedProductMetadataEntity pcp "
+                        + "WHERE pcp.deleted = false",
+                        PendingCertifiedProductMetadataEntity.class)
+                .getResultList();
+        List<PendingCertifiedProductMetadataDTO> dtos = new ArrayList<PendingCertifiedProductMetadataDTO>();
 
-        for (PendingCertifiedProductEntity entity : entities) {
-            PendingCertifiedProductDTO dto = new PendingCertifiedProductDTO(entity);
+        for (PendingCertifiedProductMetadataEntity entity : entities) {
+            PendingCertifiedProductMetadataDTO dto = new PendingCertifiedProductMetadataDTO(entity);
             dtos.add(dto);
         }
         return dtos;
     }
 
     @Override
-    @Transactional
-    public List<PendingCertifiedProductDTO> findByStatus(final Long statusId) {
-        List<PendingCertifiedProductEntity> entities = getEntitiesByStatus(statusId);
+    public List<PendingCertifiedProductDTO> findAll() {
+        List<PendingCertifiedProductEntity> entities = getAllEntities();
         List<PendingCertifiedProductDTO> dtos = new ArrayList<>();
 
         for (PendingCertifiedProductEntity entity : entities) {
@@ -605,18 +623,6 @@ throws EntityCreationException {
                                 + " where (certification_body_id = :acbId) " + " and not (pcp.deleted = true)",
                                 PendingCertifiedProductEntity.class);
         query.setParameter("acbId", acbId);
-        List<PendingCertifiedProductEntity> result = query.getResultList();
-        return result;
-    }
-
-    private List<PendingCertifiedProductEntity> getEntitiesByStatus(final Long statusId) {
-
-        Query query = entityManager
-                .createQuery(
-                        "SELECT pcp from PendingCertifiedProductEntity pcp "
-                                + " where (certification_status_id = :statusId) " + " and not (pcp.deleted = true)",
-                                PendingCertifiedProductEntity.class);
-        query.setParameter("statusId", statusId);
         List<PendingCertifiedProductEntity> result = query.getResultList();
         return result;
     }

@@ -15,6 +15,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.healthit.chpl.app.permissions.domain.ActionPermissionsBaseTest;
+import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domains.pendingcertifiedproduct.GetDetailsByIdActionPermissions;
 
@@ -41,11 +43,11 @@ public class GetDetailsByIdActionPermissionsTest extends ActionPermissionsBaseTe
     public void hasAccess_Admin() throws Exception {
         setupForAdminUser(resourcePermissions);
 
-        // Only ROLE_ADMIN and ROLE_ACB has access
-        assertTrue(permissions.hasAccess());
-
         // Not used
-        assertFalse(permissions.hasAccess(new Object()));
+        assertFalse(permissions.hasAccess());
+
+        // ROLE_ADMIN can access any pending listing
+        assertTrue(permissions.hasAccess(new PendingCertifiedProductDetails()));
     }
 
     @Override
@@ -53,11 +55,11 @@ public class GetDetailsByIdActionPermissionsTest extends ActionPermissionsBaseTe
     public void hasAccess_Onc() throws Exception {
         setupForOncUser(resourcePermissions);
 
-        // Only ROLE_ADMIN and ROLE_ACB has access
+        // Not used
         assertFalse(permissions.hasAccess());
 
-        // Not used
-        assertFalse(permissions.hasAccess(new Object()));
+        // Only ROLE_ADMIN and ROLE_ACB has access
+        assertFalse(permissions.hasAccess(new PendingCertifiedProductDetails()));
     }
 
     @Override
@@ -65,11 +67,17 @@ public class GetDetailsByIdActionPermissionsTest extends ActionPermissionsBaseTe
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
 
-        // Only ROLE_ADMIN and ROLE_ACB has access
-        assertTrue(permissions.hasAccess());
-
         // Not used
-        assertFalse(permissions.hasAccess(new Object()));
+        assertFalse(permissions.hasAccess());
+
+        // ROLE_ACB can only see pending listing on their own ACB
+        PendingCertifiedProductDetails pendingListing = new PendingCertifiedProductDetails();
+        pendingListing.getCertifyingBody().put("id", 1L);
+        assertFalse(permissions.hasAccess(pendingListing));
+
+        pendingListing = new PendingCertifiedProductDetails();
+        pendingListing.getCertifyingBody().put("id", 2L);
+        assertTrue(permissions.hasAccess(pendingListing));
     }
 
     @Override
@@ -77,10 +85,10 @@ public class GetDetailsByIdActionPermissionsTest extends ActionPermissionsBaseTe
     public void hasAccess_Atl() throws Exception {
         setupForAtlUser(resourcePermissions);
 
-        // Only ROLE_ADMIN and ROLE_ACB has access
+        // Not used
         assertFalse(permissions.hasAccess());
 
-        // Not used
+        // Only ROLE_ADMIN and ROLE_ACB has access
         assertFalse(permissions.hasAccess(new Object()));
     }
 
@@ -89,10 +97,10 @@ public class GetDetailsByIdActionPermissionsTest extends ActionPermissionsBaseTe
     public void hasAccess_Cms() throws Exception {
         setupForCmsUser(resourcePermissions);
 
-        // Only ROLE_ADMIN and ROLE_ACB has access
+        // Not used
         assertFalse(permissions.hasAccess());
 
-        // Not used
+        // Only ROLE_ADMIN and ROLE_ACB has access
         assertFalse(permissions.hasAccess(new Object()));
     }
 
@@ -101,10 +109,10 @@ public class GetDetailsByIdActionPermissionsTest extends ActionPermissionsBaseTe
     public void hasAccess_Anon() throws Exception {
         setupForAnonUser(resourcePermissions);
 
-        // Only ROLE_ADMIN and ROLE_ACB has access
+        // Not used
         assertFalse(permissions.hasAccess());
 
-        // Not used
+        // Only ROLE_ADMIN and ROLE_ACB has access
         assertFalse(permissions.hasAccess(new Object()));
     }
 }
