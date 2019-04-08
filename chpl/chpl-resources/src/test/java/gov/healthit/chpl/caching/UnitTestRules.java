@@ -56,6 +56,9 @@ public class UnitTestRules extends ExternalResource {
         resetSeqQuery = entityManager.createNativeQuery(
                 "SELECT pg_catalog.setval('acl_object_identity_id_seq', 16, true)");
         resetSeqQuery.getSingleResult();
+        resetSeqQuery = entityManager.createNativeQuery(
+                "SELECT pg_catalog.setval('api_key_api_key_id_seq', 2, true)");
+        resetSeqQuery.getSingleResult();
         tx.commit();
         entityManager.close();
     }

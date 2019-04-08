@@ -49,10 +49,10 @@ public class PendingCertifiedProductEntity {
     private Long id;
 
     @Column(name = "error_count")
-    private int errorCount;
+    private Integer errorCount;
 
     @Column(name = "warning_count")
-    private int warningCount;
+    private Integer warningCount;
 
     @Column(name = "practice_type_id")
     private Long practiceTypeId;
@@ -654,19 +654,19 @@ public class PendingCertifiedProductEntity {
         this.parentListings = parentListings;
     }
 
-    public int getErrorCount() {
+    public Integer getErrorCount() {
         return errorCount;
     }
 
-    public void setErrorCount(int errorCount) {
+    public void setErrorCount(final Integer errorCount) {
         this.errorCount = errorCount;
     }
 
-    public int getWarningCount() {
+    public Integer getWarningCount() {
         return warningCount;
     }
 
-    public void setWarningCount(int warningCount) {
+    public void setWarningCount(final Integer warningCount) {
         this.warningCount = warningCount;
     }
 }
