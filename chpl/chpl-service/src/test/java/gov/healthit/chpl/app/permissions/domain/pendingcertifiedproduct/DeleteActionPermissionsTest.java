@@ -6,15 +6,18 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.healthit.chpl.app.permissions.domain.ActionPermissionsBaseTest;
+import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domains.pendingcertifiedproduct.DeleteActionPermissions;
 
@@ -26,6 +29,9 @@ public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
     @Mock
     private ResourcePermissions resourcePermissions;
 
+    @Spy
+    private PendingCertifiedProductDAO pcpDao;
+
     @InjectMocks
     private DeleteActionPermissions permissions;
 
@@ -33,7 +39,7 @@ public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
+        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
     }
 
     @Override
@@ -65,12 +71,24 @@ public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
 
+        // Setup Mock
+        Mockito.when(pcpDao.findAcbIdById(ArgumentMatchers.anyLong())).thenReturn(2L);
+
         // This should always be false
         assertFalse(permissions.hasAccess());
+        assertTrue(permissions.hasAccess(-1L));
+    }
 
-        assertFalse(permissions.hasAccess(1L));
+    @Test
+    public void hasNoAccess_Acb() throws Exception {
+        setupForAcbUser(resourcePermissions);
 
-        assertTrue(permissions.hasAccess(2L));
+        // Setup Mock
+        Mockito.when(pcpDao.findAcbIdById(ArgumentMatchers.anyLong())).thenReturn(3L);
+
+        // This should always be false
+        assertFalse(permissions.hasAccess());
+        assertFalse(permissions.hasAccess(-1L));
     }
 
     @Override
