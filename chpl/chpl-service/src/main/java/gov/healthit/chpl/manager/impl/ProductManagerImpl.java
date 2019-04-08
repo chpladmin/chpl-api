@@ -106,27 +106,7 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
             throw new EntityCreationException("Cannot create a product without a developer ID.");
         }
 
-        DeveloperDTO dev = devDao.getById(dto.getDeveloperId());
-        if (dev == null) {
-            throw new EntityRetrievalException("Cannot find developer with id " + dto.getDeveloperId());
-        }
-        DeveloperStatusEventDTO currDevStatus = dev.getStatus();
-        if (currDevStatus == null || currDevStatus.getStatus() == null) {
-            String msg = "The product " + dto.getName() + " cannot be created since the status of developer "
-                    + dev.getName() + " cannot be determined.";
-            LOGGER.error(msg);
-            throw new EntityCreationException(msg);
-        } else if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-            String msg = "The product " + dto.getName() + " cannot be created since the developer " + dev.getName()
-                    + " has a status of " + currDevStatus.getStatus().getStatusName();
-            LOGGER.error(msg);
-            throw new EntityCreationException(msg);
-        }
-
-        ProductDTO result = productDao.create(dto);
-        String activityMsg = "Product " + dto.getName() + " was created.";
-        activityManager.addActivity(ActivityConcept.PRODUCT, result.getId(), activityMsg, null, result);
-        return getById(result.getId());
+        return createProduct(dto);
     }
 
     @Override
@@ -217,7 +197,7 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
         // create the new product and log activity
         // this method checks that the related developer is Active and will
         // throw an exception if they aren't
-        ProductDTO createdProduct = create(productToCreate);
+        ProductDTO createdProduct = createProduct(productToCreate);
 
         // re-assign versions to the new product and log activity for each
         List<Long> affectedVersionIds = new ArrayList<Long>();
@@ -327,4 +307,28 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
         return result;
     }
 
+    private ProductDTO createProduct(final ProductDTO dto)
+            throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+        DeveloperDTO dev = devDao.getById(dto.getDeveloperId());
+        if (dev == null) {
+            throw new EntityRetrievalException("Cannot find developer with id " + dto.getDeveloperId());
+        }
+        DeveloperStatusEventDTO currDevStatus = dev.getStatus();
+        if (currDevStatus == null || currDevStatus.getStatus() == null) {
+            String msg = "The product " + dto.getName() + " cannot be created since the status of developer "
+                    + dev.getName() + " cannot be determined.";
+            LOGGER.error(msg);
+            throw new EntityCreationException(msg);
+        } else if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
+            String msg = "The product " + dto.getName() + " cannot be created since the developer " + dev.getName()
+                    + " has a status of " + currDevStatus.getStatus().getStatusName();
+            LOGGER.error(msg);
+            throw new EntityCreationException(msg);
+        }
+
+        ProductDTO result = productDao.create(dto);
+        String activityMsg = "Product " + dto.getName() + " was created.";
+        activityManager.addActivity(ActivityConcept.PRODUCT, result.getId(), activityMsg, null, result);
+        return getById(result.getId());
+    }
 }
