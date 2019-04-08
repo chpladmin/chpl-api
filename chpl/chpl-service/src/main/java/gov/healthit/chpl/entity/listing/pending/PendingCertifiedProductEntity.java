@@ -48,6 +48,12 @@ public class PendingCertifiedProductEntity {
     @Column(name = "pending_certified_product_id", nullable = false)
     private Long id;
 
+    @Column(name = "error_count")
+    private Integer errorCount;
+
+    @Column(name = "warning_count")
+    private Integer warningCount;
+
     @Column(name = "practice_type_id")
     private Long practiceTypeId;
 
@@ -646,5 +652,21 @@ public class PendingCertifiedProductEntity {
 
     public void setParentListings(final Set<PendingCertifiedProductParentListingEntity> parentListings) {
         this.parentListings = parentListings;
+    }
+
+    public Integer getErrorCount() {
+        return errorCount;
+    }
+
+    public void setErrorCount(final Integer errorCount) {
+        this.errorCount = errorCount;
+    }
+
+    public Integer getWarningCount() {
+        return warningCount;
+    }
+
+    public void setWarningCount(final Integer warningCount) {
+        this.warningCount = warningCount;
     }
 }

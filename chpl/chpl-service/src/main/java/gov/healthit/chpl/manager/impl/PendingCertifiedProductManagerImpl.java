@@ -10,6 +10,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,14 +28,16 @@ import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
-import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultDTO;
-import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductMetadataDTO;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -79,8 +83,9 @@ public class PendingCertifiedProductManagerImpl extends SecuredManager implement
 
     @Override
     @Transactional(readOnly = true)
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_CERTIFIED_PRODUCT, "
-            + "T(gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions).GET_DETAILS_BY_ID)")
+    @PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_CERTIFIED_PRODUCT, "
+            + "T(gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions).GET_DETAILS_BY_ID,"
+            + "returnObject)")
     public PendingCertifiedProductDetails getById(final Long id)
             throws EntityRetrievalException, AccessDeniedException {
         return getById(id, false);
@@ -100,8 +105,9 @@ public class PendingCertifiedProductManagerImpl extends SecuredManager implement
 
     @Override
     @Transactional(readOnly = true)
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_CERTIFIED_PRODUCT, "
-            + "T(gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions).GET_DETAILS_BY_ID)")
+    @PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_CERTIFIED_PRODUCT, "
+            + "T(gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions).GET_DETAILS_BY_ID,"
+            + "returnObject)")
     public PendingCertifiedProductDetails getById(final Long id, final boolean includeRetired)
             throws EntityRetrievalException, AccessDeniedException {
 
@@ -115,6 +121,17 @@ public class PendingCertifiedProductManagerImpl extends SecuredManager implement
         addAllVersionsToCmsCriterion(pcpDetails);
         addAllMeasuresToCertificationCriteria(pcpDetails);
         return pcpDetails;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_CERTIFIED_PRODUCT, "
+            + "T(gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions).GET_ALL_METADATA)")
+    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_CERTIFIED_PRODUCT, "
+            + "T(gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions).GET_ALL_METADATA, filterObject)")
+    public List<PendingCertifiedProductMetadataDTO> getAllPendingCertifiedProductMetadata() {
+        List<PendingCertifiedProductMetadataDTO> products = pcpDao.getAllMetadata();
+        return products;
     }
 
     @Override
@@ -176,7 +193,7 @@ public class PendingCertifiedProductManagerImpl extends SecuredManager implement
         }
 
         String activityMsg = "Certified product " + pendingCpDto.getProductName() + " is pending.";
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCpDto.getId(),
+        activityManager.addActivity(ActivityConcept.PENDING_CERTIFIED_PRODUCT, pendingCpDto.getId(),
                 activityMsg, null, pendingCpDto);
 
         return pendingCpDto;
@@ -185,21 +202,20 @@ public class PendingCertifiedProductManagerImpl extends SecuredManager implement
     @Override
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_CERTIFIED_PRODUCT, "
-            + "T(gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions).DELETE, #acbId)")
-    public void deletePendingCertifiedProduct(final Long acbId, final Long pendingProductId)
+            + "T(gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions).DELETE, #pendingProductId)")
+    public void deletePendingCertifiedProduct(final Long pendingProductId)
             throws EntityRetrievalException, EntityNotFoundException, EntityCreationException, AccessDeniedException,
             JsonProcessingException, ObjectMissingValidationException {
 
         PendingCertifiedProductDTO pendingCp = pcpDao.findById(pendingProductId, true);
-        if (pendingCp == null) {
-            throw new EntityNotFoundException("Could not find pending certified product with id " + pendingProductId);
-        }
-
-        if (isPendingListingAvailableForUpdate(pendingCp.getCertificationBodyId(), pendingCp)) {
-            pcpDao.delete(pendingProductId);
-            String activityMsg = "Pending certified product " + pendingCp.getProductName() + " has been rejected.";
-            activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCp.getId(),
-                    activityMsg, pendingCp, null);
+        //dao throws entity not found exception if bad id
+        if (pendingCp != null) {
+            if (isPendingListingAvailableForUpdate(pendingCp)) {
+                pcpDao.delete(pendingProductId);
+                String activityMsg = "Pending certified product " + pendingCp.getProductName() + " has been rejected.";
+                activityManager.addActivity(ActivityConcept.PENDING_CERTIFIED_PRODUCT, pendingCp.getId(),
+                        activityMsg, pendingCp, null);
+            }
         }
     }
 
@@ -213,7 +229,7 @@ public class PendingCertifiedProductManagerImpl extends SecuredManager implement
         pcpDao.delete(pendingProductId);
 
         String activityMsg = "Pending certified product " + pendingCp.getProductName() + " has been confirmed.";
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCp.getId(),
+        activityManager.addActivity(ActivityConcept.PENDING_CERTIFIED_PRODUCT, pendingCp.getId(),
                 activityMsg, pendingCp, pendingCp);
 
     }
@@ -225,14 +241,10 @@ public class PendingCertifiedProductManagerImpl extends SecuredManager implement
     public boolean isPendingListingAvailableForUpdate(final Long acbId, final Long pendingProductId)
             throws EntityRetrievalException, ObjectMissingValidationException {
         PendingCertifiedProductDTO pendingCp = pcpDao.findById(pendingProductId, true);
-        return isPendingListingAvailableForUpdate(acbId, pendingCp);
+        return isPendingListingAvailableForUpdate(pendingCp);
     }
 
-    @Override
-    @Transactional
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_CERTIFIED_PRODUCT, "
-            + "T(gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions).UPDATEABLE, #acbId)")
-    public boolean isPendingListingAvailableForUpdate(final Long acbId, final PendingCertifiedProductDTO pendingCp)
+    private boolean isPendingListingAvailableForUpdate(final PendingCertifiedProductDTO pendingCp)
             throws EntityRetrievalException, ObjectMissingValidationException {
         if (pendingCp.getDeleted().booleanValue()) {
             ObjectMissingValidationException alreadyDeletedEx = new ObjectMissingValidationException();
@@ -383,7 +395,8 @@ public class PendingCertifiedProductManagerImpl extends SecuredManager implement
     @Override
     public void addAllVersionsToCmsCriterion(final PendingCertifiedProductDetails pcpDetails) {
         // now add allVersions for CMSs
-        String certificationEdition = pcpDetails.getCertificationEdition().get("name").toString();
+        String certificationEdition =
+                pcpDetails.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString();
         if (!certificationEdition.startsWith("2011")) {
             List<CQMCriterion> cqms = getAvailableCQMVersions();
             for (CQMCriterion cqm : cqms) {
@@ -426,7 +439,8 @@ public class PendingCertifiedProductManagerImpl extends SecuredManager implement
     public void addAvailableTestFunctionalities(final PendingCertifiedProductDetails pcpDetails) {
         // now add allMeasures for criteria
         for (CertificationResult cert : pcpDetails.getCertificationResults()) {
-            String edition = pcpDetails.getCertificationEdition().get("name").toString();
+            String edition =
+                    pcpDetails.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString();
             Long practiceTypeId = null;
             if (pcpDetails.getPracticeType().containsKey("id")) {
                 if (pcpDetails.getPracticeType().get("id") != null) {

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -127,7 +127,7 @@ public class ListingValidatorFactoryImpl implements ListingValidatorFactory {
 
     @Override
     public Validator getValidator(final CertifiedProductSearchDetails listing) {
-        String edition = listing.getCertificationEdition().get("name").toString();
+        String edition = listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString();
         if (StringUtils.isEmpty(listing.getChplProductNumber())
                 || StringUtils.isEmpty(edition)) {
             String errMsg = msgUtil.getMessage("listing.validator.editionOrChplNumberNotFound", listing.getId().toString());

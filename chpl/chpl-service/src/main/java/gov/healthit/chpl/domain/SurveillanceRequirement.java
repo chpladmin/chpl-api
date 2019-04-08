@@ -10,6 +10,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 
+import org.apache.commons.lang3.StringUtils;
+
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SurveillanceRequirement implements Serializable {
@@ -51,6 +53,82 @@ public class SurveillanceRequirement implements Serializable {
 
     public SurveillanceRequirement() {
         this.nonconformities = new ArrayList<SurveillanceNonconformity>();
+    }
+
+    public boolean matches(SurveillanceRequirement anotherRequirement) {
+        if (this.id == null && anotherRequirement.id != null
+                || this.id != null && anotherRequirement.id == null) {
+            return false;
+        } else if (this.id != null && anotherRequirement.id != null
+                && this.id.longValue() != anotherRequirement.id.longValue()) {
+            return false;
+        }
+        if (StringUtils.isEmpty(this.requirement) && !StringUtils.isEmpty(anotherRequirement.requirement)
+                || !StringUtils.isEmpty(this.requirement) && StringUtils.isEmpty(anotherRequirement.requirement)) {
+            return false;
+        } else if (!StringUtils.isEmpty(this.requirement) && !StringUtils.isEmpty(anotherRequirement.requirement)
+                && !this.requirement.equalsIgnoreCase(anotherRequirement.requirement)) {
+            return false;
+        }
+        if (this.type == null && anotherRequirement.type != null
+                || this.type != null && anotherRequirement.type == null) {
+            return false;
+        } else if (this.type != null && anotherRequirement.type != null
+                && !this.type.matches(anotherRequirement.type)) {
+            return false;
+        }
+        if (this.result == null && anotherRequirement.result != null
+                || this.result != null && anotherRequirement.result == null) {
+            return false;
+        } else if (this.result != null && anotherRequirement.result != null
+                && !this.result.matches(anotherRequirement.result)) {
+            return false;
+        }
+
+        if (this.nonconformities == null && anotherRequirement.nonconformities != null
+                || this.nonconformities != null && anotherRequirement.nonconformities == null) {
+            return false;
+        } else if (this.nonconformities != null && anotherRequirement.nonconformities != null
+                && this.nonconformities.size() != anotherRequirement.nonconformities.size()) {
+            //easy check if the sizes are different
+            return false;
+        } else {
+            //nonconformities - were any removed?
+            for (SurveillanceNonconformity thisNc : this.nonconformities) {
+                boolean foundInOtherRequirement = false;
+                for (SurveillanceNonconformity otherNc : anotherRequirement.nonconformities) {
+                    if (thisNc.getId().longValue() == otherNc.getId().longValue()) {
+                        foundInOtherRequirement = true;
+                    }
+                }
+                if (!foundInOtherRequirement) {
+                    return false;
+                }
+            }
+            //nonconformities - were any added?
+            for (SurveillanceNonconformity otherNc : anotherRequirement.nonconformities) {
+                boolean foundInThisRequirement = false;
+                for (SurveillanceNonconformity thisNc : this.nonconformities) {
+                    if (thisNc.getId().longValue() == otherNc.getId().longValue()) {
+                        foundInThisRequirement = true;
+                    }
+                }
+                if (!foundInThisRequirement) {
+                    return false;
+                }
+            }
+            //nonconformities - were any changed?
+            for (SurveillanceNonconformity otherNc : anotherRequirement.nonconformities) {
+                for (SurveillanceNonconformity thisNc : this.nonconformities) {
+                    if (thisNc.getId().longValue() == otherNc.getId().longValue()) {
+                        if (!thisNc.matches(otherNc)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     public Long getId() {

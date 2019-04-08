@@ -7,10 +7,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.TestToolDAO;
-import gov.healthit.chpl.dto.PendingCertificationResultDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
-import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestToolDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 

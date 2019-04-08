@@ -1,7 +1,7 @@
 package gov.healthit.chpl.validation.listing;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 
 public interface ListingValidatorFactory {
     PendingValidator getValidator(PendingCertifiedProductDTO product);

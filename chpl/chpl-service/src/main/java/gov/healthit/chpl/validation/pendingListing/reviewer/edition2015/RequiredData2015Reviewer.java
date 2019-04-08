@@ -14,21 +14,21 @@ import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultMacraMeasureDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultTestDataDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultTestFunctionalityDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultTestProcedureDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultTestTaskDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultTestTaskParticipantDTO;
-import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
-import gov.healthit.chpl.dto.PendingCertifiedProductQmsStandardDTO;
-import gov.healthit.chpl.dto.PendingCqmCertificationCriterionDTO;
-import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
-import gov.healthit.chpl.dto.PendingTestTaskDTO;
 import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultMacraMeasureDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestDataDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestFunctionalityDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestProcedureDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestTaskDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestTaskParticipantDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductQmsStandardDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCqmCertificationCriterionDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCqmCriterionDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingTestTaskDTO;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
@@ -773,7 +773,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_PROCEDURE)
                         && cert.getTestProcedures() != null && cert.getTestProcedures().size() > 0) {
                     for (PendingCertificationResultTestProcedureDTO crTestProc : cert.getTestProcedures()) {
-                        if (crTestProc.getTestProcedure() == null || crTestProc.getTestProcedureId() == null) {
+                        if (crTestProc.getTestProcedure() == null && crTestProc.getTestProcedureId() == null) {
                             listing.getErrorMessages().add(
                                     msgUtil.getMessage("listing.criteria.badTestProcedureName",
                                             cert.getNumber(), crTestProc.getEnteredName()));
@@ -781,7 +781,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                             TestProcedureDTO foundTestProc =
                                     testProcDao.getByCriteriaNumberAndValue(cert.getNumber(),
                                             crTestProc.getTestProcedure().getName());
-                            if(foundTestProc == null || foundTestProc.getId() == null) {
+                            if (foundTestProc == null || foundTestProc.getId() == null) {
                                 listing.getErrorMessages().add(
                                         msgUtil.getMessage("listing.criteria.badTestProcedureName",
                                                 cert.getNumber(), crTestProc.getTestProcedure().getName()));
@@ -800,7 +800,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_DATA)
                         && cert.getTestData() != null && cert.getTestData().size() > 0) {
                     for (PendingCertificationResultTestDataDTO crTestData : cert.getTestData()) {
-                        if (crTestData.getTestData() == null || crTestData.getTestDataId() == null) {
+                        if (crTestData.getTestData() == null && crTestData.getTestDataId() == null) {
                             listing.getWarningMessages().add(
                                     msgUtil.getMessage("listing.criteria.badTestDataName",
                                             crTestData.getEnteredName(), cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA));
