@@ -14,18 +14,18 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 
-import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.auth.manager.UserManager;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.auth.AuthUtil;
 import gov.healthit.chpl.domain.Job;
 import gov.healthit.chpl.domain.concept.JobTypeConcept;
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.dto.job.JobTypeDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.JobManager;
+import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.util.FileUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -53,7 +53,7 @@ public class MeaningfulUseController {
             throws EntityRetrievalException, EntityCreationException, ValidationException,
             MaxUploadSizeExceededException {
 
-        if (Util.getCurrentUser() == null || Util.getCurrentUser().getId() == null) {
+        if (AuthUtil.getCurrentUser() == null || AuthUtil.getCurrentUser().getId() == null) {
             return new ResponseEntity<Job>(HttpStatus.UNAUTHORIZED);
         }
 
@@ -70,13 +70,13 @@ public class MeaningfulUseController {
         // figure out the user
         UserDTO currentUser = null;
         try {
-            currentUser = userManager.getById(Util.getCurrentUser().getId());
+            currentUser = userManager.getById(AuthUtil.getCurrentUser().getId());
         } catch (final UserRetrievalException ex) {
-            LOGGER.error("Error finding user with ID " + Util.getCurrentUser().getId() + ": " + ex.getMessage());
+            LOGGER.error("Error finding user with ID " + AuthUtil.getCurrentUser().getId() + ": " + ex.getMessage());
             return new ResponseEntity<Job>(HttpStatus.UNAUTHORIZED);
         }
         if (currentUser == null) {
-            LOGGER.error("No user with ID " + Util.getCurrentUser().getId() + " could be found in the system.");
+            LOGGER.error("No user with ID " + AuthUtil.getCurrentUser().getId() + " could be found in the system.");
             return new ResponseEntity<Job>(HttpStatus.UNAUTHORIZED);
         }
 

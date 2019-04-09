@@ -15,12 +15,12 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.entity.AccessibilityStandardEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("accessibilityStandardDAO")
 public class AccessibilityStandardDAOImpl extends BaseDAOImpl implements AccessibilityStandardDAO {
@@ -44,7 +44,7 @@ public class AccessibilityStandardDAOImpl extends BaseDAOImpl implements Accessi
                 entity.setCreationDate(new Date());
                 entity.setDeleted(false);
                 entity.setLastModifiedDate(new Date());
-                entity.setLastModifiedUser(Util.getAuditId());
+                entity.setLastModifiedUser(AuthUtil.getAuditId());
                 entity.setName(dto.getName());
                 create(entity);
             } catch (Exception ex) {
@@ -81,7 +81,7 @@ public class AccessibilityStandardDAOImpl extends BaseDAOImpl implements Accessi
         if (toDelete != null) {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(Util.getAuditId());
+            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             update(toDelete);
         }
     }

@@ -8,10 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.auth.jwt.JWTCreationException;
-import gov.healthit.chpl.auth.jwt.JWTValidationException;
 import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.exception.JWTCreationException;
+import gov.healthit.chpl.exception.JWTValidationException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {

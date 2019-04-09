@@ -35,21 +35,22 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.authentication.Authenticator;
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
-import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.auth.dto.UserPermissionDTO;
-import gov.healthit.chpl.auth.dto.UserResetTokenDTO;
-import gov.healthit.chpl.auth.json.UserCreationJSONObject;
-import gov.healthit.chpl.auth.json.UserInfoJSONObject;
-import gov.healthit.chpl.auth.jwt.JWTCreationException;
-import gov.healthit.chpl.auth.jwt.JWTValidationException;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.User;
-import gov.healthit.chpl.auth.user.UserCreationException;
-import gov.healthit.chpl.auth.user.UserManagementException;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.caching.UnitTestRules;
+import gov.healthit.chpl.domain.auth.CreateUserRequest;
+import gov.healthit.chpl.domain.auth.UserInfoJSONObject;
+import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.dto.auth.UserPermissionDTO;
+import gov.healthit.chpl.dto.auth.UserResetTokenDTO;
+import gov.healthit.chpl.exception.JWTCreationException;
+import gov.healthit.chpl.exception.JWTValidationException;
+import gov.healthit.chpl.exception.UserCreationException;
+import gov.healthit.chpl.exception.UserManagementException;
+import gov.healthit.chpl.exception.UserPermissionRetrievalException;
+import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.manager.auth.UserManager;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
@@ -97,7 +98,7 @@ public class UserManagerTest {
 
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        UserCreationJSONObject toCreate = new UserCreationJSONObject();
+        CreateUserRequest toCreate = new CreateUserRequest();
         toCreate.setEmail("email@example.com");
         toCreate.setFullName("test");
         toCreate.setFriendlyName("test");
@@ -127,7 +128,7 @@ public class UserManagerTest {
 
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        UserCreationJSONObject toCreate = new UserCreationJSONObject();
+        CreateUserRequest toCreate = new CreateUserRequest();
         toCreate.setEmail("email@example.com");
         toCreate.setFullName("test");
         toCreate.setFriendlyName("test");
@@ -169,7 +170,7 @@ public class UserManagerTest {
 
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        UserCreationJSONObject toCreate = new UserCreationJSONObject();
+        CreateUserRequest toCreate = new CreateUserRequest();
         toCreate.setEmail("email@example.com");
         toCreate.setFullName("test");
         toCreate.setFriendlyName("test");
@@ -199,7 +200,7 @@ public class UserManagerTest {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         // public UserDTO update(User userInfo) throws UserRetrievalException;
-        gov.healthit.chpl.auth.json.User userInfo = new gov.healthit.chpl.auth.json.User();
+        gov.healthit.chpl.domain.auth.User userInfo = new gov.healthit.chpl.domain.auth.User();
         userInfo.setSubjectName("testUser2");
         userInfo.setFullName("firstName");
         userInfo.setFriendlyName("lastName");

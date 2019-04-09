@@ -1,9 +1,9 @@
 package gov.healthit.chpl.manager;
 
-import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 
 public interface UserPermissionsManager {
     void addAcbPermission(CertificationBodyDTO acb, Long userId)

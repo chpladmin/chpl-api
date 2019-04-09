@@ -13,26 +13,26 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.dao.UserDAO;
-import gov.healthit.chpl.auth.dao.UserPermissionDAO;
-import gov.healthit.chpl.auth.domain.Authority;
-import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.user.User;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.dao.UserCertificationBodyMapDAO;
 import gov.healthit.chpl.dao.UserRoleMapDAO;
 import gov.healthit.chpl.dao.UserTestingLabMapDAO;
+import gov.healthit.chpl.dao.auth.UserDAO;
+import gov.healthit.chpl.dao.auth.UserPermissionDAO;
+import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.RoleDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
 import gov.healthit.chpl.dto.UserRoleMapDTO;
 import gov.healthit.chpl.dto.UserTestingLabMapDTO;
+import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.dto.auth.UserPermissionDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
@@ -98,7 +98,7 @@ public class ResourcePermissions {
 
     @Transactional(readOnly = true)
     public List<CertificationBodyDTO> getAllAcbsForCurrentUser() {
-        User user = Util.getCurrentUser();
+        User user = AuthUtil.getCurrentUser();
         List<CertificationBodyDTO> acbs = new ArrayList<CertificationBodyDTO>();
 
         if (user != null) {
@@ -126,7 +126,7 @@ public class ResourcePermissions {
 
     @Transactional(readOnly = true)
     public List<TestingLabDTO> getAllAtlsForCurrentUser() {
-        User user = Util.getCurrentUser();
+        User user = AuthUtil.getCurrentUser();
         List<TestingLabDTO> atls = new ArrayList<TestingLabDTO>();
 
         if (user != null) {
@@ -243,11 +243,11 @@ public class ResourcePermissions {
     }
 
     public boolean isUserAnonymous() {
-        return Util.getCurrentUser() == null;
+        return AuthUtil.getCurrentUser() == null;
     }
 
     private boolean doesUserHaveRole(final String authority) {
-        User user = Util.getCurrentUser();
+        User user = AuthUtil.getCurrentUser();
         if (user == null) {
             return false;
         }
@@ -262,7 +262,7 @@ public class ResourcePermissions {
     }
 
     private boolean doesAuthenticationHaveRole(final String authority) {
-        Authentication auth = Util.getCurrentAuthentication();
+        Authentication auth = AuthUtil.getCurrentAuthentication();
         if (auth == null) {
             return false;
         }

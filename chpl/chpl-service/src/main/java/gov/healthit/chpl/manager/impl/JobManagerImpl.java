@@ -13,9 +13,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.dao.JobDAO;
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.dto.job.JobTypeDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -25,6 +24,7 @@ import gov.healthit.chpl.job.RunnableJob;
 import gov.healthit.chpl.job.RunnableJobFactory;
 import gov.healthit.chpl.manager.JobManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Service
 public class JobManagerImpl extends SecuredManager implements JobManager {
@@ -85,7 +85,7 @@ public class JobManagerImpl extends SecuredManager implements JobManager {
 
         Long userId = null;
         if (!resourcePermissions.isUserRoleAdmin()) {
-            userId = Util.getCurrentUser().getId();
+            userId = AuthUtil.getCurrentUser().getId();
         }
         return jobDao.findAllRunningAndCompletedBetweenDates(new Date(earliestCompletedJobMillis), new Date(), userId);
     }

@@ -29,38 +29,38 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.EmailBuilder;
-import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.AuthUtil;
 import gov.healthit.chpl.auth.authentication.Authenticator;
-import gov.healthit.chpl.auth.domain.Authority;
-import gov.healthit.chpl.auth.dto.InvitationDTO;
-import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.auth.dto.UserPermissionDTO;
-import gov.healthit.chpl.auth.json.GrantRoleJSONObject;
-import gov.healthit.chpl.auth.json.User;
-import gov.healthit.chpl.auth.json.UserInfoJSONObject;
-import gov.healthit.chpl.auth.json.UserInvitation;
-import gov.healthit.chpl.auth.json.UserListJSONObject;
-import gov.healthit.chpl.auth.jwt.JWTCreationException;
-import gov.healthit.chpl.auth.manager.UserManager;
-import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.auth.user.UserCreationException;
-import gov.healthit.chpl.auth.user.UserManagementException;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
-import gov.healthit.chpl.domain.AuthorizeCredentials;
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.domain.auth.Authority;
+import gov.healthit.chpl.domain.auth.AuthorizeCredentials;
+import gov.healthit.chpl.domain.auth.GrantRoleJSONObject;
+import gov.healthit.chpl.domain.auth.User;
+import gov.healthit.chpl.domain.auth.UserInfoJSONObject;
+import gov.healthit.chpl.domain.auth.UserInvitation;
+import gov.healthit.chpl.domain.auth.UsersResponse;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
+import gov.healthit.chpl.dto.auth.InvitationDTO;
+import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.dto.auth.UserPermissionDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.JWTCreationException;
+import gov.healthit.chpl.exception.UserCreationException;
+import gov.healthit.chpl.exception.UserManagementException;
+import gov.healthit.chpl.exception.UserPermissionRetrievalException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.InvitationManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
+import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -249,7 +249,7 @@ public class UserManagementController {
             throw new InvalidArgumentsException("User key is required.");
         }
 
-        JWTAuthenticatedUser loggedInUser = (JWTAuthenticatedUser) Util.getCurrentUser();
+        JWTAuthenticatedUser loggedInUser = (JWTAuthenticatedUser) AuthUtil.getCurrentUser();
         if (loggedInUser == null
                 && (StringUtils.isEmpty(credentials.getUserName()) || StringUtils.isEmpty(credentials.getPassword()))) {
             throw new InvalidArgumentsException(
@@ -472,7 +472,7 @@ public class UserManagementController {
             try {
                 userManager.grantAdmin(user.getSubjectName());
             } catch (final AccessDeniedException adEx) {
-                LOGGER.error("User " + Util.getUsername() + " does not have access to grant ROLE_ADMIN");
+                LOGGER.error("User " + AuthUtil.getUsername() + " does not have access to grant ROLE_ADMIN");
                 throw adEx;
             }
         } else {
@@ -521,7 +521,7 @@ public class UserManagementController {
             try {
                 userManager.removeAdmin(user.getSubjectName());
             } catch (final AccessDeniedException adEx) {
-                LOGGER.error("User " + Util.getUsername() + " does not have access to revoke ROLE_ADMIN");
+                LOGGER.error("User " + AuthUtil.getUsername() + " does not have access to revoke ROLE_ADMIN");
             }
         } else if (grantRoleObj.getRole().equals(Authority.ROLE_ACB)) {
             try {
@@ -534,7 +534,7 @@ public class UserManagementController {
                     userPermissionsManager.deleteAcbPermission(acb, user.getId());
                 }
             } catch (final AccessDeniedException adEx) {
-                LOGGER.error("User " + Util.getUsername() + " does not have access to revoke ROLE_ADMIN");
+                LOGGER.error("User " + AuthUtil.getUsername() + " does not have access to revoke ROLE_ADMIN");
             }
         } else {
             userManager.removeRole(grantRoleObj.getSubjectName(), grantRoleObj.getRole());
@@ -556,7 +556,7 @@ public class UserManagementController {
                     + "and ROLE_CMS_STAFF can see their self.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @PreAuthorize("isAuthenticated()")
-    public @ResponseBody UserListJSONObject getUsers() {
+    public @ResponseBody UsersResponse getUsers() {
         List<UserDTO> userList = userManager.getAll();
         List<UserInfoJSONObject> userInfos = new ArrayList<UserInfoJSONObject>();
 
@@ -572,7 +572,7 @@ public class UserManagementController {
             userInfos.add(userInfo);
         }
 
-        UserListJSONObject ulist = new UserListJSONObject();
+        UsersResponse ulist = new UsersResponse();
         ulist.setUsers(userInfos);
         return ulist;
     }

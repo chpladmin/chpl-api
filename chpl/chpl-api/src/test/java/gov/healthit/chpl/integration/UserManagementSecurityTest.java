@@ -38,12 +38,12 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import gov.healthit.chpl.UnitTestUtil;
 import gov.healthit.chpl.auth.authentication.Authenticator;
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
-import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.auth.dto.UserPermissionDTO;
-import gov.healthit.chpl.auth.filter.JWTAuthenticationFilter;
-import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.dto.auth.UserPermissionDTO;
+import gov.healthit.chpl.filter.JWTAuthenticationFilter;
+import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.web.controller.UserManagementController;
 
 @RunWith(SpringJUnit4ClassRunner.class)

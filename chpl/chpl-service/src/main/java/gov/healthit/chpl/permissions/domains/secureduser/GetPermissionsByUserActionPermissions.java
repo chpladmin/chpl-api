@@ -5,9 +5,9 @@ import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Component("securedUserGetPermissionsByUserActionPermissions")
 public class GetPermissionsByUserActionPermissions extends ActionPermissions {
@@ -29,9 +29,9 @@ public class GetPermissionsByUserActionPermissions extends ActionPermissions {
         return getResourcePermissions().isUserRoleUserAuthenticator() || getResourcePermissions().isUserRoleAdmin()
                 || getResourcePermissions().isUserRoleOnc() || getResourcePermissions().isUserRoleAcbAdmin()
                 || getResourcePermissions().isUserRoleAtlAdmin()
-                || permissionEvaluator.hasPermission(Util.getCurrentUser(), (UserDTO) obj,
+                || permissionEvaluator.hasPermission(AuthUtil.getCurrentUser(), (UserDTO) obj,
                         BasePermission.ADMINISTRATION)
-                || permissionEvaluator.hasPermission(Util.getCurrentUser(), (UserDTO) obj, BasePermission.READ);
+                || permissionEvaluator.hasPermission(AuthUtil.getCurrentUser(), (UserDTO) obj, BasePermission.READ);
     }
 
 }

@@ -29,7 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
@@ -38,6 +37,7 @@ import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.AuthUtil;
 import junit.framework.TestCase;
 
 /**
@@ -152,7 +152,7 @@ public class TestingLabDaoTest extends TestCase {
         address.setCountry("USA");
         address.setDeleted(false);
         address.setLastModifiedDate(new Date());
-        address.setLastModifiedUser(Util.getAuditId());
+        address.setLastModifiedUser(AuthUtil.getAuditId());
         atl.setAddress(address);
         atl = atlDao.create(atl);
 

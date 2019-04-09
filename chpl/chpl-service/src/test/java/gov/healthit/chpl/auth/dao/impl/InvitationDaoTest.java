@@ -22,14 +22,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-import gov.healthit.chpl.auth.dao.InvitationDAO;
-import gov.healthit.chpl.auth.dao.InvitationPermissionDAO;
-import gov.healthit.chpl.auth.dto.InvitationDTO;
 import gov.healthit.chpl.auth.dto.InvitationPermissionDTO;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.auth.user.UserCreationException;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.dao.auth.InvitationDAO;
+import gov.healthit.chpl.dao.auth.InvitationPermissionDAO;
+import gov.healthit.chpl.dto.auth.InvitationDTO;
+import gov.healthit.chpl.exception.UserCreationException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {

@@ -16,19 +16,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
+import gov.healthit.chpl.util.AuthUtil;
 
 /**
  * Business logic for accessing and updating ACBs.
@@ -82,10 +82,10 @@ public class CertificationBodyManagerImpl extends SecuredManager implements Cert
         CertificationBodyDTO result = certificationBodyDao.create(acb);
 
         // Grant the current principal administrative permission to the ACB
-        userPermissionsManager.addAcbPermission(result, Util.getCurrentUser().getId());
+        userPermissionsManager.addAcbPermission(result, AuthUtil.getCurrentUser().getId());
 
         LOGGER.debug("Created acb " + result + " and granted admin permission to recipient "
-                + gov.healthit.chpl.auth.Util.getUsername());
+                + gov.healthit.chpl.util.AuthUtil.getUsername());
 
         String activityMsg = "Created Certification Body " + result.getName();
 

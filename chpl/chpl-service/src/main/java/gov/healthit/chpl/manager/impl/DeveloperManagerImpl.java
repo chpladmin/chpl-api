@@ -23,7 +23,6 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -55,6 +54,7 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
@@ -221,7 +221,7 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
         // then nothing can be changed
         if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
                 && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
-            String msg = msgUtil.getMessage("developer.notActiveNotAdminCantChangeStatus", Util.getUsername(),
+            String msg = msgUtil.getMessage("developer.notActiveNotAdminCantChangeStatus", AuthUtil.getUsername(),
                     beforeDev.getName());
             LOGGER.error(msg);
             throw new EntityCreationException(msg);
@@ -536,7 +536,7 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
         DeveloperStatusEventDTO currDevStatus = oldDeveloper.getStatus();
         if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
                 && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
-            String msg = msgUtil.getMessage("developer.notActiveNotAdminCantSplit", Util.getUsername(),
+            String msg = msgUtil.getMessage("developer.notActiveNotAdminCantSplit", AuthUtil.getUsername(),
                     oldDeveloper.getName());
             LOGGER.error(msg);
             throw new EntityCreationException(msg);

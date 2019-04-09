@@ -5,8 +5,6 @@ import java.util.List;
 
 import javax.persistence.Query;
 
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.entity.UserEntity;
@@ -129,8 +127,7 @@ public class UserCertificationBodyMapDAOImpl extends BaseDAOImpl implements User
         List<CertificationBodyEntity> result = query.getResultList();
 
         if (result == null || result.size() == 0) {
-            String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("acb.notFound"),
-                    LocaleContextHolder.getLocale()));
+            String msg = msgUtil.getMessage("acb.notFound");
             throw new EntityRetrievalException(msg);
         } else if (result.size() > 1) {
             throw new EntityRetrievalException("Data error. Duplicate certificaiton body id in database.");
@@ -150,8 +147,7 @@ public class UserCertificationBodyMapDAOImpl extends BaseDAOImpl implements User
         List<UserEntity> result = query.getResultList();
 
         if (result == null || result.size() == 0) {
-            String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("user.notFound"),
-                    LocaleContextHolder.getLocale()));
+            String msg = msgUtil.getMessage("user.notFound");
             throw new EntityRetrievalException(msg);
         } else if (result.size() > 1) {
             throw new EntityRetrievalException("Data error. Duplicate user id in database.");

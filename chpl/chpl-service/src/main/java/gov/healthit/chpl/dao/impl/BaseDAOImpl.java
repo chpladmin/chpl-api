@@ -1,6 +1,7 @@
 package gov.healthit.chpl.dao.impl;
 
-import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -14,7 +15,7 @@ public class BaseDAOImpl {
     @PersistenceContext
     protected EntityManager entityManager;
     @Autowired
-    MessageSource messageSource;
+    protected ErrorMessageUtil msgUtil;
 
     public EntityManager getEntityManager() {
         return entityManager;
@@ -27,10 +28,20 @@ public class BaseDAOImpl {
     public Long getUserId(final Long defaultUserID) {
         // If there is no user the current context, assume this is a system
         // process
-        if (Util.getCurrentUser() == null || Util.getCurrentUser().getId() == null) {
+        if (AuthUtil.getCurrentUser() == null || AuthUtil.getCurrentUser().getId() == null) {
             return defaultUserID;
         } else {
-            return Util.getCurrentUser().getId();
+            return AuthUtil.getCurrentUser().getId();
         }
+    }
+
+    protected void create(final Object entity) {
+        entityManager.persist(entity);
+        entityManager.flush();
+    }
+
+    protected void update(final Object entity) {
+        entityManager.merge(entity);
+        entityManager.flush();
     }
 }

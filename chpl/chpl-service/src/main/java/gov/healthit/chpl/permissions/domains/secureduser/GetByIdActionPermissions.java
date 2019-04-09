@@ -5,8 +5,8 @@ import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Component("securedUserGetByIdActionPermissions")
 public class GetByIdActionPermissions extends ActionPermissions {
@@ -29,7 +29,7 @@ public class GetByIdActionPermissions extends ActionPermissions {
         } else {
             return getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()
                     || getResourcePermissions().isUserRoleAcbAdmin() || getResourcePermissions().isUserRoleAtlAdmin()
-                    || permissionEvaluator.hasPermission(Util.getCurrentUser(), (Long) obj,
+                    || permissionEvaluator.hasPermission(AuthUtil.getCurrentUser(), (Long) obj,
                             "gov.healthit.chpl.auth.dto.UserDTO", BasePermission.ADMINISTRATION);
         }
 

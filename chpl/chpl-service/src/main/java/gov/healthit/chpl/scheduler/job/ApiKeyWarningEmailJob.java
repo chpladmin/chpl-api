@@ -18,11 +18,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.auth.EmailBuilder;
 import gov.healthit.chpl.dao.ApiKeyDAO;
 import gov.healthit.chpl.dto.ApiKeyDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ApiKeyManager;
+import gov.healthit.chpl.util.EmailBuilder;
 
 public class ApiKeyWarningEmailJob implements Job {
     private static final Logger LOGGER = LogManager.getLogger("apiKeyWarningEmailJobLogger");

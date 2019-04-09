@@ -5,7 +5,7 @@ import java.util.Date;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import gov.healthit.chpl.auth.json.User;
+import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.util.Util;
 
 /**

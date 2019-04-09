@@ -2,7 +2,7 @@ package gov.healthit.chpl.dto;
 
 import java.io.Serializable;
 
-import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.UserTestingLabMapEntity;
 
 public class UserTestingLabMapDTO implements Serializable {
@@ -16,7 +16,7 @@ public class UserTestingLabMapDTO implements Serializable {
     public UserTestingLabMapDTO(UserTestingLabMapEntity entity) {
         this.id = entity.getId();
         this.testingLab = new TestingLabDTO(entity.getTestingLab());
-        this.user = new gov.healthit.chpl.auth.dto.UserDTO(entity.getUser());
+        this.user = new gov.healthit.chpl.dto.auth.UserDTO(entity.getUser());
         this.retired = entity.getRetired();
     }
 

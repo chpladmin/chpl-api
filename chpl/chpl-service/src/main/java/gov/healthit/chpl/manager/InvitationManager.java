@@ -2,14 +2,14 @@ package gov.healthit.chpl.manager;
 
 import java.util.List;
 
-import gov.healthit.chpl.auth.dto.InvitationDTO;
-import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.auth.json.UserCreationJSONObject;
-import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
-import gov.healthit.chpl.auth.user.UserCreationException;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.domain.auth.CreateUserRequest;
+import gov.healthit.chpl.dto.auth.InvitationDTO;
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.UserCreationException;
+import gov.healthit.chpl.exception.UserPermissionRetrievalException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 
 public interface InvitationManager {
 
@@ -38,7 +38,7 @@ public interface InvitationManager {
 
     InvitationDTO getByConfirmationHash(String hash);
 
-    UserDTO createUserFromInvitation(InvitationDTO invitation, UserCreationJSONObject user)
+    UserDTO createUserFromInvitation(InvitationDTO invitation, CreateUserRequest user)
             throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException, UserCreationException;
 
     UserDTO confirmAccountEmail(InvitationDTO invitation) throws UserRetrievalException;

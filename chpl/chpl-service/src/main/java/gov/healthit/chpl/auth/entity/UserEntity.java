@@ -1,8 +1,6 @@
 package gov.healthit.chpl.auth.entity;
 
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,10 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
-
-import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 
 /**
  * Entity for user.
@@ -23,8 +19,7 @@ import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 @Entity
 @Table(name = "`user`")
 public class UserEntity {
-
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -5792083881155731413L;
 
     @Id
     @Column(name = "user_id")
@@ -33,6 +28,9 @@ public class UserEntity {
 
     @Column(name = "user_name", unique = true)
     private String subjectName;
+
+    @Column(name = "user_permission_id")
+    private Long userPermissionId;
 
     @Column(name = "password")
     private String password  =  null;
@@ -55,198 +53,88 @@ public class UserEntity {
     @Column(name = "failed_login_count")
     private int failedLoginCount;
 
-    @Column(name = "last_modified_user")
-    private Long lastModifiedUser;
-
-    @Column(name = "last_modified_date")
-    private Date lastModifiedDate;
-
     @Column(name = "deleted")
     private Boolean deleted;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private Set<UserPermissionUserMappingEntity> permissionMappings;
+    @Column(name = "last_modified_user")
+    private Long lastModifiedUser;
+
+    @Column(name = "creation_date", insertable = false, updatable = false)
+    private Date creationDate;
+
+    @Column(name = "last_modified_date", insertable = false, updatable = false)
+    private Date lastModifiedDate;
+
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_permission_id", insertable = false, updatable = false)
+    private UserPermissionEntity permission;
 
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "contact_id", unique = true, nullable = false)
     private UserContactEntity contact;
 
-    /** Default constructor. */
-    public UserEntity() {
-        this.subjectName = null;
-        this.password = null;
-        this.accountExpired = false;
-        this.accountLocked = false;
-        this.credentialsExpired = false;
-        this.accountEnabled = true;
-        this.passwordResetRequired = false;
-
-        this.contact = new UserContactEntity();
+    public Long getId() {
+        return id;
     }
 
-    /**
-     * Constructor with subjectName.
-     * @param subjectName the user's subjectname / username
-     */
-    public UserEntity(final String subjectName) {
-        this.subjectName = subjectName;
-        this.password = null;
-        this.accountExpired = false;
-        this.accountLocked = false;
-        this.credentialsExpired = false;
-        this.accountEnabled = true;
-        this.passwordResetRequired = false;
-
-        this.contact = new UserContactEntity();
-    }
-
-    /**
-     * Constructor with un/pw.
-     * @param subjectName the username
-     * @param encodedPassword the password
-     */
-    public UserEntity(final String subjectName, final String encodedPassword) {
-        this.subjectName = subjectName;
-        this.password = encodedPassword;
-        this.accountExpired = false;
-        this.accountLocked = false;
-        this.credentialsExpired = false;
-        this.accountEnabled = true;
-        this.passwordResetRequired = false;
-
-        this.contact = new UserContactEntity();
+    public void setId(final Long id) {
+        this.id = id;
     }
 
     public String getSubjectName() {
         return subjectName;
     }
 
-    public void setSubjectName(final String subject) {
-        this.subjectName = subject;
-    }
-
-    public String getFullName() {
-        return contact.getFullName();
-    }
-
-    /**
-     * Set the user's contact's full name value.
-     * @param fullName the new value
-     */
-    public void setFullName(final String fullName) {
-        contact.setFullName(fullName);
-    }
-
-    public String getFriendlyName() {
-        return contact.getFriendlyName();
-    }
-
-    /**
-     * Set the user's contact's friendly name value.
-     * @param friendlyName the new value
-     */
-    public void setFriendlyName(final String friendlyName) {
-        contact.setFriendlyName(friendlyName);
-    }
-
-    /**
-     * Retrieve the set of permissions the user has.
-     * @return that set
-     */
-    public Set<UserPermissionDTO> getPermissions() {
-
-        Set<UserPermissionDTO> permissions = new HashSet<UserPermissionDTO>();
-
-        for (UserPermissionUserMappingEntity mapping : permissionMappings) {
-
-            permissions.add(new UserPermissionDTO(mapping.getPermission()));
-        }
-        return permissions;
+    public void setSubjectName(final String subjectName) {
+        this.subjectName = subjectName;
     }
 
     public String getPassword() {
         return password;
     }
 
-    public void setPassword(final String encodedPassword) {
-        this.password = encodedPassword;
+    public void setPassword(final String password) {
+        this.password = password;
     }
 
-    public String getUsername() {
-        return subjectName;
-    }
-
-    public boolean isAccountNonExpired() {
-        return !accountExpired;
-    }
-
-    public boolean isAccountNonLocked() {
-        return !accountLocked;
-    }
-
-    public boolean isCredentialsNonExpired() {
-        return !credentialsExpired;
-    }
-
-    public boolean isEnabled() {
-        return accountEnabled;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public UserContactEntity getContact() {
-        return contact;
-    }
-
-    public void setContact(final UserContactEntity contact) {
-        this.contact = contact;
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
+    public boolean isAccountExpired() {
+        return accountExpired;
     }
 
     public void setAccountExpired(final boolean accountExpired) {
         this.accountExpired = accountExpired;
     }
 
+    public boolean isAccountLocked() {
+        return accountLocked;
+    }
+
     public void setAccountLocked(final boolean accountLocked) {
         this.accountLocked = accountLocked;
+    }
+
+    public boolean isCredentialsExpired() {
+        return credentialsExpired;
     }
 
     public void setCredentialsExpired(final boolean credentialsExpired) {
         this.credentialsExpired = credentialsExpired;
     }
 
+    public boolean isAccountEnabled() {
+        return accountEnabled;
+    }
+
     public void setAccountEnabled(final boolean accountEnabled) {
         this.accountEnabled = accountEnabled;
     }
 
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
+    public boolean isPasswordResetRequired() {
+        return passwordResetRequired;
     }
 
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public Date getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
+    public void setPasswordResetRequired(final boolean passwordResetRequired) {
+        this.passwordResetRequired = passwordResetRequired;
     }
 
     public int getFailedLoginCount() {
@@ -257,50 +145,69 @@ public class UserEntity {
         this.failedLoginCount = failedLoginCount;
     }
 
-    public Set<UserPermissionUserMappingEntity> getPermissionMappings() {
-        return permissionMappings;
+    public Boolean getDeleted() {
+        return deleted;
     }
 
-    public void setPermissionMappings(final Set<UserPermissionUserMappingEntity> permissionMappings) {
-        this.permissionMappings = permissionMappings;
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
     }
 
-    public boolean isAccountExpired() {
-        return accountExpired;
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
     }
 
-    public boolean isAccountLocked() {
-        return accountLocked;
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
     }
 
-    public boolean isCredentialsExpired() {
-        return credentialsExpired;
+    public Date getCreationDate() {
+        return creationDate;
     }
 
-    public boolean isAccountEnabled() {
-        return accountEnabled;
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
     }
 
-    public Boolean getPasswordResetRequired() {
-        return passwordResetRequired;
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
     }
 
-    public void setPasswordResetRequired(final Boolean passwordResetRequired) {
-        this.passwordResetRequired = passwordResetRequired;
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public UserPermissionEntity getPermission() {
+        return permission;
+    }
+
+    public void setPermission(final UserPermissionEntity permission) {
+        this.permission = permission;
+    }
+
+    public UserContactEntity getContact() {
+        return contact;
+    }
+
+    public void setContact(final UserContactEntity contact) {
+        this.contact = contact;
     }
 
     @Override
     public String toString() {
-        String ret = "[UserEntity: "
-                + "[id: " + this.id + "]"
-                + "[subjectName: " + this.subjectName + "]"
-                + "[contact: " + this.contact + "]"
-                + "[failedLoginCount: " + this.failedLoginCount + "]"
-                + "[accountExpired: " + this.accountExpired + "]"
-                + "[accountLocked: " + this.accountLocked + "]"
-                + "[credentialsExpired: " + this.credentialsExpired + "]"
-                + "[accountEnabled: " + this.accountEnabled + "]"
-                + "[passwordResetRequired: " + this.passwordResetRequired + "]]";
-        return ret;
+        return "UserEntity [id=" + id + ", subjectName=" + subjectName + ", password=" + password + ", accountExpired="
+                + accountExpired + ", accountLocked=" + accountLocked + ", credentialsExpired=" + credentialsExpired
+                + ", accountEnabled=" + accountEnabled + ", passwordResetRequired=" + passwordResetRequired
+                + ", failedLoginCount=" + failedLoginCount + ", deleted=" + deleted + ", lastModifiedUser="
+                + lastModifiedUser + ", creationDate=" + creationDate + ", lastModifiedDate=" + lastModifiedDate
+                + ", permission=" + permission + ", contact=" + contact + "]";
+    }
+
+    public Long getUserPermissionId() {
+        return userPermissionId;
+    }
+
+    public void setUserPermissionId(Long userPermissionId) {
+        this.userPermissionId = userPermissionId;
     }
 }

@@ -15,30 +15,30 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.auth.dao.InvitationDAO;
-import gov.healthit.chpl.auth.dao.InvitationPermissionDAO;
-import gov.healthit.chpl.auth.dao.UserDAO;
-import gov.healthit.chpl.auth.dao.UserPermissionDAO;
-import gov.healthit.chpl.auth.domain.Authority;
-import gov.healthit.chpl.auth.dto.InvitationDTO;
 import gov.healthit.chpl.auth.dto.InvitationPermissionDTO;
-import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.auth.dto.UserPermissionDTO;
-import gov.healthit.chpl.auth.json.UserCreationJSONObject;
-import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.User;
-import gov.healthit.chpl.auth.user.UserCreationException;
-import gov.healthit.chpl.auth.user.UserManagementException;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.dao.auth.InvitationDAO;
+import gov.healthit.chpl.dao.auth.InvitationPermissionDAO;
+import gov.healthit.chpl.dao.auth.UserDAO;
+import gov.healthit.chpl.dao.auth.UserPermissionDAO;
+import gov.healthit.chpl.domain.auth.Authority;
+import gov.healthit.chpl.domain.auth.CreateUserRequest;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
+import gov.healthit.chpl.dto.auth.InvitationDTO;
+import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.dto.auth.UserPermissionDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.UserCreationException;
+import gov.healthit.chpl.exception.UserManagementException;
+import gov.healthit.chpl.exception.UserPermissionRetrievalException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.InvitationManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
+import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.Util;
 
@@ -217,7 +217,7 @@ public class InvitationManagerImpl extends SecuredManager implements InvitationM
 
     @Override
     @Transactional
-    public UserDTO createUserFromInvitation(final InvitationDTO invitation, final UserCreationJSONObject user)
+    public UserDTO createUserFromInvitation(final InvitationDTO invitation, final CreateUserRequest user)
             throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException, UserCreationException {
         Authentication authenticator = getInvitedUserAuthenticator(invitation.getLastModifiedUserId());
         SecurityContextHolder.getContext().setAuthentication(authenticator);
@@ -285,7 +285,7 @@ public class InvitationManagerImpl extends SecuredManager implements InvitationM
     @Transactional
     public UserDTO updateUserFromInvitation(final InvitationDTO invitation, final UserDTO toUpdate)
             throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException {
-        User loggedInUser = gov.healthit.chpl.auth.Util.getCurrentUser();
+        User loggedInUser = gov.healthit.chpl.util.AuthUtil.getCurrentUser();
 
         // have to give temporary permission to see all ACBs and ATLs
         // because the logged in user wouldn't already have permission on them

@@ -1,6 +1,6 @@
 package gov.healthit.chpl.dto;
 
-import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.UserRoleMapEntity;
 
 public class UserRoleMapDTO {

@@ -3,7 +3,7 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.util.List;
 
-import gov.healthit.chpl.auth.json.User;
+import gov.healthit.chpl.domain.auth.User;
 
 public class PermittedUser implements Serializable {
     private static final long serialVersionUID = -7978555260304001452L;

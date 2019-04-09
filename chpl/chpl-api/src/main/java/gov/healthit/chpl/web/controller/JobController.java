@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.auth.AuthUtil;
 import gov.healthit.chpl.domain.Job;
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.JobManager;
@@ -45,11 +45,11 @@ public class JobController {
             jobDtos = jobManager.getAllJobs();
         } else {
             UserDTO currentUser = new UserDTO();
-            currentUser.setId(Util.getCurrentUser().getId());
+            currentUser.setId(AuthUtil.getCurrentUser().getId());
             try {
                 jobDtos = jobManager.getJobsForUser(currentUser);
             } catch (EntityRetrievalException ex) {
-                String msg = "Could not find jobs for user " + Util.getUsername();
+                String msg = "Could not find jobs for user " + AuthUtil.getUsername();
                 LOGGER.error(msg);
                 throw new EntityRetrievalException(msg);
             }

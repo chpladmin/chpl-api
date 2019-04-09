@@ -21,25 +21,25 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nulabinc.zxcvbn.Strength;
 
-import gov.healthit.chpl.auth.EmailBuilder;
-import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.AuthUtil;
 import gov.healthit.chpl.auth.authentication.Authenticator;
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
-import gov.healthit.chpl.auth.authentication.LoginCredentials;
-import gov.healthit.chpl.auth.dao.UserDAO;
-import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.auth.dto.UserResetTokenDTO;
-import gov.healthit.chpl.auth.json.UserResetPasswordJSONObject;
-import gov.healthit.chpl.auth.jwt.JWTCreationException;
-import gov.healthit.chpl.auth.jwt.JWTValidationException;
-import gov.healthit.chpl.auth.manager.UserManager;
-import gov.healthit.chpl.auth.user.ResetPasswordRequest;
-import gov.healthit.chpl.auth.user.UpdateExpiredPasswordRequest;
-import gov.healthit.chpl.auth.user.UpdatePasswordRequest;
-import gov.healthit.chpl.auth.user.UpdatePasswordResponse;
 import gov.healthit.chpl.auth.user.User;
-import gov.healthit.chpl.auth.user.UserManagementException;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.dao.auth.UserDAO;
+import gov.healthit.chpl.domain.auth.LoginCredentials;
+import gov.healthit.chpl.domain.auth.ResetPasswordRequest;
+import gov.healthit.chpl.domain.auth.UpdateExpiredPasswordRequest;
+import gov.healthit.chpl.domain.auth.UpdatePasswordRequest;
+import gov.healthit.chpl.domain.auth.UpdatePasswordResponse;
+import gov.healthit.chpl.domain.auth.UserResetPasswordRequest;
+import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.dto.auth.UserResetTokenDTO;
+import gov.healthit.chpl.exception.JWTCreationException;
+import gov.healthit.chpl.exception.JWTValidationException;
+import gov.healthit.chpl.exception.UserManagementException;
+import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.manager.auth.UserManager;
+import gov.healthit.chpl.util.EmailBuilder;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import springfox.documentation.annotations.ApiIgnore;
@@ -136,14 +136,14 @@ public class AuthenticationController {
     public UpdatePasswordResponse changePassword(@RequestBody final UpdatePasswordRequest request)
             throws UserRetrievalException {
         UpdatePasswordResponse response = new UpdatePasswordResponse();
-        if (Util.getCurrentUser() == null) {
+        if (AuthUtil.getCurrentUser() == null) {
             throw new UserRetrievalException("No user is logged in.");
         }
 
         // get the current user
-        UserDTO currUser = userManager.getById(Util.getCurrentUser().getId());
+        UserDTO currUser = userManager.getById(AuthUtil.getCurrentUser().getId());
         if (currUser == null) {
-            throw new UserRetrievalException("The user with id " + Util.getCurrentUser().getId()
+            throw new UserRetrievalException("The user with id " + AuthUtil.getCurrentUser().getId()
                     + " could not be found or the logged in user does not have permission to modify their data.");
         }
 
@@ -263,7 +263,7 @@ public class AuthenticationController {
     @ApiOperation(value = "Reset a user's password.", notes = "")
     @RequestMapping(value = "/email_reset_password", method = RequestMethod.POST,
     consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
-    public String resetPassword(@RequestBody final UserResetPasswordJSONObject userInfo)
+    public String resetPassword(@RequestBody final UserResetPasswordRequest userInfo)
             throws UserRetrievalException, MessagingException {
 
         UserResetTokenDTO userResetTokenDTO = userManager.createResetUserPasswordToken(userInfo.getUserName(),
