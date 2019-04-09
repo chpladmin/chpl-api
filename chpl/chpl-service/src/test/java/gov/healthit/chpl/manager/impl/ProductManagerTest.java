@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,19 +49,26 @@ import gov.healthit.chpl.manager.ProductManager;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
+@TestExecutionListeners({
+        DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
+})
 @DatabaseSetup("classpath:data/testData.xml")
 public class ProductManagerTest extends TestCase {
 
-    @Autowired private ProductManager productManager;
-    @Autowired private DeveloperManager developerManager;
-    @Autowired private CertifiedProductDetailsManager cpdManager;
-    @Autowired private DeveloperStatusDAO devStatusDao;
-    @Autowired private ContactDAO contactDao;
+    @Autowired
+    private ProductManager productManager;
+    @Autowired
+    private DeveloperManager developerManager;
+    @Autowired
+    private CertifiedProductDetailsManager cpdManager;
+    @Autowired
+    private DeveloperStatusDAO devStatusDao;
+    @Autowired
+    private ContactDAO contactDao;
 
     @Rule
     @Autowired
@@ -117,7 +123,7 @@ public class ProductManagerTest extends TestCase {
         assertNotNull(product.getOwnerHistory());
         assertEquals(1, product.getOwnerHistory().size());
         List<ProductOwnerDTO> previousOwners = product.getOwnerHistory();
-        for(ProductOwnerDTO previousOwner : previousOwners) {
+        for (ProductOwnerDTO previousOwner : previousOwners) {
             assertNotNull(previousOwner.getDeveloper());
             assertEquals(-2, previousOwner.getDeveloper().getId().longValue());
             assertEquals("Test Developer 2", previousOwner.getDeveloper().getName());
@@ -358,7 +364,7 @@ public class ProductManagerTest extends TestCase {
             throws EntityRetrievalException, JsonProcessingException, MissingReasonException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        //change dev to suspended
+        // change dev to suspended
         DeveloperDTO developer = developerManager.getById(-1L);
         assertNotNull(developer);
         DeveloperStatusDTO newStatus = devStatusDao.getById(2L);
@@ -383,7 +389,7 @@ public class ProductManagerTest extends TestCase {
         assertNotNull(status.getStatus().getStatusName());
         assertEquals(DeveloperStatusType.SuspendedByOnc.toString(), status.getStatus().getStatusName());
 
-        //try to update product
+        // try to update product
         ProductDTO product = productManager.getById(-1L);
         assertNotNull(product);
         product.setName("new product name");
@@ -452,12 +458,11 @@ public class ProductManagerTest extends TestCase {
     @Test
     @Transactional
     @Rollback
-    public void testProductSplitFailsWithSuspendedDeveloper()
-            throws EntityRetrievalException, EntityCreationException,
+    public void testProductSplitFailsWithSuspendedDeveloper() throws EntityRetrievalException, EntityCreationException,
             JsonProcessingException, MissingReasonException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         DeveloperDTO developer = developerManager.getById(-1L);
-        //suspended by ONC
+        // suspended by ONC
         DeveloperStatusDTO newStatus = devStatusDao.getById(2L);
         DeveloperStatusEventDTO newStatusHistory = new DeveloperStatusEventDTO();
         newStatusHistory.setDeveloperId(developer.getId());
@@ -532,10 +537,11 @@ public class ProductManagerTest extends TestCase {
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
-    @Test
+    @Test(expected = AccessDeniedException.class)
     @Transactional
     @Rollback
-    public void testProductSplitAllowedAsAcbAdmin() throws EntityRetrievalException {
+    public void testProductSplitAllowedAsAcbAdmin()
+            throws EntityRetrievalException, AccessDeniedException, JsonProcessingException, EntityCreationException {
         SecurityContextHolder.getContext().setAuthentication(testUser3);
 
         String name = "Split Product";
@@ -557,23 +563,9 @@ public class ProductManagerTest extends TestCase {
         ProductDTO updatedNewProduct = null;
         try {
             updatedNewProduct = productManager.split(origProduct, newProduct, code, newProductVersions);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            fail(ex.getMessage());
+        } finally {
+            SecurityContextHolder.getContext().setAuthentication(null);
         }
-
-        ProductDTO updatedOrigProduct = productManager.getById(origProduct.getId());
-        assertNotNull(updatedOrigProduct.getProductVersions());
-        assertEquals(2, updatedOrigProduct.getProductVersions().size());
-
-        assertNotNull(updatedNewProduct);
-        assertEquals(name, updatedNewProduct.getName());
-        assertNotNull(updatedNewProduct.getProductVersions());
-        assertEquals(1, updatedNewProduct.getProductVersions().size());
-        cpDetails = cpdManager.getCertifiedProductDetails(7L);
-        assertTrue(cpDetails.getChplProductNumber().contains(code));
-
-        SecurityContextHolder.getContext().setAuthentication(null);
     }
 
     @Test

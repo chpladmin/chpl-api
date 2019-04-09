@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.DeveloperDAO;
-import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
@@ -16,9 +15,6 @@ public class UpdateActionPermissions extends ActionPermissions {
 
     @Autowired
     private DeveloperDAO developerDao;
-
-    @Autowired
-    private ProductVersionDAO productVersionDao;
 
     @Override
     public boolean hasAccess() {
@@ -33,9 +29,7 @@ public class UpdateActionPermissions extends ActionPermissions {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             try {
-                ProductVersionDTO pvDto = (ProductVersionDTO) obj;
-                // Get the product version from the DB to ensure the user hasn't modified the product version
-                ProductVersionDTO dto = productVersionDao.getById(pvDto.getId());
+                ProductVersionDTO dto = (ProductVersionDTO) obj;
                 return isDeveloperActive(dto.getDeveloperId());
             } catch (Exception e) {
                 return false;

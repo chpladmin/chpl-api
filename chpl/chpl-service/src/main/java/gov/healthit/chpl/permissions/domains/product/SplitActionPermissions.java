@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
-import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
@@ -20,9 +19,6 @@ public class SplitActionPermissions extends ActionPermissions {
 
     @Autowired
     private DeveloperDAO developerDao;
-
-    @Autowired
-    private ProductDAO productDao;
 
     @Autowired
     private CertifiedProductDAO certifiedProductDao;
@@ -40,9 +36,7 @@ public class SplitActionPermissions extends ActionPermissions {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             try {
-                ProductDTO productDto = (ProductDTO) obj;
-                // Get the product from the DB to ensure the user hasn't modified the product
-                ProductDTO dto = productDao.getById(productDto.getId());
+                ProductDTO dto = (ProductDTO) obj;
                 if (isDeveloperActive(dto.getDeveloperId())) {
                     return doesCurrentUserHaveAccessToAllOfDevelopersListings(dto.getDeveloperId());
                 } else {
