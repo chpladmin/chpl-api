@@ -15,10 +15,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.healthit.chpl.app.permissions.domain.ActionPermissionsBaseTest;
-import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.DeveloperStatusDTO;
-import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domains.productversion.UpdateActionPermissions;
@@ -31,9 +28,6 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Mock
     private ResourcePermissions resourcePermissions;
-
-    @Mock
-    private DeveloperDAO developerDAO;
 
     @InjectMocks
     private UpdateActionPermissions permissions;
@@ -76,22 +70,13 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
 
         DeveloperDTO dto = new DeveloperDTO();
         dto.setId(1l);
-        DeveloperStatusEventDTO statusEvent = new DeveloperStatusEventDTO();
-        statusEvent.setDeveloperId(1l);
-        DeveloperStatusDTO status = new DeveloperStatusDTO();
-        status.setStatusName("Active");
-        statusEvent.setStatus(status);
-        dto.getStatusEvents().add(statusEvent);
-        Mockito.when(developerDAO.getById(ArgumentMatchers.anyLong())).thenReturn(dto);
 
         // If the current status is Active
+        Mockito.when(resourcePermissions.isDeveloperActive(ArgumentMatchers.anyLong())).thenReturn(true);
         assertTrue(permissions.hasAccess(version));
 
         // If the current status is Non-Active
-        status.setStatusName("Suspended by ONC");
-        dto.getStatusEvents().clear();
-        statusEvent.setStatus(status);
-        dto.getStatusEvents().add(statusEvent);
+        Mockito.when(resourcePermissions.isDeveloperActive(ArgumentMatchers.anyLong())).thenReturn(false);
         assertFalse(permissions.hasAccess(version));
     }
 
