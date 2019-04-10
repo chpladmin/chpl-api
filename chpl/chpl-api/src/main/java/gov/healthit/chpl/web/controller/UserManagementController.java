@@ -29,16 +29,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.AuthUtil;
 import gov.healthit.chpl.auth.authentication.Authenticator;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.domain.auth.AuthorizeCredentials;
-import gov.healthit.chpl.domain.auth.GrantRoleJSONObject;
 import gov.healthit.chpl.domain.auth.User;
-import gov.healthit.chpl.domain.auth.UserInfoJSONObject;
 import gov.healthit.chpl.domain.auth.UserInvitation;
 import gov.healthit.chpl.domain.auth.UsersResponse;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -60,6 +57,7 @@ import gov.healthit.chpl.manager.InvitationManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import io.swagger.annotations.Api;
@@ -91,7 +89,7 @@ public class UserManagementController {
     @Autowired
     private UserPermissionsManager userPermissionsManager;
 
-    @Autowired 
+    @Autowired
     private ResourcePermissions resourcePermissions;
 
     @Autowired private MessageSource messageSource;
@@ -109,13 +107,6 @@ public class UserManagementController {
     @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public @ResponseBody User createUser(@RequestBody final CreateUserFromInvitationRequest userInfo)
-            throws ValidationException, EntityRetrievalException, InvalidArgumentsException, UserRetrievalException,
-            UserCreationException, MessagingException, JsonProcessingException, EntityCreationException {
-
-        return create(userInfo);
-    }
-
-    private User create(final CreateUserFromInvitationRequest userInfo)
             throws ValidationException, EntityRetrievalException, InvalidArgumentsException, UserRetrievalException,
             UserCreationException, MessagingException, JsonProcessingException, EntityCreationException {
 
@@ -167,38 +158,32 @@ public class UserManagementController {
     private Set<String> validateCreateUserFromInvitationRequest(final CreateUserFromInvitationRequest request) {
         Set<String> validationErrors = new HashSet<String>();
 
-        if (request.getUser().getSubjectName().length() > getMaxLength("subjectName")) {
+        if (request.getUser().getSubjectName().length() > errorMessageUtil.getMaxLength("subjectName")) {
             validationErrors.add(errorMessageUtil.getMessage("user.subjectName.maxlength",
-                    getMaxLength("subjectName")));
+                    errorMessageUtil.getMaxLength("subjectName")));
         }
-        if (request.getUser().getFullName().length() > getMaxLength("fullName")) {
+        if (request.getUser().getFullName().length() > errorMessageUtil.getMaxLength("fullName")) {
             validationErrors.add(errorMessageUtil.getMessage("user.fullName.maxlength",
-                    getMaxLength("fullName")));
+                    errorMessageUtil.getMaxLength("fullName")));
         }
         if (!StringUtils.isEmpty(request.getUser().getFriendlyName())
-                && request.getUser().getFriendlyName().length() > getMaxLength("friendlyName")) {
+                && request.getUser().getFriendlyName().length() > errorMessageUtil.getMaxLength("friendlyName")) {
             validationErrors.add(errorMessageUtil.getMessage("user.friendlyName.maxlength",
-                    getMaxLength("friendlyName")));
+                    errorMessageUtil.getMaxLength("friendlyName")));
         }
         if (!StringUtils.isEmpty(request.getUser().getTitle())
-                && request.getUser().getTitle().length() > getMaxLength("title")) {
-            validationErrors.add(errorMessageUtil.getMessage("user.title.maxlength", getMaxLength("title")));
+                && request.getUser().getTitle().length() > errorMessageUtil.getMaxLength("title")) {
+            validationErrors.add(errorMessageUtil.getMessage("user.title.maxlength", errorMessageUtil.getMaxLength("title")));
         }
-        if (request.getUser().getEmail().length() > getMaxLength("email")) {
+        if (request.getUser().getEmail().length() > errorMessageUtil.getMaxLength("email")) {
             validationErrors.add(errorMessageUtil.getMessage("user.email.maxlength",
-                    getMaxLength("email")));
+                    errorMessageUtil.getMaxLength("email")));
         }
-        if (request.getUser().getPhoneNumber().length() > getMaxLength("phoneNumber")) {
+        if (request.getUser().getPhoneNumber().length() > errorMessageUtil.getMaxLength("phoneNumber")) {
             validationErrors.add(errorMessageUtil.getMessage("user.phoneNumber.maxlength",
-                    getMaxLength("phoneNumber")));
+                    errorMessageUtil.getMaxLength("phoneNumber")));
         }
         return validationErrors;
-    }
-
-    private Integer getMaxLength(final String field) {
-        return Integer.parseInt(String.format(
-                messageSource.getMessage(new DefaultMessageSourceResolvable("maxLength." + field),
-                        LocaleContextHolder.getLocale())));
     }
 
     @ApiOperation(value = "Confirm that a user's email address is valid.",
@@ -229,64 +214,6 @@ public class UserManagementController {
         return new User(createdUser);
     }
 
-    @ApiOperation(value = "Update an existing user account with new permissions.",
-            notes = "Adds all permissions from the invitation identified by the user key "
-                    + "to the appropriate existing user account." + "The correct order to call invitation requests is "
-                    + "the following: 1) /invite 2) /create or /authorize 3) /confirm.  Security Restrictions: ROLE_ADMIN "
-                    + "or ROLE_ONC.")
-    @RequestMapping(value = "/{userId}/authorize", method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
-    public String authorizeUser(@RequestBody final AuthorizeCredentials credentials)
-            throws InvalidArgumentsException, JWTCreationException, UserRetrievalException, EntityRetrievalException {
-
-        return authorize(credentials);
-    }
-
-    private String authorize(final AuthorizeCredentials credentials)
-            throws InvalidArgumentsException, JWTCreationException, UserRetrievalException, EntityRetrievalException {
-        if (StringUtils.isEmpty(credentials.getHash())) {
-            throw new InvalidArgumentsException("User key is required.");
-        }
-
-        JWTAuthenticatedUser loggedInUser = (JWTAuthenticatedUser) AuthUtil.getCurrentUser();
-        if (loggedInUser == null
-                && (StringUtils.isEmpty(credentials.getUserName()) || StringUtils.isEmpty(credentials.getPassword()))) {
-            throw new InvalidArgumentsException(
-                    "Username and Password are required since no user is currently logged in.");
-        }
-
-        InvitationDTO invitation = invitationManager.getByInvitationHash(credentials.getHash());
-        if (invitation == null || invitation.isOlderThan(VALID_CONFIRMATION_LENGTH)) {
-            throw new InvalidArgumentsException(
-                    "Provided user key is not valid in the database. The user key is valid for up to 3 days from when "
-                            + "it is assigned.");
-        }
-
-        String jwtToken = null;
-        if (loggedInUser == null) {
-            UserDTO userToUpdate = authenticator.getUser(credentials);
-            if (userToUpdate == null) {
-                throw new UserRetrievalException(
-                        "The user " + credentials.getUserName() + " could not be authenticated.");
-            }
-            invitationManager.updateUserFromInvitation(invitation, userToUpdate);
-            jwtToken = authenticator.getJWT(credentials);
-        } else {
-            // add authorization to the currently logged in user
-            UserDTO userToUpdate = userManager.getById(loggedInUser.getId());
-            if (loggedInUser.getImpersonatingUser() != null) {
-                userToUpdate = loggedInUser.getImpersonatingUser();
-            }
-            invitationManager.updateUserFromInvitation(invitation, userToUpdate);
-            UserDTO updatedUser = userManager.getById(userToUpdate.getId());
-            jwtToken = authenticator.getJWT(updatedUser);
-        }
-
-        String jwtJSON = "{\"token\": \"" + jwtToken + "\"}";
-        return jwtJSON;
-    }
-
     @ApiOperation(value = "Invite a user to the CHPL.",
             notes = "This request creates an invitation that is sent to the email address provided. "
                     + "The recipient of this invitation can then choose to create a new account "
@@ -301,35 +228,21 @@ public class UserManagementController {
     public UserInvitation inviteUser(@RequestBody final UserInvitation invitation)
             throws InvalidArgumentsException, UserCreationException, UserRetrievalException,
             UserPermissionRetrievalException, AddressException, MessagingException {
-        boolean isChplAdmin = false;
-        boolean isOnc = false;
-        for (String permission : invitation.getPermissions()) {
-            if (permission.equals("ADMIN") || permission.equals(Authority.ROLE_ADMIN)) {
-                isChplAdmin = true;
-            } else if (permission.equals("ONC") || permission.equals(Authority.ROLE_ONC)) {
-                isOnc = true;
-            }
-        }
-
         InvitationDTO createdInvite = null;
-        if (isChplAdmin) {
-            createdInvite = invitationManager.inviteAdmin(invitation.getEmailAddress(), invitation.getPermissions());
-        } else if (isOnc) {
-            createdInvite = invitationManager.inviteOnc(invitation.getEmailAddress(), invitation.getPermissions());
-        } else {
-            if (invitation.getAcbId() == null && invitation.getTestingLabId() == null) {
-                createdInvite = invitationManager.inviteWithRolesOnly(invitation.getEmailAddress(),
-                        invitation.getPermissions());
-            } else if (invitation.getAcbId() != null && invitation.getTestingLabId() == null) {
-                createdInvite = invitationManager.inviteWithAcbAccess(invitation.getEmailAddress(),
-                        invitation.getAcbId(), invitation.getPermissions());
-            } else if (invitation.getAcbId() == null && invitation.getTestingLabId() != null) {
+        if (invitation.getRole().equals(Authority.ROLE_ADMIN)) {
+            createdInvite = invitationManager.inviteAdmin(invitation.getEmailAddress());
+        } else if (invitation.getRole().equals(Authority.ROLE_ONC)) {
+            createdInvite = invitationManager.inviteOnc(invitation.getEmailAddress());
+        } else if (invitation.getRole().equals(Authority.ROLE_CMS_STAFF)) {
+            createdInvite = invitationManager.inviteCms(invitation.getEmailAddress());
+        } else if (invitation.getRole().equals(Authority.ROLE_ACB)
+                    && invitation.getPermissionObjectId() != null) {
+            createdInvite = invitationManager.inviteWithAcbAccess(invitation.getEmailAddress(),
+                    invitation.getPermissionObjectId());
+        } else if (invitation.getRole().equals(Authority.ROLE_ATL)
+                    && invitation.getPermissionObjectId() != null) {
                 createdInvite = invitationManager.inviteWithAtlAccess(invitation.getEmailAddress(),
-                        invitation.getTestingLabId(), invitation.getPermissions());
-            } else {
-                createdInvite = invitationManager.inviteWithAcbAndAtlAccess(invitation.getEmailAddress(),
-                        invitation.getAcbId(), invitation.getTestingLabId(), invitation.getPermissions());
-            }
+                        invitation.getPermissionObjectId());
         }
 
         // send email
@@ -363,19 +276,29 @@ public class UserManagementController {
             throws UserRetrievalException, UserPermissionRetrievalException, JsonProcessingException,
             EntityCreationException, EntityRetrievalException {
 
-        return update(userInfo);
-    }
-
-    private User update(final User userInfo)
-            throws UserRetrievalException, UserPermissionRetrievalException, JsonProcessingException,
-            EntityCreationException, EntityRetrievalException {
-
         if (userInfo.getUserId() <= 0) {
             throw new UserRetrievalException("Cannot update user with ID less than 0");
         }
 
         UserDTO before = userManager.getById(userInfo.getUserId());
-        UserDTO updated = userManager.update(userInfo);
+        UserDTO toUpdate = new UserDTO();
+        toUpdate.setId(before.getId());
+        toUpdate.setPasswordResetRequired(userInfo.getPasswordResetRequired());
+        toUpdate.setAccountEnabled(userInfo.getAccountEnabled());
+        toUpdate.setAccountExpired(before.isAccountExpired());
+        toUpdate.setAccountLocked(userInfo.getAccountLocked());
+        toUpdate.setCredentialsExpired(userInfo.getCredentialsExpired());
+        toUpdate.setEmail(userInfo.getEmail());
+        toUpdate.setFailedLoginCount(before.getFailedLoginCount());
+        toUpdate.setFriendlyName(userInfo.getFriendlyName());
+        toUpdate.setFullName(userInfo.getFullName());
+        toUpdate.setPasswordResetRequired(userInfo.getPasswordResetRequired());
+        toUpdate.setPermission(before.getPermission());
+        toUpdate.setPhoneNumber(userInfo.getPhoneNumber());
+        toUpdate.setSignatureDate(before.getSignatureDate());
+        toUpdate.setSubjectName(before.getSubjectName());
+        toUpdate.setTitle(before.getTitle());
+        UserDTO updated = userManager.update(toUpdate);
 
         String activityDescription = "User " + userInfo.getSubjectName() + " was updated.";
         activityManager.addActivity(ActivityConcept.USER, before.getId(), activityDescription, before,
@@ -393,12 +316,6 @@ public class UserManagementController {
             throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException,
             JsonProcessingException, EntityCreationException, EntityRetrievalException {
 
-        return delete(userId);
-    }
-
-    private String delete(final Long userId)
-            throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException,
-            JsonProcessingException, EntityCreationException, EntityRetrievalException {
         if (userId <= 0) {
             throw new UserRetrievalException("Cannot delete user with ID less than 0");
         }
@@ -423,7 +340,7 @@ public class UserManagementController {
                         userPermissionsManager.deleteAcbPermission(dto, userId);
                     }
                 }
-            } 
+            }
             if (resourcePermissions.isUserRoleAtlAdmin()) {
                 List<TestingLabDTO> targetUserAtls = resourcePermissions.getAllAtlsForUser(userId);
                 for (TestingLabDTO dto : resourcePermissions.getAllAtlsForCurrentUser()) {
@@ -440,116 +357,6 @@ public class UserManagementController {
 
         return "{\"deletedUser\" : true}";
     }
-    
-    @ApiOperation(value = "Give additional roles to a user.",
-            notes = "Users may be given ROLE_ADMIN, ROLE_ONC, ROLE_ACB, or "
-                    + "ROLE_ATL roles within the system.  Security Restrictions: ROLE_ADMIN or "
-                    + "ROLE_ONC.")
-    @RequestMapping(value = "/{userName}/roles/{roleName}", method = RequestMethod.POST,
-    produces = "application/json; charset=utf-8")
-    public String grantUserRole(@PathVariable("userName") final String userName,
-            @PathVariable("roleName") final String roleName) throws InvalidArgumentsException, UserRetrievalException,
-    UserManagementException, UserPermissionRetrievalException, JsonProcessingException,
-    EntityCreationException, EntityRetrievalException {
-
-        GrantRoleJSONObject grantRole = new GrantRoleJSONObject();
-        grantRole.setSubjectName(userName);
-        grantRole.setRole(roleName);
-        return grant(grantRole);
-    }
-
-    private String grant(final GrantRoleJSONObject grantRoleObj) throws InvalidArgumentsException,
-    UserRetrievalException, UserManagementException, UserPermissionRetrievalException, JsonProcessingException,
-    EntityCreationException, EntityRetrievalException {
-
-        UserDTO user = userManager.getByName(grantRoleObj.getSubjectName());
-        if (user == null) {
-            throw new InvalidArgumentsException(
-                    "No user with name " + grantRoleObj.getSubjectName() + " exists in the system.");
-        }
-
-        if (grantRoleObj.getRole().equals("ROLE_ADMIN")) {
-            try {
-                userManager.grantAdmin(user.getSubjectName());
-            } catch (final AccessDeniedException adEx) {
-                LOGGER.error("User " + AuthUtil.getUsername() + " does not have access to grant ROLE_ADMIN");
-                throw adEx;
-            }
-        } else {
-            userManager.grantRole(user.getSubjectName(), grantRoleObj.getRole());
-        }
-
-        UserDTO updated = userManager.getByName(grantRoleObj.getSubjectName());
-
-        String activityDescription = "User " + user.getSubjectName() + " was granted role " + grantRoleObj.getRole()
-        + ".";
-        activityManager.addActivity(ActivityConcept.USER, user.getId(), activityDescription, user,
-                updated);
-
-        return "{\"roleAdded\" : true}";
-    }
-
-    @ApiOperation(value = "Remove roles previously granted to a user.",
-            notes = "Users may be given ROLE_ADMIN, ROLE_ACB, or "
-                    + "ROLE_ATL roles within the system.  Security Restrictions: ROLE_ADMIN and "
-                    + "ROLE_ONC.")
-    @RequestMapping(value = "/{userName}/roles/{roleName}", method = RequestMethod.DELETE,
-    produces = "application/json; charset=utf-8")
-    public String revokeUserRole(@PathVariable("userName") final String userName,
-            @PathVariable("roleName") final String roleName) throws InvalidArgumentsException, UserRetrievalException,
-    UserManagementException, UserPermissionRetrievalException, JsonProcessingException, EntityCreationException,
-    EntityRetrievalException {
-
-        GrantRoleJSONObject grantRole = new GrantRoleJSONObject();
-        grantRole.setSubjectName(userName);
-        grantRole.setRole(roleName);
-        return revoke(grantRole);
-    }
-
-
-    private String revoke(final GrantRoleJSONObject grantRoleObj) throws InvalidArgumentsException,
-    UserRetrievalException, UserManagementException, UserPermissionRetrievalException, JsonProcessingException,
-    EntityCreationException, EntityRetrievalException {
-
-        UserDTO user = userManager.getByName(grantRoleObj.getSubjectName());
-        if (user == null) {
-            throw new InvalidArgumentsException(
-                    "No user with name " + grantRoleObj.getSubjectName() + " exists in the system.");
-        }
-
-        if (grantRoleObj.getRole().equals(Authority.ROLE_ADMIN)) {
-            try {
-                userManager.removeAdmin(user.getSubjectName());
-            } catch (final AccessDeniedException adEx) {
-                LOGGER.error("User " + AuthUtil.getUsername() + " does not have access to revoke ROLE_ADMIN");
-            }
-        } else if (grantRoleObj.getRole().equals(Authority.ROLE_ACB)) {
-            try {
-                userManager.removeRole(grantRoleObj.getSubjectName(), grantRoleObj.getRole());
-
-                // if they were an acb admin then they need to have all ACB
-                // access removed
-                List<CertificationBodyDTO> acbs = resourcePermissions.getAllAcbsForCurrentUser();
-                for (CertificationBodyDTO acb : acbs) {
-                    userPermissionsManager.deleteAcbPermission(acb, user.getId());
-                }
-            } catch (final AccessDeniedException adEx) {
-                LOGGER.error("User " + AuthUtil.getUsername() + " does not have access to revoke ROLE_ADMIN");
-            }
-        } else {
-            userManager.removeRole(grantRoleObj.getSubjectName(), grantRoleObj.getRole());
-        }
-
-        UserDTO updated = userManager.getByName(grantRoleObj.getSubjectName());
-
-        String activityDescription = "User " + user.getSubjectName() + " was removed from role "
-                + grantRoleObj.getRole() + ".";
-        activityManager.addActivity(ActivityConcept.USER, user.getId(), activityDescription, user,
-                updated);
-
-        // TODO: does this function return true unless there's no user to remove?
-        return "{\"roleRemoved\" : true }";
-    }
 
     @ApiOperation(value = "View users of the system.",
             notes = "Security Restrictions: ROLE_ADMIN and ROLE_ONC can see all users.  ROLE_ACB, ROLE_ATL, "
@@ -558,23 +365,16 @@ public class UserManagementController {
     @PreAuthorize("isAuthenticated()")
     public @ResponseBody UsersResponse getUsers() {
         List<UserDTO> userList = userManager.getAll();
-        List<UserInfoJSONObject> userInfos = new ArrayList<UserInfoJSONObject>();
+        List<User> users = new ArrayList<User>(userList.size());
 
-        for (UserDTO user : userList) {
-            Set<UserPermissionDTO> permissions = userManager.getGrantedPermissionsForUser(user);
-
-            UserInfoJSONObject userInfo = new UserInfoJSONObject(user);
-            List<String> permissionList = new ArrayList<String>(permissions.size());
-            for (UserPermissionDTO permission : permissions) {
-                permissionList.add(permission.getAuthority());
-            }
-            userInfo.setRoles(permissionList);
-            userInfos.add(userInfo);
+        for (UserDTO userDto : userList) {
+            User user = new User(userDto);
+            users.add(user);
         }
 
-        UsersResponse ulist = new UsersResponse();
-        ulist.setUsers(userInfos);
-        return ulist;
+        UsersResponse response = new UsersResponse();
+        response.setUsers(users);
+        return response;
     }
 
     @ApiOperation(value = "View a specific user's details.",
@@ -582,13 +382,13 @@ public class UserManagementController {
                     + "have ROLE_ACB.")
     @RequestMapping(value = "/{userName}/details", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
-    public @ResponseBody UserInfoJSONObject getUser(@PathVariable("userName") final String userName)
+    public @ResponseBody User getUser(@PathVariable("userName") final String userName)
             throws UserRetrievalException {
 
         return userManager.getUserInfo(userName);
     }
-    
-    private boolean isAcbInList(CertificationBodyDTO acb, List<CertificationBodyDTO> acbs) {
+
+    private boolean isAcbInList(final CertificationBodyDTO acb, final List<CertificationBodyDTO> acbs) {
         for (CertificationBodyDTO dto : acbs) {
             if (dto.getId().equals(acb.getId())) {
                 return true;
@@ -596,8 +396,8 @@ public class UserManagementController {
         }
         return false;
     }
-    
-    private boolean isAtlInList(TestingLabDTO atl, List<TestingLabDTO> atls) {
+
+    private boolean isAtlInList(final TestingLabDTO atl, final List<TestingLabDTO> atls) {
         for (TestingLabDTO dto : atls) {
             if (dto.getId().equals(atl.getId())) {
                 return true;

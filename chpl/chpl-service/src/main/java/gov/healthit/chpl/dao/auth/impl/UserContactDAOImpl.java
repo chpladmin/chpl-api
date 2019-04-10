@@ -7,9 +7,9 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.auth.entity.UserContactEntity;
 import gov.healthit.chpl.dao.auth.UserContactDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.entity.auth.UserContactEntity;
 import gov.healthit.chpl.util.AuthUtil;
 
 @Repository(value = "userContactDAO")

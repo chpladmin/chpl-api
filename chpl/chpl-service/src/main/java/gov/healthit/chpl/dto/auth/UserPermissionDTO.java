@@ -1,7 +1,7 @@
 package gov.healthit.chpl.dto.auth;
 
-import gov.healthit.chpl.auth.entity.UserPermissionEntity;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
+import gov.healthit.chpl.entity.auth.UserPermissionEntity;
 
 public class UserPermissionDTO {
     private Long id;

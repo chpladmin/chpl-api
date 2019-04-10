@@ -12,12 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.auth.entity.UserContactEntity;
-import gov.healthit.chpl.auth.entity.UserEntity;
 import gov.healthit.chpl.dao.auth.UserContactDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.entity.auth.UserContactEntity;
+import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
@@ -200,7 +200,10 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 
     private UserEntity getEntityById(final Long userId) throws UserRetrievalException {
         Query query = entityManager.createQuery(
-                "from UserEntity where (NOT deleted = true) " + "AND (user_id = :userid) ", UserEntity.class);
+                "from UserEntity u "
+                + "JOIN FETCH u.contact "
+                + "JOIN FETCH u.permission "
+                + "WHERE (NOT u.deleted = true) " + "AND (u.id = :userid) ", UserEntity.class);
         query.setParameter("userid", userId);
         List<UserEntity> result = query.getResultList();
 
@@ -219,7 +222,10 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 
     private UserEntity getEntityByName(final String uname) throws UserRetrievalException {
         Query query = entityManager.createQuery(
-                "from UserEntity where ((NOT deleted = true) " + "AND (user_name = (:uname))) ", UserEntity.class);
+                "from UserEntity u "
+                        + "JOIN FETCH u.contact "
+                        + "JOIN FETCH u.permission "
+                + "where ((NOT u.deleted = true) " + "AND (u.subjectName = (:uname))) ", UserEntity.class);
         query.setParameter("uname", uname);
         List<UserEntity> result = query.getResultList();
 
@@ -262,6 +268,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
     public List<UserDTO> getUsersWithPermission(final String permissionName) {
         String hql = "SELECT u "
                 + "FROM UserEntity u "
+                + "JOIN FETCH u.contact contact "
                 + "JOIN FETCH u.permission permission "
                 + "WHERE permission.authority = :permissionName";
         Query query = entityManager.createQuery(hql);

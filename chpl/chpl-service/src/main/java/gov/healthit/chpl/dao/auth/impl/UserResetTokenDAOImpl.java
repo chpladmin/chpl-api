@@ -7,10 +7,10 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.entity.UserResetTokenEntity;
 import gov.healthit.chpl.dao.auth.UserResetTokenDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.auth.UserResetTokenDTO;
+import gov.healthit.chpl.entity.auth.UserResetTokenEntity;
 import gov.healthit.chpl.util.AuthUtil;
 
 @Repository(value = "userResetTokenDAO")

@@ -7,12 +7,12 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.entity.UserEntity;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.UserCertificationBodyMapDAO;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
 import gov.healthit.chpl.entity.CertificationBodyEntity;
 import gov.healthit.chpl.entity.UserCertificationBodyMapEntity;
+import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository(value = "userCertificationBodyMapDAO")
@@ -36,8 +36,12 @@ public class UserCertificationBodyMapDAOImpl extends BaseDAOImpl implements User
     @Override
     public List<UserCertificationBodyMapDTO> getByUserId(Long userId) {
         Query query = entityManager.createQuery(
-                "from UserCertificationBodyMapEntity ucbm " + "join fetch ucbm.certificationBody cb "
-                        + "join fetch ucbm.user u " + "where (ucbm.deleted != true) AND (u.id = :userId) ",
+                "from UserCertificationBodyMapEntity ucbm "
+                        + "join fetch ucbm.certificationBody acb "
+                        + "join fetch ucbm.user u "
+                        + "join fetch u.permission perm "
+                        + "join fetch u.contact contact "
+                        + "where (ucbm.deleted != true) AND (u.id = :userId) ",
                 UserCertificationBodyMapEntity.class);
         query.setParameter("userId", userId);
         List<UserCertificationBodyMapEntity> result = query.getResultList();
@@ -54,8 +58,13 @@ public class UserCertificationBodyMapDAOImpl extends BaseDAOImpl implements User
     @Override
     public List<UserCertificationBodyMapDTO> getByAcbId(Long acbId) {
         Query query = entityManager.createQuery(
-                "from UserCertificationBodyMapEntity ucbm " + "join fetch ucbm.certificationBody cb "
-                        + "join fetch ucbm.user u where (ucbm.deleted != true) AND (cb.id = :acbId) ",
+                "from UserCertificationBodyMapEntity ucbm "
+                        + "join fetch ucbm.certificationBody cb "
+                        + "join fetch ucbm.user u "
+                        + "join fetch u.permission perm "
+                        + "join fetch u.contact contact "
+                        + "where (ucbm.deleted != true) "
+                        + "AND (cb.id = :acbId) ",
                 UserCertificationBodyMapEntity.class);
         query.setParameter("acbId", acbId);
         List<UserCertificationBodyMapEntity> result = query.getResultList();
@@ -71,8 +80,11 @@ public class UserCertificationBodyMapDAOImpl extends BaseDAOImpl implements User
     public UserCertificationBodyMapDTO getById(Long id) {
         Query query = entityManager.createQuery(
                 "from UserCertificationBodyMapEntity ucbm "
-                        + "join fetch ucbm.certificationBody CertificationBodyEntity "
-                        + "join fetch ucbm.user UserEntity" + "where (ucbm.deleted != true) AND (ucbm.id = :id) ",
+                        + "join fetch ucbm.certificationBody acb "
+                        + "join fetch ucbm.user u"
+                        + "join fetch u.permission perm "
+                        + "join fetch u.contact contact "
+                        + "where (ucbm.deleted != true) AND (ucbm.id = :id) ",
                 UserCertificationBodyMapEntity.class);
         query.setParameter("id", id);
         List<UserCertificationBodyMapEntity> result = query.getResultList();
@@ -86,8 +98,11 @@ public class UserCertificationBodyMapDAOImpl extends BaseDAOImpl implements User
     private UserCertificationBodyMapEntity getEntityById(Long id) {
         Query query = entityManager.createQuery(
                 "from UserCertificationBodyMapEntity ucbm "
-                        + "join fetch ucbm.certificationBody CertificationBodyEntity "
-                        + "join fetch ucbm.user UserEntity " + "where (ucbm.deleted != true) AND (ucbm.id = :id) ",
+                        + "join fetch ucbm.certificationBody acb "
+                        + "join fetch ucbm.user u "
+                        + "join fetch u.permission perm "
+                        + "join fetch u.contact contact "
+                        + "where (ucbm.deleted != true) AND (ucbm.id = :id) ",
                 UserCertificationBodyMapEntity.class);
         query.setParameter("id", id);
         List<UserCertificationBodyMapEntity> result = query.getResultList();

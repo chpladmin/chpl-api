@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import gov.healthit.chpl.auth.entity.UserEntity;
+import gov.healthit.chpl.entity.auth.UserEntity;
 
 /**
  * User data transfer object.

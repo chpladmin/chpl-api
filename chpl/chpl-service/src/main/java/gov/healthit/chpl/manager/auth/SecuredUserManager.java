@@ -2,8 +2,8 @@ package gov.healthit.chpl.manager.auth;
 
 import java.util.List;
 
-import gov.healthit.chpl.auth.entity.UserEntity;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserManagementException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;

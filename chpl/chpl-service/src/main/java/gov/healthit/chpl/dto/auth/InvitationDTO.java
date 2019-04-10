@@ -2,7 +2,7 @@ package gov.healthit.chpl.dto.auth;
 
 import java.util.Date;
 
-import gov.healthit.chpl.auth.entity.InvitationEntity;
+import gov.healthit.chpl.entity.auth.InvitationEntity;
 
 public class InvitationDTO {
     private Long id;
@@ -23,7 +23,7 @@ public class InvitationDTO {
     public InvitationDTO() {
     }
 
-    public InvitationDTO(InvitationEntity entity) {
+    public InvitationDTO(final InvitationEntity entity) {
         this.id = entity.getId();
         this.email = entity.getEmailAddress();
         this.permissionObjectId = entity.getPermissionObjectId();

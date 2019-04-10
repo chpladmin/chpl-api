@@ -1,4 +1,4 @@
-package gov.healthit.chpl.auth.entity;
+package gov.healthit.chpl.entity.auth;
 
 import java.util.Date;
 

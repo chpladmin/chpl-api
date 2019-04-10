@@ -4,8 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.dto.auth.UserDTO;
-import gov.healthit.chpl.dto.auth.UserPermissionDTO;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
@@ -31,9 +31,6 @@ public class ImpersonateUserActionPermissions extends ActionPermissions {
      */
     @Override
     public boolean hasAccess(final Object obj) {
-        if (!getResourcePermissions().isUserRoleAdmin() && !getResourcePermissions().isUserRoleOnc()) {
-            return false;
-        }
         UserDTO target;
         try {
             target = getResourcePermissions().getUserByName((String) obj);
@@ -41,19 +38,21 @@ public class ImpersonateUserActionPermissions extends ActionPermissions {
             LOGGER.error("Unable to get user by name %s", (String) obj);
             return false;
         }
-        if (getResourcePermissions().isUserRoleAdmin() && !getResourcePermissions().isUserRoleOnc()) {
-            for (UserPermissionDTO t : getResourcePermissions().getPermissionsByUserId(target.getId())) {
-                if (t.getName().equalsIgnoreCase("ADMIN")) {
-                    return false;
-                }
+        if (getResourcePermissions().isUserRoleAdmin()) {
+            //admin user can't impersonate another admin user
+            if (target.getPermission().getAuthority().equalsIgnoreCase(Authority.ROLE_ADMIN)) {
+                return false;
+            }
+            return true;
+        } else if (getResourcePermissions().isUserRoleOnc()) {
+            //onc can't impersonate admin or onc
+            if (target.getPermission().getAuthority().equalsIgnoreCase(Authority.ROLE_ONC)
+                    || target.getPermission().getAuthority().equalsIgnoreCase(Authority.ROLE_ADMIN)) {
+                return false;
             }
             return true;
         }
-        for (UserPermissionDTO t : getResourcePermissions().getPermissionsByUserId(target.getId())) {
-            if (t.getName().equalsIgnoreCase("ADMIN") || t.getName().equalsIgnoreCase("ONC")) {
-                return false;
-            }
-        }
-        return true;
+        //only admin or onc can impersonate
+        return false;
     }
 }

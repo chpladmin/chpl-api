@@ -2,8 +2,8 @@ package gov.healthit.chpl.dto.auth;
 
 import java.util.Date;
 
-import gov.healthit.chpl.auth.entity.UserEntity;
-import gov.healthit.chpl.auth.entity.UserResetTokenEntity;
+import gov.healthit.chpl.entity.auth.UserEntity;
+import gov.healthit.chpl.entity.auth.UserResetTokenEntity;
 
 public class UserResetTokenDTO {
 

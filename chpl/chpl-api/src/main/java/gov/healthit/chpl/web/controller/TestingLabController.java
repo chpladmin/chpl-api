@@ -9,8 +9,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.acls.domain.PrincipalSid;
-import org.springframework.security.acls.model.Permission;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,10 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.domain.ChplPermission;
-import gov.healthit.chpl.domain.PermittedUser;
 import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.domain.auth.User;
+import gov.healthit.chpl.domain.auth.UsersResponse;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
@@ -43,7 +40,6 @@ import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
-import gov.healthit.chpl.web.controller.results.PermittedUserResults;
 import gov.healthit.chpl.web.controller.results.TestingLabResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -58,13 +54,13 @@ public class TestingLabController {
 
     @Autowired
     private UserManager userManager;
-    
+
     @Autowired
     private ResourcePermissions resourcePermissions;
-    
+
     @Autowired 
     private UserPermissionsManager userPermissionsManager;
-    
+
     @ApiOperation(value = "List all testing labs (ATLs).",
             notes = "Setting the 'editable' parameter to true will return all ATLs that the logged in user has edit "
                     + "permissions on.  Security Restrictions: When 'editable' is 'true' ROLE_ADMIN or ROLE_ONC can see all ATLs.  ROLE_ATL "
@@ -235,40 +231,21 @@ public class TestingLabController {
                     + "or read authority on the specified ATL.")
     @RequestMapping(value = "/{atlId}/users", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
-    public @ResponseBody PermittedUserResults getUsers(@PathVariable("atlId") final Long atlId)
+    public @ResponseBody UsersResponse getUsers(@PathVariable("atlId") final Long atlId)
             throws InvalidArgumentsException, EntityRetrievalException {
         TestingLabDTO atl = resourcePermissions.getAtlIfPermissionById(atlId);
         if (atl == null) {
             throw new InvalidArgumentsException("Could not find the ATL specified.");
         }
 
-        List<PermittedUser> atlUsers = new ArrayList<PermittedUser>();
         List<UserDTO> users = resourcePermissions.getAllUsersOnAtl(atl);
-        for (UserDTO user : users) {
-
-            // only show users that have ROLE_ATL
-            Set<UserPermissionDTO> systemPermissions = userManager.getGrantedPermissionsForUser(user);
-            boolean hasAtlPermission = false;
-            for (UserPermissionDTO systemPermission : systemPermissions) {
-                if (systemPermission.getAuthority().equals("ROLE_ATL")) {
-                    hasAtlPermission = true;
-                }
-            }
-
-            if (hasAtlPermission) {
-                List<String> roleNames = new ArrayList<String>();
-                for (UserPermissionDTO role : systemPermissions) {
-                    roleNames.add(role.getAuthority());
-                }
-
-                PermittedUser userInfo = new PermittedUser();
-                userInfo.setUser(new User(user));
-                userInfo.setRoles(roleNames);
-                atlUsers.add(userInfo);
-            }
+        List<User> atlUsers = new ArrayList<User>(users.size());
+        for (UserDTO userDto : users) {
+            User atlUser = new User(userDto);
+            atlUsers.add(atlUser);
         }
 
-        PermittedUserResults results = new PermittedUserResults();
+        UsersResponse results = new UsersResponse();
         results.setUsers(atlUsers);
         return results;
     }

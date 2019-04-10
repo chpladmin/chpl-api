@@ -1,7 +1,5 @@
 package gov.healthit.chpl.manager;
 
-import java.util.List;
-
 import gov.healthit.chpl.domain.auth.CreateUserRequest;
 import gov.healthit.chpl.dto.auth.InvitationDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
@@ -13,23 +11,19 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 
 public interface InvitationManager {
 
-    InvitationDTO inviteAdmin(String emailAddress, List<String> permissions)
+    InvitationDTO inviteAdmin(String emailAddress)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException;
 
-    InvitationDTO inviteOnc(String emailAddress, List<String> permissions)
+    InvitationDTO inviteOnc(String emailAddress)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException;
 
-    InvitationDTO inviteWithRolesOnly(String emailAddress, List<String> permissions)
+    InvitationDTO inviteCms(String emailAddress)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException;
 
-    InvitationDTO inviteWithAcbAccess(String emailAddress, Long acbId, List<String> permissions)
+    InvitationDTO inviteWithAcbAccess(String emailAddress, Long acbId)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException;
 
-    InvitationDTO inviteWithAtlAccess(String emailAddress, Long atlId, List<String> permissions)
-            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException;
-
-    InvitationDTO inviteWithAcbAndAtlAccess(String emailAddress, Long acbId, Long atlId,
-            List<String> permissions)
+    InvitationDTO inviteWithAtlAccess(String emailAddress, Long atlId)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException;
 
     InvitationDTO getByInvitationHash(String hash);
