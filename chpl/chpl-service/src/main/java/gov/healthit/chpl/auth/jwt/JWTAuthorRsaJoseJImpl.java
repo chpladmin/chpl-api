@@ -48,12 +48,16 @@ public class JWTAuthorRsaJoseJImpl implements JWTAuthor {
         // the subject/principal is whom the token is about
         claimsObj.setSubject(user.getSubjectName());
         // any other claims made about the user that have single string values
-        for(Map.Entry<String, String> claim : stringClaims.entrySet()) {
-            claimsObj.setStringClaim(claim.getKey(), claim.getValue());
+        if (stringClaims != null) {
+            for (Map.Entry<String, String> claim : stringClaims.entrySet()) {
+                claimsObj.setStringClaim(claim.getKey(), claim.getValue());
+            }
         }
         //any other claims made about the user that have multiple values
-        for (Map.Entry<String, List<String>> claim : listClaims.entrySet()) {
-            claimsObj.setStringListClaim(claim.getKey(), claim.getValue());
+        if (listClaims != null) {
+            for (Map.Entry<String, List<String>> claim : listClaims.entrySet()) {
+                claimsObj.setStringListClaim(claim.getKey(), claim.getValue());
+            }
         }
 
         // A JWT is a JWS and/or a JWE with JSON claims as the payload.

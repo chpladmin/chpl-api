@@ -5,21 +5,15 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -37,15 +31,9 @@ import gov.healthit.chpl.auth.authentication.Authenticator;
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.caching.UnitTestRules;
-import gov.healthit.chpl.domain.auth.CreateUserRequest;
-import gov.healthit.chpl.domain.auth.UserInfoJSONObject;
 import gov.healthit.chpl.dto.auth.UserDTO;
-import gov.healthit.chpl.dto.auth.UserPermissionDTO;
 import gov.healthit.chpl.dto.auth.UserResetTokenDTO;
-import gov.healthit.chpl.exception.JWTCreationException;
-import gov.healthit.chpl.exception.JWTValidationException;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserManagementException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
@@ -65,12 +53,6 @@ public class UserManagerTest {
 
     @Autowired
     private UserManager userManager;
-
-    @Autowired
-    private Authenticator userAuthenticator;
-
-    @Autowired
-    private JWTUserConverter jwtUserConverter;
 
     @Rule
     @Autowired
@@ -98,16 +80,16 @@ public class UserManagerTest {
 
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        CreateUserRequest toCreate = new CreateUserRequest();
+        String password = "a long password that should be good enough to not be blocked";
+        UserDTO toCreate = new UserDTO();
         toCreate.setEmail("email@example.com");
         toCreate.setFullName("test");
         toCreate.setFriendlyName("test");
-        toCreate.setPassword("a long password that should be good enough to not be blocked");
         toCreate.setPhoneNumber("123-456-7890");
         toCreate.setSubjectName("testuser");
         toCreate.setTitle("Dr.");
 
-        UserDTO result = userManager.create(toCreate);
+        UserDTO result = userManager.create(toCreate, password);
         UserDTO created = userManager.getById(result.getId());
 
         assertEquals(toCreate.getEmail(), created.getEmail());
@@ -127,17 +109,16 @@ public class UserManagerTest {
             UserPermissionRetrievalException, UserManagementException {
 
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-        CreateUserRequest toCreate = new CreateUserRequest();
+        String password = "a long password that should be good enough to not be blocked";
+        UserDTO toCreate = new UserDTO();
         toCreate.setEmail("email@example.com");
         toCreate.setFullName("test");
         toCreate.setFriendlyName("test");
-        toCreate.setPassword("a long password that should be good enough to not be blocked");
         toCreate.setPhoneNumber("123-456-7890");
         toCreate.setSubjectName("testuser");
         toCreate.setTitle("Dr.");
 
-        UserDTO result = userManager.create(toCreate);
+        UserDTO result = userManager.create(toCreate, password);
         UserDTO created = userManager.getById(result.getId());
 
         assertEquals(toCreate.getEmail(), created.getEmail());
@@ -170,16 +151,16 @@ public class UserManagerTest {
 
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        CreateUserRequest toCreate = new CreateUserRequest();
+        String password = "weak";
+        UserDTO toCreate = new UserDTO();
         toCreate.setEmail("email@example.com");
         toCreate.setFullName("test");
         toCreate.setFriendlyName("test");
-        toCreate.setPassword("weak");
         toCreate.setPhoneNumber("123-456-7890");
         toCreate.setSubjectName("testuser");
         toCreate.setTitle("Dr.");
 
-        UserDTO result = userManager.create(toCreate);
+        UserDTO result = userManager.create(toCreate, password);
         UserDTO created = userManager.getById(result.getId());
 
         assertEquals(toCreate.getEmail(), created.getEmail());
@@ -199,8 +180,7 @@ public class UserManagerTest {
 
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        // public UserDTO update(User userInfo) throws UserRetrievalException;
-        gov.healthit.chpl.domain.auth.User userInfo = new gov.healthit.chpl.domain.auth.User();
+        UserDTO userInfo = new UserDTO();
         userInfo.setSubjectName("testUser2");
         userInfo.setFullName("firstName");
         userInfo.setFriendlyName("lastName");
@@ -215,7 +195,6 @@ public class UserManagerTest {
 
     }
 
-    @Ignore("Broken during Auth project merge into Services project")
     @Test
     @Transactional
     @Rollback(true)
@@ -261,231 +240,11 @@ public class UserManagerTest {
     public void testGetUserInfo() throws UserRetrievalException {
 
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        UserInfoJSONObject userInfo = userManager.getUserInfo("admin");
-        assertEquals(userInfo.getUser().getSubjectName(), "admin");
-        assertEquals(userInfo.getUser().getFullName(), "Administrator");
-        assertEquals(userInfo.getUser().getEmail(), "info@ainq.com");
+        gov.healthit.chpl.domain.auth.User userInfo = userManager.getUserInfo("admin");
+        assertEquals(userInfo.getSubjectName(), "admin");
+        assertEquals(userInfo.getFullName(), "Administrator");
+        assertEquals(userInfo.getEmail(), "info@ainq.com");
 
-    }
-
-    @Test
-    @Transactional
-    @Rollback(true)
-    public void testGrantRole()
-            throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
-
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-        UserDTO before = userManager.getByName("testUser2");
-        Set<UserPermissionDTO> beforeRoles = getUserPermissions(before);
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-        userManager.grantRole("testUser2", "ROLE_ACB");
-
-        UserDTO after = userManager.getByName("testUser2");
-
-        Set<UserPermissionDTO> afterRoles = getUserPermissions(after);
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-        assertEquals(afterRoles.size(), 2);
-        assertEquals(beforeRoles.size(), 1);
-
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
-
-    @Test
-    @Transactional
-    @Rollback(true)
-    public void testGrantAdmin() throws UserRetrievalException, UserPermissionRetrievalException,
-            UserManagementException, JWTCreationException, JWTValidationException {
-
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-        UserDTO before = userManager.getByName("testUser2");
-        Set<UserPermissionDTO> beforeRoles = getUserPermissions(before);
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-        userManager.grantAdmin("testUser2");
-
-        UserDTO after = userManager.getByName("testUser2");
-
-        Set<UserPermissionDTO> afterRoles = getUserPermissions(after);
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-        assertEquals(afterRoles.size(), 2);
-        assertEquals(beforeRoles.size(), 1);
-
-        String jwt = userAuthenticator.getJWT(after);
-        User newAdmin = jwtUserConverter.getAuthenticatedUser(jwt);
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-        UserDTO testUser = userManager.getByName("TESTUSER");
-        Set<UserPermissionDTO> testUserRolesBefore = getUserPermissions(testUser);
-
-        // set the new admin user as the current Authentication
-        SecurityContextHolder.getContext().setAuthentication(newAdmin);
-
-        userManager.grantAdmin("TESTUSER"); // If we can do this, we have Admin
-                                            // privileges.
-
-        Set<UserPermissionDTO> testUserRolesAfter = getUserPermissions(testUser);
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-        assertTrue(testUserRolesAfter.size() > testUserRolesBefore.size());
-        SecurityContextHolder.getContext().setAuthentication(null);
-
-    }
-
-    @Test
-    @Transactional
-    @Rollback(true)
-    public void testRemoveRole()
-            throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
-
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-        userManager.grantRole("testUser2", "ROLE_ACB");
-
-        UserDTO after = userManager.getByName("testUser2");
-
-        Set<UserPermissionDTO> afterRoles = getUserPermissions(after);
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-        assertEquals(afterRoles.size(), 2);
-
-        userManager.removeRole("testUser2", "ROLE_ACB");
-        Set<UserPermissionDTO> afterRemovedRoles = getUserPermissions(after);
-
-        assertEquals(afterRemovedRoles.size(), 1);
-        SecurityContextHolder.getContext().setAuthentication(null);
-
-    }
-
-    @Test
-    @Transactional
-    @Rollback(true)
-    public void testRemoveRoleDTO()
-            throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
-
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-        userManager.grantRole("testUser2", "ROLE_ACB");
-
-        UserDTO after = userManager.getByName("testUser2");
-
-        Set<UserPermissionDTO> afterRoles = getUserPermissions(after);
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-        assertEquals(afterRoles.size(), 2);
-
-        userManager.removeRole(after, "ROLE_ACB");
-        Set<UserPermissionDTO> afterRemovedRoles = getUserPermissions(after);
-
-        assertEquals(afterRemovedRoles.size(), 1);
-        SecurityContextHolder.getContext().setAuthentication(null);
-
-    }
-
-    @Test
-    @Transactional
-    @Rollback(true)
-    public void testRemoveAdmin() throws UserRetrievalException, UserPermissionRetrievalException,
-            UserManagementException, JWTCreationException, JWTValidationException {
-
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-        UserDTO before = userManager.getByName("testUser2");
-        Set<UserPermissionDTO> beforeRoles = getUserPermissions(before);
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-        userManager.grantAdmin("testUser2");
-
-        UserDTO after = userManager.getByName("testUser2");
-
-        Set<UserPermissionDTO> afterRoles = getUserPermissions(after);
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-        assertEquals(afterRoles.size(), 2);
-        assertEquals(beforeRoles.size(), 1);
-
-        String jwt = userAuthenticator.getJWT(after);
-        User newAdmin = jwtUserConverter.getAuthenticatedUser(jwt);
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-        UserDTO testUser = userManager.getByName("TESTUSER");
-        Set<UserPermissionDTO> testUserRolesBefore = getUserPermissions(testUser);
-
-        // set the new admin user as the current Authentication
-        SecurityContextHolder.getContext().setAuthentication(newAdmin);
-
-        userManager.grantAdmin("TESTUSER"); // If we can do this, we have Admin
-                                            // privileges.
-
-        Set<UserPermissionDTO> testUserRolesAfter = getUserPermissions(testUser);
-        SecurityContextHolder.getContext().setAuthentication(newAdmin);
-
-        assertTrue(testUserRolesAfter.size() > testUserRolesBefore.size());
-
-        userManager.removeAdmin("TESTUSER");
-        userManager.removeAdmin("testUser2");
-
-        UserDTO unPrivileged = userManager.getByName("testUser2");
-
-        String unPrivilegedJwt = userAuthenticator.getJWT(unPrivileged);
-        User nonAdmin = jwtUserConverter.getAuthenticatedUser(unPrivilegedJwt);
-
-        SecurityContextHolder.getContext().setAuthentication(nonAdmin);
-
-        Boolean grantFailed = false;
-
-        try {
-            userManager.grantAdmin("TESTUSER");
-        } catch (Exception e) {
-            grantFailed = true;
-        }
-        SecurityContextHolder.getContext().setAuthentication(null);
-
-        assertTrue(grantFailed);
-    }
-
-    private Set<UserPermissionDTO> getUserPermissions(final UserDTO user) {
-
-        Authentication authenticator = new Authentication() {
-
-            @Override
-            public Collection<? extends GrantedAuthority> getAuthorities() {
-                List<GrantedAuthority> auths = new ArrayList<GrantedAuthority>();
-                auths.add(new GrantedPermission("ROLE_USER_AUTHENTICATOR"));
-                return auths;
-            }
-
-            @Override
-            public Object getCredentials() {
-                return null;
-            }
-
-            @Override
-            public Object getDetails() {
-                return null;
-            }
-
-            @Override
-            public Object getPrincipal() {
-                return null;
-            }
-
-            @Override
-            public boolean isAuthenticated() {
-                return true;
-            }
-
-            @Override
-            public void setAuthenticated(final boolean arg0) throws IllegalArgumentException {
-            }
-
-            @Override
-            public String getName() {
-                return "AUTHENTICATOR";
-            }
-
-        };
-        SecurityContextHolder.getContext().setAuthentication(authenticator);
-        Set<UserPermissionDTO> permissions = userManager.getGrantedPermissionsForUser(user);
-        SecurityContextHolder.getContext().setAuthentication(null);
-
-        return permissions;
     }
 
     @Test

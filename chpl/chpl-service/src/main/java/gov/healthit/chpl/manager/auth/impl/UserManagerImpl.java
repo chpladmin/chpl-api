@@ -55,17 +55,17 @@ public class UserManagerImpl implements UserManager {
 
     @Override
     @Transactional
-    public UserDTO create(final UserDTO userInfo) throws UserCreationException, UserRetrievalException {
+    public UserDTO create(final UserDTO userDto, final String password) throws UserCreationException, UserRetrievalException {
 
-        Strength strength = getPasswordStrength(userInfo, userInfo.getPassword());
+        Strength strength = getPasswordStrength(userDto, password);
         if (strength.getScore() < UserManager.MIN_PASSWORD_STRENGTH) {
             LOGGER.info("Strength results: [warning: {}] [suggestions: {}] [score: {}] [worst case crack time: {}]",
                     strength.getFeedback().getWarning(), strength.getFeedback().getSuggestions().toString(),
                     strength.getScore(), strength.getCrackTimesDisplay().getOfflineFastHashing1e10PerSecond());
             throw new UserCreationException("Password is not strong enough");
         }
-        String encodedPassword = encodePassword(userInfo.getPassword());
-        UserDTO createdUser = securedUserManager.create(userInfo, encodedPassword);
+        String encodedPassword = encodePassword(password);
+        UserDTO createdUser = securedUserManager.create(userDto, encodedPassword);
         return createdUser;
     }
 

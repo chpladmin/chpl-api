@@ -13,7 +13,6 @@ import gov.healthit.chpl.permissions.domains.invitation.InviteAcbActionPermissio
 import gov.healthit.chpl.permissions.domains.invitation.InviteAdminActionPermissions;
 import gov.healthit.chpl.permissions.domains.invitation.InviteAtlActionPermissions;
 import gov.healthit.chpl.permissions.domains.invitation.InviteOncActionPermissions;
-import gov.healthit.chpl.permissions.domains.invitation.InviteRoleNoAccessActionPermissions;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
@@ -35,9 +34,6 @@ public class InvitationDomainPermissionsTest {
 
         assertTrue(permissions.getActionPermissions()
                 .get(InvitationDomainPermissions.INVITE_ONC) instanceof InviteOncActionPermissions);
-
-        assertTrue(permissions.getActionPermissions()
-                .get(InvitationDomainPermissions.INVITE_ROLE_NO_ACCESS) instanceof InviteRoleNoAccessActionPermissions);
 
         assertTrue(permissions.getActionPermissions()
                 .get(InvitationDomainPermissions.INVITE_ATL) instanceof InviteAtlActionPermissions);

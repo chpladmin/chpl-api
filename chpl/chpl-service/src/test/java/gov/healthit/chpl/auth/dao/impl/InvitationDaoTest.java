@@ -22,13 +22,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-import gov.healthit.chpl.auth.dto.InvitationPermissionDTO;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.auth.InvitationDAO;
-import gov.healthit.chpl.dao.auth.InvitationPermissionDAO;
+import gov.healthit.chpl.dao.auth.UserPermissionDAO;
+import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.dto.auth.InvitationDTO;
 import gov.healthit.chpl.exception.UserCreationException;
+import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -45,7 +46,7 @@ public class InvitationDaoTest {
     @Autowired
     private InvitationDAO dao;
     @Autowired
-    private InvitationPermissionDAO permDao;
+    private UserPermissionDAO permDao;
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired
@@ -69,7 +70,8 @@ public class InvitationDaoTest {
 
     @Test
     @Transactional
-    public void testInviteChplAdmin() throws UserCreationException, UserRetrievalException {
+    public void testInviteChplAdmin()
+            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
         SecurityContextHolder.getContext().setAuthentication(chplAdminUser);
 
         String emailAddress = "katy.ekey@gmail.com";
@@ -80,10 +82,7 @@ public class InvitationDaoTest {
         testDto.setDeleted(false);
         testDto.setEmail(emailAddress);
         testDto.setInviteToken(token);
-        InvitationPermissionDTO permissionDto = new InvitationPermissionDTO();
-        permissionDto.setPermissionName(ROLE_CHPL_ADMIN);
-        permissionDto.setPermissionId(-2L);
-
+        testDto.setPermission(permDao.getPermissionFromAuthority(Authority.ROLE_ADMIN));
         testDto = dao.create(testDto);
 
         assertNotNull(testDto.getId());
@@ -92,7 +91,8 @@ public class InvitationDaoTest {
 
     @Test
     @Transactional
-    public void testInviteOnc() throws UserCreationException, UserRetrievalException {
+    public void testInviteOnc()
+            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
         SecurityContextHolder.getContext().setAuthentication(chplAdminUser);
 
         String emailAddress = "dlucas@ainq.com";
@@ -103,10 +103,7 @@ public class InvitationDaoTest {
         testDto.setDeleted(false);
         testDto.setEmail(emailAddress);
         testDto.setInviteToken(token);
-        InvitationPermissionDTO permissionDto = new InvitationPermissionDTO();
-        permissionDto.setPermissionName(ROLE_ONC);
-        permissionDto.setPermissionId(-2L);
-
+        testDto.setPermission(permDao.getPermissionFromAuthority(Authority.ROLE_ONC));
         testDto = dao.create(testDto);
 
         assertNotNull(testDto.getId());

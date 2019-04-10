@@ -30,6 +30,7 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.dao.auth.UserPermissionDAO;
+import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserPermissionDTO;
 import gov.healthit.chpl.exception.UserCreationException;
@@ -74,7 +75,8 @@ public class UserDaoTest {
     @Test(expected = UserRetrievalException.class)
     @Transactional
     @Rollback
-    public void testCreateAndDeleteUser() throws UserCreationException, UserRetrievalException {
+    public void testCreateAndDeleteUser()
+            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
         SecurityContextHolder.getContext().setAuthentication(authUser);
         String password = "password";
         String encryptedPassword = bCryptPasswordEncoder.encode(password);
@@ -90,51 +92,18 @@ public class UserDaoTest {
         testUser.setPhoneNumber("443-745-0987");
         testUser.setSubjectName("testUser");
         testUser.setTitle("Developer");
+        testUser.setPermission(permDao.getPermissionFromAuthority(Authority.ROLE_CMS_STAFF));
         testUser = dao.create(testUser, encryptedPassword);
 
         assertNotNull(testUser.getId());
+        assertNotNull(testUser.getPermission());
+        assertEquals(Authority.ROLE_CMS_STAFF, testUser.getPermission().getAuthority());
         assertEquals("testUser", testUser.getSubjectName());
 
         Long insertedUserId = testUser.getId();
         dao.delete(insertedUserId);
 
         dao.getById(insertedUserId);
-    }
-
-    @Test
-    public void testAddAcbAdminPermission() throws UserRetrievalException, UserPermissionRetrievalException {
-        SecurityContextHolder.getContext().setAuthentication(authUser);
-        UserDTO toEdit = dao.getByName("TESTUSER");
-        assertNotNull(toEdit);
-
-        dao.removePermission(toEdit.getSubjectName(), ROLE_ACB);
-        dao.addPermission(toEdit.getSubjectName(), ROLE_ACB);
-
-        Set<UserPermissionDTO> permissions = permDao.findPermissionsForUser(toEdit.getId());
-        assertNotNull(permissions);
-        boolean hasAcbStaffRole = false;
-        for (UserPermissionDTO perm : permissions) {
-            if (ROLE_ACB.equals(perm.toString())) {
-                hasAcbStaffRole = true;
-            }
-        }
-        assertTrue(hasAcbStaffRole);
-    }
-
-    @Test
-    public void testAddInvalidPermission() throws UserRetrievalException, UserPermissionRetrievalException {
-        SecurityContextHolder.getContext().setAuthentication(authUser);
-        UserDTO toEdit = dao.getByName("TESTUSER");
-        assertNotNull(toEdit);
-
-        boolean caught = false;
-        try {
-            dao.addPermission(toEdit.getSubjectName(), "BOGUS");
-        } catch (UserPermissionRetrievalException ex) {
-            caught = true;
-        }
-
-        assertTrue(caught);
     }
 
     @Test

@@ -19,7 +19,7 @@ public interface UserManager {
      */
     int MIN_PASSWORD_STRENGTH = 3;
 
-    UserDTO create(UserDTO userInfo) throws UserCreationException, UserRetrievalException;
+    UserDTO create(UserDTO userInfo, String password) throws UserCreationException, UserRetrievalException;
 
     UserDTO update(UserDTO user) throws UserRetrievalException;
 

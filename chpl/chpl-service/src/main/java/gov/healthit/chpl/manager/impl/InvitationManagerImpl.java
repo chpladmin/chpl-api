@@ -181,14 +181,14 @@ public class InvitationManagerImpl extends SecuredManager implements InvitationM
             newUser = userManager.getByName(user.getSubjectName());
             if (newUser == null) {
                 UserDTO toCreate = constructUser(invitation, user);
-                newUser = userManager.create(toCreate);
+                newUser = userManager.create(toCreate, user.getPassword());
             } else {
                 throw new InvalidArgumentsException(
                         "A user with the name " + user.getSubjectName() + " already exists.");
             }
         } catch (UserRetrievalException ex) {
             UserDTO toCreate = constructUser(invitation, user);
-            newUser = userManager.create(toCreate);
+            newUser = userManager.create(toCreate, user.getPassword());
         }
 
         try {
