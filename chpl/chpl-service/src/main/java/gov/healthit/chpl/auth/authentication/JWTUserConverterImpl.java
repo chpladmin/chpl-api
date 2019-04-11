@@ -46,7 +46,7 @@ public class JWTUserConverterImpl implements JWTUserConverter {
             String subject = (String) validatedClaims.remove("sub");
             user.setSubjectName(subject);
 
-            String role = (String) validatedClaims.get("Role");
+            String role = (String) validatedClaims.get("Authority");
             GrantedPermission permission = new GrantedPermission(role);
             user.addPermission(permission);
 
@@ -80,7 +80,7 @@ public class JWTUserConverterImpl implements JWTUserConverter {
         if (validatedClaims == null) {
             throw new JWTValidationException("Invalid authentication token.");
         } else {
-            String role = (String) validatedClaims.get("Role");
+            String role = (String) validatedClaims.get("Authority");
             GrantedPermission permission = new GrantedPermission(role);
             user.addPermission(permission);
 
