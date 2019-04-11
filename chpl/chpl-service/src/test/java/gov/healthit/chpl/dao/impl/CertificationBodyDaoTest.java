@@ -1,6 +1,5 @@
 package gov.healthit.chpl.dao.impl;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -9,13 +8,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.acls.domain.ObjectIdentityImpl;
-import org.springframework.security.acls.domain.PrincipalSid;
-import org.springframework.security.acls.model.AccessControlEntry;
-import org.springframework.security.acls.model.MutableAcl;
-import org.springframework.security.acls.model.MutableAclService;
-import org.springframework.security.acls.model.ObjectIdentity;
-import org.springframework.security.acls.model.Sid;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -53,8 +45,6 @@ public class CertificationBodyDaoTest extends TestCase {
 
     @Autowired
     private CertificationBodyDAO acbDao;
-    @Autowired
-    private MutableAclService mutableAclService;
 
     @Rule
     @Autowired
@@ -196,28 +186,5 @@ public class CertificationBodyDaoTest extends TestCase {
             ex.printStackTrace();
         }
         SecurityContextHolder.getContext().setAuthentication(null);
-    }
-
-    @Test
-    @Transactional
-    public void listUsersForAcb() {
-        Long acbIdWithUsers = -3L;
-        ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acbIdWithUsers);
-        MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
-
-        List<String> userNames = new ArrayList<String>();
-        List<AccessControlEntry> entries = acl.getEntries();
-        for (int i = 0; i < entries.size(); i++) {
-            Sid sid = entries.get(i).getSid();
-            if (sid instanceof PrincipalSid) {
-                PrincipalSid psid = (PrincipalSid) sid;
-                userNames.add(psid.getPrincipal());
-            } else {
-                userNames.add(sid.toString());
-            }
-        }
-
-        assertNotNull(userNames);
-        assertEquals(2, userNames.size());
     }
 }

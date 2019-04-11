@@ -98,8 +98,8 @@ public class SecuredUserManagerImpl extends SecuredManager implements SecuredUse
         return userDAO.getUsersWithPermission(permissionName);
     }
 
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
-            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_ID, #id)")
+    @PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_ID, returnObject)")
     public UserDTO getById(final Long id) throws UserRetrievalException {
         return userDAO.getById(id);
     }

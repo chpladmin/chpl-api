@@ -198,6 +198,17 @@ public class ResourcePermissions {
         return null;
     }
 
+    @Transactional(readOnly = true)
+    public boolean hasPermissionOnUser(final Long userId) {
+        UserDTO user = null;
+        try {
+            user = userDAO.getById(userId);
+        } catch (UserRetrievalException ex) {
+            return false;
+        }
+        return hasPermissionOnUser(user);
+    }
+
     /**
      * Determines if the current user has permissions to access
      * the account of the passed-in user.

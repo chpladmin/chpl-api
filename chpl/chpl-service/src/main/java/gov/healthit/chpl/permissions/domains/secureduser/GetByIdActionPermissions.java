@@ -15,13 +15,14 @@ public class GetByIdActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess(final Object obj) {
-        if (!(obj instanceof Long)) {
-            return false;
-        } else {
+        if (obj instanceof Long) {
+            Long userId = (Long) obj;
+            return getResourcePermissions().hasPermissionOnUser(userId);
+        } else if (obj instanceof UserDTO) {
             UserDTO user = (UserDTO) obj;
             return getResourcePermissions().hasPermissionOnUser(user);
         }
-
+        return false;
     }
 
 }
