@@ -38,10 +38,12 @@ public class BaseDAOImpl {
     protected void create(final Object entity) {
         entityManager.persist(entity);
         entityManager.flush();
+        entityManager.clear();
     }
 
     protected void update(final Object entity) {
         entityManager.merge(entity);
         entityManager.flush();
+        entityManager.clear();
     }
 }

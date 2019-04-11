@@ -7,6 +7,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.PermissionEvaluator;
+import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
@@ -32,6 +34,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
 public class ResourcePermissions {
+    private PermissionEvaluator permissionEvaluator;
     private UserCertificationBodyMapDAO userCertificationBodyMapDAO;
     private ErrorMessageUtil errorMessageUtil;
     private CertificationBodyDAO acbDAO;
@@ -40,11 +43,13 @@ public class ResourcePermissions {
     private UserDAO userDAO;
 
     @Autowired
-    public ResourcePermissions(final UserCertificationBodyMapDAO userCertificationBodyMapDAO,
+    public ResourcePermissions(final PermissionEvaluator permissionEvaluator,
+            final UserCertificationBodyMapDAO userCertificationBodyMapDAO,
             final CertificationBodyDAO acbDAO,
             final UserTestingLabMapDAO userTestingLabMapDAO, final TestingLabDAO atlDAO,
             final ErrorMessageUtil errorMessageUtil, final UserDAO userDAO) {
 
+        this.permissionEvaluator = permissionEvaluator;
         this.userCertificationBodyMapDAO = userCertificationBodyMapDAO;
         this.acbDAO = acbDAO;
         this.userTestingLabMapDAO = userTestingLabMapDAO;
@@ -191,6 +196,48 @@ public class ResourcePermissions {
         return user.getPermission();
         } catch (UserRetrievalException ex) { }
         return null;
+    }
+
+    /**
+     * Determines if the current user has permissions to access
+     * the account of the passed-in user.
+     * Rules are: Admin and Onc can access all users.
+     * Acb can access any other ROLE_ACB user who is also on their ACB.
+     * Atl can access any other ROLE_ATL user who is also on their ATL.
+     * All users can access themselves.
+     * @param user
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public boolean hasPermissionOnUser(final UserDTO user) {
+        if (isUserRoleAdmin() || isUserRoleOnc()
+                || permissionEvaluator.hasPermission(AuthUtil.getCurrentUser(), user,
+                        BasePermission.ADMINISTRATION)) {
+            return true;
+        } else if (isUserRoleAcbAdmin()) {
+            //is the user being checked on any of the same ACB(s) that the current user is on?
+            List<CertificationBodyDTO> currUserAcbs = getAllAcbsForCurrentUser();
+            List<CertificationBodyDTO> otherUserAcbs = getAllAcbsForUser(user.getId());
+            for (CertificationBodyDTO currUserAcb : currUserAcbs) {
+                for (CertificationBodyDTO otherUserAcb : otherUserAcbs) {
+                    if (currUserAcb.getId().equals(otherUserAcb.getId())) {
+                        return true;
+                    }
+                }
+            }
+        } else if (isUserRoleAtlAdmin()) {
+            //is the user being checked on any of the same ATL(s) that the current user is on?
+            List<TestingLabDTO> currUserAtls = getAllAtlsForCurrentUser();
+            List<TestingLabDTO> otherUserAtls = getAllAtlsForUser(user.getId());
+            for (TestingLabDTO currUserAtl : currUserAtls) {
+                for (TestingLabDTO otherUserAtl : otherUserAtls) {
+                    if (currUserAtl.getId().equals(otherUserAtl.getId())) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     public boolean isUserRoleAdmin() {

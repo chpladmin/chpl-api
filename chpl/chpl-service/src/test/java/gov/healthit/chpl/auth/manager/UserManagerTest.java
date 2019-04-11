@@ -27,11 +27,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-import gov.healthit.chpl.auth.authentication.Authenticator;
-import gov.healthit.chpl.auth.authentication.JWTUserConverter;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
+import gov.healthit.chpl.dao.auth.UserPermissionDAO;
+import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserResetTokenDTO;
 import gov.healthit.chpl.exception.UserCreationException;
@@ -52,13 +52,16 @@ import gov.healthit.chpl.manager.auth.UserManager;
 public class UserManagerTest {
 
     @Autowired
+    private UserPermissionDAO permDao;
+
+    @Autowired
     private UserManager userManager;
 
     @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
 
-    private static JWTAuthenticatedUser adminUser;
+    private static JWTAuthenticatedUser adminUser, oncUser, acbUser, atlUser, cmsUser;
 
     private static final String RESET_PASSWORD_TOKEN = "zlhf8n4bfh87kfq";
 
@@ -70,6 +73,34 @@ public class UserManagerTest {
         adminUser.setFriendlyName("Administrator");
         adminUser.setSubjectName("admin");
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+
+        oncUser = new JWTAuthenticatedUser();
+        oncUser.setFullName("ONC User");
+        oncUser.setId(6L);
+        oncUser.setFriendlyName("Onc");
+        oncUser.setSubjectName("oncUser");
+        oncUser.getPermissions().add(new GrantedPermission("ROLE_ONC"));
+
+        acbUser = new JWTAuthenticatedUser();
+        acbUser.setFullName("Test");
+        acbUser.setId(3L);
+        acbUser.setFriendlyName("User3");
+        acbUser.setSubjectName("testUser3");
+        acbUser.getPermissions().add(new GrantedPermission("ROLE_ACB"));
+
+        atlUser = new JWTAuthenticatedUser();
+        atlUser.setFullName("ATL");
+        atlUser.setId(4L);
+        atlUser.setFriendlyName("User");
+        atlUser.setSubjectName("atlUser");
+        atlUser.getPermissions().add(new GrantedPermission("ROLE_ATL"));
+
+        cmsUser = new JWTAuthenticatedUser();
+        cmsUser.setFullName("CMS User");
+        cmsUser.setId(5L);
+        cmsUser.setFriendlyName("User");
+        cmsUser.setSubjectName("cmsStaffUser");
+        cmsUser.getPermissions().add(new GrantedPermission("ROLE_CMS_STAFF"));
     }
 
     @Test(expected = UserRetrievalException.class)
@@ -88,6 +119,7 @@ public class UserManagerTest {
         toCreate.setPhoneNumber("123-456-7890");
         toCreate.setSubjectName("testuser");
         toCreate.setTitle("Dr.");
+        toCreate.setPermission(permDao.getPermissionFromAuthority(Authority.ROLE_ADMIN));
 
         UserDTO result = userManager.create(toCreate, password);
         UserDTO created = userManager.getById(result.getId());
@@ -117,6 +149,7 @@ public class UserManagerTest {
         toCreate.setPhoneNumber("123-456-7890");
         toCreate.setSubjectName("testuser");
         toCreate.setTitle("Dr.");
+        toCreate.setPermission(permDao.getPermissionFromAuthority(Authority.ROLE_ADMIN));
 
         UserDTO result = userManager.create(toCreate, password);
         UserDTO created = userManager.getById(result.getId());
@@ -184,6 +217,8 @@ public class UserManagerTest {
         userInfo.setSubjectName("testUser2");
         userInfo.setFullName("firstName");
         userInfo.setFriendlyName("lastName");
+        userInfo.setEmail("test@test.com");
+        userInfo.setPhoneNumber("111-111-1111");
 
         userManager.update(userInfo);
 
@@ -198,10 +233,50 @@ public class UserManagerTest {
     @Test
     @Transactional
     @Rollback(true)
-    public void testGetAll() {
+    public void testGetAllAsAdminUser() {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         List<UserDTO> results = userManager.getAll();
-        assertEquals(results.size(), 3);
+        assertEquals(8, results.size());
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testGetAllAsOncUser() {
+        SecurityContextHolder.getContext().setAuthentication(oncUser);
+        List<UserDTO> results = userManager.getAll();
+        assertEquals(8, results.size());
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testGetAllAsAcbUser() {
+        SecurityContextHolder.getContext().setAuthentication(acbUser);
+        List<UserDTO> results = userManager.getAll();
+        assertEquals(2, results.size());
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testGetAllAsAtlUser() {
+        SecurityContextHolder.getContext().setAuthentication(atlUser);
+        List<UserDTO> results = userManager.getAll();
+        assertEquals(2, results.size());
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testGetAllAsCmsUser() {
+        SecurityContextHolder.getContext().setAuthentication(cmsUser);
+        List<UserDTO> results = userManager.getAll();
+        assertEquals(1, results.size());
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 

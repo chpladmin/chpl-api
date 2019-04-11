@@ -96,8 +96,6 @@ public class UserDaoTest {
         testUser = dao.create(testUser, encryptedPassword);
 
         assertNotNull(testUser.getId());
-        assertNotNull(testUser.getPermission());
-        assertEquals(Authority.ROLE_CMS_STAFF, testUser.getPermission().getAuthority());
         assertEquals("testUser", testUser.getSubjectName());
 
         Long insertedUserId = testUser.getId();

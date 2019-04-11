@@ -48,7 +48,6 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
     public UserPermissionDTO getPermissionFromAuthority(final String authority) throws UserPermissionRetrievalException {
 
         UserPermissionEntity permissionEntity = null;
-        UserPermissionDTO permission = new UserPermissionDTO();
 
         Query query = entityManager.createQuery(
                 "from UserPermissionEntity where (NOT deleted = true) AND (authority = :authority) ",
@@ -65,12 +64,7 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
         } else {
             throw new UserPermissionRetrievalException("Permission does not exist.");
         }
-
-        permission.setAuthority(permissionEntity.getAuthority());
-        permission.setName(permissionEntity.getName());
-        permission.setDescription(permissionEntity.getDescription());
-
-        return permission;
+        return new UserPermissionDTO(permissionEntity);
     }
 
     @Override

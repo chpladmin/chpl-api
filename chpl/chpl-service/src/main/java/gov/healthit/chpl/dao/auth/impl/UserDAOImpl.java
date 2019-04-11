@@ -90,6 +90,8 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
         userEntity.getContact().setPhoneNumber(user.getPhoneNumber());
         userEntity.getContact().setSignatureDate(user.getSignatureDate());
         userEntity.getContact().setTitle(user.getTitle());
+        userEntity.getContact().setFullName(user.getFullName());
+        userEntity.getContact().setFriendlyName(user.getFriendlyName());
         userEntity.setAccountEnabled(user.isAccountEnabled());
         userEntity.setAccountExpired(user.isAccountExpired());
         userEntity.setAccountLocked(user.isAccountLocked());
@@ -144,8 +146,12 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
     public UserDTO findUserByNameAndEmail(final String username, final String email) {
         UserDTO foundUser = null;
 
-        String userQuery = "from UserEntity u" + " where (NOT u.deleted = true) "
-                + " AND (u.subjectName = :subjectName) " + " AND (u.contact.email = :email)";
+        String userQuery = "from UserEntity u "
+                + "JOIN FETCH u.contact " 
+                + "JOIN FETCH u.permission "
+                + "WHERE (NOT u.deleted = true) "
+                + "AND (u.subjectName = :subjectName) "
+                + "AND (u.contact.email = :email)";
 
         Query query = entityManager.createQuery(userQuery, UserEntity.class);
         query.setParameter("subjectName", username);
@@ -162,9 +168,14 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
     public UserDTO findUser(final UserDTO toSearch) {
         UserDTO foundUser = null;
 
-        String userQuery = "from UserEntity u" + " where (NOT u.deleted = true) "
-                + " AND (u.subjectName = :subjectName) " + " AND (u.contact.fullName = :fullName)"
-                + " AND (u.contact.friendlyName = :friendlyName)" + " AND (u.contact.email = :email)"
+        String userQuery = "from UserEntity u "
+                + " JOIN FETCH u.permission "
+                + " JOIN FETCH u.contact "
+                + " WHERE (NOT u.deleted = true) "
+                + " AND (u.subjectName = :subjectName) "
+                + " AND (u.contact.fullName = :fullName)"
+                + " AND (u.contact.friendlyName = :friendlyName)"
+                + " AND (u.contact.email = :email)"
                 + " AND (u.contact.phoneNumber = :phoneNumber)";
         if (toSearch.getTitle() != null) {
             userQuery += " AND (u.contact.title = :title)";
@@ -193,7 +204,10 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
     private List<UserEntity> getAllEntities() {
 
         List<UserEntity> result = entityManager
-                .createQuery("from UserEntity where (NOT deleted = true) ", UserEntity.class).getResultList();
+                .createQuery("from UserEntity u "
+                        + "JOIN FETCH u.contact "
+                        + "JOIN FETCH u.permission "
+                        + " WHERE (NOT u.deleted = true) ", UserEntity.class).getResultList();
 
         return result;
     }

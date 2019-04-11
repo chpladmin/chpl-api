@@ -1328,13 +1328,6 @@
         last_modified_user="-2" last_modified_date="2016-08-20 13:15:00"
         deleted="false" />
 
-    <acl_class id="1"
-        class="gov.healthit.chpl.auth.dto.UserDTO" />
-    <acl_class id="2"
-        class="gov.healthit.chpl.dto.CertificationBodyDTO" />
-    <acl_class id="3"
-        class="gov.healthit.chpl.dto.TestingLabDTO" />
-
     <acl_sid id="-2" principal="TRUE" sid="admin" />
     <acl_sid id="1" principal="TRUE" sid="TESTUSER" />
     <acl_sid id="2" principal="TRUE" sid="testUser2" />
@@ -1361,29 +1354,6 @@
         object_id_identity="6" owner_sid="6" entries_inheriting="TRUE" />
 	<acl_object_identity id="16" object_id_class="1"
         object_id_identity="7" owner_sid="7" entries_inheriting="TRUE" />
-	
-
-    <!-- acb acls -->
-    <acl_object_identity id="3" object_id_class="2"
-        object_id_identity="-1" owner_sid="-2" entries_inheriting="TRUE" />
-    <acl_object_identity id="4" object_id_class="2"
-        object_id_identity="-2" owner_sid="-2" entries_inheriting="TRUE" />
-    <acl_object_identity id="5" object_id_class="2"
-        object_id_identity="-3" owner_sid="1" entries_inheriting="TRUE" />
-    <acl_object_identity id="6" object_id_class="2"
-        object_id_identity="-4" owner_sid="-2" entries_inheriting="TRUE" />
-    <acl_object_identity id="7" object_id_class="2"
-        object_id_identity="-5" owner_sid="-2" entries_inheriting="TRUE" />
-    <acl_object_identity id="8" object_id_class="2"
-        object_id_identity="-6" owner_sid="-2" entries_inheriting="TRUE" />
-    <acl_object_identity id="9" object_id_class="2"
-        object_id_identity="-7" owner_sid="-2" entries_inheriting="TRUE" />
-    <acl_object_identity id="13" object_id_class="2"
-        object_id_identity="-8" owner_sid="-2" entries_inheriting="TRUE" />
-
-    <!-- atl acls -->
-    <acl_object_identity id="12" object_id_class="3"
-        object_id_identity="-1" owner_sid="4" entries_inheriting="TRUE" />
 
     <!-- user acls -->
     <acl_entry id="1" acl_object_identity="-2" ace_order="0"
@@ -1401,42 +1371,8 @@
     <acl_entry id="14" acl_object_identity="11" ace_order="0"
         sid="4" mask="16" granting="TRUE" audit_success="FALSE"
         audit_failure="FALSE" />
-
-    <!-- acb acls -->
-    <acl_entry id="4" acl_object_identity="3" ace_order="0"
-        sid="-2" mask="16" granting="TRUE" audit_success="FALSE"
-        audit_failure="FALSE" />
-    <acl_entry id="12" acl_object_identity="3" ace_order="1"
-        sid="3" mask="16" granting="TRUE" audit_success="FALSE"
-        audit_failure="FALSE" />
-    <acl_entry id="5" acl_object_identity="4" ace_order="0"
-        sid="-2" mask="16" granting="TRUE" audit_success="FALSE"
-        audit_failure="FALSE" />
-    <acl_entry id="6" acl_object_identity="5" ace_order="0"
-        sid="-2" mask="16" granting="TRUE" audit_success="FALSE"
-        audit_failure="FALSE" />
-    <acl_entry id="7" acl_object_identity="5" ace_order="1"
-        sid="1" mask="16" granting="TRUE" audit_success="FALSE"
-        audit_failure="FALSE" />
-    <acl_entry id="8" acl_object_identity="6" ace_order="0"
-        sid="-2" mask="16" granting="TRUE" audit_success="FALSE"
-        audit_failure="FALSE" />
-    <acl_entry id="9" acl_object_identity="7" ace_order="0"
-        sid="-2" mask="16" granting="TRUE" audit_success="FALSE"
-        audit_failure="FALSE" />
-    <acl_entry id="10" acl_object_identity="8" ace_order="0"
-        sid="-2" mask="16" granting="TRUE" audit_success="FALSE"
-        audit_failure="FALSE" />
-    <acl_entry id="11" acl_object_identity="9" ace_order="0"
-        sid="-2" mask="16" granting="TRUE" audit_success="FALSE"
-        audit_failure="FALSE" />
-
-    <!-- atl acls -->
-    <acl_entry id="15" acl_object_identity="12" ace_order="0"
-        sid="-2" mask="16" granting="TRUE" audit_success="FALSE"
-        audit_failure="FALSE" />
-    <acl_entry id="16" acl_object_identity="12" ace_order="1"
-        sid="4" mask="16" granting="TRUE" audit_success="FALSE"
+    <acl_entry id="15" acl_object_identity="14" ace_order="0"
+        sid="5" mask="16" granting="TRUE" audit_success="FALSE"
         audit_failure="FALSE" />
 
     <contact contact_id="-2" full_name="Administrator"
@@ -2125,5 +2061,15 @@
         creation_date="2017-08-28 13:13:24.528"
         last_modified_date="2017-08-22 13:12:23.525"
         last_modified_user="-3" deleted="false" />
-        
+
+    <user_testing_lab_map id="-1" 
+        user_id="4" testing_lab_id="-1" retired="false"
+        creation_date="2017-08-28 13:13:24.528"
+        last_modified_date="2017-08-22 13:12:23.525"
+        last_modified_user="-3" deleted="false" />
+    <user_testing_lab_map id="-2" 
+        user_id="2" testing_lab_id="-1" retired="false"
+        creation_date="2017-08-28 13:13:24.528"
+        last_modified_date="2017-08-22 13:12:23.525"
+        last_modified_user="-3" deleted="false" />
 </dataset>
