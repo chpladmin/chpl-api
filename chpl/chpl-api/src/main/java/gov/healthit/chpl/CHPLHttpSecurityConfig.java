@@ -44,12 +44,12 @@ public class CHPLHttpSecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
-//    @Override
-//    protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
-//        LOGGER.info("configure AuthenticationManagerBuilder");
-//        auth.inMemoryAuthentication().withUser("user").password("password").roles("USER").and().withUser("admin")
-//        .password("password").roles("USER", "ADMIN");
-//    }
+    @Override
+    protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
+        LOGGER.info("configure AuthenticationManagerBuilder");
+        auth.inMemoryAuthentication().withUser("user").password("password").roles("USER").and().withUser("admin")
+        .password("password").roles("USER", "ADMIN");
+    }
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {

@@ -101,7 +101,7 @@ public class UserAuthenticator implements Authenticator {
         String jwt = null;
 
         Map<String, String> stringClaims = new HashMap<String, String>();
-        stringClaims.put("Role", user.getPermission().getAuthority());
+        stringClaims.put("Authority", user.getPermission().getAuthority());
 
         Map<String, List<String>> listClaims = new HashMap<String, List<String>>();
         List<String> identity = new ArrayList<String>();

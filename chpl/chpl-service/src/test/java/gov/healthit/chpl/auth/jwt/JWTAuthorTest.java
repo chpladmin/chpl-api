@@ -37,12 +37,12 @@ public class JWTAuthorTest {
         String role = "ROLE_SUPERSTAR";
         UserDTO user = userDao.getById(-2L);
         Map<String, String> claims = new HashMap<String, String>();
-        claims.put("Role", role);
+        claims.put("Authority", role);
         String jwt = jwtAuthor.createJWT(user, claims, null);
 
         Map<String, Object> claimObjects = jwtConsumer.consume(jwt);
 
-        String recoveredRole = (String) claimObjects.get("Role");
+        String recoveredRole = (String) claimObjects.get("Authority");
         assertEquals(role, recoveredRole);
 
     }
