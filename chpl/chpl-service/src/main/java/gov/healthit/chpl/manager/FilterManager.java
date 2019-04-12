@@ -11,4 +11,8 @@ public interface FilterManager {
     List<FilterDTO> getByFilterType(FilterTypeDTO filterTypeDTO);
 
     FilterDTO create(FilterDTO filterDTO) throws EntityRetrievalException, ValidationException;
+
+    FilterDTO update(FilterDTO filterDTO) throws EntityRetrievalException, ValidationException;
+
+    void delete(FilterDTO filterDTO) throws EntityRetrievalException, ValidationException;
 }

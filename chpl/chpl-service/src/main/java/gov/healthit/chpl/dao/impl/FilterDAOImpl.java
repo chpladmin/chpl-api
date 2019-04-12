@@ -81,6 +81,11 @@ public class FilterDAOImpl extends BaseDAOImpl implements FilterDAO {
 
     }
 
+    @Override
+    public FilterDTO getById(Long id) throws EntityRetrievalException {
+        return new FilterDTO(getEntityById(id));
+    }
+
     private FilterEntity getEntityById(Long id) throws EntityRetrievalException {
         FilterEntity entity = null;
 

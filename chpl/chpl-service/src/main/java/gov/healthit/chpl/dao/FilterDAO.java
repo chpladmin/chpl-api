@@ -14,4 +14,6 @@ public interface FilterDAO {
     List<FilterDTO> getByFilterType(FilterTypeDTO filterType);
 
     void delete(FilterDTO dto) throws EntityRetrievalException;
+
+    FilterDTO getById(Long id) throws EntityRetrievalException;
 }
