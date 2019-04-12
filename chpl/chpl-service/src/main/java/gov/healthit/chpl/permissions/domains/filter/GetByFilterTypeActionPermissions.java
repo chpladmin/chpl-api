@@ -20,7 +20,11 @@ public class GetByFilterTypeActionPermissions extends ActionPermissions {
             return false;
         } else {
             FilterDTO origFilter = (FilterDTO) obj;
-            return origFilter.getUser().getId().equals(Util.getCurrentUser().getId());
+            if (Util.getCurrentUser() == null) {
+                return false;
+            } else {
+                return origFilter.getUser().getId().equals(Util.getCurrentUser().getId());
+            }
         }
     }
 
