@@ -169,7 +169,7 @@ public class ResourcePermissions {
     @Transactional(readOnly = true)
     public TestingLabDTO getAtlIfPermissionById(final Long id) throws EntityRetrievalException {
         try {
-            acbDAO.getById(id);
+            atlDAO.getById(id);
         } catch (final EntityRetrievalException ex) {
             throw new EntityRetrievalException(errorMessageUtil.getMessage("atl.notFound"));
         }
