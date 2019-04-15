@@ -15,4 +15,6 @@ public interface FilterManager {
     FilterDTO update(FilterDTO filterDTO) throws EntityRetrievalException, ValidationException;
 
     void delete(FilterDTO filterDTO) throws EntityRetrievalException, ValidationException;
+
+    FilterTypeDTO getFilterType(Long filterTypeId);
 }

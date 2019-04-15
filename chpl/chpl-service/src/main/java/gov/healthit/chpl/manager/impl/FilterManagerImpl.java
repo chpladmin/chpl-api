@@ -66,6 +66,12 @@ public class FilterManagerImpl extends SecuredManager implements FilterManager {
         filterDAO.delete(filterDTO);
     }
 
+    @Override
+    public FilterTypeDTO getFilterType(Long filterTypeID) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
     private Set<String> validateForCreate(FilterDTO filterDTO) {
         if (filterDTO == null) {
             Set<String> errors = new HashSet<String>();

@@ -86,6 +86,11 @@ public class FilterDAOImpl extends BaseDAOImpl implements FilterDAO {
         return new FilterDTO(getEntityById(id));
     }
 
+    @Override
+    public FilterTypeDTO getFilterTypeById(Long filterTypeId) throws EntityRetrievalException {
+        return new FilterTypeDTO(getFilterTypeEntityById(filterTypeId));
+    }
+
     private FilterEntity getEntityById(Long id) throws EntityRetrievalException {
         FilterEntity entity = null;
 
@@ -114,6 +119,27 @@ public class FilterDAOImpl extends BaseDAOImpl implements FilterDAO {
             throw new EntityRetrievalException(msg);
         } else if (result.size() > 1) {
             throw new EntityRetrievalException("Data error. Duplicate user id in database.");
+        }
+
+        if (result.size() == 0) {
+            return null;
+        }
+        return result.get(0);
+    }
+
+    private FilterTypeEntity getFilterTypeEntityById(final Long filterTypeId) throws EntityRetrievalException {
+        Query query = entityManager.createQuery(
+                "from FilterTypeEntity where (NOT deleted = true) " + "AND (id = :filterTypeid) ",
+                FilterTypeEntity.class);
+        query.setParameter("filterTypeId", filterTypeId);
+        List<FilterTypeEntity> result = query.getResultList();
+
+        if (result == null || result.size() == 0) {
+            String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("user.notFound"),
+                    LocaleContextHolder.getLocale()));
+            throw new EntityRetrievalException(msg);
+        } else if (result.size() > 1) {
+            throw new EntityRetrievalException("Data error. Duplicate filter type in database.");
         }
 
         if (result.size() == 0) {

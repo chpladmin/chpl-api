@@ -28,7 +28,6 @@ public class UpdateActionPermissions extends ActionPermissions {
             // Get the filterDTO from the DB, to make sure user was not tampered with
             try {
                 FilterDTO dto = filterDAO.getById(origFilter.getId());
-                Long userId = Util.getCurrentUser().getId();
                 return dto.getUser().getId().equals(Util.getCurrentUser().getId());
             } catch (Exception e) {
                 return false;
