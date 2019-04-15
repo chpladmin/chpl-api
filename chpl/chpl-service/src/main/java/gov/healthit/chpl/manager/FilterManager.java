@@ -16,5 +16,5 @@ public interface FilterManager {
 
     void delete(FilterDTO filterDTO) throws EntityRetrievalException, ValidationException;
 
-    FilterTypeDTO getFilterType(Long filterTypeId);
+    FilterTypeDTO getFilterType(Long filterTypeId) throws EntityRetrievalException;
 }

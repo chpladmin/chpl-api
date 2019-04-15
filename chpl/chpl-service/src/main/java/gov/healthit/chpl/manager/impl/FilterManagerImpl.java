@@ -67,9 +67,8 @@ public class FilterManagerImpl extends SecuredManager implements FilterManager {
     }
 
     @Override
-    public FilterTypeDTO getFilterType(Long filterTypeID) {
-        // TODO Auto-generated method stub
-        return null;
+    public FilterTypeDTO getFilterType(Long filterTypeId) throws EntityRetrievalException {
+        return filterDAO.getFilterTypeById(filterTypeId);
     }
 
     private Set<String> validateForCreate(FilterDTO filterDTO) {
