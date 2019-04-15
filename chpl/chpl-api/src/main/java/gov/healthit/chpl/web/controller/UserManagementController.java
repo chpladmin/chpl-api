@@ -12,12 +12,8 @@ import javax.mail.internet.AddressException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,7 +38,7 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.auth.InvitationDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
-import gov.healthit.chpl.dto.auth.UserPermissionDTO;
+import gov.healthit.chpl.dto.auth.UserInvitationDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -91,8 +87,6 @@ public class UserManagementController {
 
     @Autowired
     private ResourcePermissions resourcePermissions;
-
-    @Autowired private MessageSource messageSource;
 
     private static final Logger LOGGER = LogManager.getLogger(UserManagementController.class);
     private static final long VALID_INVITATION_LENGTH = 3L * 24L * 60L * 60L * 1000L;
@@ -251,7 +245,7 @@ public class UserManagementController {
                 throw new UserRetrievalException(
                         "The user " + credentials.getUserName() + " could not be authenticated.");
             }
-            invitationManager.updateUserFromInvitation(invitation, userToUpdate);
+            invitationManager.updateUserFromInvitation(new UserInvitationDTO(userToUpdate, invitation));
             jwtToken = authenticator.getJWT(credentials);
         } else {
             // add authorization to the currently logged in user
@@ -259,7 +253,7 @@ public class UserManagementController {
             if (loggedInUser.getImpersonatingUser() != null) {
                 userToUpdate = loggedInUser.getImpersonatingUser();
             }
-            invitationManager.updateUserFromInvitation(invitation, userToUpdate);
+            invitationManager.updateUserFromInvitation(new UserInvitationDTO(userToUpdate, invitation));
             UserDTO updatedUser = userManager.getById(userToUpdate.getId());
             jwtToken = authenticator.getJWT(updatedUser);
         }

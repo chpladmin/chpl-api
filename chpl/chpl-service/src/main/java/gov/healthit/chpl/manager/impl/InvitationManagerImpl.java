@@ -27,6 +27,7 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.auth.InvitationDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.dto.auth.UserInvitationDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.UserCreationException;
@@ -236,17 +237,19 @@ public class InvitationManagerImpl extends SecuredManager implements InvitationM
      */
     @Override
     @Transactional
-    public UserDTO updateUserFromInvitation(final InvitationDTO invitation, final UserDTO toUpdate)
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
+            + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).UPDATE_FROM_INVITATION, #userInvitation)")
+    public UserDTO updateUserFromInvitation(final UserInvitationDTO userInvitation)
             throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException {
         User loggedInUser = gov.healthit.chpl.util.AuthUtil.getCurrentUser();
 
         // have to give temporary permission to see all ACBs and ATLs
         // because the logged in user wouldn't already have permission on them
-        Authentication authenticator = getInvitedUserAuthenticator(invitation.getLastModifiedUserId());
+        Authentication authenticator = getInvitedUserAuthenticator(userInvitation.getInvitation().getLastModifiedUserId());
         SecurityContextHolder.getContext().setAuthentication(authenticator);
 
-        handleInvitation(invitation, toUpdate);
-        invitationDao.delete(invitation.getId());
+        handleInvitation(userInvitation.getInvitation(), userInvitation.getUser());
+        invitationDao.delete(userInvitation.getInvitation().getId());
 
         // put the permissions back how they were
         if (loggedInUser == null) {
@@ -255,7 +258,7 @@ public class InvitationManagerImpl extends SecuredManager implements InvitationM
             SecurityContextHolder.getContext().setAuthentication(loggedInUser);
         }
 
-        return toUpdate;
+        return userInvitation.getUser();
     }
 
     /**

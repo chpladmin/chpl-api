@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -42,6 +43,12 @@ import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
 @ControllerAdvice
 public class ApiExceptionControllerAdvice {
     private static final Logger LOGGER = LogManager.getLogger(ApiExceptionControllerAdvice.class);
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> exception(final AccessDeniedException e) {
+        return new ResponseEntity<ErrorResponse>(
+                new ErrorResponse(e.getMessage() == null ? "Access Denied" : e.getMessage()), HttpStatus.UNAUTHORIZED);
+    }
 
     @ExceptionHandler(EntityRetrievalException.class)
     public ResponseEntity<ErrorResponse> exception(final EntityRetrievalException e) {

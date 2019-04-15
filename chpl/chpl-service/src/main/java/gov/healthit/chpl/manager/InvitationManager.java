@@ -3,6 +3,7 @@ package gov.healthit.chpl.manager;
 import gov.healthit.chpl.domain.auth.CreateUserRequest;
 import gov.healthit.chpl.dto.auth.InvitationDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.dto.auth.UserInvitationDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.UserCreationException;
@@ -37,6 +38,6 @@ public interface InvitationManager {
 
     UserDTO confirmAccountEmail(InvitationDTO invitation) throws UserRetrievalException;
 
-    UserDTO updateUserFromInvitation(InvitationDTO invitation, UserDTO user)
+    UserDTO updateUserFromInvitation(UserInvitationDTO userInvitation)
             throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException;
 }

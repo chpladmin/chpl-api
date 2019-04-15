@@ -9,6 +9,7 @@ import gov.healthit.chpl.permissions.domains.invitation.InviteAdminActionPermiss
 import gov.healthit.chpl.permissions.domains.invitation.InviteAtlActionPermissions;
 import gov.healthit.chpl.permissions.domains.invitation.InviteCmsActionPermissions;
 import gov.healthit.chpl.permissions.domains.invitation.InviteOncActionPermissions;
+import gov.healthit.chpl.permissions.domains.invitation.UpdateFromInvitationActionPermissions;
 
 @Component
 public class InvitationDomainPermissions extends DomainPermissions {
@@ -17,19 +18,23 @@ public class InvitationDomainPermissions extends DomainPermissions {
     public static final String INVITE_ACB = "INVITE_ACB";
     public static final String INVITE_ATL = "INVITE_ATL";
     public static final String INVITE_CMS = "INVITE_CMS";
+    public static final String UPDATE_FROM_INVITATION = "UPDATE_FROM_INVITATION";
 
     @Autowired
     public InvitationDomainPermissions(
-            @Qualifier("invitationInviteAdminActionPermissions") InviteAdminActionPermissions inviteAdminActionPermissions,
-            @Qualifier("invitationInviteOncActionPermissions") InviteOncActionPermissions inviteOncActionPermissions,
-            @Qualifier("invitationInviteCmsActionPermissions") InviteCmsActionPermissions inviteCmsActionPermissions,
-            @Qualifier("invitationInviteAcbActionPermissions") InviteAcbActionPermissions inviteAcbActionPermissions,
-            @Qualifier("invitationInviteAtlActionPermissions") InviteAtlActionPermissions inviteAtlActionPermissions) {
+            @Qualifier("invitationInviteAdminActionPermissions") final InviteAdminActionPermissions inviteAdminActionPermissions,
+            @Qualifier("invitationInviteOncActionPermissions") final InviteOncActionPermissions inviteOncActionPermissions,
+            @Qualifier("invitationInviteCmsActionPermissions") final InviteCmsActionPermissions inviteCmsActionPermissions,
+            @Qualifier("invitationInviteAcbActionPermissions") final InviteAcbActionPermissions inviteAcbActionPermissions,
+            @Qualifier("invitationInviteAtlActionPermissions") final InviteAtlActionPermissions inviteAtlActionPermissions,
+            @Qualifier("invitationUpdateFromInvitationActionPermissions")
+                final UpdateFromInvitationActionPermissions updateFromInvitationActionPermissions) {
 
         getActionPermissions().put(INVITE_ADMIN, inviteAdminActionPermissions);
         getActionPermissions().put(INVITE_ONC, inviteOncActionPermissions);
         getActionPermissions().put(INVITE_CMS, inviteCmsActionPermissions);
         getActionPermissions().put(INVITE_ACB, inviteAcbActionPermissions);
         getActionPermissions().put(INVITE_ATL, inviteAtlActionPermissions);
+        getActionPermissions().put(UPDATE_FROM_INVITATION, updateFromInvitationActionPermissions);
     }
 }
