@@ -96,11 +96,12 @@ public class UserDaoTest {
         testUser = dao.create(testUser, encryptedPassword);
 
         assertNotNull(testUser.getId());
+        assertNotNull(testUser.getPermission());
         assertEquals("testUser", testUser.getSubjectName());
+        assertEquals(Authority.ROLE_CMS_STAFF, testUser.getPermission().getAuthority());
 
         Long insertedUserId = testUser.getId();
         dao.delete(insertedUserId);
-
         dao.getById(insertedUserId);
     }
 

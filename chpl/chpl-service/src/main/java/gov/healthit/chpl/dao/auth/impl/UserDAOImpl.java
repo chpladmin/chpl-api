@@ -18,6 +18,7 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.auth.UserContactEntity;
 import gov.healthit.chpl.entity.auth.UserEntity;
+import gov.healthit.chpl.entity.auth.UserPermissionEntity;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
@@ -46,6 +47,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
             userEntity.setSubjectName(user.getSubjectName());
             if (user.getPermission() != null) {
                 userEntity.setUserPermissionId(user.getPermission().getId());
+                userEntity.setPermission(entityManager.find(UserPermissionEntity.class, user.getPermission().getId()));
             } else {
                 throw new UserCreationException(msgUtil.getMessage("user.missingPermission", user.getSubjectName()));
             }

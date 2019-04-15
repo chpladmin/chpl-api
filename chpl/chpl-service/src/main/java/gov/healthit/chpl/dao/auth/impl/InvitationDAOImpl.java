@@ -99,7 +99,10 @@ public class InvitationDAOImpl extends BaseDAOImpl implements InvitationDAO {
 
     private InvitationEntity getEntityById(final Long id) throws UserRetrievalException {
         Query query = entityManager.createQuery(
-                "from InvitationEntity where (NOT deleted = true) AND (id = :id) ",
+                "FROM InvitationEntity i "
+                + "JOIN FETCH i.permission "
+                + "WHERE (i.deleted = false) "
+                + "AND (i.id = :id) ",
                 InvitationEntity.class);
         query.setParameter("id", id);
         List<InvitationEntity> result = query.getResultList();
@@ -116,7 +119,10 @@ public class InvitationDAOImpl extends BaseDAOImpl implements InvitationDAO {
 
     private InvitationEntity getEntityByInvitationToken(String token) {
         Query query = entityManager.createQuery(
-                "from InvitationEntity where (NOT deleted = true) AND (inviteToken = :token) ",
+                "FROM InvitationEntity i "
+                + "JOIN FETCH i.permission "
+                + "WHERE (i.deleted = false) "
+                + "AND (i.inviteToken = :token) ",
                 InvitationEntity.class);
         query.setParameter("token", token);
         List<InvitationEntity> result = query.getResultList();
@@ -129,7 +135,10 @@ public class InvitationDAOImpl extends BaseDAOImpl implements InvitationDAO {
 
     private InvitationEntity getEntityByConfirmToken(final String token) {
         Query query = entityManager.createQuery(
-                "from InvitationEntity where (NOT deleted = true) AND (confirmToken = :token) ",
+                "FROM InvitationEntity i "
+                + "JOIN FETCH i.permission "
+                + "WHERE (i.deleted = false) "
+                + "AND (i.confirmToken = :token) ",
                 InvitationEntity.class);
         query.setParameter("token", token);
         List<InvitationEntity> result = query.getResultList();

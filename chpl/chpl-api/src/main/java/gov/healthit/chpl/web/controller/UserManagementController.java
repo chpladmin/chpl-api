@@ -158,30 +158,31 @@ public class UserManagementController {
     private Set<String> validateCreateUserFromInvitationRequest(final CreateUserFromInvitationRequest request) {
         Set<String> validationErrors = new HashSet<String>();
 
-        if (request.getUser().getSubjectName().length() > errorMessageUtil.getMaxLength("subjectName")) {
+        if (request.getUser().getSubjectName().length() > errorMessageUtil.getMessageAsInteger("maxLength.subjectName")) {
             validationErrors.add(errorMessageUtil.getMessage("user.subjectName.maxlength",
-                    errorMessageUtil.getMaxLength("subjectName")));
+                    errorMessageUtil.getMessageAsInteger("maxLength.subjectName")));
         }
-        if (request.getUser().getFullName().length() > errorMessageUtil.getMaxLength("fullName")) {
+        if (request.getUser().getFullName().length() > errorMessageUtil.getMessageAsInteger("maxLength.fullName")) {
             validationErrors.add(errorMessageUtil.getMessage("user.fullName.maxlength",
-                    errorMessageUtil.getMaxLength("fullName")));
+                    errorMessageUtil.getMessageAsInteger("maxLength.fullName")));
         }
         if (!StringUtils.isEmpty(request.getUser().getFriendlyName())
-                && request.getUser().getFriendlyName().length() > errorMessageUtil.getMaxLength("friendlyName")) {
+                && request.getUser().getFriendlyName().length() > errorMessageUtil.getMessageAsInteger("maxLength.friendlyName")) {
             validationErrors.add(errorMessageUtil.getMessage("user.friendlyName.maxlength",
-                    errorMessageUtil.getMaxLength("friendlyName")));
+                    errorMessageUtil.getMessageAsInteger("maxLength.friendlyName")));
         }
         if (!StringUtils.isEmpty(request.getUser().getTitle())
-                && request.getUser().getTitle().length() > errorMessageUtil.getMaxLength("title")) {
-            validationErrors.add(errorMessageUtil.getMessage("user.title.maxlength", errorMessageUtil.getMaxLength("title")));
+                && request.getUser().getTitle().length() > errorMessageUtil.getMessageAsInteger("maxLength.title")) {
+            validationErrors.add(errorMessageUtil.getMessage("user.title.maxlength",
+                    errorMessageUtil.getMessageAsInteger("maxLength.title")));
         }
-        if (request.getUser().getEmail().length() > errorMessageUtil.getMaxLength("email")) {
+        if (request.getUser().getEmail().length() > errorMessageUtil.getMessageAsInteger("maxLength.email")) {
             validationErrors.add(errorMessageUtil.getMessage("user.email.maxlength",
-                    errorMessageUtil.getMaxLength("email")));
+                    errorMessageUtil.getMessageAsInteger("maxLength.email")));
         }
-        if (request.getUser().getPhoneNumber().length() > errorMessageUtil.getMaxLength("phoneNumber")) {
+        if (request.getUser().getPhoneNumber().length() > errorMessageUtil.getMessageAsInteger("maxLength.phoneNumber")) {
             validationErrors.add(errorMessageUtil.getMessage("user.phoneNumber.maxlength",
-                    errorMessageUtil.getMaxLength("phoneNumber")));
+                    errorMessageUtil.getMessageAsInteger("maxLength.phoneNumber")));
         }
         return validationErrors;
     }
@@ -212,6 +213,59 @@ public class UserManagementController {
                 createdUser, createdUser, createdUser.getId());
 
         return new User(createdUser);
+    }
+
+    @ApiOperation(value = "Update an existing user account with new permissions.",
+            notes = "Gives the user permission on the object in the invitation (usually an additional ACB or ATL)."
+                    + "The correct order to call invitation requests is "
+                    + "the following: 1) /invite 2) /create or /authorize 3) /confirm.  Security Restrictions: ROLE_ADMIN "
+                    + "or ROLE_ONC.")
+    @RequestMapping(value = "/{userId}/authorize", method = RequestMethod.POST,
+    consumes = MediaType.APPLICATION_JSON_VALUE,
+    produces = "application/json; charset=utf-8")
+    public String authorizeUser(@RequestBody final AuthorizeCredentials credentials)
+            throws InvalidArgumentsException, JWTCreationException, UserRetrievalException, EntityRetrievalException {
+
+        if (StringUtils.isEmpty(credentials.getHash())) {
+            throw new InvalidArgumentsException("User key is required.");
+        }
+
+        JWTAuthenticatedUser loggedInUser = (JWTAuthenticatedUser) AuthUtil.getCurrentUser();
+        if (loggedInUser == null
+                && (StringUtils.isEmpty(credentials.getUserName()) || StringUtils.isEmpty(credentials.getPassword()))) {
+            throw new InvalidArgumentsException(
+                    "Username and Password are required since no user is currently logged in.");
+        }
+
+        InvitationDTO invitation = invitationManager.getByInvitationHash(credentials.getHash());
+        if (invitation == null || invitation.isOlderThan(VALID_CONFIRMATION_LENGTH)) {
+            throw new InvalidArgumentsException(
+                    "Provided user key is not valid in the database. The user key is valid for up to 3 days from when "
+                            + "it is assigned.");
+        }
+
+        String jwtToken = null;
+        if (loggedInUser == null) {
+            UserDTO userToUpdate = authenticator.getUser(credentials);
+            if (userToUpdate == null) {
+                throw new UserRetrievalException(
+                        "The user " + credentials.getUserName() + " could not be authenticated.");
+            }
+            invitationManager.updateUserFromInvitation(invitation, userToUpdate);
+            jwtToken = authenticator.getJWT(credentials);
+        } else {
+            // add authorization to the currently logged in user
+            UserDTO userToUpdate = userManager.getById(loggedInUser.getId());
+            if (loggedInUser.getImpersonatingUser() != null) {
+                userToUpdate = loggedInUser.getImpersonatingUser();
+            }
+            invitationManager.updateUserFromInvitation(invitation, userToUpdate);
+            UserDTO updatedUser = userManager.getById(userToUpdate.getId());
+            jwtToken = authenticator.getJWT(updatedUser);
+        }
+
+        String jwtJSON = "{\"token\": \"" + jwtToken + "\"}";
+        return jwtJSON;
     }
 
     @ApiOperation(value = "Invite a user to the CHPL.",
