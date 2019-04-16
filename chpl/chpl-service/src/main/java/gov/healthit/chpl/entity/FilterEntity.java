@@ -26,12 +26,12 @@ public class FilterEntity {
     @Column(name = "filter_id", nullable = false)
     private Long id;
 
-    @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    @OneToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", insertable = true, updatable = true)
     private UserEntity user;
 
-    @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "filter_type_id", insertable = false, updatable = false)
+    @OneToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "filter_type_id", insertable = true, updatable = true)
     private FilterTypeEntity filterType;
 
     @Column(name = "filter")

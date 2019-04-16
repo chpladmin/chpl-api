@@ -1,6 +1,7 @@
 package gov.healthit.chpl.dao.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -49,16 +50,21 @@ public class FilterDAOImpl extends BaseDAOImpl implements FilterDAO {
         entity.setUser(getUserEntityById(dto.getUser().getId()));
         entity.setDeleted(false);
         entity.setLastModifiedUser(Util.getAuditId());
+        entity.setCreationDate(new Date());
+        entity.setLastModifiedDate(new Date());
 
         entityManager.persist(entity);
+        entityManager.flush();
         return new FilterDTO(entity);
     }
 
     @Override
     public List<FilterDTO> getByFilterType(final FilterTypeDTO filterType) {
-        Query query = entityManager.createQuery("FROM FilterEntity f " + "JOIN FETCH f.filterType "
-                + "JOIN FETCH f.user " + "WHERE deleted = false " + "AND f.filterType.id = :filterTypeId",
-                FilterEntity.class);
+        Query query = entityManager
+                .createQuery(
+                        "FROM FilterEntity f " + "JOIN FETCH f.filterType " + "JOIN FETCH f.user "
+                                + "WHERE f.deleted = false " + "AND f.filterType.id = :filterTypeId",
+                        FilterEntity.class);
         query.setParameter("filterTypeId", filterType.getId());
         List<FilterEntity> result = query.getResultList();
 
@@ -129,7 +135,7 @@ public class FilterDAOImpl extends BaseDAOImpl implements FilterDAO {
 
     private FilterTypeEntity getFilterTypeEntityById(final Long filterTypeId) throws EntityRetrievalException {
         Query query = entityManager.createQuery(
-                "from FilterTypeEntity where (NOT deleted = true) " + "AND (id = :filterTypeid) ",
+                "from FilterTypeEntity where (NOT deleted = true) " + "AND (id = :filterTypeId) ",
                 FilterTypeEntity.class);
         query.setParameter("filterTypeId", filterTypeId);
         List<FilterTypeEntity> result = query.getResultList();
