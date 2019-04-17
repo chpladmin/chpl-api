@@ -22,6 +22,7 @@ import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
 import gov.healthit.chpl.dto.UserTestingLabMapDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.manager.auth.UserManager;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
@@ -36,6 +37,8 @@ public class UserPermissionsManagerImplTest {
 
     @Mock
     private UserDAO userDAO;
+
+    @Mock private UserManager userManager;
 
     // @Mock
     // private Permissions permissionChecker;
