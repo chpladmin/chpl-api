@@ -44,6 +44,7 @@ public class FilterDAOImpl extends BaseDAOImpl implements FilterDAO {
     public FilterDTO create(final FilterDTO dto) throws EntityRetrievalException {
         FilterEntity entity = new FilterEntity();
         entity.setFilter(dto.getFilter());
+        entity.setName(dto.getName());
         entity.setFilterType(new FilterTypeEntity());
         entity.getFilterType().setId(dto.getFilterType().getId());
         entity.getFilterType().setName(dto.getFilterType().getName());

@@ -9,6 +9,7 @@ public class FilterDTO {
     private Long id;
     private UserDTO user;
     private FilterTypeDTO filterType;
+    private String name;
     private String filter;
     private Date creationDate;
     private Date lastModifiedDate;
@@ -22,6 +23,7 @@ public class FilterDTO {
         this.id = entity.getId();
         this.user = new UserDTO(entity.getUser());
         this.setFilterType(new FilterTypeDTO(entity.getFilterType()));
+        this.name = entity.getName();
         this.filter = entity.getFilter();
         this.creationDate = entity.getCreationDate();
         this.lastModifiedDate = entity.getLastModifiedDate();
@@ -90,6 +92,14 @@ public class FilterDTO {
 
     public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
 }

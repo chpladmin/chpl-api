@@ -34,6 +34,9 @@ public class FilterEntity {
     @JoinColumn(name = "filter_type_id", insertable = true, updatable = true)
     private FilterTypeEntity filterType;
 
+    @Column(name = "name", nullable = false)
+    private String name;
+
     @Column(name = "filter")
     @Type(type = "StringJsonObject")
     private String filter;
@@ -72,6 +75,14 @@ public class FilterEntity {
 
     public void setFilterType(FilterTypeEntity filterType) {
         this.filterType = filterType;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
     }
 
     public String getFilter() {

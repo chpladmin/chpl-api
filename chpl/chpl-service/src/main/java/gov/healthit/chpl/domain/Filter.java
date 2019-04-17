@@ -7,6 +7,7 @@ import gov.healthit.chpl.dto.FilterDTO;
 public class Filter {
     private Long id;
     private FilterType filterType;
+    private String name;
     private String filter;
     private Date creationDate;
     private Date lastModifiedDate;
@@ -18,6 +19,7 @@ public class Filter {
     public Filter(FilterDTO dto) {
         this.id = dto.getId();
         this.filterType = new FilterType(dto.getFilterType());
+        this.name = dto.getName();
         this.filter = dto.getFilter();
         this.creationDate = dto.getCreationDate();
         this.lastModifiedDate = dto.getLastModifiedDate();
@@ -69,5 +71,13 @@ public class Filter {
 
     public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

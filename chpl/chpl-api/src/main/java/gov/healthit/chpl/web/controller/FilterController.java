@@ -66,6 +66,7 @@ public class FilterController {
         UserDTO userDTO = userManager.getById(Util.getCurrentUser().getId());
         FilterTypeDTO filterTypeDTO = filterManager.getFilterType(filter.getFilterType().getId());
         
+        dto.setName(filter.getName());
         dto.setFilter(filter.getFilter());
         dto.setUser(userDTO);
         dto.setFilterType(filterTypeDTO);
