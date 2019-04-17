@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -245,7 +247,16 @@ public class UserManagementController {
                 throw new UserRetrievalException(
                         "The user " + credentials.getUserName() + " could not be authenticated.");
             }
+            //invitation manager method has security on it
+            //so it cannot be called without some user in the security context;
+            //in this case the user is logging in at the same time as accepting the invitation
+            //so there will not be any user in the security context until the call completes
+            //put in this one so that the permissions security can work
+            Authentication invitedUserAuthenticator =
+                    AuthUtil.getInvitedUserAuthenticator(invitation.getLastModifiedUserId());
+            SecurityContextHolder.getContext().setAuthentication(invitedUserAuthenticator);
             invitationManager.updateUserFromInvitation(new UserInvitationDTO(userToUpdate, invitation));
+            SecurityContextHolder.getContext().setAuthentication(null);
             jwtToken = authenticator.getJWT(credentials);
         } else {
             // add authorization to the currently logged in user
@@ -372,32 +383,8 @@ public class UserManagementController {
         if (toDelete == null) {
             throw new UserRetrievalException("Could not find user with id " + userId);
         }
-
-        //If the current user is ROLE_ADMIN or ROLE_ONC, delete the user and access to all ACB and ATLS
-        //If the current user is ROLE_ACB, remove all of the ACBs that the current user has from the target user
-        //If the current user is ROLE_ATL, remove all of the ATLs that the current user has from the target user
-        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
-            userManager.delete(toDelete);
-            userPermissionsManager.deleteAllAcbPermissionsForUser(userId);
-            userPermissionsManager.deleteAllAtlPermissionsForUser(userId);
-        } else {
-            if (resourcePermissions.isUserRoleAcbAdmin()) {
-                List<CertificationBodyDTO> targetUserAcbs = resourcePermissions.getAllAcbsForUser(userId);
-                for (CertificationBodyDTO dto : resourcePermissions.getAllAcbsForCurrentUser()) {
-                    if (isAcbInList(dto, targetUserAcbs)) {
-                        userPermissionsManager.deleteAcbPermission(dto, userId);
-                    }
-                }
-            }
-            if (resourcePermissions.isUserRoleAtlAdmin()) {
-                List<TestingLabDTO> targetUserAtls = resourcePermissions.getAllAtlsForUser(userId);
-                for (TestingLabDTO dto : resourcePermissions.getAllAtlsForCurrentUser()) {
-                    if (isAtlInList(dto, targetUserAtls)) {
-                        userPermissionsManager.deleteAtlPermission(dto, userId);
-                    }
-                }
-            }
-        }
+        userManager.delete(toDelete);
+        //db soft delete trigger takes care of deleting things associated with this user.
 
         String activityDescription = "User " + toDelete.getSubjectName() + " was deleted.";
         activityManager.addActivity(ActivityConcept.USER, toDelete.getId(), activityDescription,
@@ -435,23 +422,4 @@ public class UserManagementController {
 
         return userManager.getUserInfo(userName);
     }
-
-    private boolean isAcbInList(final CertificationBodyDTO acb, final List<CertificationBodyDTO> acbs) {
-        for (CertificationBodyDTO dto : acbs) {
-            if (dto.getId().equals(acb.getId())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean isAtlInList(final TestingLabDTO atl, final List<TestingLabDTO> atls) {
-        for (TestingLabDTO dto : atls) {
-            if (dto.getId().equals(atl.getId())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
 }

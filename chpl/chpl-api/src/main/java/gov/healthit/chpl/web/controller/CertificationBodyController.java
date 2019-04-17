@@ -199,13 +199,6 @@ public class CertificationBodyController {
     produces = "application/json; charset=utf-8")
     public String deleteUserFromAcb(@PathVariable final Long acbId, @PathVariable final Long userId)
             throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
-
-        return deleteUser(acbId, userId);
-    }
-
-    private String deleteUser(final Long acbId, final Long userId)
-            throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
-
         UserDTO user = userManager.getById(userId);
         CertificationBodyDTO acb = resourcePermissions.getAcbIfPermissionById(acbId);
 

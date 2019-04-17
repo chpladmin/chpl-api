@@ -1,9 +1,15 @@
 package gov.healthit.chpl.util;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.User;
 
@@ -58,4 +64,56 @@ public class AuthUtil {
         return toStr.toString();
     }
 
+    public static Authentication getInvitedUserAuthenticator(final Long id) {
+        JWTAuthenticatedUser authenticator = new JWTAuthenticatedUser() {
+
+            @Override
+            public Long getId() {
+                return id == null ? Long.valueOf(User.ADMIN_USER_ID) : id;
+            }
+
+            @Override
+            public Collection<? extends GrantedAuthority> getAuthorities() {
+                List<GrantedAuthority> auths = new ArrayList<GrantedAuthority>();
+                auths.add(new GrantedPermission("ROLE_INVITED_USER_CREATOR"));
+                return auths;
+            }
+
+            @Override
+            public Object getCredentials() {
+                return null;
+            }
+
+            @Override
+            public Object getDetails() {
+                return null;
+            }
+
+            @Override
+            public Object getPrincipal() {
+                return getName();
+            }
+
+            @Override
+            public String getSubjectName() {
+                return this.getName();
+            }
+
+            @Override
+            public boolean isAuthenticated() {
+                return true;
+            }
+
+            @Override
+            public void setAuthenticated(final boolean arg0) throws IllegalArgumentException {
+            }
+
+            @Override
+            public String getName() {
+                return "admin";
+            }
+
+        };
+        return authenticator;
+    }
 }

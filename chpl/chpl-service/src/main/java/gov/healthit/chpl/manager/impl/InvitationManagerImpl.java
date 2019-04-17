@@ -37,6 +37,7 @@ import gov.healthit.chpl.manager.InvitationManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.Util;
 
 @Service
@@ -172,7 +173,7 @@ public class InvitationManagerImpl extends SecuredManager implements InvitationM
     @Transactional
     public UserDTO createUserFromInvitation(final InvitationDTO invitation, final CreateUserRequest user)
             throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException, UserCreationException {
-        Authentication authenticator = getInvitedUserAuthenticator(invitation.getLastModifiedUserId());
+        Authentication authenticator = AuthUtil.getInvitedUserAuthenticator(invitation.getLastModifiedUserId());
         SecurityContextHolder.getContext().setAuthentication(authenticator);
 
         // create the user
@@ -211,7 +212,7 @@ public class InvitationManagerImpl extends SecuredManager implements InvitationM
     @Override
     @Transactional
     public UserDTO confirmAccountEmail(final InvitationDTO invitation) throws UserRetrievalException {
-        Authentication authenticator = getInvitedUserAuthenticator(invitation.getLastModifiedUserId());
+        Authentication authenticator = AuthUtil.getInvitedUserAuthenticator(invitation.getLastModifiedUserId());
         SecurityContextHolder.getContext().setAuthentication(authenticator);
 
         try {
@@ -245,7 +246,8 @@ public class InvitationManagerImpl extends SecuredManager implements InvitationM
 
         // have to give temporary permission to see all ACBs and ATLs
         // because the logged in user wouldn't already have permission on them
-        Authentication authenticator = getInvitedUserAuthenticator(userInvitation.getInvitation().getLastModifiedUserId());
+        Authentication authenticator =
+                AuthUtil.getInvitedUserAuthenticator(userInvitation.getInvitation().getLastModifiedUserId());
         SecurityContextHolder.getContext().setAuthentication(authenticator);
 
         handleInvitation(userInvitation.getInvitation(), userInvitation.getUser());
@@ -318,58 +320,4 @@ public class InvitationManagerImpl extends SecuredManager implements InvitationM
         userDto.setAccountEnabled(true);
         return userDto;
     }
-
-    private Authentication getInvitedUserAuthenticator(final Long id) {
-        JWTAuthenticatedUser authenticator = new JWTAuthenticatedUser() {
-
-            @Override
-            public Long getId() {
-                return id == null ? Long.valueOf(User.ADMIN_USER_ID) : id;
-            }
-
-            @Override
-            public Collection<? extends GrantedAuthority> getAuthorities() {
-                List<GrantedAuthority> auths = new ArrayList<GrantedAuthority>();
-                auths.add(new GrantedPermission("ROLE_INVITED_USER_CREATOR"));
-                return auths;
-            }
-
-            @Override
-            public Object getCredentials() {
-                return null;
-            }
-
-            @Override
-            public Object getDetails() {
-                return null;
-            }
-
-            @Override
-            public Object getPrincipal() {
-                return getName();
-            }
-
-            @Override
-            public String getSubjectName() {
-                return this.getName();
-            }
-
-            @Override
-            public boolean isAuthenticated() {
-                return true;
-            }
-
-            @Override
-            public void setAuthenticated(final boolean arg0) throws IllegalArgumentException {
-            }
-
-            @Override
-            public String getName() {
-                return "admin";
-            }
-
-        };
-        return authenticator;
-    }
-
 }
