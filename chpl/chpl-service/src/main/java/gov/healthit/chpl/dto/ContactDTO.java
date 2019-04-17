@@ -3,6 +3,8 @@ package gov.healthit.chpl.dto;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import gov.healthit.chpl.entity.ContactEntity;
 import gov.healthit.chpl.util.Util;
 
@@ -11,6 +13,7 @@ import gov.healthit.chpl.util.Util;
  * @author alarned
  *
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ContactDTO implements Serializable {
     private static final long serialVersionUID = 5417465972193498436L;
     private Long id;
