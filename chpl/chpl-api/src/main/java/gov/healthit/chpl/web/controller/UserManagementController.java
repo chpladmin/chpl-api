@@ -242,6 +242,8 @@ public class UserManagementController {
 
         String jwtToken = null;
         if (loggedInUser == null) {
+            //there's no logged in user - they are logging in at the same time
+            //they are accepting the invitation for additional access
             UserDTO userToUpdate = authenticator.getUser(credentials);
             if (userToUpdate == null) {
                 throw new UserRetrievalException(
