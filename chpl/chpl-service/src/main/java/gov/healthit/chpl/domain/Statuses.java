@@ -2,6 +2,9 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Statuses implements Serializable {
     private static final long serialVersionUID = -7091471050071142764L;
     private Integer active;
