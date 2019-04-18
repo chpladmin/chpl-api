@@ -46,8 +46,14 @@ public class ListingsFromBannedDevelopersEntity {
     @Column(name = "acb_id")
     private Long acbId;
 
+    @Column(name = "acb_name")
+    private String acbName;
+
     @Column(name = "developer_id")
     private Long developerId;
+
+    @Column(name = "developer_name")
+    private String developerName;
 
     @Column(name = "developer_status_id")
     private Long developerStatusId;
@@ -117,5 +123,21 @@ public class ListingsFromBannedDevelopersEntity {
 
     public void setDeveloperStatusName(final String developerStatusName) {
         this.developerStatusName = developerStatusName;
+    }
+
+    public String getDeveloperName() {
+        return developerName;
+    }
+
+    public void setDeveloperName(final String developerName) {
+        this.developerName = developerName;
+    }
+
+    public String getAcbName() {
+        return acbName;
+    }
+
+    public void setAcbName(final String acbName) {
+        this.acbName = acbName;
     }
 }
