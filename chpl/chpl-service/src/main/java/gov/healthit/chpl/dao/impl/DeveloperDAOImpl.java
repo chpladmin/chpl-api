@@ -488,7 +488,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 
         Query bannedListingsQuery = entityManager.createQuery(
                 "FROM CertifiedProductDetailsEntity "
-                        + "WHERE developerStatusName IN (:banned) AND deleted = false AND acbIsDeleted = false",
+                        + "WHERE developerStatusName IN (:banned) AND deleted = false AND acbIsRetired = false",
                         CertifiedProductDetailsEntity.class);
         bannedListingsQuery.setParameter("banned", String.valueOf(DeveloperStatusType.UnderCertificationBanByOnc));
         List<CertifiedProductDetailsEntity> bannedListings = bannedListingsQuery.getResultList();
