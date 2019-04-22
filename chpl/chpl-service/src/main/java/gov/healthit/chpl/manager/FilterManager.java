@@ -10,6 +10,8 @@ import gov.healthit.chpl.exception.ValidationException;
 public interface FilterManager {
     List<FilterDTO> getByFilterType(FilterTypeDTO filterTypeDTO);
 
+    FilterDTO getByFilterId(Long filterId) throws EntityRetrievalException;
+
     FilterDTO create(FilterDTO filterDTO) throws EntityRetrievalException, ValidationException;
 
     FilterDTO update(FilterDTO filterDTO) throws EntityRetrievalException, ValidationException;

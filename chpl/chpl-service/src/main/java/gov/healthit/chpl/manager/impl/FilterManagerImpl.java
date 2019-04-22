@@ -77,6 +77,12 @@ public class FilterManagerImpl extends SecuredManager implements FilterManager {
         return filterDAO.getFilterTypeById(filterTypeId);
     }
 
+    @Override
+    @Transactional
+    public FilterDTO getByFilterId(Long filterId) throws EntityRetrievalException {
+        return filterDAO.getById(filterId);
+    }
+
     private Set<String> validateForCreate(FilterDTO filterDTO) {
         if (filterDTO == null) {
             Set<String> errors = new HashSet<String>();

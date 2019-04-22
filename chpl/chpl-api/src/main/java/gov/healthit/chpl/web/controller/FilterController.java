@@ -3,13 +3,21 @@ package gov.healthit.chpl.web.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dto.UserDTO;
@@ -18,7 +26,9 @@ import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.domain.Filter;
 import gov.healthit.chpl.dto.FilterDTO;
 import gov.healthit.chpl.dto.FilterTypeDTO;
+import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.FilterManager;
 import gov.healthit.chpl.web.controller.results.FilterResults;
@@ -29,6 +39,7 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping("/filters")
 public class FilterController {
+    private static final Logger LOGGER = LogManager.getLogger(FilterController.class);
 
     private FilterManager filterManager;
     private UserManager userManager;
@@ -76,5 +87,22 @@ public class FilterController {
         return new Filter(dto);
     }
     
-    
+    @ApiOperation(value = "Deletes a filter.",
+            notes = "")
+    @RequestMapping(value = "/{filterId}", method = RequestMethod.DELETE,
+    produces = "application/json; charset=utf-8")
+    public @ResponseBody String deleteFilter(@PathVariable("filterId") final Long filterId) {
+        try {
+            FilterDTO filterDTO = filterManager.getByFilterId(filterId);
+            if (filterDTO != null) {
+                filterManager.delete(filterDTO);
+                return "{\"success\" : true}";
+            } else {
+                return "{\"success\" : false}";
+            }
+        } catch (Exception e) {
+            LOGGER.error("Could not delete filterId: " + filterId, e);
+            return "{\"success\" : false}";
+        }
+    }
 }
