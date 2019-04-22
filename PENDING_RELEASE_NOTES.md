@@ -9,8 +9,4 @@ _Date TBD_
   * /acbs/{id}/users
   * /atls/{id}/users
 
-### New features
-* Quartz jobs that gather data delete old data and insert new data within a single transaction
-* Support clustering of Quartz schedulers
-
 ---
