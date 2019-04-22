@@ -9,6 +9,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -232,8 +233,6 @@ public class DeveloperManagerTest extends TestCase {
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
-
-
     @Test(expected = ValidationException.class)
     @Transactional
     @Rollback
@@ -253,11 +252,11 @@ public class DeveloperManagerTest extends TestCase {
 
     }
 
-    @Test
+    @Test(expected = AccessDeniedException.class)
     @Transactional
     @Rollback(true)
-    public void testNoUpdatesAllowedByNonAdminIfDeveloperIsNotActive()
-            throws EntityRetrievalException, JsonProcessingException, MissingReasonException, ValidationException {
+    public void testNoUpdatesAllowedByNonAdminIfDeveloperIsNotActive() throws EntityRetrievalException,
+            JsonProcessingException, MissingReasonException, ValidationException, EntityCreationException {
         SecurityContextHolder.getContext().setAuthentication(testUser3);
         DeveloperDTO developer = developerManager.getById(-3L);
         assertNotNull(developer);
@@ -272,18 +271,16 @@ public class DeveloperManagerTest extends TestCase {
         boolean failed = false;
         try {
             developer = developerManager.update(developer, false);
-        } catch (EntityCreationException ex) {
-            System.out.println(ex.getMessage());
-            failed = true;
+            assertTrue(failed);
+        } finally {
+            SecurityContextHolder.getContext().setAuthentication(null);
         }
-        assertTrue(failed);
-        SecurityContextHolder.getContext().setAuthentication(null);
     }
 
     @Test
     @Transactional
     @Rollback(true)
-    public void testSplitDeveloper_productOwnershipHistoryAdded() throws ValidationException{
+    public void testSplitDeveloper_productOwnershipHistoryAdded() throws ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         Long developerIdToSplit = -1L;
         List<Long> productIdsToMove = new ArrayList<Long>();
@@ -292,7 +289,8 @@ public class DeveloperManagerTest extends TestCase {
         DeveloperDTO toCreate = createDeveloper();
         DeveloperDTO createdDev = null;
         try {
-            createdDev = developerManager.split(developerManager.getById(developerIdToSplit), toCreate, productIdsToMove);
+            createdDev = developerManager.split(developerManager.getById(developerIdToSplit), toCreate,
+                    productIdsToMove);
         } catch (EntityCreationException | JsonProcessingException | EntityRetrievalException ex) {
             fail(ex.getMessage());
         }
@@ -307,7 +305,8 @@ public class DeveloperManagerTest extends TestCase {
             assertEquals(2, movedProduct.getOwnerHistory().size());
             boolean foundOldOwner = false;
             for (ProductOwnerDTO owner : movedProduct.getOwnerHistory()) {
-                if (owner.getDeveloper() != null && owner.getDeveloper().getId().longValue() == developerIdToSplit.longValue()) {
+                if (owner.getDeveloper() != null
+                        && owner.getDeveloper().getId().longValue() == developerIdToSplit.longValue()) {
                     foundOldOwner = true;
                 }
             }

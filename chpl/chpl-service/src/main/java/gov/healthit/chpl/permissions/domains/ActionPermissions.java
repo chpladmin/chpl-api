@@ -3,14 +3,20 @@ package gov.healthit.chpl.permissions.domains;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
 public abstract class ActionPermissions {
     @Autowired
     private ResourcePermissions resourcePermissions;
+
+    @Autowired
+    private CertifiedProductDAO certifiedProductDAO;
 
     public abstract boolean hasAccess();
 
@@ -34,6 +40,17 @@ public abstract class ActionPermissions {
             }
         }
         return false;
+    }
+
+    @Transactional(readOnly = true)
+    public boolean doesCurrentUserHaveAccessToAllOfDevelopersListings(Long developerId) {
+        List<CertifiedProductDetailsDTO> cpDtos = certifiedProductDAO.findByDeveloperId(developerId);
+        for (CertifiedProductDetailsDTO cpDto : cpDtos) {
+            if (!isAcbValidForCurrentUser(cpDto.getCertificationBodyId())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public ResourcePermissions getResourcePermissions() {

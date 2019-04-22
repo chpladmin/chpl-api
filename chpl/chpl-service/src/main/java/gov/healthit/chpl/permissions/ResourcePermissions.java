@@ -16,17 +16,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.dao.UserCertificationBodyMapDAO;
 import gov.healthit.chpl.dao.UserTestingLabMapDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
+import gov.healthit.chpl.dao.auth.UserPermissionDAO;
 import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
 import gov.healthit.chpl.dto.UserTestingLabMapDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserPermissionDTO;
+import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
@@ -41,14 +46,15 @@ public class ResourcePermissions {
     private UserTestingLabMapDAO userTestingLabMapDAO;
     private TestingLabDAO atlDAO;
     private UserDAO userDAO;
+    private DeveloperDAO developerDAO;
 
     @Autowired
     public ResourcePermissions(final PermissionEvaluator permissionEvaluator,
             final UserCertificationBodyMapDAO userCertificationBodyMapDAO,
             final CertificationBodyDAO acbDAO,
             final UserTestingLabMapDAO userTestingLabMapDAO, final TestingLabDAO atlDAO,
-            final ErrorMessageUtil errorMessageUtil, final UserDAO userDAO) {
-
+            final ErrorMessageUtil errorMessageUtil, final UserDAO userDAO,
+            final DeveloperDAO developerDAO) {
         this.permissionEvaluator = permissionEvaluator;
         this.userCertificationBodyMapDAO = userCertificationBodyMapDAO;
         this.acbDAO = acbDAO;
@@ -56,6 +62,22 @@ public class ResourcePermissions {
         this.atlDAO = atlDAO;
         this.errorMessageUtil = errorMessageUtil;
         this.userDAO = userDAO;
+        this.developerDAO = developerDAO;
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isDeveloperActive(final Long developerId) {
+        try {
+            DeveloperDTO developerDto = developerDAO.getById(developerId);
+            if (developerDto != null && developerDto.getStatus() != null && developerDto.getStatus().getStatus()
+                    .getStatusName().equals(DeveloperStatusType.Active.toString())) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (EntityRetrievalException e) {
+            return false;
+        }
     }
 
     @Transactional(readOnly = true)

@@ -106,78 +106,33 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
             throw new EntityCreationException("Cannot create a product without a developer ID.");
         }
 
-        DeveloperDTO dev = devDao.getById(dto.getDeveloperId());
-        if (dev == null) {
-            throw new EntityRetrievalException("Cannot find developer with id " + dto.getDeveloperId());
-        }
-        DeveloperStatusEventDTO currDevStatus = dev.getStatus();
-        if (currDevStatus == null || currDevStatus.getStatus() == null) {
-            String msg = "The product " + dto.getName() + " cannot be created since the status of developer "
-                    + dev.getName() + " cannot be determined.";
-            LOGGER.error(msg);
-            throw new EntityCreationException(msg);
-        } else if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-            String msg = "The product " + dto.getName() + " cannot be created since the developer " + dev.getName()
-                    + " has a status of " + currDevStatus.getStatus().getStatusName();
-            LOGGER.error(msg);
-            throw new EntityCreationException(msg);
-        }
-
-        ProductDTO result = productDao.create(dto);
-        String activityMsg = "Product " + dto.getName() + " was created.";
-        activityManager.addActivity(ActivityConcept.PRODUCT, result.getId(), activityMsg, null,
-                result);
-        return getById(result.getId());
+        return createProduct(dto);
     }
 
     @Override
     @Transactional(readOnly = false)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
-            + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).UPDATE)")
-    public ProductDTO update(final ProductDTO dto)
+            + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).UPDATE_OWNERSHIP, #dto)")
+    public ProductDTO updateProductOwnership(final ProductDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
-
-        ProductDTO beforeDTO = productDao.getById(dto.getId());
-
-        // check that the developer of this product is Active
-        if (beforeDTO.getDeveloperId() == null) {
-            throw new EntityCreationException("Cannot update a product without a developer ID.");
-        }
-
-        DeveloperDTO dev = devDao.getById(beforeDTO.getDeveloperId());
-        if (dev == null) {
-            throw new EntityRetrievalException("Cannot find developer with id " + beforeDTO.getDeveloperId());
-        }
-        DeveloperStatusEventDTO currDevStatus = dev.getStatus();
-        if (currDevStatus == null || currDevStatus.getStatus() == null) {
-            String msg = "The product " + dto.getName() + " cannot be updated since the status of developer "
-                    + dev.getName() + " cannot be determined.";
-            LOGGER.error(msg);
-            throw new EntityCreationException(msg);
-        } else if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
-                && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
-            String msg = "The product " + dto.getName() + " cannot be updated since the developer " + dev.getName()
-                    + " has a status of " + currDevStatus.getStatus().getStatusName();
-            LOGGER.error(msg);
-            throw new EntityCreationException(msg);
-        }
-
-        ProductDTO result = productDao.update(dto);
-        // the developer name is not updated at this point until after
-        // transaction commit so we have to set it
-        DeveloperDTO devDto = devDao.getById(result.getDeveloperId());
-        result.setDeveloperName(devDto.getName());
-
-        String activityMsg = "Product " + dto.getName() + " was updated.";
-        activityManager.addActivity(ActivityConcept.PRODUCT, result.getId(), activityMsg, beforeDTO,
-                result);
-        return result;
-
+        // This method was created to provide different security than the update() method
+        // even though it is the same functionality...
+        return updateProduct(dto);
     }
 
     @Override
     @Transactional(readOnly = false)
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
+            + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).UPDATE, #dto)")
+    public ProductDTO update(final ProductDTO dto)
+            throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+        return updateProduct(dto);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
+            + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).MERGE)")
     public ProductDTO merge(final List<Long> productIdsToMerge, final ProductDTO toCreate)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 
@@ -220,8 +175,8 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
 
         String activityMsg = "Merged " + productIdsToMerge.size() + " products into new product '"
                 + createdProduct.getName() + "'.";
-        activityManager.addActivity(ActivityConcept.PRODUCT, createdProduct.getId(), activityMsg,
-                beforeProducts, createdProduct);
+        activityManager.addActivity(ActivityConcept.PRODUCT, createdProduct.getId(), activityMsg, beforeProducts,
+                createdProduct);
 
         return createdProduct;
     }
@@ -232,7 +187,7 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
             AccessDeniedException.class
     })
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
-            + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).SPLIT)")
+            + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).SPLIT, #oldProduct)")
     public ProductDTO split(final ProductDTO oldProduct, final ProductDTO productToCreate, final String newProductCode,
             final List<ProductVersionDTO> newProductVersions)
             throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
@@ -242,7 +197,7 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
         // create the new product and log activity
         // this method checks that the related developer is Active and will
         // throw an exception if they aren't
-        ProductDTO createdProduct = create(productToCreate);
+        ProductDTO createdProduct = createProduct(productToCreate);
 
         // re-assign versions to the new product and log activity for each
         List<Long> affectedVersionIds = new ArrayList<Long>();
@@ -254,8 +209,8 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
             versionDao.update(affectedVersion);
             ProductVersionDTO afterVersion = versionDao.getById(affectedVersion.getId());
             activityManager.addActivity(
-                    ActivityConcept.VERSION, afterVersion.getId(), "Product Version "
-                            + afterVersion.getVersion() + " product owner updated to " + afterVersion.getProductName(),
+                    ActivityConcept.VERSION, afterVersion.getId(), "Product Version " + afterVersion.getVersion()
+                            + " product owner updated to " + afterVersion.getProductName(),
                     beforeVersion, afterVersion);
             affectedVersionIds.add(affectedVersion.getId());
         }
@@ -276,9 +231,9 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
                 }
             }
             if (!hasAccessToAcb) {
-                    throw new AccessDeniedException(msgUtil.getMessage("acb.accessDenied.listingUpdate",
-                            beforeProduct.getChplProductNumber(),
-                            beforeProduct.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY)));
+                throw new AccessDeniedException(
+                        msgUtil.getMessage("acb.accessDenied.listingUpdate", beforeProduct.getChplProductNumber(),
+                                beforeProduct.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY)));
             }
 
             // make sure the updated CHPL product number is unique and that the
@@ -311,5 +266,69 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
         }
 
         return getById(createdProduct.getId());
+    }
+
+    private ProductDTO updateProduct(final ProductDTO dto)
+            throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+
+        ProductDTO beforeDTO = productDao.getById(dto.getId());
+
+        // check that the developer of this product is Active
+        if (beforeDTO.getDeveloperId() == null) {
+            throw new EntityCreationException("Cannot update a product without a developer ID.");
+        }
+
+        DeveloperDTO dev = devDao.getById(beforeDTO.getDeveloperId());
+        if (dev == null) {
+            throw new EntityRetrievalException("Cannot find developer with id " + beforeDTO.getDeveloperId());
+        }
+        DeveloperStatusEventDTO currDevStatus = dev.getStatus();
+        if (currDevStatus == null || currDevStatus.getStatus() == null) {
+            String msg = "The product " + dto.getName() + " cannot be updated since the status of developer "
+                    + dev.getName() + " cannot be determined.";
+            LOGGER.error(msg);
+            throw new EntityCreationException(msg);
+        } else if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
+                && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
+            String msg = "The product " + dto.getName() + " cannot be updated since the developer " + dev.getName()
+                    + " has a status of " + currDevStatus.getStatus().getStatusName();
+            LOGGER.error(msg);
+            throw new EntityCreationException(msg);
+        }
+
+        ProductDTO result = productDao.update(dto);
+        // the developer name is not updated at this point until after
+        // transaction commit so we have to set it
+        DeveloperDTO devDto = devDao.getById(result.getDeveloperId());
+        result.setDeveloperName(devDto.getName());
+
+        String activityMsg = "Product " + dto.getName() + " was updated.";
+        activityManager.addActivity(ActivityConcept.PRODUCT, result.getId(), activityMsg, beforeDTO, result);
+        return result;
+    }
+
+    private ProductDTO createProduct(final ProductDTO dto)
+            throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+        DeveloperDTO dev = devDao.getById(dto.getDeveloperId());
+        if (dev == null) {
+            throw new EntityRetrievalException("Cannot find developer with id " + dto.getDeveloperId());
+        }
+        DeveloperStatusEventDTO currDevStatus = dev.getStatus();
+        if (currDevStatus == null || currDevStatus.getStatus() == null) {
+            String msg = "The product " + dto.getName() + " cannot be created since the status of developer "
+                    + dev.getName() + " cannot be determined.";
+            LOGGER.error(msg);
+            throw new EntityCreationException(msg);
+        } else if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
+            String msg = "The product " + dto.getName() + " cannot be created since the developer " + dev.getName()
+                    + " has a status of " + currDevStatus.getStatus().getStatusName();
+            LOGGER.error(msg);
+            throw new EntityCreationException(msg);
+        }
+
+        ProductDTO result = productDao.create(dto);
+        String activityMsg = "Product " + dto.getName() + " was created.";
+        activityManager.addActivity(ActivityConcept.PRODUCT, result.getId(), activityMsg, null, result);
+        return getById(result.getId());
     }
 }

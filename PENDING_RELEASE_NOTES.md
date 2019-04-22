@@ -9,4 +9,7 @@ _Date TBD_
   * /acbs/{id}/users
   * /atls/{id}/users
 
+### New features
+* Updated security for edit/split/merge of developers, products, and versions
+
 ---
