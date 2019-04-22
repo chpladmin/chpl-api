@@ -36,7 +36,7 @@ public class ListingQuestionableActivityProvider {
             final CertifiedProductSearchDetails origListing, final CertifiedProductSearchDetails newListing) {
 
         QuestionableActivityListingDTO activity = null;
-        if (origListing.getCertificationEdition().get("name").equals("2011")) {
+        if (origListing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).equals("2011")) {
             activity = new QuestionableActivityListingDTO();
             activity.setBefore(null);
             activity.setAfter(null);

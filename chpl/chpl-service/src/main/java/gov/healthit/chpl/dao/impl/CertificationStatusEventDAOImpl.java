@@ -38,7 +38,7 @@ public class CertificationStatusEventDAOImpl extends BaseDAOImpl implements Cert
             entity.setCertificationStatusId(dto.getStatus().getId());
             entity.setEventDate(dto.getEventDate());
             entity.setReason(dto.getReason());
-            entity.setLastModifiedUser(Util.getCurrentUser().getId());
+            entity.setLastModifiedUser(Util.getAuditId());
             entity.setDeleted(false);
             create(entity);
             return new CertificationStatusEventDTO(entity);
@@ -57,7 +57,7 @@ public class CertificationStatusEventDAOImpl extends BaseDAOImpl implements Cert
         entity.setCertificationStatusId(dto.getStatus().getId());
         entity.setEventDate(dto.getEventDate());
         entity.setReason(dto.getReason());
-        entity.setLastModifiedUser(Util.getCurrentUser().getId());
+        entity.setLastModifiedUser(Util.getAuditId());
 
         update(entity);
         return new CertificationStatusEventDTO(entity);
@@ -70,7 +70,7 @@ public class CertificationStatusEventDAOImpl extends BaseDAOImpl implements Cert
 
         if (toDelete != null) {
             toDelete.setDeleted(true);
-            toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+            toDelete.setLastModifiedUser(Util.getAuditId());
             update(toDelete);
         }
     }

@@ -15,7 +15,7 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
@@ -81,7 +81,7 @@ public class QuestionableActivityListener implements EnvironmentAware {
 
         //all questionable activity from this action should have the exact same date and user id
         Date activityDate = new Date();
-        Long activityUser = Util.getCurrentUser().getId();
+        Long activityUser = Util.getAuditId();
 
         if (originalData instanceof CertifiedProductSearchDetails
                 && newData instanceof CertifiedProductSearchDetails) {
@@ -140,7 +140,7 @@ public class QuestionableActivityListener implements EnvironmentAware {
 
         //all questionable activity from this action should have the exact same date and user id
         Date activityDate = new Date();
-        Long activityUser = Util.getCurrentUser().getId();
+        Long activityUser = Util.getAuditId();
 
         if (originalData instanceof DeveloperDTO && newData instanceof DeveloperDTO) {
             DeveloperDTO origDeveloper = (DeveloperDTO) originalData;

@@ -35,7 +35,7 @@ public class InvitationDAOImpl extends BaseDAOImpl implements InvitationDAO {
 		toCreate.setEmailAddress(dto.getEmail());
 		toCreate.setInviteToken(dto.getInviteToken());
 		toCreate.setLastModifiedDate(new Date());
-		toCreate.setLastModifiedUser(Util.getCurrentUser().getId());
+		toCreate.setLastModifiedUser(Util.getAuditId());
 		
 		create(toCreate);
 		return new InvitationDTO(toCreate);
@@ -52,7 +52,7 @@ public class InvitationDAOImpl extends BaseDAOImpl implements InvitationDAO {
 		toUpdate.setInviteToken(dto.getInviteToken());
 		toUpdate.setCreatedUserId(dto.getCreatedUserId());
 		toUpdate.setLastModifiedDate(new Date());
-		toUpdate.setLastModifiedUser(Util.getCurrentUser().getId());
+		toUpdate.setLastModifiedUser(Util.getAuditId());
 		
 		update(toUpdate);
 		
@@ -68,7 +68,7 @@ public class InvitationDAOImpl extends BaseDAOImpl implements InvitationDAO {
 			toDelete.setDeleted(true);
 			toDelete.setLastModifiedDate(currentDate);
 			//TODO: can we update the last modified user field like this? is someone authenticated at this point?
-			//toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+			//toDelete.setLastModifiedUser(Util.getAuditId());
 			
 			update(toDelete);
 		} else {

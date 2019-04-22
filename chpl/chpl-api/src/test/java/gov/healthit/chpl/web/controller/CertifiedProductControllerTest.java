@@ -59,11 +59,11 @@ import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.TestTask;
-import gov.healthit.chpl.dto.PendingCertificationResultDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
-import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
-import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestToolDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCqmCriterionDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -245,8 +245,8 @@ public class CertifiedProductControllerTest {
         cqms.add(cqm);
         updateRequest.setCqmResults(cqms);
         Map<String, Object> certificationEdition = new HashMap<String, Object>();
-        String certEdition = "2015";
-        certificationEdition.put("name", certEdition);
+        certificationEdition.put("id", 3L);
+        certificationEdition.put("name", "2015");
         updateRequest.setCertificationEdition(certificationEdition);
         InheritedCertificationStatus ics = new InheritedCertificationStatus();
         ics.setInherits(false);
@@ -261,8 +261,8 @@ public class CertifiedProductControllerTest {
         } catch (ValidationException e) {
             assertNotNull(e);
             // ICS is false, 15.07.07.2642.IC04.36.0.1.160402 shows false ICS. No mismatch = error message
-            assertTrue(e.getErrorMessages().contains("Test Tool 'Retired Test Tool' can not be used for criteria '170.315 (b)(6)', "
-                    + "as it is a retired tool, and this Certified Product does not carry ICS."));
+            assertTrue(e.getWarningMessages().contains("Test Tool 'Retired Test Tool' can not be used for criteria '170.315 (b)(6)', "
+                    + "as it is a retired tool."));
         }
 
         ics.setInherits(true);
@@ -286,8 +286,8 @@ public class CertifiedProductControllerTest {
         practiceType.put("name", "AMBULATORY");
         updateRequest.setPracticeType(practiceType);
         Map<String, Object> certificationEdition2014 = new HashMap<String, Object>();
-        String certEdition2014 = "2014";
-        certificationEdition2014.put("name", certEdition2014);
+        certificationEdition2014.put("id", 2L);
+        certificationEdition2014.put("name", "2014");
         updateRequest.setCertificationEdition(certificationEdition2014);
         ics.setInherits(false);
         try {
@@ -299,8 +299,8 @@ public class CertifiedProductControllerTest {
         } catch (ValidationException e) {
             assertNotNull(e);
             // 2014 certEdition; ICS is false, 15.07.07.2642.IC04.36.0.1.160402 shows false ICS. No mismatch = error message
-            assertTrue(e.getErrorMessages().contains("Test Tool 'Retired Test Tool' can not be used for criteria '170.315 (b)(6)', "
-                    + "as it is a retired tool, and this Certified Product does not carry ICS."));
+            assertTrue(e.getWarningMessages().contains("Test Tool 'Retired Test Tool' can not be used for criteria '170.315 (b)(6)', "
+                    + "as it is a retired tool."));
         }
 
         ics.setInherits(true);

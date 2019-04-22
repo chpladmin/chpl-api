@@ -22,6 +22,7 @@ import gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions;
+import gov.healthit.chpl.permissions.domains.TestingLabDomainPermissions;
 import gov.healthit.chpl.permissions.domains.UserPermissionsDomainPermissions;
 
 @Component
@@ -42,6 +43,7 @@ public class Permissions {
     public static final String DEVELOPER = "DEVELOPER";
     public static final String PRODUCT_VERSION = "PRODUCT_VERSION";
     public static final String SECURED_USER = "SECURED_USER";
+    public static final String TESTING_LAB = "TESTING_LAB";
 
     private Map<String, DomainPermissions> domainPermissions = new HashMap<String, DomainPermissions>();
 
@@ -55,12 +57,14 @@ public class Permissions {
             final SurveillanceDomainPermissions surveillanceDomainPermissions,
             final CertificationBodyDomainPermissions certificationBodyDomainPermissions,
             final UserPermissionsDomainPermissions userPermissionsDomainPermissions,
-            final ActivityDomainPermissions activityDomainPermissions, final JobDomainPermissions jobDomainPermissions,
+            final ActivityDomainPermissions activityDomainPermissions,
+            final JobDomainPermissions jobDomainPermissions,
             final ProductDomainPermissions productDomainPermissions,
             final DeveloperDomainPermissions developerDomainPermissions,
             final ProductVersionDomainPermissions productVersionDomainPermissions,
             final SecuredUserDomainPermissions securedUserDomainPermissions,
-            final SchedulerDomainPermissions schedulerDomainPermissions) {
+            final SchedulerDomainPermissions schedulerDomainPermissions,
+            final TestingLabDomainPermissions testingLabDomainPermissions) {
 
         domainPermissions.put(PENDING_SURVEILLANCE, pendingSurveillanceDomainPermissions);
         domainPermissions.put(CERTIFICATION_RESULTS, certificationResultsDomainPermissions);
@@ -78,6 +82,7 @@ public class Permissions {
         domainPermissions.put(PRODUCT_VERSION, productVersionDomainPermissions);
         domainPermissions.put(SECURED_USER, securedUserDomainPermissions);
         domainPermissions.put(SCHEDULER, schedulerDomainPermissions);
+        domainPermissions.put(TESTING_LAB, testingLabDomainPermissions);
     }
 
     public boolean hasAccess(final String domain, final String action) {

@@ -266,7 +266,7 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         base.setDeveloper(listing.getDeveloper().getName());
         base.setProduct(listing.getProduct().getName());
         base.setVersion(listing.getVersion().getVersion());
-        base.setAcb(listing.getCertifyingBody().get("name").toString());
+        base.setAcb(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString());
         base.setChplProductNumber(listing.getChplProductNumber());
         String productDetailsUrl = props.getProperty("chplUrlBegin").trim();
         if (!productDetailsUrl.endsWith("/")) {

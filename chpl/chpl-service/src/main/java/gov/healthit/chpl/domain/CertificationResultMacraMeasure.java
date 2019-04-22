@@ -3,7 +3,7 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 
 import gov.healthit.chpl.dto.CertificationResultMacraMeasureDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultMacraMeasureDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultMacraMeasureDTO;
 
 public class CertificationResultMacraMeasure implements Serializable {
     private static final long serialVersionUID = -8007889129011680045L;

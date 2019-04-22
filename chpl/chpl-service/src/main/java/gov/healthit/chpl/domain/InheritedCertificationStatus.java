@@ -10,10 +10,25 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class InheritedCertificationStatus implements Serializable {
     private static final long serialVersionUID = 2456763191912903082L;
+
+    public InheritedCertificationStatus() {}
+
+    /**
+     * Boolean constructor provided for backwards compatibility with older
+     * listing details objects so that activity can be reconstructed with a
+     * JSON parser.
+     * @param value
+     */
+    public InheritedCertificationStatus(final boolean value) {
+        inherits = value;
+    }
 
     /**
      * This variable indicates whether or not the certification issued was a

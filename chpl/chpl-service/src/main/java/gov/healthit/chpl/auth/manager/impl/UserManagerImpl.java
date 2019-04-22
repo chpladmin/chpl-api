@@ -121,14 +121,6 @@ public class UserManagerImpl implements UserManager {
             userDTO.setPasswordResetRequired(false);
         }
 
-        if (Boolean.TRUE.equals(userInfo.getComplianceTermsAccepted())) {
-            if (userDTO.getComplianceSignatureDate() == null) {
-                userDTO.setComplianceSignatureDate(new Date());
-            }
-        } else {
-            userDTO.setComplianceSignatureDate(null);
-        }
-
         userDTO.setTitle(userInfo.getTitle());
         return securedUserManager.update(userDTO);
     }
@@ -236,10 +228,11 @@ public class UserManagerImpl implements UserManager {
         UserDTO userToUpdate = securedUserManager.getBySubjectName(userName);
         securedUserManager.updatePassword(userToUpdate, encodedPassword);
     }
-    
+
     @Override
     @Transactional
-    public void updateUserPasswordUnsecured(final String userName, final String password) throws UserRetrievalException {
+    public void updateUserPasswordUnsecured(final String userName, final String password)
+            throws UserRetrievalException {
         String encodedPassword = encodePassword(password);
         userDAO.updatePassword(userName, encodedPassword);
     }
@@ -254,7 +247,7 @@ public class UserManagerImpl implements UserManager {
         if (foundUser == null) {
             throw new UserRetrievalException("Cannot find user with name " + username + " and email address " + email);
         }
-        
+
         String password = UUID.randomUUID().toString();
 
         // delete all previous tokens from that user that are in the table
@@ -270,8 +263,8 @@ public class UserManagerImpl implements UserManager {
     private boolean isTokenValid(UserResetTokenDTO userResetToken) {
         Date checkDate = userResetToken.getCreationDate();
         Instant now = Instant.now();
-        return (!checkDate.toInstant().isBefore(now.minus(Integer.parseInt(env.getProperty("resetLinkExpirationTimeInHours")), ChronoUnit.HOURS)))
-                && (checkDate.toInstant().isBefore(now));
+        return (!checkDate.toInstant().isBefore(
+                now.minus(Integer.parseInt(env.getProperty("resetLinkExpirationTimeInHours")), ChronoUnit.HOURS)));
     }
 
     @Transactional
@@ -310,7 +303,7 @@ public class UserManagerImpl implements UserManager {
         UserDTO dto = securedUserManager.getBySubjectName(userName);
         return dto;
     }
-    
+
     @Override
     public UserDTO getByNameUnsecured(final String userName) throws UserRetrievalException {
         return userDAO.getByName(userName);

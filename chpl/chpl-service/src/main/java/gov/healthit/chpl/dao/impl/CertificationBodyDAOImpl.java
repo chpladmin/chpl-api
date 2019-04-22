@@ -61,7 +61,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
             entity.setWebsite(dto.getWebsite());
             entity.setAcbCode(dto.getAcbCode());
             entity.setRetired(Boolean.FALSE);
-            entity.setLastModifiedUser(Util.getCurrentUser().getId());
+            entity.setLastModifiedUser(Util.getAuditId());
             create(entity);
             return new CertificationBodyDTO(entity);
         }
@@ -102,7 +102,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
             entity.setAcbCode(dto.getAcbCode());
         }
 
-        entity.setLastModifiedUser(Util.getCurrentUser().getId());
+        entity.setLastModifiedUser(Util.getAuditId());
         update(entity);
         return new CertificationBodyDTO(entity);
     }

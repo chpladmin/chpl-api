@@ -6,11 +6,14 @@ import java.util.Date;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import gov.healthit.chpl.auth.entity.UserEntity;
 
 /**
  * User data transfer object.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserDTO implements UserDetails {
 
     private static final long serialVersionUID = 1L;
@@ -22,7 +25,8 @@ public class UserDTO implements UserDetails {
     private String phoneNumber;
     private String title;
     private Date signatureDate;
-    private Date complianceSignatureDate;
+    private UserDTO impersonatedBy;
+
 
     private int failedLoginCount;
     private boolean accountExpired;
@@ -50,7 +54,6 @@ public class UserDTO implements UserDetails {
             this.phoneNumber = entity.getContact().getPhoneNumber();
             this.title = entity.getContact().getTitle();
             this.signatureDate = entity.getContact().getSignatureDate();
-            this.complianceSignatureDate = entity.getComplianceSignature();
             this.failedLoginCount = entity.getFailedLoginCount();
             this.accountExpired = !entity.isAccountNonExpired();
             this.accountLocked = !entity.isAccountNonLocked();
@@ -192,15 +195,15 @@ public class UserDTO implements UserDetails {
         this.signatureDate = signatureDate;
     }
 
-    public Date getComplianceSignatureDate() {
-        return complianceSignatureDate;
+    public UserDTO getImpersonatedBy() {
+        return impersonatedBy;
     }
 
-    public void setComplianceSignatureDate(final Date complianceSignatureDate) {
-        this.complianceSignatureDate = complianceSignatureDate;
+    public void setImpersonatedBy(UserDTO impersonatedBy) {
+        this.impersonatedBy = impersonatedBy;
     }
 
-    public int getFailedLoginCount() {
+  public int getFailedLoginCount() {
         return failedLoginCount;
     }
 
@@ -231,7 +234,6 @@ public class UserDTO implements UserDetails {
                 + "[phoneNumber: " + this.phoneNumber + "]"
                 + "[title: " + this.title + "]"
                 + "[signatureDate: " + this.signatureDate + "]"
-                + "[complianceSignatureDate: " + this.complianceSignatureDate + "]"
                 + "[failedLoginCount: " + this.failedLoginCount + "]"
                 + "[accountExpired: " + this.accountExpired + "]"
                 + "[accountLocked: " + this.accountLocked + "]"

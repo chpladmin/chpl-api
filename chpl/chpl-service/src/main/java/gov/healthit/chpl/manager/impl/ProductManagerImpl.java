@@ -13,13 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
@@ -33,15 +32,14 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.ProductManager;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil.ChplProductNumberParts;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
-import gov.healthit.chpl.permissions.ResourcePermissions;
-import gov.healthit.chpl.validation.listing.reviewer.ChplNumberReviewer;
 
 @Service
-public class ProductManagerImpl implements ProductManager {
+public class ProductManagerImpl extends SecuredManager implements ProductManager {
     private static final Logger LOGGER = LogManager.getLogger(ProductManagerImpl.class);
 
     private ErrorMessageUtil msgUtil;
@@ -56,10 +54,11 @@ public class ProductManagerImpl implements ProductManager {
     private ResourcePermissions resourcePermissions;
 
     @Autowired
-    public ProductManagerImpl(final ErrorMessageUtil msgUtil, final ProductDAO productDao, final ProductVersionDAO versionDao,
-            final DeveloperDAO devDao, final CertifiedProductDAO cpDao, final CertifiedProductDetailsManager cpdManager,
-            final CertificationBodyManager acbManager, final ChplProductNumberUtil chplProductNumberUtil,
-            final ActivityManager activityManager, final ResourcePermissions resourcePermissions) {
+    public ProductManagerImpl(final ErrorMessageUtil msgUtil, final ProductDAO productDao,
+            final ProductVersionDAO versionDao, final DeveloperDAO devDao, final CertifiedProductDAO cpDao,
+            final CertifiedProductDetailsManager cpdManager, final CertificationBodyManager acbManager,
+            final ChplProductNumberUtil chplProductNumberUtil, final ActivityManager activityManager,
+            final ResourcePermissions resourcePermissions) {
         this.msgUtil = msgUtil;
         this.productDao = productDao;
         this.versionDao = versionDao;
@@ -126,7 +125,7 @@ public class ProductManagerImpl implements ProductManager {
 
         ProductDTO result = productDao.create(dto);
         String activityMsg = "Product " + dto.getName() + " was created.";
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, result.getId(), activityMsg, null,
+        activityManager.addActivity(ActivityConcept.PRODUCT, result.getId(), activityMsg, null,
                 result);
         return getById(result.getId());
     }
@@ -170,7 +169,7 @@ public class ProductManagerImpl implements ProductManager {
         result.setDeveloperName(devDto.getName());
 
         String activityMsg = "Product " + dto.getName() + " was updated.";
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, result.getId(), activityMsg, beforeDTO,
+        activityManager.addActivity(ActivityConcept.PRODUCT, result.getId(), activityMsg, beforeDTO,
                 result);
         return result;
 
@@ -221,7 +220,7 @@ public class ProductManagerImpl implements ProductManager {
 
         String activityMsg = "Merged " + productIdsToMerge.size() + " products into new product '"
                 + createdProduct.getName() + "'.";
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, createdProduct.getId(), activityMsg,
+        activityManager.addActivity(ActivityConcept.PRODUCT, createdProduct.getId(), activityMsg,
                 beforeProducts, createdProduct);
 
         return createdProduct;
@@ -255,7 +254,7 @@ public class ProductManagerImpl implements ProductManager {
             versionDao.update(affectedVersion);
             ProductVersionDTO afterVersion = versionDao.getById(affectedVersion.getId());
             activityManager.addActivity(
-                    ActivityConcept.ACTIVITY_CONCEPT_VERSION, afterVersion.getId(), "Product Version "
+                    ActivityConcept.VERSION, afterVersion.getId(), "Product Version "
                             + afterVersion.getVersion() + " product owner updated to " + afterVersion.getProductName(),
                     beforeVersion, afterVersion);
             affectedVersionIds.add(affectedVersion.getId());
@@ -279,7 +278,7 @@ public class ProductManagerImpl implements ProductManager {
             if (!hasAccessToAcb) {
                     throw new AccessDeniedException(msgUtil.getMessage("acb.accessDenied.listingUpdate",
                             beforeProduct.getChplProductNumber(),
-                            beforeProduct.getCertifyingBody().get("name")));
+                            beforeProduct.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY)));
             }
 
             // make sure the updated CHPL product number is unique and that the
@@ -287,19 +286,18 @@ public class ProductManagerImpl implements ProductManager {
             String chplNumber = beforeProduct.getChplProductNumber();
             if (!chplProductNumberUtil.isLegacy(chplNumber)) {
                 ChplProductNumberParts parts = chplProductNumberUtil.parseChplProductNumber(chplNumber);
-                String potentialChplNumber = chplProductNumberUtil.getChplProductNumber(
-                        parts.getEditionCode(), parts.getAtlCode(), parts.getAcbCode(),
-                        parts.getDeveloperCode(), newProductCode, parts.getVersionCode(),
-                        parts.getIcsCode(), parts.getAdditionalSoftwareCode(), parts.getCertifiedDateCode());
+                String potentialChplNumber = chplProductNumberUtil.getChplProductNumber(parts.getEditionCode(),
+                        parts.getAtlCode(), parts.getAcbCode(), parts.getDeveloperCode(), newProductCode,
+                        parts.getVersionCode(), parts.getIcsCode(), parts.getAdditionalSoftwareCode(),
+                        parts.getCertifiedDateCode());
                 if (!chplProductNumberUtil.isUnique(potentialChplNumber)) {
                     throw new EntityCreationException("Cannot update certified product " + chplNumber + " to "
                             + potentialChplNumber + " because a certified product with that CHPL ID already exists.");
                 }
                 if (!ValidationUtils.chplNumberPartIsValid(potentialChplNumber,
-                        ChplProductNumberUtil.PRODUCT_CODE_INDEX,
-                        ChplProductNumberUtil.PRODUCT_CODE_REGEX)) {
-                    throw new EntityCreationException(
-                            msgUtil.getMessage("listing.badProductCodeChars", ChplProductNumberUtil.PRODUCT_CODE_LENGTH));
+                        ChplProductNumberUtil.PRODUCT_CODE_INDEX, ChplProductNumberUtil.PRODUCT_CODE_REGEX)) {
+                    throw new EntityCreationException(msgUtil.getMessage("listing.badProductCodeChars",
+                            ChplProductNumberUtil.PRODUCT_CODE_LENGTH));
                 }
                 affectedCp.setProductCode(newProductCode);
             }
@@ -307,7 +305,7 @@ public class ProductManagerImpl implements ProductManager {
             // do the update and add activity
             cpDao.update(affectedCp);
             CertifiedProductSearchDetails afterProduct = cpdManager.getCertifiedProductDetails(affectedCp.getId());
-            activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, beforeProduct.getId(),
+            activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, beforeProduct.getId(),
                     "Updated certified product " + afterProduct.getChplProductNumber() + ".", beforeProduct,
                     afterProduct);
         }

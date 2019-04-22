@@ -21,8 +21,10 @@ public class FieldLengthReviewer implements Reviewer {
 
     @Override
     public void review(CertifiedProductSearchDetails listing) {
-        if (listing.getCertificationEdition() != null && listing.getCertificationEdition().get("id") != null) {
-            checkField(listing, listing.getCertificationEdition().get("id"), "certificationEdition");
+        if (listing.getCertificationEdition() != null
+                && listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY) != null) {
+            checkField(listing, listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY),
+                    "certificationEdition");
         }
         if (listing.getProduct() != null && !StringUtils.isEmpty(listing.getProduct().getName())) {
             checkField(listing, listing.getProduct().getName(), "productName");

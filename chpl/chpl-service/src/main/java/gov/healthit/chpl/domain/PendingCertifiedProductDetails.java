@@ -11,26 +11,26 @@ import java.util.Set;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultAdditionalSoftwareDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultMacraMeasureDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultTestDataDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultTestFunctionalityDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultTestProcedureDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultTestStandardDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultTestTaskDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultTestTaskParticipantDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultUcdProcessDTO;
-import gov.healthit.chpl.dto.PendingCertifiedProductAccessibilityStandardDTO;
-import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
-import gov.healthit.chpl.dto.PendingCertifiedProductQmsStandardDTO;
-import gov.healthit.chpl.dto.PendingCertifiedProductTargetedUserDTO;
-import gov.healthit.chpl.dto.PendingCertifiedProductTestingLabDTO;
-import gov.healthit.chpl.dto.PendingCqmCertificationCriterionDTO;
-import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
-import gov.healthit.chpl.dto.PendingTestParticipantDTO;
-import gov.healthit.chpl.dto.PendingTestTaskDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultAdditionalSoftwareDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultMacraMeasureDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestDataDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestFunctionalityDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestProcedureDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestStandardDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestTaskDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestTaskParticipantDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestToolDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultUcdProcessDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductAccessibilityStandardDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductQmsStandardDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductTargetedUserDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductTestingLabDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCqmCertificationCriterionDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCqmCriterionDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingTestParticipantDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingTestTaskDTO;
 
 /**
  * Pending Certified Product Details domain object.

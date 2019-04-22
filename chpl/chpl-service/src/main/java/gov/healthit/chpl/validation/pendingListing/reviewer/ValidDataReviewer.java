@@ -5,9 +5,9 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.concept.PrivacyAndSecurityFrameworkConcept;
-import gov.healthit.chpl.dto.PendingCertificationResultAdditionalSoftwareDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultDTO;
-import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultAdditionalSoftwareDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 
 @Component("pendingValidDataReviewer")
 public class ValidDataReviewer implements Reviewer {

@@ -1,5 +1,63 @@
 # Release Notes
 
+## Version 20.9.0
+_22 April 2019_
+
+### New features
+* Quartz jobs that gather data delete old data and insert new data within a single transaction
+* Support clustering of Quartz schedulers
+
+---
+
+## Version 20.8.0
+_8 April 2019_
+
+### New features
+* Add /system-status API call which returns the combined server up/down status and the cache initliazing/ok status.
+* Deprecated /status and /cache_status API calls. Will be removed in a future release.
+* Add new API call /certified_products/pending/metadata for high-level information about pending listings. /certified_products/pending is now deprecated.
+* Add new endpoints for activity metadata for lisings, developers, products, and versions. Endpoints are:
+  * /activity/metadata/listings
+  * /activity/metadata/listings/{id}
+  * /activity/metadata/developers
+  * /activity/metadata/developers/{id}
+  * /activity/metadata/products
+  * /activity/metadata/products/{id}
+  * /activity/metadata/versions
+  * /activity/metadata/versions/{id}
+* Add new activity details endpoint to get the detailed activity json
+  * /activity/details/{id}
+
+### Bug Fixes
+* Upload surveillance job properly runs when there is an invalid CHPL Product Number in the upload file
+
+---
+
+## Version 20.7.0
+_1 April 2019_
+
+### Refactoring Changes
+* Removed unused references to certification status in pending listing objects.
+
+---
+
+## Version 20.6.0
+_27 March 2019_
+
+### New features
+* Add error message for unparseable certification date on Listing upload
+* Allow certain users to impersonate certain other ones
+* Modify security to use CHPL managed user/ATL relationship
+
+### Refactoring changes
+* Removed unused "compliance terms accepted" references
+
+### Bug Fixes
+* Fixed error on banned developer page when banned developer has listings without meaningful use counts
+* Use correct ROLE for surveillance authority
+
+---
+
 ## Version 20.5.1
 _11 March 2019_
 

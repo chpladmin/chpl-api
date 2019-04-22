@@ -10,7 +10,6 @@ import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +20,7 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -30,7 +29,6 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
-import gov.healthit.chpl.permissions.Permissions;
 
 /**
  * Business logic for accessing and updating ACBs.
@@ -39,24 +37,22 @@ import gov.healthit.chpl.permissions.Permissions;
  *
  */
 @Service("certificationBodyManager")
-public class CertificationBodyManagerImpl extends ApplicationObjectSupport implements CertificationBodyManager {
+public class CertificationBodyManagerImpl extends SecuredManager implements CertificationBodyManager {
     private static final Logger LOGGER = LogManager.getLogger(CertificationBodyManagerImpl.class);
 
     private CertificationBodyDAO certificationBodyDao;
     private ActivityManager activityManager;
     private SchedulerManager schedulerManager;
     private UserPermissionsManager userPermissionsManager;
-    private Permissions permissions;
 
     @Autowired
     public CertificationBodyManagerImpl(final CertificationBodyDAO certificationBodyDao,
             final ActivityManager activityManager, @Lazy final SchedulerManager schedulerManager,
-            final UserPermissionsManager userPermissionsManager, final Permissions permissions) {
+            final UserPermissionsManager userPermissionsManager) {
         this.certificationBodyDao = certificationBodyDao;
         this.activityManager = activityManager;
         this.schedulerManager = schedulerManager;
         this.userPermissionsManager = userPermissionsManager;
-        this.permissions = permissions;
     }
 
     @Override
@@ -93,7 +89,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 
         String activityMsg = "Created Certification Body " + result.getName();
 
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, result.getId(), activityMsg,
+        activityManager.addActivity(ActivityConcept.CERTIFICATION_BODY, result.getId(), activityMsg,
                 null, result);
 
         return result;
@@ -120,7 +116,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
         }
 
         String activityMsg = "Updated acb " + acb.getName();
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, result.getId(), activityMsg,
+        activityManager.addActivity(ActivityConcept.CERTIFICATION_BODY, result.getId(), activityMsg,
                 toUpdate, result);
         return result;
     }
@@ -144,7 +140,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
         schedulerManager.retireAcb(toUpdate.getName());
 
         String activityMsg = "Retired acb " + toUpdate.getName();
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, result.getId(), activityMsg,
+        activityManager.addActivity(ActivityConcept.CERTIFICATION_BODY, result.getId(), activityMsg,
                 toUpdate, result);
         return result;
     }
@@ -162,7 +158,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
         result = certificationBodyDao.update(toUpdate);
 
         String activityMsg = "Unretired acb " + toUpdate.getName();
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, result.getId(), activityMsg,
+        activityManager.addActivity(ActivityConcept.CERTIFICATION_BODY, result.getId(), activityMsg,
                 toUpdate, result);
         return result;
     }

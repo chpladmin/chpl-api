@@ -99,7 +99,7 @@ public class CertifiedProductControllerMockitoTest {
         cp.setDeveloper(new Developer());
         cp.getDeveloper().setDeveloperCode("2495");
         cp.setCertificationEdition(new HashMap<String, Object>());
-        cp.getCertificationEdition().put("name", "2015");
+        cp.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
         cp.setCertifyingBody(new HashMap<String, Object>());
         cp.getCertifyingBody().put("code", "04");
         cp.getCertifyingBody().put("name", "Drummond Group");

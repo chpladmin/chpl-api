@@ -43,7 +43,7 @@ import gov.healthit.chpl.domain.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.domain.SurveillanceUploadResult;
-import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.concept.JobTypeConcept;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -69,18 +69,16 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.JobManager;
 import gov.healthit.chpl.manager.PendingSurveillanceManager;
 import gov.healthit.chpl.manager.SurveillanceUploadManager;
-import gov.healthit.chpl.permissions.Permissions;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 
 @Component
-public class PendingSurveillanceManagerImpl implements PendingSurveillanceManager {
+public class PendingSurveillanceManagerImpl extends SecuredManager implements PendingSurveillanceManager {
     private static final Logger LOGGER = LogManager.getLogger(PendingSurveillanceManagerImpl.class);
     private static final int SURV_THRESHOLD_DEFAULT = 50;
     private final JobTypeConcept allowedJobType = JobTypeConcept.SURV_UPLOAD;
 
     private Environment env;
-    private Permissions permissions;
     private FileUtils fileUtils;
     private SurveillanceUploadManager survUploadHelper;
     private JobManager jobManager;
@@ -96,15 +94,14 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
     private CertifiedProductDAO cpDAO;
 
     @Autowired
-    public PendingSurveillanceManagerImpl(final Permissions permissions, final Environment env,
-            final FileUtils fileUtils, final SurveillanceUploadManager survUploadManager, final JobManager jobManager,
+    public PendingSurveillanceManagerImpl(final Environment env, final FileUtils fileUtils,
+            final SurveillanceUploadManager survUploadManager, final JobManager jobManager,
             final UserManager userManager, final CertifiedProductManager cpManager,
             final SurveillanceValidator survValidator, final SurveillanceDAO survDao, final UserDAO userDao,
             final ActivityManager activityManager, final CertifiedProductDetailsManager cpDetailsManager,
             final SurveillanceValidator validator, final UserPermissionDAO userPermissionDAO,
             final CertifiedProductDAO cpDAO) {
         this.env = env;
-        this.permissions = permissions;
         this.fileUtils = fileUtils;
         this.survUploadHelper = survUploadManager;
         this.jobManager = jobManager;
@@ -248,7 +245,7 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
         CertifiedProductSearchDetails afterCp = cpDetailsManager
                 .getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
 
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, afterCp.getId(),
+        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, afterCp.getId(),
                 "Surveillance upload was confirmed for certified product " + afterCp.getChplProductNumber(), beforeCp,
                 afterCp);
 
@@ -443,7 +440,7 @@ public class PendingSurveillanceManagerImpl implements PendingSurveillanceManage
             } else {
                 activityMsg.append("rejected.");
             }
-            activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_SURVEILLANCE, toDelete.getId(),
+            activityManager.addActivity(ActivityConcept.PENDING_SURVEILLANCE, toDelete.getId(),
                     activityMsg.toString(), toDelete, null);
         }
 

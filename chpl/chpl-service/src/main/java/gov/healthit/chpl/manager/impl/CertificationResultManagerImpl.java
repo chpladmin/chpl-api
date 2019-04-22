@@ -67,10 +67,9 @@ import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertificationResultManager;
-import gov.healthit.chpl.permissions.Permissions;
 
 @Service
-public class CertificationResultManagerImpl implements CertificationResultManager {
+public class CertificationResultManagerImpl extends SecuredManager implements CertificationResultManager {
     private static final Logger LOGGER = LogManager.getLogger(CertificationResultManagerImpl.class);
     private static final String G1_MEASURE = "G1";
     private static final String G2_MEASURE = "G2";
@@ -101,8 +100,6 @@ public class CertificationResultManagerImpl implements CertificationResultManage
     private MacraMeasureDAO mmDao;
     @Autowired
     private FuzzyChoicesDAO fuzzyChoicesDao;
-    @Autowired
-    private Permissions permissions;
 
     @Override
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_RESULTS, "
@@ -629,7 +626,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             List<CertificationResultTestStandard> existingTestStandards,
             List<CertificationResultTestStandard> updatedTestStandards) throws EntityCreationException {
         int numChanges = 0;
-        String editionIdString = listing.getCertificationEdition().get("id").toString();
+        String editionIdString = listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY).toString();
         List<CertificationResultTestStandardDTO> testStandardsToAdd = new ArrayList<CertificationResultTestStandardDTO>();
         List<Long> idsToRemove = new ArrayList<Long>();
 
@@ -963,7 +960,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             List<CertificationResultTestFunctionality> existingTestFunctionality,
             List<CertificationResultTestFunctionality> updatedTestFunctionality) throws EntityCreationException {
         int numChanges = 0;
-        String editionIdString = listing.getCertificationEdition().get("id").toString();
+        String editionIdString = listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY).toString();
         List<CertificationResultTestFunctionalityDTO> testFuncToAdd = new ArrayList<CertificationResultTestFunctionalityDTO>();
         List<Long> idsToRemove = new ArrayList<Long>();
 

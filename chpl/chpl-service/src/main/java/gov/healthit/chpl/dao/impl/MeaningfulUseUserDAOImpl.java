@@ -32,7 +32,7 @@ public class MeaningfulUseUserDAOImpl extends BaseDAOImpl implements MeaningfulU
         entity.setCertifiedProductId(dto.getCertifiedProductId());
         entity.setMuuCount(dto.getMuuCount());
         entity.setMuuDate(dto.getMuuDate());
-        entity.setLastModifiedUser(Util.getCurrentUser().getId());
+        entity.setLastModifiedUser(Util.getAuditId());
         entity.setDeleted(false);
         entityManager.persist(entity);
         entityManager.flush();
@@ -48,7 +48,7 @@ public class MeaningfulUseUserDAOImpl extends BaseDAOImpl implements MeaningfulU
         }
         entity.setMuuCount(dto.getMuuCount());
         entity.setMuuDate(dto.getMuuDate());
-        entity.setLastModifiedUser(Util.getCurrentUser().getId());
+        entity.setLastModifiedUser(Util.getAuditId());
         entityManager.merge(entity);
         entityManager.flush();
         return new MeaningfulUseUserDTO(entity);
@@ -61,7 +61,7 @@ public class MeaningfulUseUserDAOImpl extends BaseDAOImpl implements MeaningfulU
 
         if (toDelete != null) {
             toDelete.setDeleted(true);
-            toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+            toDelete.setLastModifiedUser(Util.getAuditId());
             entityManager.merge(toDelete);
             entityManager.flush();
         }

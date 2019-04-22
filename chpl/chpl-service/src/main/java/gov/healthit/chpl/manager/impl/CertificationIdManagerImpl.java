@@ -19,7 +19,7 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertificationIdDAO;
 import gov.healthit.chpl.domain.SimpleCertificationId;
 import gov.healthit.chpl.domain.SimpleCertificationIdWithProducts;
-import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CQMMetDTO;
 import gov.healthit.chpl.dto.CertificationIdAndCertifiedProductDTO;
 import gov.healthit.chpl.dto.CertificationIdDTO;
@@ -169,7 +169,7 @@ public class CertificationIdManagerImpl implements CertificationIdManager {
         CertificationIdDTO result = certificationIdDao.create(productIds, year);
 
         String activityMsg = "CertificationId " + result.getCertificationId() + " was created.";
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATIONID, result.getId(), activityMsg, null,
+        activityManager.addActivity(ActivityConcept.CERTIFICATION_ID, result.getId(), activityMsg, null,
                 result);
         return result;
     }

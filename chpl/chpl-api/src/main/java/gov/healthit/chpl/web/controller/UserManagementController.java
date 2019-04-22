@@ -19,8 +19,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.acls.domain.BasePermission;
-import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,21 +44,21 @@ import gov.healthit.chpl.auth.json.UserListJSONObject;
 import gov.healthit.chpl.auth.jwt.JWTCreationException;
 import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.domain.AuthorizeCredentials;
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
-import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
-import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.InvitationManager;
-import gov.healthit.chpl.manager.TestingLabManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -74,9 +72,6 @@ public class UserManagementController {
 
     @Autowired
     private UserManager userManager;
-
-    @Autowired
-    private TestingLabManager atlManager;
 
     @Autowired
     private InvitationManager invitationManager;
@@ -95,10 +90,10 @@ public class UserManagementController {
 
     @Autowired
     private UserPermissionsManager userPermissionsManager;
-    
+
     @Autowired 
     private ResourcePermissions resourcePermissions;
-    
+
     @Autowired private MessageSource messageSource;
 
     private static final Logger LOGGER = LogManager.getLogger(UserManagementController.class);
@@ -161,7 +156,7 @@ public class UserManagementController {
         .sendEmail();
 
         String activityDescription = "User " + createdUser.getSubjectName() + " was created.";
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, createdUser.getId(), activityDescription,
+        activityManager.addActivity(ActivityConcept.USER, createdUser.getId(), activityDescription,
                 null, createdUser, createdUser.getId());
 
         User result = new User(createdUser);
@@ -228,7 +223,7 @@ public class UserManagementController {
         UserDTO createdUser = invitationManager.confirmAccountEmail(invitation);
 
         String activityDescription = "User " + createdUser.getSubjectName() + " was confirmed.";
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, createdUser.getId(), activityDescription,
+        activityManager.addActivity(ActivityConcept.USER, createdUser.getId(), activityDescription,
                 createdUser, createdUser, createdUser.getId());
 
         return new User(createdUser);
@@ -254,7 +249,7 @@ public class UserManagementController {
             throw new InvalidArgumentsException("User key is required.");
         }
 
-        gov.healthit.chpl.auth.user.User loggedInUser = Util.getCurrentUser();
+        JWTAuthenticatedUser loggedInUser = (JWTAuthenticatedUser) Util.getCurrentUser();
         if (loggedInUser == null
                 && (StringUtils.isEmpty(credentials.getUserName()) || StringUtils.isEmpty(credentials.getPassword()))) {
             throw new InvalidArgumentsException(
@@ -280,8 +275,11 @@ public class UserManagementController {
         } else {
             // add authorization to the currently logged in user
             UserDTO userToUpdate = userManager.getById(loggedInUser.getId());
+            if (loggedInUser.getImpersonatingUser() != null) {
+                userToUpdate = loggedInUser.getImpersonatingUser();
+            }
             invitationManager.updateUserFromInvitation(invitation, userToUpdate);
-            UserDTO updatedUser = userManager.getById(loggedInUser.getId());
+            UserDTO updatedUser = userManager.getById(userToUpdate.getId());
             jwtToken = authenticator.getJWT(updatedUser);
         }
 
@@ -380,7 +378,7 @@ public class UserManagementController {
         UserDTO updated = userManager.update(userInfo);
 
         String activityDescription = "User " + userInfo.getSubjectName() + " was updated.";
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, before.getId(), activityDescription, before,
+        activityManager.addActivity(ActivityConcept.USER, before.getId(), activityDescription, before,
                 updated);
 
         return new User(updated);
@@ -410,20 +408,39 @@ public class UserManagementController {
             throw new UserRetrievalException("Could not find user with id " + userId);
         }
 
-        // delete the acb permissions for that user
-        userPermissionsManager.deleteAllAcbPermissionsForUser(userId);
-        atlManager.deletePermissionsForUser(toDelete);
-
-        // delete the user
-        userManager.delete(toDelete);
+        //If the current user is ROLE_ADMIN or ROLE_ONC, delete the user and access to all ACB and ATLS
+        //If the current user is ROLE_ACB, remove all of the ACBs that the current user has from the target user
+        //If the current user is ROLE_ATL, remove all of the ATLs that the current user has from the target user
+        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
+            userManager.delete(toDelete);
+            userPermissionsManager.deleteAllAcbPermissionsForUser(userId);
+            userPermissionsManager.deleteAllAtlPermissionsForUser(userId);
+        } else {
+            if (resourcePermissions.isUserRoleAcbAdmin()) {
+                List<CertificationBodyDTO> targetUserAcbs = resourcePermissions.getAllAcbsForUser(userId);
+                for (CertificationBodyDTO dto : resourcePermissions.getAllAcbsForCurrentUser()) {
+                    if (isAcbInList(dto, targetUserAcbs)) {
+                        userPermissionsManager.deleteAcbPermission(dto, userId);
+                    }
+                }
+            } 
+            if (resourcePermissions.isUserRoleAtlAdmin()) {
+                List<TestingLabDTO> targetUserAtls = resourcePermissions.getAllAtlsForUser(userId);
+                for (TestingLabDTO dto : resourcePermissions.getAllAtlsForCurrentUser()) {
+                    if (isAtlInList(dto, targetUserAtls)) {
+                        userPermissionsManager.deleteAtlPermission(dto, userId);
+                    }
+                }
+            }
+        }
 
         String activityDescription = "User " + toDelete.getSubjectName() + " was deleted.";
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, toDelete.getId(), activityDescription,
+        activityManager.addActivity(ActivityConcept.USER, toDelete.getId(), activityDescription,
                 toDelete, null);
 
         return "{\"deletedUser\" : true}";
     }
-
+    
     @ApiOperation(value = "Give additional roles to a user.",
             notes = "Users may be given ROLE_ADMIN, ROLE_ONC, ROLE_ACB, or "
                     + "ROLE_ATL roles within the system.  Security Restrictions: ROLE_ADMIN or "
@@ -466,7 +483,7 @@ public class UserManagementController {
 
         String activityDescription = "User " + user.getSubjectName() + " was granted role " + grantRoleObj.getRole()
         + ".";
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, user.getId(), activityDescription, user,
+        activityManager.addActivity(ActivityConcept.USER, user.getId(), activityDescription, user,
                 updated);
 
         return "{\"roleAdded\" : true}";
@@ -527,7 +544,7 @@ public class UserManagementController {
 
         String activityDescription = "User " + user.getSubjectName() + " was removed from role "
                 + grantRoleObj.getRole() + ".";
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, user.getId(), activityDescription, user,
+        activityManager.addActivity(ActivityConcept.USER, user.getId(), activityDescription, user,
                 updated);
 
         // TODO: does this function return true unless there's no user to remove?
@@ -569,6 +586,24 @@ public class UserManagementController {
             throws UserRetrievalException {
 
         return userManager.getUserInfo(userName);
-
     }
+    
+    private boolean isAcbInList(CertificationBodyDTO acb, List<CertificationBodyDTO> acbs) {
+        for (CertificationBodyDTO dto : acbs) {
+            if (dto.getId().equals(acb.getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean isAtlInList(TestingLabDTO atl, List<TestingLabDTO> atls) {
+        for (TestingLabDTO dto : atls) {
+            if (dto.getId().equals(atl.getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
