@@ -1,5 +1,14 @@
 # Release Notes
 
+## Version 20.9.0
+_22 April 2019_
+
+### New features
+* Quartz jobs that gather data delete old data and insert new data within a single transaction
+* Support clustering of Quartz schedulers
+
+---
+
 ## Version 20.8.0
 _8 April 2019_
 
