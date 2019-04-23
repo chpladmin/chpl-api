@@ -73,4 +73,9 @@ public class FilterTypeDTO {
         this.deleted = deleted;
     }
 
+    @Override
+    public String toString() {
+        return "FilterTypeDTO [id=" + id + ", name=" + name + ", creationDate=" + creationDate + ", lastModifiedDate="
+                + lastModifiedDate + ", lastModifiedUser=" + lastModifiedUser + ", deleted=" + deleted + "]";
+    }
 }

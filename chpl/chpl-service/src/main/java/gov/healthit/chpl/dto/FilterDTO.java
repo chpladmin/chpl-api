@@ -102,4 +102,10 @@ public class FilterDTO {
         this.name = name;
     }
 
+    @Override
+    public String toString() {
+        return "FilterDTO [id=" + id + ", user=" + user + ", filterType=" + filterType + ", name=" + name + ", filter="
+                + filter + ", creationDate=" + creationDate + ", lastModifiedDate=" + lastModifiedDate
+                + ", lastModifiedUser=" + lastModifiedUser + ", deleted=" + deleted + "]";
+    }
 }

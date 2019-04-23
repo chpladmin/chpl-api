@@ -125,4 +125,10 @@ public class FilterEntity {
         this.deleted = deleted;
     }
 
+    @Override
+    public String toString() {
+        return "FilterEntity [id=" + id + ", user=" + user + ", filterType=" + filterType + ", name=" + name
+                + ", filter=" + filter + ", creationDate=" + creationDate + ", lastModifiedDate=" + lastModifiedDate
+                + ", lastModifiedUser=" + lastModifiedUser + ", deleted=" + deleted + "]";
+    }
 }
