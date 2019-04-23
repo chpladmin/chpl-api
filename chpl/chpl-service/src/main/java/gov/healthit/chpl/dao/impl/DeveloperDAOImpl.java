@@ -437,9 +437,13 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
     }
 
     @Override
-    public DeveloperDTO getById(Long id) throws EntityRetrievalException {
+    public DeveloperDTO getById(final Long id) throws EntityRetrievalException {
+        return getById(id, false);
+    }
 
-        DeveloperEntity entity = getEntityById(id);
+    @Override
+    public DeveloperDTO getById(final Long id, final boolean includeDeleted) throws EntityRetrievalException {
+        DeveloperEntity entity = getEntityById(id, includeDeleted);
         DeveloperDTO dto = null;
         if (entity != null) {
             dto = new DeveloperDTO(entity);
@@ -585,14 +589,24 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
         return result;
     }
 
-    private DeveloperEntity getEntityById(Long id) throws EntityRetrievalException {
+    private DeveloperEntity getEntityById(final Long id) throws EntityRetrievalException {
+        return getEntityById(id, false);
+    }
+
+    private DeveloperEntity getEntityById(final Long id, final boolean includeDeleted) throws EntityRetrievalException {
 
         DeveloperEntity entity = null;
-        Query query = entityManager
-                .createQuery("SELECT DISTINCT v from " + "DeveloperEntity v " + "LEFT OUTER JOIN FETCH v.address "
-                        + "LEFT OUTER JOIN FETCH v.contact " + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
+        String queryStr = "SELECT DISTINCT v FROM "
+                        + "DeveloperEntity v "
+                        + "LEFT OUTER JOIN FETCH v.address "
+                        + "LEFT OUTER JOIN FETCH v.contact "
+                        + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
                         + "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
-                        + "where (NOT v.deleted = true) AND (v.id = :entityid) ", DeveloperEntity.class);
+                        + "WHERE v.id = :entityid ";
+        if (!includeDeleted) {
+            queryStr += " AND v.deleted = false";
+        }
+        Query query = entityManager.createQuery(queryStr, DeveloperEntity.class);
         query.setParameter("entityid", id);
         List<DeveloperEntity> result = query.getResultList();
 

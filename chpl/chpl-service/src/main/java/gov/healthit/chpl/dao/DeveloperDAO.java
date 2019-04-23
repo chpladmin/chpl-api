@@ -32,6 +32,8 @@ public interface DeveloperDAO {
 
     DeveloperDTO getById(Long id) throws EntityRetrievalException;
 
+    DeveloperDTO getById(Long id, boolean includeDeleted) throws EntityRetrievalException;
+
     DeveloperDTO getByName(String name);
 
     DeveloperDTO getByCode(String code);

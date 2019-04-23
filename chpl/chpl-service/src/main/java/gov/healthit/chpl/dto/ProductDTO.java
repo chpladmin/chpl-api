@@ -7,12 +7,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import gov.healthit.chpl.domain.Statuses;
 import gov.healthit.chpl.entity.ProductActiveOwnerEntity;
 import gov.healthit.chpl.entity.ProductEntity;
 import gov.healthit.chpl.entity.ProductVersionEntity;
 import gov.healthit.chpl.util.Util;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ProductDTO implements Serializable {
     private static final long serialVersionUID = -5440560685496661764L;
     private Long id;
