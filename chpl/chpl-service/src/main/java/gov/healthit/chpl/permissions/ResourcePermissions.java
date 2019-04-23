@@ -22,16 +22,20 @@ import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.dao.UserCertificationBodyMapDAO;
 import gov.healthit.chpl.dao.UserRoleMapDAO;
 import gov.healthit.chpl.dao.UserTestingLabMapDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.RoleDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
 import gov.healthit.chpl.dto.UserRoleMapDTO;
 import gov.healthit.chpl.dto.UserTestingLabMapDTO;
+import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -45,12 +49,15 @@ public class ResourcePermissions {
     private TestingLabDAO atlDAO;
     private UserDAO userDAO;
     private UserPermissionDAO userPermissionDAO;
+    private DeveloperDAO developerDAO;
+    private CertifiedProductDAO certifiedProductDAO;
 
     @Autowired
     public ResourcePermissions(final UserCertificationBodyMapDAO userCertificationBodyMapDAO,
             final UserRoleMapDAO userRoleMapDAO, final CertificationBodyDAO acbDAO,
             final UserTestingLabMapDAO userTestingLabMapDAO, final TestingLabDAO atlDAO,
-            final ErrorMessageUtil errorMessageUtil, final UserDAO userDAO, final UserPermissionDAO userPermissionDAO) {
+            final ErrorMessageUtil errorMessageUtil, final UserDAO userDAO, final UserPermissionDAO userPermissionDAO,
+            final DeveloperDAO developerDAO) {
 
         this.userCertificationBodyMapDAO = userCertificationBodyMapDAO;
         this.userRoleMapDAO = userRoleMapDAO;
@@ -60,6 +67,22 @@ public class ResourcePermissions {
         this.errorMessageUtil = errorMessageUtil;
         this.userDAO = userDAO;
         this.userPermissionDAO = userPermissionDAO;
+        this.developerDAO = developerDAO;
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isDeveloperActive(Long developerId) {
+        try {
+            DeveloperDTO developerDto = developerDAO.getById(developerId);
+            if (developerDto != null && developerDto.getStatus() != null && developerDto.getStatus().getStatus()
+                    .getStatusName().equals(DeveloperStatusType.Active.toString())) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (EntityRetrievalException e) {
+            return false;
+        }
     }
 
     @Transactional(readOnly = true)
