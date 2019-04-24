@@ -82,6 +82,8 @@ public class FilterManagerImpl extends SecuredManager implements FilterManager {
 
     @Override
     @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).FILTER, "
+            + "T(gov.healthit.chpl.permissions.domains.FilterDomainPermissions).GET_BY_ID, #filterId)")
     public FilterDTO getByFilterId(Long filterId) throws EntityRetrievalException {
         return filterDAO.getById(filterId);
     }
