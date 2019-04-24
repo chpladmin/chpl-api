@@ -116,26 +116,6 @@ import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.FuzzyChoicesDTO;
 import gov.healthit.chpl.dto.ListingToListingMapDTO;
 import gov.healthit.chpl.dto.MeaningfulUseUserDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultAdditionalSoftwareDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultMacraMeasureDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultTestDataDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultTestFunctionalityDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultTestProcedureDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultTestStandardDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultTestTaskDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultTestTaskParticipantDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultUcdProcessDTO;
-import gov.healthit.chpl.dto.PendingCertifiedProductAccessibilityStandardDTO;
-import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
-import gov.healthit.chpl.dto.PendingCertifiedProductQmsStandardDTO;
-import gov.healthit.chpl.dto.PendingCertifiedProductTargetedUserDTO;
-import gov.healthit.chpl.dto.PendingCertifiedProductTestingLabDTO;
-import gov.healthit.chpl.dto.PendingCqmCertificationCriterionDTO;
-import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
-import gov.healthit.chpl.dto.PendingTestParticipantDTO;
-import gov.healthit.chpl.dto.PendingTestTaskDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.QmsStandardDTO;
@@ -149,6 +129,26 @@ import gov.healthit.chpl.dto.TestTaskDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultAdditionalSoftwareDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultMacraMeasureDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestDataDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestFunctionalityDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestProcedureDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestStandardDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestTaskDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestTaskParticipantDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestToolDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultUcdProcessDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductAccessibilityStandardDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductQmsStandardDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductTargetedUserDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductTestingLabDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCqmCertificationCriterionDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCqmCriterionDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingTestParticipantDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingTestTaskDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
@@ -162,12 +162,11 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
-import gov.healthit.chpl.permissions.Permissions;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Service("certifiedProductManager")
-public class CertifiedProductManagerImpl implements CertifiedProductManager {
+public class CertifiedProductManagerImpl extends SecuredManager implements CertifiedProductManager {
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductManagerImpl.class);
 
     @Autowired
@@ -278,9 +277,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
     @Autowired
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
-
-    @Autowired
-    private Permissions permissions;
 
     private static final int PROD_CODE_LOC = 4;
     private static final int VER_CODE_LOC = 5;

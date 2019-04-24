@@ -24,25 +24,21 @@ import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityMetadataManager;
-import gov.healthit.chpl.permissions.Permissions;
 
 @Service("activityMetadataManager")
-public class ActivityMetadataManagerImpl implements ActivityMetadataManager {
+public class ActivityMetadataManagerImpl extends SecuredManager implements ActivityMetadataManager {
     private static final Logger LOGGER = LogManager.getLogger(ActivityMetadataManagerImpl.class);
 
     private ActivityDAO activityDAO;
     private CertificationBodyDAO acbDao;
     private ActivityMetadataBuilderFactory metadataBuilderFactory;
-    private Permissions permissions;
 
     @Autowired
     public ActivityMetadataManagerImpl(final ActivityDAO activityDAO,
             final CertificationBodyDAO acbDao,
-            final ActivityMetadataBuilderFactory metadataBuilderFactory,
-            final Permissions permissions) {
+            final ActivityMetadataBuilderFactory metadataBuilderFactory) {
         this.activityDAO = activityDAO;
         this.acbDao = acbDao;
-        this.permissions = permissions;
         this.metadataBuilderFactory = metadataBuilderFactory;
     }
 

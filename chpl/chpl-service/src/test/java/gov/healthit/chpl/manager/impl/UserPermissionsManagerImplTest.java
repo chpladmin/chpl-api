@@ -17,8 +17,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.dao.UserCertificationBodyMapDAO;
+import gov.healthit.chpl.dao.UserTestingLabMapDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
+import gov.healthit.chpl.dto.UserTestingLabMapDTO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
@@ -27,6 +30,9 @@ import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
 public class UserPermissionsManagerImplTest {
     @Mock
     private UserCertificationBodyMapDAO userCertificationBodyMapDAO;
+
+    @Mock
+    private UserTestingLabMapDAO userTestingLabMapDAO;
 
     @Mock
     private UserDAO userDAO;
@@ -200,6 +206,147 @@ public class UserPermissionsManagerImplTest {
         // Ensure the DAO 'delete' method was not called...
         Mockito.verify(userCertificationBodyMapDAO, Mockito.times(0))
                 .delete(ArgumentMatchers.any(UserCertificationBodyMapDTO.class));
+    }
+
+    @Test
+    public void addAtlPermission_PermissionAlreadyExists() throws Exception {
+        List<UserTestingLabMapDTO> utlms = new ArrayList<UserTestingLabMapDTO>();
+        UserTestingLabMapDTO utlm = new UserTestingLabMapDTO();
+        utlm.setId(1L);
+        UserDTO user = new UserDTO();
+        user.setId(2L);
+        utlm.setUser(user);
+        TestingLabDTO atl = new TestingLabDTO();
+        atl.setId(1L);
+        utlm.setTestingLab(atl);
+        utlms.add(utlm);
+        Mockito.when(userTestingLabMapDAO.getByUserId(ArgumentMatchers.anyLong())).thenReturn(utlms);
+
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(2L);
+        Mockito.when(userDAO.getById(ArgumentMatchers.anyLong())).thenReturn(userDTO);
+
+        TestingLabDTO dto = new TestingLabDTO();
+        dto.setId(1L);
+        manager.addAtlPermission(dto, 2L);
+
+        // Since the user already has permission - defined above, the 'create'
+        // method should not be called
+        Mockito.verify(userTestingLabMapDAO, Mockito.times(0)).create(ArgumentMatchers.any(UserTestingLabMapDTO.class));
+    }
+
+    @Test
+    public void deleteAtlPermission() throws Exception {
+        List<UserTestingLabMapDTO> utlms = new ArrayList<UserTestingLabMapDTO>();
+        UserTestingLabMapDTO utlm = new UserTestingLabMapDTO();
+        utlm.setId(1L);
+        UserDTO user = new UserDTO();
+        user.setId(2L);
+        utlm.setUser(user);
+        TestingLabDTO atl = new TestingLabDTO();
+        atl.setId(1L);
+        utlm.setTestingLab(atl);
+        utlms.add(utlm);
+        Mockito.when(userTestingLabMapDAO.getByUserId(ArgumentMatchers.anyLong())).thenReturn(utlms);
+
+        TestingLabDTO dto = new TestingLabDTO();
+        dto.setId(1L);
+        manager.deleteAtlPermission(dto, 2l);
+
+        // Ensure the DAO 'delete' method was called...
+        Mockito.verify(userTestingLabMapDAO).delete(ArgumentMatchers.any(UserTestingLabMapDTO.class));
+    }
+
+    @Test
+    public void deleteAtlPermission_PermissionsDoesNotExist() throws Exception {
+        List<UserTestingLabMapDTO> utlms = new ArrayList<UserTestingLabMapDTO>();
+        UserTestingLabMapDTO utlm = new UserTestingLabMapDTO();
+        utlm.setId(1L);
+        UserDTO user = new UserDTO();
+        user.setId(2L);
+        utlm.setUser(user);
+        TestingLabDTO atl = new TestingLabDTO();
+        atl.setId(2L);
+        utlm.setTestingLab(atl);
+        utlms.add(utlm);
+        Mockito.when(userTestingLabMapDAO.getByUserId(ArgumentMatchers.anyLong())).thenReturn(utlms);
+
+        TestingLabDTO dto = new TestingLabDTO();
+        dto.setId(1L);
+        manager.deleteAtlPermission(dto, 2l);
+
+        // Ensure the DAO 'delete' method was not called...
+        Mockito.verify(userTestingLabMapDAO, Mockito.times(0)).delete(ArgumentMatchers.any(UserTestingLabMapDTO.class));
+    }
+
+    @Test
+    public void deleteAllAtlPermissionsForUser() throws Exception {
+        List<UserTestingLabMapDTO> utlms = new ArrayList<UserTestingLabMapDTO>();
+        UserTestingLabMapDTO utlm = new UserTestingLabMapDTO();
+        utlm.setId(1L);
+        UserDTO user = new UserDTO();
+        user.setId(2L);
+        utlm.setUser(user);
+        TestingLabDTO atl = new TestingLabDTO();
+        atl.setId(2L);
+        utlm.setTestingLab(atl);
+        utlms.add(utlm);
+        Mockito.when(userTestingLabMapDAO.getByUserId(ArgumentMatchers.anyLong())).thenReturn(utlms);
+
+        manager.deleteAllAtlPermissionsForUser(2l);
+
+        // Ensure the DAO 'delete' method was called...
+        Mockito.verify(userTestingLabMapDAO, Mockito.times(1)).delete(ArgumentMatchers.any(UserTestingLabMapDTO.class));
+    }
+
+    @Test
+    public void deleteAllAtlPermissionsForUser_2Acbs() throws Exception {
+        List<UserTestingLabMapDTO> utlms = new ArrayList<UserTestingLabMapDTO>();
+        UserTestingLabMapDTO utlm1 = new UserTestingLabMapDTO();
+        utlm1.setId(1L);
+        UserDTO user = new UserDTO();
+        user.setId(2L);
+        utlm1.setUser(user);
+        TestingLabDTO atl = new TestingLabDTO();
+        atl.setId(2L);
+        utlm1.setTestingLab(atl);
+        utlms.add(utlm1);
+
+        UserTestingLabMapDTO utlm2 = new UserTestingLabMapDTO();
+        utlm2.setId(2L);
+        utlm2.setUser(user);
+        TestingLabDTO atl2 = new TestingLabDTO();
+        atl2.setId(3L);
+        utlm2.setTestingLab(atl2);
+        utlms.add(utlm2);
+        Mockito.when(userTestingLabMapDAO.getByUserId(ArgumentMatchers.anyLong())).thenReturn(utlms);
+
+        manager.deleteAllAtlPermissionsForUser(2l);
+
+        // Ensure the DAO 'delete' method was called twice...
+        Mockito.verify(userTestingLabMapDAO, Mockito.times(2)).delete(ArgumentMatchers.any(UserTestingLabMapDTO.class));
+    }
+
+    @Test
+    public void deleteAllAtlPermissionsForUser_0Acbs() throws Exception {
+        List<UserTestingLabMapDTO> utlms = new ArrayList<UserTestingLabMapDTO>();
+        Mockito.when(userTestingLabMapDAO.getByUserId(ArgumentMatchers.anyLong())).thenReturn(utlms);
+
+        manager.deleteAllAtlPermissionsForUser(2l);
+
+        // Ensure the DAO 'delete' method was not called...
+        Mockito.verify(userTestingLabMapDAO, Mockito.times(0)).delete(ArgumentMatchers.any(UserTestingLabMapDTO.class));
+    }
+
+    @Test
+    public void deleteAllAtlPermissionsForUser_ListOfUserCertBodyMapsIsNull() throws Exception {
+        List<UserTestingLabMapDTO> utlms = new ArrayList<UserTestingLabMapDTO>();
+        Mockito.when(userTestingLabMapDAO.getByUserId(ArgumentMatchers.anyLong())).thenReturn(null);
+
+        manager.deleteAllAtlPermissionsForUser(2l);
+
+        // Ensure the DAO 'delete' method was not called...
+        Mockito.verify(userTestingLabMapDAO, Mockito.times(0)).delete(ArgumentMatchers.any(UserTestingLabMapDTO.class));
     }
 
 }

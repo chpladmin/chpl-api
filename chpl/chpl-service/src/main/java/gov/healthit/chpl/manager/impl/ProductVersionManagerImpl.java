@@ -31,7 +31,7 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 
 @Service
-public class ProductVersionManagerImpl implements ProductVersionManager {
+public class ProductVersionManagerImpl extends SecuredManager implements ProductVersionManager {
     private static final Logger LOGGER = LogManager.getLogger(ProductVersionManagerImpl.class);
     @Autowired
     private ProductVersionDAO dao;
@@ -108,7 +108,7 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
     @Override
     @Transactional(readOnly = false)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
-            + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).UPDATE)")
+            + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).UPDATE, #dto)")
     public ProductVersionDTO update(ProductVersionDTO dto)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 
@@ -122,11 +122,6 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
         if (currDevStatus == null || currDevStatus.getStatus() == null) {
             String msg = "The version " + before.getVersion() + " cannot be updated since the status of developer "
                     + dev.getName() + " cannot be determined.";
-            LOGGER.error(msg);
-            throw new EntityCreationException(msg);
-        } else if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-            String msg = "The version " + before.getVersion() + " cannot be updated since the developer "
-                    + dev.getName() + " has a status of " + currDevStatus.getStatus().getStatusName();
             LOGGER.error(msg);
             throw new EntityCreationException(msg);
         }
@@ -143,7 +138,8 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
             EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class,
             AccessDeniedException.class
     })
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
+            + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).MERGE)")
     public ProductVersionDTO merge(List<Long> versionIdsToMerge, ProductVersionDTO toCreate)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 

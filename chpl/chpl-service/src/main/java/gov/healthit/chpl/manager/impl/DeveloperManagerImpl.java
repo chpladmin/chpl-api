@@ -69,7 +69,7 @@ import gov.healthit.chpl.validation.developer.DeveloperUpdateValidator;
  */
 @Lazy
 @Service
-public class DeveloperManagerImpl implements DeveloperManager {
+public class DeveloperManagerImpl extends SecuredManager implements DeveloperManager {
     private static final Logger LOGGER = LogManager.getLogger(DeveloperManagerImpl.class);
 
     private DeveloperDAO developerDao;
@@ -179,7 +179,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 
     @Override
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
-            + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).UPDATE)")
+            + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).UPDATE, #updatedDev)")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
@@ -398,7 +398,8 @@ public class DeveloperManagerImpl implements DeveloperManager {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
+            + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).MERGE)")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
@@ -496,8 +497,9 @@ public class DeveloperManagerImpl implements DeveloperManager {
             developerDao.delete(developerId);
         }
 
-        activityManager.addActivity(ActivityConcept.DEVELOPER, createdDeveloper.getId(), "Merged "
-                + developerIdsToMerge.size() + " developers into new developer '" + createdDeveloper.getName() + "'.",
+        activityManager.addActivity(
+                ActivityConcept.DEVELOPER, createdDeveloper.getId(), "Merged " + developerIdsToMerge.size()
+                        + " developers into new developer '" + createdDeveloper.getName() + "'.",
                 beforeDevelopers, createdDeveloper);
 
         return createdDeveloper;
@@ -521,7 +523,8 @@ public class DeveloperManagerImpl implements DeveloperManager {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
             CacheNames.GET_DECERTIFIED_DEVELOPERS
     }, allEntries = true)
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
+            + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).UPDATE, #oldDeveloper)")
     public DeveloperDTO split(final DeveloperDTO oldDeveloper, final DeveloperDTO developerToCreate,
             final List<Long> productIdsToMove) throws ValidationException, AccessDeniedException,
             EntityRetrievalException, EntityCreationException, JsonProcessingException {
@@ -566,9 +569,9 @@ public class DeveloperManagerImpl implements DeveloperManager {
                     }
                 }
                 if (!hasAccessToAcb) {
-                    throw new AccessDeniedException(msgUtil.getMessage("acb.accessDenied.listingUpdate",
-                            beforeListing.getChplProductNumber(),
-                            beforeListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY)));
+                    throw new AccessDeniedException(
+                            msgUtil.getMessage("acb.accessDenied.listingUpdate", beforeListing.getChplProductNumber(),
+                                    beforeListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY)));
                 }
 
                 beforeListingDetails.put(beforeListing.getId(), beforeListing);

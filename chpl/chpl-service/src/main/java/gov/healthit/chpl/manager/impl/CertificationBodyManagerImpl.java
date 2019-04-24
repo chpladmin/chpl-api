@@ -10,7 +10,6 @@ import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +29,6 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
-import gov.healthit.chpl.permissions.Permissions;
 
 /**
  * Business logic for accessing and updating ACBs.
@@ -39,24 +37,22 @@ import gov.healthit.chpl.permissions.Permissions;
  *
  */
 @Service("certificationBodyManager")
-public class CertificationBodyManagerImpl extends ApplicationObjectSupport implements CertificationBodyManager {
+public class CertificationBodyManagerImpl extends SecuredManager implements CertificationBodyManager {
     private static final Logger LOGGER = LogManager.getLogger(CertificationBodyManagerImpl.class);
 
     private CertificationBodyDAO certificationBodyDao;
     private ActivityManager activityManager;
     private SchedulerManager schedulerManager;
     private UserPermissionsManager userPermissionsManager;
-    private Permissions permissions;
 
     @Autowired
     public CertificationBodyManagerImpl(final CertificationBodyDAO certificationBodyDao,
             final ActivityManager activityManager, @Lazy final SchedulerManager schedulerManager,
-            final UserPermissionsManager userPermissionsManager, final Permissions permissions) {
+            final UserPermissionsManager userPermissionsManager) {
         this.certificationBodyDao = certificationBodyDao;
         this.activityManager = activityManager;
         this.schedulerManager = schedulerManager;
         this.userPermissionsManager = userPermissionsManager;
-        this.permissions = permissions;
     }
 
     @Override

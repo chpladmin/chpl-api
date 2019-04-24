@@ -1,5 +1,5 @@
 package gov.healthit.chpl.validation.pendingListing.reviewer;
-import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 
 /**
  * Interface for reviewers of pending Listings.
