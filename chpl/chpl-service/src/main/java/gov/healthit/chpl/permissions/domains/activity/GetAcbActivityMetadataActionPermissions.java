@@ -31,9 +31,7 @@ public class GetAcbActivityMetadataActionPermissions extends ActionPermissions {
             //including for retired acbs.
             //Acb user can see activity for their own acb.
             CertificationBodyActivityMetadata metadata = (CertificationBodyActivityMetadata) obj;
-            return getResourcePermissions().isUserRoleAdmin()
-                    || getResourcePermissions().isUserRoleOnc()
-                    || isAcbValidForCurrentUser(metadata.getAcbId());
+            return isAcbValidForCurrentUser(metadata.getAcbId());
         }
     }
 }

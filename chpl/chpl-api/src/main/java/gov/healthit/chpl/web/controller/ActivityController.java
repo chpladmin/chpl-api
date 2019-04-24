@@ -403,6 +403,46 @@ public class ActivityController {
                 id, startDate, endDate);
     }
 
+    @ApiOperation(value = "Get metadata about auditable records in the system for testing labs.",
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "
+                    + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all testing labs.  "
+                    + "ROLE_ATL can see activity for their own ATLs.")
+    @RequestMapping(value = "/metadata/atls", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public List<ActivityMetadata> metadataForAtls(@RequestParam final Long start,
+            @RequestParam final Long end)
+                    throws JsonParseException, IOException, ValidationException {
+
+        Date startDate = new Date(start);
+        Date endDate = new Date(end);
+        validateActivityDates(start, end);
+        return activityMetadataManager.getTestingLabActivityMetadata(startDate, endDate);
+    }
+
+    @ApiOperation(value = "Get metadata about auditable records in the system for a specific testing lab.",
+            notes = "A start and end date may optionally be provided to limit activity results.")
+    @RequestMapping(value = "/metadata/atls/{id:^-?\\d+$}", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public List<ActivityMetadata> metadataForAtlById(@PathVariable("id") final Long id,
+            @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
+                    throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
+        //if one of start of end is provided then the other must also be provided.
+        //if neither is provided then query all dates
+        Date startDate = new Date(0);
+        Date endDate = new Date();
+        if (start != null && end != null) {
+            validateActivityDates(start, end);
+            startDate = new Date(start);
+            endDate = new Date(end);
+        } else if (start == null && end != null) {
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
+        } else if (start != null && end == null) {
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
+        }
+
+        return activityMetadataManager.getTestingLabActivityMetadata(
+                id, startDate, endDate);
+    }
+
     @Deprecated
     @ApiOperation(value = "DEPRECATED. Get auditable data for certification bodies.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "
@@ -521,7 +561,8 @@ public class ActivityController {
         return getActivityEventsForAnnouncement(id, startDate, endDate);
     }
 
-    @ApiOperation(value = "Get auditable data for testing labs.",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED. Get auditable data for testing labs.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "
                     + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all testing labs.  "
                     + "ROLE_ATL can see their own information.")
@@ -538,7 +579,8 @@ public class ActivityController {
         return activityManager.getAtlActivity(allowedAtls, startDate, endDate);
     }
 
-    @ApiOperation(value = "Get auditable data for a specific testing lab.",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED. Get auditable data for a specific testing lab.",
             notes = "A start and end date may optionally be provided to limit activity results.  "
                     + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all testing labs.  "
                     + "ROLE_ATL can see their own information.")

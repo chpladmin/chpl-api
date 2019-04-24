@@ -15,6 +15,10 @@ public interface ActivityMetadataManager {
             throws JsonParseException, IOException;
     List<ActivityMetadata> getCertificationBodyActivityMetadata(Long acbId, Date startDate, Date endDate)
             throws EntityRetrievalException, JsonParseException, IOException;
+    List<ActivityMetadata> getTestingLabActivityMetadata(Date startDate, Date endDate)
+            throws JsonParseException, IOException;
+    List<ActivityMetadata> getTestingLabActivityMetadata(Long atlId, Date startDate, Date endDate)
+            throws EntityRetrievalException, JsonParseException, IOException;
     List<ActivityMetadata> getActivityMetadataByConcept(
             ActivityConcept concept, Date startDate, Date endDate)
             throws JsonParseException, IOException;

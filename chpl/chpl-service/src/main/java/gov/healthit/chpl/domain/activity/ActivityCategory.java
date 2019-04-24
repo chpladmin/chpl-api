@@ -48,5 +48,10 @@ public enum ActivityCategory implements Serializable {
     /**
      * An ACB was changed.
      */
-    CERTIFICATION_BODY;
+    CERTIFICATION_BODY,
+
+    /**
+     * An ATL was changed.
+     */
+    TESTING_LAB;
 }

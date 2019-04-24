@@ -19,6 +19,7 @@ import gov.healthit.chpl.activity.ActivityMetadataBuilder;
 import gov.healthit.chpl.activity.ActivityMetadataBuilderFactory;
 import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
@@ -31,14 +32,17 @@ public class ActivityMetadataManagerImpl extends SecuredManager implements Activ
 
     private ActivityDAO activityDAO;
     private CertificationBodyDAO acbDao;
+    private TestingLabDAO atlDao;
     private ActivityMetadataBuilderFactory metadataBuilderFactory;
 
     @Autowired
     public ActivityMetadataManagerImpl(final ActivityDAO activityDAO,
             final CertificationBodyDAO acbDao,
+            final TestingLabDAO atlDao,
             final ActivityMetadataBuilderFactory metadataBuilderFactory) {
         this.activityDAO = activityDAO;
         this.acbDao = acbDao;
+        this.atlDao = atlDao;
         this.metadataBuilderFactory = metadataBuilderFactory;
     }
 
@@ -112,5 +116,28 @@ public class ActivityMetadataManagerImpl extends SecuredManager implements Activ
             throws EntityRetrievalException, JsonParseException, IOException {
         acbDao.getById(acbId); //throws not found exception for invalid id
         return getActivityMetadataByObject(acbId, ActivityConcept.CERTIFICATION_BODY, startDate, endDate);
+    }
+
+    @Override
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ATL')")
+    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_ATL_METADATA, filterObject)")
+    @Transactional
+    public List<ActivityMetadata> getTestingLabActivityMetadata(final Date startDate, final Date endDate)
+            throws JsonParseException, IOException {
+        //there is very little ATL activity so just get it all for the date range
+        //and apply a post filter to remove whatever the current user should not see.
+        return getActivityMetadataByConcept(ActivityConcept.ATL, startDate, endDate);
+    }
+
+    @Override
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or "
+            + "@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_METADATA_BY_ATL, #atlId)")
+    @Transactional
+    public List<ActivityMetadata> getTestingLabActivityMetadata(final Long atlId, final Date startDate, final Date endDate)
+            throws EntityRetrievalException, JsonParseException, IOException {
+        atlDao.getById(atlId); //throws not found exception for invalid id
+        return getActivityMetadataByObject(atlId, ActivityConcept.ATL, startDate, endDate);
     }
 }

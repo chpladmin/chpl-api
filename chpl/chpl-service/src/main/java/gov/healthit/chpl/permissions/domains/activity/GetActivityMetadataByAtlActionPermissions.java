@@ -6,20 +6,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dao.TestingLabDAO;
+import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
-@Component("actionGetActivityMetadataByAcbActionPermissions")
-public class GetActivityMetadataByAcbActionPermissions extends ActionPermissions {
-    private static final Logger LOGGER = LogManager.getLogger(GetActivityMetadataByAcbActionPermissions.class);
+@Component("actionGetActivityMetadataByAtlActionPermissions")
+public class GetActivityMetadataByAtlActionPermissions extends ActionPermissions {
+    private static final Logger LOGGER = LogManager.getLogger(GetActivityMetadataByAtlActionPermissions.class);
 
-    private CertificationBodyDAO acbDao;
+    private TestingLabDAO atlDao;
 
     @Autowired
-    public GetActivityMetadataByAcbActionPermissions(final CertificationBodyDAO acbDao) {
-        this.acbDao = acbDao;
+    public GetActivityMetadataByAtlActionPermissions(final TestingLabDAO atlDao) {
+        this.atlDao = atlDao;
     }
 
     @Override
@@ -34,17 +34,17 @@ public class GetActivityMetadataByAcbActionPermissions extends ActionPermissions
         } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
             return true;
         } else {
-            Long acbId = (Long) obj;
-            CertificationBodyDTO acb = null;
+            Long atlId = (Long) obj;
+            TestingLabDTO atl = null;
             try {
-                acb = acbDao.getById(acbId);
-                if (acb != null && acb.isRetired()) {
+                atl = atlDao.getById(atlId);
+                if (atl != null && atl.isRetired()) {
                     LOGGER.warn("Non-admin user " + Util.getUsername()
-                    + " tried to see activity for retired ACB " + acb.getName());
+                    + " tried to see activity for retired ATL " + atl.getName());
                     return false;
                 }
             } catch (EntityRetrievalException ex) { }
-            return isAcbValidForCurrentUser(acbId);
+            return isAtlValidForCurrentUser(atlId);
         }
     }
 }
