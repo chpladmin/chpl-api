@@ -17,14 +17,17 @@ import gov.healthit.chpl.dto.FilterTypeDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.FilterManager;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("filterManager")
 public class FilterManagerImpl extends SecuredManager implements FilterManager {
     private FilterDAO filterDAO;
+    private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public FilterManagerImpl(final FilterDAO filterDAO) {
+    public FilterManagerImpl(final FilterDAO filterDAO, final ErrorMessageUtil errorMessageUtil) {
         this.filterDAO = filterDAO;
+        this.errorMessageUtil = errorMessageUtil;
     }
 
     @Override
@@ -86,7 +89,7 @@ public class FilterManagerImpl extends SecuredManager implements FilterManager {
     private Set<String> validateForCreate(FilterDTO filterDTO) {
         if (filterDTO == null) {
             Set<String> errors = new HashSet<String>();
-            errors.add("No filter object was present to be saved.");
+            errors.add(errorMessageUtil.getMessage("filter.notPresent"));
             return errors;
         }
         return validate(filterDTO);
@@ -95,7 +98,7 @@ public class FilterManagerImpl extends SecuredManager implements FilterManager {
     private Set<String> validateForUpdate(FilterDTO filterDTO) {
         if (filterDTO == null || filterDTO.getId() == null) {
             Set<String> errors = new HashSet<String>();
-            errors.add("No filter object was present to be saved.");
+            errors.add(errorMessageUtil.getMessage("filter.notPresent"));
             return errors;
         }
         return validate(filterDTO);
@@ -104,7 +107,7 @@ public class FilterManagerImpl extends SecuredManager implements FilterManager {
     private Set<String> validateForDelete(FilterDTO filterDTO) {
         Set<String> errors = new HashSet<String>();
         if (filterDTO == null || filterDTO.getId() == null) {
-            errors.add("No filter object was present to be saved.");
+            errors.add(errorMessageUtil.getMessage("filter.notPresent"));
         }
         return errors;
     }
@@ -112,13 +115,13 @@ public class FilterManagerImpl extends SecuredManager implements FilterManager {
     private Set<String> validate(FilterDTO filterDTO) {
         Set<String> errors = new HashSet<String>();
         if (StringUtils.isEmpty(filterDTO.getFilter())) {
-            errors.add("Filter cannot be empty.");
+            errors.add(errorMessageUtil.getMessage("filter.empty"));
         }
         if (filterDTO.getUser() == null || filterDTO.getUser().getId() == null) {
-            errors.add("The filter does not have an associated user.");
+            errors.add(errorMessageUtil.getMessage("filter.noUser"));
         }
         if (filterDTO.getFilterType() == null || filterDTO.getFilterType().getId() == null) {
-            errors.add("The filter does not have an associated filter type.");
+            errors.add(errorMessageUtil.getMessage("filter.noFilterType"));
         }
         return errors;
     }
