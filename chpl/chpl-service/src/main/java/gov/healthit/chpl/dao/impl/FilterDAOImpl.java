@@ -6,8 +6,7 @@ import java.util.List;
 
 import javax.persistence.Query;
 
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
@@ -18,13 +17,22 @@ import gov.healthit.chpl.dto.FilterTypeDTO;
 import gov.healthit.chpl.entity.FilterEntity;
 import gov.healthit.chpl.entity.FilterTypeEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Repository("filterDAO")
 public class FilterDAOImpl extends BaseDAOImpl implements FilterDAO {
 
+    private ErrorMessageUtil errorMessageUtil;
+
+    @Autowired
+    public FilterDAOImpl(final ErrorMessageUtil errorMessageUtil) {
+        this.errorMessageUtil = errorMessageUtil;
+    }
+
     @Override
     public FilterDTO update(final FilterDTO dto) throws EntityRetrievalException {
-        FilterEntity entity = new FilterEntity();
+        FilterEntity entity = getEntityById(dto.getId());
+
         entity.setFilter(dto.getFilter());
         entity.setLastModifiedUser(Util.getAuditId());
         entity.setFilterType(new FilterTypeEntity());
@@ -121,8 +129,7 @@ public class FilterDAOImpl extends BaseDAOImpl implements FilterDAO {
         List<UserEntity> result = query.getResultList();
 
         if (result == null || result.size() == 0) {
-            String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("user.notFound"),
-                    LocaleContextHolder.getLocale()));
+            String msg = String.format(errorMessageUtil.getMessage("user.notFound"));
             throw new EntityRetrievalException(msg);
         } else if (result.size() > 1) {
             throw new EntityRetrievalException("Data error. Duplicate user id in database.");
@@ -142,9 +149,7 @@ public class FilterDAOImpl extends BaseDAOImpl implements FilterDAO {
         List<FilterTypeEntity> result = query.getResultList();
 
         if (result == null || result.size() == 0) {
-            String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("user.notFound"),
-                    LocaleContextHolder.getLocale()));
-            throw new EntityRetrievalException(msg);
+            throw new EntityRetrievalException("Date error. Filter type not found in database.");
         } else if (result.size() > 1) {
             throw new EntityRetrievalException("Data error. Duplicate filter type in database.");
         }
