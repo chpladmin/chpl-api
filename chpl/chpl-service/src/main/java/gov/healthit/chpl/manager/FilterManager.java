@@ -1,7 +1,9 @@
 package gov.healthit.chpl.manager;
 
 import java.util.List;
+import java.util.Set;
 
+import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.dto.FilterDTO;
 import gov.healthit.chpl.dto.FilterTypeDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -19,4 +21,6 @@ public interface FilterManager {
     void delete(FilterDTO filterDTO) throws EntityRetrievalException, ValidationException;
 
     FilterTypeDTO getFilterType(Long filterTypeId) throws EntityRetrievalException;
+
+    Set<KeyValueModel> getFilterTypes();
 }

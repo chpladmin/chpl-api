@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.FilterDAO;
+import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.dto.FilterDTO;
 import gov.healthit.chpl.dto.FilterTypeDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -78,6 +79,20 @@ public class FilterManagerImpl extends SecuredManager implements FilterManager {
     @Transactional
     public FilterTypeDTO getFilterType(Long filterTypeId) throws EntityRetrievalException {
         return filterDAO.getFilterTypeById(filterTypeId);
+    }
+
+    @Override
+    @Transactional
+    public Set<KeyValueModel> getFilterTypes() {
+        List<FilterTypeDTO> filterTypes = filterDAO.getFilterTypes();
+
+        Set<KeyValueModel> results = new HashSet<KeyValueModel>();
+
+        for (FilterTypeDTO filterType : filterTypes) {
+            results.add(new KeyValueModel(filterType.getId(), filterType.getName()));
+        }
+        return results;
+
     }
 
     @Override

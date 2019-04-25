@@ -106,6 +106,16 @@ public class FilterDAOImpl extends BaseDAOImpl implements FilterDAO {
         return new FilterTypeDTO(getFilterTypeEntityById(filterTypeId));
     }
 
+    @Override
+    public List<FilterTypeDTO> getFilterTypes() {
+        List<FilterTypeEntity> entities = getFilterTypeEntities();
+        List<FilterTypeDTO> dtos = new ArrayList<FilterTypeDTO>();
+        for (FilterTypeEntity entity : entities) {
+            dtos.add(new FilterTypeDTO(entity));
+        }
+        return dtos;
+    }
+
     private FilterEntity getEntityById(Long id) throws EntityRetrievalException {
         FilterEntity entity = null;
 
@@ -158,6 +168,13 @@ public class FilterDAOImpl extends BaseDAOImpl implements FilterDAO {
             return null;
         }
         return result.get(0);
+    }
+
+    private List<FilterTypeEntity> getFilterTypeEntities() {
+        Query query = entityManager.createQuery("from FilterTypeEntity where (NOT deleted = true) ",
+                FilterTypeEntity.class);
+        List<FilterTypeEntity> result = query.getResultList();
+        return result;
     }
 
 }

@@ -18,4 +18,6 @@ public interface FilterDAO {
     FilterDTO getById(Long id) throws EntityRetrievalException;
 
     FilterTypeDTO getFilterTypeById(Long filterTypeId) throws EntityRetrievalException;
+
+    List<FilterTypeDTO> getFilterTypes();
 }
