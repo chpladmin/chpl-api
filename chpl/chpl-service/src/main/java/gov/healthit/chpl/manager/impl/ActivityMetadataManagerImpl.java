@@ -58,6 +58,7 @@ public class ActivityMetadataManagerImpl extends SecuredManager implements Activ
         List<ActivityMetadata> activityMetas = new ArrayList<ActivityMetadata>();
         ActivityMetadataBuilder builder = null;
         if (activityDtos != null && activityDtos.size() > 0) {
+            LOGGER.info("Found " + activityDtos.size() + " activity events");
             //excpect all dtos to have the same
             //since we've searched based on activity concept
             builder = metadataBuilderFactory.getBuilder(activityDtos.get(0));
@@ -66,6 +67,8 @@ public class ActivityMetadataManagerImpl extends SecuredManager implements Activ
                 ActivityMetadata activityMeta = builder.build(dto);
                 activityMetas.add(activityMeta);
             }
+        } else {
+            LOGGER.info("Found no activity events");
         }
         return activityMetas;
     }
