@@ -79,11 +79,11 @@ public class TestingLabManagerImpl extends SecuredManager implements TestingLabM
     public TestingLabDTO update(final TestingLabDTO atl) throws EntityRetrievalException, JsonProcessingException,
             EntityCreationException, UpdateTestingLabException {
 
-        TestingLabDTO toUpdate = testingLabDAO.getById(atl.getId());
+        TestingLabDTO beforeAtl = testingLabDAO.getById(atl.getId());
         TestingLabDTO result = testingLabDAO.update(atl);
 
         String activityMsg = "Updated testing lab " + atl.getName();
-        activityManager.addActivity(ActivityConcept.TESTING_LAB, result.getId(), activityMsg, toUpdate,
+        activityManager.addActivity(ActivityConcept.TESTING_LAB, result.getId(), activityMsg, beforeAtl,
                 result);
         return result;
     }
@@ -97,15 +97,12 @@ public class TestingLabManagerImpl extends SecuredManager implements TestingLabM
         if (atl.getRetirementDate() == null || now.before(atl.getRetirementDate())) {
             throw new UpdateTestingLabException("Retirement date is required and must be before \"now\".");
         }
-        TestingLabDTO result = null;
-        TestingLabDTO toUpdate = testingLabDAO.getById(atl.getId());
-        toUpdate.setRetired(true);
-        toUpdate.setRetirementDate(atl.getRetirementDate());
-        result = testingLabDAO.update(toUpdate);
+        TestingLabDTO beforeAtl = testingLabDAO.getById(atl.getId());
+        TestingLabDTO result = testingLabDAO.update(atl);
 
-        String activityMsg = "Retired atl " + toUpdate.getName();
+        String activityMsg = "Retired atl " + beforeAtl.getName();
         activityManager.addActivity(ActivityConcept.TESTING_LAB, result.getId(), activityMsg,
-                toUpdate, result);
+                beforeAtl, result);
         return result;
     }
 
@@ -114,15 +111,15 @@ public class TestingLabManagerImpl extends SecuredManager implements TestingLabM
             + "T(gov.healthit.chpl.permissions.domains.TestingLabDomainPermissions).UNRETIRE)")
     public TestingLabDTO unretire(final Long atlId) throws EntityRetrievalException, JsonProcessingException,
             EntityCreationException, UpdateTestingLabException {
-        TestingLabDTO result = null;
-        TestingLabDTO toUpdate = testingLabDAO.getById(atlId);
-        toUpdate.setRetired(false);
-        toUpdate.setRetirementDate(null);
-        result = testingLabDAO.update(toUpdate);
+        TestingLabDTO beforeAtl = testingLabDAO.getById(atlId);
+        TestingLabDTO toUnretire = testingLabDAO.getById(atlId);
+        toUnretire.setRetired(false);
+        toUnretire.setRetirementDate(null);
+        TestingLabDTO result = testingLabDAO.update(toUnretire);
 
-        String activityMsg = "Unretired atl " + toUpdate.getName();
+        String activityMsg = "Unretired atl " + toUnretire.getName();
         activityManager.addActivity(ActivityConcept.TESTING_LAB, result.getId(), activityMsg,
-                toUpdate, result);
+                beforeAtl, result);
         return result;
     }
 

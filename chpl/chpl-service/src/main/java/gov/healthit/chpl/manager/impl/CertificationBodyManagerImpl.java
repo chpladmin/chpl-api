@@ -133,13 +133,10 @@ public class CertificationBodyManagerImpl extends SecuredManager implements Cert
             throw new IllegalArgumentException("Retirement date is required and must be before \"now\".");
         }
         CertificationBodyDTO beforeAcb = certificationBodyDao.getById(acb.getId());
-        CertificationBodyDTO toRetire = certificationBodyDao.getById(acb.getId());
-        toRetire.setRetired(true);
-        toRetire.setRetirementDate(acb.getRetirementDate());
-        CertificationBodyDTO result = certificationBodyDao.update(toRetire);
-        schedulerManager.retireAcb(toRetire.getName());
+        CertificationBodyDTO result = certificationBodyDao.update(acb);
+        schedulerManager.retireAcb(beforeAcb.getName());
 
-        String activityMsg = "Retired acb " + toRetire.getName();
+        String activityMsg = "Retired acb " + acb.getName();
         activityManager.addActivity(ActivityConcept.CERTIFICATION_BODY, result.getId(), activityMsg,
                 beforeAcb, result);
         return result;
