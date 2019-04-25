@@ -4,5 +4,6 @@ _Date TBD_
 
 ### New features
 * Updated security for edit/split/merge of developers, products, and versions
+* Respond with a 401 error when the user's token has expired
 
 ---
