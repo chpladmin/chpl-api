@@ -63,7 +63,7 @@ public abstract class ActivityMetadataBuilder {
         case CERTIFICATION_BODY:
             metadata = new CertificationBodyActivityMetadata();
             break;
-        case ATL:
+        case TESTING_LAB:
             metadata = new TestingLabActivityMetadata();
             break;
         default:

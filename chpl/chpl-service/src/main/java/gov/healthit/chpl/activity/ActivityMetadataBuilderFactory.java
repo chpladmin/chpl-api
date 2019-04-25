@@ -60,7 +60,7 @@ public class ActivityMetadataBuilderFactory {
         case CERTIFICATION_BODY:
             builder = acbBuilder;
             break;
-        case ATL:
+        case TESTING_LAB:
             builder = atlBuilder;
             break;
         default:

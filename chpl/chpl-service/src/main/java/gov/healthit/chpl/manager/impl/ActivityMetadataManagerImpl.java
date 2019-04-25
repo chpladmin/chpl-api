@@ -131,7 +131,7 @@ public class ActivityMetadataManagerImpl extends SecuredManager implements Activ
             throws JsonParseException, IOException {
         //there is very little ATL activity so just get it all for the date range
         //and apply a post filter to remove whatever the current user should not see.
-        return getActivityMetadataByConcept(ActivityConcept.ATL, startDate, endDate);
+        return getActivityMetadataByConcept(ActivityConcept.TESTING_LAB, startDate, endDate);
     }
 
     @Override
@@ -141,6 +141,6 @@ public class ActivityMetadataManagerImpl extends SecuredManager implements Activ
     public List<ActivityMetadata> getTestingLabActivityMetadata(final Long atlId, final Date startDate, final Date endDate)
             throws EntityRetrievalException, JsonParseException, IOException {
         atlDao.getById(atlId); //throws not found exception for invalid id
-        return getActivityMetadataByObject(atlId, ActivityConcept.ATL, startDate, endDate);
+        return getActivityMetadataByObject(atlId, ActivityConcept.TESTING_LAB, startDate, endDate);
     }
 }
