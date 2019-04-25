@@ -134,17 +134,12 @@ public class CertificationResultManagerImpl extends SecuredManager implements Ce
                 toUpdate.setCertificationCriterionId(criteria.getId());
             }
             toUpdate.setSuccessful(updated.isSuccess());
+            toUpdate.setG1Success(updated.isG1Success());
+            toUpdate.setG2Success(updated.isG2Success());
 
-            if (toUpdate.getSuccessful() != null && !toUpdate.getSuccessful().booleanValue()
-                    && (!ObjectUtils.equals(orig.isG1Success(), updated.isG1Success())
-                            || !ObjectUtils.equals(orig.isG2Success(), updated.isG2Success()))) {
-                toUpdate.setG1Success(updated.isG1Success());
-                toUpdate.setG2Success(updated.isG2Success());
-            } else if (toUpdate.getSuccessful() != null && toUpdate.getSuccessful().booleanValue()) {
+            if (toUpdate.getSuccessful() != null && toUpdate.getSuccessful().booleanValue()) {
                 toUpdate.setApiDocumentation(updated.getApiDocumentation());
                 toUpdate.setPrivacySecurityFramework(updated.getPrivacySecurityFramework());
-                toUpdate.setG1Success(updated.isG1Success());
-                toUpdate.setG2Success(updated.isG2Success());
                 toUpdate.setGap(updated.isGap());
                 toUpdate.setSed(updated.isSed());
             } else {

@@ -1,6 +1,5 @@
 package gov.healthit.chpl.listener;
 
-
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -42,8 +41,6 @@ import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.web.controller.CertifiedProductController;
 import junit.framework.TestCase;
 
-
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
@@ -83,7 +80,7 @@ public class CertificationResultTest extends TestCase {
 
         Date beforeActivity = new Date();
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
-        for(CertificationResult result : listing.getCertificationResults()) {
+        for (CertificationResult result : listing.getCertificationResults()) {
             result.setSed(Boolean.FALSE);
         }
         for (CertificationResult certResult : listing.getCertificationResults()) {
@@ -99,7 +96,7 @@ public class CertificationResultTest extends TestCase {
         List<QuestionableActivityCertificationResultDTO> activities = qaDao
                 .findCertificationResultActivityBetweenDates(beforeActivity, afterActivity);
         assertNotNull(activities);
-        assertEquals(2, activities.size());
+        assertEquals(1, activities.size());
         QuestionableActivityCertificationResultDTO activity = activities.get(0);
         assertEquals(1, activity.getCertResultId().longValue());
         assertNotNull(activity.getCertResult());
@@ -122,8 +119,8 @@ public class CertificationResultTest extends TestCase {
 
         Date beforeActivity = new Date();
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
-        for(CertificationResult certResult : listing.getCertificationResults()) {
-            if(certResult.getId().longValue() == 1) {
+        for (CertificationResult certResult : listing.getCertificationResults()) {
+            if (certResult.getId().longValue() == 1) {
                 certResult.setG1Success(Boolean.FALSE);
             }
         }
