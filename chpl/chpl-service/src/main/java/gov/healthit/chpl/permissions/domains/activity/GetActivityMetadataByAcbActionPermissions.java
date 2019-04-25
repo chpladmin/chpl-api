@@ -43,7 +43,9 @@ public class GetActivityMetadataByAcbActionPermissions extends ActionPermissions
                     + " tried to see activity for retired ACB " + acb.getName());
                     return false;
                 }
-            } catch (EntityRetrievalException ex) { }
+            } catch (Exception ex) {
+                return false;
+            }
             return isAcbValidForCurrentUser(acbId);
         }
     }

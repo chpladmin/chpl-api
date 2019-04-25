@@ -43,7 +43,9 @@ public class GetActivityMetadataByAtlActionPermissions extends ActionPermissions
                     + " tried to see activity for retired ATL " + atl.getName());
                     return false;
                 }
-            } catch (EntityRetrievalException ex) { }
+            } catch (Exception ex) {
+                return false;
+            }
             return isAtlValidForCurrentUser(atlId);
         }
     }
