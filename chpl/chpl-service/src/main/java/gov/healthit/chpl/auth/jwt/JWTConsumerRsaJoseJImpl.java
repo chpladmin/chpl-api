@@ -44,7 +44,7 @@ public class JWTConsumerRsaJoseJImpl implements JWTConsumer {
             JwtClaims jwtClaims = jwtConsumer.processToClaims(jwt);
             return jwtClaims.getClaimsMap();
         } catch (InvalidJwtException e) {
-            logger.error("Invalid JWT", e);
+            logger.error("Invalid JWT - " + e.getMessage());
             throw new InvalidJwtException("Invalid JWT - failed in JWTConsumerRsaJoseJImpl.");
         }
     }
