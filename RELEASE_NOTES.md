@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version 20.9.1
+_25 April 2019_
+
+### Bug fixes
+* Convert error about g1/g2 for 2014 listings back to warning
+
+---
+
 ## Version 20.9.0
 _22 April 2019_
 
