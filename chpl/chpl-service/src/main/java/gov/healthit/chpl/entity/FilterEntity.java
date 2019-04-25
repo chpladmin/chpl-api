@@ -27,8 +27,11 @@ public class FilterEntity {
     private Long id;
 
     @OneToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", insertable = true, updatable = true)
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private UserEntity user;
+
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 
     @OneToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "filter_type_id", insertable = true, updatable = true)
@@ -59,6 +62,14 @@ public class FilterEntity {
 
     public void setId(final Long id) {
         this.id = id;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(final Long userId) {
+        this.userId = userId;
     }
 
     public UserEntity getUser() {

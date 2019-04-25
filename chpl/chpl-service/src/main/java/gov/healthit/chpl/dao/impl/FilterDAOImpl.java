@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.entity.UserEntity;
 import gov.healthit.chpl.dao.FilterDAO;
 import gov.healthit.chpl.dto.FilterDTO;
 import gov.healthit.chpl.dto.FilterTypeDTO;
@@ -38,7 +37,7 @@ public class FilterDAOImpl extends BaseDAOImpl implements FilterDAO {
         entity.setFilterType(new FilterTypeEntity());
         entity.getFilterType().setId(dto.getFilterType().getId());
         entity.getFilterType().setName(dto.getFilterType().getName());
-        entity.setUser(getUserEntityById(dto.getUser().getId()));
+        entity.setUserId(dto.getUser().getId());
         entity.setDeleted(false);
         entity.setLastModifiedUser(Util.getAuditId());
 
@@ -56,7 +55,7 @@ public class FilterDAOImpl extends BaseDAOImpl implements FilterDAO {
         entity.setFilterType(new FilterTypeEntity());
         entity.getFilterType().setId(dto.getFilterType().getId());
         entity.getFilterType().setName(dto.getFilterType().getName());
-        entity.setUser(getUserEntityById(dto.getUser().getId()));
+        entity.setUserId(dto.getUser().getId());
         entity.setDeleted(false);
         entity.setLastModifiedUser(Util.getAuditId());
         entity.setCreationDate(new Date());
@@ -132,24 +131,24 @@ public class FilterDAOImpl extends BaseDAOImpl implements FilterDAO {
         return entity;
     }
 
-    private UserEntity getUserEntityById(final Long userId) throws EntityRetrievalException {
-        Query query = entityManager.createQuery(
-                "from UserEntity where (NOT deleted = true) " + "AND (user_id = :userid) ", UserEntity.class);
-        query.setParameter("userid", userId);
-        List<UserEntity> result = query.getResultList();
-
-        if (result == null || result.size() == 0) {
-            String msg = String.format(errorMessageUtil.getMessage("user.notFound"));
-            throw new EntityRetrievalException(msg);
-        } else if (result.size() > 1) {
-            throw new EntityRetrievalException("Data error. Duplicate user id in database.");
-        }
-
-        if (result.size() == 0) {
-            return null;
-        }
-        return result.get(0);
-    }
+    // private UserEntity getUserEntityById(final Long userId) throws EntityRetrievalException {
+    // Query query = entityManager.createQuery(
+    // "from UserEntity where (NOT deleted = true) " + "AND (user_id = :userid) ", UserEntity.class);
+    // query.setParameter("userid", userId);
+    // List<UserEntity> result = query.getResultList();
+    //
+    // if (result == null || result.size() == 0) {
+    // String msg = String.format(errorMessageUtil.getMessage("user.notFound"));
+    // throw new EntityRetrievalException(msg);
+    // } else if (result.size() > 1) {
+    // throw new EntityRetrievalException("Data error. Duplicate user id in database.");
+    // }
+    //
+    // if (result.size() == 0) {
+    // return null;
+    // }
+    // return result.get(0);
+    // }
 
     private FilterTypeEntity getFilterTypeEntityById(final Long filterTypeId) throws EntityRetrievalException {
         Query query = entityManager.createQuery(
