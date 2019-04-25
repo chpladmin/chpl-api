@@ -463,7 +463,8 @@ public class ActivityController {
         return activityManager.getAcbActivity(allowedAcbs, startDate, endDate);
     }
 
-    @ApiOperation(value = "Get auditable data for a specific certification body.",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED. Get auditable data for a specific certification body.",
             notes = "A start and end date may optionally be provided to limit activity results.  "
                     + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all certification bodies.  "
                     + "ROLE_ACB can see their own information.")
