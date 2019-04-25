@@ -119,7 +119,7 @@ public class ActivityController {
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
-        validateActivityDates(start, end);
+        validateActivityDatesAndDateRange(start, end);
         return activityMetadataManager.getActivityMetadataByConcept(
                 ActivityConcept.CERTIFIED_PRODUCT, startDate, endDate);
     }
@@ -251,7 +251,7 @@ public class ActivityController {
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
-        validateActivityDates(start, end);
+        validateActivityDatesAndDateRange(start, end);
         return activityMetadataManager.getActivityMetadataByConcept(
                 ActivityConcept.DEVELOPER, startDate, endDate);
     }
@@ -291,7 +291,7 @@ public class ActivityController {
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
-        validateActivityDates(start, end);
+        validateActivityDatesAndDateRange(start, end);
         return activityMetadataManager.getActivityMetadataByConcept(
                 ActivityConcept.PRODUCT, startDate, endDate);
     }
@@ -331,7 +331,7 @@ public class ActivityController {
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
-        validateActivityDates(start, end);
+        validateActivityDatesAndDateRange(start, end);
         return activityMetadataManager.getActivityMetadataByConcept(
                 ActivityConcept.VERSION, startDate, endDate);
     }
@@ -455,7 +455,7 @@ public class ActivityController {
 
         Date startDate = new Date(start);
         Date endDate = new Date(end);
-        validateActivityDates(start, end);
+        validateActivityDatesAndDateRange(start, end);
         if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
             return activityManager.getAllAcbActivity(startDate, endDate);
         }
@@ -485,7 +485,7 @@ public class ActivityController {
         Date startDate = new Date(0);
         Date endDate = new Date();
         if (start != null && end != null) {
-            validateActivityDates(start, end);
+            validateActivityDatesAndDateRange(start, end);
             startDate = new Date(start);
             endDate = new Date(end);
         } else if (start == null && end != null) {
@@ -526,7 +526,7 @@ public class ActivityController {
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
-        validateActivityDates(start, end);
+        validateActivityDatesAndDateRange(start, end);
         return getActivityEventsForAnnouncements(startDate, endDate);
     }
 
@@ -546,7 +546,7 @@ public class ActivityController {
         Date startDate = new Date(0);
         Date endDate = new Date();
         if (start != null && end != null) {
-            validateActivityDates(start, end);
+            validateActivityDatesAndDateRange(start, end);
             startDate = new Date(start);
             endDate = new Date(end);
         } else if (start == null && end != null) {
@@ -572,7 +572,7 @@ public class ActivityController {
             throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
-        validateActivityDates(start, end);
+        validateActivityDatesAndDateRange(start, end);
         if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
             return activityManager.getAllAtlActivity(startDate, endDate);
         }
@@ -601,7 +601,7 @@ public class ActivityController {
         Date startDate = new Date(0);
         Date endDate = new Date();
         if (start != null && end != null) {
-            validateActivityDates(start, end);
+            validateActivityDatesAndDateRange(start, end);
             startDate = new Date(start);
             endDate = new Date(end);
         } else if (start == null && end != null) {
@@ -638,7 +638,7 @@ public class ActivityController {
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
-        validateActivityDates(start, end);
+        validateActivityDatesAndDateRange(start, end);
         return activityManager.getApiKeyActivity(startDate, endDate);
     }
 
@@ -651,7 +651,7 @@ public class ActivityController {
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
-        validateActivityDates(start, end);
+        validateActivityDatesAndDateRange(start, end);
         return getActivityEventsForCertifiedProducts(startDate, endDate);
     }
 
@@ -671,7 +671,7 @@ public class ActivityController {
         Date startDate = new Date(0);
         Date endDate = new Date();
         if (start != null && end != null) {
-            validateActivityDates(start, end);
+            validateActivityDatesAndDateRange(start, end);
             startDate = new Date(start);
             endDate = new Date(end);
         } else if (start == null && end != null) {
@@ -725,7 +725,7 @@ public class ActivityController {
         Date startDate = new Date(0);
         Date endDate = new Date();
         if (start != null && end != null) {
-            validateActivityDates(start, end);
+            validateActivityDatesAndDateRange(start, end);
             startDate = new Date(start);
             endDate = new Date(end);
         } else if (start == null && end != null) {
@@ -770,7 +770,7 @@ public class ActivityController {
         Date startDate = new Date(0);
         Date endDate = new Date();
         if (start != null && end != null) {
-            validateActivityDates(start, end);
+            validateActivityDatesAndDateRange(start, end);
             startDate = new Date(start);
             endDate = new Date(end);
         } else if (start == null && end != null) {
@@ -796,7 +796,7 @@ public class ActivityController {
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
-        validateActivityDates(start, end);
+        validateActivityDatesAndDateRange(start, end);
         if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
             return activityManager.getAllPendingListingActivity(startDate, endDate);
         }
@@ -833,7 +833,7 @@ public class ActivityController {
         Date startDate = new Date(0);
         Date endDate = new Date();
         if (start != null && end != null) {
-            validateActivityDates(start, end);
+            validateActivityDatesAndDateRange(start, end);
             startDate = new Date(start);
             endDate = new Date(end);
         } else if (start == null && end != null) {
@@ -861,7 +861,7 @@ public class ActivityController {
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
-        validateActivityDates(start, end);
+        validateActivityDatesAndDateRange(start, end);
         return getActivityEventsForProducts(startDate, endDate);
     }
 
@@ -881,7 +881,7 @@ public class ActivityController {
         Date startDate = new Date(0);
         Date endDate = new Date();
         if (start != null && end != null) {
-            validateActivityDates(start, end);
+            validateActivityDatesAndDateRange(start, end);
             startDate = new Date(start);
             endDate = new Date(end);
         } else if (start == null && end != null) {
@@ -904,7 +904,7 @@ public class ActivityController {
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
-        validateActivityDates(start, end);
+        validateActivityDatesAndDateRange(start, end);
         return getActivityEventsForVersions(startDate, endDate);
     }
 
@@ -924,7 +924,7 @@ public class ActivityController {
         Date startDate = new Date(0);
         Date endDate = new Date();
         if (start != null && end != null) {
-            validateActivityDates(start, end);
+            validateActivityDatesAndDateRange(start, end);
             startDate = new Date(start);
             endDate = new Date(end);
         } else if (start == null && end != null) {
@@ -949,7 +949,7 @@ public class ActivityController {
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
-        validateActivityDates(start, end);
+        validateActivityDatesAndDateRange(start, end);
         if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
             return activityManager.getAllUserActivity(startDate, endDate);
         }
@@ -973,7 +973,7 @@ public class ActivityController {
         Date startDate = new Date(0);
         Date endDate = new Date();
         if (start != null && end != null) {
-            validateActivityDates(start, end);
+            validateActivityDatesAndDateRange(start, end);
             startDate = new Date(start);
             endDate = new Date(end);
         } else if (start == null && end != null) {
@@ -1009,7 +1009,7 @@ public class ActivityController {
 
         Date startDate = new Date(start);
         Date endDate = new Date(end);
-        validateActivityDates(start, end);
+        validateActivityDatesAndDateRange(start, end);
         return getActivityEventsForDevelopers(startDate, endDate);
     }
 
@@ -1029,7 +1029,7 @@ public class ActivityController {
         Date startDate = new Date(0);
         Date endDate = new Date();
         if (start != null && end != null) {
-            validateActivityDates(start, end);
+            validateActivityDatesAndDateRange(start, end);
             startDate = new Date(start);
             endDate = new Date(end);
         } else if (start == null && end != null) {
@@ -1054,7 +1054,7 @@ public class ActivityController {
                     throws JsonParseException, IOException, UserRetrievalException, ValidationException {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
-        validateActivityDates(start, end);
+        validateActivityDatesAndDateRange(start, end);
         return activityManager.getActivityByUserInDateRange(startDate, endDate);
     }
 
@@ -1074,7 +1074,7 @@ public class ActivityController {
         Date startDate = new Date(0);
         Date endDate = new Date();
         if (start != null && end != null) {
-            validateActivityDates(start, end);
+            validateActivityDatesAndDateRange(start, end);
             startDate = new Date(start);
             endDate = new Date(end);
         } else if (start == null && end != null) {
@@ -1259,7 +1259,31 @@ public class ActivityController {
         return activityManager.getActivityForObject(concept, objectId, startDate, endDate);
     }
 
+    /**
+     * Make sure the start date is not after the end date.
+     * @param startDate
+     * @param endDate
+     * @throws IllegalArgumentException
+     */
     private void validateActivityDates(final Long startDate, final Long endDate) throws IllegalArgumentException {
+        LocalDate startDateUtc =
+                Instant.ofEpochMilli(startDate).atZone(ZoneId.of("UTC")).toLocalDate();
+        LocalDate endDateUtc =
+                Instant.ofEpochMilli(endDate).atZone(ZoneId.of("UTC")).toLocalDate();
+
+        if (startDateUtc.isAfter(endDateUtc)) {
+            throw new IllegalArgumentException("Cannot search for activity with the start date after the end date");
+        }
+    }
+
+    /**
+     * Validates the start is not after the end date.
+     * Validates the amount of time between start/end dates is not larger than our defined max range.
+     * @param startDate
+     * @param endDate
+     * @throws IllegalArgumentException
+     */
+    private void validateActivityDatesAndDateRange(final Long startDate, final Long endDate) throws IllegalArgumentException {
         LocalDate startDateUtc =
                 Instant.ofEpochMilli(startDate).atZone(ZoneId.of("UTC")).toLocalDate();
         LocalDate endDateUtc =
