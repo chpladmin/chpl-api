@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import gov.healthit.chpl.entity.developer.DeveloperStatusEventEntity;
 import gov.healthit.chpl.util.Util;
 
@@ -12,6 +14,7 @@ import gov.healthit.chpl.util.Util;
  * @author alarned
  *
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DeveloperStatusEventDTO implements Serializable {
     private static final long serialVersionUID = -2492374479266782228L;
 

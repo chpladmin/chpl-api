@@ -134,17 +134,12 @@ public class CertificationResultManagerImpl extends SecuredManager implements Ce
                 toUpdate.setCertificationCriterionId(criteria.getId());
             }
             toUpdate.setSuccessful(updated.isSuccess());
+            toUpdate.setG1Success(updated.isG1Success());
+            toUpdate.setG2Success(updated.isG2Success());
 
-            if (toUpdate.getSuccessful() != null && !toUpdate.getSuccessful().booleanValue()
-                    && (!ObjectUtils.equals(orig.isG1Success(), updated.isG1Success())
-                            || !ObjectUtils.equals(orig.isG2Success(), updated.isG2Success()))) {
-                toUpdate.setG1Success(updated.isG1Success());
-                toUpdate.setG2Success(updated.isG2Success());
-            } else if (toUpdate.getSuccessful() != null && toUpdate.getSuccessful().booleanValue()) {
+            if (toUpdate.getSuccessful() != null && toUpdate.getSuccessful().booleanValue()) {
                 toUpdate.setApiDocumentation(updated.getApiDocumentation());
                 toUpdate.setPrivacySecurityFramework(updated.getPrivacySecurityFramework());
-                toUpdate.setG1Success(updated.isG1Success());
-                toUpdate.setG2Success(updated.isG2Success());
                 toUpdate.setGap(updated.isGap());
                 toUpdate.setSed(updated.isSed());
             } else {
@@ -626,7 +621,7 @@ public class CertificationResultManagerImpl extends SecuredManager implements Ce
             List<CertificationResultTestStandard> existingTestStandards,
             List<CertificationResultTestStandard> updatedTestStandards) throws EntityCreationException {
         int numChanges = 0;
-        String editionIdString = listing.getCertificationEdition().get("id").toString();
+        String editionIdString = listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY).toString();
         List<CertificationResultTestStandardDTO> testStandardsToAdd = new ArrayList<CertificationResultTestStandardDTO>();
         List<Long> idsToRemove = new ArrayList<Long>();
 
@@ -960,7 +955,7 @@ public class CertificationResultManagerImpl extends SecuredManager implements Ce
             List<CertificationResultTestFunctionality> existingTestFunctionality,
             List<CertificationResultTestFunctionality> updatedTestFunctionality) throws EntityCreationException {
         int numChanges = 0;
-        String editionIdString = listing.getCertificationEdition().get("id").toString();
+        String editionIdString = listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY).toString();
         List<CertificationResultTestFunctionalityDTO> testFuncToAdd = new ArrayList<CertificationResultTestFunctionalityDTO>();
         List<Long> idsToRemove = new ArrayList<Long>();
 

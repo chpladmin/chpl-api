@@ -50,7 +50,7 @@ import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.domain.AuthorizeCredentials;
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
-import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -156,7 +156,7 @@ public class UserManagementController {
         .sendEmail();
 
         String activityDescription = "User " + createdUser.getSubjectName() + " was created.";
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, createdUser.getId(), activityDescription,
+        activityManager.addActivity(ActivityConcept.USER, createdUser.getId(), activityDescription,
                 null, createdUser, createdUser.getId());
 
         User result = new User(createdUser);
@@ -223,7 +223,7 @@ public class UserManagementController {
         UserDTO createdUser = invitationManager.confirmAccountEmail(invitation);
 
         String activityDescription = "User " + createdUser.getSubjectName() + " was confirmed.";
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, createdUser.getId(), activityDescription,
+        activityManager.addActivity(ActivityConcept.USER, createdUser.getId(), activityDescription,
                 createdUser, createdUser, createdUser.getId());
 
         return new User(createdUser);
@@ -378,7 +378,7 @@ public class UserManagementController {
         UserDTO updated = userManager.update(userInfo);
 
         String activityDescription = "User " + userInfo.getSubjectName() + " was updated.";
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, before.getId(), activityDescription, before,
+        activityManager.addActivity(ActivityConcept.USER, before.getId(), activityDescription, before,
                 updated);
 
         return new User(updated);
@@ -435,7 +435,7 @@ public class UserManagementController {
         }
 
         String activityDescription = "User " + toDelete.getSubjectName() + " was deleted.";
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, toDelete.getId(), activityDescription,
+        activityManager.addActivity(ActivityConcept.USER, toDelete.getId(), activityDescription,
                 toDelete, null);
 
         return "{\"deletedUser\" : true}";
@@ -483,7 +483,7 @@ public class UserManagementController {
 
         String activityDescription = "User " + user.getSubjectName() + " was granted role " + grantRoleObj.getRole()
         + ".";
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, user.getId(), activityDescription, user,
+        activityManager.addActivity(ActivityConcept.USER, user.getId(), activityDescription, user,
                 updated);
 
         return "{\"roleAdded\" : true}";
@@ -544,7 +544,7 @@ public class UserManagementController {
 
         String activityDescription = "User " + user.getSubjectName() + " was removed from role "
                 + grantRoleObj.getRole() + ".";
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, user.getId(), activityDescription, user,
+        activityManager.addActivity(ActivityConcept.USER, user.getId(), activityDescription, user,
                 updated);
 
         // TODO: does this function return true unless there's no user to remove?

@@ -13,18 +13,18 @@ import javax.persistence.Table;
 import gov.healthit.chpl.util.Util;
 
 @Entity
-@Table(name = "activity_class")
+@Table(name = "activity_concept")
 public class ActivityConceptEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "activity_id", nullable = false)
+    @Column(name = "activity_concept_id", nullable = false)
     private Long id;
 
     @Basic(optional = false)
-    @Column(name = "class", nullable = false)
-    private String className;
+    @Column(name = "concept", nullable = false)
+    private String concept;
 
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)
@@ -50,14 +50,6 @@ public class ActivityConceptEntity {
         this.id = id;
     }
 
-    public String getClassName() {
-        return className;
-    }
-
-    public void setClassName(final String className) {
-        this.className = className;
-    }
-
     public Date getCreationDate() {
         return Util.getNewDate(creationDate);
     }
@@ -73,7 +65,7 @@ public class ActivityConceptEntity {
     public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
-    
+
     public Long getLastModifiedUser() {
         return lastModifiedUser;
     }
@@ -88,6 +80,14 @@ public class ActivityConceptEntity {
 
     public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public String getConcept() {
+        return concept;
+    }
+
+    public void setConcept(final String concept) {
+        this.concept = concept;
     }
 
 }

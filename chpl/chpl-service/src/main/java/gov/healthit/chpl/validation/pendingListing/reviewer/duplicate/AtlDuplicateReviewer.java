@@ -8,8 +8,8 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
-import gov.healthit.chpl.dto.PendingCertifiedProductTestingLabDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductTestingLabDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("atlDuplicateReviewer")

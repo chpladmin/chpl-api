@@ -3,11 +3,16 @@ package gov.healthit.chpl.validation.pendingListing.reviewer.edition2014;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dto.PendingCertificationResultDTO;
-import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
 
+/**
+ * Give warning messages for mismatched G1/G2 criteria for pending 2014 Inpatient Listings.
+ * @author alarned
+ *
+ */
 @Component("pendingInpatientG1G2RequiredData2014Reviewer")
 public class InpatientG1G2RequiredData2014Reviewer implements Reviewer {
     private static final String[] G1_COMPLEMENTARY_CERTS = {
@@ -31,7 +36,7 @@ public class InpatientG1G2RequiredData2014Reviewer implements Reviewer {
     @Autowired private ErrorMessageUtil msgUtil;
 
     @Override
-    public void review(PendingCertifiedProductDTO listing) {
+    public void review(final PendingCertifiedProductDTO listing) {
      // check (g)(1)
         boolean hasG1Cert = false;
         for (PendingCertificationResultDTO certCriteria : listing.getCertificationCriterion()) {
@@ -50,7 +55,7 @@ public class InpatientG1G2RequiredData2014Reviewer implements Reviewer {
             }
 
             if (!hasAtLeastOneCertPartner) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingG1Related"));
+                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.missingG1Related"));
             }
         }
 
@@ -72,7 +77,7 @@ public class InpatientG1G2RequiredData2014Reviewer implements Reviewer {
             }
 
             if (!hasG2Complement) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingG2Related"));
+                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.missingG2Related"));
             }
         }
 

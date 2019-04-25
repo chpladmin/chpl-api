@@ -7,6 +7,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.apache.commons.lang3.StringUtils;
+
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SurveillanceNonconformityStatus implements Serializable {
@@ -27,6 +29,24 @@ public class SurveillanceNonconformityStatus implements Serializable {
     private String name;
 
     public SurveillanceNonconformityStatus() {
+    }
+
+    /**
+     * Checks the id and name fields to determine if the two
+     * status fields are the same.
+     * Expect one or both fields to be filled in always.
+     * @param anotherStatus
+     * @return whether the two objects are the same
+     */
+    public boolean matches(final SurveillanceNonconformityStatus anotherStatus) {
+        if (this.id != null && anotherStatus.id != null
+                && this.id.longValue() == anotherStatus.id.longValue()) {
+            return true;
+        } else if (!StringUtils.isEmpty(this.name) && !StringUtils.isEmpty(anotherStatus.name)
+                && this.name.equalsIgnoreCase(anotherStatus.name)) {
+            return true;
+        }
+        return false;
     }
 
     public Long getId() {

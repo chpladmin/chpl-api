@@ -105,7 +105,6 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
         tasks = new ArrayList<PendingTestTaskEntity>();
 
         PendingCertifiedProductEntity pendingCertifiedProduct = new PendingCertifiedProductEntity();
-        pendingCertifiedProduct.setStatus(getDefaultStatusId());
 
         // get the first row of the certified product
         for (CSVRecord record : getRecord()) {

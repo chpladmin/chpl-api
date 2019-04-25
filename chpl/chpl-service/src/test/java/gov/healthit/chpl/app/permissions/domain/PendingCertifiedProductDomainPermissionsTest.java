@@ -13,6 +13,7 @@ import gov.healthit.chpl.permissions.domains.pendingcertifiedproduct.ConfirmActi
 import gov.healthit.chpl.permissions.domains.pendingcertifiedproduct.CreateOrReplaceActionPermissions;
 import gov.healthit.chpl.permissions.domains.pendingcertifiedproduct.DeleteActionPermissions;
 import gov.healthit.chpl.permissions.domains.pendingcertifiedproduct.GetAllActionPermissions;
+import gov.healthit.chpl.permissions.domains.pendingcertifiedproduct.GetAllMetadataActionPermissions;
 import gov.healthit.chpl.permissions.domains.pendingcertifiedproduct.GetByAcbActionPermissions;
 import gov.healthit.chpl.permissions.domains.pendingcertifiedproduct.GetDetailsByIdActionPermissions;
 import gov.healthit.chpl.permissions.domains.pendingcertifiedproduct.GetDetailsByIdForActivityActionPermissions;
@@ -28,7 +29,7 @@ public class PendingCertifiedProductDomainPermissionsTest {
 
     @Test
     public void setupTest() {
-        assertTrue(permissions.getActionPermissions().size() == 8);
+        assertTrue(permissions.getActionPermissions().size() == 9);
 
         assertTrue(permissions.getActionPermissions()
                 .get(PendingCertifiedProductDomainPermissions.CONFIRM) instanceof ConfirmActionPermissions);
@@ -41,6 +42,9 @@ public class PendingCertifiedProductDomainPermissionsTest {
 
         assertTrue(permissions.getActionPermissions()
                 .get(PendingCertifiedProductDomainPermissions.GET_ALL) instanceof GetAllActionPermissions);
+
+        assertTrue(permissions.getActionPermissions()
+                .get(PendingCertifiedProductDomainPermissions.GET_ALL_METADATA) instanceof GetAllMetadataActionPermissions);
 
         assertTrue(permissions.getActionPermissions()
                 .get(PendingCertifiedProductDomainPermissions.GET_BY_ACB) instanceof GetByAcbActionPermissions);

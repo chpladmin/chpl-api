@@ -5,11 +5,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import gov.healthit.chpl.domain.Statuses;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import gov.healthit.chpl.entity.developer.DeveloperStatusEventEntity;
 import gov.healthit.chpl.util.Util;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DeveloperDTO implements Serializable {
     private static final long serialVersionUID = -2492373079266782228L;
     private String developerCode;
