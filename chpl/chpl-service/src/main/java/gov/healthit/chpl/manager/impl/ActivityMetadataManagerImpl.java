@@ -99,7 +99,8 @@ public class ActivityMetadataManagerImpl extends SecuredManager implements Activ
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_ACB_METADATA)")
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_ACB_METADATA, filterObject)")
     @Transactional
@@ -111,8 +112,7 @@ public class ActivityMetadataManagerImpl extends SecuredManager implements Activ
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or "
-            + "@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_METADATA_BY_ACB, #acbId)")
     @Transactional
     public List<ActivityMetadata> getCertificationBodyActivityMetadata(final Long acbId, final Date startDate, final Date endDate)
@@ -122,7 +122,8 @@ public class ActivityMetadataManagerImpl extends SecuredManager implements Activ
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ATL')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_ATL_METADATA)")
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_ATL_METADATA, filterObject)")
     @Transactional
@@ -134,8 +135,7 @@ public class ActivityMetadataManagerImpl extends SecuredManager implements Activ
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC') or "
-            + "@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_METADATA_BY_ATL, #atlId)")
     @Transactional
     public List<ActivityMetadata> getTestingLabActivityMetadata(final Long atlId, final Date startDate, final Date endDate)

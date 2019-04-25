@@ -214,14 +214,13 @@ public class UserManagerTest {
 
     }
 
-    @Ignore("Broken during Auth project merge into Services project")
     @Test
     @Transactional
     @Rollback(true)
     public void testGetAll() {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         List<UserDTO> results = userManager.getAll();
-        assertEquals(results.size(), 3);
+        assertEquals(8, results.size());
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 

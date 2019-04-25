@@ -18,7 +18,8 @@ public class GetAtlActivityMetadataActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess() {
-        return false;
+        return getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()
+                || getResourcePermissions().isUserRoleAtlAdmin();
     }
 
     @Override

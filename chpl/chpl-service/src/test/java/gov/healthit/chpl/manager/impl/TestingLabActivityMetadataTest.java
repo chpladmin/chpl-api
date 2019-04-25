@@ -29,13 +29,13 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.domain.activity.ActivityCategory;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityMetadataManager;
-import gov.healthit.chpl.manager.CertificationBodyManager;
+import gov.healthit.chpl.manager.TestingLabManager;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -47,12 +47,12 @@ import junit.framework.TestCase;
         TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
 })
 @DatabaseSetup("classpath:data/testData.xml")
-public class CertificationBodyActivityMetadataTest extends TestCase {
+public class TestingLabActivityMetadataTest extends TestCase {
     @Autowired
     private ActivityMetadataManager metadataManager;
 
     @Autowired
-    private CertificationBodyManager acbManager;
+    private TestingLabManager atlManager;
 
     private static JWTAuthenticatedUser adminUser, acbUser, atlUser;
 
@@ -87,85 +87,85 @@ public class CertificationBodyActivityMetadataTest extends TestCase {
     @Test
     @Rollback(true)
     @Transactional
-    public void testModifyAcbName_GetActivityAsAdmin_Allowed()
+    public void testModifyAtlName_GetActivityAsAdmin_Allowed()
         throws EntityRetrievalException, ValidationException, IOException,
         InvalidArgumentsException, EntityCreationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        Long acbId = -1L;
-        CertificationBodyDTO acb = acbManager.getById(acbId);
-        acb.setWebsite("http://www.new-website.com");
+        Long atlId = -1L;
+        TestingLabDTO atl = atlManager.getById(atlId);
+        atl.setWebsite("http://www.new-website.com");
 
         try {
-            acbManager.update(acb);
+            atlManager.update(atl);
         } catch (Exception ex) {
             ex.printStackTrace();
-            fail("Could not perform ACB name update: " + ex.getMessage());
+            fail("Could not perform ATL name update: " + ex.getMessage());
         }
 
         Calendar start = getBeginningOfToday();
         Calendar end = getEndOfToday();
-        List<ActivityMetadata> metadatas = metadataManager.getCertificationBodyActivityMetadata(
+        List<ActivityMetadata> metadatas = metadataManager.getTestingLabActivityMetadata(
                 start.getTime(), end.getTime());
         assertEquals(1, metadatas.size());
         ActivityMetadata metadata = metadatas.get(0);
-        assertEquals(acbId.longValue(), metadata.getObjectId().longValue());
-        assertTrue(metadata.getCategories().contains(ActivityCategory.CERTIFICATION_BODY));
+        assertEquals(atlId.longValue(), metadata.getObjectId().longValue());
+        assertTrue(metadata.getCategories().contains(ActivityCategory.TESTING_LAB));
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
     @Test
     @Rollback(true)
     @Transactional
-    public void testModifyAcbName_GetActivityAsAcbWithAccess_Allowed()
+    public void testModifyAtlName_GetActivityAsAtlWithAccess_Allowed()
         throws EntityRetrievalException, ValidationException, IOException,
         InvalidArgumentsException, EntityCreationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        Long acbId = -1L;
-        CertificationBodyDTO acb = acbManager.getById(acbId);
-        acb.setWebsite("http://www.new-website.com");
+        Long atlId = -1L;
+        TestingLabDTO atl = atlManager.getById(atlId);
+        atl.setWebsite("http://www.new-website.com");
 
         try {
-            acbManager.update(acb);
+            atlManager.update(atl);
         } catch (Exception ex) {
             ex.printStackTrace();
-            fail("Could not perform ACB name update: " + ex.getMessage());
+            fail("Could not perform ATL name update: " + ex.getMessage());
         }
 
-        SecurityContextHolder.getContext().setAuthentication(acbUser);
+        SecurityContextHolder.getContext().setAuthentication(atlUser);
         Calendar start = getBeginningOfToday();
         Calendar end = getEndOfToday();
         List<ActivityMetadata> metadatas =
-                metadataManager.getCertificationBodyActivityMetadata(start.getTime(), end.getTime());
+                metadataManager.getTestingLabActivityMetadata(start.getTime(), end.getTime());
         assertEquals(1, metadatas.size());
         ActivityMetadata metadata = metadatas.get(0);
-        assertEquals(acbId.longValue(), metadata.getObjectId().longValue());
-        assertTrue(metadata.getCategories().contains(ActivityCategory.CERTIFICATION_BODY));
+        assertEquals(atlId.longValue(), metadata.getObjectId().longValue());
+        assertTrue(metadata.getCategories().contains(ActivityCategory.TESTING_LAB));
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
     @Test
     @Rollback(true)
     @Transactional
-    public void testModifyAcbName_GetActivityAsAcbWithoutAccess_NoResults()
+    public void testModifyAtlName_GetActivityAsAtlWithoutAccess_NoResults()
         throws EntityRetrievalException, ValidationException, IOException,
         InvalidArgumentsException, EntityCreationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        Long acbId = -2L;
-        CertificationBodyDTO acb = acbManager.getById(acbId);
-        acb.setWebsite("http://www.new-website.com");
+        Long atlId = 2L;
+        TestingLabDTO atl = atlManager.getById(atlId);
+        atl.setWebsite("http://www.new-website.com");
 
         try {
-            acbManager.update(acb);
+            atlManager.update(atl);
         } catch (Exception ex) {
             ex.printStackTrace();
-            fail("Could not perform ACB name update: " + ex.getMessage());
+            fail("Could not perform ATL name update: " + ex.getMessage());
         }
 
-        SecurityContextHolder.getContext().setAuthentication(acbUser);
+        SecurityContextHolder.getContext().setAuthentication(atlUser);
         Calendar start = getBeginningOfToday();
         Calendar end = getEndOfToday();
         List<ActivityMetadata> results =
-                metadataManager.getCertificationBodyActivityMetadata(start.getTime(), end.getTime());
+                metadataManager.getTestingLabActivityMetadata(start.getTime(), end.getTime());
         assertEquals(0, results.size());
         SecurityContextHolder.getContext().setAuthentication(null);
     }
@@ -173,37 +173,37 @@ public class CertificationBodyActivityMetadataTest extends TestCase {
     @Test(expected = AccessDeniedException.class)
     @Rollback(true)
     @Transactional
-    public void testModifyAcbName_GetActivityAsAtl_NotAllowed()
+    public void testModifyAtlName_GetActivityAsAcb_NotAllowed()
         throws EntityRetrievalException, ValidationException, IOException,
         InvalidArgumentsException, EntityCreationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        Long acbId = -1L;
-        CertificationBodyDTO acb = acbManager.getById(acbId);
-        acb.setWebsite("http://www.new-website.com");
+        Long atlId = -1L;
+        TestingLabDTO atl = atlManager.getById(atlId);
+        atl.setWebsite("http://www.new-website.com");
 
         try {
-            acbManager.update(acb);
+            atlManager.update(atl);
         } catch (Exception ex) {
             ex.printStackTrace();
-            fail("Could not perform ACB name update: " + ex.getMessage());
+            fail("Could not perform ATL name update: " + ex.getMessage());
         }
 
-        SecurityContextHolder.getContext().setAuthentication(atlUser);
+        SecurityContextHolder.getContext().setAuthentication(acbUser);
         Calendar start = getBeginningOfToday();
         Calendar end = getEndOfToday();
-        metadataManager.getCertificationBodyActivityMetadata(start.getTime(), end.getTime());
+        metadataManager.getTestingLabActivityMetadata(start.getTime(), end.getTime());
     }
 
     @Test(expected = EntityRetrievalException.class)
     @Rollback(true)
     @Transactional
-    public void testGetActivityForBadAcb_NotAllowed()
+    public void testGetActivityForBadAtl_NotAllowed()
         throws EntityRetrievalException, ValidationException, IOException,
         InvalidArgumentsException, EntityCreationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         Calendar start = getBeginningOfToday();
         Calendar end = getEndOfToday();
-        metadataManager.getCertificationBodyActivityMetadata(
+        metadataManager.getTestingLabActivityMetadata(
                 100L, start.getTime(), end.getTime());
         SecurityContextHolder.getContext().setAuthentication(null);
     }
