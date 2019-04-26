@@ -181,7 +181,7 @@ public class SchedulerManagerImpl extends SecuredManager implements SchedulerMan
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.healthit.chpl.manager.SchedulerManager#getAllJobs() As new jobs are added that have authorities other than
      * ROLE_ADMIN, those authorities will need to be added to the list.
      */
@@ -248,7 +248,12 @@ public class SchedulerManagerImpl extends SecuredManager implements SchedulerMan
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
             + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).UPDATE_ACB_NAME)")
     public void changeAcbName(final String oldAcb, final String newAcb) throws SchedulerException, ValidationException {
+        //have to get all triggers in the system here without a permission check because
+        //the acb name has been changed and the permission check will never pass
+        //since it compare the acb names the user has access to (where name has changed) with
+        //acb names in the trigger (where name has not changed).
         List<ChplRepeatableTrigger> allTriggers = getAllTriggers();
+
         for (ChplRepeatableTrigger trigger : allTriggers) {
             if (!StringUtils.isEmpty(trigger.getAcb()) && trigger.getAcb().indexOf(oldAcb) > -1) {
                 ArrayList<String> acbs = new ArrayList<String>(Arrays.asList(trigger.getAcb().split(DATA_DELIMITER)));
@@ -256,7 +261,13 @@ public class SchedulerManagerImpl extends SecuredManager implements SchedulerMan
                 acbs.add(newAcb);
                 trigger.setAcb(String.join(DATA_DELIMITER, acbs));
                 createTrigger(trigger);
-                deleteTrigger(trigger.getGroup(), trigger.getName());
+                //delete the trigger - can't use the method in this class
+                //because it will check user permissions but that will not give the user access
+                //to the trigger to allow them to delete it; the permissions check is done
+                //by acb name but the acb will have a different name now and the check will never pass.
+                Scheduler scheduler = getScheduler();
+                TriggerKey triggerKey = triggerKey(trigger.getName(), trigger.getGroup());
+                scheduler.unscheduleJob(triggerKey);
             }
         }
     }
