@@ -51,13 +51,15 @@ public class SchedulerManagerImpl extends SecuredManager implements SchedulerMan
 
     private static final String AUTHORITY_DELIMITER = ";";
     private static final String DATA_DELIMITER = "\u263A";
+    private static final String CHPL_JOBS_KEY = "chplJobs";
 
     private ChplSchedulerReference chplScheduler;
     private ResourcePermissions resourcePermissions;
 
     @Autowired
 
-    public SchedulerManagerImpl(final ChplSchedulerReference chplScheduler, ResourcePermissions resourcePermissions) {
+    public SchedulerManagerImpl(final ChplSchedulerReference chplScheduler,
+            final ResourcePermissions resourcePermissions) {
         this.chplScheduler = chplScheduler;
         this.resourcePermissions = resourcePermissions;
     }
@@ -99,7 +101,7 @@ public class SchedulerManagerImpl extends SecuredManager implements SchedulerMan
     @Override
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
             + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).CREATE_ONE_TIME_TRIGGER)")
-    public ChplOneTimeTrigger createOneTimeTrigger(ChplOneTimeTrigger chplTrigger)
+    public ChplOneTimeTrigger createOneTimeTrigger(final ChplOneTimeTrigger chplTrigger)
             throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
 
@@ -132,13 +134,13 @@ public class SchedulerManagerImpl extends SecuredManager implements SchedulerMan
     @Override
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
             + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).GET_ALL_TRIGGERS)")
-    public List<ChplRepeatableTrigger> getAllTriggers() throws SchedulerException {
-        ArrayList<ChplRepeatableTrigger> triggers = new ArrayList<ChplRepeatableTrigger>();
+    public List<ChplRepeatableTrigger> getAllTriggersForUser() throws SchedulerException {
+        List<ChplRepeatableTrigger> triggers = new ArrayList<ChplRepeatableTrigger>();
         Scheduler scheduler = getScheduler();
         for (String group : scheduler.getTriggerGroupNames()) {
             // enumerate each trigger in group
             for (TriggerKey triggerKey : scheduler.getTriggerKeys(groupEquals(group))) {
-                if (scheduler.getTrigger(triggerKey).getJobKey().getGroup().equalsIgnoreCase("chplJobs")) {
+                if (scheduler.getTrigger(triggerKey).getJobKey().getGroup().equalsIgnoreCase(CHPL_JOBS_KEY)) {
                     if (doesUserHavePermissionToTrigger(scheduler.getTrigger(triggerKey))
                             && getScheduler().getTrigger(triggerKey) instanceof CronTrigger) {
                         ChplRepeatableTrigger newTrigger = getChplTrigger(triggerKey);
@@ -228,7 +230,7 @@ public class SchedulerManagerImpl extends SecuredManager implements SchedulerMan
     @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     public void retireAcb(final String acb) throws SchedulerException, ValidationException {
-        List<ChplRepeatableTrigger> allTriggers = getAllTriggers();
+        List<ChplRepeatableTrigger> allTriggers = getAllTriggersForUser();
         for (ChplRepeatableTrigger trigger : allTriggers) {
             if (!StringUtils.isEmpty(trigger.getAcb()) && trigger.getAcb().indexOf(acb) > -1) {
                 ArrayList<String> acbs = new ArrayList<String>(Arrays.asList(trigger.getAcb().split(DATA_DELIMITER)));
@@ -261,6 +263,20 @@ public class SchedulerManagerImpl extends SecuredManager implements SchedulerMan
 
     private Scheduler getScheduler() throws SchedulerException {
         return chplScheduler.getScheduler();
+    }
+
+    private List<ChplRepeatableTrigger> getAllTriggers() throws SchedulerException {
+        List<ChplRepeatableTrigger> allTriggers = new ArrayList<ChplRepeatableTrigger>();
+        Scheduler scheduler = getScheduler();
+        for (String group : scheduler.getTriggerGroupNames()) {
+            // enumerate each trigger in group
+            for (TriggerKey triggerKey : scheduler.getTriggerKeys(groupEquals(group))) {
+                if (scheduler.getTrigger(triggerKey).getJobKey().getGroup().equalsIgnoreCase(CHPL_JOBS_KEY)) {
+                    allTriggers.add(getChplTrigger(triggerKey));
+                }
+            }
+        }
+        return allTriggers;
     }
 
     private ChplRepeatableTrigger getChplTrigger(final TriggerKey triggerKey) throws SchedulerException {
