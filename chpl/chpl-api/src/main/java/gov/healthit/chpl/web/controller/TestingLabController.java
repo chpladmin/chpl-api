@@ -159,8 +159,8 @@ public class TestingLabController {
         TestingLabDTO existingAtl =  resourcePermissions.getAtlIfPermissionById(updatedAtl.getId());
         if (updatedAtl.isRetired()) {
             //we are retiring this ATL and no other changes can be made
+            existingAtl.setRetired(true);
             existingAtl.setRetirementDate(updatedAtl.getRetirementDate());
-            existingAtl.setId(updatedAtl.getId());
             atlManager.retire(existingAtl);
         } else {
             if (existingAtl.isRetired()) {
