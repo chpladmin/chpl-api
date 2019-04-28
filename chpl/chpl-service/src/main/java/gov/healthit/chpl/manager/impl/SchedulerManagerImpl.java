@@ -250,7 +250,7 @@ public class SchedulerManagerImpl extends SecuredManager implements SchedulerMan
     public void changeAcbName(final String oldAcb, final String newAcb) throws SchedulerException, ValidationException {
         //have to get all triggers in the system here without a permission check because
         //the acb name has been changed and the permission check will never pass
-        //since it compare the acb names the user has access to (where name has changed) with
+        //since it compares the acb names the user has access to (where name has changed) with
         //acb names in the trigger (where name has not changed).
         List<ChplRepeatableTrigger> allTriggers = getAllTriggers();
 
