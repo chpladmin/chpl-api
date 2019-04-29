@@ -319,12 +319,13 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
                     + dev.getName() + " cannot be determined.";
             LOGGER.error(msg);
             throw new EntityCreationException(msg);
-        } else if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-            String msg = "The product " + dto.getName() + " cannot be created since the developer " + dev.getName()
-                    + " has a status of " + currDevStatus.getStatus().getStatusName();
-            LOGGER.error(msg);
-            throw new EntityCreationException(msg);
         }
+        // } else if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
+        // String msg = "The product " + dto.getName() + " cannot be created since the developer " + dev.getName()
+        // + " has a status of " + currDevStatus.getStatus().getStatusName();
+        // LOGGER.error(msg);
+        // throw new EntityCreationException(msg);
+        // }
 
         ProductDTO result = productDao.create(dto);
         String activityMsg = "Product " + dto.getName() + " was created.";
