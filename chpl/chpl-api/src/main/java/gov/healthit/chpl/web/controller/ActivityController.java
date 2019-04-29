@@ -368,8 +368,8 @@ public class ActivityController {
                     + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all certification bodies.  "
                     + "ROLE_ACB can see activity for their own ACBs.")
     @RequestMapping(value = "/metadata/acbs", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ActivityMetadata> metadataForAcbs(@RequestParam final Long start,
-            @RequestParam final Long end)
+    public List<ActivityMetadata> metadataForAcbs(@RequestParam(required = false) final Long start,
+            @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, ValidationException {
 
         Date startDate = new Date(start);
@@ -408,8 +408,8 @@ public class ActivityController {
                     + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all testing labs.  "
                     + "ROLE_ATL can see activity for their own ATLs.")
     @RequestMapping(value = "/metadata/atls", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ActivityMetadata> metadataForAtls(@RequestParam final Long start,
-            @RequestParam final Long end)
+    public List<ActivityMetadata> metadataForAtls(@RequestParam(required = false) final Long start,
+            @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, ValidationException {
 
         Date startDate = new Date(start);
