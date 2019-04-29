@@ -403,22 +403,6 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
             throw new ValidationException(getDuplicateChplProductNumberErrorMessages(duplicateChplProdNumbers), null);
         }
 
-        // check for any non-active developers and throw an error if any are found
-        for (DeveloperDTO beforeDeveloper : beforeDevelopers) {
-            DeveloperStatusEventDTO currDeveloperStatus = beforeDeveloper.getStatus();
-            if (currDeveloperStatus == null || currDeveloperStatus.getStatus() == null) {
-                String msg = "Cannot merge developer " + beforeDeveloper.getName()
-                        + " because their current status cannot be determined.";
-                LOGGER.error(msg);
-                throw new EntityCreationException(msg);
-            } else if (!currDeveloperStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-                String msg = "Cannot merge developer " + beforeDeveloper.getName() + " with a status of "
-                        + currDeveloperStatus.getStatus().getStatusName();
-                LOGGER.error(msg);
-                throw new EntityCreationException(msg);
-            }
-        }
-
         // check if the transparency attestation for each developer is conflicting
         List<CertificationBodyDTO> allAcbs = acbManager.getAll();
         for (CertificationBodyDTO acb : allAcbs) {
