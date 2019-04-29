@@ -372,9 +372,17 @@ public class ActivityController {
             @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, ValidationException {
 
-        Date startDate = new Date(start);
-        Date endDate = new Date(end);
-        validateActivityDates(start, end);
+        Date startDate = new Date(0);
+        Date endDate = new Date();
+        if (start != null && end != null) {
+            validateActivityDates(start, end);
+            startDate = new Date(start);
+            endDate = new Date(end);
+        } else if (start == null && end != null) {
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
+        } else if (start != null && end == null) {
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
+        }
         return activityMetadataManager.getCertificationBodyActivityMetadata(startDate, endDate);
     }
 
@@ -412,9 +420,17 @@ public class ActivityController {
             @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, ValidationException {
 
-        Date startDate = new Date(start);
-        Date endDate = new Date(end);
-        validateActivityDates(start, end);
+        Date startDate = new Date(0);
+        Date endDate = new Date();
+        if (start != null && end != null) {
+            validateActivityDates(start, end);
+            startDate = new Date(start);
+            endDate = new Date(end);
+        } else if (start == null && end != null) {
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
+        } else if (start != null && end == null) {
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
+        }
         return activityMetadataManager.getTestingLabActivityMetadata(startDate, endDate);
     }
 
