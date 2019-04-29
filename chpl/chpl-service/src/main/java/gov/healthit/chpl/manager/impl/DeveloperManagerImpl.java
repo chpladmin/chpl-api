@@ -494,17 +494,6 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
             throw new ValidationException(devErrors, null);
         }
 
-        // if the user is an ACB then the developer must be Active otherwise the split is not allowed.
-        // ADMIN and ONC can perform a split no matter the developer's status
-        DeveloperStatusEventDTO currDevStatus = oldDeveloper.getStatus();
-        if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
-                && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
-            String msg = msgUtil.getMessage("developer.notActiveNotAdminCantSplit", Util.getUsername(),
-                    oldDeveloper.getName());
-            LOGGER.error(msg);
-            throw new EntityCreationException(msg);
-        }
-
         // create the new developer and log activity
         DeveloperDTO createdDeveloper = create(developerToCreate);
 
