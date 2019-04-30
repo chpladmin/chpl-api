@@ -1186,7 +1186,9 @@ public class SearchViewController {
         return dimensionalDataManager.getSearchableDimensionalData(simple);
     }
 
-    @ApiOperation(value = "Get all developer decertifications in the CHPL",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED. Use /collections/decertified-developers instead. "
+            + "Get all developer decertifications in the CHPL",
             notes = "This returns all decertified developers.")
     @RequestMapping(value = "/decertifications/developers", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
