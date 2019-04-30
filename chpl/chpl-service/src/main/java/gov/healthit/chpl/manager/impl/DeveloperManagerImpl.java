@@ -30,12 +30,14 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.DecertifiedDeveloper;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.DeveloperTransparency;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
+import gov.healthit.chpl.dto.DecertifiedDeveloperDTODeprecated;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
@@ -674,14 +676,13 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(CacheNames.GET_DECERTIFIED_DEVELOPERS)
     public List<DecertifiedDeveloperResult> getDecertifiedDevelopers() throws EntityRetrievalException {
-        List<DecertifiedDeveloperDTO> dtoList = new ArrayList<DecertifiedDeveloperDTO>();
+        List<DecertifiedDeveloperDTODeprecated> dtoList = new ArrayList<DecertifiedDeveloperDTODeprecated>();
         List<DecertifiedDeveloperResult> decertifiedDeveloperResults = new ArrayList<DecertifiedDeveloperResult>();
 
         dtoList = developerDao.getDecertifiedDevelopers();
 
-        for (DecertifiedDeveloperDTO dto : dtoList) {
+        for (DecertifiedDeveloperDTODeprecated dto : dtoList) {
             List<CertificationBody> certifyingBody = new ArrayList<CertificationBody>();
             for (Long oncacbId : dto.getAcbIdList()) {
                 CertificationBody cb = new CertificationBody(certificationBodyDao.getById(oncacbId));
@@ -693,6 +694,27 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
                     dto.getNumMeaningfulUse(), dto.getEarliestNumMeaningfulUseDate(),
                     dto.getLatestNumMeaningfulUseDate());
             decertifiedDeveloperResults.add(decertifiedDeveloper);
+        }
+        return decertifiedDeveloperResults;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @Cacheable(CacheNames.GET_DECERTIFIED_DEVELOPERS)
+    public List<DecertifiedDeveloper> getDecertifiedDeveloperCollection() {
+        List<DecertifiedDeveloperDTO> dtoList = new ArrayList<DecertifiedDeveloperDTO>();
+        List<DecertifiedDeveloper> decertifiedDeveloperResults = new ArrayList<DecertifiedDeveloper>();
+        dtoList = developerDao.getDecertifiedDeveloperCollection();
+
+        for (DecertifiedDeveloperDTO dto : dtoList) {
+            DecertifiedDeveloper decertDev = new DecertifiedDeveloper();
+            decertDev.setDeveloperId(dto.getDeveloper().getId());
+            decertDev.setDeveloperName(dto.getDeveloper().getName());
+            decertDev.setDecertificationDate(dto.getDecertificationDate());
+            for (CertificationBodyDTO acb : dto.getAcbs()) {
+                decertDev.getAcbNames().add(acb.getName());
+            }
+            decertifiedDeveloperResults.add(decertDev);
         }
         return decertifiedDeveloperResults;
     }

@@ -2,7 +2,9 @@ package gov.healthit.chpl.dao.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Query;
 
@@ -20,9 +22,12 @@ import gov.healthit.chpl.dao.AddressDAO;
 import gov.healthit.chpl.dao.ContactDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
+import gov.healthit.chpl.domain.DecertifiedDeveloper;
 import gov.healthit.chpl.domain.DeveloperTransparency;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
+import gov.healthit.chpl.dto.DecertifiedDeveloperDTODeprecated;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
@@ -36,6 +41,7 @@ import gov.healthit.chpl.entity.developer.DeveloperStatusEventEntity;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.entity.developer.DeveloperTransparencyEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
+import gov.healthit.chpl.entity.listing.ListingsFromBannedDevelopersEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -488,22 +494,23 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
         return null;
     }
 
-    public List<DecertifiedDeveloperDTO> getDecertifiedDevelopers() {
+    @Override
+    public List<DecertifiedDeveloperDTODeprecated> getDecertifiedDevelopers() {
 
         Query bannedListingsQuery = entityManager.createQuery(
                 "FROM CertifiedProductDetailsEntity "
-                        + "WHERE developerStatusName IN (:banned) AND deleted = false AND acbIsDeleted = false",
+                        + "WHERE developerStatusName IN (:banned) AND deleted = false AND acbIsRetired = false",
                         CertifiedProductDetailsEntity.class);
         bannedListingsQuery.setParameter("banned", String.valueOf(DeveloperStatusType.UnderCertificationBanByOnc));
         List<CertifiedProductDetailsEntity> bannedListings = bannedListingsQuery.getResultList();
-        List<DecertifiedDeveloperDTO> decertifiedDevelopers = new ArrayList<DecertifiedDeveloperDTO>();
+        List<DecertifiedDeveloperDTODeprecated> decertifiedDevelopers = new ArrayList<DecertifiedDeveloperDTODeprecated>();
         // populate dtoList from result
         for (CertifiedProductDetailsEntity currListing : bannedListings) {
             LOGGER.debug("CertifiedProductDetailsEntity: " + currListing.getDeveloperId() + " " + currListing.getCertificationBodyId() + " "
                     + currListing.getMeaningfulUseUsers());
             Boolean devExists = false;
             if (decertifiedDevelopers.size() > 0) {
-                for (DecertifiedDeveloperDTO currDev : decertifiedDevelopers) {
+                for (DecertifiedDeveloperDTODeprecated currDev : decertifiedDevelopers) {
                     LOGGER.debug("DeveloperDecertifiedDTO: " + currDev.getDeveloperId() + " " + currDev.getAcbIdList() + " "
                             + currDev.getNumMeaningfulUse());
                     // if developer already exists, update it to include ACB and
@@ -536,7 +543,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
                             }
                             if (currDev.getLatestNumMeaningfulUseDate() == null) {
                                 currDev.setLatestNumMeaningfulUseDate(currListing.getMeaningfulUseUsersDate());
-                            } else if(currListing.getMeaningfulUseUsersDate().getTime() > currDev.getLatestNumMeaningfulUseDate().getTime()) {
+                            } else if (currListing.getMeaningfulUseUsersDate().getTime() > currDev.getLatestNumMeaningfulUseDate().getTime()) {
                                 currDev.setLatestNumMeaningfulUseDate(currListing.getMeaningfulUseUsersDate());
                             }
                         }
@@ -548,7 +555,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
             if (!devExists) {
                 List<Long> acbList = new ArrayList<Long>();
                 acbList.add(currListing.getCertificationBodyId());
-                DecertifiedDeveloperDTO decertDev = new DecertifiedDeveloperDTO(currListing.getDeveloperId(), acbList,
+                DecertifiedDeveloperDTODeprecated decertDev = new DecertifiedDeveloperDTODeprecated(currListing.getDeveloperId(), acbList,
                         currListing.getDeveloperStatusName(), currListing.getDeveloperStatusDate(), currListing.getMeaningfulUseUsers());
                 decertDev.setEarliestNumMeaningfulUseDate(currListing.getMeaningfulUseUsersDate());
                 decertDev.setLatestNumMeaningfulUseDate(currListing.getMeaningfulUseUsersDate());
@@ -559,12 +566,54 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
         return decertifiedDevelopers;
     }
 
-    private void create(DeveloperEntity entity) {
+    @Override
+    public List<DecertifiedDeveloperDTO> getDecertifiedDeveloperCollection() {
+
+        Query query = entityManager.createQuery(
+                "FROM ListingsFromBannedDevelopersEntity ",
+                        ListingsFromBannedDevelopersEntity.class);
+        List<ListingsFromBannedDevelopersEntity> listingsFromBannedDevelopers = query.getResultList();
+        List<DecertifiedDeveloperDTO> decertifiedDevelopers = new ArrayList<DecertifiedDeveloperDTO>();
+        for (ListingsFromBannedDevelopersEntity currListing : listingsFromBannedDevelopers) {
+            boolean devExists = false;
+            if (decertifiedDevelopers.size() > 0) {
+                for (DecertifiedDeveloperDTO currDecertDev : decertifiedDevelopers) {
+                    // if developer already exists just add the acb
+                    if (currDecertDev.getDeveloper() != null && currDecertDev.getDeveloper().getId() != null
+                            && currDecertDev.getDeveloper().getId().equals(currListing.getDeveloperId())) {
+                        CertificationBodyDTO acb = new CertificationBodyDTO();
+                        acb.setId(currListing.getAcbId());
+                        acb.setName(currListing.getAcbName());
+                        currDecertDev.getAcbs().add(acb);
+                        devExists = true;
+                        break;
+                    }
+                }
+            }
+            if (!devExists) {
+                DecertifiedDeveloperDTO decertDev = new DecertifiedDeveloperDTO();
+                DeveloperDTO dev = new DeveloperDTO();
+                dev.setId(currListing.getDeveloperId());
+                dev.setName(currListing.getDeveloperName());
+                decertDev.setDeveloper(dev);
+                CertificationBodyDTO acb = new CertificationBodyDTO();
+                acb.setId(currListing.getAcbId());
+                acb.setName(currListing.getAcbName());
+                decertDev.getAcbs().add(acb);
+                decertDev.setDecertificationDate(currListing.getDeveloperStatusDate());
+                decertifiedDevelopers.add(decertDev);
+            }
+        }
+
+        return decertifiedDevelopers;
+    }
+
+    private void create(final DeveloperEntity entity) {
         entityManager.persist(entity);
         entityManager.flush();
     }
 
-    private void update(DeveloperEntity entity) {
+    private void update(final DeveloperEntity entity) {
         entityManager.merge(entity);
         entityManager.flush();
     }

@@ -8,6 +8,11 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
 
+/**
+ * Give warning messages for mismatched G1/G2 criteria for pending 2014 Ambulatory Listings.
+ * @author alarned
+ *
+ */
 @Component("pendingAmbulatoryG1G2RequiredData2014Reviewer")
 public class AmbulatoryG1G2RequiredData2014Reviewer implements Reviewer {
     private static final String[] G1_COMPLEMENTARY_CERTS = {
@@ -31,7 +36,7 @@ public class AmbulatoryG1G2RequiredData2014Reviewer implements Reviewer {
     @Autowired private ErrorMessageUtil msgUtil;
 
     @Override
-    public void review(PendingCertifiedProductDTO listing) {
+    public void review(final PendingCertifiedProductDTO listing) {
         boolean hasG1Cert = false;
         for (PendingCertificationResultDTO certCriteria : listing.getCertificationCriterion()) {
             if (certCriteria.getNumber().equals(G1_2014) && certCriteria.getMeetsCriteria()) {
@@ -49,7 +54,7 @@ public class AmbulatoryG1G2RequiredData2014Reviewer implements Reviewer {
             }
 
             if (!hasG1Complement) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingG1Related"));
+                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.missingG1Related"));
             }
         }
 
@@ -71,7 +76,7 @@ public class AmbulatoryG1G2RequiredData2014Reviewer implements Reviewer {
             }
 
             if (!hasG2Complement) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingG2Related"));
+                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.missingG2Related"));
             }
         }
 
