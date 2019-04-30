@@ -23,6 +23,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.healthit.chpl.domain.DecertifiedDeveloper;
 import gov.healthit.chpl.domain.DeveloperTransparency;
 import gov.healthit.chpl.domain.search.BasicSearchResponse;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
@@ -151,6 +152,15 @@ public class CollectionsController {
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody List<DeveloperTransparency> getDeveloperCollection() {
         List<DeveloperTransparency> developerResults = developerManager.getDeveloperCollection();
+        return developerResults;
+    }
+
+    @ApiOperation(value = "Get a list of all banned developers.",
+            notes = "")
+    @RequestMapping(value = "/decertified-developers", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody List<DecertifiedDeveloper> getDecertifiedDeveloperCollection() {
+        List<DecertifiedDeveloper> developerResults = developerManager.getDecertifiedDeveloperCollection();
         return developerResults;
     }
 

@@ -3,6 +3,8 @@ package gov.healthit.chpl.dto;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.entity.CertificationBodyEntity;
@@ -103,4 +105,43 @@ public class CertificationBodyDTO implements Serializable {
                 + ", address=" + address + ", retired=" + retired + ", retirementDate=" + retirementDate + "]";
     }
 
+    @Override
+    public boolean equals(final Object anotherObject) {
+        if (anotherObject == null || !(anotherObject instanceof CertificationBodyDTO)) {
+            return false;
+        }
+
+        CertificationBodyDTO anotherAcb = (CertificationBodyDTO) anotherObject;
+        if (this.getId() != null && anotherAcb.getId() != null
+                && this.getId().longValue() == anotherAcb.getId().longValue()) {
+            return true;
+        }
+
+        if (!StringUtils.isEmpty(this.getName()) && !StringUtils.isEmpty(anotherAcb.getName())
+                && this.getName().equalsIgnoreCase(anotherAcb.getName())) {
+            return true;
+        }
+
+        if (!StringUtils.isEmpty(this.getAcbCode()) && !StringUtils.isEmpty(anotherAcb.getAcbCode())
+                && this.getAcbCode().equalsIgnoreCase(anotherAcb.getAcbCode())) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        if (this.getId() != null) {
+            return this.getId().hashCode();
+        }
+
+        if (!StringUtils.isEmpty(this.getName())) {
+            return this.getName().hashCode();
+        }
+
+        if (!StringUtils.isEmpty(this.getAcbCode())) {
+            return this.getAcbCode().hashCode();
+        }
+        return -1;
+    }
 }
