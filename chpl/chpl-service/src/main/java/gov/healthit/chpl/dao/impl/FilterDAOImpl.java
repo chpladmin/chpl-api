@@ -131,25 +131,6 @@ public class FilterDAOImpl extends BaseDAOImpl implements FilterDAO {
         return entity;
     }
 
-    // private UserEntity getUserEntityById(final Long userId) throws EntityRetrievalException {
-    // Query query = entityManager.createQuery(
-    // "from UserEntity where (NOT deleted = true) " + "AND (user_id = :userid) ", UserEntity.class);
-    // query.setParameter("userid", userId);
-    // List<UserEntity> result = query.getResultList();
-    //
-    // if (result == null || result.size() == 0) {
-    // String msg = String.format(errorMessageUtil.getMessage("user.notFound"));
-    // throw new EntityRetrievalException(msg);
-    // } else if (result.size() > 1) {
-    // throw new EntityRetrievalException("Data error. Duplicate user id in database.");
-    // }
-    //
-    // if (result.size() == 0) {
-    // return null;
-    // }
-    // return result.get(0);
-    // }
-
     private FilterTypeEntity getFilterTypeEntityById(final Long filterTypeId) throws EntityRetrievalException {
         Query query = entityManager.createQuery(
                 "from FilterTypeEntity where (NOT deleted = true) " + "AND (id = :filterTypeId) ",
