@@ -8,6 +8,11 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
+/**
+ * Give warnings for Inpatient 2014 Listings with mismatched G1/G2 issues.
+ * @author alarned
+ *
+ */
 @Component("inpatientG1G2RequiredData2014Reviewer")
 public class InpatientG1G2RequiredData2014Reviewer implements Reviewer {
     private static final String[] G1_COMPLEMENTARY_CERTS = {
@@ -31,7 +36,7 @@ public class InpatientG1G2RequiredData2014Reviewer implements Reviewer {
     @Autowired private ErrorMessageUtil msgUtil;
 
     @Override
-    public void review(CertifiedProductSearchDetails listing) {
+    public void review(final CertifiedProductSearchDetails listing) {
      // check (g)(1)
         boolean hasG1Cert = false;
         for (CertificationResult certCriteria : listing.getCertificationResults()) {
@@ -50,7 +55,7 @@ public class InpatientG1G2RequiredData2014Reviewer implements Reviewer {
             }
 
             if (!hasAtLeastOneCertPartner) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingG1Related"));
+                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.missingG1Related"));
             }
         }
 
@@ -62,17 +67,17 @@ public class InpatientG1G2RequiredData2014Reviewer implements Reviewer {
             }
         }
         if (hasG2Cert) {
-            boolean hasG2Complement = false;
-            for (int i = 0; i < G2_COMPLEMENTARY_CERTS.length && !hasG2Complement; i++) {
+            boolean hasAtLeastOneCertPartner = false;
+            for (int i = 0; i < G2_COMPLEMENTARY_CERTS.length && !hasAtLeastOneCertPartner; i++) {
                 for (CertificationResult certCriteria : listing.getCertificationResults()) {
                     if (certCriteria.getNumber().equals(G2_COMPLEMENTARY_CERTS[i]) && certCriteria.isSuccess()) {
-                        hasG2Complement = true;
+                        hasAtLeastOneCertPartner = true;
                     }
                 }
             }
 
-            if (!hasG2Complement) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingG2Related"));
+            if (!hasAtLeastOneCertPartner) {
+                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.missingG2Related"));
             }
         }
 
