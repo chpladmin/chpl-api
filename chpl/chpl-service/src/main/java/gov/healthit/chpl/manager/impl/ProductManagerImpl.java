@@ -73,8 +73,14 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
 
     @Override
     @Transactional(readOnly = true)
+    public ProductDTO getById(final Long id, final boolean allowDeleted) throws EntityRetrievalException {
+        return productDao.getById(id, allowDeleted);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public ProductDTO getById(final Long id) throws EntityRetrievalException {
-        return productDao.getById(id);
+        return getById(id, false);
     }
 
     @Override

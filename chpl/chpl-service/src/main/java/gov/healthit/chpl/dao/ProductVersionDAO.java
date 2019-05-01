@@ -19,6 +19,8 @@ public interface ProductVersionDAO {
 
     ProductVersionDTO getById(Long id) throws EntityRetrievalException;
 
+    ProductVersionDTO getById(Long id, boolean allowDeleted) throws EntityRetrievalException;
+
     List<ProductVersionDTO> getByProductId(Long productId);
 
     List<ProductVersionDTO> getByProductIds(List<Long> productId);

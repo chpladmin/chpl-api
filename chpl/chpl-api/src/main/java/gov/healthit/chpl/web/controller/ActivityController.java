@@ -303,7 +303,7 @@ public class ActivityController {
     public List<ActivityMetadata> metadataForProductById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
-        productManager.getById(id); // returns 404 if bad id
+        productManager.getById(id, true); //allows getting activity for deleted product
 
         //if one of start of end is provided then the other must also be provided.
         //if neither is provided then query all dates
@@ -343,7 +343,7 @@ public class ActivityController {
     public List<ActivityMetadata> metadataForVersionById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
-        versionManager.getById(id); // returns 404 if bad id
+        versionManager.getById(id, true); //allows getting activity for deleted version
 
         //if one of start of end is provided then the other must also be provided.
         //if neither is provided then query all dates
