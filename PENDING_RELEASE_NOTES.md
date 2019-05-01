@@ -5,5 +5,6 @@ _Date TBD_
 ### New Features
 * Added endpoint /collections/decertified-developers to improve response time getting that data. This endpoint will eventually replace /decertifications/developers which has been deprecated.
 * Updated security for edit/split/merge of developers, products, and versions
+* Updated product and version activity metadata to parse activity for merges and splits; better parsing of product and developer names if they have been deleted.
 
 ---

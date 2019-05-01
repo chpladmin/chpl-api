@@ -25,6 +25,8 @@ public interface ProductDAO {
 
     ProductDTO getById(Long id) throws EntityRetrievalException;
 
+    ProductDTO getById(Long id, boolean includeDeleted) throws EntityRetrievalException;
+
     List<ProductDTO> getByDeveloper(Long vendorId);
 
     List<ProductDTO> getByDevelopers(List<Long> vendorIds);
