@@ -596,7 +596,7 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
                 CertifiedProductSearchDetails afterListing = cpdManager
                         .getCertifiedProductDetails(affectedListing.getId());
                 CertifiedProductSearchDetails beforeListing = beforeListingDetails.get(afterListing.getId());
-                activityManager.addActivity(ActivityConcept.DEVELOPER, beforeListing.getId(),
+                activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, beforeListing.getId(),
                         "Updated certified product " + afterListing.getChplProductNumber() + ".", beforeListing,
                         afterListing);
             }
