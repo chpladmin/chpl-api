@@ -145,8 +145,9 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
 
     @Override
     @Transactional(readOnly = true)
-    public DeveloperDTO getById(final Long id) throws EntityRetrievalException {
-        DeveloperDTO developer = developerDao.getById(id);
+    public DeveloperDTO getById(final Long id, final boolean allowDeleted)
+            throws EntityRetrievalException {
+        DeveloperDTO developer = developerDao.getById(id, allowDeleted);
         List<CertificationBodyDTO> availableAcbs = resourcePermissions.getAllAcbsForCurrentUser();
         if (availableAcbs == null || availableAcbs.size() == 0) {
             availableAcbs = acbManager.getAll();
@@ -170,6 +171,12 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
             }
         }
         return developer;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public DeveloperDTO getById(final Long id) throws EntityRetrievalException {
+        return getById(id, false);
     }
 
     @Override

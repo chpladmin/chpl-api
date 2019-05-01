@@ -263,7 +263,7 @@ public class ActivityController {
     public List<ActivityMetadata> metadataForDeveloperById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
-        developerManager.getById(id); // returns 404 if bad id
+        developerManager.getById(id, true); // allows getting activity for deleted developer
 
         //if one of start of end is provided then the other must also be provided.
         //if neither is provided then query all dates
