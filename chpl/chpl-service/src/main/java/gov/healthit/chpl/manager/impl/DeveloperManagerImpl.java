@@ -256,10 +256,6 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
                 && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
             String msg = msgUtil.getMessage("developer.statusChangeNotAllowedWithoutAdmin");
             throw new EntityCreationException(msg);
-        } else if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
-                && !newDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-            // if the developer is not active and not going to be active only its current status can be updated
-            updateStatusHistory(beforeDev, updatedDev);
         } else {
             /*
              * Check to see that the Developer's website is valid.
@@ -274,19 +270,10 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
             if (beforeDev.getContact() != null && beforeDev.getContact().getId() != null) {
                 updatedDev.getContact().setId(beforeDev.getContact().getId());
             }
-            // if either the before or updated statuses are active and the user is
-            // ROLE_ADMIN or ROLE_ONC
-            // OR if before status is active and user is not ROLE_ADMIN - proceed
-            if (((currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
-                    || newDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()))
-                    && (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()))
-                    || (currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
-                            && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc())) {
 
-                developerDao.update(updatedDev);
-                updateStatusHistory(beforeDev, updatedDev);
-                createOrUpdateTransparencyMappings(updatedDev);
-            }
+            developerDao.update(updatedDev);
+            updateStatusHistory(beforeDev, updatedDev);
+            createOrUpdateTransparencyMappings(updatedDev);
         }
         DeveloperDTO after = getById(updatedDev.getId());
         activityManager.addActivity(ActivityConcept.DEVELOPER, after.getId(),
