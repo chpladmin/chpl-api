@@ -609,7 +609,25 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
             }
         }
 
-        return getById(createdDeveloper.getId());
+        //the split is complete - log split activity
+        //we want to have a record of the split when looking at either the before or after developer
+        //so we need two activity records put in the table - one associated with each developer
+
+        //get the original developer object from the db to make sure it's all filled in
+        DeveloperDTO origDeveloper = getById(oldDeveloper.getId());
+        DeveloperDTO afterDeveloper = getById(createdDeveloper.getId());
+        List<DeveloperDTO> splitDevelopers = new ArrayList<DeveloperDTO>();
+        splitDevelopers.add(origDeveloper);
+        splitDevelopers.add(afterDeveloper);
+        activityManager.addActivity(ActivityConcept.DEVELOPER, origDeveloper.getId(),
+                "Split developer " + origDeveloper.getName() + " into " + origDeveloper.getName()
+                + " and " + afterDeveloper.getName(),
+                origDeveloper, splitDevelopers);
+        activityManager.addActivity(ActivityConcept.DEVELOPER, afterDeveloper.getId(),
+                "Split developer " + origDeveloper.getName() + " into " + origDeveloper.getName()
+                + " and " + afterDeveloper.getName(),
+                origDeveloper, splitDevelopers);
+        return afterDeveloper;
     }
 
     /**

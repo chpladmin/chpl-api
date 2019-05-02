@@ -227,7 +227,7 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
         for (CertifiedProductDTO affectedCp : affectedCps) {
             // have to get the cpdetails for before and after code update
             // because that is object sent into activity reports
-            CertifiedProductSearchDetails beforeProduct = cpdManager.getCertifiedProductDetails(affectedCp.getId());
+            CertifiedProductSearchDetails beforeListing = cpdManager.getCertifiedProductDetails(affectedCp.getId());
             // make sure each cp listing associated with the newProduct ->
             // version is owned by an ACB the user has access to
             boolean hasAccessToAcb = false;
@@ -238,13 +238,13 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
             }
             if (!hasAccessToAcb) {
                 throw new AccessDeniedException(
-                        msgUtil.getMessage("acb.accessDenied.listingUpdate", beforeProduct.getChplProductNumber(),
-                                beforeProduct.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY)));
+                        msgUtil.getMessage("acb.accessDenied.listingUpdate", beforeListing.getChplProductNumber(),
+                                beforeListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY)));
             }
 
             // make sure the updated CHPL product number is unique and that the
             // new product code is valid
-            String chplNumber = beforeProduct.getChplProductNumber();
+            String chplNumber = beforeListing.getChplProductNumber();
             if (!chplProductNumberUtil.isLegacy(chplNumber)) {
                 ChplProductNumberParts parts = chplProductNumberUtil.parseChplProductNumber(chplNumber);
                 String potentialChplNumber = chplProductNumberUtil.getChplProductNumber(parts.getEditionCode(),
@@ -265,13 +265,30 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
 
             // do the update and add activity
             cpDao.update(affectedCp);
-            CertifiedProductSearchDetails afterProduct = cpdManager.getCertifiedProductDetails(affectedCp.getId());
-            activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, beforeProduct.getId(),
-                    "Updated certified product " + afterProduct.getChplProductNumber() + ".", beforeProduct,
-                    afterProduct);
+            CertifiedProductSearchDetails afterListing = cpdManager.getCertifiedProductDetails(affectedCp.getId());
+            activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, beforeListing.getId(),
+                    "Updated certified product " + afterListing.getChplProductNumber() + ".", beforeListing,
+                    afterListing);
         }
 
-        return getById(createdProduct.getId());
+        //the split is complete - log split activity
+        //we want to have a record of the split when looking at either the before or after product
+        //so we need two activity records put in the table - one associated with each product
+
+        //getting the original product object from the db to make sure it's all filled in
+        ProductDTO origProduct = getById(oldProduct.getId());
+        ProductDTO afterProduct = getById(createdProduct.getId());
+        List<ProductDTO> splitProducts = new ArrayList<ProductDTO>();
+        splitProducts.add(origProduct);
+        splitProducts.add(afterProduct);
+        activityManager.addActivity(ActivityConcept.PRODUCT, origProduct.getId(),
+                "Split product " + origProduct.getName() + " into " + origProduct.getName() + " and " + afterProduct.getName(),
+                origProduct, splitProducts);
+        activityManager.addActivity(ActivityConcept.PRODUCT, afterProduct.getId(),
+                "Split product " + origProduct.getName() + " into " + origProduct.getName() + " and " + afterProduct.getName(),
+                origProduct, splitProducts);
+
+        return afterProduct;
     }
 
     private ProductDTO updateProduct(final ProductDTO dto)
