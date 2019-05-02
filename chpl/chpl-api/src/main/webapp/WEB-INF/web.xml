@@ -41,6 +41,21 @@
     	<url-pattern>/FileUpload</url-pattern>
 	</servlet-mapping>
 	
+	<servlet>
+ 		<servlet-name>ff4j-console</servlet-name>
+ 		<servlet-class>org.ff4j.web.FF4jDispatcherServlet</servlet-class>
+ 		<init-param>
+  			<param-name>ff4jProvider</param-name>
+  			<param-value>gov.healthit.chpl.ChplFF4JProvider</param-value>
+ 		</init-param>
+ 		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<servlet-mapping>
+ 		<servlet-name>ff4j-console</servlet-name>
+ 		<url-pattern>/ff4j-console/*</url-pattern>
+	</servlet-mapping>
+
 	<context-param>
 	    <param-name>contextClass</param-name>
 	    <param-value>
