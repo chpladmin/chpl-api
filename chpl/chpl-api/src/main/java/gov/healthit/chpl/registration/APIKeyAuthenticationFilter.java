@@ -30,7 +30,7 @@ public class APIKeyAuthenticationFilter extends GenericFilterBean {
      * Requests that do not require an API Key.
      */
     public static final String[] ALLOWED_REQUEST_PATHS = {
-            "/api-docs", "/system-status", "/status", "/cache_status", "/monitoring"
+            "/api-docs", "/system-status", "/status", "/cache_status", "/monitoring", "/ff4j-console", "/features"
     };
 
     private ApiKeyManager apiKeyManager;
