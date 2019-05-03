@@ -257,7 +257,7 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get metadata about auditable records in the system for a specific developer.",
-            notes = "A start and end date may optionally be provided to limit activity results.")
+            notes = "A start or end date may optionally be provided to limit activity results.")
     @RequestMapping(value = "/metadata/developers/{id:^-?\\d+$}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForDeveloperById(@PathVariable("id") final Long id,
@@ -273,10 +273,10 @@ public class ActivityController {
             validateActivityDates(start, end);
             startDate = new Date(start);
             endDate = new Date(end);
-        } else if (start == null && end != null) {
-            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
-        } else if (start != null && end == null) {
-            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
+        } else if (start != null) {
+            startDate = new Date(start);
+        } else if (end != null) {
+            endDate = new Date(end);
         }
 
         return activityMetadataManager.getActivityMetadataByObject(
@@ -297,7 +297,7 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get metadata about auditable records in the system for a specific product.",
-            notes = "A start and end date may optionally be provided to limit activity results.")
+            notes = "A start or end date may optionally be provided to limit activity results.")
     @RequestMapping(value = "/metadata/products/{id:^-?\\d+$}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForProductById(@PathVariable("id") final Long id,
@@ -313,10 +313,10 @@ public class ActivityController {
             validateActivityDates(start, end);
             startDate = new Date(start);
             endDate = new Date(end);
-        } else if (start == null && end != null) {
-            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
-        } else if (start != null && end == null) {
-            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
+        } else if (start != null) {
+            startDate = new Date(start);
+        } else if (end != null) {
+            endDate = new Date(end);
         }
 
         return activityMetadataManager.getActivityMetadataByObject(
@@ -337,7 +337,7 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get metadata about auditable records in the system for a specific version.",
-            notes = "A start and end date may optionally be provided to limit activity results.")
+            notes = "A start or end date may optionally be provided to limit activity results.")
     @RequestMapping(value = "/metadata/versions/{id:^-?\\d+$}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForVersionById(@PathVariable("id") final Long id,
@@ -353,10 +353,10 @@ public class ActivityController {
             validateActivityDates(start, end);
             startDate = new Date(start);
             endDate = new Date(end);
-        } else if (start == null && end != null) {
-            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
-        } else if (start != null && end == null) {
-            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
+        } else if (start != null) {
+            startDate = new Date(start);
+        } else if (end != null) {
+            endDate = new Date(end);
         }
 
         return activityMetadataManager.getActivityMetadataByObject(
