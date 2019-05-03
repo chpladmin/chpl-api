@@ -27,9 +27,13 @@ public class MergeActionPermissions extends ActionPermissions {
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             try {
                 List<Long> versionIds = (List<Long>) obj;
-                // All versions will have the same developer, so we only need to check the first one
-                ProductVersionDTO versionDTO = versionDAO.getById(versionIds.get(0));
-                return getResourcePermissions().isDeveloperActive(versionDTO.getDeveloperId());
+                for (Long versionId : versionIds) {
+                    ProductVersionDTO versionDTO = versionDAO.getById(versionId);
+                    if (!getResourcePermissions().isDeveloperActive(versionDTO.getDeveloperId())) {
+                        return false;
+                    }
+                }
+                return true;
             } catch (Exception e) {
                 return false;
             }
