@@ -26,11 +26,15 @@ public class MergeActionPermissions extends ActionPermissions {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             try {
-                // Need to make sure developer for products to be merged is active
+                // Need to make sure all developers for products to be merged are active
                 List<Long> productIds = (List<Long>) obj;
-                // All products will have the same developer, so we only need to check the first one
-                ProductDTO productDTO = productDAO.getById(productIds.get(0));
-                return getResourcePermissions().isDeveloperActive(productDTO.getDeveloperId());
+                for (Long productId : productIds) {
+                    ProductDTO productDTO = productDAO.getById(productId);
+                    if (!getResourcePermissions().isDeveloperActive(productDTO.getDeveloperId())) {
+                        return false;
+                    }
+                }
+                return true;
             } catch (Exception e) {
                 return false;
             }
