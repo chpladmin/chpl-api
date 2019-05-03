@@ -46,14 +46,18 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
+import gov.healthit.chpl.auth.filter.FF4jAuthenticationFilter;
 import gov.healthit.chpl.auth.filter.JWTAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @PropertySource("classpath:/environment.properties")
-@ComponentScan(basePackages = { "gov.healthit.chpl.auth.**" }, excludeFilters = {
-        @ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class) })
+@ComponentScan(basePackages = {
+        "gov.healthit.chpl.auth.**"
+}, excludeFilters = {
+        @ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)
+})
 public class CHPLAuthenticationSecurityConfig extends WebSecurityConfigurerAdapter implements EnvironmentAware {
 
     private static final Logger logger = LogManager.getLogger(CHPLAuthenticationSecurityConfig.class);
@@ -84,7 +88,7 @@ public class CHPLAuthenticationSecurityConfig extends WebSecurityConfigurerAdapt
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         logger.info("configure AuthenticationManagerBuilder");
         auth.inMemoryAuthentication().withUser("user").password("password").roles("USER").and().withUser("admin")
-        .password("password").roles("USER", "ADMIN");
+                .password("password").roles("USER", "ADMIN");
     }
 
     @Override
@@ -93,16 +97,16 @@ public class CHPLAuthenticationSecurityConfig extends WebSecurityConfigurerAdapt
 
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 
-        .exceptionHandling().and().anonymous().and().servletApi().and()
-        // .headers().cacheControl().and()
-        .authorizeRequests().antMatchers("/favicon.ico").permitAll().antMatchers("/resources/**").permitAll()
+                .exceptionHandling().and().anonymous().and().servletApi().and()
+                // .headers().cacheControl().and()
+                .authorizeRequests().antMatchers("/favicon.ico").permitAll().antMatchers("/resources/**").permitAll()
 
-        // allow anonymous resource requests
-        .antMatchers("/").permitAll().and()
-        // custom Token based authentication based on the header
-        // previously given to the client
-        .addFilterBefore(new JWTAuthenticationFilter(userConverter), UsernamePasswordAuthenticationFilter.class)
-        .headers().cacheControl();
+                // allow anonymous resource requests
+                .antMatchers("/").permitAll().and()
+                // custom Token based authentication based on the header
+                // previously given to the client
+                .addFilterBefore(new JWTAuthenticationFilter(userConverter), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new FF4jAuthenticationFilter(), JWTAuthenticationFilter.class).headers().cacheControl();
 
     }
 
@@ -253,7 +257,6 @@ public class CHPLAuthenticationSecurityConfig extends WebSecurityConfigurerAdapt
         return bean;
     }
 
-
     @Bean
     public AclPermissionCacheOptimizer aclPermissionCacheOptimizer() {
         logger.info("Get AclPermissionCacheOptimizer");
@@ -266,13 +269,13 @@ public class CHPLAuthenticationSecurityConfig extends WebSecurityConfigurerAdapt
         logger.info("Get DefaultMethodSecurityExpressionHandler");
         DefaultMethodSecurityExpressionHandler bean = new DefaultMethodSecurityExpressionHandler();
         bean.setPermissionEvaluator(permissionEvaluator());
-        //Commenting this out allows for our custom Postfilter'ing to work
-        //bean.setPermissionCacheOptimizer(aclPermissionCacheOptimizer());
+        // Commenting this out allows for our custom Postfilter'ing to work
+        // bean.setPermissionCacheOptimizer(aclPermissionCacheOptimizer());
         return bean;
     }
 
     @Bean
-    public ReloadableResourceBundleMessageSource messageSource(){
+    public ReloadableResourceBundleMessageSource messageSource() {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
         messageSource.setBasename("classpath:/errors.auth");
         messageSource.setDefaultEncoding("UTF-8");

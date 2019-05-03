@@ -31,7 +31,7 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
     private FF4j ff4j;
 
     private static final String[] ALLOWED_REQUEST_PATHS = {
-            "/monitoring", "/ff4j-console", "/features"
+            "/monitoring", "/ff4j-console"
     };
 
     private JWTUserConverter userConverter;
