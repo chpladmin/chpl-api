@@ -272,18 +272,12 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
         }
 
         //the split is complete - log split activity
-        //we want to have a record of the split when looking at either the before or after product
-        //so we need two activity records put in the table - one associated with each product
-
         //getting the original product object from the db to make sure it's all filled in
         ProductDTO origProduct = getById(oldProduct.getId());
         ProductDTO afterProduct = getById(createdProduct.getId());
         List<ProductDTO> splitProducts = new ArrayList<ProductDTO>();
         splitProducts.add(origProduct);
         splitProducts.add(afterProduct);
-        activityManager.addActivity(ActivityConcept.PRODUCT, origProduct.getId(),
-                "Split product " + origProduct.getName() + " into " + origProduct.getName() + " and " + afterProduct.getName(),
-                origProduct, splitProducts);
         activityManager.addActivity(ActivityConcept.PRODUCT, afterProduct.getId(),
                 "Split product " + origProduct.getName() + " into " + origProduct.getName() + " and " + afterProduct.getName(),
                 origProduct, splitProducts);
