@@ -132,30 +132,13 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
     @Override
     @Transactional(readOnly = false)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
-            + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).MERGE)")
+            + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).MERGE, #productIdsToMerge)")
     public ProductDTO merge(final List<Long> productIdsToMerge, final ProductDTO toCreate)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 
         List<ProductDTO> beforeProducts = new ArrayList<ProductDTO>();
         for (Long productId : productIdsToMerge) {
             beforeProducts.add(productDao.getById(productId));
-        }
-
-        for (ProductDTO beforeProduct : beforeProducts) {
-            Long devId = beforeProduct.getDeveloperId();
-            DeveloperDTO dev = devDao.getById(devId);
-            DeveloperStatusEventDTO currDevStatus = dev.getStatus();
-            if (currDevStatus == null || currDevStatus.getStatus() == null) {
-                String msg = "The product " + beforeProduct.getName()
-                        + " cannot be merged since the status of developer " + dev.getName() + " cannot be determined.";
-                LOGGER.error(msg);
-                throw new EntityCreationException(msg);
-            } else if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-                String msg = "The product " + beforeProduct.getName() + " cannot be merged since the developer "
-                        + dev.getName() + " has a status of " + currDevStatus.getStatus().getStatusName();
-                LOGGER.error(msg);
-                throw new EntityCreationException(msg);
-            }
         }
 
         ProductDTO createdProduct = productDao.create(toCreate);
