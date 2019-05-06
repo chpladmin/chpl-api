@@ -370,6 +370,18 @@ public class ProductController {
         }
 
         ProductDTO toUpdate = productManager.getById(productId);
+        if (productInfo.getProduct().getOwnerHistory() != null) {
+            for (ProductOwner prevOwner : productInfo.getProduct().getOwnerHistory()) {
+                ProductOwnerDTO prevOwnerDTO = new ProductOwnerDTO();
+                prevOwnerDTO.setId(prevOwner.getId());
+                prevOwnerDTO.setProductId(toUpdate.getId());
+                DeveloperDTO dev = new DeveloperDTO();
+                dev.setId(prevOwner.getDeveloper().getDeveloperId());
+                prevOwnerDTO.setDeveloper(dev);
+                prevOwnerDTO.setTransferDate(prevOwner.getTransferDate());
+                toUpdate.getOwnerHistory().add(prevOwnerDTO);
+            }
+        }
         toUpdate.setDeveloperId(productInfo.getNewDeveloperId());
         return productManager.updateProductOwnership(toUpdate);
     }
