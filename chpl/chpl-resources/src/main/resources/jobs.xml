@@ -482,5 +482,14 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
+
+        <job>
+            <name>insertMissingSplitActivityJob</name>
+            <group>systemJobs</group>
+            <description>Add split activity for developers and products that was missing.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.InsertMissingSplitActivityJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
     </schedule>
 </job-scheduling-data>
