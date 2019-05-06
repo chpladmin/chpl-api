@@ -51,6 +51,26 @@
  		<load-on-startup>1</load-on-startup>
 	</servlet>
 	
+	<security-constraint>
+        <web-resource-collection>
+            <web-resource-name>ApplicationContent</web-resource-name>
+            <url-pattern>/ff4j-console/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>ff4jUser</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <security-role>
+        <description>
+            The role that is required to access the application
+        </description>
+        <role-name>ff4jUser</role-name>
+     </security-role>
+     <login-config>
+        <auth-method>BASIC</auth-method>
+        <realm-name>SecuredApp</realm-name>
+     </login-config>
+  
 	<servlet-mapping>
  		<servlet-name>ff4j-console</servlet-name>
  		<url-pattern>/ff4j-console/*</url-pattern>
@@ -74,7 +94,7 @@
 	    <dispatcher>REQUEST</dispatcher>
 	</filter-mapping>
 
-<!-- <filter>
+    <filter>
   		<filter-name>apiKeyAuthenticationFilter</filter-name>
   		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
 	</filter>
@@ -82,7 +102,7 @@
   		<filter-name>apiKeyAuthenticationFilter</filter-name>
   		<url-pattern>/*</url-pattern>
 	</filter-mapping>
--->
+
     <filter>
         <filter-name>javamelody</filter-name>
         <filter-class>net.bull.javamelody.MonitoringFilter</filter-class>

@@ -46,7 +46,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
-import gov.healthit.chpl.auth.filter.FF4jAuthenticationFilter;
 import gov.healthit.chpl.auth.filter.JWTAuthenticationFilter;
 
 @Configuration
@@ -106,7 +105,7 @@ public class CHPLAuthenticationSecurityConfig extends WebSecurityConfigurerAdapt
                 // custom Token based authentication based on the header
                 // previously given to the client
                 .addFilterBefore(new JWTAuthenticationFilter(userConverter), UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(new FF4jAuthenticationFilter(), JWTAuthenticationFilter.class).headers().cacheControl();
+                .headers().cacheControl();
 
     }
 

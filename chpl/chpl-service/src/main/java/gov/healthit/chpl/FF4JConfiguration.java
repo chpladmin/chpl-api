@@ -9,6 +9,8 @@ import javax.sql.DataSource;
 
 import org.ff4j.FF4j;
 import org.ff4j.audit.repository.JdbcEventRepository;
+import org.ff4j.cache.FF4JCacheManager;
+import org.ff4j.cache.FeatureCacheProviderEhCache;
 import org.ff4j.property.store.JdbcPropertyStore;
 import org.ff4j.store.JdbcFeatureStore;
 import org.ff4j.store.JdbcQueryBuilder;
@@ -34,6 +36,10 @@ public class FF4JConfiguration {
             JdbcEventRepository eventRepository = new JdbcEventRepository(ff4jDataSource());
             eventRepository.setQueryBuilder(new JdbcQueryBuilder("ff4j_", "", "openchpl"));
             ff4j.setEventRepository(new JdbcEventRepository(ff4jDataSource()));
+
+            FF4JCacheManager ff4jCache = new FeatureCacheProviderEhCache();
+            ff4j.cache(ff4jCache);
+
             return ff4j;
         } catch (NamingException | SQLException e) {
             return null;
