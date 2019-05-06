@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
@@ -18,9 +17,6 @@ public abstract class ActionPermissions {
 
     @Autowired
     private CertifiedProductDAO certifiedProductDAO;
-
-    @Autowired
-    private CertifiedProductSearchDAO certifiedProductSearchDAO;
 
     public abstract boolean hasAccess();
 
