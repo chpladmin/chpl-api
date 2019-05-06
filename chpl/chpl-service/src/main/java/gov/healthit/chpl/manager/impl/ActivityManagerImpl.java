@@ -487,7 +487,7 @@ public class ActivityManagerImpl extends SecuredManager implements ActivityManag
 
         if (event instanceof ProductActivityDetails && event.getNewData() != null) {
             JsonNode devIdNode = event.getNewData().get("developerId");
-            if(devIdNode != null) {
+            if (devIdNode != null) {
                 Long devId = devIdNode.asLong();
                 if (devId != null) {
                     try {
