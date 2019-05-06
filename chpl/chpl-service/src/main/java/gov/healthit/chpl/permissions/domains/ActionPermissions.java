@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
@@ -17,6 +18,9 @@ public abstract class ActionPermissions {
 
     @Autowired
     private CertifiedProductDAO certifiedProductDAO;
+
+    @Autowired
+    private CertifiedProductSearchDAO certifiedProductSearchDAO;
 
     public abstract boolean hasAccess();
 
@@ -45,6 +49,17 @@ public abstract class ActionPermissions {
     @Transactional(readOnly = true)
     public boolean doesCurrentUserHaveAccessToAllOfDevelopersListings(Long developerId) {
         List<CertifiedProductDetailsDTO> cpDtos = certifiedProductDAO.findByDeveloperId(developerId);
+        for (CertifiedProductDetailsDTO cpDto : cpDtos) {
+            if (!isAcbValidForCurrentUser(cpDto.getCertificationBodyId())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Transactional(readOnly = true)
+    public boolean doesCurrentUserHaveAccessToAllOfProductListings(Long productId) {
+        List<CertifiedProductDetailsDTO> cpDtos = certifiedProductDAO.getDetailsByProductId(productId);
         for (CertifiedProductDetailsDTO cpDto : cpDtos) {
             if (!isAcbValidForCurrentUser(cpDto.getCertificationBodyId())) {
                 return false;
