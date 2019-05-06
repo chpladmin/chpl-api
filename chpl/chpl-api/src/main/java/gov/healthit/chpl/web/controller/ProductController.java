@@ -152,9 +152,8 @@ public class ProductController {
             throw new InvalidArgumentsException("At least one product id must be provided in the request.");
         }
 
-        if (productInfo.getProduct() == null && productInfo.getNewDeveloperId() != null) {
-            // no new product is specified, so we just need to update the
-            // developer id
+        if (productInfo.getNewDeveloperId() != null) {
+            // new developer was sent in, update product ownership
             for (Long productId : productInfo.getProductIds()) {
                 result = updateProductOwnership(productInfo, productId);
                 responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
@@ -372,7 +371,7 @@ public class ProductController {
 
         ProductDTO toUpdate = productManager.getById(productId);
         toUpdate.setDeveloperId(productInfo.getNewDeveloperId());
-        return productManager.update(toUpdate);
+        return productManager.updateProductOwnership(toUpdate);
     }
     
     
