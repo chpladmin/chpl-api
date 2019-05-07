@@ -488,7 +488,7 @@ public class ProductManagerTest extends TestCase {
             fail(ex.getMessage());
         }
 
-        assertTrue(productCreateError);
+        assertFalse(productCreateError);
 
         SecurityContextHolder.getContext().setAuthentication(null);
     }

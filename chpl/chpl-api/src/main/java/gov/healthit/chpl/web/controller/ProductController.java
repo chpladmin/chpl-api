@@ -152,9 +152,8 @@ public class ProductController {
             throw new InvalidArgumentsException("At least one product id must be provided in the request.");
         }
 
-        if (productInfo.getProduct() == null && productInfo.getNewDeveloperId() != null) {
-            // no new product is specified, so we just need to update the
-            // developer id
+        if (updatingOwnerHistory(productInfo)) {
+            // new developer was sent in, update product ownership (will implicitly update product data, too)
             for (Long productId : productInfo.getProductIds()) {
                 result = updateProductOwnership(productInfo, productId);
                 responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
@@ -181,6 +180,11 @@ public class ProductController {
         return new ResponseEntity<Product>(new Product(updatedProduct), responseHeaders, HttpStatus.OK);
     }
 
+    private Boolean updatingOwnerHistory(UpdateProductsRequest request) {
+        return request.getNewDeveloperId() != null 
+                && !request.getNewDeveloperId().equals(request.getProduct().getOwner().getDeveloperId());
+    }
+    
     private Set<String> getDuplicateChplProductNumberErrorMessages(
             final List<DuplicateChplProdNumber> duplicateChplProdNumbers) {
 
@@ -371,8 +375,20 @@ public class ProductController {
         }
 
         ProductDTO toUpdate = productManager.getById(productId);
+        if (productInfo.getProduct().getOwnerHistory() != null) {
+            for (ProductOwner prevOwner : productInfo.getProduct().getOwnerHistory()) {
+                ProductOwnerDTO prevOwnerDTO = new ProductOwnerDTO();
+                prevOwnerDTO.setId(prevOwner.getId());
+                prevOwnerDTO.setProductId(toUpdate.getId());
+                DeveloperDTO dev = new DeveloperDTO();
+                dev.setId(prevOwner.getDeveloper().getDeveloperId());
+                prevOwnerDTO.setDeveloper(dev);
+                prevOwnerDTO.setTransferDate(prevOwner.getTransferDate());
+                toUpdate.getOwnerHistory().add(prevOwnerDTO);
+            }
+        }
         toUpdate.setDeveloperId(productInfo.getNewDeveloperId());
-        return productManager.update(toUpdate);
+        return productManager.updateProductOwnership(toUpdate);
     }
     
     
