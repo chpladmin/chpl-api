@@ -22,9 +22,11 @@ import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.DeveloperManager;
+import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.util.JSONUtils;
 
 /**
@@ -32,6 +34,9 @@ import gov.healthit.chpl.util.JSONUtils;
  * we were correctly adding activity for that action. This job is being temporarily
  * added so we can run it and it will add the missing activity. It is written such that
  * it may be run multiple times without adding duplicate activities.
+ *
+ * TODO: When removing this class also remember to remove the @Transational annotation in
+ * the create method of ActivityDAOImpl.
  * @author kekey
  *
  */
@@ -42,6 +47,9 @@ public class InsertMissingSplitActivityJob extends QuartzJob implements Interrup
 
     @Autowired
     private DeveloperManager devManager;
+
+    @Autowired
+    private ProductManager productManager;
 
     @Autowired
     private ActivityDAO activityDao;
@@ -82,27 +90,115 @@ public class InsertMissingSplitActivityJob extends QuartzJob implements Interrup
             LOGGER.error("Exception getting developer info to add to split activity.", ex);
         }
 
+        if (interrupted) {
+            return;
+        }
+
         //Product Split
         //11/26/18 MEDITECH 6.1 Emergency Department Management (database id 1503) was split to become MEDITECH 6.1 Emergency Department Management (database id 2991)
         //- User was jodigonzalez
         //- Yes the product names are identical.
+        try {
+            Calendar activityDate = Calendar.getInstance();
+            activityDate.set(2018, 10, 26, 17, 39, 24);
+            activityDate.set(Calendar.MILLISECOND, 0);
+            Long origProductId = 1503L;
+            Long newProductId = 2991L;
+            Long activityUserId = 5L;
+            ProductDTO origProduct = productManager.getById(origProductId);
+            ProductDTO afterProduct = productManager.getById(newProductId);
+            List<ProductDTO> splitProducts = new ArrayList<ProductDTO>();
+            splitProducts.add(origProduct);
+            splitProducts.add(afterProduct);
+            String activityDescription = "Split product " + origProduct.getName() + " into "
+                    + origProduct.getName() + " and " + afterProduct.getName();
 
-        //TODO
+            insertSplitActivityIfNotExists(activityDate.getTime(), newProductId,
+                    origProduct, splitProducts, activityDescription, activityUserId, ActivityConcept.PRODUCT);
+        } catch (EntityRetrievalException ex) {
+            LOGGER.error("Exception getting product info to add to split activity.", ex);
+        }
+
+        if (interrupted) {
+            return;
+        }
 
         //11/26/18 MEDITECH 6.1 Ambulatory  Electronic Health Record (database ID 2791) was split to become MEDITECH Expanse (6.16) Ambulatory (database ID 2990)
         //- User was jodigonzalez
+        try {
+            Calendar activityDate = Calendar.getInstance();
+            activityDate.set(2018, 10, 26, 15, 9, 57);
+            activityDate.set(Calendar.MILLISECOND, 0);
+            Long origProductId = 2791L;
+            Long newProductId = 2990L;
+            Long activityUserId = 5L;
+            ProductDTO origProduct = productManager.getById(origProductId);
+            ProductDTO afterProduct = productManager.getById(newProductId);
+            List<ProductDTO> splitProducts = new ArrayList<ProductDTO>();
+            splitProducts.add(origProduct);
+            splitProducts.add(afterProduct);
+            String activityDescription = "Split product " + origProduct.getName() + " into "
+                    + origProduct.getName() + " and " + afterProduct.getName();
 
-        //TODO
+            insertSplitActivityIfNotExists(activityDate.getTime(), newProductId,
+                    origProduct, splitProducts, activityDescription, activityUserId, ActivityConcept.PRODUCT);
+        } catch (EntityRetrievalException ex) {
+            LOGGER.error("Exception getting product info to add to split activity.", ex);
+        }
+
+        if (interrupted) {
+            return;
+        }
 
         //11/26/18 MEDITECH 6.1 Electronic Health  Record Core HCIS (database ID 2838) was split to become MEDITECH Expanse (6.16) Core HCIS (database ID 2986)
         //- User was jodigonzalez
+        try {
+            Calendar activityDate = Calendar.getInstance();
+            activityDate.set(2018, 10, 26, 14, 38, 14);
+            activityDate.set(Calendar.MILLISECOND, 0);
+            Long origProductId = 2838L;
+            Long newProductId = 2986L;
+            Long activityUserId = 5L;
+            ProductDTO origProduct = productManager.getById(origProductId);
+            ProductDTO afterProduct = productManager.getById(newProductId);
+            List<ProductDTO> splitProducts = new ArrayList<ProductDTO>();
+            splitProducts.add(origProduct);
+            splitProducts.add(afterProduct);
+            String activityDescription = "Split product " + origProduct.getName() + " into "
+                    + origProduct.getName() + " and " + afterProduct.getName();
 
-        //TODO
+            insertSplitActivityIfNotExists(activityDate.getTime(), newProductId,
+                    origProduct, splitProducts, activityDescription, activityUserId, ActivityConcept.PRODUCT);
+        } catch (EntityRetrievalException ex) {
+            LOGGER.error("Exception getting product info to add to split activity.", ex);
+        }
+
+        if (interrupted) {
+            return;
+        }
 
         //11/16/18 EpicCare Ambulatory EHR Suite (database ID 2916) was split to become EpicCare Ambulatory Base (database ID 2980)
         //- User was jodigonzalez
+        try {
+            Calendar activityDate = Calendar.getInstance();
+            activityDate.set(2018, 10, 16, 13, 19, 18);
+            activityDate.set(Calendar.MILLISECOND, 0);
+            Long origProductId = 2916L;
+            Long newProductId = 2980L;
+            Long activityUserId = 5L;
+            ProductDTO origProduct = productManager.getById(origProductId);
+            ProductDTO afterProduct = productManager.getById(newProductId);
+            List<ProductDTO> splitProducts = new ArrayList<ProductDTO>();
+            splitProducts.add(origProduct);
+            splitProducts.add(afterProduct);
+            String activityDescription = "Split product " + origProduct.getName() + " into "
+                    + origProduct.getName() + " and " + afterProduct.getName();
 
-        //TODO
+            insertSplitActivityIfNotExists(activityDate.getTime(), newProductId,
+                    origProduct, splitProducts, activityDescription, activityUserId, ActivityConcept.PRODUCT);
+        } catch (EntityRetrievalException ex) {
+            LOGGER.error("Exception getting product info to add to split activity.", ex);
+        }
     }
 
     @Override
@@ -110,9 +206,20 @@ public class InsertMissingSplitActivityJob extends QuartzJob implements Interrup
         this.interrupted = true;
     }
 
-    private void insertSplitActivityIfNotExists(Date activityDate, Long activityObjectId,
-            Object origData, Object newData, String activityDescription,
-            Long activityUserId, ActivityConcept concept) {
+    /**
+     * Check first if there is an activity for the object at the specific time.
+     * If there is not then insert the split activity.
+     * @param activityDate
+     * @param activityObjectId
+     * @param origData
+     * @param newData
+     * @param activityDescription
+     * @param activityUserId
+     * @param concept
+     */
+    private void insertSplitActivityIfNotExists(final Date activityDate, final Long activityObjectId,
+            final Object origData, final Object newData, final String activityDescription,
+            final Long activityUserId, final ActivityConcept concept) {
       //check if activity already exists
         List<ActivityDTO> existingActivity =
                 activityDao.findByObjectId(activityObjectId, concept, activityDate, activityDate);
@@ -135,7 +242,7 @@ public class InsertMissingSplitActivityJob extends QuartzJob implements Interrup
                 dto.setActivityObjectId(activityObjectId);
                 dto.setCreationDate(new Date());
                 dto.setLastModifiedDate(new Date());
-                dto.setLastModifiedUser(14L); //user id for dconiglio
+                dto.setLastModifiedUser(activityUserId);
                 dto.setDeleted(false);
                 activityDao.create(dto);
                 LOGGER.info("Inserted split activity for " + concept + " " + activityObjectId);
