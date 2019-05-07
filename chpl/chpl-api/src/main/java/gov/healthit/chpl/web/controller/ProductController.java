@@ -183,8 +183,7 @@ public class ProductController {
                 //Convert the dto list to domain objects
                 List<ProductOwner> origProductOwners = convertToProductOwnerDomainTypes(origProduct.getOwnerHistory());
                 List<ProductOwner> newProductOwners = request.getProduct().getOwnerHistory();
-                return !isProductOwnerListEqual(origProductOwners, newProductOwners) 
-                        || !isProductOwnerListEqual(newProductOwners, origProductOwners);
+                return !isProductOwnerListEqual(origProductOwners, newProductOwners);
             }
         } catch (EntityRetrievalException e) {
             return false;
@@ -198,6 +197,12 @@ public class ProductController {
                 return false;
             }
         }
+        for (ProductOwner po : owners2) {
+            if (!owners1.contains(po)) {
+                return false;
+            }
+        }
+        
         return true;
     }
     
