@@ -152,8 +152,8 @@ public class ProductController {
             throw new InvalidArgumentsException("At least one product id must be provided in the request.");
         }
 
-        if (productInfo.getNewDeveloperId() != null) {
-            // new developer was sent in, update product ownership
+        if (updatingOwnerHistory(productInfo)) {
+            // new developer was sent in, update product ownership (will implicitly update product data, too)
             for (Long productId : productInfo.getProductIds()) {
                 result = updateProductOwnership(productInfo, productId);
                 responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
@@ -180,6 +180,11 @@ public class ProductController {
         return new ResponseEntity<Product>(new Product(updatedProduct), responseHeaders, HttpStatus.OK);
     }
 
+    private Boolean updatingOwnerHistory(UpdateProductsRequest request) {
+        return request.getNewDeveloperId() != null 
+                && !request.getNewDeveloperId().equals(request.getProduct().getOwner().getDeveloperId());
+    }
+    
     private Set<String> getDuplicateChplProductNumberErrorMessages(
             final List<DuplicateChplProdNumber> duplicateChplProdNumbers) {
 
