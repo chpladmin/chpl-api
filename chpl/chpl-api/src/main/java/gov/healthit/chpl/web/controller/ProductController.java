@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.auth.user.UpdatePasswordRequest;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.Product;
@@ -151,24 +152,18 @@ public class ProductController {
         if (productInfo.getProductIds() == null || productInfo.getProductIds().size() == 0) {
             throw new InvalidArgumentsException("At least one product id must be provided in the request.");
         }
-
-        if (productInfo.getProduct() == null && productInfo.getNewDeveloperId() != null) {
-            // no new product is specified, so we just need to update the
-            // developer id
-            for (Long productId : productInfo.getProductIds()) {
-                result = updateProductOwnership(productInfo, productId);
-                responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
-            }
-        } else {
-            if (productInfo.getProductIds().size() > 1) {
-                // if a product was sent in, we need to do a "merge" of the new product and old products create a new 
-                // product with the rest of the passed in information
-                result = mergeProducts(productInfo);
-                responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
-            } else if (productInfo.getProductIds().size() == 1) {
+        if (productInfo.getProductIds().size() > 1) {
+            // if a product was sent in, we need to do a "merge" of the new product and old products create a new 
+            // product with the rest of the passed in information
+            result = mergeProducts(productInfo);
+            responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+        } else if (productInfo.getProductIds().size() == 1) {
+            if (didOwnerHistoryChange(productInfo)) {
+                result = updateProductOwnership(productInfo, productInfo.getProduct().getProductId());
+            } else {
                 result = updateProductInformation(productInfo);
-                responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
             }
+            responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
         }
 
         if (result == null) {
@@ -181,6 +176,43 @@ public class ProductController {
         return new ResponseEntity<Product>(new Product(updatedProduct), responseHeaders, HttpStatus.OK);
     }
 
+    private Boolean didOwnerHistoryChange(UpdateProductsRequest request) {
+        try {
+            ProductDTO origProduct = productManager.getById(request.getProduct().getProductId());
+            if (origProduct != null) {
+                //Convert the dto list to domain objects
+                List<ProductOwner> origProductOwners = convertToProductOwnerDomainTypes(origProduct.getOwnerHistory());
+                List<ProductOwner> newProductOwners = request.getProduct().getOwnerHistory();
+                return !isProductOwnerListEqual(origProductOwners, newProductOwners);
+            }
+        } catch (EntityRetrievalException e) {
+            return false;
+        }
+        return false;
+    }
+    
+    private Boolean isProductOwnerListEqual(List<ProductOwner> owners1, List<ProductOwner> owners2) {
+        for (ProductOwner po : owners1) {
+            if (!owners2.contains(po)) {
+                return false;
+            }
+        }
+        for (ProductOwner po : owners2) {
+            if (!owners1.contains(po)) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    private List<ProductOwner> convertToProductOwnerDomainTypes(List<ProductOwnerDTO> dtos) {
+        List<ProductOwner> productOwners = new ArrayList<ProductOwner>();
+        for (ProductOwnerDTO dto : dtos) {
+            productOwners.add(new ProductOwner(dto));
+        }
+        return productOwners;
+    }
     private Set<String> getDuplicateChplProductNumberErrorMessages(
             final List<DuplicateChplProdNumber> duplicateChplProdNumbers) {
 
@@ -371,8 +403,20 @@ public class ProductController {
         }
 
         ProductDTO toUpdate = productManager.getById(productId);
+        if (productInfo.getProduct().getOwnerHistory() != null) {
+            for (ProductOwner prevOwner : productInfo.getProduct().getOwnerHistory()) {
+                ProductOwnerDTO prevOwnerDTO = new ProductOwnerDTO();
+                prevOwnerDTO.setId(prevOwner.getId());
+                prevOwnerDTO.setProductId(toUpdate.getId());
+                DeveloperDTO dev = new DeveloperDTO();
+                dev.setId(prevOwner.getDeveloper().getDeveloperId());
+                prevOwnerDTO.setDeveloper(dev);
+                prevOwnerDTO.setTransferDate(prevOwner.getTransferDate());
+                toUpdate.getOwnerHistory().add(prevOwnerDTO);
+            }
+        }
         toUpdate.setDeveloperId(productInfo.getNewDeveloperId());
-        return productManager.update(toUpdate);
+        return productManager.updateProductOwnership(toUpdate);
     }
     
     
