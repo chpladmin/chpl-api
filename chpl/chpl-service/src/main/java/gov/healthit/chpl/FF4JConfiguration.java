@@ -17,8 +17,11 @@ import org.ff4j.store.JdbcQueryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+
 @Configuration
 public class FF4JConfiguration {
+    private static final String TABLE_PREFIX = "ff4j_";
 
     @Bean
     public FF4j getFF4j() {
@@ -26,15 +29,15 @@ public class FF4JConfiguration {
             FF4j ff4j = new FF4j();
 
             JdbcFeatureStore featureStore = new JdbcFeatureStore(ff4jDataSource());
-            featureStore.setQueryBuilder(new JdbcQueryBuilder("ff4j_", "", "openchpl"));
+            featureStore.setQueryBuilder(new JdbcQueryBuilder(TABLE_PREFIX, "", BaseDAOImpl.SCHEMA_NAME));
             ff4j.setFeatureStore(featureStore);
 
             JdbcPropertyStore propertyStore = new JdbcPropertyStore(ff4jDataSource());
-            propertyStore.setQueryBuilder(new JdbcQueryBuilder("ff4j_", "", "openchpl"));
+            propertyStore.setQueryBuilder(new JdbcQueryBuilder(TABLE_PREFIX, "", BaseDAOImpl.SCHEMA_NAME));
             ff4j.setPropertiesStore(propertyStore);
 
             JdbcEventRepository eventRepository = new JdbcEventRepository(ff4jDataSource());
-            eventRepository.setQueryBuilder(new JdbcQueryBuilder("ff4j_", "", "openchpl"));
+            eventRepository.setQueryBuilder(new JdbcQueryBuilder(TABLE_PREFIX, "", BaseDAOImpl.SCHEMA_NAME));
             ff4j.setEventRepository(new JdbcEventRepository(ff4jDataSource()));
 
             FF4JCacheManager ff4jCache = new FeatureCacheProviderEhCache();
