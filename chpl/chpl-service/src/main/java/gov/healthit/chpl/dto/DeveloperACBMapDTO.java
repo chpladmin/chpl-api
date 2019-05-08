@@ -2,9 +2,12 @@ package gov.healthit.chpl.dto;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import gov.healthit.chpl.entity.developer.DeveloperACBMapEntity;
 import gov.healthit.chpl.entity.developer.DeveloperACBTransparencyMapEntity;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DeveloperACBMapDTO implements Serializable {
     private static final long serialVersionUID = -1860729017532925654L;
     private Long id;

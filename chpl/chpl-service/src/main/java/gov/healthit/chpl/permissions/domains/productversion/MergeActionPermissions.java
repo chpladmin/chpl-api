@@ -1,5 +1,7 @@
 package gov.healthit.chpl.permissions.domains.productversion;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -7,11 +9,11 @@ import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
-@Component("productVersionUpdateActionPermissions")
-public class UpdateActionPermissions extends ActionPermissions {
+@Component("productVersionMergeActionPermissions")
+public class MergeActionPermissions extends ActionPermissions {
 
     @Autowired
-    private ProductVersionDAO productVersionDAO;
+    private ProductVersionDAO versionDAO;
 
     @Override
     public boolean hasAccess() {
@@ -20,16 +22,18 @@ public class UpdateActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess(Object obj) {
-        if (!(obj instanceof ProductVersionDTO)) {
-            return false;
-        } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
+        if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             try {
-                // This object is not completely populated, so we get a new one from the DB
-                ProductVersionDTO dto = (ProductVersionDTO) obj;
-                ProductVersionDTO versionDTO = productVersionDAO.getById(dto.getId());
-                return getResourcePermissions().isDeveloperActive(versionDTO.getDeveloperId());
+                List<Long> versionIds = (List<Long>) obj;
+                for (Long versionId : versionIds) {
+                    ProductVersionDTO versionDTO = versionDAO.getById(versionId);
+                    if (!getResourcePermissions().isDeveloperActive(versionDTO.getDeveloperId())) {
+                        return false;
+                    }
+                }
+                return true;
             } catch (Exception e) {
                 return false;
             }
@@ -37,4 +41,5 @@ public class UpdateActionPermissions extends ActionPermissions {
             return false;
         }
     }
+
 }

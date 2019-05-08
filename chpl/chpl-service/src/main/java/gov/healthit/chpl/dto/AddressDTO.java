@@ -3,9 +3,12 @@ package gov.healthit.chpl.dto;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import gov.healthit.chpl.entity.AddressEntity;
 import gov.healthit.chpl.util.Util;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AddressDTO implements Serializable {
     private static final long serialVersionUID = -5340045233309684152L;
     private Long id;

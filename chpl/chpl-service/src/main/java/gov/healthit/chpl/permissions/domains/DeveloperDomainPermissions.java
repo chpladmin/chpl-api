@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.permissions.domains.developer.CreateActionPermissions;
 import gov.healthit.chpl.permissions.domains.developer.GetAllWithDeletedActionPermissions;
+import gov.healthit.chpl.permissions.domains.developer.MergeActionPermissions;
+import gov.healthit.chpl.permissions.domains.developer.SplitActionPermissions;
 import gov.healthit.chpl.permissions.domains.developer.UpdateActionPermissions;
 
 @Component
@@ -13,15 +15,21 @@ public class DeveloperDomainPermissions extends DomainPermissions {
     public static final String GET_ALL_WITH_DELETED = "GET_ALL_WITH_DELETED";
     public static final String UPDATE = "UPDATE";
     public static final String CREATE = "CREATE";
+    public static final String MERGE = "MERGE";
+    public static final String SPLIT = "SPLIT";
 
     @Autowired
     public DeveloperDomainPermissions(
             @Qualifier("developerGetAllWithDeletedActionPermissions") GetAllWithDeletedActionPermissions getAllWithDeletedActionPermissions,
             @Qualifier("developerUpdateActionPermissions") UpdateActionPermissions updateActionPermissions,
-            @Qualifier("developerCreateActionPermissions") CreateActionPermissions createActionPermissions) {
+            @Qualifier("developerCreateActionPermissions") CreateActionPermissions createActionPermissions,
+            @Qualifier("developerMergeActionPermissions") MergeActionPermissions mergeActionPermissions,
+            @Qualifier("developerSplitActionPermissions") SplitActionPermissions splitActionPermissions) {
 
         getActionPermissions().put(GET_ALL_WITH_DELETED, getAllWithDeletedActionPermissions);
         getActionPermissions().put(UPDATE, updateActionPermissions);
         getActionPermissions().put(CREATE, createActionPermissions);
+        getActionPermissions().put(MERGE, mergeActionPermissions);
+        getActionPermissions().put(SPLIT, splitActionPermissions);
     }
 }

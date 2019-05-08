@@ -71,7 +71,7 @@ public class DecertifiedDeveloperDTOTest {
         acbList1.add(null);
         String developerStatus1 = String.valueOf(DeveloperStatusType.UnderCertificationBanByOnc);
         Long numMeaningfulUse1 = 66L;
-        DecertifiedDeveloperDTO dto1 = new DecertifiedDeveloperDTO(developerId1, acbList1, developerStatus1, decertDate,
+        DecertifiedDeveloperDTODeprecated dto1 = new DecertifiedDeveloperDTODeprecated(developerId1, acbList1, developerStatus1, decertDate,
                 numMeaningfulUse1);
         assertTrue(dto1 != null);
 
@@ -81,11 +81,11 @@ public class DecertifiedDeveloperDTOTest {
         acbList2.add(null);
         String developerStatus2 = String.valueOf(DeveloperStatusType.UnderCertificationBanByOnc);
         Long numMeaningfulUse2 = null;
-        DecertifiedDeveloperDTO dto2 = new DecertifiedDeveloperDTO(developerId2, acbList2, developerStatus2, decertDate,
+        DecertifiedDeveloperDTODeprecated dto2 = new DecertifiedDeveloperDTODeprecated(developerId2, acbList2, developerStatus2, decertDate,
                 numMeaningfulUse2);
         assertTrue(dto2 != null);
 
-        DecertifiedDeveloperDTO dto3 = new DecertifiedDeveloperDTO();
+        DecertifiedDeveloperDTODeprecated dto3 = new DecertifiedDeveloperDTODeprecated();
         Long developerId3 = -1L;
         List<Long> acbList3 = new ArrayList<Long>();
         acbList3.add(-1L);
@@ -104,10 +104,10 @@ public class DecertifiedDeveloperDTOTest {
         acbList4.add(null);
         String developerStatus4 = String.valueOf(DeveloperStatusType.UnderCertificationBanByOnc);
         Long numMeaningfulUse4 = null;
-        DecertifiedDeveloperDTO dto4 = new DecertifiedDeveloperDTO(developerId4, null, developerStatus4, decertDate,
+        DecertifiedDeveloperDTODeprecated dto4 = new DecertifiedDeveloperDTODeprecated(developerId4, null, developerStatus4, decertDate,
                 numMeaningfulUse4);
         assertTrue(dto4 != null);
-        DecertifiedDeveloperDTO dto5 = new DecertifiedDeveloperDTO(developerId4, acbList4, developerStatus4, decertDate,
+        DecertifiedDeveloperDTODeprecated dto5 = new DecertifiedDeveloperDTODeprecated(developerId4, acbList4, developerStatus4, decertDate,
                 numMeaningfulUse4);
         assertTrue(dto5 != null);
     }
