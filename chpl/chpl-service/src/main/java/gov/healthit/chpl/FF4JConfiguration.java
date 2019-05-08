@@ -14,14 +14,19 @@ import org.ff4j.cache.FeatureCacheProviderEhCache;
 import org.ff4j.property.store.JdbcPropertyStore;
 import org.ff4j.store.JdbcFeatureStore;
 import org.ff4j.store.JdbcQueryBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 
 @Configuration
 public class FF4JConfiguration {
     private static final String TABLE_PREFIX = "ff4j_";
+
+    @Autowired
+    private Environment env;
 
     @Bean
     public FF4j getFF4j() {
@@ -51,7 +56,7 @@ public class FF4JConfiguration {
 
     private DataSource ff4jDataSource() throws NamingException, SQLException {
         Context ctx = new InitialContext();
-        DataSource ds = (DataSource) ctx.lookup("java:/comp/env/jdbc/openchpl");
+        DataSource ds = (DataSource) ctx.lookup(env.getProperty("jndiName"));
         return (DataSource) ds;
     }
 
