@@ -147,7 +147,7 @@ public class ProductVersionManagerImpl extends SecuredManager implements Product
     })
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
             + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).MERGE, #versionIdsToMerge)")
-    public ProductVersionDTO merge(List<Long> versionIdsToMerge, ProductVersionDTO toCreate)
+    public ProductVersionDTO merge(final List<Long> versionIdsToMerge, final ProductVersionDTO toCreate)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 
         List<ProductVersionDTO> beforeVersions = new ArrayList<ProductVersionDTO>();
@@ -177,5 +177,19 @@ public class ProductVersionManagerImpl extends SecuredManager implements Product
                 beforeVersions, createdVersion);
 
         return createdVersion;
+    }
+
+    @Override
+    @Transactional(rollbackFor = {
+            EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class,
+            AccessDeniedException.class
+    })
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
+            + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).SPLIT, #oldVersion)")
+    public ProductVersionDTO split(final ProductVersionDTO oldVersion, final ProductVersionDTO newVersion,
+            final String newVersionCode, final List<CertifiedProductDTO> newVersionListings)
+            throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
+        //TODO: implement
+        return null;
     }
 }
