@@ -213,6 +213,7 @@ public class ProductTest extends TestCase {
         List<Long> updateProductIds = new ArrayList<Long>();
         updateProductIds.add(toEdit.getProductId());
         updateProductsRequest.setProductIds(updateProductIds);
+        updateProductsRequest.setNewDeveloperId(toEdit.getOwner().getDeveloperId());
         try {
             productController.updateProduct(updateProductsRequest);
         } catch (ValidationException ex) {

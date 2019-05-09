@@ -30,6 +30,7 @@ import gov.healthit.chpl.dao.AddressDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
+import gov.healthit.chpl.dto.DecertifiedDeveloperDTODeprecated;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
@@ -292,7 +293,7 @@ public class DeveloperDaoTest extends TestCase {
     @Test
     @Transactional
     public void getDecertifiedDevelopers() {
-        List<DecertifiedDeveloperDTO> dtoList = new ArrayList<DecertifiedDeveloperDTO>();
+        List<DecertifiedDeveloperDTODeprecated> dtoList = new ArrayList<DecertifiedDeveloperDTODeprecated>();
         dtoList = developerDao.getDecertifiedDevelopers();
         assertTrue(dtoList.size() == 1);
         assertTrue(dtoList.get(0).getDeveloperId() == -10L || dtoList.get(0).getDeveloperId() == -11L);

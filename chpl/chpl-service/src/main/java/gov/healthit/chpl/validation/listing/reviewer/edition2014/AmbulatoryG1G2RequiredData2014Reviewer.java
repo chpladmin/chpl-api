@@ -8,6 +8,11 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
+/**
+ * Give warning messages for mismatched G1/G2 criteria for 2014 Ambulatory Listings.
+ * @author alarned
+ *
+ */
 @Component("ambulatoryG1G2RequiredData2014Reviewer")
 public class AmbulatoryG1G2RequiredData2014Reviewer implements Reviewer {
     private static final String[] G1_COMPLEMENTARY_CERTS = {
@@ -31,7 +36,7 @@ public class AmbulatoryG1G2RequiredData2014Reviewer implements Reviewer {
     @Autowired private ErrorMessageUtil msgUtil;
 
     @Override
-    public void review(CertifiedProductSearchDetails listing) {
+    public void review(final CertifiedProductSearchDetails listing) {
         boolean hasG1Cert = false;
         for (CertificationResult certCriteria : listing.getCertificationResults()) {
             if (certCriteria.getNumber().equals(G1_2014) && certCriteria.isSuccess()) {
@@ -49,7 +54,7 @@ public class AmbulatoryG1G2RequiredData2014Reviewer implements Reviewer {
             }
 
             if (!hasAtLeastOneCertPartner) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingG1Related"));
+                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.missingG1Related"));
             }
         }
 
@@ -71,7 +76,7 @@ public class AmbulatoryG1G2RequiredData2014Reviewer implements Reviewer {
             }
 
             if (!hasAtLeastOneCertPartner) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingG2Related"));
+                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.missingG2Related"));
             }
         }
 

@@ -3,7 +3,7 @@ package gov.healthit.chpl.permissions.domains.productversion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dao.DeveloperDAO;
+import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
@@ -11,7 +11,7 @@ import gov.healthit.chpl.permissions.domains.ActionPermissions;
 public class UpdateActionPermissions extends ActionPermissions {
 
     @Autowired
-    private DeveloperDAO developerDao;
+    private ProductVersionDAO productVersionDAO;
 
     @Override
     public boolean hasAccess() {
@@ -26,8 +26,10 @@ public class UpdateActionPermissions extends ActionPermissions {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             try {
+                // This object is not completely populated, so we get a new one from the DB
                 ProductVersionDTO dto = (ProductVersionDTO) obj;
-                return getResourcePermissions().isDeveloperActive(dto.getDeveloperId());
+                ProductVersionDTO versionDTO = productVersionDAO.getById(dto.getId());
+                return getResourcePermissions().isDeveloperActive(versionDTO.getDeveloperId());
             } catch (Exception e) {
                 return false;
             }
