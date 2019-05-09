@@ -13,5 +13,6 @@ _Date TBD_
   * /activity/acb/{acbId}
   * /activity/atls
   * /activity/atl/{atlId}
+* Add endpoints to provide ability for users to save filters for admin reports
 
 ---
