@@ -153,10 +153,9 @@ public class CertificationBodyController {
         CertificationBodyDTO existingAcb = resourcePermissions.getAcbIfPermissionById(updatedAcb.getId());
         if (updatedAcb.isRetired()) {
             //we are retiring this ACB - no other updates can happen
-            CertificationBodyDTO toRetire = new CertificationBodyDTO();
-            toRetire.setRetirementDate(updatedAcb.getRetirementDate());
-            toRetire.setId(updatedAcb.getId());
-            acbManager.retire(toRetire);
+            existingAcb.setRetirementDate(updatedAcb.getRetirementDate());
+            existingAcb.setRetired(true);
+            acbManager.retire(existingAcb);
         } else {
             if (existingAcb.isRetired()) {
                 //unretire the ACB

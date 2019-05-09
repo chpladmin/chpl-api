@@ -11,5 +11,15 @@ _Date TBD_
 
 ### New features
 * Add endpoints to provide ability for users to save filters for admin report
+* Added endpoints for ACB and ATL activity metadata.
+  * /activity/metadata/acbs
+  * /activity/metadata/acb/{acbId}
+  * /activity/metadata/atls
+  * /activity/metadata/atl/{atlId}
+* Deprecated existing endpoints for ACB and ATL activity
+  * /activity/acbs
+  * /activity/acb/{acbId}
+  * /activity/atls
+  * /activity/atl/{atlId}
 
 ---

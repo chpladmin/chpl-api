@@ -306,7 +306,7 @@ public class ActivityManagerImpl extends SecuredManager implements ActivityManag
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     public List<ActivityDetails> getAllAtlActivity(final Date startDate, final Date endDate)
             throws JsonParseException, IOException {
-        List<ActivityDTO> atlActivity = activityDAO.findByConcept(ActivityConcept.ATL, startDate,
+        List<ActivityDTO> atlActivity = activityDAO.findByConcept(ActivityConcept.TESTING_LAB, startDate,
                 endDate);
 
         List<ActivityDetails> events = new ArrayList<ActivityDetails>();
