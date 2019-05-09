@@ -112,7 +112,8 @@ public class ProductControllerTest {
         UpdateProductsRequest request = new UpdateProductsRequest();
         request.setNewDeveloperId(-1L);
         request.setProductIds(productIds);
-
+        request.setProduct(productController.getProductById(-1L));
+        
         productController.updateProduct(request);
     }
 

@@ -67,4 +67,42 @@ public class ProductOwner implements Serializable {
     public void setTransferDate(final Long transferDate) {
         this.transferDate = transferDate;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((developer == null) ? 0 : developer.hashCode());
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((transferDate == null) ? 0 : transferDate.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ProductOwner other = (ProductOwner) obj;
+        if (developer == null) {
+            if (other.developer != null)
+                return false;
+        } else if (!developer.getDeveloperId().equals(other.developer.getDeveloperId()))
+            return false;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        if (transferDate == null) {
+            if (other.transferDate != null)
+                return false;
+        } else if (!transferDate.equals(other.transferDate))
+            return false;
+        return true;
+    }
+
 }
