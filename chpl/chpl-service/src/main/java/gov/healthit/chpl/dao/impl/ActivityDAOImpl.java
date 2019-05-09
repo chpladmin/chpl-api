@@ -171,7 +171,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
         }
 
         List<ActivityEntity> entities = getEntitiesByObjectIds(atlIds,
-                ActivityConcept.ATL, startDate, endDate);
+                ActivityConcept.TESTING_LAB, startDate, endDate);
 
         List<ActivityDTO> results = new ArrayList<ActivityDTO>();
         for (ActivityEntity entity : entities) {
