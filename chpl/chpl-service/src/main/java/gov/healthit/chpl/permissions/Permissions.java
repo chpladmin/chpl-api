@@ -13,6 +13,7 @@ import gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CorrectiveActionPlanDomainPermissions;
 import gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions;
 import gov.healthit.chpl.permissions.domains.DomainPermissions;
+import gov.healthit.chpl.permissions.domains.FilterDomainPermissions;
 import gov.healthit.chpl.permissions.domains.InvitationDomainPermissions;
 import gov.healthit.chpl.permissions.domains.JobDomainPermissions;
 import gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions;
@@ -44,6 +45,7 @@ public class Permissions {
     public static final String PRODUCT_VERSION = "PRODUCT_VERSION";
     public static final String SECURED_USER = "SECURED_USER";
     public static final String TESTING_LAB = "TESTING_LAB";
+    public static final String FILTER = "FILTER";
 
     private Map<String, DomainPermissions> domainPermissions = new HashMap<String, DomainPermissions>();
 
@@ -57,14 +59,14 @@ public class Permissions {
             final SurveillanceDomainPermissions surveillanceDomainPermissions,
             final CertificationBodyDomainPermissions certificationBodyDomainPermissions,
             final UserPermissionsDomainPermissions userPermissionsDomainPermissions,
-            final ActivityDomainPermissions activityDomainPermissions,
-            final JobDomainPermissions jobDomainPermissions,
+            final ActivityDomainPermissions activityDomainPermissions, final JobDomainPermissions jobDomainPermissions,
             final ProductDomainPermissions productDomainPermissions,
             final DeveloperDomainPermissions developerDomainPermissions,
             final ProductVersionDomainPermissions productVersionDomainPermissions,
             final SecuredUserDomainPermissions securedUserDomainPermissions,
             final SchedulerDomainPermissions schedulerDomainPermissions,
-            final TestingLabDomainPermissions testingLabDomainPermissions) {
+            final TestingLabDomainPermissions testingLabDomainPermissions,
+            final FilterDomainPermissions filterDomainPermissions) {
 
         domainPermissions.put(PENDING_SURVEILLANCE, pendingSurveillanceDomainPermissions);
         domainPermissions.put(CERTIFICATION_RESULTS, certificationResultsDomainPermissions);
@@ -83,6 +85,7 @@ public class Permissions {
         domainPermissions.put(SECURED_USER, securedUserDomainPermissions);
         domainPermissions.put(SCHEDULER, schedulerDomainPermissions);
         domainPermissions.put(TESTING_LAB, testingLabDomainPermissions);
+        domainPermissions.put(FILTER, filterDomainPermissions);
     }
 
     public boolean hasAccess(final String domain, final String action) {
