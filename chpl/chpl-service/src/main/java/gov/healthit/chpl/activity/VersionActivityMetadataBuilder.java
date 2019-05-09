@@ -75,8 +75,8 @@ public class VersionActivityMetadataBuilder extends ActivityMetadataBuilder {
 
         if (newVersion != null) {
             //if there is a new version that could mean the version
-            //was version and we want to fill in the metadata with the
-            //latest product info
+            //was updated and we want to fill in the metadata with the
+            //latest version info
             parseVersionMetadata(versionMetadata, newVersion);
         } else if (origVersion != null) {
             //if there is an original version but no new version
