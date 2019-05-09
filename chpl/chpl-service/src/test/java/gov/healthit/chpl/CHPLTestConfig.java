@@ -284,7 +284,8 @@ public class CHPLTestConfig implements EnvironmentAware {
     public DefaultMethodSecurityExpressionHandler expressionHandler() throws Exception {
         DefaultMethodSecurityExpressionHandler bean = new DefaultMethodSecurityExpressionHandler();
         bean.setPermissionEvaluator(permissionEvaluator());
-        bean.setPermissionCacheOptimizer(aclPermissionCacheOptimizer());
+        //Commenting this out allows for our custom Postfilter'ing to work
+        //bean.setPermissionCacheOptimizer(aclPermissionCacheOptimizer());
         return bean;
     }
 

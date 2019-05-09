@@ -24,7 +24,7 @@ public class GetAllActionPermissions extends ActionPermissions {
     // hasPermission(filterObject, 'read') or hasPermission(filterObject,
     // admin)")
     @Override
-    public boolean hasAccess(Object obj) {
+    public boolean hasAccess(final Object obj) {
         if (!(obj instanceof UserDTO)) {
             return false;
         } else {
