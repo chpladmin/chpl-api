@@ -258,10 +258,6 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
                 && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
             String msg = msgUtil.getMessage("developer.statusChangeNotAllowedWithoutAdmin");
             throw new EntityCreationException(msg);
-        } else if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
-                && !newDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-            // if the developer is not active and not going to be active only its current status can be updated
-            updateStatusHistory(beforeDev, updatedDev);
         } else {
             /*
              * Check to see that the Developer's website is valid.
@@ -276,19 +272,10 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
             if (beforeDev.getContact() != null && beforeDev.getContact().getId() != null) {
                 updatedDev.getContact().setId(beforeDev.getContact().getId());
             }
-            // if either the before or updated statuses are active and the user is
-            // ROLE_ADMIN or ROLE_ONC
-            // OR if before status is active and user is not ROLE_ADMIN - proceed
-            if (((currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
-                    || newDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()))
-                    && (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()))
-                    || (currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
-                            && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc())) {
 
-                developerDao.update(updatedDev);
-                updateStatusHistory(beforeDev, updatedDev);
-                createOrUpdateTransparencyMappings(updatedDev);
-            }
+            developerDao.update(updatedDev);
+            updateStatusHistory(beforeDev, updatedDev);
+            createOrUpdateTransparencyMappings(updatedDev);
         }
         DeveloperDTO after = getById(updatedDev.getId());
         activityManager.addActivity(ActivityConcept.DEVELOPER, after.getId(),
@@ -401,7 +388,7 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
 
     @Override
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
-            + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).MERGE)")
+            + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).MERGE, #developerIdsToMerge)")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
@@ -427,22 +414,6 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
                 developerIdsToMerge, developerToCreate.getDeveloperCode());
         if (duplicateChplProdNumbers.size() != 0) {
             throw new ValidationException(getDuplicateChplProductNumberErrorMessages(duplicateChplProdNumbers), null);
-        }
-
-        // check for any non-active developers and throw an error if any are found
-        for (DeveloperDTO beforeDeveloper : beforeDevelopers) {
-            DeveloperStatusEventDTO currDeveloperStatus = beforeDeveloper.getStatus();
-            if (currDeveloperStatus == null || currDeveloperStatus.getStatus() == null) {
-                String msg = "Cannot merge developer " + beforeDeveloper.getName()
-                        + " because their current status cannot be determined.";
-                LOGGER.error(msg);
-                throw new EntityCreationException(msg);
-            } else if (!currDeveloperStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-                String msg = "Cannot merge developer " + beforeDeveloper.getName() + " with a status of "
-                        + currDeveloperStatus.getStatus().getStatusName();
-                LOGGER.error(msg);
-                throw new EntityCreationException(msg);
-            }
         }
 
         // check if the transparency attestation for each developer is conflicting
@@ -534,17 +505,6 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
         Set<String> devErrors = creationValidator.validate(developerToCreate);
         if (devErrors != null && devErrors.size() > 0) {
             throw new ValidationException(devErrors, null);
-        }
-
-        // if the user is an ACB then the developer must be Active otherwise the split is not allowed.
-        // ADMIN and ONC can perform a split no matter the developer's status
-        DeveloperStatusEventDTO currDevStatus = oldDeveloper.getStatus();
-        if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
-                && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
-            String msg = msgUtil.getMessage("developer.notActiveNotAdminCantSplit", Util.getUsername(),
-                    oldDeveloper.getName());
-            LOGGER.error(msg);
-            throw new EntityCreationException(msg);
         }
 
         // create the new developer and log activity
