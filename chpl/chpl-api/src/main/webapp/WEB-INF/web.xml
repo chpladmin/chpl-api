@@ -41,6 +41,41 @@
     	<url-pattern>/FileUpload</url-pattern>
 	</servlet-mapping>
 	
+	<servlet>
+ 		<servlet-name>ff4j-console</servlet-name>
+ 		<servlet-class>org.ff4j.web.FF4jDispatcherServlet</servlet-class>
+ 		<init-param>
+  			<param-name>ff4jProvider</param-name>
+  			<param-value>gov.healthit.chpl.ChplFF4JProvider</param-value>
+ 		</init-param>
+ 		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<security-constraint>
+        <web-resource-collection>
+            <web-resource-name>ApplicationContent</web-resource-name>
+            <url-pattern>/ff4j-console/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>ff4jUser</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <security-role>
+        <description>
+            The role that is required to access the application
+        </description>
+        <role-name>ff4jUser</role-name>
+     </security-role>
+     <login-config>
+        <auth-method>BASIC</auth-method>
+        <realm-name>SecuredApp</realm-name>
+     </login-config>
+  
+	<servlet-mapping>
+ 		<servlet-name>ff4j-console</servlet-name>
+ 		<url-pattern>/ff4j-console/*</url-pattern>
+	</servlet-mapping>
+
 	<context-param>
 	    <param-name>contextClass</param-name>
 	    <param-value>
@@ -59,7 +94,7 @@
 	    <dispatcher>REQUEST</dispatcher>
 	</filter-mapping>
 
-	<filter>
+    <filter>
   		<filter-name>apiKeyAuthenticationFilter</filter-name>
   		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
 	</filter>
