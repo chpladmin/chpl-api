@@ -59,6 +59,7 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.DimensionalDataManager;
+import gov.healthit.chpl.manager.FilterManager;
 import gov.healthit.chpl.manager.FuzzyChoicesManager;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
@@ -100,6 +101,9 @@ public class SearchViewController {
     @Lazy
     @Autowired
     private DeveloperManager developerManager;
+    
+    @Autowired
+    private FilterManager filterManager;
 
     @Autowired private FileUtils fileUtils;
 
@@ -1198,5 +1202,17 @@ public class SearchViewController {
         List<DecertifiedDeveloperResult> results = developerManager.getDecertifiedDevelopers();
         ddr.setDecertifiedDeveloperResults(results);
         return ddr;
+    }
+    
+    @ApiOperation(value = "Get all available filter type.")
+    @RequestMapping(value = "/data/filter_types", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody SearchOption getFilterTypes() {
+        Set<KeyValueModel> data = filterManager.getFilterTypes();
+        SearchOption result = new SearchOption();
+        result.setExpandable(false);
+        result.setData(data);
+        return result;
     }
 }
