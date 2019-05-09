@@ -9,8 +9,4 @@ _Date TBD_
   * /acbs/{id}/users
   * /atls/{id}/users
 
-### New Features
-* Added endpoint /collections/decertified-developers to improve response time getting that data. This endpoint will eventually replace /decertifications/developers which has been deprecated.
-* Updated security for edit/split/merge of developers, products, and versions
-
 ---
