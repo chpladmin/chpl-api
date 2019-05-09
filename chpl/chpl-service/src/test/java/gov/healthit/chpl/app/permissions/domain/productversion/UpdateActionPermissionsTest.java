@@ -15,6 +15,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.healthit.chpl.app.permissions.domain.ActionPermissionsBaseTest;
+import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
@@ -28,6 +29,9 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Mock
     private ResourcePermissions resourcePermissions;
+
+    @Mock
+    private ProductVersionDAO productVersionDAO;
 
     @InjectMocks
     private UpdateActionPermissions permissions;
@@ -70,6 +74,8 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
 
         DeveloperDTO dto = new DeveloperDTO();
         dto.setId(1l);
+
+        Mockito.when(productVersionDAO.getById(ArgumentMatchers.anyLong())).thenReturn(version);
 
         // If the current status is Active
         Mockito.when(resourcePermissions.isDeveloperActive(ArgumentMatchers.anyLong())).thenReturn(true);
