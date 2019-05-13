@@ -13,17 +13,22 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 public interface ActivityMetadataManager {
     List<ActivityMetadata> getCertificationBodyActivityMetadata(Date startDate, Date endDate)
             throws JsonParseException, IOException;
+
     List<ActivityMetadata> getCertificationBodyActivityMetadata(Long acbId, Date startDate, Date endDate)
             throws EntityRetrievalException, JsonParseException, IOException;
+
     List<ActivityMetadata> getTestingLabActivityMetadata(Date startDate, Date endDate)
             throws JsonParseException, IOException;
+
     List<ActivityMetadata> getTestingLabActivityMetadata(Long atlId, Date startDate, Date endDate)
             throws EntityRetrievalException, JsonParseException, IOException;
-    List<ActivityMetadata> getActivityMetadataByConcept(
-            ActivityConcept concept, Date startDate, Date endDate)
+
+    List<ActivityMetadata> getActivityMetadataByConcept(ActivityConcept concept, Date startDate, Date endDate)
             throws JsonParseException, IOException;
-    List<ActivityMetadata> getActivityMetadataByObject(
-            Long objectId, ActivityConcept concept,
-            Date startDate, Date endDate)
+
+    List<ActivityMetadata> getActivityMetadataByObject(Long objectId, ActivityConcept concept, Date startDate,
+            Date endDate) throws JsonParseException, IOException;
+
+    List<ActivityMetadata> getUserMaintenanceActivityMetadata(Date startDate, Date endDate)
             throws JsonParseException, IOException;
 }

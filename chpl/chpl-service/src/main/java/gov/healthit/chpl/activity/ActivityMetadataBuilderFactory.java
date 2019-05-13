@@ -19,6 +19,7 @@ public class ActivityMetadataBuilderFactory {
     private VersionActivityMetadataBuilder versionBuilder;
     private CertificationBodyActivityMetadataBuilder acbBuilder;
     private TestingLabActivityMetadataBuilder atlBuilder;
+    private UserMaintenanceActivityMetadataBuilder userMaintenanceActivityMetadataBuilder;
 
     @Autowired
     public ActivityMetadataBuilderFactory(
@@ -27,13 +28,15 @@ public class ActivityMetadataBuilderFactory {
             @Qualifier("productActivityMetadataBuilder") final ProductActivityMetadataBuilder productBuilder,
             @Qualifier("versionActivityMetadataBuilder") final VersionActivityMetadataBuilder versionBuilder,
             @Qualifier("acbActivityMetadataBuilder") final CertificationBodyActivityMetadataBuilder acbBuilder,
-            @Qualifier("atlActivityMetadataBuilder") final TestingLabActivityMetadataBuilder atlBuilder) {
+            @Qualifier("atlActivityMetadataBuilder") final TestingLabActivityMetadataBuilder atlBuilder,
+            @Qualifier("userMaintenanceActivityMetadataBuilder") final UserMaintenanceActivityMetadataBuilder userMaintenanceActivityMetadataBuilder) {
         this.listingBuilder = listingBuilder;
         this.developerBuilder = developerBuilder;
         this.productBuilder = productBuilder;
         this.versionBuilder = versionBuilder;
         this.acbBuilder = acbBuilder;
         this.atlBuilder = atlBuilder;
+        this.userMaintenanceActivityMetadataBuilder = userMaintenanceActivityMetadataBuilder;
     }
 
     /**
@@ -63,6 +66,8 @@ public class ActivityMetadataBuilderFactory {
         case TESTING_LAB:
             builder = atlBuilder;
             break;
+        case USER:
+            builder = userMaintenanceActivityMetadataBuilder;
         default:
             break;
         }

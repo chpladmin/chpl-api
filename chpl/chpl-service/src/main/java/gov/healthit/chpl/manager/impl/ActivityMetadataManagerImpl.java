@@ -36,10 +36,8 @@ public class ActivityMetadataManagerImpl extends SecuredManager implements Activ
     private ActivityMetadataBuilderFactory metadataBuilderFactory;
 
     @Autowired
-    public ActivityMetadataManagerImpl(final ActivityDAO activityDAO,
-            final CertificationBodyDAO acbDao,
-            final TestingLabDAO atlDao,
-            final ActivityMetadataBuilderFactory metadataBuilderFactory) {
+    public ActivityMetadataManagerImpl(final ActivityDAO activityDAO, final CertificationBodyDAO acbDao,
+            final TestingLabDAO atlDao, final ActivityMetadataBuilderFactory metadataBuilderFactory) {
         this.activityDAO = activityDAO;
         this.acbDao = acbDao;
         this.atlDao = atlDao;
@@ -48,21 +46,20 @@ public class ActivityMetadataManagerImpl extends SecuredManager implements Activ
 
     @Override
     @Transactional
-    public List<ActivityMetadata> getActivityMetadataByConcept(
-            final ActivityConcept concept, final Date startDate, final Date endDate)
-            throws JsonParseException, IOException {
+    public List<ActivityMetadata> getActivityMetadataByConcept(final ActivityConcept concept, final Date startDate,
+            final Date endDate) throws JsonParseException, IOException {
 
         LOGGER.info("Getting " + concept.name() + " activity from " + startDate + " through " + endDate);
-        //get the activity
+        // get the activity
         List<ActivityDTO> activityDtos = activityDAO.findByConcept(concept, startDate, endDate);
         List<ActivityMetadata> activityMetas = new ArrayList<ActivityMetadata>();
         ActivityMetadataBuilder builder = null;
         if (activityDtos != null && activityDtos.size() > 0) {
             LOGGER.info("Found " + activityDtos.size() + " activity events");
-            //excpect all dtos to have the same
-            //since we've searched based on activity concept
+            // excpect all dtos to have the same
+            // since we've searched based on activity concept
             builder = metadataBuilderFactory.getBuilder(activityDtos.get(0));
-            //convert to domain object
+            // convert to domain object
             for (ActivityDTO dto : activityDtos) {
                 ActivityMetadata activityMeta = builder.build(dto);
                 activityMetas.add(activityMeta);
@@ -75,21 +72,20 @@ public class ActivityMetadataManagerImpl extends SecuredManager implements Activ
 
     @Override
     @Transactional
-    public List<ActivityMetadata> getActivityMetadataByObject(
-            final Long objectId, final ActivityConcept concept,
-            final Date startDate, final Date endDate)
-            throws JsonParseException, IOException {
+    public List<ActivityMetadata> getActivityMetadataByObject(final Long objectId, final ActivityConcept concept,
+            final Date startDate, final Date endDate) throws JsonParseException, IOException {
 
-        LOGGER.info("Getting " + concept.name() + " activity for id " + objectId + " from " + startDate + " through " + endDate);
-        //get the activity
+        LOGGER.info("Getting " + concept.name() + " activity for id " + objectId + " from " + startDate + " through "
+                + endDate);
+        // get the activity
         List<ActivityDTO> activityDtos = activityDAO.findByObjectId(objectId, concept, startDate, endDate);
         List<ActivityMetadata> activityMetas = new ArrayList<ActivityMetadata>();
         ActivityMetadataBuilder builder = null;
         if (activityDtos != null && activityDtos.size() > 0) {
-            //excpect all dtos to have the same
-            //since we've searched based on activity concept
+            // excpect all dtos to have the same
+            // since we've searched based on activity concept
             builder = metadataBuilderFactory.getBuilder(activityDtos.get(0));
-            //convert to domain object
+            // convert to domain object
             for (ActivityDTO dto : activityDtos) {
                 ActivityMetadata activityMeta = builder.build(dto);
                 activityMetas.add(activityMeta);
@@ -106,8 +102,8 @@ public class ActivityMetadataManagerImpl extends SecuredManager implements Activ
     @Transactional
     public List<ActivityMetadata> getCertificationBodyActivityMetadata(final Date startDate, final Date endDate)
             throws JsonParseException, IOException {
-        //there is very little ACB activity so just get it all for the date range
-        //and apply a post filter to remove whatever the current user should not see.
+        // there is very little ACB activity so just get it all for the date range
+        // and apply a post filter to remove whatever the current user should not see.
         return getActivityMetadataByConcept(ActivityConcept.CERTIFICATION_BODY, startDate, endDate);
     }
 
@@ -115,9 +111,9 @@ public class ActivityMetadataManagerImpl extends SecuredManager implements Activ
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_METADATA_BY_ACB, #acbId)")
     @Transactional
-    public List<ActivityMetadata> getCertificationBodyActivityMetadata(final Long acbId, final Date startDate, final Date endDate)
-            throws EntityRetrievalException, JsonParseException, IOException {
-        acbDao.getById(acbId); //throws not found exception for invalid id
+    public List<ActivityMetadata> getCertificationBodyActivityMetadata(final Long acbId, final Date startDate,
+            final Date endDate) throws EntityRetrievalException, JsonParseException, IOException {
+        acbDao.getById(acbId); // throws not found exception for invalid id
         return getActivityMetadataByObject(acbId, ActivityConcept.CERTIFICATION_BODY, startDate, endDate);
     }
 
@@ -129,8 +125,8 @@ public class ActivityMetadataManagerImpl extends SecuredManager implements Activ
     @Transactional
     public List<ActivityMetadata> getTestingLabActivityMetadata(final Date startDate, final Date endDate)
             throws JsonParseException, IOException {
-        //there is very little ATL activity so just get it all for the date range
-        //and apply a post filter to remove whatever the current user should not see.
+        // there is very little ATL activity so just get it all for the date range
+        // and apply a post filter to remove whatever the current user should not see.
         return getActivityMetadataByConcept(ActivityConcept.TESTING_LAB, startDate, endDate);
     }
 
@@ -138,9 +134,18 @@ public class ActivityMetadataManagerImpl extends SecuredManager implements Activ
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_METADATA_BY_ATL, #atlId)")
     @Transactional
-    public List<ActivityMetadata> getTestingLabActivityMetadata(final Long atlId, final Date startDate, final Date endDate)
-            throws EntityRetrievalException, JsonParseException, IOException {
-        atlDao.getById(atlId); //throws not found exception for invalid id
+    public List<ActivityMetadata> getTestingLabActivityMetadata(final Long atlId, final Date startDate,
+            final Date endDate) throws EntityRetrievalException, JsonParseException, IOException {
+        atlDao.getById(atlId); // throws not found exception for invalid id
         return getActivityMetadataByObject(atlId, ActivityConcept.TESTING_LAB, startDate, endDate);
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_METADATA_BY_ATL, #atlId)")
+    public List<ActivityMetadata> getUserMaintenanceActivityMetadata(final Date startDate, final Date endDate)
+            throws JsonParseException, IOException {
+        return getActivityMetadataByConcept(ActivityConcept.USER, startDate, endDate);
     }
 }

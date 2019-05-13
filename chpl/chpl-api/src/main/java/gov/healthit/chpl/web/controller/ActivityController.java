@@ -459,6 +459,18 @@ public class ActivityController {
                 id, startDate, endDate);
     }
 
+    @ApiOperation(value = "Get metadata about auditable records in the system for users.",
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+    @RequestMapping(value = "/metadata/users", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public List<ActivityMetadata> metadataForUsers(@RequestParam final Long start,
+            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
+        Date startDate = new Date(start);
+        Date endDate = new Date(end);
+        validateActivityDatesAndDateRange(start, end);
+        return activityMetadataManager.getUserMaintenanceActivityMetadata(startDate, endDate);
+    }
+    
     @Deprecated
     @ApiOperation(value = "DEPRECATED. Get auditable data for certification bodies.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "
@@ -955,7 +967,8 @@ public class ActivityController {
         return getActivityEventsForVersions(id, startDate, endDate);
     }
 
-    @ApiOperation(value = "Get auditable data about all CHPL user accounts",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED. Get auditable data about all CHPL user accounts",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.  "
                     + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_CMS_STAFF "
                     + "(of ROLE_CMS_STAFF Users), ROLE_ACB (of their own), or ROLE_ATL (of their own).")

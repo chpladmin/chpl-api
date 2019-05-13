@@ -7,6 +7,7 @@ import gov.healthit.chpl.domain.activity.DeveloperActivityMetadata;
 import gov.healthit.chpl.domain.activity.ListingActivityMetadata;
 import gov.healthit.chpl.domain.activity.ProductActivityMetadata;
 import gov.healthit.chpl.domain.activity.TestingLabActivityMetadata;
+import gov.healthit.chpl.domain.activity.UserMaintenanceActivityMetadata;
 import gov.healthit.chpl.domain.activity.VersionActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
 
@@ -66,6 +67,8 @@ public abstract class ActivityMetadataBuilder {
         case TESTING_LAB:
             metadata = new TestingLabActivityMetadata();
             break;
+        case USER:
+            metadata = new UserMaintenanceActivityMetadata();
         default:
             break;
         }
