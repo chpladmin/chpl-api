@@ -184,10 +184,10 @@ public class ProductVersionController {
         if (StringUtils.isEmpty(splitRequest.getNewVersionCode())) {
             throw new InvalidArgumentsException("A new version code is required.");
         }
-        if (splitRequest.getNewVersionName() != null) {
-            splitRequest.setNewVersionName(splitRequest.getNewVersionName().trim());
+        if (splitRequest.getNewVersionVersion() != null) {
+            splitRequest.setNewVersionVersion(splitRequest.getNewVersionVersion().trim());
         }
-        if (StringUtils.isEmpty(splitRequest.getNewVersionName())) {
+        if (StringUtils.isEmpty(splitRequest.getNewVersionVersion())) {
             throw new InvalidArgumentsException("A new product name is required.");
         }
         if (splitRequest.getNewListings() == null || splitRequest.getNewListings().size() == 0) {
@@ -209,7 +209,7 @@ public class ProductVersionController {
         HttpHeaders responseHeaders = new HttpHeaders();
         ProductVersionDTO oldVersion = pvManager.getById(splitRequest.getOldVersion().getVersionId());
         ProductVersionDTO newVersion = new ProductVersionDTO();
-        newVersion.setVersion(splitRequest.getNewVersionName());
+        newVersion.setVersion(splitRequest.getNewVersionVersion());
         newVersion.setProductId(oldVersion.getProductId());
         newVersion.setDeveloperId(oldVersion.getDeveloperId());
         List<CertifiedProductDTO> newVersionListings = new ArrayList<CertifiedProductDTO>();

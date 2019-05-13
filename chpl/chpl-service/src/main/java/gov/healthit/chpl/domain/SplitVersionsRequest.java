@@ -6,7 +6,7 @@ import java.util.List;
 public class SplitVersionsRequest implements Serializable {
     private static final long serialVersionUID = -5814308900559716235L;
 
-    private String newVersionName;
+    private String newVersionVersion;
     private String newVersionCode;
     //listings going with the new version
     private List<CertifiedProduct> newListings;
@@ -14,11 +14,11 @@ public class SplitVersionsRequest implements Serializable {
     //listings staying with the existing version
     private List<CertifiedProduct> oldListings;
 
-    public String getNewVersionName() {
-        return newVersionName;
+    public String getNewVersionVersion() {
+        return newVersionVersion;
     }
-    public void setNewVersionName(final String newVersionName) {
-        this.newVersionName = newVersionName;
+    public void setNewVersionVersion(final String newVersionVersion) {
+        this.newVersionVersion = newVersionVersion;
     }
     public String getNewVersionCode() {
         return newVersionCode;
