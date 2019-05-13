@@ -223,8 +223,8 @@ public class ProductVersionController {
                 newVersionListings);
         responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
         SplitVersionResponse response = new SplitVersionResponse();
-        response.setNewVersion(new ProductVersion(oldVersion));
-        response.setOldVersion(new ProductVersion(newVersionFromSplit));
+        response.setNewVersion(new ProductVersion(newVersionFromSplit));
+        response.setOldVersion(new ProductVersion(oldVersion));
 
         // find out which CHPL product numbers would have changed (only
         // new-style ones)

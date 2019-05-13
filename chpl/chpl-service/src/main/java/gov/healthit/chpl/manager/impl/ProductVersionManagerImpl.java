@@ -253,6 +253,7 @@ public class ProductVersionManagerImpl extends SecuredManager implements Product
                 }
                 affectedListing.setVersionCode(newVersionCode);
             }
+            affectedListing.setProductVersionId(createdVersion.getId());
 
             // do the update and add activity
             cpDao.update(affectedListing);
