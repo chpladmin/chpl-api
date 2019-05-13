@@ -491,7 +491,7 @@ public class ActivityManagerImpl extends SecuredManager implements ActivityManag
                 Long devId = devIdNode.asLong();
                 if (devId != null) {
                     try {
-                        DeveloperDTO dev = devDao.getById(devId);
+                        DeveloperDTO dev = devDao.getById(devId, true);
                         if (dev != null) {
                             ((ProductActivityDetails) event).setDeveloper(new Developer(dev));
                         }

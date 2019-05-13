@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.ff4j.FF4j;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.InterruptableJob;
 import org.quartz.JobExecutionContext;
@@ -18,6 +19,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.ActivityDTO;
@@ -54,6 +56,9 @@ public class InsertMissingSplitActivityJob extends QuartzJob implements Interrup
     @Autowired
     private ActivityDAO activityDao;
 
+    @Autowired
+    private FF4j ff4j;
+
     /**
      * Default constructor.
      */
@@ -65,6 +70,11 @@ public class InsertMissingSplitActivityJob extends QuartzJob implements Interrup
     @Transactional
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+
+        if (!ff4j.check(FeatureList.BETTER_SPLIT)) {
+            LOGGER.fatal("Cannot execute job because feature flag " + FeatureList.BETTER_SPLIT + " is not enabled.");
+            return;
+        }
 
        //Developer Split
        //3/20/19: Orion Health (code 2113 and database id 1114) split into Interoperability Bidco (code 3043 and database id 2044)
