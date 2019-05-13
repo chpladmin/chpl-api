@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.ProductDAO;
@@ -52,13 +54,14 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
     private ChplProductNumberUtil chplProductNumberUtil;
     private ActivityManager activityManager;
     private ResourcePermissions resourcePermissions;
+    private FF4j ff4j;
 
     @Autowired
     public ProductManagerImpl(final ErrorMessageUtil msgUtil, final ProductDAO productDao,
             final ProductVersionDAO versionDao, final DeveloperDAO devDao, final CertifiedProductDAO cpDao,
             final CertifiedProductDetailsManager cpdManager, final CertificationBodyManager acbManager,
             final ChplProductNumberUtil chplProductNumberUtil, final ActivityManager activityManager,
-            final ResourcePermissions resourcePermissions) {
+            final ResourcePermissions resourcePermissions, final FF4j ff4j) {
         this.msgUtil = msgUtil;
         this.productDao = productDao;
         this.versionDao = versionDao;
@@ -69,6 +72,7 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.activityManager = activityManager;
         this.resourcePermissions = resourcePermissions;
+        this.ff4j = ff4j;
     }
 
     @Override
@@ -254,16 +258,21 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
                     afterListing);
         }
 
-        //the split is complete - log split activity
-        //getting the original product object from the db to make sure it's all filled in
-        ProductDTO origProduct = getById(oldProduct.getId());
-        ProductDTO afterProduct = getById(createdProduct.getId());
-        List<ProductDTO> splitProducts = new ArrayList<ProductDTO>();
-        splitProducts.add(origProduct);
-        splitProducts.add(afterProduct);
-        activityManager.addActivity(ActivityConcept.PRODUCT, afterProduct.getId(),
-                "Split product " + origProduct.getName() + " into " + origProduct.getName() + " and " + afterProduct.getName(),
-                origProduct, splitProducts);
+        ProductDTO afterProduct = null;
+        if (ff4j.check(FeatureList.BETTER_SPLIT)) {
+            //the split is complete - log split activity
+            //getting the original product object from the db to make sure it's all filled in
+            ProductDTO origProduct = getById(oldProduct.getId());
+            afterProduct = getById(createdProduct.getId());
+            List<ProductDTO> splitProducts = new ArrayList<ProductDTO>();
+            splitProducts.add(origProduct);
+            splitProducts.add(afterProduct);
+            activityManager.addActivity(ActivityConcept.PRODUCT, afterProduct.getId(),
+                    "Split product " + origProduct.getName() + " into " + origProduct.getName() + " and " + afterProduct.getName(),
+                    origProduct, splitProducts);
+        } else {
+            afterProduct = getById(createdProduct.getId());
+        }
 
         return afterProduct;
     }
