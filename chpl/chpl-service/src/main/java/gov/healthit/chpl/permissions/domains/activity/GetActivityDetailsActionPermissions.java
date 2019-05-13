@@ -57,7 +57,7 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
                     return hasAccessToAnnouncement(details.getOriginalData());
                 }
                 break;
-            case ATL:
+            case TESTING_LAB:
                 if (details.getNewData() != null) {
                     return hasAccessToTestingLab(details.getNewData());
                 } else if (details.getOriginalData() != null) {
