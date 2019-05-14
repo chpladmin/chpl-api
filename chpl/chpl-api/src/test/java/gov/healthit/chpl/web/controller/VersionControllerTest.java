@@ -95,7 +95,7 @@ public class VersionControllerTest {
     @Test
     public void testSplitVersion() throws EntityRetrievalException, JsonProcessingException,
     InvalidArgumentsException, EntityCreationException {
-        Long versionIdToSplit = 3L;
+        Long versionIdToSplit = -3L;
         Long newVersionListingId = 2L;
         Long oldVersionListingId = 3L;
         SplitVersionsRequest request = new SplitVersionsRequest();
@@ -132,5 +132,70 @@ public class VersionControllerTest {
 
         CertifiedProductDTO remainingListing = cpDao.getById(oldVersionListingId);
         assertEquals(versionIdToSplit, remainingListing.getProductVersionId());
+    }
+
+    @Transactional
+    @Rollback(true)
+    @Test(expected = EntityRetrievalException.class)
+    public void testSplitVersion_OldVersionDoesNotExist() throws EntityRetrievalException, JsonProcessingException,
+    InvalidArgumentsException, EntityCreationException {
+        Long versionIdToSplit = -999L;
+        Long newVersionListingId = 2L;
+        Long oldVersionListingId = 3L;
+        SplitVersionsRequest request = new SplitVersionsRequest();
+        request.setNewVersionCode("30");
+        request.setNewVersionVersion("3.1-1");
+
+        ProductVersion versionToSplit = new ProductVersion();
+        versionToSplit.setVersionId(versionIdToSplit);
+        request.setOldVersion(versionToSplit);
+
+        CertifiedProduct oldVersionListing = new CertifiedProduct();
+        oldVersionListing.setId(oldVersionListingId);
+        List<CertifiedProduct> oldVersionListings = new ArrayList<CertifiedProduct>();
+        oldVersionListings.add(oldVersionListing);
+        request.setOldListings(oldVersionListings);
+
+        CertifiedProduct newVersionListing = new CertifiedProduct();
+        newVersionListing.setId(newVersionListingId);
+        List<CertifiedProduct> newVersionListings = new ArrayList<CertifiedProduct>();
+        newVersionListings.add(newVersionListing);
+        request.setNewListings(newVersionListings);
+
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        ResponseEntity<SplitVersionResponse> responseEntity = versionController.splitVersion(versionIdToSplit, request);
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    @Transactional
+    @Rollback(true)
+    @Test(expected = EntityCreationException.class)
+    public void testSplitVersion_ListingNotPartOfOldVersion() throws EntityRetrievalException, JsonProcessingException,
+    InvalidArgumentsException, EntityCreationException {
+        Long versionIdToSplit = -3L;
+        Long newVersionListingId = 6L;
+        Long oldVersionListingId = 3L; //not part of versionIdToSplit
+        SplitVersionsRequest request = new SplitVersionsRequest();
+        request.setNewVersionCode("30");
+        request.setNewVersionVersion("3.1-1");
+
+        ProductVersion versionToSplit = versionController.getProductVersionById(versionIdToSplit);
+        request.setOldVersion(versionToSplit);
+
+        CertifiedProduct oldVersionListing = new CertifiedProduct();
+        oldVersionListing.setId(oldVersionListingId);
+        List<CertifiedProduct> oldVersionListings = new ArrayList<CertifiedProduct>();
+        oldVersionListings.add(oldVersionListing);
+        request.setOldListings(oldVersionListings);
+
+        CertifiedProduct newVersionListing = new CertifiedProduct();
+        newVersionListing.setId(newVersionListingId);
+        List<CertifiedProduct> newVersionListings = new ArrayList<CertifiedProduct>();
+        newVersionListings.add(newVersionListing);
+        request.setNewListings(newVersionListings);
+
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        ResponseEntity<SplitVersionResponse> responseEntity = versionController.splitVersion(versionIdToSplit, request);
+        SecurityContextHolder.getContext().setAuthentication(null);
     }
 }

@@ -88,7 +88,7 @@ public class VersionManagerTest extends TestCase {
     public void testAllowedToUpdateVersionWithActiveDeveloper()
             throws EntityRetrievalException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        ProductVersionDTO version = versionManager.getById(1L);
+        ProductVersionDTO version = versionManager.getById(-1L);
         assertNotNull(version);
         version.setVersion("new version name");
         boolean failed = false;
@@ -136,7 +136,7 @@ public class VersionManagerTest extends TestCase {
         assertEquals(DeveloperStatusType.SuspendedByOnc.toString(), status.getStatus().getStatusName());
 
         // try to update version
-        ProductVersionDTO version = versionManager.getById(1L);
+        ProductVersionDTO version = versionManager.getById(-1L);
         assertNotNull(version);
         version.setVersion("new version name");
         failed = false;
@@ -178,7 +178,7 @@ public class VersionManagerTest extends TestCase {
         assertEquals(DeveloperStatusType.SuspendedByOnc.toString(), status.getStatus().getStatusName());
 
         // try to update version
-        ProductVersionDTO version = versionManager.getById(1L);
+        ProductVersionDTO version = versionManager.getById(-1L);
         assertNotNull(version);
         version.setVersion("new version name");
         failed = false;

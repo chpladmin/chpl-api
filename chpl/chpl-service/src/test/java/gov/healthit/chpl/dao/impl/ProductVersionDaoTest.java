@@ -65,7 +65,7 @@ public class ProductVersionDaoTest extends TestCase {
     @Test
     @Transactional
     public void getVersionById() {
-        Long versionId = 1L;
+        Long versionId = -1L;
         ProductVersionDTO version = null;
         try {
             version = versionDao.getById(versionId);
@@ -73,7 +73,7 @@ public class ProductVersionDaoTest extends TestCase {
             fail("Could not find version with id " + versionId);
         }
         assertNotNull(version);
-        assertEquals(1, version.getId().longValue());
+        assertEquals(-1, version.getId().longValue());
     }
 
     @Test

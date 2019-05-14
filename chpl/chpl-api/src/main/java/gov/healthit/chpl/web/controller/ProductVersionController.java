@@ -37,6 +37,7 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.web.controller.results.SplitVersionResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -56,6 +57,8 @@ public class ProductVersionController {
     private ChplProductNumberUtil chplProductNumberUtil;
     @Autowired
     private FF4j ff4j;
+    @Autowired
+    private ErrorMessageUtil msgUtil;
 
     @ApiOperation(value = "List all versions for a specific product.",
             notes = "List all versions associated with a specific product.")
@@ -182,28 +185,26 @@ public class ProductVersionController {
             splitRequest.setNewVersionCode(splitRequest.getNewVersionCode().trim());
         }
         if (StringUtils.isEmpty(splitRequest.getNewVersionCode())) {
-            throw new InvalidArgumentsException("A new version code is required.");
+            throw new InvalidArgumentsException(msgUtil.getMessage("version.split.missingCode"));
         }
         if (splitRequest.getNewVersionVersion() != null) {
             splitRequest.setNewVersionVersion(splitRequest.getNewVersionVersion().trim());
         }
         if (StringUtils.isEmpty(splitRequest.getNewVersionVersion())) {
-            throw new InvalidArgumentsException("A new product name is required.");
+            throw new InvalidArgumentsException(msgUtil.getMessage("version.split.missingName"));
         }
         if (splitRequest.getNewListings() == null || splitRequest.getNewListings().size() == 0) {
-            throw new InvalidArgumentsException("At least one listing to assign to the new version is required.");
+            throw new InvalidArgumentsException(msgUtil.getMessage("version.split.missingNewListing"));
         }
         if (splitRequest.getOldVersion() == null || splitRequest.getOldVersion().getVersionId() == null) {
-            throw new InvalidArgumentsException("An 'oldVersion' ID is required.");
+            throw new InvalidArgumentsException(msgUtil.getMessage("version.split.missingOldVersion"));
         }
         if (splitRequest.getOldListings() == null || splitRequest.getOldListings().size() == 0) {
-            throw new InvalidArgumentsException(
-                    "At least one listing must remain with the original version. No 'oldListings's were found.");
+            throw new InvalidArgumentsException(msgUtil.getMessage("version.split.missingOldVersionListings"));
         }
         if (versionId.longValue() != splitRequest.getOldVersion().getVersionId().longValue()) {
-            throw new InvalidArgumentsException("The versionId passed into the URL (" + versionId
-                    + ") does not match the version id specified in the request body ("
-                    + splitRequest.getOldVersion().getVersionId() + ").");
+            throw new InvalidArgumentsException(msgUtil.getMessage("version.split.argumentMismatch",
+                    versionId, splitRequest.getOldVersion().getVersionId()));
         }
 
         HttpHeaders responseHeaders = new HttpHeaders();

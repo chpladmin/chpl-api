@@ -238,9 +238,9 @@ public class ProductVersionManagerImpl extends SecuredManager implements Product
 
             //make sure the affected listing belongs to the old version id
             if (!affectedListing.getProductVersionId().equals(oldVersion.getId().longValue())) {
-                throw new EntityCreationException("Listing " + affectedListing.getChplProductNumber()
-                + " belongs to version with id " + affectedListing.getProductVersionId()
-                + " but the version being split has id " + oldVersion.getId() + ".");
+                throw new EntityCreationException(msgUtil.getMessage("version.split.listingVersionMismatch",
+                        affectedListing.getChplProductNumber(), affectedListing.getProductVersionId(),
+                        oldVersion.getId()));
             }
 
             // make sure the updated CHPL product number is unique and that the
@@ -253,8 +253,8 @@ public class ProductVersionManagerImpl extends SecuredManager implements Product
                         newVersionCode, parts.getIcsCode(), parts.getAdditionalSoftwareCode(),
                         parts.getCertifiedDateCode());
                 if (!chplProductNumberUtil.isUnique(potentialChplNumber)) {
-                    throw new EntityCreationException("Cannot update certified product " + chplNumber + " to "
-                            + potentialChplNumber + " because a certified product with that CHPL ID already exists.");
+                    throw new EntityCreationException(msgUtil.getMessage("version.split.duplicateChplId",
+                            chplNumber, potentialChplNumber));
                 }
                 if (!ValidationUtils.chplNumberPartIsValid(potentialChplNumber,
                         ChplProductNumberUtil.VERSION_CODE_INDEX, ChplProductNumberUtil.VERSION_CODE_REGEX)) {
