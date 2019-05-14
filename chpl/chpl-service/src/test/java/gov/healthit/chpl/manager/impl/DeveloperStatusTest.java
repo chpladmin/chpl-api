@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.ArrayList;
 import java.util.Date;
 
+import org.ff4j.FF4j;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,6 +23,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
@@ -90,6 +92,9 @@ public class DeveloperStatusTest {
     private DeveloperUpdateValidator updateValidator;
     @Spy 
     private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
+    @Spy
+    private FF4j ff4j;
+
     @Mock
     private ResourcePermissions permissionChecker;
 
@@ -108,7 +113,7 @@ public class DeveloperStatusTest {
         MockitoAnnotations.initMocks(this);
         developerManager = new DeveloperManagerImpl(devDao, productManager, acbManager, cpManager,
                 cpdManager, certificationBodyDao, certifiedProductDao, chplProductNumberUtil, activityManager,
-                creationValidator, updateValidator, msgUtil, permissionChecker);
+                creationValidator, updateValidator, msgUtil, permissionChecker, ff4j);
 
         Mockito.when(permissionChecker.getAllAcbsForCurrentUser()).thenReturn(new ArrayList<CertificationBodyDTO>());
         Mockito.when(acbManager.getAll()).thenReturn(new ArrayList<CertificationBodyDTO>());
@@ -127,6 +132,11 @@ public class DeveloperStatusTest {
         DeveloperDTO activeDeveloper = createDeveloper(1L, "0001", "Test Developer");
         try {
             Mockito.when(devDao.getById(ArgumentMatchers.anyLong())).thenReturn(activeDeveloper);
+        } catch (EntityRetrievalException ex) {
+        }
+        try {
+            Mockito.when(devDao.getById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+            .thenReturn(activeDeveloper);
         } catch (EntityRetrievalException ex) {
         }
 
@@ -148,6 +158,11 @@ public class DeveloperStatusTest {
         DeveloperDTO activeDeveloper = createDeveloper(1L, "0001", "Test Developer");
         try {
             Mockito.when(devDao.getById(ArgumentMatchers.anyLong())).thenReturn(activeDeveloper);
+        } catch (EntityRetrievalException ex) {
+        }
+        try {
+            Mockito.when(devDao.getById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+            .thenReturn(activeDeveloper);
         } catch (EntityRetrievalException ex) {
         }
 
@@ -175,6 +190,11 @@ public class DeveloperStatusTest {
             Mockito.when(devDao.getById(ArgumentMatchers.anyLong())).thenReturn(activeDeveloperWithStatusHistory);
         } catch (EntityRetrievalException ex) {
         }
+        try {
+            Mockito.when(devDao.getById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+            .thenReturn(activeDeveloperWithStatusHistory);
+        } catch (EntityRetrievalException ex) {
+        }
 
         activeDeveloperWithStatusHistory.setName("New Name");
         developerManager.update(activeDeveloperWithStatusHistory, false);
@@ -188,6 +208,12 @@ public class DeveloperStatusTest {
         DeveloperDTO activeDeveloper = createDeveloper(1L, "0001", "Test Developer");
         try {
             Mockito.when(devDao.getById(ArgumentMatchers.anyLong())).thenReturn(activeDeveloper);
+        } catch (EntityRetrievalException ex) {
+        }
+
+        try {
+            Mockito.when(devDao.getById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+            .thenReturn(activeDeveloper);
         } catch (EntityRetrievalException ex) {
         }
 
@@ -206,6 +232,12 @@ public class DeveloperStatusTest {
         DeveloperDTO activeDeveloper = createDeveloper(1L, "0001", "Test Developer");
         try {
             Mockito.when(devDao.getById(ArgumentMatchers.anyLong())).thenReturn(activeDeveloper);
+        } catch (EntityRetrievalException ex) {
+        }
+
+        try {
+            Mockito.when(devDao.getById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+            .thenReturn(activeDeveloper);
         } catch (EntityRetrievalException ex) {
         }
 
