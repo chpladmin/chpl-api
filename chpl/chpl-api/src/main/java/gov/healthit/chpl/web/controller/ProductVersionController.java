@@ -217,6 +217,7 @@ public class ProductVersionController {
             CertifiedProductDTO newVersionListing = new CertifiedProductDTO();
             newVersionListing.setId(requestNewVersionListing.getId());
             newVersionListing.setVersionCode(splitRequest.getNewVersionCode());
+            newVersionListings.add(newVersionListing);
         }
 
         ProductVersionDTO newVersionFromSplit = pvManager.split(oldVersion, newVersion, splitRequest.getNewVersionCode(),

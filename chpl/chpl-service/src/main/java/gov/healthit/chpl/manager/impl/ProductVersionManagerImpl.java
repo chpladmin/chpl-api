@@ -216,6 +216,9 @@ public class ProductVersionManagerImpl extends SecuredManager implements Product
         // re-assign listings to the new version and
         //update their version codes and log activity for each
         for (CertifiedProductDTO affectedListing : newVersionListings) {
+            //get listing by id so all info is filled in prior to update
+            affectedListing = cpDao.getById(affectedListing.getId());
+
             // have to get the cpdetails for before and after code update
             // because that is object sent into activity reports
             CertifiedProductSearchDetails beforeListing = cpdManager.getCertifiedProductDetails(affectedListing.getId());
