@@ -142,14 +142,14 @@ public class TestingLabManagerTest extends TestingUsers {
         TestingLabDTO original = new TestingLabDTO();
         original.setId(-99l);
         original.setName("Testing Lab");
-        original.setRetired(false);
+        original.setRetired(true);
         original.setTestingLabCode("05");
         original.setAccredidationNumber("accr_nbr");
         original.setRetirementDate(new Date());
 
         Mockito.when(atlDao.getById(ArgumentMatchers.anyLong())).thenReturn(original);
         Mockito.when(atlDao.update(ArgumentMatchers.any(TestingLabDTO.class)))
-                .then(AdditionalAnswers.returnsFirstArg());
+                .thenReturn(original);
 
         original = atlManager.retire(original);
 
