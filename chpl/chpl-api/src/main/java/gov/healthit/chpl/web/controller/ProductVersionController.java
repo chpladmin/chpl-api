@@ -212,16 +212,13 @@ public class ProductVersionController {
         newVersion.setVersion(splitRequest.getNewVersionVersion());
         newVersion.setProductId(oldVersion.getProductId());
         newVersion.setDeveloperId(oldVersion.getDeveloperId());
-        List<CertifiedProductDTO> newVersionListings = new ArrayList<CertifiedProductDTO>();
+        List<Long> newVersionListingIds = new ArrayList<Long>();
         for (CertifiedProduct requestNewVersionListing : splitRequest.getNewListings()) {
-            CertifiedProductDTO newVersionListing = new CertifiedProductDTO();
-            newVersionListing.setId(requestNewVersionListing.getId());
-            newVersionListing.setVersionCode(splitRequest.getNewVersionCode());
-            newVersionListings.add(newVersionListing);
+            newVersionListingIds.add(requestNewVersionListing.getId());
         }
 
         ProductVersionDTO newVersionFromSplit = pvManager.split(oldVersion, newVersion, splitRequest.getNewVersionCode(),
-                newVersionListings);
+                newVersionListingIds);
         responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
         SplitVersionResponse response = new SplitVersionResponse();
         response.setNewVersion(new ProductVersion(newVersionFromSplit));

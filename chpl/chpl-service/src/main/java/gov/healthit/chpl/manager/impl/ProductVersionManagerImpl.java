@@ -203,7 +203,7 @@ public class ProductVersionManagerImpl extends SecuredManager implements Product
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
             + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).SPLIT, #oldVersion)")
     public ProductVersionDTO split(final ProductVersionDTO oldVersion, final ProductVersionDTO newVersion,
-            final String newVersionCode, final List<CertifiedProductDTO> newVersionListings)
+            final String newVersionCode, final List<Long> newVersionListingIds)
             throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
         // what ACB does the user have??
         List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
@@ -215,13 +215,13 @@ public class ProductVersionManagerImpl extends SecuredManager implements Product
 
         // re-assign listings to the new version and
         //update their version codes and log activity for each
-        for (CertifiedProductDTO affectedListing : newVersionListings) {
+        for (Long affectedListingId : newVersionListingIds) {
             //get listing by id so all info is filled in prior to update
-            affectedListing = cpDao.getById(affectedListing.getId());
+            CertifiedProductDTO affectedListing = cpDao.getById(affectedListingId);
 
             // have to get the cpdetails for before and after code update
             // because that is object sent into activity reports
-            CertifiedProductSearchDetails beforeListing = cpdManager.getCertifiedProductDetails(affectedListing.getId());
+            CertifiedProductSearchDetails beforeListing = cpdManager.getCertifiedProductDetails(affectedListingId);
             // make sure each cp listing is owned by an ACB the user has access to
             boolean hasAccessToAcb = false;
             for (CertificationBodyDTO allowedAcb : allowedAcbs) {
@@ -234,6 +234,13 @@ public class ProductVersionManagerImpl extends SecuredManager implements Product
                 throw new AccessDeniedException(
                         msgUtil.getMessage("acb.accessDenied.listingUpdate", beforeListing.getChplProductNumber(),
                                 beforeListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY)));
+            }
+
+            //make sure the affected listing belongs to the old version id
+            if (!affectedListing.getProductVersionId().equals(oldVersion.getId().longValue())) {
+                throw new EntityCreationException("Listing " + affectedListing.getChplProductNumber()
+                + " belongs to version with id " + affectedListing.getProductVersionId()
+                + " but the version being split has id " + oldVersion.getId() + ".");
             }
 
             // make sure the updated CHPL product number is unique and that the
@@ -260,7 +267,7 @@ public class ProductVersionManagerImpl extends SecuredManager implements Product
 
             // do the update and add activity
             cpDao.update(affectedListing);
-            CertifiedProductSearchDetails afterListing = cpdManager.getCertifiedProductDetails(affectedListing.getId());
+            CertifiedProductSearchDetails afterListing = cpdManager.getCertifiedProductDetails(affectedListingId);
             activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, beforeListing.getId(),
                     "Updated certified product " + afterListing.getChplProductNumber() + ".", beforeListing,
                     afterListing);

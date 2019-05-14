@@ -32,6 +32,6 @@ public interface ProductVersionManager {
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 
     ProductVersionDTO split(ProductVersionDTO oldVersion, ProductVersionDTO newVersion, String newVersionCode,
-            List<CertifiedProductDTO> newVersionListings)
+            List<Long> newVersionListingIds)
             throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException;
 }
