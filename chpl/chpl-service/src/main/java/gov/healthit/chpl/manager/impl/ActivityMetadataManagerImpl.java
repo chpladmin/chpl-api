@@ -143,7 +143,7 @@ public class ActivityMetadataManagerImpl extends SecuredManager implements Activ
     @Override
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
-            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_METADATA_BY_ATL, #atlId)")
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_USER_MAINTENANCE_METADATA)")
     public List<ActivityMetadata> getUserMaintenanceActivityMetadata(final Date startDate, final Date endDate)
             throws JsonParseException, IOException {
         return getActivityMetadataByConcept(ActivityConcept.USER, startDate, endDate);

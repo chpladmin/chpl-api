@@ -9,16 +9,16 @@ public class GetUserMaintenanceMetadataActionPermissions extends ActionPermissio
 
     @Override
     public boolean hasAccess() {
-        return false;
-    }
-
-    @Override
-    public boolean hasAccess(Object obj) {
         if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleAcbAdmin()) {
             return true;
         } else {
             return false;
         }
+    }
+
+    @Override
+    public boolean hasAccess(Object obj) {
+        return false;
     }
 
 }

@@ -43,7 +43,6 @@ public class UserMaintenanceActivityMetadataBuilder extends ActivityMetadataBuil
     }
 
     private void parseMetaData(UserDTO user, UserMaintenanceActivityMetadata userMetadata) {
-        userMetadata.setFullName(user.getFullName());
         userMetadata.setEmail(user.getEmail());
         userMetadata.setSubjectName(user.getSubjectName());
     }

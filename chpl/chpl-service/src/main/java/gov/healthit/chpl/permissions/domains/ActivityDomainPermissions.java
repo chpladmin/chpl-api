@@ -26,7 +26,7 @@ public class ActivityDomainPermissions extends DomainPermissions {
     public static final String GET_PENDING_LISTING_ACTIVITY = "GET_PENDING_LISTING_ACTIVITY";
     public static final String GET_USER_ACTIVITY = "GET_USER_ACTIVITY";
     public static final String GET_ACTIVITY_DETAILS = "GET_ACTIVITY_DETAILS";
-    public static final String GET_USER_MAINTENANCE_METADATA = "GET_USERMAINTENANCE_METADATA";
+    public static final String GET_USER_MAINTENANCE_METADATA = "GET_USER_MAINTENANCE_METADATA";
 
     @Autowired
     public ActivityDomainPermissions(
