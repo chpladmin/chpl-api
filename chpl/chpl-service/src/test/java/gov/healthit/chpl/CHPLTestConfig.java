@@ -62,7 +62,7 @@ import gov.healthit.chpl.caching.CacheInitializor;
 import gov.healthit.chpl.job.MeaningfulUseUploadJob;
 
 @Configuration
-@Import({ChplTestCacheConfig.class, FF4JTestConfig.class})
+@Import({ChplTestCacheConfig.class})
 @EnableCaching
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @PropertySource("classpath:/environment.test.properties")

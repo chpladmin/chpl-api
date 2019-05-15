@@ -76,21 +76,21 @@ public class DeveloperStatusTest {
     @Autowired
     private ChplProductNumberUtil chplProductNumberUtil;
 
-    @Spy 
+    @Spy
     private DeveloperDAO devDao;
-    @Spy 
+    @Spy
     private CertificationBodyManager acbManager;
-    @Spy 
+    @Spy
     private CertifiedProductManager cpManager;
-    @Spy 
+    @Spy
     private CertifiedProductDetailsManager cpdManager;
-    @Spy 
+    @Spy
     private ActivityManager activityManager;
-    @Spy 
+    @Spy
     private DeveloperCreationValidator creationValidator;
-    @Spy 
+    @Spy
     private DeveloperUpdateValidator updateValidator;
-    @Spy 
+    @Spy
     private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
     @Spy
     private FF4j ff4j;
@@ -122,6 +122,7 @@ public class DeveloperStatusTest {
         Mockito.doReturn(NO_ADMIN_NO_STATUS_CHANGE_ERROR).when(msgUtil)
             .getMessage(ArgumentMatchers.eq("developer.statusChangeNotAllowedWithoutAdmin"),
                     ArgumentMatchers.eq(DeveloperStatusType.UnderCertificationBanByOnc.toString()));
+        Mockito.doReturn(true).when(ff4j).check(FeatureList.BETTER_SPLIT);
     }
 
     @Test
