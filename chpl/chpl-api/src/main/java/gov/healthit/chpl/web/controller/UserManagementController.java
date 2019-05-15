@@ -219,12 +219,14 @@ public class UserManagementController {
                     "Provided user key is not valid in the database. The user key is valid for up to 3 days from when "
                             + "it is assigned.");
         }
-
+        
+        UserDTO origUser = userManager.getById(invitation.getCreatedUserId());
+        
         UserDTO createdUser = invitationManager.confirmAccountEmail(invitation);
 
         String activityDescription = "User " + createdUser.getSubjectName() + " was confirmed.";
         activityManager.addActivity(ActivityConcept.USER, createdUser.getId(), activityDescription,
-                createdUser, createdUser, createdUser.getId());
+                origUser, createdUser, createdUser.getId());
 
         return new User(createdUser);
     }

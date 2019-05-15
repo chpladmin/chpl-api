@@ -33,6 +33,7 @@ import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -260,6 +261,7 @@ public class InvitationManagerImpl extends SecuredManager implements InvitationM
         SecurityContextHolder.getContext().setAuthentication(authenticator);
 
         try {
+
             // set the user signature date
             UserDTO user = userDao.getById(invitation.getCreatedUserId());
             if (user == null) {
@@ -275,6 +277,11 @@ public class InvitationManagerImpl extends SecuredManager implements InvitationM
                 invitationPermissionDao.delete(permission.getId());
             }
             invitationDao.delete(invitation.getId());
+
+            String activityDescription = "User " + createdUser.getSubjectName() + " was confirmed.";
+            activityManager.addActivity(ActivityConcept.USER, createdUser.getId(), activityDescription, origUser,
+                    createdUser, createdUser.getId());
+
             return user;
         } finally {
             SecurityContextHolder.getContext().setAuthentication(null);
