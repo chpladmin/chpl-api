@@ -1,5 +1,7 @@
 package gov.healthit.chpl.activity;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,14 +38,27 @@ public class VersionActivityMetadataBuilder extends ActivityMetadataBuilder {
         VersionActivityMetadata versionMetadata = (VersionActivityMetadata) metadata;
 
         //parse version specific metadata
+        //original data can be a list of versions in the case of version merge
+        //otherwise we expect it to be a single ProductVersionDTO.
         ProductVersionDTO origVersion = null;
+        List<ProductVersionDTO> origVersions = null;
         if (dto.getOriginalData() != null) {
             try {
                 origVersion =
                     jsonMapper.readValue(dto.getOriginalData(), ProductVersionDTO.class);
-            } catch (final Exception ex) {
-                LOGGER.error("Could not parse activity ID " + dto.getId() + " original data. "
-                        + "JSON was: " + dto.getOriginalData(), ex);
+            } catch (final Exception ignore) { }
+
+            if (origVersion == null) {
+                try {
+                    origVersions =
+                            jsonMapper.readValue(dto.getOriginalData(), List.class);
+                } catch (Exception ignore) { }
+            }
+
+            if (origVersion == null && origVersions == null) {
+                LOGGER.error("Could not parse activity ID " + dto.getId() + " original data "
+                        + "as ProductVersionDTO or List<ProductVersionDTO>. "
+                        + "JSON was: " + dto.getOriginalData());
             }
         }
 
@@ -67,6 +82,9 @@ public class VersionActivityMetadataBuilder extends ActivityMetadataBuilder {
             //if there is an original version but no new version
             //then the version was deleted - pull its info from the orig object
             parseVersionMetadata(versionMetadata, origVersion);
+        } else if (origVersions != null && origVersions.size() > 0) {
+            //could be multiple origVersions on a merge action
+            parseVersionMetadata(versionMetadata, origVersions.get(0));
         }
 
         versionMetadata.getCategories().add(ActivityCategory.VERSION);
@@ -80,7 +98,7 @@ public class VersionActivityMetadataBuilder extends ActivityMetadataBuilder {
             versionMetadata.setProductName(version.getProductName());
         } else if (version.getProductId() != null) {
             try {
-                ProductDTO product = productDao.getById(version.getProductId());
+                ProductDTO product = productDao.getById(version.getProductId(), true);
                 versionMetadata.setProductName(product.getName());
             } catch (Exception ex) {
                 LOGGER.error("Unable to find product with ID " + version.getProductId() + " referenced "

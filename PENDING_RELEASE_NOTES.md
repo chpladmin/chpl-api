@@ -11,6 +11,7 @@ _Date TBD_
 
 ### New features
 * Add endpoints to provide ability for users to save filters for admin report
+* Updated product and version activity metadata to parse activity for merges and splits; better parsing of product and developer names if they have been deleted.
 * Added endpoints for ACB and ATL activity metadata.
   * /activity/metadata/acbs
   * /activity/metadata/acb/{acbId}
