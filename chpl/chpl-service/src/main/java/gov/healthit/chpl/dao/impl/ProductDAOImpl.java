@@ -287,9 +287,15 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 
     @Override
     @Transactional(readOnly = true)
-    public ProductDTO getById(Long id) throws EntityRetrievalException {
+    public ProductDTO getById(final Long id) throws EntityRetrievalException {
+        return getById(id, false);
+    }
 
-        ProductEntity entity = getEntityById(id);
+    @Override
+    @Transactional(readOnly = true)
+    public ProductDTO getById(final Long id, final boolean includeDeleted) throws EntityRetrievalException {
+
+        ProductEntity entity = getEntityById(id, includeDeleted);
         if (entity == null) {
             return null;
         }
@@ -404,13 +410,25 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
         return result;
     }
 
-    private ProductEntity getEntityById(Long id) throws EntityRetrievalException {
+    private ProductEntity getEntityById(final Long id) throws EntityRetrievalException {
+        return getEntityById(id, false);
+    }
+
+    private ProductEntity getEntityById(final Long id, final boolean includeDeleted) throws EntityRetrievalException {
         ProductEntity entity = null;
 
-        Query query = entityManager.createQuery("SELECT DISTINCT pe " + "FROM ProductEntity pe "
-                + "LEFT JOIN FETCH pe.developer " + "LEFT JOIN FETCH pe.contact " + "LEFT JOIN FETCH pe.ownerHistory "
-                + "LEFT JOIN FETCH pe.productVersions " + "WHERE (NOT pe.deleted = true) " + "AND (pe.id = :entityid) ",
-                ProductEntity.class);
+        String queryStr = "SELECT DISTINCT pe "
+                + "FROM ProductEntity pe "
+                + "LEFT JOIN FETCH pe.developer "
+                + "LEFT JOIN FETCH pe.contact "
+                + "LEFT JOIN FETCH pe.ownerHistory "
+                + "LEFT JOIN FETCH pe.productVersions "
+                + "WHERE pe.id = :entityid ";
+        if (!includeDeleted) {
+            queryStr += " AND pe.deleted = false";
+        }
+
+        Query query = entityManager.createQuery(queryStr, ProductEntity.class);
         query.setParameter("entityid", id);
         List<ProductEntity> result = query.getResultList();
 
