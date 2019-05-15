@@ -24,7 +24,7 @@ public class FilterDomainPermissionsTest {
 
     @Test
     public void setupTest() {
-        assertTrue(permissions.getActionPermissions().size() == 4);
+        assertTrue(permissions.getActionPermissions().size() == 5);
 
         assertTrue(permissions.getActionPermissions()
                 .get(FilterDomainPermissions.CREATE) instanceof CreateActionPermissions);
