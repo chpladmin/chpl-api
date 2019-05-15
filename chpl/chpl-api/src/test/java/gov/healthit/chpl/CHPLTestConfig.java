@@ -8,6 +8,8 @@ import java.util.Locale;
 import javax.sql.DataSource;
 
 import org.dbunit.ext.postgresql.PostgresqlDataTypeFactory;
+import org.ff4j.FF4j;
+import org.mockito.Mockito;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -342,4 +344,8 @@ public class CHPLTestConfig implements EnvironmentAware {
         return new MeaningfulUseUploadJob();
     }
 
+    @Bean
+    public FF4j getFF4j() {
+        return Mockito.mock(FF4j.class);
+    }
 }
