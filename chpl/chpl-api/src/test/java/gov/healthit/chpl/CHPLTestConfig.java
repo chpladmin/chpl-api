@@ -70,7 +70,7 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.job.MeaningfulUseUploadJob;
 
 @Configuration
-@Import({ChplTestCacheConfig.class, FF4JTestConfig.class})
+@Import({ChplTestCacheConfig.class})
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @PropertySource("classpath:/environment.test.properties")
 @EnableCaching
@@ -345,7 +345,7 @@ public class CHPLTestConfig implements EnvironmentAware {
     }
 
     @Bean
-    public FF4j getFF4j() {
+    public FF4j ff4j() {
         return Mockito.mock(FF4j.class);
     }
 }
