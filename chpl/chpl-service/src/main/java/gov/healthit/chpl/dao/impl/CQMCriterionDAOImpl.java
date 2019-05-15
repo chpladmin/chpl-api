@@ -7,13 +7,13 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.entity.CQMCriterionEntity;
 import gov.healthit.chpl.entity.CQMVersionEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Repository(value = "cqmCriterionDAO")
 public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO {
@@ -43,7 +43,7 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
             entity.setDescription(dto.getDescription());
             // entity.setId(dto.getId());
             entity.setLastModifiedDate(dto.getLastModifiedDate());
-            entity.setLastModifiedUser(Util.getAuditId());
+            entity.setLastModifiedUser(AuthUtil.getAuditId());
             entity.setNqfNumber(dto.getNqfNumber());
             entity.setNumber(dto.getNumber());
             entity.setTitle(dto.getTitle());
@@ -73,7 +73,7 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
         entity.setDescription(dto.getDescription());
         // entity.setId(dto.getId());
         entity.setLastModifiedDate(dto.getLastModifiedDate());
-        entity.setLastModifiedUser(Util.getAuditId());
+        entity.setLastModifiedUser(AuthUtil.getAuditId());
         entity.setNqfNumber(dto.getNqfNumber());
         entity.setNumber(dto.getNumber());
         entity.setTitle(dto.getTitle());

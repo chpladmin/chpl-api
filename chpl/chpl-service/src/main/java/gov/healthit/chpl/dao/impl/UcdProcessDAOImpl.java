@@ -15,12 +15,12 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.UcdProcessDAO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.entity.UcdProcessEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("ucdProcessDAO")
 public class UcdProcessDAOImpl extends BaseDAOImpl implements UcdProcessDAO {
@@ -38,7 +38,7 @@ public class UcdProcessDAOImpl extends BaseDAOImpl implements UcdProcessDAO {
         }
 
         entity.setName(dto.getName());
-        entity.setLastModifiedUser(Util.getAuditId());
+        entity.setLastModifiedUser(AuthUtil.getAuditId());
         entity.setLastModifiedDate(new Date());
 
         entityManager.merge(entity);
@@ -54,7 +54,7 @@ public class UcdProcessDAOImpl extends BaseDAOImpl implements UcdProcessDAO {
         if (toDelete != null) {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(Util.getAuditId());
+            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             entityManager.merge(toDelete);
             entityManager.flush();
         }
@@ -128,7 +128,7 @@ public class UcdProcessDAOImpl extends BaseDAOImpl implements UcdProcessDAO {
             entity.setCreationDate(new Date());
             entity.setDeleted(false);
             entity.setLastModifiedDate(new Date());
-            entity.setLastModifiedUser(Util.getAuditId());
+            entity.setLastModifiedUser(AuthUtil.getAuditId());
             entity.setName(dto.getName());
 
             try {

@@ -16,13 +16,13 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.auth.authentication.Authenticator;
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
-import gov.healthit.chpl.auth.authentication.LoginCredentials;
-import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.auth.jwt.JWTCreationException;
-import gov.healthit.chpl.auth.jwt.JWTValidationException;
-import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.user.User;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.domain.auth.LoginCredentials;
+import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.exception.JWTCreationException;
+import gov.healthit.chpl.exception.JWTValidationException;
+import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.manager.auth.UserManager;
 
 /**
  * Quartz job to require all non-deleted users, except for Admin, to change their password on next login.

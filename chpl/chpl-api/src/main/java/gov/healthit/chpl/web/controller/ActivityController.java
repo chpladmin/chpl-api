@@ -29,10 +29,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonParseException;
 
-import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.auth.manager.UserManager;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
@@ -43,7 +39,9 @@ import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.ActivityMetadataManager;
@@ -54,7 +52,9 @@ import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.manager.TestingLabManager;
+import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import io.swagger.annotations.Api;
@@ -491,7 +491,7 @@ public class ActivityController {
                     throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
         CertificationBodyDTO acb = resourcePermissions.getAcbIfPermissionById(id); // throws 404 if ACB doesn't exist
         if (acb != null && acb.isRetired() && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
-            LOGGER.warn("Non-admin user " + Util.getUsername()
+            LOGGER.warn("Non-admin user " + AuthUtil.getUsername()
             + " tried to see activity for retired ACB " + acb.getName());
             throw new AccessDeniedException("Only Admins can see retired ACBs.");
         }
@@ -524,7 +524,7 @@ public class ActivityController {
         if (acb == null) {
             String err = String.format(messageSource.getMessage(
                     new DefaultMessageSourceResolvable("acb.accessDenied"),
-                    LocaleContextHolder.getLocale()), Util.getUsername(), id);
+                    LocaleContextHolder.getLocale()), AuthUtil.getUsername(), id);
             throw new AccessDeniedException(err);
         }
         List<CertificationBodyDTO> acbs = new ArrayList<CertificationBodyDTO>();
@@ -607,7 +607,7 @@ public class ActivityController {
                     throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
         TestingLabDTO atl = resourcePermissions.getAtlIfPermissionById(id); // throws 404 if bad id
         if (atl != null && atl.isRetired() && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
-            LOGGER.warn("Non-admin user " + Util.getUsername()
+            LOGGER.warn("Non-admin user " + AuthUtil.getUsername()
             + " tried to see activity for retired ATL " + atl.getName());
             throw new AccessDeniedException("Only Admins can see retired ATLs.");
         }
@@ -638,7 +638,7 @@ public class ActivityController {
             }
         }
         if (atl == null) {
-            throw new AccessDeniedException("User " + Util.getUsername() + " does not have access to "
+            throw new AccessDeniedException("User " + AuthUtil.getUsername() + " does not have access to "
                     + "activity for testing lab with ID " + id);
         }
         List<TestingLabDTO> atls = new ArrayList<TestingLabDTO>();
@@ -1007,7 +1007,7 @@ public class ActivityController {
         if (!resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
             Set<Long> allowedUserIds = getAllowedUsersForActivitySearch();
             if (!allowedUserIds.contains(id)) {
-                throw new AccessDeniedException("User " + Util.getUsername()
+                throw new AccessDeniedException("User " + AuthUtil.getUsername()
                 + " does not have permission to get activity for user with ID " + id);
             }
         }
@@ -1108,7 +1108,7 @@ public class ActivityController {
     private Set<Long> getAllowedUsersForActivitySearch() {
         Set<Long> allowedUserIds = new HashSet<Long>();
         //user can see their own activity
-        allowedUserIds.add(Util.getCurrentUser().getId());
+        allowedUserIds.add(AuthUtil.getCurrentUser().getId());
 
         //user can see activity for other users in the same acb
 
@@ -1181,7 +1181,7 @@ public class ActivityController {
 
     private List<ActivityDetails> getActivityEventsForCertifiedProducts(final Date startDate, final Date endDate)
             throws JsonParseException, IOException {
-        LOGGER.info("User " + Util.getUsername() + " requested certified product activity between " + startDate
+        LOGGER.info("User " + AuthUtil.getUsername() + " requested certified product activity between " + startDate
                 + " and " + endDate);
 
         List<ActivityDetails> events = null;
@@ -1194,7 +1194,7 @@ public class ActivityController {
     private List<ActivityDetails> getActivityEventsForProducts(final Date startDate, final Date endDate)
             throws JsonParseException, IOException {
         LOGGER.info(
-                "User " + Util.getUsername() + " requested product activity between " + startDate + " and " + endDate);
+                "User " + AuthUtil.getUsername() + " requested product activity between " + startDate + " and " + endDate);
 
         List<ActivityDetails> events = null;
         ActivityConcept concept = ActivityConcept.PRODUCT;
@@ -1205,7 +1205,7 @@ public class ActivityController {
 
     private List<ActivityDetails> getActivityEventsForDevelopers(final Date startDate, final Date endDate)
             throws JsonParseException, IOException {
-        LOGGER.info("User " + Util.getUsername() + " requested developer activity between " + startDate + " and "
+        LOGGER.info("User " + AuthUtil.getUsername() + " requested developer activity between " + startDate + " and "
                 + endDate);
 
         List<ActivityDetails> events = null;
@@ -1218,7 +1218,7 @@ public class ActivityController {
     private List<ActivityDetails> getActivityEventsForVersions(final Date startDate, final Date endDate)
             throws JsonParseException, IOException {
         LOGGER.info(
-                "User " + Util.getUsername() + " requested version activity between " + startDate + " and " + endDate);
+                "User " + AuthUtil.getUsername() + " requested version activity between " + startDate + " and " + endDate);
 
         List<ActivityDetails> events = null;
         ActivityConcept concept = ActivityConcept.VERSION;
@@ -1229,13 +1229,13 @@ public class ActivityController {
 
     private List<ActivityDetails> getActivityEventsForAnnouncements(final Date startDate, final Date endDate)
             throws JsonParseException, IOException {
-        if (Util.getCurrentUser() == null) {
+        if (AuthUtil.getCurrentUser() == null) {
             LOGGER.info("Anonymous user requested public announcement activity between " + startDate + " and "
                     + endDate);
             return activityManager.getPublicAnnouncementActivity(startDate, endDate);
         }
 
-        LOGGER.info("User " + Util.getUsername() + " requested all announcement activity between " + startDate + " and "
+        LOGGER.info("User " + AuthUtil.getUsername() + " requested all announcement activity between " + startDate + " and "
                 + endDate);
         List<ActivityDetails> events = null;
         ActivityConcept concept = ActivityConcept.ANNOUNCEMENT;
@@ -1247,14 +1247,14 @@ public class ActivityController {
     private List<ActivityDetails> getActivityEventsForAnnouncement(final Long id,
             final Date startDate, final Date endDate)
                     throws JsonParseException, IOException {
-        if (Util.getCurrentUser() == null) {
+        if (AuthUtil.getCurrentUser() == null) {
             LOGGER.info("Anonymous user requested public announcement activity "
                     + "for announcement id " + id + " between " + startDate + " and "
                     + endDate);
             return activityManager.getPublicAnnouncementActivity(id, startDate, endDate);
         }
 
-        LOGGER.info("User " + Util.getUsername() + " requested all announcement activity "
+        LOGGER.info("User " + AuthUtil.getUsername() + " requested all announcement activity "
                 + "for announcement id " + id + " between " + startDate + " and "
                 + endDate);
 

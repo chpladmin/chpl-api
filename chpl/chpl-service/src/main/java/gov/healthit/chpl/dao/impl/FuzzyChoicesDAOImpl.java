@@ -14,13 +14,13 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.FuzzyChoicesDAO;
 import gov.healthit.chpl.dto.FuzzyChoicesDTO;
 import gov.healthit.chpl.entity.FuzzyChoicesEntity;
 import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Repository(value = "fuzzyChoicesDAO")
 public class FuzzyChoicesDAOImpl extends BaseDAOImpl implements FuzzyChoicesDAO {
@@ -35,7 +35,7 @@ public class FuzzyChoicesDAOImpl extends BaseDAOImpl implements FuzzyChoicesDAO 
         entity.setCreationDate(new Date());
         entity.setDeleted(false);
         entity.setLastModifiedDate(new Date());
-        entity.setLastModifiedUser(Util.getAuditId());
+        entity.setLastModifiedUser(AuthUtil.getAuditId());
         create(entity);
         return new FuzzyChoicesDTO(entity);
     }
@@ -76,7 +76,7 @@ public class FuzzyChoicesDAOImpl extends BaseDAOImpl implements FuzzyChoicesDAO 
 
         String toJSON = new ObjectMapper().writeValueAsString(dto.getChoices());
         entity.setChoices(toJSON);
-        entity.setLastModifiedUser(Util.getAuditId());
+        entity.setLastModifiedUser(AuthUtil.getAuditId());
 
         update(entity);
         return new FuzzyChoicesDTO(entity);
