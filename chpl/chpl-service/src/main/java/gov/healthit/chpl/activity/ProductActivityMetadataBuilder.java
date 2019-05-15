@@ -1,5 +1,7 @@
 package gov.healthit.chpl.activity;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,25 +38,48 @@ public class ProductActivityMetadataBuilder extends ActivityMetadataBuilder {
         ProductActivityMetadata productMetadata = (ProductActivityMetadata) metadata;
 
         //parse product specific metadata
+        //for merges, original data is a list of products
+        //for splits, new data is a list of products
+        //otherwise we expect orig/new data to be a single product
         ProductDTO origProduct = null;
+        List<ProductDTO> origProducts = null;
         if (dto.getOriginalData() != null) {
             try {
                 origProduct =
                     jsonMapper.readValue(dto.getOriginalData(), ProductDTO.class);
-            } catch (final Exception ex) {
-                LOGGER.error("Could not parse activity ID " + dto.getId() + " original data. "
-                        + "JSON was: " + dto.getOriginalData(), ex);
+            } catch (final Exception ignore) { }
+
+            if (origProduct == null) {
+                try {
+                    origProducts =
+                        jsonMapper.readValue(dto.getOriginalData(), List.class);
+                } catch (final Exception ignore) {}
+            }
+
+            if (origProduct == null && origProducts == null) {
+                LOGGER.error("Could not parse activity ID " + dto.getId() + " original data "
+                        + " as ProductDTO or List<ProductDTO>. JSON was: " + dto.getOriginalData());
             }
         }
 
         ProductDTO newProduct = null;
+        List<ProductDTO> newProducts = null;
         if (dto.getNewData() != null) {
             try {
                 newProduct =
                     jsonMapper.readValue(dto.getNewData(), ProductDTO.class);
-            } catch (final Exception ex) {
-                LOGGER.error("Could not parse activity ID " + dto.getId() + " new data. "
-                        + "JSON was: " + dto.getNewData(), ex);
+            } catch (final Exception ignore) {}
+
+            if (newProduct == null) {
+                try {
+                    newProducts =
+                            jsonMapper.readValue(dto.getNewData(), List.class);
+                } catch (final Exception ignore) {}
+            }
+
+            if (newProduct == null && newProducts == null) {
+                LOGGER.error("Could not parse activity ID " + dto.getId() + " new data "
+                    + "as ProductDTO or List<ProductDTO>. JSON was: " + dto.getNewData());
             }
         }
 
@@ -67,6 +92,12 @@ public class ProductActivityMetadataBuilder extends ActivityMetadataBuilder {
             //if there is an original product but no new product
             //then the product was deleted - pull its info from the orig object
             parseProductMetadata(productMetadata, origProduct);
+        } else if (newProducts != null && newProducts.size() > 0) {
+            //there could be multiple new products on a product split
+            parseProductMetadata(productMetadata, newProducts.get(0));
+        } else if (origProducts != null && origProducts.size() > 0) {
+            //there could be multiple original products on a product merge
+            parseProductMetadata(productMetadata, origProducts.get(0));
         }
 
         productMetadata.getCategories().add(ActivityCategory.PRODUCT);
@@ -81,7 +112,7 @@ public class ProductActivityMetadataBuilder extends ActivityMetadataBuilder {
             productMetadata.setDeveloperName(product.getDeveloperName());
         } else if (product.getDeveloperId() != null) {
             try {
-                DeveloperDTO developer = developerDao.getById(product.getDeveloperId());
+                DeveloperDTO developer = developerDao.getById(product.getDeveloperId(), true);
                 productMetadata.setDeveloperName(developer.getName());
             } catch (Exception ex) {
                 LOGGER.error("Unable to find developer with ID " + product.getDeveloperId() + " referenced "
