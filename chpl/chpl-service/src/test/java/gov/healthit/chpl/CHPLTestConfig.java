@@ -7,6 +7,8 @@ import java.util.Locale;
 import javax.sql.DataSource;
 
 import org.dbunit.ext.postgresql.PostgresqlDataTypeFactory;
+import org.ff4j.FF4j;
+import org.mockito.Mockito;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -284,8 +286,8 @@ public class CHPLTestConfig implements EnvironmentAware {
     public DefaultMethodSecurityExpressionHandler expressionHandler() throws Exception {
         DefaultMethodSecurityExpressionHandler bean = new DefaultMethodSecurityExpressionHandler();
         bean.setPermissionEvaluator(permissionEvaluator());
-        //Commenting this out allows for our custom Postfilter'ing to work
-        //bean.setPermissionCacheOptimizer(aclPermissionCacheOptimizer());
+        // Commenting this out allows for our custom Postfilter'ing to work
+        // bean.setPermissionCacheOptimizer(aclPermissionCacheOptimizer());
         return bean;
     }
 
@@ -328,4 +330,8 @@ public class CHPLTestConfig implements EnvironmentAware {
         return new MeaningfulUseUploadJob();
     }
 
+    @Bean
+    public FF4j getFF4j() {
+        return Mockito.mock(FF4j.class);
+    }
 }
