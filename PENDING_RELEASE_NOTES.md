@@ -3,7 +3,6 @@
 _Date TBD_
 
 ### New Features
-* Respond with a 401 error when the user's token has expired
 * Add FF4j framework (feature flags)
 * Added endpoints for ACB and ATL activity metadata.
   * /activity/metadata/acbs
