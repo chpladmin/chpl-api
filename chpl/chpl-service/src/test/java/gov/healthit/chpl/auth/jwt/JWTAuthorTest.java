@@ -13,11 +13,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import gov.healthit.chpl.dao.auth.UserDAO;
+import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.exception.UserRetrievalException;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
         gov.healthit.chpl.CHPLTestConfig.class
 })
 public class JWTAuthorTest {
+
+    @Autowired
+    private UserDAO userDao;
 
     @Autowired
     private JWTAuthor jwtAuthor;
@@ -26,19 +33,17 @@ public class JWTAuthorTest {
     private JWTConsumer jwtConsumer;
 
     @Test
-    public void testCreateJWT() {
-
-        Map<String, List<String>> claims = new HashMap<String, List<String>>();
-        List<String> authorities = new ArrayList<String>();
-        authorities.add("ROLE_SUPERSTAR");
-
-        claims.put("Authorities", authorities);
-        String jwt = jwtAuthor.createJWT("testsubject", claims);
+    public void testCreateJWT() throws UserRetrievalException {
+        String role = "ROLE_SUPERSTAR";
+        UserDTO user = userDao.getById(-2L);
+        Map<String, String> claims = new HashMap<String, String>();
+        claims.put("Authority", role);
+        String jwt = jwtAuthor.createJWT(user, claims, null);
 
         Map<String, Object> claimObjects = jwtConsumer.consume(jwt);
 
-        List<String> recoveredAuthorities = (List<String>) claimObjects.get("Authorities");
-        assertEquals(authorities.get(0), recoveredAuthorities.get(0));
+        String recoveredRole = (String) claimObjects.get("Authority");
+        assertEquals(role, recoveredRole);
 
     }
 

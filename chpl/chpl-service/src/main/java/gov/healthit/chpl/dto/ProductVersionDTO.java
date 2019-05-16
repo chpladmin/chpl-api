@@ -3,9 +3,12 @@ package gov.healthit.chpl.dto;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import gov.healthit.chpl.entity.ProductVersionEntity;
 import gov.healthit.chpl.util.Util;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ProductVersionDTO implements Serializable {
     private static final long serialVersionUID = -1371133241003414009L;
     private Long id;

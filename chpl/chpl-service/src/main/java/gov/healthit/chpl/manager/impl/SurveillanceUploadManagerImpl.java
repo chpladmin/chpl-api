@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -28,6 +27,7 @@ import gov.healthit.chpl.permissions.Permissions;
 import gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions;
 import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandler;
 import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandlerFactory;
+import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.FileUtils;
 
@@ -227,7 +227,7 @@ public class SurveillanceUploadManagerImpl extends SecuredManager implements Sur
                 String msg = errorMessageUtil.getMessage(
                         "pendingSurveillance.addSurveillancePermissionDenied",
                         pendingSurv.getCertifiedProduct().getChplProductNumber());
-                LOGGER.error("User " + Util.getCurrentUser().getSubjectName()
+                LOGGER.error("User " + AuthUtil.getCurrentUser().getSubjectName()
                         + " does not have access to " + pendingSurv.getCertifiedProduct().getChplProductNumber()
                         + " due to ACB restrictions.");
 

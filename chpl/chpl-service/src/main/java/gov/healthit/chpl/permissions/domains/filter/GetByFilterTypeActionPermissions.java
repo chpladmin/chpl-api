@@ -2,9 +2,9 @@ package gov.healthit.chpl.permissions.domains.filter;
 
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dto.FilterDTO;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Component("filterGetByFilterTypeActionPermissions")
 public class GetByFilterTypeActionPermissions extends ActionPermissions {
@@ -20,10 +20,10 @@ public class GetByFilterTypeActionPermissions extends ActionPermissions {
             return false;
         } else {
             FilterDTO origFilter = (FilterDTO) obj;
-            if (Util.getCurrentUser() == null) {
+            if (AuthUtil.getCurrentUser() == null) {
                 return false;
             } else {
-                return origFilter.getUser().getId().equals(Util.getCurrentUser().getId());
+                return origFilter.getUser().getId().equals(AuthUtil.getCurrentUser().getId());
             }
         }
     }

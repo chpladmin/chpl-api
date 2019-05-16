@@ -9,13 +9,11 @@
         <provider>org.hibernate.ejb.HibernatePersistence</provider>
         <!-- not sure why but the entities from auth need to be declared
             here -->
-        <class>gov.healthit.chpl.auth.entity.UserEntity</class>
-        <class>gov.healthit.chpl.auth.entity.UserContactEntity</class>
-        <class>gov.healthit.chpl.auth.entity.UserPermissionEntity</class>
-        <class>gov.healthit.chpl.auth.entity.UserPermissionUserMappingEntity</class>
-        <class>gov.healthit.chpl.auth.entity.UserResetTokenEntity</class>
-        <class>gov.healthit.chpl.auth.entity.InvitationEntity</class>
-        <class>gov.healthit.chpl.auth.entity.InvitationPermissionEntity</class>
+        <class>gov.healthit.chpl.entity.auth.UserEntity</class>
+        <class>gov.healthit.chpl.entity.auth.UserContactEntity</class>
+        <class>gov.healthit.chpl.entity.auth.UserPermissionEntity</class>
+        <class>gov.healthit.chpl.entity.auth.UserResetTokenEntity</class>
+        <class>gov.healthit.chpl.entity.auth.InvitationEntity</class>
         <properties>
             <!-- SQL values should be false normally; true if debugging -->
             <property name="hibernate.show_sql" value="false" />

@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,18 +20,17 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.jwt.JWTAuthor;
-import gov.healthit.chpl.auth.jwt.JWTCreationException;
-import gov.healthit.chpl.auth.manager.SecuredUserManager;
-import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.User;
-import gov.healthit.chpl.auth.user.UserManagementException;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.domain.auth.LoginCredentials;
+import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.exception.JWTCreationException;
+import gov.healthit.chpl.exception.UserManagementException;
+import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.manager.auth.UserManager;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Service
 public class UserAuthenticator implements Authenticator {
@@ -42,10 +40,7 @@ public class UserAuthenticator implements Authenticator {
     private JWTAuthor jwtAuthor;
 
     @Autowired
-    protected UserManager userManager;
-
-    @Autowired
-    private SecuredUserManager securedUserManager;
+    private UserManager userManager;
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -103,20 +98,13 @@ public class UserAuthenticator implements Authenticator {
 
     @Override
     public String getJWT(final UserDTO user) throws JWTCreationException {
-
         String jwt = null;
-        Map<String, List<String>> claims = new HashMap<String, List<String>>();
-        List<String> claimStrings = new ArrayList<String>();
 
-        Set<UserPermissionDTO> permissions = getUserPermissions(user);
+        Map<String, String> stringClaims = new HashMap<String, String>();
+        stringClaims.put("Authority", user.getPermission().getAuthority());
 
-        for (UserPermissionDTO claim : permissions) {
-            claimStrings.add(claim.getAuthority());
-        }
-        claims.put("Authorities", claimStrings);
-
+        Map<String, List<String>> listClaims = new HashMap<String, List<String>>();
         List<String> identity = new ArrayList<String>();
-
         identity.add(user.getId().toString());
         identity.add(user.getUsername());
         identity.add(user.getFullName());
@@ -124,18 +112,16 @@ public class UserAuthenticator implements Authenticator {
             identity.add(user.getImpersonatedBy().getId().toString());
             identity.add(user.getImpersonatedBy().getSubjectName());
         }
+        listClaims.put("Identity", identity);
 
-        claims.put("Identity", identity);
-
-        jwt = jwtAuthor.createJWT(user.getSubjectName(), claims);
+        jwt = jwtAuthor.createJWT(user, stringClaims, listClaims);
         return jwt;
 
     }
 
     @Override
     public String refreshJWT() throws JWTCreationException, UserRetrievalException {
-
-        JWTAuthenticatedUser user = (JWTAuthenticatedUser) Util.getCurrentUser();
+        JWTAuthenticatedUser user = (JWTAuthenticatedUser) AuthUtil.getCurrentUser();
 
         if (user != null) {
             UserDTO userDto = getUserByName(user.getSubjectName());
@@ -151,7 +137,6 @@ public class UserAuthenticator implements Authenticator {
     @Override
     @Transactional
     public String getJWT(final LoginCredentials credentials) throws JWTCreationException {
-
         String jwt = null;
         UserDTO user = null;
 
@@ -171,59 +156,7 @@ public class UserAuthenticator implements Authenticator {
 
     }
 
-    private Set<UserPermissionDTO> getUserPermissions(final UserDTO user) {
-
-        Authentication authenticator = new Authentication() {
-
-            @Override
-            public Collection<? extends GrantedAuthority> getAuthorities() {
-                List<GrantedAuthority> auths = new ArrayList<GrantedAuthority>();
-                auths.add(new GrantedPermission("ROLE_USER_AUTHENTICATOR"));
-                return auths;
-            }
-
-            @Override
-            public Object getCredentials() {
-                return null;
-            }
-
-            @Override
-            public Object getDetails() {
-                return null;
-            }
-
-            @Override
-            public Object getPrincipal() {
-                return null;
-            }
-
-            @Override
-            public boolean isAuthenticated() {
-                return true;
-            }
-
-            @Override
-            public void setAuthenticated(final boolean arg0) throws IllegalArgumentException {
-            }
-
-            @Override
-            public String getName() {
-                return "AUTHENTICATOR";
-            }
-
-        };
-        SecurityContextHolder.getContext().setAuthentication(authenticator);
-        try {
-            Set<UserPermissionDTO> permissions = userManager.getGrantedPermissionsForUser(user);
-            return permissions;
-        } finally {
-            SecurityContextHolder.getContext().setAuthentication(null);
-        }
-
-    }
-
     private UserDTO getUserByName(final String userName) throws UserRetrievalException {
-
         Authentication authenticator = new Authentication() {
             private static final long serialVersionUID = 6718133333641942231L;
 
@@ -276,7 +209,6 @@ public class UserAuthenticator implements Authenticator {
     }
 
     private void updateFailedLogins(final UserDTO userToUpdate) throws UserRetrievalException, UserManagementException {
-
         Authentication authenticator = new Authentication() {
 
             @Override
@@ -341,7 +273,7 @@ public class UserAuthenticator implements Authenticator {
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).IMPERSONATE_USER, #username)")
     public String impersonateUser(final String username) throws UserRetrievalException,
     JWTCreationException, UserManagementException {
-        JWTAuthenticatedUser user = (JWTAuthenticatedUser) Util.getCurrentUser();
+        JWTAuthenticatedUser user = (JWTAuthenticatedUser) AuthUtil.getCurrentUser();
         if (user.getImpersonatingUser() != null) {
             throw new UserManagementException("Unable to impersonate user while already impersonating");
         }

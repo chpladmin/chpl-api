@@ -2,7 +2,7 @@ package gov.healthit.chpl.dto.questionableActivity;
 
 import java.util.Date;
 
-import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.questionableActivity.QuestionableActivityEntity;
 import gov.healthit.chpl.util.Util;
 

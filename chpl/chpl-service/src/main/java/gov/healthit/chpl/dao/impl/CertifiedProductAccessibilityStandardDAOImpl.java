@@ -8,12 +8,12 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
 import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.entity.listing.CertifiedProductAccessibilityStandardEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Repository(value = "certifiedProductAccessibilityStandardDao")
 public class CertifiedProductAccessibilityStandardDAOImpl extends BaseDAOImpl
@@ -27,7 +27,7 @@ public class CertifiedProductAccessibilityStandardDAOImpl extends BaseDAOImpl
         toCreateEntity.setCertifiedProductId(toCreate.getCertifiedProductId());
         toCreateEntity.setAccessibilityStandardId(toCreate.getAccessibilityStandardId());
         toCreateEntity.setLastModifiedDate(new Date());
-        toCreateEntity.setLastModifiedUser(Util.getAuditId());
+        toCreateEntity.setLastModifiedUser(AuthUtil.getAuditId());
         toCreateEntity.setCreationDate(new Date());
         toCreateEntity.setDeleted(false);
         entityManager.persist(toCreateEntity);
@@ -46,7 +46,7 @@ public class CertifiedProductAccessibilityStandardDAOImpl extends BaseDAOImpl
         }
         curr.setDeleted(true);
         curr.setLastModifiedDate(new Date());
-        curr.setLastModifiedUser(Util.getAuditId());
+        curr.setLastModifiedUser(AuthUtil.getAuditId());
         entityManager.persist(curr);
         entityManager.flush();
 

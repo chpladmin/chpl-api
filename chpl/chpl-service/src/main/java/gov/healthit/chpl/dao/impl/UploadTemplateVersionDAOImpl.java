@@ -5,8 +5,6 @@ import java.util.List;
 
 import javax.persistence.Query;
 
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.UploadTemplateVersionDAO;
@@ -30,9 +28,7 @@ public class UploadTemplateVersionDAOImpl extends BaseDAOImpl implements UploadT
 
         List<UploadTemplateVersionEntity> entities = query.getResultList();
         if (entities == null || entities.size() == 0) {
-            String msg = String.format(
-                    messageSource.getMessage(new DefaultMessageSourceResolvable("uploadTemplateVersion.notFound"),
-                            LocaleContextHolder.getLocale()));
+            String msg = msgUtil.getMessage("uploadTemplateVersion.notFound");
             throw new EntityRetrievalException(msg);
         } else {
             dto = new UploadTemplateVersionDTO(entities.get(0));
