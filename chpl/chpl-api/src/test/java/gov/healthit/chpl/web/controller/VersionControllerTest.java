@@ -15,9 +15,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -68,13 +70,12 @@ public class VersionControllerTest {
     private Environment env;
 
     @Autowired
-    @InjectMocks
     private ProductVersionController versionController;
 
     @Autowired
     private CertifiedProductDAO cpDao;
 
-    @Spy
+    @Autowired
     private FF4j ff4j;
 
     @Rule
