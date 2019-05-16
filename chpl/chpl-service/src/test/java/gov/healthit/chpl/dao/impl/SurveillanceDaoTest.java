@@ -21,9 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -36,10 +34,12 @@ import gov.healthit.chpl.domain.SurveillanceRequirement;
 import gov.healthit.chpl.domain.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
+import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)

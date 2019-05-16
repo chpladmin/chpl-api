@@ -15,7 +15,6 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.JobDAO;
 import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.dto.job.JobStatusDTO;
@@ -27,6 +26,7 @@ import gov.healthit.chpl.entity.job.JobStatusType;
 import gov.healthit.chpl.entity.job.JobTypeEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("jobDAO")
 public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
@@ -93,7 +93,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
                 message.setDeleted(true);
                 message.setLastModifiedDate(new Date());
                 message.setLastModifiedUser(
-                        Util.getCurrentUser() != null ? Util.getAuditId() : jobEntity.getUserId());
+                        AuthUtil.getCurrentUser() != null ? AuthUtil.getAuditId() : jobEntity.getUserId());
                 entityManager.merge(message);
             }
             entityManager.flush();
@@ -175,7 +175,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
         entity.setData(dto.getData());
         entity.setStartTime(dto.getStartTime());
         entity.setEndTime(dto.getEndTime());
-        entity.setLastModifiedUser(Util.getCurrentUser() != null ? Util.getAuditId() : entity.getUserId());
+        entity.setLastModifiedUser(AuthUtil.getCurrentUser() != null ? AuthUtil.getAuditId() : entity.getUserId());
         entity.setLastModifiedDate(new Date());
         entityManager.merge(entity);
         entityManager.flush();
@@ -191,7 +191,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedDate(new Date());
             toDelete.setLastModifiedUser(
-                    Util.getCurrentUser() != null ? Util.getAuditId() : toDelete.getUserId());
+                    AuthUtil.getCurrentUser() != null ? AuthUtil.getAuditId() : toDelete.getUserId());
             entityManager.merge(toDelete);
 
             if (toDelete.getStatus() != null) {
@@ -199,7 +199,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
                 status.setDeleted(true);
                 status.setLastModifiedDate(new Date());
                 status.setLastModifiedUser(
-                        Util.getCurrentUser() != null ? Util.getAuditId() : toDelete.getUserId());
+                        AuthUtil.getCurrentUser() != null ? AuthUtil.getAuditId() : toDelete.getUserId());
                 entityManager.merge(status);
             }
 
@@ -208,7 +208,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
                     message.setDeleted(true);
                     message.setLastModifiedDate(new Date());
                     message.setLastModifiedUser(
-                            Util.getCurrentUser() != null ? Util.getAuditId() : toDelete.getUserId());
+                            AuthUtil.getCurrentUser() != null ? AuthUtil.getAuditId() : toDelete.getUserId());
                     entityManager.merge(message);
                 }
             }

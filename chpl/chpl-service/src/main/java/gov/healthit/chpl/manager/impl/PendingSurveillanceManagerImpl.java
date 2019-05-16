@@ -20,16 +20,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.dao.UserDAO;
-import gov.healthit.chpl.auth.dao.UserPermissionDAO;
-import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.auth.manager.UserManager;
-import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.SurveillanceDAO;
+import gov.healthit.chpl.dao.auth.UserDAO;
+import gov.healthit.chpl.dao.auth.UserPermissionDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Contact;
@@ -47,6 +42,7 @@ import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.concept.JobTypeConcept;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.dto.job.JobTypeDTO;
 import gov.healthit.chpl.entity.ValidationMessageType;
@@ -62,6 +58,8 @@ import gov.healthit.chpl.entity.surveillance.SurveillanceRequirementEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ObjectMissingValidationException;
+import gov.healthit.chpl.exception.UserPermissionRetrievalException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
@@ -69,6 +67,8 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.JobManager;
 import gov.healthit.chpl.manager.PendingSurveillanceManager;
 import gov.healthit.chpl.manager.SurveillanceUploadManager;
+import gov.healthit.chpl.manager.auth.UserManager;
+import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 
@@ -261,14 +261,14 @@ public class PendingSurveillanceManagerImpl extends SecuredManager implements Pe
         // figure out the user
         UserDTO currentUser = null;
         try {
-            currentUser = userManager.getById(Util.getCurrentUser().getId());
+            currentUser = userManager.getById(AuthUtil.getCurrentUser().getId());
         } catch (final UserRetrievalException ex) {
-            LOGGER.error("Error finding user with ID " + Util.getCurrentUser().getId() + ": " + ex.getMessage());
+            LOGGER.error("Error finding user with ID " + AuthUtil.getCurrentUser().getId() + ": " + ex.getMessage());
             result.setJobStatus(SurveillanceUploadResult.UNAUTHORIZED);
             return result;
         }
         if (currentUser == null) {
-            LOGGER.error("No user with ID " + Util.getCurrentUser().getId() + " could be found in the system.");
+            LOGGER.error("No user with ID " + AuthUtil.getCurrentUser().getId() + " could be found in the system.");
             result.setJobStatus(SurveillanceUploadResult.UNAUTHORIZED);
             return result;
         }
@@ -325,7 +325,7 @@ public class PendingSurveillanceManagerImpl extends SecuredManager implements Pe
                 Surveillance uploaded = getPendingById(pendingId);
                 uploadedSurveillance.add(uploaded);
             } catch (final AccessDeniedException denied) {
-                LOGGER.error("User " + Util.getCurrentUser().getSubjectName()
+                LOGGER.error("User " + AuthUtil.getCurrentUser().getSubjectName()
                         + " does not have access to add surveillance"
                         + (owningCp != null ? " to ACB with ID '" + owningCp.getCertificationBodyId() + "'." : "."));
             } catch (Exception ex) {

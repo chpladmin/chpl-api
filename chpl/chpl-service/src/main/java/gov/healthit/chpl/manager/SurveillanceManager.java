@@ -4,10 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformityDocument;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
 
 public interface SurveillanceManager {

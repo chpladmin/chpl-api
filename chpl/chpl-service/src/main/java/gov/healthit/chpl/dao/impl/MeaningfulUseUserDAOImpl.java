@@ -8,12 +8,12 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.MeaningfulUseUserDAO;
 import gov.healthit.chpl.dto.MeaningfulUseUserDTO;
 import gov.healthit.chpl.entity.MeaningfulUseUserEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.AuthUtil;
 
 /**
  * Meaningful use user DAO implementation.
@@ -32,7 +32,7 @@ public class MeaningfulUseUserDAOImpl extends BaseDAOImpl implements MeaningfulU
         entity.setCertifiedProductId(dto.getCertifiedProductId());
         entity.setMuuCount(dto.getMuuCount());
         entity.setMuuDate(dto.getMuuDate());
-        entity.setLastModifiedUser(Util.getAuditId());
+        entity.setLastModifiedUser(AuthUtil.getAuditId());
         entity.setDeleted(false);
         entityManager.persist(entity);
         entityManager.flush();
@@ -48,7 +48,7 @@ public class MeaningfulUseUserDAOImpl extends BaseDAOImpl implements MeaningfulU
         }
         entity.setMuuCount(dto.getMuuCount());
         entity.setMuuDate(dto.getMuuDate());
-        entity.setLastModifiedUser(Util.getAuditId());
+        entity.setLastModifiedUser(AuthUtil.getAuditId());
         entityManager.merge(entity);
         entityManager.flush();
         return new MeaningfulUseUserDTO(entity);
@@ -61,7 +61,7 @@ public class MeaningfulUseUserDAOImpl extends BaseDAOImpl implements MeaningfulU
 
         if (toDelete != null) {
             toDelete.setDeleted(true);
-            toDelete.setLastModifiedUser(Util.getAuditId());
+            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             entityManager.merge(toDelete);
             entityManager.flush();
         }

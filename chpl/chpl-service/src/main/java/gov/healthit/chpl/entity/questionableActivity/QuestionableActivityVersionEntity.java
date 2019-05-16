@@ -12,8 +12,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.auth.entity.UserEntity;
 import gov.healthit.chpl.entity.ProductVersionEntity;
+import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.util.Util;
 
 @Entity

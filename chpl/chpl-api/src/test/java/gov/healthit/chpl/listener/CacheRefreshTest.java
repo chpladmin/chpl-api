@@ -27,7 +27,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
@@ -52,6 +51,7 @@ import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.domain.UpdateDevelopersRequest;
 import gov.healthit.chpl.domain.UpdateProductsRequest;
 import gov.healthit.chpl.domain.UpdateVersionsRequest;
+import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.job.JobEntity;
 import gov.healthit.chpl.entity.job.JobMessageEntity;
 import gov.healthit.chpl.util.Util;

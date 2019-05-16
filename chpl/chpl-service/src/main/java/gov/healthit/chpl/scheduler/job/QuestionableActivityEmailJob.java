@@ -29,7 +29,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.auth.EmailBuilder;
 import gov.healthit.chpl.dao.QuestionableActivityDAO;
 import gov.healthit.chpl.domain.concept.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityCertificationResultDTO;
@@ -38,6 +37,7 @@ import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityProductDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityTriggerDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityVersionDTO;
+import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.Util;
 
 /**

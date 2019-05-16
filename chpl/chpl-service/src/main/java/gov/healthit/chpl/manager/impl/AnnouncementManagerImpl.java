@@ -14,15 +14,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.AnnouncementDAO;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.AnnouncementDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.AnnouncementManager;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Service
 public class AnnouncementManagerImpl extends ApplicationObjectSupport implements AnnouncementManager {
@@ -81,7 +81,7 @@ public class AnnouncementManagerImpl extends ApplicationObjectSupport implements
 
     @Transactional(readOnly = true)
     public List<AnnouncementDTO> getAll() {
-        boolean isLoggedIn = Util.getCurrentUser() == null ? false : true;
+        boolean isLoggedIn = AuthUtil.getCurrentUser() == null ? false : true;
         return announcementDAO.findAll(isLoggedIn);
     }
 
@@ -94,7 +94,7 @@ public class AnnouncementManagerImpl extends ApplicationObjectSupport implements
     public AnnouncementDTO getById(Long id, boolean includeDeleted)
             throws EntityRetrievalException, AccessDeniedException {
         AnnouncementDTO result =  announcementDAO.getById(id, includeDeleted);
-        boolean isLoggedIn = Util.getCurrentUser() == null ? false : true;
+        boolean isLoggedIn = AuthUtil.getCurrentUser() == null ? false : true;
         if (!result.getIsPublic().booleanValue() && !isLoggedIn) {
             String msg = String.format(messageSource.getMessage(
                     new DefaultMessageSourceResolvable("announcement.accessDenied"),

@@ -9,13 +9,10 @@ import javax.persistence.Query;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.AddressDAO;
 import gov.healthit.chpl.dao.ContactDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
@@ -41,6 +38,7 @@ import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.listing.ListingsFromBannedDevelopersEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Repository("developerDAO")
@@ -102,7 +100,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
             if (dto.getLastModifiedUser() != null) {
                 entity.setLastModifiedUser(dto.getLastModifiedUser());
             } else {
-                entity.setLastModifiedUser(Util.getAuditId());
+                entity.setLastModifiedUser(AuthUtil.getAuditId());
             }
 
             if (dto.getLastModifiedDate() != null) {
@@ -177,7 +175,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
         mapping.setCreationDate(new Date());
         mapping.setDeleted(false);
         mapping.setLastModifiedDate(new Date());
-        mapping.setLastModifiedUser(Util.getAuditId());
+        mapping.setLastModifiedUser(AuthUtil.getAuditId());
         entityManager.persist(mapping);
         entityManager.flush();
         return new DeveloperACBMapDTO(mapping);
@@ -235,7 +233,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
         if (dto.getLastModifiedUser() != null) {
             entity.setLastModifiedUser(dto.getLastModifiedUser());
         } else {
-            entity.setLastModifiedUser(Util.getAuditId());
+            entity.setLastModifiedUser(AuthUtil.getAuditId());
         }
 
         if (dto.getLastModifiedDate() != null) {
@@ -263,7 +261,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
                 statusEvent.setDeveloperStatusId(defaultStatus.getId());
                 statusEvent.setReason(statusEventDto.getReason());
                 statusEvent.setStatusDate(statusEventDto.getStatusDate());
-                statusEvent.setLastModifiedUser(Util.getAuditId());
+                statusEvent.setLastModifiedUser(AuthUtil.getAuditId());
                 statusEvent.setDeleted(Boolean.FALSE);
                 entityManager.persist(statusEvent);
                 entityManager.flush();
@@ -333,7 +331,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 
         mapping.setTransparencyAttestation(AttestationType.getValue(dto.getTransparencyAttestation()));
         mapping.setLastModifiedDate(new Date());
-        mapping.setLastModifiedUser(Util.getAuditId());
+        mapping.setLastModifiedUser(AuthUtil.getAuditId());
         entityManager.persist(mapping);
         entityManager.flush();
         return new DeveloperACBMapDTO(mapping);
@@ -347,7 +345,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
         if (toDelete != null) {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(Util.getAuditId());
+            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             update(toDelete);
         }
     }
@@ -358,7 +356,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
         if (toDelete != null) {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(Util.getAuditId());
+            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             entityManager.persist(toDelete);
             entityManager.flush();
         }
@@ -657,8 +655,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
         List<DeveloperEntity> result = query.getResultList();
 
         if (result == null || result.size() == 0) {
-            String msg = String.format(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("developer.notFound"), LocaleContextHolder.getLocale()));
+            String msg = msgUtil.getMessage("developer.notFound");
             throw new EntityRetrievalException(msg);
         } else if (result.size() > 0) {
             entity = result.get(0);

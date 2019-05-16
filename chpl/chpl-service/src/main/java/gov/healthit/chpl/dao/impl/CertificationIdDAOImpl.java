@@ -13,12 +13,9 @@ import javax.persistence.Query;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertificationIdDAO;
 import gov.healthit.chpl.dto.CQMMetDTO;
 import gov.healthit.chpl.dto.CertificationIdAndCertifiedProductDTO;
@@ -28,6 +25,7 @@ import gov.healthit.chpl.entity.CertificationIdEntity;
 import gov.healthit.chpl.entity.CertificationIdProductMapEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.AuthUtil;
 
 /**
  * Certification ID Data Access Object.
@@ -125,7 +123,7 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
             if (dto.getLastModifiedUser() != null) {
                 entity.setLastModifiedUser(dto.getLastModifiedUser());
             } else {
-                entity.setLastModifiedUser(Util.getAuditId());
+                entity.setLastModifiedUser(AuthUtil.getAuditId());
             }
 
             if (dto.getLastModifiedDate() != null) {
@@ -301,8 +299,7 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
         List<CertificationIdEntity> result = query.getResultList();
 
         if (result == null || result.size() == 0) {
-            String msg = String.format(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("certificationId.notFound"), LocaleContextHolder.getLocale()));
+            String msg = msgUtil.getMessage("certificationId.notFound");
             throw new EntityRetrievalException(msg);
         } else if (result.size() > 1) {
             throw new EntityRetrievalException("Data error. Duplicate certificationId id in database.");
@@ -324,8 +321,7 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
         List<CertificationIdEntity> result = query.getResultList();
 
         if (result == null || result.size() == 0) {
-            String msg = String.format(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("certificationId.notFound"), LocaleContextHolder.getLocale()));
+            String msg = msgUtil.getMessage("certificationId.notFound");
             throw new EntityRetrievalException(msg);
         } else if (result.size() > 1) {
             throw new EntityRetrievalException("Data error. Duplicate certificationId in database.");

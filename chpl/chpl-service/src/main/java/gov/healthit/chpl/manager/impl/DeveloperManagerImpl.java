@@ -25,7 +25,6 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.FeatureList;
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -59,6 +58,7 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
@@ -234,7 +234,7 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
         // then nothing can be changed
         if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
                 && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
-            String msg = msgUtil.getMessage("developer.notActiveNotAdminCantChangeStatus", Util.getUsername(),
+            String msg = msgUtil.getMessage("developer.notActiveNotAdminCantChangeStatus", AuthUtil.getUsername(),
                     beforeDev.getName());
             LOGGER.error(msg);
             throw new EntityCreationException(msg);
@@ -508,7 +508,7 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
             CacheNames.GET_DECERTIFIED_DEVELOPERS
     }, allEntries = true)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
-            + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).UPDATE, #oldDeveloper)")
+            + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).SPLIT, #oldDeveloper)")
     public DeveloperDTO split(final DeveloperDTO oldDeveloper, final DeveloperDTO developerToCreate,
             final List<Long> productIdsToMove) throws ValidationException, AccessDeniedException,
             EntityRetrievalException, EntityCreationException, JsonProcessingException {

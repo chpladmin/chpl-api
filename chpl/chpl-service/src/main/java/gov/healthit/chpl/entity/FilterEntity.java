@@ -15,7 +15,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
 
-import gov.healthit.chpl.auth.entity.UserEntity;
+import gov.healthit.chpl.entity.auth.UserEntity;
 
 @Entity
 @Table(name = "filter")

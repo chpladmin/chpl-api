@@ -6,16 +6,14 @@ import java.util.List;
 
 import javax.persistence.Query;
 
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.entity.ProductVersionEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("productVersionDAO")
 public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersionDAO {
@@ -61,7 +59,7 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
             if (dto.getLastModifiedUser() != null) {
                 entity.setLastModifiedUser(dto.getLastModifiedUser());
             } else {
-                entity.setLastModifiedUser(Util.getAuditId());
+                entity.setLastModifiedUser(AuthUtil.getAuditId());
             }
             create(entity);
         }
@@ -101,7 +99,7 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
         if (dto.getLastModifiedUser() != null) {
             entity.setLastModifiedUser(dto.getLastModifiedUser());
         } else {
-            entity.setLastModifiedUser(Util.getAuditId());
+            entity.setLastModifiedUser(AuthUtil.getAuditId());
         }
 
         update(entity);
@@ -115,7 +113,7 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
         if (toDelete != null) {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(Util.getAuditId());
+            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             update(toDelete);
         }
     }
@@ -252,8 +250,7 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
 
         ProductVersionEntity entity = null;
         if (result == null || result.size() == 0) {
-            String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("version.notFound"),
-                    LocaleContextHolder.getLocale()));
+            String msg = msgUtil.getMessage("version.notFound");
             throw new EntityRetrievalException(msg);
         } else if (result.size() > 1) {
             throw new EntityRetrievalException("Data error. Duplicate product version id in database.");

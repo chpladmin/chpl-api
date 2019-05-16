@@ -2,7 +2,6 @@ package gov.healthit.chpl.web.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,28 +17,26 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.auth.dto.UserPermissionDTO;
-import gov.healthit.chpl.auth.json.User;
-import gov.healthit.chpl.auth.manager.UserManager;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.PermittedUser;
+import gov.healthit.chpl.domain.auth.User;
+import gov.healthit.chpl.domain.auth.UsersResponse;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
+import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import gov.healthit.chpl.web.controller.results.CertificationBodyResults;
-import gov.healthit.chpl.web.controller.results.PermittedUserResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -53,10 +50,10 @@ public class CertificationBodyController {
 
     @Autowired
     private ResourcePermissions resourcePermissions;
-    
+
     @Autowired
     private UserPermissionsManager userPermissionsManager;
-    
+
     @Autowired
     private UserManager userManager;
 
@@ -201,13 +198,6 @@ public class CertificationBodyController {
     produces = "application/json; charset=utf-8")
     public String deleteUserFromAcb(@PathVariable final Long acbId, @PathVariable final Long userId)
             throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
-
-        return deleteUser(acbId, userId);
-    }
-
-    private String deleteUser(final Long acbId, final Long userId)
-            throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
-
         UserDTO user = userManager.getById(userId);
         CertificationBodyDTO acb = resourcePermissions.getAcbIfPermissionById(acbId);
 
@@ -226,40 +216,21 @@ public class CertificationBodyController {
                     + "or read authority on the specified ACB")
     @RequestMapping(value = "/{acbId}/users", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
-    public @ResponseBody PermittedUserResults getUsers(@PathVariable("acbId") final Long acbId)
+    public @ResponseBody UsersResponse getUsers(@PathVariable("acbId") final Long acbId)
             throws InvalidArgumentsException, EntityRetrievalException {
         CertificationBodyDTO acb = resourcePermissions.getAcbIfPermissionById(acbId);
         if (acb == null) {
             throw new InvalidArgumentsException("Could not find the ACB specified.");
         }
 
-        List<PermittedUser> acbUsers = new ArrayList<PermittedUser>();
         List<UserDTO> users = resourcePermissions.getAllUsersOnAcb(acb);
-        for (UserDTO user : users) {
-
-            // only show users that have ROLE_ACB
-            Set<UserPermissionDTO> systemPermissions = userManager.getGrantedPermissionsForUser(user);
-            boolean hasAcbPermission = false;
-            for (UserPermissionDTO systemPermission : systemPermissions) {
-                if (systemPermission.getAuthority().equals("ROLE_ACB")) {
-                    hasAcbPermission = true;
-                }
-            }
-
-            if (hasAcbPermission) {
-                List<String> roleNames = new ArrayList<String>();
-                for (UserPermissionDTO role : systemPermissions) {
-                    roleNames.add(role.getAuthority());
-                }
-
-                PermittedUser userInfo = new PermittedUser();
-                userInfo.setUser(new User(user));
-                userInfo.setRoles(roleNames);
-                acbUsers.add(userInfo);
-            }
+        List<User> acbUsers = new ArrayList<User>(users.size());
+        for (UserDTO userDto : users) {
+            User acbUser = new User(userDto);
+            acbUsers.add(acbUser);
         }
 
-        PermittedUserResults results = new PermittedUserResults();
+        UsersResponse results = new UsersResponse();
         results.setUsers(acbUsers);
         return results;
     }

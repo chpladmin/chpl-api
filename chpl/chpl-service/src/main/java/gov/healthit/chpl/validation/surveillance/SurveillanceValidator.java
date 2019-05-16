@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -22,6 +21,7 @@ import gov.healthit.chpl.domain.SurveillanceRequirement;
 import gov.healthit.chpl.domain.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
+import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.domain.concept.RequirementTypeEnum;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;

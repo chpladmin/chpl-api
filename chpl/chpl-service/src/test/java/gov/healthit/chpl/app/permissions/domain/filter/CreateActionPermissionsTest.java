@@ -13,9 +13,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.healthit.chpl.app.permissions.domain.ActionPermissionsBaseTest;
-import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.dto.FilterDTO;
 import gov.healthit.chpl.dto.FilterTypeDTO;
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domains.filter.CreateActionPermissions;
 

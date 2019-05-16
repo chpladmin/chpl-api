@@ -6,10 +6,10 @@ import org.springframework.security.access.AccessDeniedException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dto.AnnouncementDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 
 public interface AnnouncementManager {
 
