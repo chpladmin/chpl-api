@@ -11,14 +11,14 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.healthit.chpl.auth.dao.UserDAO;
-import gov.healthit.chpl.auth.domain.Authority;
-import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.activity.ActivityDetails;
+import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.dto.AnnouncementDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
 @Component("actionGetActivityDetailsActionPermissions")

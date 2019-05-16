@@ -1,7 +1,7 @@
 package gov.healthit.chpl.auth.authentication;
 
-import gov.healthit.chpl.auth.jwt.JWTValidationException;
 import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.exception.JWTValidationException;
 
 public interface JWTUserConverter {
 

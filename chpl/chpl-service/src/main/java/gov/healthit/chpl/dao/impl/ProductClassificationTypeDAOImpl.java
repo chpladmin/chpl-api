@@ -7,12 +7,12 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.ProductClassificationTypeDAO;
 import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
 import gov.healthit.chpl.entity.ProductClassificationTypeEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("productClassificationTypeDAO")
 public class ProductClassificationTypeDAOImpl extends BaseDAOImpl implements ProductClassificationTypeDAO {
@@ -39,7 +39,7 @@ public class ProductClassificationTypeDAOImpl extends BaseDAOImpl implements Pro
             entity.setId(dto.getId());
             entity.setName(dto.getName());
             // entity.setLastModifiedDate(result.getLastModifiedDate());
-            entity.setLastModifiedUser(Util.getAuditId());
+            entity.setLastModifiedUser(AuthUtil.getAuditId());
 
             create(entity);
         }
@@ -55,7 +55,7 @@ public class ProductClassificationTypeDAOImpl extends BaseDAOImpl implements Pro
         entity.setId(dto.getId());
         entity.setName(dto.getName());
         // entity.setLastModifiedDate(result.getLastModifiedDate());
-        entity.setLastModifiedUser(Util.getAuditId());
+        entity.setLastModifiedUser(AuthUtil.getAuditId());
 
         update(entity);
     }

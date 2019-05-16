@@ -41,8 +41,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.EmailBuilder;
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
@@ -75,7 +73,9 @@ import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandler;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandlerFactory;
+import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
@@ -631,7 +631,7 @@ public class CertifiedProductController {
                     && !resourcePermissions.isUserRoleOnc()
                     && !resourcePermissions.isUserRoleAdmin()) {
                 updatedListing.getErrorMessages()
-                .add("User " + Util.getUsername()
+                .add("User " + AuthUtil.getUsername()
                 + " does not have permission to change certification status of "
                 + existingListing.getChplProductNumber() + " from "
                 + existingListing.getCurrentStatus().getStatus().getName() + " to "
@@ -1070,7 +1070,7 @@ public class CertifiedProductController {
 
         //create the email body
         String htmlBody = "<p>Upload attempted at " + new Date()
-                + "<br/>Uploaded by " + Util.getUsername() + "</p>";
+                + "<br/>Uploaded by " + AuthUtil.getUsername() + "</p>";
         StringWriter writer = new StringWriter();
         ex.printStackTrace(new PrintWriter(writer));
         htmlBody += "<pre>" + writer.toString() + "</pre>";

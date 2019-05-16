@@ -6,8 +6,8 @@ import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
 
-import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
+import gov.healthit.chpl.dto.auth.UserDTO;
 
 public class JWTAuthenticatedUser implements User {
 

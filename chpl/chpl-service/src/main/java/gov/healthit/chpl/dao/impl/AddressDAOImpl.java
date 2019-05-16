@@ -11,12 +11,12 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.AddressDAO;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.entity.AddressEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("addressDao")
 public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
@@ -42,7 +42,7 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
         if (dto.getLastModifiedUser() != null) {
             toInsert.setLastModifiedUser(dto.getLastModifiedUser());
         } else {
-            toInsert.setLastModifiedUser(Util.getAuditId());
+            toInsert.setLastModifiedUser(AuthUtil.getAuditId());
         }
         if (dto.getLastModifiedDate() != null) {
             toInsert.setLastModifiedDate(dto.getLastModifiedDate());
@@ -93,7 +93,7 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
         if (addressDto.getLastModifiedUser() != null) {
             address.setLastModifiedUser(addressDto.getLastModifiedUser());
         } else {
-            address.setLastModifiedUser(Util.getAuditId());
+            address.setLastModifiedUser(AuthUtil.getAuditId());
         }
         if (addressDto.getLastModifiedDate() != null) {
             address.setLastModifiedDate(addressDto.getLastModifiedDate());
@@ -113,7 +113,7 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
         if (toDelete != null) {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(Util.getAuditId());
+            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             entityManager.merge(toDelete);
         }
     }

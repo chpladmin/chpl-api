@@ -1,9 +1,16 @@
 
-
-## Version 20.11.0
+## Version 21.0.0
 _Date TBD_
 
-### New Features
+### Backwards compatibility breaking features
+* Moved permissions from many-to-many relationship with users to a one-to-many so that each user may only have one role. Invitations are sent slightly differently and logic enforces a user having a single role within the system while ACB and ATL users may still have access to multiple ACBs and ATLs. Returned user data is also slightly different as it has only a single role per user rather than a set of granted permissions. Affected endpoints include:
+  * /users/invite
+  * /users
+  * /acbs/{id}/users
+  * /atls/{id}/users
+
+### New features
+* Add endpoints to provide ability for users to save filters for admin report
 * Updated product and version activity metadata to parse activity for merges and splits; better parsing of product and developer names if they have been deleted.
 * Added endpoints for ACB and ATL activity metadata.
   * /activity/metadata/acbs
@@ -15,7 +22,6 @@ _Date TBD_
   * /activity/acb/{acbId}
   * /activity/atls
   * /activity/atl/{atlId}
-* Add endpoints to provide ability for users to save filters for admin reports
 
 ### Bugs Fixed
 * Correctly handle scheduled job update when an ACB is renamed.

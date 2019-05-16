@@ -11,12 +11,12 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.ContactDAO;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.entity.ContactEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("contactDao")
 public class ContactDAOImpl extends BaseDAOImpl implements ContactDAO {
@@ -36,7 +36,7 @@ public class ContactDAOImpl extends BaseDAOImpl implements ContactDAO {
         toInsert.setDeleted(false);
         toInsert.setCreationDate(new Date());
         toInsert.setLastModifiedDate(new Date());
-        toInsert.setLastModifiedUser(Util.getAuditId());
+        toInsert.setLastModifiedUser(AuthUtil.getAuditId());
         entityManager.persist(toInsert);
         entityManager.flush();
         return toInsert;
@@ -55,7 +55,7 @@ public class ContactDAOImpl extends BaseDAOImpl implements ContactDAO {
         contact.setSignatureDate(dto.getSignatureDate());
 
         contact.setLastModifiedDate(new Date());
-        contact.setLastModifiedUser(Util.getAuditId());
+        contact.setLastModifiedUser(AuthUtil.getAuditId());
         entityManager.merge(contact);
         return contact;
     }
@@ -68,7 +68,7 @@ public class ContactDAOImpl extends BaseDAOImpl implements ContactDAO {
         if (toDelete != null) {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(Util.getAuditId());
+            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             entityManager.merge(toDelete);
         }
     }

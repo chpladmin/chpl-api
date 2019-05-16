@@ -5,11 +5,11 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Component("actionGetActivityMetadataByAcbActionPermissions")
 public class GetActivityMetadataByAcbActionPermissions extends ActionPermissions {
@@ -39,7 +39,7 @@ public class GetActivityMetadataByAcbActionPermissions extends ActionPermissions
             try {
                 acb = acbDao.getById(acbId);
                 if (acb != null && acb.isRetired()) {
-                    LOGGER.warn("Non-admin user " + Util.getUsername()
+                    LOGGER.warn("Non-admin user " + AuthUtil.getUsername()
                     + " tried to see activity for retired ACB " + acb.getName());
                     return false;
                 }

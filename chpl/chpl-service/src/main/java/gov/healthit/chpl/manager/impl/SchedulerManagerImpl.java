@@ -29,7 +29,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
@@ -39,6 +38,7 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.scheduler.ChplSchedulerReference;
+import gov.healthit.chpl.util.AuthUtil;
 
 /**
  * Implementation of Scheduler Manager.
@@ -305,7 +305,7 @@ public class SchedulerManagerImpl extends SecuredManager implements SchedulerMan
         if (jobDetail.getJobDataMap().containsKey("authorities")) {
             List<String> authorities = new ArrayList<String>(
                     Arrays.asList(jobDetail.getJobDataMap().get("authorities").toString().split(AUTHORITY_DELIMITER)));
-            Set<GrantedPermission> userRoles = Util.getCurrentUser().getPermissions();
+            Set<GrantedPermission> userRoles = AuthUtil.getCurrentUser().getPermissions();
             for (GrantedPermission permission : userRoles) {
                 for (String authority : authorities) {
                     if (permission.getAuthority().equalsIgnoreCase(authority)) {

@@ -8,18 +8,16 @@ import javax.persistence.Query;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.AddressDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.entity.TestingLabEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.AuthUtil;
 
 /**
  * Data access methods for testing labs (ATLs).
@@ -64,7 +62,7 @@ public class TestingLabDAOImpl extends BaseDAOImpl implements TestingLabDAO {
             entity.setTestingLabCode(dto.getTestingLabCode());
             entity.setRetired(dto.isRetired());
             entity.setRetirementDate(dto.getRetirementDate());
-            entity.setLastModifiedUser(Util.getAuditId());
+            entity.setLastModifiedUser(AuthUtil.getAuditId());
             create(entity);
             return new TestingLabDTO(entity);
         }
@@ -105,7 +103,7 @@ public class TestingLabDAOImpl extends BaseDAOImpl implements TestingLabDAO {
         if (dto.getTestingLabCode() != null) {
             entity.setTestingLabCode(dto.getTestingLabCode());
         }
-        entity.setLastModifiedUser(Util.getAuditId());
+        entity.setLastModifiedUser(AuthUtil.getAuditId());
         update(entity);
         return new TestingLabDTO(entity);
     }
@@ -223,8 +221,7 @@ public class TestingLabDAOImpl extends BaseDAOImpl implements TestingLabDAO {
         List<TestingLabEntity> result = query.getResultList();
 
         if (result == null || result.size() == 0) {
-            String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("atl.notFound"),
-                    LocaleContextHolder.getLocale()));
+            String msg = msgUtil.getMessage("atl.notFound");
             throw new EntityRetrievalException(msg);
         } else if (result.size() > 1) {
             throw new EntityRetrievalException("Data error. Duplicate testing lab id in database.");

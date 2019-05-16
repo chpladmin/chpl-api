@@ -22,7 +22,7 @@ public abstract class ActionPermissions {
 
     public abstract boolean hasAccess(Object obj);
 
-    public boolean isAcbValidForCurrentUser(Long acbId) {
+    public boolean isAcbValidForCurrentUser(final Long acbId) {
         List<CertificationBodyDTO> acbs = resourcePermissions.getAllAcbsForCurrentUser();
         for (CertificationBodyDTO dto : acbs) {
             if (dto.getId().equals(acbId)) {
@@ -32,7 +32,7 @@ public abstract class ActionPermissions {
         return false;
     }
 
-    public boolean isAtlValidForCurrentUser(Long atlId) {
+    public boolean isAtlValidForCurrentUser(final Long atlId) {
         List<TestingLabDTO> atls = resourcePermissions.getAllAtlsForCurrentUser();
         for (TestingLabDTO dto : atls) {
             if (dto.getId().equals(atlId)) {
