@@ -12,7 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.auth.entity.UserEntity;
+import gov.healthit.chpl.entity.auth.UserEntity;
 
 @Entity
 @Table(name = "user_testing_lab_map")

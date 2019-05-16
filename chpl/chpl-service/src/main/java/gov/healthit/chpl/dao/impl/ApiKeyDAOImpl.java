@@ -8,17 +8,15 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.ApiKeyDAO;
 import gov.healthit.chpl.dto.ApiKeyDTO;
 import gov.healthit.chpl.entity.ApiKeyEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("apiKeyDAO")
 public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
@@ -57,7 +55,7 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
             }
             entity.setDeleted(dto.getDeleted());
             if (dto.getLastModifiedUser() == null) {
-                entity.setLastModifiedUser(Util.getAuditId());
+                entity.setLastModifiedUser(AuthUtil.getAuditId());
             } else {
                 entity.setLastModifiedUser(dto.getLastModifiedUser());
             }
@@ -83,7 +81,7 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
             entity.setLastModifiedDate(dto.getLastModifiedDate());
         }
         if (dto.getLastModifiedUser() == null) {
-            entity.setLastModifiedUser(Util.getAuditId());
+            entity.setLastModifiedUser(AuthUtil.getAuditId());
         } else {
             entity.setLastModifiedUser(dto.getLastModifiedUser());
         }
@@ -279,8 +277,7 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
         List<ApiKeyEntity> result = query.getResultList();
 
         if (result == null || result.size() == 0) {
-            String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("apikey.notFound"),
-                    LocaleContextHolder.getLocale()));
+            String msg = msgUtil.getMessage("apikey.notFound");
             throw new EntityRetrievalException(msg);
         } else if (result.size() > 1) {
             throw new EntityRetrievalException("Data error. Duplicate api key id in database.");
@@ -298,8 +295,7 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
         List<ApiKeyEntity> result = query.getResultList();
 
         if (result == null || result.size() == 0) {
-            String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("apikey.notFound"),
-                    LocaleContextHolder.getLocale()));
+            String msg = msgUtil.getMessage("apikey.notFound");
             throw new EntityRetrievalException(msg);
         } else {
             entity = result.get(0);

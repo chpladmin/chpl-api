@@ -5,11 +5,11 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Component("actionGetActivityMetadataByAtlActionPermissions")
 public class GetActivityMetadataByAtlActionPermissions extends ActionPermissions {
@@ -39,7 +39,7 @@ public class GetActivityMetadataByAtlActionPermissions extends ActionPermissions
             try {
                 atl = atlDao.getById(atlId);
                 if (atl != null && atl.isRetired()) {
-                    LOGGER.warn("Non-admin user " + Util.getUsername()
+                    LOGGER.warn("Non-admin user " + AuthUtil.getUsername()
                     + " tried to see activity for retired ATL " + atl.getName());
                     return false;
                 }

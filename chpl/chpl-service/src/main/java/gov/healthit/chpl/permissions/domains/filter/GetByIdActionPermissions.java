@@ -3,10 +3,10 @@ package gov.healthit.chpl.permissions.domains.filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.FilterDAO;
 import gov.healthit.chpl.dto.FilterDTO;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Component("filterGetByIdActionPermissions")
 public class GetByIdActionPermissions extends ActionPermissions {
@@ -31,10 +31,10 @@ public class GetByIdActionPermissions extends ActionPermissions {
             try {
                 Long filterId = (Long) obj;
                 FilterDTO origFilter = filterDAO.getById(filterId);
-                if (Util.getCurrentUser() == null) {
+                if (AuthUtil.getCurrentUser() == null) {
                     return false;
                 } else {
-                    return origFilter.getUser().getId().equals(Util.getCurrentUser().getId());
+                    return origFilter.getUser().getId().equals(AuthUtil.getCurrentUser().getId());
                 }
             } catch (Exception e) {
                 return false;

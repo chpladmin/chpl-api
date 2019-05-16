@@ -13,16 +13,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.TestingLabManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Service
 public class TestingLabManagerImpl extends SecuredManager implements TestingLabManager {
@@ -61,10 +61,10 @@ public class TestingLabManagerImpl extends SecuredManager implements TestingLabM
         TestingLabDTO result = testingLabDAO.create(atl);
 
         // Grant the user administrative permission to the ATL
-        userPermissionsManager.addAtlPermission(result, Util.getAuditId());
+        userPermissionsManager.addAtlPermission(result, AuthUtil.getAuditId());
 
         LOGGER.debug("Created testing lab " + result + " and granted admin permission to recipient "
-                + gov.healthit.chpl.auth.Util.getUsername());
+                + gov.healthit.chpl.util.AuthUtil.getUsername());
 
         String activityMsg = "Created Testing Lab " + result.getName();
 
