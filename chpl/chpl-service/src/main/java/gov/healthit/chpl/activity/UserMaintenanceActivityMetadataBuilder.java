@@ -4,13 +4,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.domain.activity.ActivityCategory;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.UserMaintenanceActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
+import gov.healthit.chpl.dto.auth.UserDTO;
 
 @Component("userMaintenanceActivityMetadataBuilder")
 public class UserMaintenanceActivityMetadataBuilder extends ActivityMetadataBuilder {
@@ -20,7 +21,6 @@ public class UserMaintenanceActivityMetadataBuilder extends ActivityMetadataBuil
     public UserMaintenanceActivityMetadataBuilder() {
         super();
         jsonMapper = new ObjectMapper();
-
     }
 
     @Override
@@ -50,6 +50,7 @@ public class UserMaintenanceActivityMetadataBuilder extends ActivityMetadataBuil
     private UserDTO getUserDtoFromJson(String json, Long dtoId) {
         UserDTO userDTO = null;
         try {
+            jsonMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
             userDTO = jsonMapper.readValue(json, UserDTO.class);
         } catch (final Exception ex) {
             LOGGER.error("Could not parse activity ID " + dtoId + " original data. " + "JSON was: " + json, ex);
