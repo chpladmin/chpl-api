@@ -8,6 +8,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.acls.domain.ObjectIdentityImpl;
+import org.springframework.security.acls.model.MutableAclService;
+import org.springframework.security.acls.model.ObjectIdentity;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,16 +37,18 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
     private UserTestingLabMapDAO userTestingLabMapDAO;
     private UserDAO userDAO;
     private UserManager userManager;
+    private MutableAclService mutableAclService;
 
     @Autowired
     public UserPermissionsManagerImpl(final UserCertificationBodyMapDAO userCertificationBodyMapDAO,
             final UserTestingLabMapDAO userTestingLabMapDAO, final UserDAO userDAO,
-            final UserManager userManager) {
+            final UserManager userManager, final MutableAclService mutableAclService) {
 
         this.userCertificationBodyMapDAO = userCertificationBodyMapDAO;
         this.userTestingLabMapDAO = userTestingLabMapDAO;
         this.userDAO = userDAO;
         this.userManager = userManager;
+        this.mutableAclService = mutableAclService;
     }
 
     @Override
@@ -94,10 +99,23 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
             UserDTO toDelete = new UserDTO();
             toDelete.setId(userId);
             try {
-                userManager.delete(toDelete);
+                // We can't call the user manager delete method here because
+                // that only lets role onc and role admin remove the user.
+                // We can't modify the permissions checker to confirm that
+                // the user to be deleted has the same membership as the calling
+                // user because at this point that membership has been removed.
+                // Just delete the user here.
+
+                // remove all ACLs for this user
+                //should only be one - for themselves
+                ObjectIdentity oid = new ObjectIdentityImpl(UserDTO.class, userId);
+                mutableAclService.deleteAcl(oid, false);
+
+                // now delete the user
+                userDAO.delete(userId);
                 LOGGER.info("User " + userId + " was removed from ACB "
                         + acb.getId() + " and had no additional permissions. The user was deleted.");
-            } catch (UserManagementException | UserPermissionRetrievalException | UserRetrievalException ex) {
+            } catch (UserRetrievalException ex) {
                 LOGGER.error("Could not delete the user " + userId, ex);
             }
         }
