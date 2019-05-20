@@ -1,13 +1,12 @@
 package gov.healthit.chpl.auth.jwt;
 
-
-
 import java.util.List;
 import java.util.Map;
 
+import gov.healthit.chpl.dto.auth.UserDTO;
 
 public interface JWTAuthor {
-	
-	public String createJWT(String subject, Map<String, List<String> > claims) ;
-	
+
+    public String createJWT(UserDTO user, Map<String, String> stringClaims, Map<String, List<String>> listClaims);
+
 }

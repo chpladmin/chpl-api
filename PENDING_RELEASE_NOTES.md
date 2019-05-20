@@ -1,19 +1,13 @@
 
-## Version 20.11.0
+## Version 21.1.0
 _Date TBD_
 
 ### New Features
 * Add FF4j framework (feature flags)
-* Added endpoints for ACB and ATL activity metadata.
-  * /activity/metadata/acbs
-  * /activity/metadata/acb/{acbId}
-  * /activity/metadata/atls
-  * /activity/metadata/atl/{atlId}
-* Deprecated existing endpoints for ACB and ATL activity
-  * /activity/acbs
-  * /activity/acb/{acbId}
-  * /activity/atls
-  * /activity/atl/{atlId}
 * Add endpoints to provide ability for users to save filters for admin reports
+
+### Bugs Fixed
+* Correctly handle scheduled job update when an ACB is renamed.
+* Send 401 error back to consumer if JWT token is invalid
 
 ---

@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 
-public interface User extends UserDetails , Authentication {
+public interface User extends UserDetails, Authentication {
 
     public static final Long ADMIN_USER_ID = -2L;
     public static final Long SYSTEM_USER_ID = -3L;

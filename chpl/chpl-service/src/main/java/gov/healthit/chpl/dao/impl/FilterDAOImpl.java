@@ -9,13 +9,13 @@ import javax.persistence.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.FilterDAO;
 import gov.healthit.chpl.dto.FilterDTO;
 import gov.healthit.chpl.dto.FilterTypeDTO;
 import gov.healthit.chpl.entity.FilterEntity;
 import gov.healthit.chpl.entity.FilterTypeEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Repository("filterDAO")
@@ -33,13 +33,13 @@ public class FilterDAOImpl extends BaseDAOImpl implements FilterDAO {
         FilterEntity entity = getEntityById(dto.getId());
 
         entity.setFilter(dto.getFilter());
-        entity.setLastModifiedUser(Util.getAuditId());
+        entity.setLastModifiedUser(AuthUtil.getAuditId());
         entity.setFilterType(new FilterTypeEntity());
         entity.getFilterType().setId(dto.getFilterType().getId());
         entity.getFilterType().setName(dto.getFilterType().getName());
         entity.setUserId(dto.getUser().getId());
         entity.setDeleted(false);
-        entity.setLastModifiedUser(Util.getAuditId());
+        entity.setLastModifiedUser(AuthUtil.getAuditId());
 
         entityManager.merge(entity);
         entityManager.flush();
@@ -57,7 +57,7 @@ public class FilterDAOImpl extends BaseDAOImpl implements FilterDAO {
         entity.getFilterType().setName(dto.getFilterType().getName());
         entity.setUserId(dto.getUser().getId());
         entity.setDeleted(false);
-        entity.setLastModifiedUser(Util.getAuditId());
+        entity.setLastModifiedUser(AuthUtil.getAuditId());
         entity.setCreationDate(new Date());
         entity.setLastModifiedDate(new Date());
 
@@ -88,7 +88,7 @@ public class FilterDAOImpl extends BaseDAOImpl implements FilterDAO {
         FilterEntity entity = getEntityById(dto.getId());
         if (entity != null) {
             entity.setDeleted(true);
-            entity.setLastModifiedUser(Util.getAuditId());
+            entity.setLastModifiedUser(AuthUtil.getAuditId());
             entityManager.merge(entity);
             entityManager.flush();
         }

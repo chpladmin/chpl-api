@@ -24,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
@@ -32,6 +31,7 @@ import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.AuthUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
@@ -85,7 +85,7 @@ public class CQMCriterionDaoTest {
         dto.setCreationDate(new Date());
         dto.setDeleted(false);
         dto.setLastModifiedDate(new Date());
-        dto.setLastModifiedUser(Util.getAuditId());
+        dto.setLastModifiedUser(AuthUtil.getAuditId());
         dto.setRetired(false);
 
         CQMCriterionDTO result = cqmCriterionDAO.create(dto);
@@ -133,7 +133,7 @@ public class CQMCriterionDaoTest {
         dto.setCreationDate(new Date());
         dto.setDeleted(false);
         dto.setLastModifiedDate(new Date());
-        dto.setLastModifiedUser(Util.getAuditId());
+        dto.setLastModifiedUser(AuthUtil.getAuditId());
         dto.setRetired(false);
 
         CQMCriterionDTO result = cqmCriterionDAO.create(dto);
@@ -151,7 +151,7 @@ public class CQMCriterionDaoTest {
         result.setCreationDate(new Date());
         result.setDeleted(false);
         result.setLastModifiedDate(new Date());
-        result.setLastModifiedUser(Util.getAuditId());
+        result.setLastModifiedUser(AuthUtil.getAuditId());
 
         cqmCriterionDAO.update(result);
 
@@ -199,7 +199,7 @@ public class CQMCriterionDaoTest {
         dto.setCreationDate(new Date());
         dto.setDeleted(false);
         dto.setLastModifiedDate(new Date());
-        dto.setLastModifiedUser(Util.getAuditId());
+        dto.setLastModifiedUser(AuthUtil.getAuditId());
         dto.setRetired(false);
 
         CQMCriterionDTO result = cqmCriterionDAO.create(dto);
@@ -259,7 +259,7 @@ public class CQMCriterionDaoTest {
         dto.setCreationDate(new Date());
         dto.setDeleted(false);
         dto.setLastModifiedDate(new Date());
-        dto.setLastModifiedUser(Util.getAuditId());
+        dto.setLastModifiedUser(AuthUtil.getAuditId());
         dto.setRetired(false);
 
         CQMCriterionDTO result = cqmCriterionDAO.create(dto);

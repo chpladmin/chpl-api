@@ -100,7 +100,7 @@ public class CHPLAuthenticationSecurityTestConfig extends WebSecurityConfigurerA
     public org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean bean = new org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean();
         bean.setDataSource(dataSource());
-        bean.setPersistenceUnitName(env.getProperty("authPersistenceUnitName"));
+        bean.setPersistenceUnitName(env.getProperty("persistenceUnitName"));
         return bean;
     }
 

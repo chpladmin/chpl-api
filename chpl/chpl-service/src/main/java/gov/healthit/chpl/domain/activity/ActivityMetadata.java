@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import gov.healthit.chpl.auth.json.User;
+import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.util.Util;
 
 /**

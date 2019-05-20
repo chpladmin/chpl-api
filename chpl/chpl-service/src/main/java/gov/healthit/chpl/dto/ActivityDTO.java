@@ -3,8 +3,8 @@ package gov.healthit.chpl.dto;
 import java.io.Serializable;
 import java.util.Date;
 
-import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.ActivityEntity;
 import gov.healthit.chpl.util.Util;
 

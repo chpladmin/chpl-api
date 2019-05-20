@@ -35,7 +35,6 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
@@ -163,6 +162,7 @@ import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Service("certifiedProductManager")
@@ -462,7 +462,7 @@ public class CertifiedProductManagerImpl extends SecuredManager implements Certi
         toCreate.setCreationDate(new Date());
         toCreate.setDeleted(false);
         toCreate.setLastModifiedDate(new Date());
-        toCreate.setLastModifiedUser(Util.getAuditId());
+        toCreate.setLastModifiedUser(AuthUtil.getAuditId());
 
         if (pendingCp.getCertificationBodyId() == null) {
             throw new EntityCreationException("ACB ID must be specified.");
@@ -1179,7 +1179,7 @@ public class CertifiedProductManagerImpl extends SecuredManager implements Certi
                                 .getByName(DeveloperStatusType.UnderCertificationBanByOnc.toString());
                     }
                 } else if (!resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
-                    LOGGER.error("User " + Util.getUsername()
+                    LOGGER.error("User " + AuthUtil.getUsername()
                             + " does not have ROLE_ADMIN or ROLE_ONC and cannot change the status of developer for certified "
                             + "product with id " + listingId);
                     throw new AccessDeniedException(
@@ -2248,7 +2248,7 @@ public class CertifiedProductManagerImpl extends SecuredManager implements Certi
                     .usingJobData("acb",
                             updatedListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString())
                     .usingJobData("changeDate", new Date().getTime())
-                    .usingJobData("fullName", Util.getCurrentUser().getFullName())
+                    .usingJobData("fullName", AuthUtil.getCurrentUser().getFullName())
                     .usingJobData("effectiveDate", updatedListing.getCurrentStatus().getEventDate())
                     .usingJobData("openNcs", updatedListing.getCountOpenNonconformities())
                     .usingJobData("closedNcs", updatedListing.getCountClosedNonconformities())

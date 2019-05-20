@@ -11,7 +11,6 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -20,6 +19,7 @@ import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.manager.QuestionableActivityManager;
+import gov.healthit.chpl.util.AuthUtil;
 
 /**
  * Checks for and adds Questionable Activity when appropriate.
@@ -75,13 +75,13 @@ public class QuestionableActivityListener implements EnvironmentAware {
             final Object newData, final String reason) {
         if (originalData == null || newData == null
                 || !originalData.getClass().equals(newData.getClass())
-                || Util.getCurrentUser() == null) {
+                || AuthUtil.getCurrentUser() == null) {
             return;
         }
 
         //all questionable activity from this action should have the exact same date and user id
         Date activityDate = new Date();
-        Long activityUser = Util.getAuditId();
+        Long activityUser = AuthUtil.getAuditId();
 
         if (originalData instanceof CertifiedProductSearchDetails
                 && newData instanceof CertifiedProductSearchDetails) {
@@ -134,13 +134,13 @@ public class QuestionableActivityListener implements EnvironmentAware {
             final Long objectId, final String activityDescription, final Object originalData, final Object newData) {
         if (originalData == null || newData == null
                 || !originalData.getClass().equals(newData.getClass())
-                || Util.getCurrentUser() == null) {
+                || AuthUtil.getCurrentUser() == null) {
             return;
         }
 
         //all questionable activity from this action should have the exact same date and user id
         Date activityDate = new Date();
-        Long activityUser = Util.getAuditId();
+        Long activityUser = AuthUtil.getAuditId();
 
         if (originalData instanceof DeveloperDTO && newData instanceof DeveloperDTO) {
             DeveloperDTO origDeveloper = (DeveloperDTO) originalData;

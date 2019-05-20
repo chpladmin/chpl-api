@@ -16,7 +16,6 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.TestParticipantDAO;
 import gov.healthit.chpl.dao.TestTaskDAO;
@@ -48,6 +47,7 @@ import gov.healthit.chpl.entity.listing.CertificationResultUcdProcessEntity;
 import gov.healthit.chpl.entity.listing.TestTaskParticipantMapEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Repository(value = "certificationResultDAO")
 public class CertificationResultDAOImpl extends BaseDAOImpl implements CertificationResultDAO {
@@ -85,7 +85,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
             entity.setSuccess(result.getSuccessful());
             entity.setApiDocumentation(result.getApiDocumentation());
             entity.setPrivacySecurityFramework(result.getPrivacySecurityFramework());
-            entity.setLastModifiedUser(Util.getAuditId());
+            entity.setLastModifiedUser(AuthUtil.getAuditId());
 
             try {
                 entityManager.persist(entity);
@@ -115,7 +115,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         entity.setSuccess(toUpdate.getSuccessful());
         entity.setApiDocumentation(toUpdate.getApiDocumentation());
         entity.setPrivacySecurityFramework(toUpdate.getPrivacySecurityFramework());
-        entity.setLastModifiedUser(Util.getAuditId());
+        entity.setLastModifiedUser(AuthUtil.getAuditId());
 
         try {
             entityManager.merge(entity);
@@ -272,7 +272,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         mapping.setCreationDate(new Date());
         mapping.setDeleted(false);
         mapping.setLastModifiedDate(new Date());
-        mapping.setLastModifiedUser(Util.getAuditId());
+        mapping.setLastModifiedUser(AuthUtil.getAuditId());
         try {
             entityManager.persist(mapping);
             entityManager.flush();
@@ -293,7 +293,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         if (toDelete != null) {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(Util.getAuditId());
+            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             entityManager.persist(toDelete);
             entityManager.flush();
         }
@@ -308,7 +308,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         toUpdate.setUcdProcessDetails(dto.getUcdProcessDetails());
         toUpdate.setUcdProcessId(dto.getUcdProcessId());
         toUpdate.setLastModifiedDate(new Date());
-        toUpdate.setLastModifiedUser(Util.getAuditId());
+        toUpdate.setLastModifiedUser(AuthUtil.getAuditId());
         try {
             entityManager.persist(toUpdate);
             entityManager.flush();
@@ -384,7 +384,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         mapping.setCreationDate(new Date());
         mapping.setDeleted(false);
         mapping.setLastModifiedDate(new Date());
-        mapping.setLastModifiedUser(Util.getAuditId());
+        mapping.setLastModifiedUser(AuthUtil.getAuditId());
 
         try {
             entityManager.persist(mapping);
@@ -407,7 +407,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         if (toDelete != null) {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(Util.getAuditId());
+            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             entityManager.persist(toDelete);
             entityManager.flush();
         }
@@ -428,7 +428,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         curr.setName(toUpdate.getName());
         curr.setVersion(toUpdate.getVersion());
         curr.setLastModifiedDate(new Date());
-        curr.setLastModifiedUser(Util.getAuditId());
+        curr.setLastModifiedUser(AuthUtil.getAuditId());
 
         try {
             entityManager.merge(curr);
@@ -522,7 +522,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         mapping.setCreationDate(new Date());
         mapping.setDeleted(false);
         mapping.setLastModifiedDate(new Date());
-        mapping.setLastModifiedUser(Util.getAuditId());
+        mapping.setLastModifiedUser(AuthUtil.getAuditId());
         entityManager.persist(mapping);
         entityManager.flush();
 
@@ -535,7 +535,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         if (toDelete != null) {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(Util.getAuditId());
+            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             entityManager.persist(toDelete);
             entityManager.flush();
         }
@@ -619,7 +619,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         mapping.setCreationDate(new Date());
         mapping.setDeleted(false);
         mapping.setLastModifiedDate(new Date());
-        mapping.setLastModifiedUser(Util.getAuditId());
+        mapping.setLastModifiedUser(AuthUtil.getAuditId());
         try {
             entityManager.persist(mapping);
             entityManager.flush();
@@ -640,7 +640,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         if (toDelete != null) {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(Util.getAuditId());
+            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             entityManager.persist(toDelete);
             entityManager.flush();
         }
@@ -704,7 +704,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         mapping.setCreationDate(new Date());
         mapping.setDeleted(false);
         mapping.setLastModifiedDate(new Date());
-        mapping.setLastModifiedUser(Util.getAuditId());
+        mapping.setLastModifiedUser(AuthUtil.getAuditId());
         entityManager.persist(mapping);
         entityManager.flush();
 
@@ -718,7 +718,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         if (toDelete != null) {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(Util.getAuditId());
+            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             entityManager.persist(toDelete);
             entityManager.flush();
         }
@@ -791,7 +791,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         mapping.setCreationDate(new Date());
         mapping.setDeleted(false);
         mapping.setLastModifiedDate(new Date());
-        mapping.setLastModifiedUser(Util.getAuditId());
+        mapping.setLastModifiedUser(AuthUtil.getAuditId());
         entityManager.persist(mapping);
         entityManager.flush();
 
@@ -805,7 +805,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         if (toDelete != null) {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(Util.getAuditId());
+            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             entityManager.persist(toDelete);
             entityManager.flush();
         }
@@ -878,7 +878,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         mapping.setCreationDate(new Date());
         mapping.setDeleted(false);
         mapping.setLastModifiedDate(new Date());
-        mapping.setLastModifiedUser(Util.getAuditId());
+        mapping.setLastModifiedUser(AuthUtil.getAuditId());
         try {
             entityManager.persist(mapping);
             entityManager.flush();
@@ -898,7 +898,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         if (toDelete != null) {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(Util.getAuditId());
+            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             entityManager.persist(toDelete);
             entityManager.flush();
         }
@@ -913,7 +913,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         toUpdate.setAlterationDescription(dto.getAlteration());
         toUpdate.setTestDataVersion(dto.getVersion());
         toUpdate.setLastModifiedDate(new Date());
-        toUpdate.setLastModifiedUser(Util.getAuditId());
+        toUpdate.setLastModifiedUser(AuthUtil.getAuditId());
         try {
             entityManager.persist(toUpdate);
             entityManager.flush();
@@ -986,7 +986,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         mapping.setCreationDate(new Date());
         mapping.setDeleted(false);
         mapping.setLastModifiedDate(new Date());
-        mapping.setLastModifiedUser(Util.getAuditId());
+        mapping.setLastModifiedUser(AuthUtil.getAuditId());
         entityManager.persist(mapping);
         entityManager.flush();
 
@@ -999,7 +999,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         if (toDelete != null) {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(Util.getAuditId());
+            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             entityManager.persist(toDelete);
             entityManager.flush();
         }
@@ -1064,7 +1064,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         mapping.setCreationDate(new Date());
         mapping.setDeleted(false);
         mapping.setLastModifiedDate(new Date());
-        mapping.setLastModifiedUser(Util.getAuditId());
+        mapping.setLastModifiedUser(AuthUtil.getAuditId());
         entityManager.persist(mapping);
         entityManager.flush();
 
@@ -1076,7 +1076,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         if (toDelete != null) {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(Util.getAuditId());
+            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             entityManager.persist(toDelete);
             entityManager.flush();
         }
@@ -1140,7 +1140,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         mapping.setCreationDate(new Date());
         mapping.setDeleted(false);
         mapping.setLastModifiedDate(new Date());
-        mapping.setLastModifiedUser(Util.getAuditId());
+        mapping.setLastModifiedUser(AuthUtil.getAuditId());
         entityManager.persist(mapping);
         entityManager.flush();
 
@@ -1170,7 +1170,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
             for (CertificationResultTestTaskEntity toDelete : toDeleteList) {
                 toDelete.setDeleted(true);
                 toDelete.setLastModifiedDate(new Date());
-                toDelete.setLastModifiedUser(Util.getAuditId());
+                toDelete.setLastModifiedUser(AuthUtil.getAuditId());
                 entityManager.persist(toDelete);
             }
             entityManager.flush();
@@ -1246,7 +1246,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
             mapping.setCreationDate(new Date());
             mapping.setDeleted(false);
             mapping.setLastModifiedDate(new Date());
-            mapping.setLastModifiedUser(Util.getAuditId());
+            mapping.setLastModifiedUser(AuthUtil.getAuditId());
             entityManager.persist(mapping);
             entityManager.flush();
         }
@@ -1267,7 +1267,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
             for (TestTaskParticipantMapEntity toDelete : toDeleteList) {
                 toDelete.setDeleted(true);
                 toDelete.setLastModifiedDate(new Date());
-                toDelete.setLastModifiedUser(Util.getAuditId());
+                toDelete.setLastModifiedUser(AuthUtil.getAuditId());
                 entityManager.persist(toDelete);
             }
             entityManager.flush();
@@ -1287,7 +1287,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
                     testParticipantId);
             participantEntity.setDeleted(true);
             participantEntity.setLastModifiedDate(new Date());
-            participantEntity.setLastModifiedUser(Util.getAuditId());
+            participantEntity.setLastModifiedUser(AuthUtil.getAuditId());
             entityManager.persist(participantEntity);
             entityManager.flush();
         }

@@ -8,13 +8,11 @@
     <persistence-unit name="openchpl-test"
         transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.ejb.HibernatePersistence</provider>
-        <class>gov.healthit.chpl.auth.entity.InvitationEntity</class>
-        <class>gov.healthit.chpl.auth.entity.InvitationPermissionEntity</class>
-        <class>gov.healthit.chpl.auth.entity.UserContactEntity</class>
-        <class>gov.healthit.chpl.auth.entity.UserEntity</class>
-        <class>gov.healthit.chpl.auth.entity.UserPermissionEntity</class>
-        <class>gov.healthit.chpl.auth.entity.UserPermissionUserMappingEntity</class>
-        <class>gov.healthit.chpl.auth.entity.UserResetTokenEntity</class>
+        <class>gov.healthit.chpl.entity.auth.InvitationEntity</class>
+        <class>gov.healthit.chpl.entity.auth.UserContactEntity</class>
+        <class>gov.healthit.chpl.entity.auth.UserEntity</class>
+        <class>gov.healthit.chpl.entity.auth.UserPermissionEntity</class>
+        <class>gov.healthit.chpl.entity.auth.UserResetTokenEntity</class>
         <class>gov.healthit.chpl.entity.AccessibilityStandardEntity</class>
         <class>gov.healthit.chpl.entity.ActivityEntity</class>
         <class>gov.healthit.chpl.entity.ActivityConceptEntity</class>
@@ -49,7 +47,6 @@
         <class>gov.healthit.chpl.entity.ProductInsertableOwnerEntity</class>
         <class>gov.healthit.chpl.entity.ProductVersionEntity</class>
         <class>gov.healthit.chpl.entity.QmsStandardEntity</class>
-        <class>gov.healthit.chpl.entity.RoleEntity</class>
         <class>gov.healthit.chpl.entity.TargetedUserEntity</class>
         <class>gov.healthit.chpl.entity.TestDataCriteriaMapEntity</class>
         <class>gov.healthit.chpl.entity.TestDataEntity</class>
@@ -65,7 +62,6 @@
         <class>gov.healthit.chpl.entity.UcdProcessEntity</class>
         <class>gov.healthit.chpl.entity.UserCertificationBodyMapEntity</class>
         <class>gov.healthit.chpl.entity.UserTestingLabMapEntity</class>
-        <class>gov.healthit.chpl.entity.UserRoleMapEntity</class>
         <class>gov.healthit.chpl.entity.developer.DeveloperACBMapEntity</class>
         <class>gov.healthit.chpl.entity.developer.DeveloperACBTransparencyMapEntity</class>
         <class>gov.healthit.chpl.entity.developer.DeveloperCertificationStatusesEntity</class>
@@ -149,8 +145,6 @@
             <property name="hibernate.show_sql" value="false" />
             <property name="hibernate.format_sql" value="false" />
             <property name="hibernate.driver_class" value="org.postgresql.Driver" />
-            <property name="hibernate.connection.datasource"
-                value="java:comp/env/jdbc/openchpl_test" />
             <property name="hibernate.dialect"
                 value="org.hibernate.dialect.PostgreSQLDialect" />
             <property name="hibernate.flush_before_completion"

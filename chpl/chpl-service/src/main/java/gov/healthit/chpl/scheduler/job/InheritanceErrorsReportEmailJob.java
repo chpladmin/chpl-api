@@ -23,9 +23,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.auth.EmailBuilder;
 import gov.healthit.chpl.dao.scheduler.InheritanceErrorsReportDAO;
 import gov.healthit.chpl.dto.scheduler.InheritanceErrorsReportDTO;
+import gov.healthit.chpl.util.EmailBuilder;
 
 /**
  * The InheritanceErrorsReportEmailJob implements a Quartz job and is available to ROLE_ADMIN and ROLE_ACB. When

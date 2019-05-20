@@ -8,12 +8,12 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.ApiKeyActivityDAO;
 import gov.healthit.chpl.dto.ApiKeyActivityDTO;
 import gov.healthit.chpl.entity.ApiKeyActivityEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("apiKeyActivityDAO")
 public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivityDAO {
@@ -50,10 +50,10 @@ public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivity
             }
             entity.setDeleted(dto.getDeleted());
 
-            if (Util.getCurrentUser() == null) {
+            if (AuthUtil.getCurrentUser() == null) {
                 entity.setLastModifiedUser(-3L);
             } else {
-                entity.setLastModifiedUser(Util.getAuditId());
+                entity.setLastModifiedUser(AuthUtil.getAuditId());
             }
 
             create(entity);
@@ -75,7 +75,7 @@ public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivity
             entity.setLastModifiedDate(new Date());
         }
         entity.setDeleted(dto.getDeleted());
-        entity.setLastModifiedUser(Util.getAuditId());
+        entity.setLastModifiedUser(AuthUtil.getAuditId());
         update(entity);
 
         return new ApiKeyActivityDTO(entity);

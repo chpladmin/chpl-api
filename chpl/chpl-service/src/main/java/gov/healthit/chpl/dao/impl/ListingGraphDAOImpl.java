@@ -15,13 +15,13 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.ListingToListingMapDTO;
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 import gov.healthit.chpl.entity.listing.ListingToListingMapEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Repository(value = "listingGraphDao")
 public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO {
@@ -35,7 +35,7 @@ public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO 
         entity.setChildId(toCreate.getChildId());
         entity.setParentId(toCreate.getParentId());
         entity.setDeleted(false);
-        entity.setLastModifiedUser(Util.getAuditId());
+        entity.setLastModifiedUser(AuthUtil.getAuditId());
         try {
             entityManager.persist(entity);
             entityManager.flush();
@@ -63,7 +63,7 @@ public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO 
 
         if (entity != null) {
             entity.setDeleted(true);
-            entity.setLastModifiedUser(Util.getAuditId());
+            entity.setLastModifiedUser(AuthUtil.getAuditId());
             entityManager.merge(entity);
             entityManager.flush();
         }

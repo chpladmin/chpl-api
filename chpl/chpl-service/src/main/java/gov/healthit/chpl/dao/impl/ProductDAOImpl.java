@@ -10,12 +10,9 @@ import javax.persistence.Query;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.ContactDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dto.ProductDTO;
@@ -26,6 +23,7 @@ import gov.healthit.chpl.entity.ProductEntity;
 import gov.healthit.chpl.entity.ProductInsertableOwnerEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("productDAO")
 public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
@@ -55,7 +53,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
             entity.setReportFileLocation(dto.getReportFileLocation());
             entity.setDeveloperId(dto.getDeveloperId());
             entity.setDeleted(false);
-            entity.setLastModifiedUser(Util.getAuditId());
+            entity.setLastModifiedUser(AuthUtil.getAuditId());
 
             if (dto.getContact() != null) {
                 if (dto.getContact().getId() != null) {
@@ -96,7 +94,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
         entity.setName(dto.getName());
         entity.setDeveloperId(dto.getDeveloperId());
         entity.setDeleted(dto.getDeleted() == null ?  Boolean.FALSE : dto.getDeleted());
-        entity.setLastModifiedUser(Util.getAuditId());
+        entity.setLastModifiedUser(AuthUtil.getAuditId());
         if (dto.getContact() != null) {
             if (dto.getContact().getId() == null) {
                 // if there is not contact id then it must not exist - create it
@@ -130,7 +128,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
                 for (ProductActiveOwnerEntity existingPrevOwner : entity.getOwnerHistory()) {
                     existingPrevOwner.setDeleted(true);
                     existingPrevOwner.setLastModifiedDate(new Date());
-                    existingPrevOwner.setLastModifiedUser(Util.getAuditId());
+                    existingPrevOwner.setLastModifiedUser(AuthUtil.getAuditId());
                     entityManager.merge(existingPrevOwner);
                     entityManager.flush();
                 }
@@ -172,7 +170,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
                 if (!isInUpdate) {
                     existingPrevOwner.setDeleted(true);
                     existingPrevOwner.setLastModifiedDate(new Date());
-                    existingPrevOwner.setLastModifiedUser(Util.getAuditId());
+                    existingPrevOwner.setLastModifiedUser(AuthUtil.getAuditId());
                     entityManager.merge(existingPrevOwner);
                     entityManager.flush();
                 }
@@ -216,14 +214,14 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
             for (ProductActiveOwnerEntity prevOwner : toDelete.getOwnerHistory()) {
                 prevOwner.setDeleted(true);
                 prevOwner.setLastModifiedDate(new Date());
-                prevOwner.setLastModifiedUser(Util.getAuditId());
+                prevOwner.setLastModifiedUser(AuthUtil.getAuditId());
                 entityManager.merge(prevOwner);
                 entityManager.flush();
             }
         }
         toDelete.setDeleted(true);
         toDelete.setLastModifiedDate(new Date());
-        toDelete.setLastModifiedUser(Util.getAuditId());
+        toDelete.setLastModifiedUser(AuthUtil.getAuditId());
         update(toDelete);
     }
 
@@ -234,7 +232,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
         entityToAdd.setCreationDate(new Date());
         entityToAdd.setLastModifiedDate(new Date());
         entityToAdd.setDeleted(false);
-        entityToAdd.setLastModifiedUser(Util.getAuditId());
+        entityToAdd.setLastModifiedUser(AuthUtil.getAuditId());
         if (toAdd.getDeveloper() != null) {
             entityToAdd.setDeveloperId(toAdd.getDeveloper().getId());
         }
@@ -253,7 +251,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
         }
         toDelete.setDeleted(true);
         toDelete.setLastModifiedDate(new Date());
-        toDelete.setLastModifiedUser(Util.getAuditId());
+        toDelete.setLastModifiedUser(AuthUtil.getAuditId());
         entityManager.merge(toDelete);
         entityManager.flush();
     }
@@ -287,9 +285,15 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 
     @Override
     @Transactional(readOnly = true)
-    public ProductDTO getById(Long id) throws EntityRetrievalException {
+    public ProductDTO getById(final Long id) throws EntityRetrievalException {
+        return getById(id, false);
+    }
 
-        ProductEntity entity = getEntityById(id);
+    @Override
+    @Transactional(readOnly = true)
+    public ProductDTO getById(final Long id, final boolean includeDeleted) throws EntityRetrievalException {
+
+        ProductEntity entity = getEntityById(id, includeDeleted);
         if (entity == null) {
             return null;
         }
@@ -404,19 +408,30 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
         return result;
     }
 
-    private ProductEntity getEntityById(Long id) throws EntityRetrievalException {
+    private ProductEntity getEntityById(final Long id) throws EntityRetrievalException {
+        return getEntityById(id, false);
+    }
+
+    private ProductEntity getEntityById(final Long id, final boolean includeDeleted) throws EntityRetrievalException {
         ProductEntity entity = null;
 
-        Query query = entityManager.createQuery("SELECT DISTINCT pe " + "FROM ProductEntity pe "
-                + "LEFT JOIN FETCH pe.developer " + "LEFT JOIN FETCH pe.contact " + "LEFT JOIN FETCH pe.ownerHistory "
-                + "LEFT JOIN FETCH pe.productVersions " + "WHERE (NOT pe.deleted = true) " + "AND (pe.id = :entityid) ",
-                ProductEntity.class);
+        String queryStr = "SELECT DISTINCT pe "
+                + "FROM ProductEntity pe "
+                + "LEFT JOIN FETCH pe.developer "
+                + "LEFT JOIN FETCH pe.contact "
+                + "LEFT JOIN FETCH pe.ownerHistory "
+                + "LEFT JOIN FETCH pe.productVersions "
+                + "WHERE pe.id = :entityid ";
+        if (!includeDeleted) {
+            queryStr += " AND pe.deleted = false";
+        }
+
+        Query query = entityManager.createQuery(queryStr, ProductEntity.class);
         query.setParameter("entityid", id);
         List<ProductEntity> result = query.getResultList();
 
         if (result == null || result.size() == 0) {
-            String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("product.notFound"),
-                    LocaleContextHolder.getLocale()));
+            String msg = msgUtil.getMessage("product.notFound");
             throw new EntityRetrievalException(msg);
         } else if (result.size() > 1) {
             throw new EntityRetrievalException("Data error. Duplicate product id in database.");
