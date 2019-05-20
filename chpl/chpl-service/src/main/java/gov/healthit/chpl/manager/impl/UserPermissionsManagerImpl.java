@@ -200,13 +200,14 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
                 ObjectIdentity oid = new ObjectIdentityImpl(UserDTO.class, userId);
                 mutableAclService.deleteAcl(oid, false);
 
-                userManager.delete(toDelete);
+                userDAO.delete(userId);
                 LOGGER.info("User " + userId + " had no additional permissions. The user was deleted.");
-            } catch (UserManagementException | UserPermissionRetrievalException | UserRetrievalException ex) {
+            } catch (UserRetrievalException ex) {
                 LOGGER.error("Could not delete the user " + userId, ex);
             }
         }
     }
+
     private boolean doesUserHaveAnyPermissions(final Long userId) {
         List<UserCertificationBodyMapDTO> acbPermissions = userCertificationBodyMapDAO.getByUserId(userId);
         List<UserTestingLabMapDTO> atlPermissions = userTestingLabMapDAO.getByUserId(userId);
@@ -214,5 +215,4 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
         return (acbPermissions != null && acbPermissions.size() > 0)
                 || (atlPermissions != null && atlPermissions.size() > 0);
     }
-
 }
