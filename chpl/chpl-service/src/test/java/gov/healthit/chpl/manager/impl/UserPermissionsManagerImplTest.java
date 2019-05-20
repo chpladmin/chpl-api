@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.acls.model.MutableAclService;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -40,8 +41,7 @@ public class UserPermissionsManagerImplTest {
 
     @Mock private UserManager userManager;
 
-    // @Mock
-    // private Permissions permissionChecker;
+    @Mock private MutableAclService mutableAclService;
 
     @InjectMocks
     private UserPermissionsManagerImpl manager;
