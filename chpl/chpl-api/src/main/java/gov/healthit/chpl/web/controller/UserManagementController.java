@@ -358,7 +358,7 @@ public class UserManagementController {
         toUpdate.setPhoneNumber(userInfo.getPhoneNumber());
         toUpdate.setSignatureDate(before.getSignatureDate());
         toUpdate.setSubjectName(before.getSubjectName());
-        toUpdate.setTitle(before.getTitle());
+        toUpdate.setTitle(userInfo.getTitle());
         UserDTO updated = userManager.update(toUpdate);
 
         String activityDescription = "User " + userInfo.getSubjectName() + " was updated.";
