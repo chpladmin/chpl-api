@@ -1,5 +1,3 @@
-authJndiName=java:comp/env/jdbc/openchpl
-authPersistenceUnitName=openchpl-test
 authAclCacheName=aclCache
 jwtAllowedClockSkew=30
 jwtIssuer=ONCCHPL
@@ -20,7 +18,6 @@ testDbUser=openchpl
 testDbPassword=
 testDbServer=localhost/openchpl_test
 persistenceUnitName=openchpl-test
-authAclCacheName=aclCache
 questionableActivityEmail=test@email.com
 questionableActivityThresholdDays=30
 

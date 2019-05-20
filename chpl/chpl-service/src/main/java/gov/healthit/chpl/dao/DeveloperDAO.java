@@ -1,9 +1,11 @@
 package gov.healthit.chpl.dao;
 
 import java.util.List;
+import java.util.Set;
 
 import gov.healthit.chpl.domain.DeveloperTransparency;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
+import gov.healthit.chpl.dto.DecertifiedDeveloperDTODeprecated;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
@@ -32,6 +34,8 @@ public interface DeveloperDAO {
 
     DeveloperDTO getById(Long id) throws EntityRetrievalException;
 
+    DeveloperDTO getById(Long id, boolean includeDeleted) throws EntityRetrievalException;
+
     DeveloperDTO getByName(String name);
 
     DeveloperDTO getByCode(String code);
@@ -48,5 +52,7 @@ public interface DeveloperDAO {
 
     List<DeveloperACBMapDTO> getAllTransparencyMappings();
 
-    List<DecertifiedDeveloperDTO> getDecertifiedDevelopers();
+    @Deprecated
+    List<DecertifiedDeveloperDTODeprecated> getDecertifiedDevelopers();
+    List<DecertifiedDeveloperDTO> getDecertifiedDeveloperCollection();
 }

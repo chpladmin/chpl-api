@@ -7,12 +7,12 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.PracticeTypeDAO;
 import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.entity.PracticeTypeEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("practiceTypeDAO")
 public class PracticeTypeDAOImpl extends BaseDAOImpl implements PracticeTypeDAO {
@@ -40,7 +40,7 @@ public class PracticeTypeDAOImpl extends BaseDAOImpl implements PracticeTypeDAO 
             entity.setName(dto.getName());
             entity.setDescription(dto.getDescription());
             // entity.setLastModifiedDate(result.getLastModifiedDate());
-            entity.setLastModifiedUser(Util.getAuditId());
+            entity.setLastModifiedUser(AuthUtil.getAuditId());
 
             create(entity);
         }
@@ -57,7 +57,7 @@ public class PracticeTypeDAOImpl extends BaseDAOImpl implements PracticeTypeDAO 
         entity.setName(dto.getName());
         entity.setDescription(dto.getDescription());
         // entity.setLastModifiedDate(result.getLastModifiedDate());
-        entity.setLastModifiedUser(Util.getAuditId());
+        entity.setLastModifiedUser(AuthUtil.getAuditId());
 
         update(entity);
     }

@@ -108,7 +108,7 @@ public class ProductVersionManagerImpl extends SecuredManager implements Product
     @Override
     @Transactional(readOnly = false)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
-            + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).UPDATE)")
+            + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).UPDATE, #dto)")
     public ProductVersionDTO update(ProductVersionDTO dto)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 
@@ -122,11 +122,6 @@ public class ProductVersionManagerImpl extends SecuredManager implements Product
         if (currDevStatus == null || currDevStatus.getStatus() == null) {
             String msg = "The version " + before.getVersion() + " cannot be updated since the status of developer "
                     + dev.getName() + " cannot be determined.";
-            LOGGER.error(msg);
-            throw new EntityCreationException(msg);
-        } else if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-            String msg = "The version " + before.getVersion() + " cannot be updated since the developer "
-                    + dev.getName() + " has a status of " + currDevStatus.getStatus().getStatusName();
             LOGGER.error(msg);
             throw new EntityCreationException(msg);
         }
@@ -143,34 +138,14 @@ public class ProductVersionManagerImpl extends SecuredManager implements Product
             EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class,
             AccessDeniedException.class
     })
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
+            + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).MERGE, #versionIdsToMerge)")
     public ProductVersionDTO merge(List<Long> versionIdsToMerge, ProductVersionDTO toCreate)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 
         List<ProductVersionDTO> beforeVersions = new ArrayList<ProductVersionDTO>();
         for (Long versionId : versionIdsToMerge) {
             beforeVersions.add(dao.getById(versionId));
-        }
-
-        // make sure all versions come from an Active developer
-        for (ProductVersionDTO version : beforeVersions) {
-            // check that the developer of this version is Active
-            DeveloperDTO dev = devDao.getByVersion(version.getId());
-            if (dev == null) {
-                throw new EntityRetrievalException("Cannot find developer of version id " + version.getId());
-            }
-            DeveloperStatusEventDTO currDevStatus = dev.getStatus();
-            if (currDevStatus == null || currDevStatus.getStatus() == null) {
-                String msg = "The version " + version.getVersion() + " cannot be merged since the status of developer "
-                        + dev.getName() + " cannot be determined.";
-                LOGGER.error(msg);
-                throw new EntityCreationException(msg);
-            } else if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-                String msg = "The version " + version.getVersion() + " cannot be merged since the developer "
-                        + dev.getName() + " has a status of " + currDevStatus.getStatus().getStatusName();
-                LOGGER.error(msg);
-                throw new EntityCreationException(msg);
-            }
         }
 
         ProductVersionDTO createdVersion = dao.create(toCreate);

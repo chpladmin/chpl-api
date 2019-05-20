@@ -29,7 +29,6 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.healthit.chpl.auth.EmailBuilder;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyAltTestStatistics;
@@ -38,6 +37,7 @@ import gov.healthit.chpl.domain.statistics.Statistics;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.entity.SummaryStatisticsEntity;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
+import gov.healthit.chpl.util.EmailBuilder;
 
 /**
  * The SummaryStatisticsEmailJob implements a Quartz job and is schedulable by ADMINs.  When the job is triggered,

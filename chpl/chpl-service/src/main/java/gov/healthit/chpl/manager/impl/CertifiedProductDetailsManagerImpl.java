@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
 import gov.healthit.chpl.dao.CQMResultDetailsDAO;
@@ -88,6 +87,7 @@ import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.manager.TestingFunctionalityManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.PropertyUtil;
@@ -481,7 +481,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
             cse.setLastModifiedUser(certStatusDto.getLastModifiedUser());
             cse.setLastModifiedDate(certStatusDto.getLastModifiedDate().getTime());
 
-            if (Util.getCurrentUser() != null
+            if (AuthUtil.getCurrentUser() != null
                     && (resourcePermissions.isUserRoleAcbAdmin() || resourcePermissions.isUserRoleAdmin())) {
                 cse.setReason(certStatusDto.getReason());
             }

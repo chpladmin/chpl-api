@@ -8,13 +8,13 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertifiedProductTestingLabDAO;
 import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
 import gov.healthit.chpl.entity.listing.CertifiedProductTargetedUserEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductTestingLabMapEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.AuthUtil;
 
 /**
  * Implementation of Certified Product Testing Lab DAO.
@@ -32,7 +32,7 @@ public class CertifiedProductTestingLabDAOImpl extends BaseDAOImpl implements Ce
         toCreateEntity.setCertifiedProductId(toCreate.getCertifiedProductId());
         toCreateEntity.setTestingLabId(toCreate.getTestingLabId());
         toCreateEntity.setLastModifiedDate(new Date());
-        toCreateEntity.setLastModifiedUser(Util.getAuditId());
+        toCreateEntity.setLastModifiedUser(AuthUtil.getAuditId());
         toCreateEntity.setCreationDate(new Date());
         toCreateEntity.setDeleted(false);
         entityManager.persist(toCreateEntity);
@@ -51,7 +51,7 @@ public class CertifiedProductTestingLabDAOImpl extends BaseDAOImpl implements Ce
         }
         curr.setDeleted(true);
         curr.setLastModifiedDate(new Date());
-        curr.setLastModifiedUser(Util.getAuditId());
+        curr.setLastModifiedUser(AuthUtil.getAuditId());
         entityManager.persist(curr);
         entityManager.flush();
 

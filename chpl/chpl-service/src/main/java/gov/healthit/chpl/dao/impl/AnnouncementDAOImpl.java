@@ -6,17 +6,15 @@ import java.util.List;
 
 import javax.persistence.Query;
 
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.AnnouncementDAO;
 import gov.healthit.chpl.dto.AnnouncementDTO;
 import gov.healthit.chpl.entity.AnnouncementEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Repository(value = "announcementDAO")
 public class AnnouncementDAOImpl extends BaseDAOImpl implements AnnouncementDAO {
@@ -68,7 +66,7 @@ public class AnnouncementDAOImpl extends BaseDAOImpl implements AnnouncementDAO 
             if (dto.getLastModifiedUser() != null) {
                 entity.setLastModifiedUser(dto.getLastModifiedUser());
             } else {
-                entity.setLastModifiedUser(Util.getAuditId());
+                entity.setLastModifiedUser(AuthUtil.getAuditId());
             }
 
             if (dto.getLastModifiedDate() != null) {
@@ -125,7 +123,7 @@ public class AnnouncementDAOImpl extends BaseDAOImpl implements AnnouncementDAO 
         if (dto.getLastModifiedUser() != null) {
             entity.setLastModifiedUser(dto.getLastModifiedUser());
         } else {
-            entity.setLastModifiedUser(Util.getAuditId());
+            entity.setLastModifiedUser(AuthUtil.getAuditId());
         }
 
         if (dto.getLastModifiedDate() != null) {
@@ -249,7 +247,7 @@ public class AnnouncementDAOImpl extends BaseDAOImpl implements AnnouncementDAO 
         String hql = "SELECT a "
                 + "FROM AnnouncementEntity a "
                 + "WHERE (a.id = :entityid) ";
-        if(!includeDeleted) {
+        if (!includeDeleted) {
             hql += " AND a.deleted = false ";
         }
         Query query = entityManager
@@ -257,8 +255,7 @@ public class AnnouncementDAOImpl extends BaseDAOImpl implements AnnouncementDAO 
         query.setParameter("entityid", entityId);
         results = query.getResultList();
         if (results == null || results.size() == 0) {
-            String msg = String.format(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("announcement.notFound"), LocaleContextHolder.getLocale()));
+            String msg = msgUtil.getMessage("announcement.notFound");
             throw new EntityRetrievalException(msg);
         } else {
             entity = results.get(0);

@@ -1,6 +1,5 @@
 package gov.healthit.chpl.dao.impl;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -9,13 +8,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.acls.domain.ObjectIdentityImpl;
-import org.springframework.security.acls.domain.PrincipalSid;
-import org.springframework.security.acls.model.AccessControlEntry;
-import org.springframework.security.acls.model.MutableAcl;
-import org.springframework.security.acls.model.MutableAclService;
-import org.springframework.security.acls.model.ObjectIdentity;
-import org.springframework.security.acls.model.Sid;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -29,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
@@ -38,6 +29,7 @@ import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.AuthUtil;
 import junit.framework.TestCase;
 
 /**
@@ -55,7 +47,7 @@ import junit.framework.TestCase;
 public class TestingLabDaoTest extends TestCase {
 
     @Autowired private TestingLabDAO atlDao;
-    @Autowired private MutableAclService mutableAclService;
+
     static final long ADMIN_ID = -2L;
     static final int EXPECTED_ATL_COUNT = 3;
 
@@ -152,7 +144,7 @@ public class TestingLabDaoTest extends TestCase {
         address.setCountry("USA");
         address.setDeleted(false);
         address.setLastModifiedDate(new Date());
-        address.setLastModifiedUser(Util.getAuditId());
+        address.setLastModifiedUser(AuthUtil.getAuditId());
         atl.setAddress(address);
         atl = atlDao.create(atl);
 
@@ -222,31 +214,5 @@ public class TestingLabDaoTest extends TestCase {
             ex.printStackTrace();
         }
         SecurityContextHolder.getContext().setAuthentication(null);
-    }
-
-    /**
-     * Ensure we can get users of an ATL.
-     */
-    @Test
-    @Transactional
-    public void listUsersForAtl() {
-        Long atlIdWithUsers = -1L;
-        ObjectIdentity oid = new ObjectIdentityImpl(TestingLabDTO.class, atlIdWithUsers);
-        MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
-
-        List<String> userNames = new ArrayList<String>();
-        List<AccessControlEntry> entries = acl.getEntries();
-        for (int i = 0; i < entries.size(); i++) {
-            Sid sid = entries.get(i).getSid();
-            if (sid instanceof PrincipalSid) {
-                PrincipalSid psid = (PrincipalSid) sid;
-                userNames.add(psid.getPrincipal());
-            } else {
-                userNames.add(sid.toString());
-            }
-        }
-
-        assertNotNull(userNames);
-        assertEquals(2, userNames.size());
     }
 }
