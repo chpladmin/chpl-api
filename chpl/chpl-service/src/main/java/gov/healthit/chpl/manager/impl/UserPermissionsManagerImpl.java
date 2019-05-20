@@ -95,30 +95,7 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
         }
 
         LOGGER.info("Deleted ACB: " + acb.getId() + " for user: " + userId);
-        if (!doesUserHaveAnyPermissions(userId)) {
-            UserDTO toDelete = new UserDTO();
-            toDelete.setId(userId);
-            try {
-                // We can't call the user manager delete method here because
-                // that only lets role onc and role admin remove the user.
-                // We can't modify the permissions checker to confirm that
-                // the user to be deleted has the same membership as the calling
-                // user because at this point that membership has been removed.
-                // Just delete the user here.
-
-                // remove all ACLs for this user
-                //should only be one - for themselves
-                ObjectIdentity oid = new ObjectIdentityImpl(UserDTO.class, userId);
-                mutableAclService.deleteAcl(oid, false);
-
-                // now delete the user
-                userDAO.delete(userId);
-                LOGGER.info("User " + userId + " was removed from ACB "
-                        + acb.getId() + " and had no additional permissions. The user was deleted.");
-            } catch (UserRetrievalException ex) {
-                LOGGER.error("Could not delete the user " + userId, ex);
-            }
-        }
+        removeUserIfPermissionless(userId);
     }
 
 
@@ -166,17 +143,7 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
         }
 
         LOGGER.info("Deleted ATL: " + atl.getId() + " for user: " + userId);
-        if (!doesUserHaveAnyPermissions(userId)) {
-            UserDTO toDelete = new UserDTO();
-            toDelete.setId(userId);
-            try {
-                userManager.delete(toDelete);
-                LOGGER.info("User " + userId + " was removed from ATL "
-                        + atl.getId() + " and had no additional permissions. The user was deleted.");
-            } catch (UserManagementException | UserPermissionRetrievalException | UserRetrievalException ex) {
-                LOGGER.error("Could not delete the user " + userId, ex);
-            }
-        }
+        removeUserIfPermissionless(userId);
     }
 
     private Boolean doesUserCertificationBodyMapExist(final Long acbId, final Long userId) {
@@ -216,6 +183,30 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
         return dtos.size() > 0;
     }
 
+    private void removeUserIfPermissionless(final Long userId) {
+        if (!doesUserHaveAnyPermissions(userId)) {
+            UserDTO toDelete = new UserDTO();
+            toDelete.setId(userId);
+            try {
+                // We can't call the user manager delete method here because
+                // that only lets role onc and role admin remove the user.
+                // We can't modify the permissions checker to confirm that
+                // the user to be deleted has the same membership as the calling
+                // user because at this point that membership has been removed.
+                // Just delete the user here.
+
+                // remove all ACLs for this user
+                //should only be one - for themselves
+                ObjectIdentity oid = new ObjectIdentityImpl(UserDTO.class, userId);
+                mutableAclService.deleteAcl(oid, false);
+
+                userManager.delete(toDelete);
+                LOGGER.info("User " + userId + " had no additional permissions. The user was deleted.");
+            } catch (UserManagementException | UserPermissionRetrievalException | UserRetrievalException ex) {
+                LOGGER.error("Could not delete the user " + userId, ex);
+            }
+        }
+    }
     private boolean doesUserHaveAnyPermissions(final Long userId) {
         List<UserCertificationBodyMapDTO> acbPermissions = userCertificationBodyMapDAO.getByUserId(userId);
         List<UserTestingLabMapDTO> atlPermissions = userTestingLabMapDAO.getByUserId(userId);
