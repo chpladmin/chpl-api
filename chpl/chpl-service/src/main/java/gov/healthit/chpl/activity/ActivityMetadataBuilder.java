@@ -44,6 +44,7 @@ public abstract class ActivityMetadataBuilder {
         metadata.setObjectId(dto.getActivityObjectId());
         metadata.setConcept(dto.getConcept());
         metadata.setResponsibleUser(dto.getUser() == null ? null : new User(dto.getUser()));
+        metadata.setDescription(dto.getDescription());
     }
 
     private ActivityMetadata createMetadataObject(final ActivityDTO dto) {
