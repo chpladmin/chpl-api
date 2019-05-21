@@ -23,42 +23,20 @@ public class JWTConsumerRsaJoseJImpl implements JWTConsumer {
     @Qualifier("RsaJose4JWebKey")
     JSONWebKey jwk;
 
-    Logger LOGGER = LogManager.getLogger(JWTConsumerRsaJoseJImpl.class.getName());
+    Logger logger = LogManager.getLogger(JWTConsumerRsaJoseJImpl.class.getName());
 
-    public Map<String, Object> consume(String jwt) {
+    public Map<String, Object> consume(String jwt) throws InvalidJwtException {
 
-        JwtConsumer jwtConsumer = new JwtConsumerBuilder().setRequireExpirationTime() // the
-                                                                                      // JWT
-                                                                                      // must
-                                                                                      // have
-                                                                                      // an
-                                                                                      // expiration
-                                                                                      // time
-                .setAllowedClockSkewInSeconds(Integer.parseInt(env.getProperty("jwtAllowedClockSkew"))) // allow
-                                                                                                        // some
-                                                                                                        // leeway
-                                                                                                        // in
-                                                                                                        // validating
-                                                                                                        // time
-                                                                                                        // based
-                                                                                                        // claims
-                                                                                                        // to
-                                                                                                        // account
-                                                                                                        // for
-                                                                                                        // clock
+        JwtConsumer jwtConsumer = new JwtConsumerBuilder().setRequireExpirationTime() // the JWT must have an expiration time
+                .setAllowedClockSkewInSeconds(Integer.parseInt(env.getProperty("jwtAllowedClockSkew"))) // allow some leeway
+                                                                                                        // in validating time
+                                                                                                        // based claims to
+                                                                                                        // account for clock
                                                                                                         // skew
                 .setRequireSubject() // the JWT must have a subject claim
-                .setExpectedIssuer(env.getProperty("jwtIssuer")) // whom the JWT
-                                                                 // needs to
-                                                                 // have been
-                                                                 // issued by
-                .setExpectedAudience(env.getProperty("jwtAudience")) // to whom
-                                                                     // the JWT
-                                                                     // is
-                                                                     // intended
-                                                                     // for
-                .setVerificationKey(jwk.getKey()) // verify the signature with
-                                                  // the public key
+                .setExpectedIssuer(env.getProperty("jwtIssuer")) // whom the JWT needs to have been issued by
+                .setExpectedAudience(env.getProperty("jwtAudience")) // to whom the JWT is intended for
+                .setVerificationKey(jwk.getKey()) // verify the signature with the public key
                 .build(); // create the JwtConsumer instance
 
         try {
@@ -66,10 +44,8 @@ public class JWTConsumerRsaJoseJImpl implements JWTConsumer {
             JwtClaims jwtClaims = jwtConsumer.processToClaims(jwt);
             return jwtClaims.getClaimsMap();
         } catch (InvalidJwtException e) {
-            // log every time an expired / invalid
-            // token is used.
-            LOGGER.error("Invalid JWT", e);
-            return null;
+            logger.error("Invalid JWT - " + e.getMessage());
+            throw new InvalidJwtException("Invalid JWT - failed in JWTConsumerRsaJoseJImpl.");
         }
     }
 }
