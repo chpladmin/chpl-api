@@ -18,6 +18,15 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "`user`")
+//Setting dynamic update makes the hql engine generate new sql for any update call
+//and will exclude any unmodified columns from the update.
+//We need this because of the user_soft_delete trigger which is getting called
+//whenever the delete column is updated. We don't want to un-delete associations
+//for the user that were already marked deleted any time the user "delete" column is
+//included in an update statement (even if its value hasn't changed).
+@org.hibernate.annotations.Entity(
+        dynamicUpdate = true
+)
 public class UserEntity {
     private static final long serialVersionUID = -5792083881155731413L;
 

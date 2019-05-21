@@ -3,6 +3,7 @@ package gov.healthit.chpl.auth.authentication;
 import java.util.List;
 import java.util.Map;
 
+import org.jose4j.jwt.consumer.InvalidJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,7 +39,12 @@ public class JWTUserConverterImpl implements JWTUserConverter {
         JWTAuthenticatedUser user = new JWTAuthenticatedUser();
         user.setAuthenticated(true);
 
-        Map<String, Object> validatedClaims = jwtConsumer.consume(jwt);
+        Map<String, Object> validatedClaims;
+        try {
+            validatedClaims = jwtConsumer.consume(jwt);
+        } catch (InvalidJwtException e) {
+            throw new JWTValidationException(e.getMessage());
+        }
 
         if (validatedClaims == null) {
             throw new JWTValidationException("Invalid authentication token.");
@@ -75,7 +81,12 @@ public class JWTUserConverterImpl implements JWTUserConverter {
         JWTAuthenticatedUser user = new JWTAuthenticatedUser();
         user.setAuthenticated(true);
 
-        Map<String, Object> validatedClaims = jwtConsumer.consume(jwt);
+        Map<String, Object> validatedClaims;
+        try {
+            validatedClaims = jwtConsumer.consume(jwt);
+        } catch (InvalidJwtException e) {
+            throw new JWTValidationException(e.getMessage());
+        }
 
         if (validatedClaims == null) {
             throw new JWTValidationException("Invalid authentication token.");
