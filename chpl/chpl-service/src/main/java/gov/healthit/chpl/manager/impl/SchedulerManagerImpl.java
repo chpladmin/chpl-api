@@ -248,6 +248,8 @@ public class SchedulerManagerImpl extends SecuredManager implements SchedulerMan
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
             + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).UPDATE_ACB_NAME)")
     public void changeAcbName(final String oldAcb, final String newAcb) throws SchedulerException, ValidationException {
+        Scheduler scheduler = getScheduler();
+
         //have to get all triggers in the system here without a permission check because
         //the acb name has been changed and the permission check will never pass
         //since it compares the acb names the user has access to (where name has changed) with
@@ -260,12 +262,20 @@ public class SchedulerManagerImpl extends SecuredManager implements SchedulerMan
                 acbs.remove(oldAcb);
                 acbs.add(newAcb);
                 trigger.setAcb(String.join(DATA_DELIMITER, acbs));
-                createTrigger(trigger);
+                //create the trigger - can't use the method in this class (createTrigger)
+                //because it will check user permissions and a user that has permission to change an ACB name
+                //may not have permissions on all the jobs that include that ACB (like if the job includes other ACBs
+                //that the current user doesn't have access to)
+                TriggerKey triggerId = triggerKey(createTriggerName(trigger), createTriggerGroup(trigger.getJob()));
+                JobKey jobId = jobKey(trigger.getJob().getName(), trigger.getJob().getGroup());
+                Trigger qzTrigger = newTrigger().withIdentity(triggerId).startNow().forJob(jobId)
+                        .usingJobData("email", trigger.getEmail()).usingJobData("acb", trigger.getAcb())
+                        .withSchedule(cronSchedule(trigger.getCronSchedule())).build();
+                scheduler.scheduleJob(qzTrigger);
                 //delete the trigger - can't use the method in this class
                 //because it will check user permissions but that will not give the user access
                 //to the trigger to allow them to delete it; the permissions check is done
                 //by acb name but the acb will have a different name now and the check will never pass.
-                Scheduler scheduler = getScheduler();
                 TriggerKey triggerKey = triggerKey(trigger.getName(), trigger.getGroup());
                 scheduler.unscheduleJob(triggerKey);
             }
