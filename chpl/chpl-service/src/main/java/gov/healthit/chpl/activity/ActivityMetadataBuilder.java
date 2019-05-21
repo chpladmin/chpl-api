@@ -1,6 +1,7 @@
 package gov.healthit.chpl.activity;
 
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
+import gov.healthit.chpl.domain.activity.AnnouncementActivityMetadata;
 import gov.healthit.chpl.domain.activity.CertificationBodyActivityMetadata;
 import gov.healthit.chpl.domain.activity.DeveloperActivityMetadata;
 import gov.healthit.chpl.domain.activity.ListingActivityMetadata;
@@ -70,6 +71,9 @@ public abstract class ActivityMetadataBuilder {
             break;
         case USER:
             metadata = new UserMaintenanceActivityMetadata();
+            break;
+        case ANNOUNCEMENT:
+            metadata = new AnnouncementActivityMetadata();
         default:
             break;
         }

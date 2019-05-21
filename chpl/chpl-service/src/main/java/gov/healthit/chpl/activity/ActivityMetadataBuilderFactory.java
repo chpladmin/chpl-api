@@ -20,6 +20,7 @@ public class ActivityMetadataBuilderFactory {
     private CertificationBodyActivityMetadataBuilder acbBuilder;
     private TestingLabActivityMetadataBuilder atlBuilder;
     private UserMaintenanceActivityMetadataBuilder userMaintenanceActivityMetadataBuilder;
+    private AnnouncementActivityMetadataBuilder announcementActivityMetadataBuilder;
 
     @Autowired
     public ActivityMetadataBuilderFactory(
@@ -29,7 +30,8 @@ public class ActivityMetadataBuilderFactory {
             @Qualifier("versionActivityMetadataBuilder") final VersionActivityMetadataBuilder versionBuilder,
             @Qualifier("acbActivityMetadataBuilder") final CertificationBodyActivityMetadataBuilder acbBuilder,
             @Qualifier("atlActivityMetadataBuilder") final TestingLabActivityMetadataBuilder atlBuilder,
-            @Qualifier("userMaintenanceActivityMetadataBuilder") final UserMaintenanceActivityMetadataBuilder userMaintenanceActivityMetadataBuilder) {
+            @Qualifier("userMaintenanceActivityMetadataBuilder") final UserMaintenanceActivityMetadataBuilder userMaintenanceActivityMetadataBuilder,
+            @Qualifier("announcementActivityMetadataBuilder") final AnnouncementActivityMetadataBuilder announcementActivityMetadataBuilder) {
         this.listingBuilder = listingBuilder;
         this.developerBuilder = developerBuilder;
         this.productBuilder = productBuilder;
@@ -37,6 +39,7 @@ public class ActivityMetadataBuilderFactory {
         this.acbBuilder = acbBuilder;
         this.atlBuilder = atlBuilder;
         this.userMaintenanceActivityMetadataBuilder = userMaintenanceActivityMetadataBuilder;
+        this.announcementActivityMetadataBuilder = announcementActivityMetadataBuilder;
     }
 
     /**
@@ -68,6 +71,10 @@ public class ActivityMetadataBuilderFactory {
             break;
         case USER:
             builder = userMaintenanceActivityMetadataBuilder;
+            break;
+        case ANNOUNCEMENT:
+            builder = announcementActivityMetadataBuilder;
+            break;
         default:
             break;
         }

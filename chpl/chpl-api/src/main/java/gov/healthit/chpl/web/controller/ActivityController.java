@@ -471,6 +471,19 @@ public class ActivityController {
         return activityMetadataManager.getUserMaintenanceActivityMetadata(startDate, endDate);
     }
     
+    @ApiOperation(value = "Get metadata about auditable records in the system for announcements.",
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+    @RequestMapping(value = "/metadata/announcements", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public List<ActivityMetadata> metadataForAnnouncements(@RequestParam final Long start,
+            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
+        Date startDate = new Date(start);
+        Date endDate = new Date(end);
+        validateActivityDatesAndDateRange(start, end);
+        return activityMetadataManager.getActivityMetadataByConcept(
+                ActivityConcept.ANNOUNCEMENT, startDate, endDate);
+    }
+    
     @Deprecated
     @ApiOperation(value = "DEPRECATED. Get auditable data for certification bodies.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "
