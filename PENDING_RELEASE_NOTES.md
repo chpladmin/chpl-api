@@ -5,6 +5,7 @@ _Date TBD_
 ### New Features
 * Add FF4j framework (feature flags)
 * Add endpoints to provide ability for users to save filters for admin reports
+* Add endpoints to provide activity metadata for users, announcements, pending listings, corrective action plans, and pending surveillances
 
 ### Bugs Fixed
 * Correctly handle scheduled job update when an ACB is renamed.
