@@ -50,8 +50,10 @@ public class UserMaintenanceActivityMetadataBuilder extends ActivityMetadataBuil
     private UserDTO getUserDtoFromJson(String json, Long dtoId) {
         UserDTO userDTO = null;
         try {
-            jsonMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-            userDTO = jsonMapper.readValue(json, UserDTO.class);
+            if (json != null && json != "") {
+                jsonMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+                userDTO = jsonMapper.readValue(json, UserDTO.class);
+            }
         } catch (final Exception ex) {
             LOGGER.error("Could not parse activity ID " + dtoId + " original data. " + "JSON was: " + json, ex);
         }

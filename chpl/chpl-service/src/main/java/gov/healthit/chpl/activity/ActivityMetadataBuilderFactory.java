@@ -22,6 +22,7 @@ public class ActivityMetadataBuilderFactory {
     private UserMaintenanceActivityMetadataBuilder userMaintenanceActivityMetadataBuilder;
     private AnnouncementActivityMetadataBuilder announcementActivityMetadataBuilder;
     private PendingListingActivityMetadataBuilder pendingListingActivityMetadataBuilder;
+    private CorrectActionPlanActivityMetadataBuilder correctActionPlanActivityMetadataBuilder;
 
     @Autowired
     public ActivityMetadataBuilderFactory(
@@ -33,7 +34,8 @@ public class ActivityMetadataBuilderFactory {
             @Qualifier("atlActivityMetadataBuilder") final TestingLabActivityMetadataBuilder atlBuilder,
             @Qualifier("userMaintenanceActivityMetadataBuilder") final UserMaintenanceActivityMetadataBuilder userMaintenanceActivityMetadataBuilder,
             @Qualifier("announcementActivityMetadataBuilder") final AnnouncementActivityMetadataBuilder announcementActivityMetadataBuilder,
-            @Qualifier("pendingListingActivityMetadataBuilder") final PendingListingActivityMetadataBuilder pendingListingActivityMetadataBuilder) {
+            @Qualifier("pendingListingActivityMetadataBuilder") final PendingListingActivityMetadataBuilder pendingListingActivityMetadataBuilder,
+            @Qualifier("correctActionPlanActivityMetadataBuilder") final CorrectActionPlanActivityMetadataBuilder correctActionPlanActivityMetadataBuilder) {
         this.listingBuilder = listingBuilder;
         this.developerBuilder = developerBuilder;
         this.productBuilder = productBuilder;
@@ -43,6 +45,7 @@ public class ActivityMetadataBuilderFactory {
         this.userMaintenanceActivityMetadataBuilder = userMaintenanceActivityMetadataBuilder;
         this.announcementActivityMetadataBuilder = announcementActivityMetadataBuilder;
         this.pendingListingActivityMetadataBuilder = pendingListingActivityMetadataBuilder;
+        this.correctActionPlanActivityMetadataBuilder = correctActionPlanActivityMetadataBuilder;
     }
 
     /**
@@ -80,6 +83,9 @@ public class ActivityMetadataBuilderFactory {
             break;
         case PENDING_CERTIFIED_PRODUCT:
             builder = pendingListingActivityMetadataBuilder;
+            break;
+        case CORRECTIVE_ACTION_PLAN:
+            builder = correctActionPlanActivityMetadataBuilder;
             break;
         default:
             break;

@@ -3,6 +3,7 @@ package gov.healthit.chpl.activity;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.AnnouncementActivityMetadata;
 import gov.healthit.chpl.domain.activity.CertificationBodyActivityMetadata;
+import gov.healthit.chpl.domain.activity.CorrectiveActionPlanActivityMetadata;
 import gov.healthit.chpl.domain.activity.DeveloperActivityMetadata;
 import gov.healthit.chpl.domain.activity.ListingActivityMetadata;
 import gov.healthit.chpl.domain.activity.PendingListingActivityMetadata;
@@ -78,6 +79,9 @@ public abstract class ActivityMetadataBuilder {
             break;
         case PENDING_CERTIFIED_PRODUCT:
             metadata = new PendingListingActivityMetadata();
+            break;
+        case CORRECTIVE_ACTION_PLAN:
+            metadata = new CorrectiveActionPlanActivityMetadata();
             break;
         default:
             break;
