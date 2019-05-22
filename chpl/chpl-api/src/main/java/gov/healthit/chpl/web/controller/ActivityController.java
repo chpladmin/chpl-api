@@ -510,6 +510,19 @@ public class ActivityController {
                 ActivityConcept.CORRECTIVE_ACTION_PLAN, startDate, endDate);
     }
     
+    @ApiOperation(value = "Get metadata about auditable records in the system for pending surveillances.",
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+    @RequestMapping(value = "/metadata/pending_surveillances", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public List<ActivityMetadata> metadataForPendingSurveillances(@RequestParam final Long start,
+            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
+        Date startDate = new Date(start);
+        Date endDate = new Date(end);
+        validateActivityDatesAndDateRange(start, end);
+        return activityMetadataManager.getActivityMetadataByConcept(
+                ActivityConcept.PENDING_SURVEILLANCE, startDate, endDate);
+    }
+    
     @Deprecated
     @ApiOperation(value = "DEPRECATED. Get auditable data for certification bodies.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "

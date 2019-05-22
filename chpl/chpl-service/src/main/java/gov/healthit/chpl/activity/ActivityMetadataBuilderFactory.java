@@ -23,6 +23,7 @@ public class ActivityMetadataBuilderFactory {
     private AnnouncementActivityMetadataBuilder announcementActivityMetadataBuilder;
     private PendingListingActivityMetadataBuilder pendingListingActivityMetadataBuilder;
     private CorrectActionPlanActivityMetadataBuilder correctActionPlanActivityMetadataBuilder;
+    private PendingSurveillanceActivityMetadataBuilder pendingSurveillanceActivityMetadataBuilder;
 
     @Autowired
     public ActivityMetadataBuilderFactory(
@@ -35,7 +36,8 @@ public class ActivityMetadataBuilderFactory {
             @Qualifier("userMaintenanceActivityMetadataBuilder") final UserMaintenanceActivityMetadataBuilder userMaintenanceActivityMetadataBuilder,
             @Qualifier("announcementActivityMetadataBuilder") final AnnouncementActivityMetadataBuilder announcementActivityMetadataBuilder,
             @Qualifier("pendingListingActivityMetadataBuilder") final PendingListingActivityMetadataBuilder pendingListingActivityMetadataBuilder,
-            @Qualifier("correctActionPlanActivityMetadataBuilder") final CorrectActionPlanActivityMetadataBuilder correctActionPlanActivityMetadataBuilder) {
+            @Qualifier("correctActionPlanActivityMetadataBuilder") final CorrectActionPlanActivityMetadataBuilder correctActionPlanActivityMetadataBuilder,
+            @Qualifier("pendingSurveillanceActivityMetadataBuilder") final PendingSurveillanceActivityMetadataBuilder pendingSurveillanceActivityMetadataBuilder) {
         this.listingBuilder = listingBuilder;
         this.developerBuilder = developerBuilder;
         this.productBuilder = productBuilder;
@@ -46,6 +48,7 @@ public class ActivityMetadataBuilderFactory {
         this.announcementActivityMetadataBuilder = announcementActivityMetadataBuilder;
         this.pendingListingActivityMetadataBuilder = pendingListingActivityMetadataBuilder;
         this.correctActionPlanActivityMetadataBuilder = correctActionPlanActivityMetadataBuilder;
+        this.pendingSurveillanceActivityMetadataBuilder = pendingSurveillanceActivityMetadataBuilder;
     }
 
     /**
@@ -86,6 +89,9 @@ public class ActivityMetadataBuilderFactory {
             break;
         case CORRECTIVE_ACTION_PLAN:
             builder = correctActionPlanActivityMetadataBuilder;
+            break;
+        case PENDING_SURVEILLANCE:
+            builder = pendingListingActivityMetadataBuilder;
             break;
         default:
             break;

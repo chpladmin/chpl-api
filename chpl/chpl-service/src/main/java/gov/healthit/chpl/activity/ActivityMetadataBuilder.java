@@ -7,6 +7,7 @@ import gov.healthit.chpl.domain.activity.CorrectiveActionPlanActivityMetadata;
 import gov.healthit.chpl.domain.activity.DeveloperActivityMetadata;
 import gov.healthit.chpl.domain.activity.ListingActivityMetadata;
 import gov.healthit.chpl.domain.activity.PendingListingActivityMetadata;
+import gov.healthit.chpl.domain.activity.PendingSurveillanceActivityMetadata;
 import gov.healthit.chpl.domain.activity.ProductActivityMetadata;
 import gov.healthit.chpl.domain.activity.TestingLabActivityMetadata;
 import gov.healthit.chpl.domain.activity.UserMaintenanceActivityMetadata;
@@ -82,6 +83,9 @@ public abstract class ActivityMetadataBuilder {
             break;
         case CORRECTIVE_ACTION_PLAN:
             metadata = new CorrectiveActionPlanActivityMetadata();
+            break;
+        case PENDING_SURVEILLANCE:
+            metadata = new PendingSurveillanceActivityMetadata();
             break;
         default:
             break;
