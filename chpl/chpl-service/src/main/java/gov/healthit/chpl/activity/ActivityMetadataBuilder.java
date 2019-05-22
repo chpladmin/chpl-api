@@ -5,6 +5,7 @@ import gov.healthit.chpl.domain.activity.AnnouncementActivityMetadata;
 import gov.healthit.chpl.domain.activity.CertificationBodyActivityMetadata;
 import gov.healthit.chpl.domain.activity.DeveloperActivityMetadata;
 import gov.healthit.chpl.domain.activity.ListingActivityMetadata;
+import gov.healthit.chpl.domain.activity.PendingListingActivityMetadata;
 import gov.healthit.chpl.domain.activity.ProductActivityMetadata;
 import gov.healthit.chpl.domain.activity.TestingLabActivityMetadata;
 import gov.healthit.chpl.domain.activity.UserMaintenanceActivityMetadata;
@@ -74,6 +75,10 @@ public abstract class ActivityMetadataBuilder {
             break;
         case ANNOUNCEMENT:
             metadata = new AnnouncementActivityMetadata();
+            break;
+        case PENDING_CERTIFIED_PRODUCT:
+            metadata = new PendingListingActivityMetadata();
+            break;
         default:
             break;
         }

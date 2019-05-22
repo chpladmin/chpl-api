@@ -484,6 +484,19 @@ public class ActivityController {
                 ActivityConcept.ANNOUNCEMENT, startDate, endDate);
     }
     
+    @ApiOperation(value = "Get metadata about auditable records in the system for pending listings.",
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+    @RequestMapping(value = "/metadata/pending_listings", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public List<ActivityMetadata> metadataForPendingListings(@RequestParam final Long start,
+            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
+        Date startDate = new Date(start);
+        Date endDate = new Date(end);
+        validateActivityDatesAndDateRange(start, end);
+        return activityMetadataManager.getActivityMetadataByConcept(
+                ActivityConcept.PENDING_CERTIFIED_PRODUCT, startDate, endDate);
+    }
+    
     @Deprecated
     @ApiOperation(value = "DEPRECATED. Get auditable data for certification bodies.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "
@@ -570,7 +583,7 @@ public class ActivityController {
         validateActivityDatesAndDateRange(start, end);
         return getActivityEventsForAnnouncements(startDate, endDate);
     }
-
+    
     @ApiOperation(value = "Get auditable data for a specific announcement",
             notes = "A start and end date may optionally be provided to limit activity results.  "
                     + "Security Restrictions: Anonymous users are only allowed to see activity for public "

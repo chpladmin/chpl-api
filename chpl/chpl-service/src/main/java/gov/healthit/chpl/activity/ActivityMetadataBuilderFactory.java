@@ -21,6 +21,7 @@ public class ActivityMetadataBuilderFactory {
     private TestingLabActivityMetadataBuilder atlBuilder;
     private UserMaintenanceActivityMetadataBuilder userMaintenanceActivityMetadataBuilder;
     private AnnouncementActivityMetadataBuilder announcementActivityMetadataBuilder;
+    private PendingListingActivityMetadataBuilder pendingListingActivityMetadataBuilder;
 
     @Autowired
     public ActivityMetadataBuilderFactory(
@@ -31,7 +32,8 @@ public class ActivityMetadataBuilderFactory {
             @Qualifier("acbActivityMetadataBuilder") final CertificationBodyActivityMetadataBuilder acbBuilder,
             @Qualifier("atlActivityMetadataBuilder") final TestingLabActivityMetadataBuilder atlBuilder,
             @Qualifier("userMaintenanceActivityMetadataBuilder") final UserMaintenanceActivityMetadataBuilder userMaintenanceActivityMetadataBuilder,
-            @Qualifier("announcementActivityMetadataBuilder") final AnnouncementActivityMetadataBuilder announcementActivityMetadataBuilder) {
+            @Qualifier("announcementActivityMetadataBuilder") final AnnouncementActivityMetadataBuilder announcementActivityMetadataBuilder,
+            @Qualifier("pendingListingActivityMetadataBuilder") final PendingListingActivityMetadataBuilder pendingListingActivityMetadataBuilder) {
         this.listingBuilder = listingBuilder;
         this.developerBuilder = developerBuilder;
         this.productBuilder = productBuilder;
@@ -40,6 +42,7 @@ public class ActivityMetadataBuilderFactory {
         this.atlBuilder = atlBuilder;
         this.userMaintenanceActivityMetadataBuilder = userMaintenanceActivityMetadataBuilder;
         this.announcementActivityMetadataBuilder = announcementActivityMetadataBuilder;
+        this.pendingListingActivityMetadataBuilder = pendingListingActivityMetadataBuilder;
     }
 
     /**
@@ -74,6 +77,9 @@ public class ActivityMetadataBuilderFactory {
             break;
         case ANNOUNCEMENT:
             builder = announcementActivityMetadataBuilder;
+            break;
+        case PENDING_CERTIFIED_PRODUCT:
+            builder = pendingListingActivityMetadataBuilder;
             break;
         default:
             break;
