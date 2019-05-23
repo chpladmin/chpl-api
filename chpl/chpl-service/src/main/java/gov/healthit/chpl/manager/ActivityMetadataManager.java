@@ -31,4 +31,12 @@ public interface ActivityMetadataManager {
 
     List<ActivityMetadata> getUserMaintenanceActivityMetadata(Date startDate, Date endDate)
             throws JsonParseException, IOException;
+
+    List<ActivityMetadata> getPendingListingActivityMetadata(final Date startDate, final Date endDate)
+            throws IOException;
+
+    List<ActivityMetadata> getPendingSurveillanceActivityMetadata(final Date startDate, final Date endDate)
+            throws IOException;
+
+    List<ActivityMetadata> getAnnouncementActivityMetadata(final Date startDate, final Date endDate) throws IOException;
 }

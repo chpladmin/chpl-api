@@ -91,7 +91,7 @@ public class ActivityMetadataBuilderFactory {
             builder = correctActionPlanActivityMetadataBuilder;
             break;
         case PENDING_SURVEILLANCE:
-            builder = pendingListingActivityMetadataBuilder;
+            builder = pendingSurveillanceActivityMetadataBuilder;
             break;
         default:
             break;

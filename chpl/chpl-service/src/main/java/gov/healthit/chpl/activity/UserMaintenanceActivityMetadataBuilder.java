@@ -15,7 +15,7 @@ import gov.healthit.chpl.dto.auth.UserDTO;
 
 @Component("userMaintenanceActivityMetadataBuilder")
 public class UserMaintenanceActivityMetadataBuilder extends ActivityMetadataBuilder {
-    private static final Logger LOGGER = LogManager.getLogger(VersionActivityMetadataBuilder.class);
+    private static final Logger LOGGER = LogManager.getLogger(UserMaintenanceActivityMetadataBuilder.class);
     private ObjectMapper jsonMapper;
 
     public UserMaintenanceActivityMetadataBuilder() {

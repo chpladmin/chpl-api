@@ -480,8 +480,7 @@ public class ActivityController {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDatesAndDateRange(start, end);
-        return activityMetadataManager.getActivityMetadataByConcept(
-                ActivityConcept.ANNOUNCEMENT, startDate, endDate);
+        return activityMetadataManager.getAnnouncementActivityMetadata(startDate, endDate);
     }
     
     @ApiOperation(value = "Get metadata about auditable records in the system for pending listings.",
@@ -493,8 +492,7 @@ public class ActivityController {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDatesAndDateRange(start, end);
-        return activityMetadataManager.getActivityMetadataByConcept(
-                ActivityConcept.PENDING_CERTIFIED_PRODUCT, startDate, endDate);
+        return activityMetadataManager.getPendingListingActivityMetadata(startDate, endDate);
     }
     
     @ApiOperation(value = "Get metadata about auditable records in the system for corrective action plans.",
@@ -519,8 +517,7 @@ public class ActivityController {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDatesAndDateRange(start, end);
-        return activityMetadataManager.getActivityMetadataByConcept(
-                ActivityConcept.PENDING_SURVEILLANCE, startDate, endDate);
+        return activityMetadataManager.getPendingSurveillanceActivityMetadata(startDate, endDate);
     }
     
     @Deprecated
@@ -1125,7 +1122,8 @@ public class ActivityController {
         return getActivityEventsForDevelopers(id, startDate, endDate);
     }
 
-    @ApiOperation(value = "Track the actions of all users in the system",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED. Track the actions of all users in the system",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
                     + "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/user_activities", method = RequestMethod.GET,
