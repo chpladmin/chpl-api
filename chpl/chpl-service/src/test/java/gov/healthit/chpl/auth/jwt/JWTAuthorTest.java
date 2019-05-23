@@ -3,12 +3,11 @@ package gov.healthit.chpl.auth.jwt;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.jose4j.jwt.consumer.InvalidJwtException;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +34,7 @@ public class JWTAuthorTest {
     private JWTConsumer jwtConsumer;
 
     @Test
+    @Ignore
     public void testCreateJWT() throws UserRetrievalException {
         String role = "ROLE_SUPERSTAR";
         UserDTO user = userDao.getById(-2L);
@@ -50,7 +50,6 @@ public class JWTAuthorTest {
         } catch (InvalidJwtException e) {
             fail();
         }
-
     }
 
 }
