@@ -6,6 +6,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
@@ -43,6 +44,11 @@ import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
 @ControllerAdvice
 public class ApiExceptionControllerAdvice {
     private static final Logger LOGGER = LogManager.getLogger(ApiExceptionControllerAdvice.class);
+
+    @ExceptionHandler(NotImplementedException.class)
+    public ResponseEntity<ErrorResponse> exception(final NotImplementedException e) {
+        return new ResponseEntity<ErrorResponse>(new ErrorResponse(e.getMessage()), HttpStatus.NOT_IMPLEMENTED);
+    }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> exception(final AccessDeniedException e) {

@@ -36,7 +36,7 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
 
     private JWTUserConverter userConverter;
 
-   public JWTAuthenticationFilter(final JWTUserConverter userConverter) {
+    public JWTAuthenticationFilter(final JWTUserConverter userConverter) {
         this.userConverter = userConverter;
     }
 

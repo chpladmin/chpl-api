@@ -477,7 +477,7 @@ public class ProductManagerTest extends TestCase {
         newProduct.setDeveloperId(origProduct.getDeveloperId());
         List<ProductVersionDTO> newProductVersions = new ArrayList<ProductVersionDTO>();
         ProductVersionDTO newProductVersion = new ProductVersionDTO();
-        newProductVersion.setId(5L);
+        newProductVersion.setId(-5L);
         newProductVersions.add(newProductVersion);
         boolean productCreateError = false;
         try {
@@ -513,7 +513,7 @@ public class ProductManagerTest extends TestCase {
         newProduct.setDeveloperId(origProduct.getDeveloperId());
         List<ProductVersionDTO> newProductVersions = new ArrayList<ProductVersionDTO>();
         ProductVersionDTO newProductVersion = new ProductVersionDTO();
-        newProductVersion.setId(7L);
+        newProductVersion.setId(-7L);
         newProductVersions.add(newProductVersion);
         ProductDTO updatedNewProduct = null;
         try {

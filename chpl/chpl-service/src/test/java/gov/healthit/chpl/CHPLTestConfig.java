@@ -62,7 +62,7 @@ import gov.healthit.chpl.caching.CacheInitializor;
 import gov.healthit.chpl.job.MeaningfulUseUploadJob;
 
 @Configuration
-@Import(ChplTestCacheConfig.class)
+@Import({ChplTestCacheConfig.class})
 @EnableCaching
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @PropertySource("classpath:/environment.test.properties")
@@ -332,6 +332,6 @@ public class CHPLTestConfig implements EnvironmentAware {
 
     @Bean
     public FF4j getFF4j() {
-        return Mockito.mock(FF4j.class);
+        return Mockito.spy(new FF4j());
     }
 }

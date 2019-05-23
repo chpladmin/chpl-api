@@ -15,6 +15,7 @@ import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.SimpleExplainableAction;
 import gov.healthit.chpl.domain.SplitDeveloperRequest;
 import gov.healthit.chpl.domain.SplitProductsRequest;
+import gov.healthit.chpl.domain.SplitVersionsRequest;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.UpdateDevelopersRequest;
 import gov.healthit.chpl.domain.UpdateProductsRequest;
@@ -91,6 +92,19 @@ public class ListingCollectionCacheRefreshListener extends CacheRefreshListener 
             + "args(versionInfo,..)")
     public void afterVersionUpdate(final UpdateVersionsRequest versionInfo) {
         LOGGER.debug("A version was updated. Refreshing listings collection cache.");
+        refreshCache();
+    }
+
+    /**
+     * After a version is split refresh the listings collection cache.
+     * @param versionId version id to split
+     * @param splitRequest request object
+     */
+    @AfterReturning(
+            "execution(* gov.healthit.chpl.web.controller.ProductVersionController.updateVersion(..)) && "
+            + "args(versionId,splitRequest,..)")
+    public void afterVersionSplit(final Long versionId, final SplitVersionsRequest splitRequest) {
+        LOGGER.debug("A version was split. Refreshing listings collection cache.");
         refreshCache();
     }
 
