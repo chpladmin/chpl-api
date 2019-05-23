@@ -106,7 +106,7 @@ public class SchedulerController {
                     + "authority on the specified ACB.")
     @RequestMapping(value = "/triggers", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ScheduleTriggersResults getAllTriggers() throws SchedulerException {
-        List<ChplRepeatableTrigger> triggers = schedulerManager.getAllTriggers();
+        List<ChplRepeatableTrigger> triggers = schedulerManager.getAllTriggersForUser();
         ScheduleTriggersResults results = new ScheduleTriggersResults();
         results.setResults(triggers);
         

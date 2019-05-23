@@ -41,8 +41,8 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
     }
 
     @Override
-    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
-            throws IOException, ServletException {
+    public void doFilter(final ServletRequest req, final ServletResponse res,
+            final FilterChain chain) throws IOException, ServletException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         HttpServletRequest request = (HttpServletRequest) req;
 
@@ -60,7 +60,7 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
                 : authorizationFromParam);
 
         if (authorization == null) {
-            chain.doFilter(req, res); // continue
+            chain.doFilter(req, res); //continue
             SecurityContextHolder.getContext().setAuthentication(null);
         } else {
             User authenticatedUser;
@@ -73,7 +73,7 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
                     HttpServletResponse response = (HttpServletResponse) res;
                     response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
                 } else {
-                    ErrorResponse errorObj = new ErrorResponse(e.getMessage());
+                    ErrorResponse errorObj = new ErrorResponse("Token must be presented in the form: Bearer token");
                     ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
                     String json = ow.writeValueAsString(errorObj);
                     res.getOutputStream().write(json.getBytes());
@@ -91,7 +91,7 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
                         HttpServletResponse response = (HttpServletResponse) res;
                         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
                     } else {
-                        ErrorResponse errorObj = new ErrorResponse(e.getMessage());
+                        ErrorResponse errorObj = new ErrorResponse("Token must be presented in the form: Bearer token");
                         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
                         String json = ow.writeValueAsString(errorObj);
                         res.getOutputStream().write(json.getBytes());

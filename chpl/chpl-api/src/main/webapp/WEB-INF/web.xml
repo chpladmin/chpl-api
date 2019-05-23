@@ -74,6 +74,7 @@
 	<servlet-mapping>
  		<servlet-name>ff4j-console</servlet-name>
  		<url-pattern>/ff4j-console/*</url-pattern>
+ 		<url-pattern>/static/*</url-pattern>
 	</servlet-mapping>
 
 	<context-param>
