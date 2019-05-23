@@ -45,7 +45,7 @@ public class QuarterlyReportEntity {
     private QuarterEntity quarter;
 
     @Column(name = "reactive_summary")
-    private String reactiveSummar;
+    private String reactiveSummary;
 
     @Column(name = "prioritized_element_summary")
     private String prioritizedElementSummary;
@@ -97,12 +97,12 @@ public class QuarterlyReportEntity {
         return quarter;
     }
 
-    public String getReactiveSummar() {
-        return reactiveSummar;
+    public String getReactiveSummary() {
+        return reactiveSummary;
     }
 
-    public void setReactiveSummar(final String reactiveSummar) {
-        this.reactiveSummar = reactiveSummar;
+    public void setReactiveSummary(final String reactiveSummary) {
+        this.reactiveSummary = reactiveSummary;
     }
 
     public String getPrioritizedElementSummary() {
