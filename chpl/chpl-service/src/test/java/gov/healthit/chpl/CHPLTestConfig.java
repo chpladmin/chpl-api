@@ -332,6 +332,6 @@ public class CHPLTestConfig implements EnvironmentAware {
 
     @Bean
     public FF4j getFF4j() {
-        return Mockito.mock(FF4j.class);
+        return Mockito.spy(new FF4j());
     }
 }

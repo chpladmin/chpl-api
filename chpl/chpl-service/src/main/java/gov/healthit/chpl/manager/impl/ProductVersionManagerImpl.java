@@ -17,7 +17,9 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.ProductVersionDAO;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
@@ -28,7 +30,13 @@ import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
+import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.ValidationUtils;
+import gov.healthit.chpl.util.ChplProductNumberUtil.ChplProductNumberParts;
 
 @Service
 public class ProductVersionManagerImpl extends SecuredManager implements ProductVersionManager {
@@ -43,6 +51,14 @@ public class ProductVersionManagerImpl extends SecuredManager implements Product
     private CertifiedProductDAO cpDao;
     @Autowired
     private ActivityManager activityManager;
+    @Autowired
+    private CertifiedProductDetailsManager cpdManager;
+    @Autowired
+    private ResourcePermissions resourcePermissions;
+    @Autowired
+    private ErrorMessageUtil msgUtil;
+    @Autowired
+    private ChplProductNumberUtil chplProductNumberUtil;
 
     @Override
     @Transactional(readOnly = true)
@@ -147,7 +163,7 @@ public class ProductVersionManagerImpl extends SecuredManager implements Product
     })
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
             + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).MERGE, #versionIdsToMerge)")
-    public ProductVersionDTO merge(List<Long> versionIdsToMerge, ProductVersionDTO toCreate)
+    public ProductVersionDTO merge(final List<Long> versionIdsToMerge, final ProductVersionDTO toCreate)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 
         List<ProductVersionDTO> beforeVersions = new ArrayList<ProductVersionDTO>();
@@ -177,5 +193,98 @@ public class ProductVersionManagerImpl extends SecuredManager implements Product
                 beforeVersions, createdVersion);
 
         return createdVersion;
+    }
+
+    @Override
+    @Transactional(rollbackFor = {
+            EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class,
+            AccessDeniedException.class
+    })
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
+            + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).SPLIT, #oldVersion)")
+    public ProductVersionDTO split(final ProductVersionDTO oldVersion, final ProductVersionDTO newVersion,
+            final String newVersionCode, final List<Long> newVersionListingIds)
+            throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
+        // what ACB does the user have??
+        List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
+
+        // create the new version and log activity
+        // this method checks that the related developer is Active and will
+        // throw an exception if they aren't
+        ProductVersionDTO createdVersion = create(newVersion);
+
+        // re-assign listings to the new version and
+        //update their version codes and log activity for each
+        for (Long affectedListingId : newVersionListingIds) {
+            //get listing by id so all info is filled in prior to update
+            CertifiedProductDTO affectedListing = cpDao.getById(affectedListingId);
+
+            // have to get the cpdetails for before and after code update
+            // because that is object sent into activity reports
+            CertifiedProductSearchDetails beforeListing = cpdManager.getCertifiedProductDetails(affectedListingId);
+            // make sure each cp listing is owned by an ACB the user has access to
+            boolean hasAccessToAcb = false;
+            for (CertificationBodyDTO allowedAcb : allowedAcbs) {
+                if (allowedAcb.getId().toString().equals(
+                        beforeListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString())) {
+                    hasAccessToAcb = true;
+                }
+            }
+            if (!hasAccessToAcb) {
+                throw new AccessDeniedException(
+                        msgUtil.getMessage("acb.accessDenied.listingUpdate", beforeListing.getChplProductNumber(),
+                                beforeListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY)));
+            }
+
+            //make sure the affected listing belongs to the old version id
+            if (!affectedListing.getProductVersionId().equals(oldVersion.getId().longValue())) {
+                throw new EntityCreationException(msgUtil.getMessage("version.split.listingVersionMismatch",
+                        affectedListing.getChplProductNumber(), affectedListing.getProductVersionId(),
+                        oldVersion.getId()));
+            }
+
+            // make sure the updated CHPL product number is unique and that the
+            // new product code is valid
+            String chplNumber = beforeListing.getChplProductNumber();
+            if (!chplProductNumberUtil.isLegacy(chplNumber)) {
+                ChplProductNumberParts parts = chplProductNumberUtil.parseChplProductNumber(chplNumber);
+                String potentialChplNumber = chplProductNumberUtil.getChplProductNumber(parts.getEditionCode(),
+                        parts.getAtlCode(), parts.getAcbCode(), parts.getDeveloperCode(), parts.getProductCode(),
+                        newVersionCode, parts.getIcsCode(), parts.getAdditionalSoftwareCode(),
+                        parts.getCertifiedDateCode());
+                if (!chplProductNumberUtil.isUnique(potentialChplNumber)) {
+                    throw new EntityCreationException(msgUtil.getMessage("version.split.duplicateChplId",
+                            chplNumber, potentialChplNumber));
+                }
+                if (!ValidationUtils.chplNumberPartIsValid(potentialChplNumber,
+                        ChplProductNumberUtil.VERSION_CODE_INDEX, ChplProductNumberUtil.VERSION_CODE_REGEX)) {
+                    throw new EntityCreationException(msgUtil.getMessage("listing.badVersionCodeChars",
+                            ChplProductNumberUtil.VERSION_CODE_LENGTH));
+                }
+                affectedListing.setVersionCode(newVersionCode);
+            }
+            affectedListing.setProductVersionId(createdVersion.getId());
+
+            // do the update and add activity
+            cpDao.update(affectedListing);
+            CertifiedProductSearchDetails afterListing = cpdManager.getCertifiedProductDetails(affectedListingId);
+            activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, beforeListing.getId(),
+                    "Updated certified product " + afterListing.getChplProductNumber() + ".", beforeListing,
+                    afterListing);
+        }
+
+        //the split is complete - log split activity
+        //getting the original version object from the db to make sure it's all filled in
+        ProductVersionDTO origVersion = getById(oldVersion.getId());
+        ProductVersionDTO afterVersion = getById(createdVersion.getId());
+        List<ProductVersionDTO> splitVersions = new ArrayList<ProductVersionDTO>();
+        splitVersions.add(origVersion);
+        splitVersions.add(afterVersion);
+        activityManager.addActivity(ActivityConcept.VERSION, afterVersion.getId(),
+                "Split version " + origVersion.getVersion() + " into "
+                        + origVersion.getVersion() + " and " + afterVersion.getVersion(),
+                origVersion, splitVersions);
+
+        return afterVersion;
     }
 }
