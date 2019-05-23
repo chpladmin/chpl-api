@@ -4,7 +4,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.domain.activity.ActivityCategory;
@@ -51,7 +50,6 @@ public class UserMaintenanceActivityMetadataBuilder extends ActivityMetadataBuil
         UserDTO userDTO = null;
         try {
             if (json != null && json != "") {
-                jsonMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
                 userDTO = jsonMapper.readValue(json, UserDTO.class);
             }
         } catch (final Exception ex) {
