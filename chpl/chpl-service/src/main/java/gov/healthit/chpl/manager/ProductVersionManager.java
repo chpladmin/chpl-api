@@ -10,6 +10,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public interface ProductVersionManager {
     ProductVersionDTO getById(Long id) throws EntityRetrievalException;
+    ProductVersionDTO getById(Long id, boolean allowDeleted) throws EntityRetrievalException;
 
     List<ProductVersionDTO> getAll();
 

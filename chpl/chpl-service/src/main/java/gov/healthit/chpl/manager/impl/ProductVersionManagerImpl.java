@@ -34,7 +34,7 @@ import gov.healthit.chpl.manager.ProductVersionManager;
 public class ProductVersionManagerImpl extends SecuredManager implements ProductVersionManager {
     private static final Logger LOGGER = LogManager.getLogger(ProductVersionManagerImpl.class);
     @Autowired
-    private ProductVersionDAO dao;
+    private ProductVersionDAO versionDao;
     @Autowired
     private DeveloperDAO devDao;
     @Autowired
@@ -46,26 +46,33 @@ public class ProductVersionManagerImpl extends SecuredManager implements Product
 
     @Override
     @Transactional(readOnly = true)
-    public ProductVersionDTO getById(Long id) throws EntityRetrievalException {
-        return dao.getById(id);
+    public ProductVersionDTO getById(final Long id, final boolean allowDeleted)
+            throws EntityRetrievalException {
+        return versionDao.getById(id, allowDeleted);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ProductVersionDTO getById(final Long id) throws EntityRetrievalException {
+        return getById(id, false);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<ProductVersionDTO> getAll() {
-        return dao.findAll();
+        return versionDao.findAll();
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<ProductVersionDTO> getByProduct(Long productId) {
-        return dao.getByProductId(productId);
+        return versionDao.getByProductId(productId);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<ProductVersionDTO> getByProducts(List<Long> productIds) {
-        return dao.getByProductIds(productIds);
+        return versionDao.getByProductIds(productIds);
     }
 
     @Override
@@ -99,7 +106,7 @@ public class ProductVersionManagerImpl extends SecuredManager implements Product
             throw new EntityCreationException(msg);
         }
 
-        ProductVersionDTO created = dao.create(dto);
+        ProductVersionDTO created = versionDao.create(dto);
         activityManager.addActivity(ActivityConcept.VERSION, created.getId(),
                 "Product Version " + dto.getVersion() + " added for product " + dto.getProductId(), null, created);
         return created;
@@ -112,7 +119,7 @@ public class ProductVersionManagerImpl extends SecuredManager implements Product
     public ProductVersionDTO update(ProductVersionDTO dto)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 
-        ProductVersionDTO before = dao.getById(dto.getId());
+        ProductVersionDTO before = versionDao.getById(dto.getId());
         // check that the developer of this version is Active
         DeveloperDTO dev = devDao.getByVersion(before.getId());
         if (dev == null) {
@@ -126,7 +133,7 @@ public class ProductVersionManagerImpl extends SecuredManager implements Product
             throw new EntityCreationException(msg);
         }
 
-        ProductVersionEntity result = dao.update(dto);
+        ProductVersionEntity result = versionDao.update(dto);
         ProductVersionDTO after = new ProductVersionDTO(result);
         activityManager.addActivity(ActivityConcept.VERSION, after.getId(),
                 "Product Version " + dto.getVersion() + " updated for product " + dto.getProductId(), before, after);
@@ -145,10 +152,10 @@ public class ProductVersionManagerImpl extends SecuredManager implements Product
 
         List<ProductVersionDTO> beforeVersions = new ArrayList<ProductVersionDTO>();
         for (Long versionId : versionIdsToMerge) {
-            beforeVersions.add(dao.getById(versionId));
+            beforeVersions.add(versionDao.getById(versionId));
         }
 
-        ProductVersionDTO createdVersion = dao.create(toCreate);
+        ProductVersionDTO createdVersion = versionDao.create(toCreate);
 
         // search for any certified products assigned to the list of versions
         // passed in
@@ -162,7 +169,7 @@ public class ProductVersionManagerImpl extends SecuredManager implements Product
 
         // - mark the passed in versions as deleted
         for (Long versionId : versionIdsToMerge) {
-            dao.delete(versionId);
+            versionDao.delete(versionId);
         }
 
         activityManager.addActivity(ActivityConcept.VERSION, createdVersion.getId(),
