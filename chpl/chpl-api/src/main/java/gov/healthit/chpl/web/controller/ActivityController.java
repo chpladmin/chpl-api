@@ -497,7 +497,7 @@ public class ActivityController {
     
     @ApiOperation(value = "Get metadata about auditable records in the system for corrective action plans.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
-    @RequestMapping(value = "/metadata/correct_action_plans", method = RequestMethod.GET,
+    @RequestMapping(value = "/metadata/corrective_action_plans", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForCorrectiveActionPlans(@RequestParam final Long start,
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
