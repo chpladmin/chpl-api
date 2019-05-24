@@ -1,11 +1,32 @@
 package gov.healthit.chpl.dao.surveillance.report;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.stereotype.Repository;
+
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.surveillance.report.QuarterDTO;
 import gov.healthit.chpl.entity.surveillance.report.QuarterEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
+@Repository("quarterDao")
 public class QuarterDAOImpl extends BaseDAOImpl implements QuarterDAO {
+
+    @Override
+    public List<QuarterDTO> getAll() {
+        List<QuarterEntity> resultEntities = entityManager.createQuery(
+                "SELECT q "
+                + " FROM QuarterEntity q "
+                + " WHERE q.deleted = false").getResultList();
+        List<QuarterDTO> results = new ArrayList<QuarterDTO>();
+        if (resultEntities != null && resultEntities.size() > 0) {
+            for (QuarterEntity resultEntity : resultEntities) {
+                results.add(new QuarterDTO(resultEntity));
+            }
+        }
+        return results;
+    }
 
     @Override
     public QuarterDTO getById(final Long id) throws EntityRetrievalException {

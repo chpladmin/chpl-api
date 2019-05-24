@@ -53,7 +53,7 @@ public class QuarterlyReportEntity {
     @Column(name = "transparency_disclosure_summary")
     private String transparencyDisclosureSummary;
 
-    @Column(name = "deleted")
+    @Column(name = "deleted", insertable = false)
     private Boolean deleted;
 
     @Column(name = "last_modified_user")

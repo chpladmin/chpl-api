@@ -39,7 +39,7 @@ public class AnnualReportEntity {
     @Column(name = "findings_summary")
     private String findingsSummary;
 
-    @Column(name = "deleted")
+    @Column(name = "deleted", insertable = false)
     private Boolean deleted;
 
     @Column(name = "last_modified_user")

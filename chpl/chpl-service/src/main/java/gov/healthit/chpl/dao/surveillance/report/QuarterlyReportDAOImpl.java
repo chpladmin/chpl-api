@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.springframework.stereotype.Repository;
+
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.entity.surveillance.report.QuarterlyReportEntity;
@@ -13,6 +15,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
 
+@Repository("quarterlyReportDao")
 public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyReportDAO {
 
     /**

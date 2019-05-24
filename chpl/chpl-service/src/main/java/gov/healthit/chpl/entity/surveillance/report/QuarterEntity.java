@@ -36,7 +36,7 @@ public class QuarterEntity {
     @Column(name = "quarter_end_day")
     private Integer quarterEndDay;
 
-    @Column(name = "deleted")
+    @Column(name = "deleted", insertable = false)
     private Boolean deleted;
 
     @Column(name = "last_modified_user")
