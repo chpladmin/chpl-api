@@ -74,7 +74,7 @@ public class VersionTest extends TestCase {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date();
-        ProductVersionDTO version = versionManager.getById(1L);
+        ProductVersionDTO version = versionManager.getById(-1L);
         version.setVersion("NEW VERSION NAME");
         versionManager.update(version);
         Date afterActivity = new Date();
@@ -84,7 +84,7 @@ public class VersionTest extends TestCase {
         assertNotNull(activities);
         assertEquals(1, activities.size());
         QuestionableActivityVersionDTO activity = activities.get(0);
-        assertEquals(1, activity.getVersionId().longValue());
+        assertEquals(-1, activity.getVersionId().longValue());
         assertEquals("1.0.0", activity.getBefore());
         assertEquals("NEW VERSION NAME", activity.getAfter());
         assertEquals(QuestionableActivityTriggerConcept.VERSION_NAME_EDITED.getName(), activity.getTrigger().getName());
@@ -99,7 +99,7 @@ public class VersionTest extends TestCase {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date();
-        ProductVersionDTO version = versionManager.getById(1L);
+        ProductVersionDTO version = versionManager.getById(-1L);
         versionManager.update(version);
         Date afterActivity = new Date();
 

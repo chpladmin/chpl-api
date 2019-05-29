@@ -487,15 +487,17 @@ public class ActivityManagerImpl extends SecuredManager implements ActivityManag
 
         if (event instanceof ProductActivityDetails && event.getNewData() != null) {
             JsonNode devIdNode = event.getNewData().get("developerId");
-            Long devId = devIdNode.asLong();
-            if (devId != null) {
-                try {
-                    DeveloperDTO dev = devDao.getById(devId);
-                    if (dev != null) {
-                        ((ProductActivityDetails) event).setDeveloper(new Developer(dev));
+            if (devIdNode != null) {
+                Long devId = devIdNode.asLong();
+                if (devId != null) {
+                    try {
+                        DeveloperDTO dev = devDao.getById(devId, true);
+                        if (dev != null) {
+                            ((ProductActivityDetails) event).setDeveloper(new Developer(dev));
+                        }
+                    } catch (final EntityRetrievalException ex) {
+                        LOGGER.error("Could not get developer with id " + devId);
                     }
-                } catch (final EntityRetrievalException ex) {
-                    LOGGER.error("Could not get developer with id " + devId);
                 }
             }
         }

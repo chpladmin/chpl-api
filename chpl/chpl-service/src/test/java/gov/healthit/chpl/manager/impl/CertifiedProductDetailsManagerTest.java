@@ -285,7 +285,7 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
         assertEquals("Test Product 1", detail.getProduct().getName());
         assertEquals(-1, detail.getProduct().getProductId().longValue());
         assertEquals("1.0.0", detail.getVersion().getVersion());
-        assertEquals(1, detail.getVersion().getVersionId().longValue());
+        assertEquals(-1, detail.getVersion().getVersionId().longValue());
 
     }
 
