@@ -823,6 +823,17 @@ public class SearchViewController {
     }
 
     @Secured({
+        Authority.ROLE_ADMIN, Authority.ROLE_ACB
+    })
+    @ApiOperation(value = "Get a list of quarters for which a surveillance report can be created.")
+    @RequestMapping(value = "/data/quarters", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody Set<KeyValueModel> getQuarters() {
+        return dimensionalDataManager.getQuarters();
+    }
+
+    @Secured({
         Authority.ROLE_ADMIN
     })
     @ApiOperation(value = "Get all fuzzy matching choices for the items that be fuzzy matched.")

@@ -30,6 +30,7 @@ import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.UcdProcessDAO;
 import gov.healthit.chpl.dao.UploadTemplateVersionDAO;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
+import gov.healthit.chpl.dao.surveillance.report.QuarterDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
@@ -65,6 +66,7 @@ import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.dto.UploadTemplateVersionDTO;
 import gov.healthit.chpl.dto.job.JobTypeDTO;
+import gov.healthit.chpl.dto.surveillance.report.QuarterDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.manager.PrecacheableDimensionalDataManager;
@@ -109,6 +111,8 @@ public class DimensionalDataManagerImpl implements DimensionalDataManager {
     private SurveillanceDAO survDao;
     @Autowired
     private UploadTemplateVersionDAO uploadTemplateDao;
+    @Autowired
+    private QuarterDAO quarterDao;
 
 
     @Autowired
@@ -126,6 +130,18 @@ public class DimensionalDataManagerImpl implements DimensionalDataManager {
         Set<KeyValueModel> results = new HashSet<KeyValueModel>();
         for (JobTypeDTO dto : jobTypes) {
             results.add(new KeyValueModel(dto.getId(), dto.getName(), dto.getDescription()));
+        }
+        return results;
+    }
+
+    @Transactional
+    @Override
+    public Set<KeyValueModel> getQuarters() {
+        LOGGER.debug("Getting all quarters from the database (not cached).");
+        List<QuarterDTO> quarters = quarterDao.getAll();
+        Set<KeyValueModel> results = new HashSet<KeyValueModel>();
+        for (QuarterDTO dto : quarters) {
+            results.add(new KeyValueModel(dto.getId(), dto.getName()));
         }
         return results;
     }

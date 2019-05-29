@@ -7,8 +7,10 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public interface QuarterlyReportDAO {
+    public QuarterlyReportDTO getByQuarterAndAcbAndYear(Long quarterId, final Long acbId, final Integer year);
     public List<QuarterlyReportDTO> getByAcbAndYear(Long acbId, Integer year);
     public List<QuarterlyReportDTO> getByAcb(Long acbId);
+    public List<QuarterlyReportDTO> getAll();
     public QuarterlyReportDTO getById(Long id) throws EntityRetrievalException;
     public QuarterlyReportDTO create(QuarterlyReportDTO toCreate) throws EntityCreationException;
     public QuarterlyReportDTO update(QuarterlyReportDTO toUpdate) throws EntityRetrievalException;

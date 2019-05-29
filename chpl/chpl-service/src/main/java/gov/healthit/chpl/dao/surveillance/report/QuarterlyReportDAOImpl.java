@@ -18,6 +18,29 @@ import gov.healthit.chpl.util.AuthUtil;
 @Repository("quarterlyReportDao")
 public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyReportDAO {
 
+    @Override
+    public QuarterlyReportDTO getByQuarterAndAcbAndYear(final Long quarterId, final Long acbId, final Integer year) {
+        String queryStr = "SELECT qr "
+                + " FROM QuarterlyReportEntity qr "
+                + " JOIN FETCH qr.quarter "
+                + " JOIN FETCH qr.annualReport ar"
+                + " JOIN FETCH ar.acb acb "
+                + " WHERE qr.deleted = false "
+                + " AND ar.year = :year "
+                + " AND acb.id = :acbId "
+                + " AND qr.id = :quarterId";
+        Query query = entityManager.createQuery(queryStr);
+        query.setParameter("quarterId", quarterId);
+        query.setParameter("year", year);
+        query.setParameter("acbId", acbId);
+        List<QuarterlyReportEntity> entityResults = query.getResultList();
+        QuarterlyReportDTO result = null;
+        if (entityResults != null && entityResults.size() > 0) {
+            result = new QuarterlyReportDTO(entityResults.get(0));
+        }
+        return result;
+    }
+
     /**
      * Get the quarterly reports for a specific year and ACB.
      * There could be 0-4 quarterly reports.
@@ -60,6 +83,28 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
                 + " AND acb.id = :acbId";
         Query query = entityManager.createQuery(queryStr);
         query.setParameter("acbId", acbId);
+        List<QuarterlyReportEntity> entityResults = query.getResultList();
+        List<QuarterlyReportDTO> results = new ArrayList<QuarterlyReportDTO>();
+        if (entityResults != null && entityResults.size() > 0) {
+            for (QuarterlyReportEntity entityResult : entityResults) {
+                results.add(new QuarterlyReportDTO(entityResult));
+            }
+        }
+        return results;
+    }
+
+    /**
+     * Get all of the quarterly report.
+     */
+    @Override
+    public List<QuarterlyReportDTO> getAll() {
+        String queryStr = "SELECT qr "
+                + " FROM QuarterlyReportEntity qr "
+                + " JOIN FETCH qr.quarter "
+                + " JOIN FETCH qr.annualReport ar"
+                + " JOIN FETCH ar.acb acb "
+                + " WHERE qr.deleted = false ";
+        Query query = entityManager.createQuery(queryStr);
         List<QuarterlyReportEntity> entityResults = query.getResultList();
         List<QuarterlyReportDTO> results = new ArrayList<QuarterlyReportDTO>();
         if (entityResults != null && entityResults.size() > 0) {

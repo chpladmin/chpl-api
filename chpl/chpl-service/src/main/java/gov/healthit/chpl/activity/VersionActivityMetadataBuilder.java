@@ -70,10 +70,7 @@ public class VersionActivityMetadataBuilder extends ActivityMetadataBuilder {
             try {
                 newVersion =
                     jsonMapper.readValue(activity.getNewData(), ProductVersionDTO.class);
-            } catch (final Exception ex) {
-                LOGGER.error("Could not parse activity ID " + activity.getId() + " new data. "
-                        + "JSON was: " + activity.getNewData(), ex);
-            }
+            } catch (final Exception ignore) { }
 
             if (newVersion == null) {
                 try {

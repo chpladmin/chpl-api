@@ -3,6 +3,8 @@ package gov.healthit.chpl.dao.surveillance.report;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Query;
+
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -35,5 +37,21 @@ public class QuarterDAOImpl extends BaseDAOImpl implements QuarterDAO {
             throw new EntityRetrievalException("No quarter exists with database ID " + id);
         }
         return new QuarterDTO(entity);
+    }
+
+    @Override
+    public QuarterDTO getByName(final String name) {
+        Query query = entityManager.createQuery(
+                "SELECT q "
+                + " FROM QuarterEntity q "
+                + " WHERE q.name = :name "
+                + " AND q.deleted = false");
+        query.setParameter("name", name);
+        List<QuarterEntity> resultEntities = query.getResultList();
+        QuarterDTO result = null;
+        if (resultEntities != null && resultEntities.size() > 0) {
+            result = new QuarterDTO(resultEntities.get(0));
+        }
+        return result;
     }
 }

@@ -23,6 +23,7 @@ import gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions;
+import gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions;
 import gov.healthit.chpl.permissions.domains.TestingLabDomainPermissions;
 import gov.healthit.chpl.permissions.domains.UserPermissionsDomainPermissions;
 
@@ -35,6 +36,7 @@ public class Permissions {
     public static final String INVITATION = "INVITATION";
     public static final String PENDING_CERTIFIED_PRODUCT = "PENDING_CERTIFIED_PRODUCT";
     public static final String SURVEILLANCE = "SURVEILLANCE";
+    public static final String SURVEILLANCE_REPORT = "SURVEILLANCE_REPORT";
     public static final String CERTIFICATION_BODY = "CERTIFICATION_BODY";
     public static final String SCHEDULER = "SCHEDULER";
     public static final String USER_PERMISSIONS = "USER_PERMISSIONS";
@@ -57,6 +59,7 @@ public class Permissions {
             final InvitationDomainPermissions invitationDomainPermissions,
             final PendingCertifiedProductDomainPermissions pendingCertifiedProductDomainPermissions,
             final SurveillanceDomainPermissions surveillanceDomainPermissions,
+            final SurveillanceReportDomainPermissions surveillanceReportDomainPermissions,
             final CertificationBodyDomainPermissions certificationBodyDomainPermissions,
             final UserPermissionsDomainPermissions userPermissionsDomainPermissions,
             final ActivityDomainPermissions activityDomainPermissions, final JobDomainPermissions jobDomainPermissions,
@@ -75,6 +78,7 @@ public class Permissions {
         domainPermissions.put(INVITATION, invitationDomainPermissions);
         domainPermissions.put(PENDING_CERTIFIED_PRODUCT, pendingCertifiedProductDomainPermissions);
         domainPermissions.put(SURVEILLANCE, surveillanceDomainPermissions);
+        domainPermissions.put(SURVEILLANCE_REPORT, surveillanceReportDomainPermissions);
         domainPermissions.put(CERTIFICATION_BODY, certificationBodyDomainPermissions);
         domainPermissions.put(USER_PERMISSIONS, userPermissionsDomainPermissions);
         domainPermissions.put(ACTIVITY, activityDomainPermissions);

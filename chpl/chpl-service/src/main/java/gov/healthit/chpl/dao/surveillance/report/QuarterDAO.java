@@ -8,4 +8,5 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 public interface QuarterDAO {
     public List<QuarterDTO> getAll();
     public QuarterDTO getById(Long id) throws EntityRetrievalException;
+    public QuarterDTO getByName(String name);
 }
