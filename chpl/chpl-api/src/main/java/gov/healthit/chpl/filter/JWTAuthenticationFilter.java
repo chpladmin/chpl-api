@@ -16,13 +16,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import org.springframework.web.filter.GenericFilterBean;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
 import gov.healthit.chpl.auth.user.User;
-import gov.healthit.chpl.domain.error.ErrorResponse;
 import gov.healthit.chpl.exception.JWTValidationException;
 
 public class JWTAuthenticationFilter extends GenericFilterBean {
@@ -69,15 +64,8 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
             try {
                 jwt = authorization.split(" ")[1];
             } catch (java.lang.ArrayIndexOutOfBoundsException e) {
-                if (ff4j.check(FeatureList.OCD_2820)) {
-                    HttpServletResponse response = (HttpServletResponse) res;
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
-                } else {
-                    ErrorResponse errorObj = new ErrorResponse("Token must be presented in the form: Bearer token");
-                    ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-                    String json = ow.writeValueAsString(errorObj);
-                    res.getOutputStream().write(json.getBytes());
-                }
+                HttpServletResponse response = (HttpServletResponse) res;
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
             }
 
             if (jwt != null) {
@@ -87,15 +75,8 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
                     chain.doFilter(req, res); // continue
                     SecurityContextHolder.getContext().setAuthentication(null);
                 } catch (JWTValidationException e) {
-                    if (ff4j.check(FeatureList.OCD_2820)) {
-                        HttpServletResponse response = (HttpServletResponse) res;
-                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
-                    } else {
-                        ErrorResponse errorObj = new ErrorResponse("Token must be presented in the form: Bearer token");
-                        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-                        String json = ow.writeValueAsString(errorObj);
-                        res.getOutputStream().write(json.getBytes());
-                    }
+                    HttpServletResponse response = (HttpServletResponse) res;
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
                 }
             }
         }
