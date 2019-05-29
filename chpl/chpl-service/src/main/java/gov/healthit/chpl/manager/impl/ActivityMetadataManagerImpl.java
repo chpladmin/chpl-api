@@ -112,6 +112,8 @@ public class ActivityMetadataManagerImpl extends SecuredManager implements Activ
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_USER_MAINTENANCE_METADATA)")
+    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_USER_MAINTENANCE_METADATA, filterObject)")
     public List<ActivityMetadata> getUserMaintenanceActivityMetadata(final Date startDate, final Date endDate)
             throws JsonParseException, IOException {
         return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.USER, startDate, endDate);
