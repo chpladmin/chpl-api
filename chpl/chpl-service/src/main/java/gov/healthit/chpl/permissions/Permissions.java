@@ -10,6 +10,7 @@ import gov.healthit.chpl.permissions.domains.ActivityDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CertificationResultsDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions;
+import gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CorrectiveActionPlanDomainPermissions;
 import gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions;
 import gov.healthit.chpl.permissions.domains.DomainPermissions;
@@ -46,6 +47,7 @@ public class Permissions {
     public static final String SECURED_USER = "SECURED_USER";
     public static final String TESTING_LAB = "TESTING_LAB";
     public static final String FILTER = "FILTER";
+    public static final String COMPLAINT = "COMPLAINT";
 
     private Map<String, DomainPermissions> domainPermissions = new HashMap<String, DomainPermissions>();
 
@@ -66,7 +68,8 @@ public class Permissions {
             final SecuredUserDomainPermissions securedUserDomainPermissions,
             final SchedulerDomainPermissions schedulerDomainPermissions,
             final TestingLabDomainPermissions testingLabDomainPermissions,
-            final FilterDomainPermissions filterDomainPermissions) {
+            final FilterDomainPermissions filterDomainPermissions,
+            final ComplaintDomainPermissions complaintDomainPermissions) {
 
         domainPermissions.put(PENDING_SURVEILLANCE, pendingSurveillanceDomainPermissions);
         domainPermissions.put(CERTIFICATION_RESULTS, certificationResultsDomainPermissions);
@@ -86,6 +89,7 @@ public class Permissions {
         domainPermissions.put(SCHEDULER, schedulerDomainPermissions);
         domainPermissions.put(TESTING_LAB, testingLabDomainPermissions);
         domainPermissions.put(FILTER, filterDomainPermissions);
+        domainPermissions.put(COMPLAINT, complaintDomainPermissions);
     }
 
     public boolean hasAccess(final String domain, final String action) {
