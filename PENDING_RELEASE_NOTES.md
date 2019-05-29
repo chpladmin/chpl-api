@@ -10,6 +10,5 @@ _Date TBD_
 
 ### Bugs Fixed
 * Correctly handle scheduled job update when an ACB is renamed.
-* Send 401 error back to consumer if JWT token is invalid
 
 ---
