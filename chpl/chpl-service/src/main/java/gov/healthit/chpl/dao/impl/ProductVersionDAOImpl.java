@@ -132,10 +132,15 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
     }
 
     @Override
-    public ProductVersionDTO getById(Long id) throws EntityRetrievalException {
+    public ProductVersionDTO getById(final Long id) throws EntityRetrievalException {
+        return getById(id, false);
+    }
 
+    @Override
+    public ProductVersionDTO getById(final Long id, final boolean includeDeleted)
+            throws EntityRetrievalException {
         ProductVersionDTO dto = null;
-        ProductVersionEntity entity = getEntityById(id);
+        ProductVersionEntity entity = getEntityById(id, includeDeleted);
 
         if (entity != null) {
             dto = new ProductVersionDTO(entity);
@@ -144,7 +149,7 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
     }
 
     @Override
-    public List<ProductVersionDTO> getByProductId(Long productId) {
+    public List<ProductVersionDTO> getByProductId(final Long productId) {
         Query query = entityManager.createQuery("SELECT pve "
                 + " FROM ProductVersionEntity pve "
                 + " LEFT OUTER JOIN FETCH pve.product product "
@@ -162,7 +167,7 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
         return dtoResults;
     }
 
-    public List<ProductVersionDTO> getByProductIds(List<Long> productIds) {
+    public List<ProductVersionDTO> getByProductIds(final List<Long> productIds) {
         Query query = entityManager.createQuery("SELECT pve "
                         + " FROM ProductVersionEntity pve "
                         + " LEFT OUTER JOIN FETCH pve.product product "
@@ -181,7 +186,7 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
         return dtoResults;
     }
 
-    public ProductVersionDTO getByProductAndVersion(Long productId, String version) {
+    public ProductVersionDTO getByProductAndVersion(final Long productId, final String version) {
         Query query = entityManager.createQuery("SELECT pve "
                 + "FROM ProductVersionEntity pve "
                 + "LEFT OUTER JOIN FETCH pve.product product "
@@ -201,14 +206,14 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
         return result;
     }
 
-    private void create(ProductVersionEntity entity) {
+    private void create(final ProductVersionEntity entity) {
 
         entityManager.persist(entity);
         entityManager.flush();
         entityManager.clear();
     }
 
-    private void update(ProductVersionEntity entity) {
+    private void update(final ProductVersionEntity entity) {
 
         entityManager.merge(entity);
         entityManager.flush();
@@ -227,20 +232,23 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
 
     }
 
-    private ProductVersionEntity getEntityById(final Long id) throws EntityRetrievalException {
+    private ProductVersionEntity getEntityById(final Long id, final boolean includeDeleted)
+            throws EntityRetrievalException {
 
-        ProductVersionEntity entity = null;
-        Query query = entityManager.createQuery("SELECT pve "
+        String queryStr = "SELECT pve "
                 + " FROM ProductVersionEntity pve "
                 + " LEFT OUTER JOIN FETCH pve.product product "
                 + "LEFT OUTER JOIN FETCH product.developer "
-                + "WHERE (NOT pve.deleted = true) "
-                + "AND (product_version_id = :entityid)",
-                ProductVersionEntity.class);
+                + "WHERE (product_version_id = :entityid)";
+        if (!includeDeleted) {
+            queryStr += " AND pve.deleted = false";
+        }
 
+        Query query = entityManager.createQuery(queryStr, ProductVersionEntity.class);
         query.setParameter("entityid", id);
         List<ProductVersionEntity> result = query.getResultList();
 
+        ProductVersionEntity entity = null;
         if (result == null || result.size() == 0) {
             String msg = msgUtil.getMessage("version.notFound");
             throw new EntityRetrievalException(msg);
@@ -251,6 +259,10 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
         }
 
         return entity;
+    }
+
+    private ProductVersionEntity getEntityById(final Long id) throws EntityRetrievalException {
+        return getEntityById(id, false);
     }
 
 }

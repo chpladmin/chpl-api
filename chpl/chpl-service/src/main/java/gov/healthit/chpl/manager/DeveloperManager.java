@@ -21,6 +21,8 @@ public interface DeveloperManager {
     List<DeveloperDTO> getAllIncludingDeleted();
 
     DeveloperDTO getById(Long id) throws EntityRetrievalException;
+    DeveloperDTO getById(Long id, boolean allowDeleted)
+            throws EntityRetrievalException;
 
     List<DeveloperTransparency> getDeveloperCollection();
 

@@ -24,7 +24,7 @@ public class DeveloperActivityMetadataBuilder extends ActivityMetadataBuilder {
         jsonMapper = new ObjectMapper();
     }
 
-    protected void addConceptSpecificMetadata(final ActivityDTO dto, final ActivityMetadata metadata) {
+    protected void addConceptSpecificMetadata(final ActivityDTO activity, final ActivityMetadata metadata) {
         if (!(metadata instanceof DeveloperActivityMetadata)) {
             return;
         }
@@ -35,69 +35,79 @@ public class DeveloperActivityMetadataBuilder extends ActivityMetadataBuilder {
         //for other developer activities it's just a single developer.
         DeveloperDTO origDeveloper = null;
         List<DeveloperDTO> origDevelopers = null;
-        if (dto.getOriginalData() != null) {
+        if (activity.getOriginalData() != null) {
             try {
                 origDeveloper =
-                    jsonMapper.readValue(dto.getOriginalData(), DeveloperDTO.class);
-            } catch (final Exception ignore) {}
+                    jsonMapper.readValue(activity.getOriginalData(), DeveloperDTO.class);
+            } catch (final Exception ignore) { }
 
             //if we couldn't parse it as a DeveloperDTO
             //try to parse it as a List.
             if (origDeveloper == null) {
                 try {
-                    origDevelopers =
-                            jsonMapper.readValue(dto.getOriginalData(), List.class);
+                    origDevelopers = jsonMapper.readValue(activity.getOriginalData(),
+                            jsonMapper.getTypeFactory().constructCollectionType(List.class, DeveloperDTO.class));
                 } catch (final Exception ignore) {
                 }
             }
 
             //if the orig data is not a developer or a list, log an error
             if (origDeveloper == null && origDevelopers == null) {
-                LOGGER.error("Could not parse activity ID " + dto.getId() + " original data as "
-                    + "a DeveloperDTO or List<DeveloperDTO>. JSON was: " + dto.getOriginalData());
+                LOGGER.error("Could not parse activity ID " + activity.getId() + " original data as "
+                    + "a DeveloperDTO or List<DeveloperDTO>. JSON was: " + activity.getOriginalData());
             }
         }
 
         DeveloperDTO newDeveloper = null;
         List<DeveloperDTO> newDevelopers = null;
-        if (dto.getNewData() != null) {
+        if (activity.getNewData() != null) {
             try {
                 newDeveloper =
-                    jsonMapper.readValue(dto.getNewData(), DeveloperDTO.class);
+                    jsonMapper.readValue(activity.getNewData(), DeveloperDTO.class);
             } catch (final Exception ignore) { }
 
             //if we couldn't parse it as a DeveloperDTO
             //try to parse it as a List.
             if (newDeveloper == null) {
                 try {
-                    newDevelopers =
-                            jsonMapper.readValue(dto.getOriginalData(), List.class);
+                    newDevelopers = jsonMapper.readValue(activity.getNewData(),
+                            jsonMapper.getTypeFactory().constructCollectionType(List.class, DeveloperDTO.class));
                 } catch (final Exception ignore) {
                 }
             }
 
             //if the new data is not a developer or a list, log an error
             if (newDeveloper == null && newDevelopers == null) {
-                LOGGER.error("Could not parse activity ID " + dto.getId() + " new data as "
-                    + "a DeveloperDTO or List<DeveloperDTO>. JSON was: " + dto.getNewData());
+                LOGGER.error("Could not parse activity ID " + activity.getId() + " new data as "
+                    + "a DeveloperDTO or List<DeveloperDTO>. JSON was: " + activity.getNewData());
             }
         }
 
-        if (newDeveloper != null) {
-            //if there is a new developer that could mean the developer
-            //was updated and we want to fill in the metadata with the
-            //latest developer info
+        if (newDeveloper != null && origDeveloper != null
+                && newDevelopers == null && origDevelopers == null) {
+            //if there is a single new developer and single original developer
+            //that means the activity was editing the developer
             parseDeveloperMetadata(developerMetadata, newDeveloper);
-        } else if (origDeveloper != null) {
+        } else if (origDeveloper != null && newDeveloper == null
+                && newDevelopers == null && origDevelopers == null) {
             //if there is an original developer but no new developer
             //then the developer was deleted - pull its info from the orig object
             parseDeveloperMetadata(developerMetadata, origDeveloper);
-        } else if (newDevelopers != null && newDevelopers.size() > 0) {
-            //there could be multiple new developers on a developer split
-            parseDeveloperMetadata(developerMetadata, newDevelopers.get(0));
-        } else if (origDevelopers != null && origDevelopers.size() > 0) {
-            //there could be multiple original developers on a developer merge
-            parseDeveloperMetadata(developerMetadata, origDevelopers.get(0));
+        } else if (newDeveloper != null && origDeveloper == null
+                && newDevelopers == null && origDevelopers == null) {
+            //if there is a new developer but no original developer
+            //then the developer was just created
+            parseDeveloperMetadata(developerMetadata, newDeveloper);
+        } else if (newDevelopers != null && origDeveloper != null
+                && newDeveloper == null && origDevelopers == null) {
+            //multiple new developers and a single original developer
+            //means the activity was a split
+            parseDeveloperMetadata(developerMetadata, activity, newDevelopers);
+        } else if (origDevelopers != null && newDeveloper != null
+                && origDeveloper == null && newDevelopers == null) {
+            //multiple original developers and a single new developer
+            //means the activity was a merge
+            parseDeveloperMetadata(developerMetadata, newDeveloper);
         }
 
         developerMetadata.getCategories().add(ActivityCategory.DEVELOPER);
@@ -107,5 +117,24 @@ public class DeveloperActivityMetadataBuilder extends ActivityMetadataBuilder {
             final DeveloperActivityMetadata developerMetadata, final DeveloperDTO developer) {
         developerMetadata.setDeveloperName(developer.getName());
         developerMetadata.setDeveloperCode(developer.getDeveloperCode());
+    }
+
+    /**
+     * Find the developer in the list that matches the id of the developer
+     * the activity was recorded for. Parse activity metadata from that developer.
+     * @param developerMetadata
+     * @param activity
+     * @param developers
+     */
+    private void parseDeveloperMetadata(
+            final DeveloperActivityMetadata developerMetadata, final ActivityDTO activity,
+            final List<DeveloperDTO> developers) {
+        Long idToFind = activity.getActivityObjectId();
+        for (DeveloperDTO currDev : developers) {
+            if (currDev != null && currDev.getId().longValue() == idToFind.longValue()) {
+                parseDeveloperMetadata(developerMetadata, currDev);
+                break;
+            }
+        }
     }
 }

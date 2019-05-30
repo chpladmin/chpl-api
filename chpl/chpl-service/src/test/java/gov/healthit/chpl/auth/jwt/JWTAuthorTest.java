@@ -1,9 +1,9 @@
 package gov.healthit.chpl.auth.jwt;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.jose4j.jwt.consumer.InvalidJwtException;
@@ -45,8 +45,8 @@ public class JWTAuthorTest {
         Map<String, Object> claimObjects;
         try {
             claimObjects = jwtConsumer.consume(jwt);
-            List<String> recoveredAuthorities = (List<String>) claimObjects.get("Authorities");
-            // assertEquals(authorities.get(0), recoveredAuthorities.get(0));
+            String recoveredRole = (String) claimObjects.get("Authority");
+            assertEquals(role, recoveredRole);
         } catch (InvalidJwtException e) {
             fail();
         }
