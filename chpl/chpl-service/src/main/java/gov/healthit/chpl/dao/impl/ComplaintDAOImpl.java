@@ -16,7 +16,6 @@ import gov.healthit.chpl.entity.CertificationBodyEntity;
 import gov.healthit.chpl.entity.ComplaintEntity;
 import gov.healthit.chpl.entity.ComplaintStatusTypeEntity;
 import gov.healthit.chpl.entity.ComplaintTypeEntity;
-import gov.healthit.chpl.entity.FilterEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
 
@@ -45,9 +44,11 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
 
     @Override
     public List<ComplaintDTO> getAllComplaints() {
-        Query query = entityManager.createQuery("FROM ComplaintEntity c " + "JOIN FETCH c.certificationBody "
-                + "JOIN FETCH c.complaintType " + "JOIN FETCH c.complaintStatusType " + "WHERE c.deleted = false ",
-                FilterEntity.class);
+        Query query = entityManager
+                .createQuery(
+                        "FROM ComplaintEntity c " + "JOIN FETCH c.certificationBody " + "JOIN FETCH c.complaintType "
+                                + "JOIN FETCH c.complaintStatusType " + "WHERE c.deleted = false ",
+                        ComplaintEntity.class);
         List<ComplaintEntity> results = query.getResultList();
 
         List<ComplaintDTO> complaintDTOs = new ArrayList<ComplaintDTO>();
@@ -55,7 +56,12 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
             complaintDTOs.add(new ComplaintDTO(entity));
         }
         return complaintDTOs;
+    }
 
+    @Override
+    public ComplaintDTO getComplaint(final Long complaintId) throws EntityRetrievalException {
+        ComplaintEntity entity = getEntityById(complaintId);
+        return new ComplaintDTO(entity);
     }
 
     @Override
@@ -88,6 +94,7 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
     @Override
     public void delete(ComplaintDTO complaintDTO) throws EntityRetrievalException {
         ComplaintEntity entity = getEntityById(complaintDTO.getId());
+        entity.setDeleted(true);
         entity.setLastModifiedUser(AuthUtil.getAuditId());
 
         entityManager.merge(entity);

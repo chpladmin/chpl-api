@@ -13,6 +13,8 @@ public interface ComplaintDAO {
 
     List<ComplaintDTO> getAllComplaints();
 
+    ComplaintDTO getComplaint(Long complaintId) throws EntityRetrievalException;
+
     ComplaintDTO create(ComplaintDTO complaintDTO);
 
     ComplaintDTO update(ComplaintDTO complaintDTO) throws EntityRetrievalException;

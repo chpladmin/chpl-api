@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,7 +24,7 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
     private ComplaintDAO complaintDAO;
 
     @Autowired
-    public ComplaintManagerImpl(final ComplaintDAO complaintDAO) {
+    public ComplaintManagerImpl(final ComplaintDAO complaintDAO, final FF4j ff4j) {
         this.complaintDAO = complaintDAO;
     }
 
@@ -61,7 +62,7 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
             + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).CREATE, #complaintDTO)")
-    public ComplaintDTO create(ComplaintDTO complaintDTO) {
+    public ComplaintDTO create(final ComplaintDTO complaintDTO) {
         return complaintDAO.create(complaintDTO);
     }
 
@@ -69,15 +70,18 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
             + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).UPDATE, #complaintDTO)")
-    public ComplaintDTO update(ComplaintDTO complaintDTO) throws EntityRetrievalException {
+    public ComplaintDTO update(final ComplaintDTO complaintDTO) throws EntityRetrievalException {
         return complaintDAO.update(complaintDTO);
     }
 
     @Override
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
-            + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).DELETE, #complaintDTO)")
-    public void delete(ComplaintDTO complaintDTO) throws EntityRetrievalException {
-        complaintDAO.delete(complaintDTO);
+            + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).DELETE, #complaintId)")
+    public void delete(final Long complaintId) throws EntityRetrievalException {
+        ComplaintDTO dto = complaintDAO.getComplaint(complaintId);
+        if (dto != null) {
+            complaintDAO.delete(dto);
+        }
     }
 }

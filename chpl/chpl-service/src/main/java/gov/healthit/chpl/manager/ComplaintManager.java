@@ -18,5 +18,5 @@ public interface ComplaintManager {
 
     ComplaintDTO update(ComplaintDTO complaintDTO) throws EntityRetrievalException;
 
-    void delete(ComplaintDTO complaintDTO) throws EntityRetrievalException;
+    void delete(Long complaintId) throws EntityRetrievalException;
 }
