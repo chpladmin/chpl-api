@@ -48,7 +48,7 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
         TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
 })
 @DatabaseSetup("classpath:data/testData.xml")
-public class SurveillanceReportControllerTest {
+public class QuarterlyReportControllerTest {
     private static JWTAuthenticatedUser adminUser, acbUser;
 
     @Autowired
