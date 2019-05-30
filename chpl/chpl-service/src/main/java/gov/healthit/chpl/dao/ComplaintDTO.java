@@ -25,6 +25,10 @@ public class ComplaintDTO {
     private Long lastModifiedUser;
     private Boolean deleted;
 
+    public ComplaintDTO() {
+
+    }
+
     public ComplaintDTO(ComplaintEntity entity) {
         this.id = entity.getId();
         this.setCertificationBody(new CertificationBodyDTO(entity.getCertificationBody()));
