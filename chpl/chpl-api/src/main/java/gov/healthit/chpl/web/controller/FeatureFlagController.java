@@ -17,7 +17,7 @@ import io.swagger.annotations.ApiOperation;
 
 @Api(value = "feature-flags")
 @RestController
-@RequestMapping("/feature_flags")
+@RequestMapping("/feature-flags")
 public class FeatureFlagController {
 
     private FF4j ff4j;
