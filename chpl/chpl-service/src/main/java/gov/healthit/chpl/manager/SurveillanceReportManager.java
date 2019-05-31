@@ -1,5 +1,6 @@
 package gov.healthit.chpl.manager;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Workbook;
@@ -16,5 +17,5 @@ public interface SurveillanceReportManager {
     public void deleteQuarterlyReport(Long id) throws EntityRetrievalException;
     public List<QuarterlyReportDTO> getQuarterlyReports();
     public QuarterlyReportDTO getQuarterlyReport(Long id) throws EntityRetrievalException;
-    public Workbook exportQuarterlyReport(Long id);
+    public Workbook exportQuarterlyReport(Long id) throws EntityRetrievalException, IOException;
 }

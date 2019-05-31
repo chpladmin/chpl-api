@@ -255,8 +255,8 @@
         </dependency>
         <dependency>
             <groupId>xerces</groupId>
-            <artifactId>xerces</artifactId>
-            <version>2.4.0</version>
+            <artifactId>xercesImpl</artifactId>
+            <version>2.12.0</version>
         </dependency>
 
         <dependency>
@@ -299,6 +299,11 @@
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
+            <version>4.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
             <version>4.1.0</version>
         </dependency>
         <!-- for unit/integration testing of the dao calls -->

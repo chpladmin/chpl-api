@@ -1,7 +1,11 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
+import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -495,6 +499,40 @@ public class QuarterlyReportManagerTest extends TestCase {
         List<QuarterlyReportDTO> acbReports = reportManager.getQuarterlyReports();
         assertNotNull(acbReports);
         assertEquals(0, acbReports.size());
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    @Test
+    @Rollback(true)
+    @Transactional
+    public void writeQuarterlyReportAsExcelWorkbook()
+            throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException,
+            IOException {
+        SecurityContextHolder.getContext().setAuthentication(acbUser);
+        AnnualReportDTO annualReport = new AnnualReportDTO();
+        annualReport.setYear(2019);
+        CertificationBodyDTO acb = new CertificationBodyDTO();
+        acb.setId(-1L);
+        annualReport.setAcb(acb);
+        QuarterDTO quarter = new QuarterDTO();
+        quarter.setName("Q1");
+        QuarterlyReportDTO toCreate = new QuarterlyReportDTO();
+        toCreate.setAnnualReport(annualReport);
+        toCreate.setQuarter(quarter);
+        QuarterlyReportDTO created = reportManager.createQuarterlyReport(toCreate);
+
+        Workbook workbook = reportManager.exportQuarterlyReport(created.getId());
+        OutputStream outputStream = null;
+        try {
+            outputStream = new FileOutputStream("test.xlsx");
+            workbook.write(outputStream);
+        } catch(final Exception ex) {
+            fail(ex.getMessage());
+        } finally {
+            outputStream.flush();
+            outputStream.close();
+        }
+
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 

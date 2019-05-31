@@ -1,12 +1,20 @@
 package gov.healthit.chpl.web.controller;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -19,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.SurveillanceNonconformityDocument;
 import gov.healthit.chpl.domain.surveillance.report.QuarterlyReport;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
@@ -30,6 +39,7 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.manager.SurveillanceReportManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.FileUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -39,6 +49,7 @@ import io.swagger.annotations.ApiOperation;
 public class SurveillanceReportController {
 
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceReportController.class);
+    private static final String XLSX_MIME_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
     @Autowired
     private ErrorMessageUtil msgUtil;
@@ -46,6 +57,8 @@ public class SurveillanceReportController {
     private SurveillanceReportManager reportManager;
     @Autowired
     private ResourcePermissions resourcePermissions;
+    @Autowired
+    private FileUtils fileUtils;
     @Autowired
     private FF4j ff4j;
 
@@ -168,5 +181,34 @@ public class SurveillanceReportController {
             throw new NotImplementedException();
         }
         reportManager.deleteQuarterlyReport(quarterlyReportId);
+    }
+
+    @ApiOperation(value = "Download a quarterly report as an XLSX file.",
+            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority "
+                    + "on the ACB associated with the report.")
+    @RequestMapping(value = "/export/quarterly/{quarterlyReportId}", method = RequestMethod.GET)
+    public void exportQuarterlyReport(@PathVariable("quarterlyReportId") final Long quarterlyReportId,
+            final HttpServletResponse response) throws EntityRetrievalException, IOException {
+        //create the excel workbook object
+        Workbook reportXlsx = reportManager.exportQuarterlyReport(quarterlyReportId);
+
+        //create a new file in the download directory
+        QuarterlyReportDTO report = reportManager.getQuarterlyReport(quarterlyReportId);
+        String filename = report.getQuarter().getName() + "-" + report.getAnnualReport().getYear()
+                    + "-" + report.getAnnualReport().getAcb().getName() + "-quarterly-report.xlsx";
+        File downloadFile = fileUtils.createDownloadFile(filename);
+        //write out the workbook contents to this file
+        OutputStream outputStream = null;
+        try {
+            outputStream = new FileOutputStream(downloadFile);
+            reportXlsx.write(outputStream);
+        } catch (final Exception ex) {
+            LOGGER.error("Error writing excel document to file output stream.", ex);
+        } finally {
+            outputStream.flush();
+            outputStream.close();
+        }
+
+        fileUtils.streamFileAsResponse(downloadFile, XLSX_MIME_TYPE, response);
     }
 }
