@@ -11,6 +11,7 @@ import java.util.Set;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -23,19 +24,21 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.DecertifiedDeveloper;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.DeveloperTransparency;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
+import gov.healthit.chpl.dto.DecertifiedDeveloperDTODeprecated;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
@@ -55,6 +58,7 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
@@ -85,6 +89,7 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
     private DeveloperUpdateValidator updateValidator;
     private ErrorMessageUtil msgUtil;
     private ResourcePermissions resourcePermissions;
+    private FF4j ff4j;
 
     /**
      * Autowired constructor for dependency injection.
@@ -105,7 +110,7 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
             final CertifiedProductDAO certifiedProductDAO, final ChplProductNumberUtil chplProductNumberUtil,
             final ActivityManager activityManager, final DeveloperCreationValidator creationValidator,
             final DeveloperUpdateValidator updateValidator, final ErrorMessageUtil msgUtil,
-            final ResourcePermissions resourcePermissions) {
+            final ResourcePermissions resourcePermissions, final FF4j ff4j) {
         this.developerDao = developerDao;
         this.productManager = productManager;
         this.acbManager = acbManager;
@@ -119,6 +124,7 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
         this.updateValidator = updateValidator;
         this.msgUtil = msgUtil;
         this.resourcePermissions = resourcePermissions;
+        this.ff4j = ff4j;
     }
 
     @Override
@@ -143,8 +149,9 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
 
     @Override
     @Transactional(readOnly = true)
-    public DeveloperDTO getById(final Long id) throws EntityRetrievalException {
-        DeveloperDTO developer = developerDao.getById(id);
+    public DeveloperDTO getById(final Long id, final boolean allowDeleted)
+            throws EntityRetrievalException {
+        DeveloperDTO developer = developerDao.getById(id, allowDeleted);
         List<CertificationBodyDTO> availableAcbs = resourcePermissions.getAllAcbsForCurrentUser();
         if (availableAcbs == null || availableAcbs.size() == 0) {
             availableAcbs = acbManager.getAll();
@@ -172,6 +179,12 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
 
     @Override
     @Transactional(readOnly = true)
+    public DeveloperDTO getById(final Long id) throws EntityRetrievalException {
+        return getById(id, false);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     @Cacheable(CacheNames.COLLECTIONS_DEVELOPERS)
     public List<DeveloperTransparency> getDeveloperCollection() {
         return developerDao.getAllDevelopersWithTransparencies();
@@ -179,7 +192,7 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
 
     @Override
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
-            + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).UPDATE)")
+            + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).UPDATE, #updatedDev)")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
@@ -221,7 +234,7 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
         // then nothing can be changed
         if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
                 && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
-            String msg = msgUtil.getMessage("developer.notActiveNotAdminCantChangeStatus", Util.getUsername(),
+            String msg = msgUtil.getMessage("developer.notActiveNotAdminCantChangeStatus", AuthUtil.getUsername(),
                     beforeDev.getName());
             LOGGER.error(msg);
             throw new EntityCreationException(msg);
@@ -256,10 +269,6 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
                 && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
             String msg = msgUtil.getMessage("developer.statusChangeNotAllowedWithoutAdmin");
             throw new EntityCreationException(msg);
-        } else if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
-                && !newDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-            // if the developer is not active and not going to be active only its current status can be updated
-            updateStatusHistory(beforeDev, updatedDev);
         } else {
             /*
              * Check to see that the Developer's website is valid.
@@ -274,19 +283,10 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
             if (beforeDev.getContact() != null && beforeDev.getContact().getId() != null) {
                 updatedDev.getContact().setId(beforeDev.getContact().getId());
             }
-            // if either the before or updated statuses are active and the user is
-            // ROLE_ADMIN or ROLE_ONC
-            // OR if before status is active and user is not ROLE_ADMIN - proceed
-            if (((currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
-                    || newDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()))
-                    && (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()))
-                    || (currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
-                            && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc())) {
 
-                developerDao.update(updatedDev);
-                updateStatusHistory(beforeDev, updatedDev);
-                createOrUpdateTransparencyMappings(updatedDev);
-            }
+            developerDao.update(updatedDev);
+            updateStatusHistory(beforeDev, updatedDev);
+            createOrUpdateTransparencyMappings(updatedDev);
         }
         DeveloperDTO after = getById(updatedDev.getId());
         activityManager.addActivity(ActivityConcept.DEVELOPER, after.getId(),
@@ -398,7 +398,8 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
+            + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).MERGE, #developerIdsToMerge)")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
@@ -424,22 +425,6 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
                 developerIdsToMerge, developerToCreate.getDeveloperCode());
         if (duplicateChplProdNumbers.size() != 0) {
             throw new ValidationException(getDuplicateChplProductNumberErrorMessages(duplicateChplProdNumbers), null);
-        }
-
-        // check for any non-active developers and throw an error if any are found
-        for (DeveloperDTO beforeDeveloper : beforeDevelopers) {
-            DeveloperStatusEventDTO currDeveloperStatus = beforeDeveloper.getStatus();
-            if (currDeveloperStatus == null || currDeveloperStatus.getStatus() == null) {
-                String msg = "Cannot merge developer " + beforeDeveloper.getName()
-                        + " because their current status cannot be determined.";
-                LOGGER.error(msg);
-                throw new EntityCreationException(msg);
-            } else if (!currDeveloperStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-                String msg = "Cannot merge developer " + beforeDeveloper.getName() + " with a status of "
-                        + currDeveloperStatus.getStatus().getStatusName();
-                LOGGER.error(msg);
-                throw new EntityCreationException(msg);
-            }
         }
 
         // check if the transparency attestation for each developer is conflicting
@@ -496,8 +481,9 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
             developerDao.delete(developerId);
         }
 
-        activityManager.addActivity(ActivityConcept.DEVELOPER, createdDeveloper.getId(), "Merged "
-                + developerIdsToMerge.size() + " developers into new developer '" + createdDeveloper.getName() + "'.",
+        activityManager.addActivity(
+                ActivityConcept.DEVELOPER, createdDeveloper.getId(), "Merged " + developerIdsToMerge.size()
+                        + " developers into new developer '" + createdDeveloper.getName() + "'.",
                 beforeDevelopers, createdDeveloper);
 
         return createdDeveloper;
@@ -521,7 +507,8 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
             CacheNames.GET_DECERTIFIED_DEVELOPERS
     }, allEntries = true)
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
+            + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).SPLIT, #oldDeveloper)")
     public DeveloperDTO split(final DeveloperDTO oldDeveloper, final DeveloperDTO developerToCreate,
             final List<Long> productIdsToMove) throws ValidationException, AccessDeniedException,
             EntityRetrievalException, EntityCreationException, JsonProcessingException {
@@ -529,17 +516,6 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
         Set<String> devErrors = creationValidator.validate(developerToCreate);
         if (devErrors != null && devErrors.size() > 0) {
             throw new ValidationException(devErrors, null);
-        }
-
-        // if the user is an ACB then the developer must be Active otherwise the split is not allowed.
-        // ADMIN and ONC can perform a split no matter the developer's status
-        DeveloperStatusEventDTO currDevStatus = oldDeveloper.getStatus();
-        if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
-                && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
-            String msg = msgUtil.getMessage("developer.notActiveNotAdminCantSplit", Util.getUsername(),
-                    oldDeveloper.getName());
-            LOGGER.error(msg);
-            throw new EntityCreationException(msg);
         }
 
         // create the new developer and log activity
@@ -566,9 +542,9 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
                     }
                 }
                 if (!hasAccessToAcb) {
-                    throw new AccessDeniedException(msgUtil.getMessage("acb.accessDenied.listingUpdate",
-                            beforeListing.getChplProductNumber(),
-                            beforeListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY)));
+                    throw new AccessDeniedException(
+                            msgUtil.getMessage("acb.accessDenied.listingUpdate", beforeListing.getChplProductNumber(),
+                                    beforeListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY)));
                 }
 
                 beforeListingDetails.put(beforeListing.getId(), beforeListing);
@@ -591,18 +567,33 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
                 CertifiedProductSearchDetails afterListing = cpdManager
                         .getCertifiedProductDetails(affectedListing.getId());
                 CertifiedProductSearchDetails beforeListing = beforeListingDetails.get(afterListing.getId());
-                activityManager.addActivity(ActivityConcept.DEVELOPER, beforeListing.getId(),
+                activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, beforeListing.getId(),
                         "Updated certified product " + afterListing.getChplProductNumber() + ".", beforeListing,
                         afterListing);
             }
         }
 
-        return getById(createdDeveloper.getId());
+        DeveloperDTO afterDeveloper = null;
+        if (ff4j.check(FeatureList.BETTER_SPLIT)) {
+            //the split is complete - log split activity
+            //get the original developer object from the db to make sure it's all filled in
+            DeveloperDTO origDeveloper = getById(oldDeveloper.getId());
+            afterDeveloper = getById(createdDeveloper.getId());
+            List<DeveloperDTO> splitDevelopers = new ArrayList<DeveloperDTO>();
+            splitDevelopers.add(origDeveloper);
+            splitDevelopers.add(afterDeveloper);
+            activityManager.addActivity(ActivityConcept.DEVELOPER, afterDeveloper.getId(),
+                    "Split developer " + origDeveloper.getName() + " into " + origDeveloper.getName()
+                    + " and " + afterDeveloper.getName(),
+                    origDeveloper, splitDevelopers);
+        } else {
+            afterDeveloper = getById(createdDeveloper.getId());
+        }
+        return afterDeveloper;
     }
 
     /**
      * Clones a list of DeveloperStatusEventDTO.
-     * 
      * @param original
      *            - List<DeveloperStatusEventDTO>
      * @return List<DeveloperStatusEventDTO>
@@ -671,14 +662,13 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(CacheNames.GET_DECERTIFIED_DEVELOPERS)
     public List<DecertifiedDeveloperResult> getDecertifiedDevelopers() throws EntityRetrievalException {
-        List<DecertifiedDeveloperDTO> dtoList = new ArrayList<DecertifiedDeveloperDTO>();
+        List<DecertifiedDeveloperDTODeprecated> dtoList = new ArrayList<DecertifiedDeveloperDTODeprecated>();
         List<DecertifiedDeveloperResult> decertifiedDeveloperResults = new ArrayList<DecertifiedDeveloperResult>();
 
         dtoList = developerDao.getDecertifiedDevelopers();
 
-        for (DecertifiedDeveloperDTO dto : dtoList) {
+        for (DecertifiedDeveloperDTODeprecated dto : dtoList) {
             List<CertificationBody> certifyingBody = new ArrayList<CertificationBody>();
             for (Long oncacbId : dto.getAcbIdList()) {
                 CertificationBody cb = new CertificationBody(certificationBodyDao.getById(oncacbId));
@@ -690,6 +680,27 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
                     dto.getNumMeaningfulUse(), dto.getEarliestNumMeaningfulUseDate(),
                     dto.getLatestNumMeaningfulUseDate());
             decertifiedDeveloperResults.add(decertifiedDeveloper);
+        }
+        return decertifiedDeveloperResults;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @Cacheable(CacheNames.GET_DECERTIFIED_DEVELOPERS)
+    public List<DecertifiedDeveloper> getDecertifiedDeveloperCollection() {
+        List<DecertifiedDeveloperDTO> dtoList = new ArrayList<DecertifiedDeveloperDTO>();
+        List<DecertifiedDeveloper> decertifiedDeveloperResults = new ArrayList<DecertifiedDeveloper>();
+        dtoList = developerDao.getDecertifiedDeveloperCollection();
+
+        for (DecertifiedDeveloperDTO dto : dtoList) {
+            DecertifiedDeveloper decertDev = new DecertifiedDeveloper();
+            decertDev.setDeveloperId(dto.getDeveloper().getId());
+            decertDev.setDeveloperName(dto.getDeveloper().getName());
+            decertDev.setDecertificationDate(dto.getDecertificationDate());
+            for (CertificationBodyDTO acb : dto.getAcbs()) {
+                decertDev.getAcbNames().add(acb.getName());
+            }
+            decertifiedDeveloperResults.add(decertDev);
         }
         return decertifiedDeveloperResults;
     }

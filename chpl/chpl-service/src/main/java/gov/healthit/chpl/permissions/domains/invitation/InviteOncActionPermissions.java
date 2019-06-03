@@ -13,7 +13,7 @@ public class InviteOncActionPermissions extends ActionPermissions {
     }
 
     @Override
-    public boolean hasAccess(Object obj) {
+    public boolean hasAccess(final Object obj) {
         return false;
     }
 

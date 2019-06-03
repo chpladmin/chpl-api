@@ -14,12 +14,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.auth.EmailBuilder;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.JobDAO;
 import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.dto.job.JobMessageDTO;
 import gov.healthit.chpl.entity.job.JobStatusType;
+import gov.healthit.chpl.util.EmailBuilder;
 
 @Component
 public class RunnableJob implements Runnable {

@@ -16,19 +16,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
+import gov.healthit.chpl.util.AuthUtil;
 
 /**
  * Business logic for accessing and updating ACBs.
@@ -82,10 +82,10 @@ public class CertificationBodyManagerImpl extends SecuredManager implements Cert
         CertificationBodyDTO result = certificationBodyDao.create(acb);
 
         // Grant the current principal administrative permission to the ACB
-        userPermissionsManager.addAcbPermission(result, Util.getCurrentUser().getId());
+        userPermissionsManager.addAcbPermission(result, AuthUtil.getCurrentUser().getId());
 
         LOGGER.debug("Created acb " + result + " and granted admin permission to recipient "
-                + gov.healthit.chpl.auth.Util.getUsername());
+                + gov.healthit.chpl.util.AuthUtil.getUsername());
 
         String activityMsg = "Created Certification Body " + result.getName();
 
@@ -132,16 +132,13 @@ public class CertificationBodyManagerImpl extends SecuredManager implements Cert
         if (acb.getRetirementDate() == null || now.before(acb.getRetirementDate())) {
             throw new IllegalArgumentException("Retirement date is required and must be before \"now\".");
         }
-        CertificationBodyDTO result = null;
-        CertificationBodyDTO toUpdate = certificationBodyDao.getById(acb.getId());
-        toUpdate.setRetired(true);
-        toUpdate.setRetirementDate(acb.getRetirementDate());
-        result = certificationBodyDao.update(toUpdate);
-        schedulerManager.retireAcb(toUpdate.getName());
+        CertificationBodyDTO beforeAcb = certificationBodyDao.getById(acb.getId());
+        CertificationBodyDTO result = certificationBodyDao.update(acb);
+        schedulerManager.retireAcb(beforeAcb.getName());
 
-        String activityMsg = "Retired acb " + toUpdate.getName();
+        String activityMsg = "Retired acb " + acb.getName();
         activityManager.addActivity(ActivityConcept.CERTIFICATION_BODY, result.getId(), activityMsg,
-                toUpdate, result);
+                beforeAcb, result);
         return result;
     }
 
@@ -151,15 +148,15 @@ public class CertificationBodyManagerImpl extends SecuredManager implements Cert
             + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).UNRETIRE)")
     public CertificationBodyDTO unretire(final Long acbId) throws EntityRetrievalException, JsonProcessingException,
             EntityCreationException, UpdateCertifiedBodyException {
-        CertificationBodyDTO result = null;
-        CertificationBodyDTO toUpdate = certificationBodyDao.getById(acbId);
-        toUpdate.setRetired(false);
-        toUpdate.setRetirementDate(null);
-        result = certificationBodyDao.update(toUpdate);
+        CertificationBodyDTO beforeAcb = certificationBodyDao.getById(acbId);
+        CertificationBodyDTO toUnretire = certificationBodyDao.getById(acbId);
+        toUnretire.setRetired(false);
+        toUnretire.setRetirementDate(null);
+        CertificationBodyDTO result = certificationBodyDao.update(toUnretire);
 
-        String activityMsg = "Unretired acb " + toUpdate.getName();
+        String activityMsg = "Unretired acb " + toUnretire.getName();
         activityManager.addActivity(ActivityConcept.CERTIFICATION_BODY, result.getId(), activityMsg,
-                toUpdate, result);
+                beforeAcb, result);
         return result;
     }
 

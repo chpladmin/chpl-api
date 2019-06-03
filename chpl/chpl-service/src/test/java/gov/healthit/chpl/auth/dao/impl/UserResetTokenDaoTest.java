@@ -20,10 +20,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-import gov.healthit.chpl.auth.dao.UserResetTokenDAO;
-import gov.healthit.chpl.auth.dto.UserResetTokenDTO;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.dao.auth.UserResetTokenDAO;
+import gov.healthit.chpl.dto.auth.UserResetTokenDTO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {

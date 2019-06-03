@@ -7,12 +7,12 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.dto.CertificationStatusEventDTO;
 import gov.healthit.chpl.entity.listing.CertificationStatusEventEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("certificationStatusEventDAO")
 public class CertificationStatusEventDAOImpl extends BaseDAOImpl implements CertificationStatusEventDAO {
@@ -38,7 +38,7 @@ public class CertificationStatusEventDAOImpl extends BaseDAOImpl implements Cert
             entity.setCertificationStatusId(dto.getStatus().getId());
             entity.setEventDate(dto.getEventDate());
             entity.setReason(dto.getReason());
-            entity.setLastModifiedUser(Util.getAuditId());
+            entity.setLastModifiedUser(AuthUtil.getAuditId());
             entity.setDeleted(false);
             create(entity);
             return new CertificationStatusEventDTO(entity);
@@ -57,7 +57,7 @@ public class CertificationStatusEventDAOImpl extends BaseDAOImpl implements Cert
         entity.setCertificationStatusId(dto.getStatus().getId());
         entity.setEventDate(dto.getEventDate());
         entity.setReason(dto.getReason());
-        entity.setLastModifiedUser(Util.getAuditId());
+        entity.setLastModifiedUser(AuthUtil.getAuditId());
 
         update(entity);
         return new CertificationStatusEventDTO(entity);
@@ -70,7 +70,7 @@ public class CertificationStatusEventDAOImpl extends BaseDAOImpl implements Cert
 
         if (toDelete != null) {
             toDelete.setDeleted(true);
-            toDelete.setLastModifiedUser(Util.getAuditId());
+            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             update(toDelete);
         }
     }

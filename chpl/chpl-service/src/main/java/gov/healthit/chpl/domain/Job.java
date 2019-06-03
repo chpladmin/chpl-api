@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import gov.healthit.chpl.auth.json.User;
+import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.dto.job.JobMessageDTO;
 

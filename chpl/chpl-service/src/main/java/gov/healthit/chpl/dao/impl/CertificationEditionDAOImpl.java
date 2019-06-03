@@ -8,12 +8,12 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.entity.CertificationEditionEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("certificationEditionDAO")
 public class CertificationEditionDAOImpl extends BaseDAOImpl implements CertificationEditionDAO {
@@ -42,7 +42,7 @@ public class CertificationEditionDAOImpl extends BaseDAOImpl implements Certific
             entity.setId(dto.getId());
             entity.setYear(dto.getYear());
             // entity.setLastModifiedDate(result.getLastModifiedDate());
-            entity.setLastModifiedUser(Util.getAuditId());
+            entity.setLastModifiedUser(AuthUtil.getAuditId());
 
             create(entity);
         }
@@ -60,7 +60,7 @@ public class CertificationEditionDAOImpl extends BaseDAOImpl implements Certific
         entity.setId(dto.getId());
         entity.setYear(dto.getYear());
         // entity.setLastModifiedDate(result.getLastModifiedDate());
-        entity.setLastModifiedUser(Util.getAuditId());
+        entity.setLastModifiedUser(AuthUtil.getAuditId());
 
         update(entity);
     }

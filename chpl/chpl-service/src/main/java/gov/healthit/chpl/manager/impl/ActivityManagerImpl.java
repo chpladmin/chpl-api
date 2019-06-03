@@ -22,10 +22,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.auth.json.User;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.Developer;
@@ -33,13 +29,17 @@ import gov.healthit.chpl.domain.UserActivity;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.activity.ActivityDetails;
 import gov.healthit.chpl.domain.activity.ProductActivityDetails;
+import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.JSONUtils;
 
 @Service("activityManager")
@@ -87,8 +87,8 @@ public class ActivityManagerImpl extends SecuredManager implements ActivityManag
             dto.setActivityObjectId(objectId);
             dto.setCreationDate(new Date());
             dto.setLastModifiedDate(new Date());
-            if (Util.getCurrentUser() != null) {
-                dto.setLastModifiedUser(Util.getAuditId());
+            if (AuthUtil.getCurrentUser() != null) {
+                dto.setLastModifiedUser(AuthUtil.getAuditId());
             }
             dto.setDeleted(false);
 
@@ -176,7 +176,7 @@ public class ActivityManagerImpl extends SecuredManager implements ActivityManag
             dto.setActivityObjectId(objectId);
             dto.setCreationDate(new Date());
             dto.setLastModifiedDate(new Date());
-            dto.setLastModifiedUser(Util.getAuditId());
+            dto.setLastModifiedUser(AuthUtil.getAuditId());
             dto.setDeleted(false);
 
             activityDAO.create(dto);
@@ -306,7 +306,7 @@ public class ActivityManagerImpl extends SecuredManager implements ActivityManag
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     public List<ActivityDetails> getAllAtlActivity(final Date startDate, final Date endDate)
             throws JsonParseException, IOException {
-        List<ActivityDTO> atlActivity = activityDAO.findByConcept(ActivityConcept.ATL, startDate,
+        List<ActivityDTO> atlActivity = activityDAO.findByConcept(ActivityConcept.TESTING_LAB, startDate,
                 endDate);
 
         List<ActivityDetails> events = new ArrayList<ActivityDetails>();
@@ -487,15 +487,17 @@ public class ActivityManagerImpl extends SecuredManager implements ActivityManag
 
         if (event instanceof ProductActivityDetails && event.getNewData() != null) {
             JsonNode devIdNode = event.getNewData().get("developerId");
-            Long devId = devIdNode.asLong();
-            if (devId != null) {
-                try {
-                    DeveloperDTO dev = devDao.getById(devId);
-                    if (dev != null) {
-                        ((ProductActivityDetails) event).setDeveloper(new Developer(dev));
+            if (devIdNode != null) {
+                Long devId = devIdNode.asLong();
+                if (devId != null) {
+                    try {
+                        DeveloperDTO dev = devDao.getById(devId, true);
+                        if (dev != null) {
+                            ((ProductActivityDetails) event).setDeveloper(new Developer(dev));
+                        }
+                    } catch (final EntityRetrievalException ex) {
+                        LOGGER.error("Could not get developer with id " + devId);
                     }
-                } catch (final EntityRetrievalException ex) {
-                    LOGGER.error("Could not get developer with id " + devId);
                 }
             }
         }

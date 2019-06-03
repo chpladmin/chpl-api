@@ -6,6 +6,7 @@ import org.springframework.security.access.AccessDeniedException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.domain.DecertifiedDeveloper;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.DeveloperTransparency;
 import gov.healthit.chpl.dto.DeveloperDTO;
@@ -20,6 +21,8 @@ public interface DeveloperManager {
     List<DeveloperDTO> getAllIncludingDeleted();
 
     DeveloperDTO getById(Long id) throws EntityRetrievalException;
+    DeveloperDTO getById(Long id, boolean allowDeleted)
+            throws EntityRetrievalException;
 
     List<DeveloperTransparency> getDeveloperCollection();
 
@@ -37,5 +40,7 @@ public interface DeveloperManager {
             throws AccessDeniedException, EntityRetrievalException, EntityCreationException,
             JsonProcessingException, ValidationException;
 
+    @Deprecated
     List<DecertifiedDeveloperResult> getDecertifiedDevelopers() throws EntityRetrievalException;
+    List<DecertifiedDeveloper> getDecertifiedDeveloperCollection();
 }

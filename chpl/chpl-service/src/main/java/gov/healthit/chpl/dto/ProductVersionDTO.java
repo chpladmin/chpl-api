@@ -3,9 +3,12 @@ package gov.healthit.chpl.dto;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import gov.healthit.chpl.entity.ProductVersionEntity;
 import gov.healthit.chpl.util.Util;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ProductVersionDTO implements Serializable {
     private static final long serialVersionUID = -1371133241003414009L;
     private Long id;
@@ -22,7 +25,7 @@ public class ProductVersionDTO implements Serializable {
     public ProductVersionDTO() {
     }
 
-    public ProductVersionDTO(ProductVersionEntity entity) {
+    public ProductVersionDTO(final ProductVersionEntity entity) {
         if (entity != null) {
             this.id = entity.getId();
             this.creationDate = entity.getCreationDate();
@@ -33,10 +36,12 @@ public class ProductVersionDTO implements Serializable {
             if (entity.getProduct() != null) {
                 this.productId = entity.getProduct().getId();
                 this.productName = entity.getProduct().getName();
-                if(entity.getProduct().getDeveloper() != null) {
+                if (entity.getProduct().getDeveloper() != null) {
                     this.developerId = entity.getProduct().getDeveloper().getId();
                     this.developerName = entity.getProduct().getDeveloper().getName();
                 }
+            } else if (entity.getProductId() != null) {
+                this.productId = entity.getProductId();
             }
         }
     }

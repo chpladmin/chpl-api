@@ -9,19 +9,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.dao.UserPermissionDAO;
-import gov.healthit.chpl.auth.domain.Authority;
-import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.SurveillanceDAO;
+import gov.healthit.chpl.dao.auth.UserPermissionDAO;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.SurveillanceNonconformityDocument;
@@ -30,6 +25,7 @@ import gov.healthit.chpl.domain.SurveillanceRequirement;
 import gov.healthit.chpl.domain.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
+import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.entity.NonconformityStatusEntity;
 import gov.healthit.chpl.entity.ValidationMessageType;
@@ -45,7 +41,9 @@ import gov.healthit.chpl.entity.surveillance.SurveillanceRequirementTypeEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceResultTypeEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceTypeEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("surveillanceDAO")
 public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO {
@@ -67,7 +65,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
     public Long insertSurveillance(final Surveillance surv) throws UserPermissionRetrievalException {
         SurveillanceEntity toInsert = new SurveillanceEntity();
         populateSurveillanceEntity(toInsert, surv);
-        toInsert.setLastModifiedUser(Util.getAuditId());
+        toInsert.setLastModifiedUser(AuthUtil.getAuditId());
         toInsert.setDeleted(false);
         entityManager.persist(toInsert);
         entityManager.flush();
@@ -76,7 +74,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
             SurveillanceRequirementEntity toInsertReq = new SurveillanceRequirementEntity();
             populateSurveillanceRequirementEntity(toInsertReq, req);
             toInsertReq.setSurveillanceId(toInsert.getId());
-            toInsertReq.setLastModifiedUser(Util.getAuditId());
+            toInsertReq.setLastModifiedUser(AuthUtil.getAuditId());
             toInsertReq.setDeleted(false);
             entityManager.persist(toInsertReq);
             entityManager.flush();
@@ -86,7 +84,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
                 populateSurveillanceNonconformityEntity(toInsertNc, nc);
                 toInsertNc.setSurveillanceRequirementId(toInsertReq.getId());
                 toInsertNc.setDeleted(false);
-                toInsertNc.setLastModifiedUser(Util.getAuditId());
+                toInsertNc.setLastModifiedUser(AuthUtil.getAuditId());
 
                 entityManager.persist(toInsertNc);
                 entityManager.flush();
@@ -100,9 +98,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
             throws EntityRetrievalException {
         SurveillanceNonconformityEntity nc = entityManager.find(SurveillanceNonconformityEntity.class, nonconformityId);
         if (nc == null) {
-            String msg = String.format(
-                    messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.nonconformity.notFound"),
-                            LocaleContextHolder.getLocale()));
+            String msg = msgUtil.getMessage("surveillance.nonconformity.notFound");
             throw new EntityRetrievalException(msg);
         }
         SurveillanceNonconformityDocumentationEntity docEntity = new SurveillanceNonconformityDocumentationEntity();
@@ -111,7 +107,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
         docEntity.setFileType(doc.getFileType());
         docEntity.setFileName(doc.getFileName());
         docEntity.setDeleted(false);
-        docEntity.setLastModifiedUser(Util.getAuditId());
+        docEntity.setLastModifiedUser(AuthUtil.getAuditId());
 
         entityManager.persist(docEntity);
         entityManager.flush();
@@ -124,7 +120,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
             throws EntityRetrievalException, UserPermissionRetrievalException {
         SurveillanceEntity oldSurv = fetchSurveillanceById(newSurv.getId());
         populateSurveillanceEntity(oldSurv, newSurv);
-        oldSurv.setLastModifiedUser(Util.getAuditId());
+        oldSurv.setLastModifiedUser(AuthUtil.getAuditId());
         oldSurv.setDeleted(false);
         entityManager.merge(oldSurv);
         entityManager.flush();
@@ -145,19 +141,19 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
                 for (SurveillanceNonconformityEntity nc : oldReq.getNonconformities()) {
                     if (nc.getDocuments() != null) {
                         for (SurveillanceNonconformityDocumentationEntity ncDoc : nc.getDocuments()) {
-                            ncDoc.setLastModifiedUser(Util.getAuditId());
+                            ncDoc.setLastModifiedUser(AuthUtil.getAuditId());
                             ncDoc.setDeleted(true);
                             entityManager.merge(ncDoc);
                             entityManager.flush();
                         }
                     }
-                    nc.setLastModifiedUser(Util.getAuditId());
+                    nc.setLastModifiedUser(AuthUtil.getAuditId());
                     nc.setDeleted(true);
                     entityManager.merge(nc);
                     entityManager.flush();
                 }
                 // delete the req
-                oldReq.setLastModifiedUser(Util.getAuditId());
+                oldReq.setLastModifiedUser(AuthUtil.getAuditId());
                 oldReq.setDeleted(true);
                 entityManager.merge(oldReq);
                 entityManager.flush();
@@ -171,7 +167,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
                 for (SurveillanceRequirementEntity oldReq : oldSurv.getSurveilledRequirements()) {
                     if (oldReq.getId().longValue() == newReq.getId().longValue()) {
                         populateSurveillanceRequirementEntity(oldReq, newReq);
-                        oldReq.setLastModifiedUser(Util.getAuditId());
+                        oldReq.setLastModifiedUser(AuthUtil.getAuditId());
                         oldReq.setDeleted(false);
                         entityManager.merge(oldReq);
                         entityManager.flush();
@@ -188,13 +184,13 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
                             if (!isFoundInUpdate) {
                                 if (oldNc.getDocuments() != null) {
                                     for (SurveillanceNonconformityDocumentationEntity ncDoc : oldNc.getDocuments()) {
-                                        ncDoc.setLastModifiedUser(Util.getAuditId());
+                                        ncDoc.setLastModifiedUser(AuthUtil.getAuditId());
                                         ncDoc.setDeleted(true);
                                         entityManager.merge(ncDoc);
                                         entityManager.flush();
                                     }
                                 }
-                                oldNc.setLastModifiedUser(Util.getAuditId());
+                                oldNc.setLastModifiedUser(AuthUtil.getAuditId());
                                 oldNc.setDeleted(true);
                                 entityManager.merge(oldNc);
                                 entityManager.flush();
@@ -209,7 +205,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
                                 for (SurveillanceNonconformityEntity oldNc : oldReq.getNonconformities()) {
                                     if (oldNc.getId().longValue() == newNc.getId().longValue()) {
                                         populateSurveillanceNonconformityEntity(oldNc, newNc);
-                                        oldNc.setLastModifiedUser(Util.getAuditId());
+                                        oldNc.setLastModifiedUser(AuthUtil.getAuditId());
                                         oldNc.setDeleted(false);
                                         entityManager.merge(oldNc);
                                         entityManager.flush();
@@ -221,7 +217,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
                                 populateSurveillanceNonconformityEntity(toInsertNc, newNc);
                                 toInsertNc.setSurveillanceRequirementId(oldReq.getId());
                                 toInsertNc.setDeleted(false);
-                                toInsertNc.setLastModifiedUser(Util.getAuditId());
+                                toInsertNc.setLastModifiedUser(AuthUtil.getAuditId());
                                 entityManager.persist(toInsertNc);
                                 entityManager.flush();
                             }
@@ -233,7 +229,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
                 SurveillanceRequirementEntity toInsertReq = new SurveillanceRequirementEntity();
                 populateSurveillanceRequirementEntity(toInsertReq, newReq);
                 toInsertReq.setSurveillanceId(oldSurv.getId());
-                toInsertReq.setLastModifiedUser(Util.getAuditId());
+                toInsertReq.setLastModifiedUser(AuthUtil.getAuditId());
                 toInsertReq.setDeleted(false);
                 entityManager.persist(toInsertReq);
                 entityManager.flush();
@@ -243,7 +239,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
                     populateSurveillanceNonconformityEntity(toInsertNc, nc);
                     toInsertNc.setSurveillanceRequirementId(toInsertReq.getId());
                     toInsertNc.setDeleted(false);
-                    toInsertNc.setLastModifiedUser(Util.getAuditId());
+                    toInsertNc.setLastModifiedUser(AuthUtil.getAuditId());
 
                     entityManager.persist(toInsertNc);
                     entityManager.flush();
@@ -283,9 +279,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
         SurveillanceNonconformityDocumentationEntity doc = entityManager
                 .find(SurveillanceNonconformityDocumentationEntity.class, documentId);
         if (doc == null) {
-            String msg = String.format(
-                    messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.document.notFound"),
-                            LocaleContextHolder.getLocale()));
+            String msg = msgUtil.getMessage("surveillance.document.notFound");
             throw new EntityRetrievalException(msg);
         }
         return doc;
@@ -321,7 +315,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
         if (surv.getType() != null) {
             toInsert.setSurveillanceType(surv.getType().getName());
         }
-        toInsert.setLastModifiedUser(Util.getAuditId());
+        toInsert.setLastModifiedUser(AuthUtil.getAuditId());
         toInsert.setDeleted(false);
         toInsert.setUserPermissionId(getSurveillanceAuthority());
 
@@ -334,7 +328,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
             valEntity.setPendingSurveillanceId(toInsert.getId());
             valEntity.setMessage(errorMessage);
             valEntity.setDeleted(false);
-            valEntity.setLastModifiedUser(Util.getAuditId());
+            valEntity.setLastModifiedUser(AuthUtil.getAuditId());
             entityManager.persist(valEntity);
             entityManager.flush();
         }
@@ -349,7 +343,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
             }
             toInsertReq.setSurveilledRequirement(req.getRequirement());
             toInsertReq.setPendingSurveillanceId(toInsert.getId());
-            toInsertReq.setLastModifiedUser(Util.getAuditId());
+            toInsertReq.setLastModifiedUser(AuthUtil.getAuditId());
             toInsertReq.setDeleted(false);
 
             entityManager.persist(toInsertReq);
@@ -375,7 +369,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
                 toInsertNc.setTotalSites(nc.getTotalSites());
                 toInsertNc.setType(nc.getNonconformityType());
                 toInsertNc.setDeleted(false);
-                toInsertNc.setLastModifiedUser(Util.getAuditId());
+                toInsertNc.setLastModifiedUser(AuthUtil.getAuditId());
 
                 entityManager.persist(toInsertNc);
                 entityManager.flush();
@@ -389,13 +383,11 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
         SurveillanceNonconformityDocumentationEntity doc = entityManager
                 .find(SurveillanceNonconformityDocumentationEntity.class, documentId);
         if (doc == null) {
-            String msg = String.format(
-                    messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.document.notFound"),
-                            LocaleContextHolder.getLocale()));
+            String msg = msgUtil.getMessage("surveillance.document.notFound");
             throw new EntityRetrievalException(msg);
         }
         doc.setDeleted(true);
-        doc.setLastModifiedUser(Util.getAuditId());
+        doc.setLastModifiedUser(AuthUtil.getAuditId());
         entityManager.merge(doc);
         entityManager.flush();
     }
@@ -411,25 +403,25 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
                         if (ncToDelete.getDocuments() != null) {
                             for (SurveillanceNonconformityDocumentationEntity docToDelete : ncToDelete.getDocuments()) {
                                 docToDelete.setDeleted(true);
-                                docToDelete.setLastModifiedUser(Util.getAuditId());
+                                docToDelete.setLastModifiedUser(AuthUtil.getAuditId());
                                 entityManager.merge(docToDelete);
                                 entityManager.flush();
                             }
                         }
                         ncToDelete.setDeleted(true);
-                        ncToDelete.setLastModifiedUser(Util.getAuditId());
+                        ncToDelete.setLastModifiedUser(AuthUtil.getAuditId());
                         entityManager.merge(ncToDelete);
                         entityManager.flush();
                     }
                 }
                 reqToDelete.setDeleted(true);
-                reqToDelete.setLastModifiedUser(Util.getAuditId());
+                reqToDelete.setLastModifiedUser(AuthUtil.getAuditId());
                 entityManager.merge(reqToDelete);
                 entityManager.flush();
             }
         }
         toDelete.setDeleted(true);
-        toDelete.setLastModifiedUser(Util.getAuditId());
+        toDelete.setLastModifiedUser(AuthUtil.getAuditId());
         entityManager.merge(toDelete);
         entityManager.flush();
     }
@@ -441,7 +433,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
         if (toDelete.getValidation() != null) {
             for (PendingSurveillanceValidationEntity val : toDelete.getValidation()) {
                 val.setDeleted(true);
-                val.setLastModifiedUser(Util.getAuditId());
+                val.setLastModifiedUser(AuthUtil.getAuditId());
                 entityManager.merge(val);
                 entityManager.flush();
             }
@@ -452,19 +444,19 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
                 if (reqToDelete.getNonconformities() != null) {
                     for (PendingSurveillanceNonconformityEntity ncToDelete : reqToDelete.getNonconformities()) {
                         ncToDelete.setDeleted(true);
-                        ncToDelete.setLastModifiedUser(Util.getAuditId());
+                        ncToDelete.setLastModifiedUser(AuthUtil.getAuditId());
                         entityManager.merge(ncToDelete);
                         entityManager.flush();
                     }
                 }
                 reqToDelete.setDeleted(true);
-                reqToDelete.setLastModifiedUser(Util.getAuditId());
+                reqToDelete.setLastModifiedUser(AuthUtil.getAuditId());
                 entityManager.merge(reqToDelete);
                 entityManager.flush();
             }
         }
         toDelete.setDeleted(true);
-        toDelete.setLastModifiedUser(Util.getAuditId());
+        toDelete.setLastModifiedUser(AuthUtil.getAuditId());
         entityManager.merge(toDelete);
         entityManager.flush();
     }
@@ -755,8 +747,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 
         List<SurveillanceEntity> results = query.getResultList();
         if (results == null || results.size() == 0) {
-            String msg = String.format(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("surveillance.notFound"), LocaleContextHolder.getLocale()));
+            String msg = msgUtil.getMessage("surveillance.notFound");
             throw new EntityRetrievalException(msg);
         } else {
             return results.get(0);
@@ -802,9 +793,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 
         List<PendingSurveillanceEntity> results = query.getResultList();
         if (results == null || results.size() == 0) {
-            String msg = String.format(
-                    messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.pending.notFound"),
-                            LocaleContextHolder.getLocale()));
+            String msg = msgUtil.getMessage("surveillance.pending.notFound");
             throw new EntityRetrievalException(msg);
         } else {
             entity = results.get(0);

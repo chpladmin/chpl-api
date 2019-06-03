@@ -3,11 +3,11 @@ package gov.healthit.chpl.manager.impl;
 import java.util.Date;
 
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -63,6 +63,8 @@ public class VersionManagerTest extends TestCase {
 
     private static JWTAuthenticatedUser adminUser;
 
+    private static JWTAuthenticatedUser acbUser;
+
     @BeforeClass
     public static void setUpClass() throws Exception {
         adminUser = new JWTAuthenticatedUser();
@@ -71,6 +73,13 @@ public class VersionManagerTest extends TestCase {
         adminUser.setFriendlyName("Administrator");
         adminUser.setSubjectName("admin");
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+
+        acbUser = new JWTAuthenticatedUser();
+        acbUser.setFullName("ACB User");
+        acbUser.setId(-1L);
+        acbUser.setFriendlyName("ACB User");
+        acbUser.setSubjectName("acb");
+        acbUser.getPermissions().add(new GrantedPermission("ROLE_ACB"));
     }
 
     @Test
@@ -79,7 +88,7 @@ public class VersionManagerTest extends TestCase {
     public void testAllowedToUpdateVersionWithActiveDeveloper()
             throws EntityRetrievalException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        ProductVersionDTO version = versionManager.getById(1L);
+        ProductVersionDTO version = versionManager.getById(-1L);
         assertNotNull(version);
         version.setVersion("new version name");
         boolean failed = false;
@@ -97,8 +106,8 @@ public class VersionManagerTest extends TestCase {
     @Test
     @Transactional
     @Rollback
-    public void testNotAllowedToUpdateVersionWithInactiveDeveloper()
-            throws EntityRetrievalException, JsonProcessingException, MissingReasonException, ValidationException {
+    public void testAllowedToUpdateVersionWithInactiveDeveloper() throws EntityRetrievalException,
+            EntityCreationException, JsonProcessingException, MissingReasonException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         // change dev to suspended
@@ -127,17 +136,57 @@ public class VersionManagerTest extends TestCase {
         assertEquals(DeveloperStatusType.SuspendedByOnc.toString(), status.getStatus().getStatusName());
 
         // try to update version
-        ProductVersionDTO version = versionManager.getById(1L);
+        ProductVersionDTO version = versionManager.getById(-1L);
+        assertNotNull(version);
+        version.setVersion("new version name");
+        failed = false;
+        version = versionManager.update(version);
+        assertTrue(version != null);
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    @Test(expected = AccessDeniedException.class)
+    @Transactional
+    @Rollback
+    public void testAcbNotAllowedToUpdateVersionWithInactiveDeveloper() throws EntityRetrievalException,
+            EntityCreationException, JsonProcessingException, MissingReasonException, ValidationException {
+        SecurityContextHolder.getContext().setAuthentication(acbUser);
+
+        // change dev to suspended
+        DeveloperDTO developer = developerManager.getById(-1L);
+        assertNotNull(developer);
+        DeveloperStatusDTO newStatus = devStatusDao.getById(2L);
+        DeveloperStatusEventDTO newStatusHistory = new DeveloperStatusEventDTO();
+        newStatusHistory.setDeveloperId(developer.getId());
+        newStatusHistory.setStatus(newStatus);
+        newStatusHistory.setStatusDate(new Date());
+        developer.getStatusEvents().add(newStatusHistory);
+
+        boolean failed = false;
+        try {
+            developer = developerManager.update(developer, false);
+        } catch (EntityCreationException ex) {
+            System.out.println(ex.getMessage());
+            failed = true;
+        }
+        assertFalse(failed);
+        DeveloperStatusEventDTO status = developer.getStatus();
+        assertNotNull(status);
+        assertNotNull(status.getId());
+        assertNotNull(status.getStatus());
+        assertNotNull(status.getStatus().getStatusName());
+        assertEquals(DeveloperStatusType.SuspendedByOnc.toString(), status.getStatus().getStatusName());
+
+        // try to update version
+        ProductVersionDTO version = versionManager.getById(-1L);
         assertNotNull(version);
         version.setVersion("new version name");
         failed = false;
         try {
             version = versionManager.update(version);
-        } catch (EntityCreationException ex) {
-            System.out.println(ex.getMessage());
-            failed = true;
+        } finally {
+            SecurityContextHolder.getContext().setAuthentication(null);
         }
-        assertTrue(failed);
-        SecurityContextHolder.getContext().setAuthentication(null);
     }
+
 }

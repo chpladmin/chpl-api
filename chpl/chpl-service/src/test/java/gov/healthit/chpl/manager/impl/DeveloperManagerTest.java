@@ -4,11 +4,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.ff4j.FF4j;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -23,6 +28,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
@@ -63,6 +69,9 @@ public class DeveloperManagerTest extends TestCase {
     private ProductManager productManager;
     @Autowired
     private DeveloperStatusDAO devStatusDao;
+    @Autowired
+    private FF4j ff4j;
+
     @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
@@ -85,6 +94,12 @@ public class DeveloperManagerTest extends TestCase {
         testUser3.setFriendlyName("User3");
         testUser3.setSubjectName("testUser3");
         testUser3.getPermissions().add(new GrantedPermission("ROLE_ACB"));
+    }
+
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
+        Mockito.doReturn(true).when(ff4j).check(FeatureList.BETTER_SPLIT);
     }
 
     @Test
@@ -232,8 +247,6 @@ public class DeveloperManagerTest extends TestCase {
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
-
-
     @Test(expected = ValidationException.class)
     @Transactional
     @Rollback
@@ -253,11 +266,11 @@ public class DeveloperManagerTest extends TestCase {
 
     }
 
-    @Test
+    @Test(expected = AccessDeniedException.class)
     @Transactional
     @Rollback(true)
-    public void testNoUpdatesAllowedByNonAdminIfDeveloperIsNotActive()
-            throws EntityRetrievalException, JsonProcessingException, MissingReasonException, ValidationException {
+    public void testNoUpdatesAllowedByNonAdminIfDeveloperIsNotActive() throws EntityRetrievalException,
+            JsonProcessingException, MissingReasonException, ValidationException, EntityCreationException {
         SecurityContextHolder.getContext().setAuthentication(testUser3);
         DeveloperDTO developer = developerManager.getById(-3L);
         assertNotNull(developer);
@@ -272,18 +285,16 @@ public class DeveloperManagerTest extends TestCase {
         boolean failed = false;
         try {
             developer = developerManager.update(developer, false);
-        } catch (EntityCreationException ex) {
-            System.out.println(ex.getMessage());
-            failed = true;
+            assertTrue(failed);
+        } finally {
+            SecurityContextHolder.getContext().setAuthentication(null);
         }
-        assertTrue(failed);
-        SecurityContextHolder.getContext().setAuthentication(null);
     }
 
     @Test
     @Transactional
     @Rollback(true)
-    public void testSplitDeveloper_productOwnershipHistoryAdded() throws ValidationException{
+    public void testSplitDeveloper_productOwnershipHistoryAdded() throws ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         Long developerIdToSplit = -1L;
         List<Long> productIdsToMove = new ArrayList<Long>();
@@ -292,7 +303,8 @@ public class DeveloperManagerTest extends TestCase {
         DeveloperDTO toCreate = createDeveloper();
         DeveloperDTO createdDev = null;
         try {
-            createdDev = developerManager.split(developerManager.getById(developerIdToSplit), toCreate, productIdsToMove);
+            createdDev = developerManager.split(developerManager.getById(developerIdToSplit), toCreate,
+                    productIdsToMove);
         } catch (EntityCreationException | JsonProcessingException | EntityRetrievalException ex) {
             fail(ex.getMessage());
         }
@@ -307,7 +319,8 @@ public class DeveloperManagerTest extends TestCase {
             assertEquals(2, movedProduct.getOwnerHistory().size());
             boolean foundOldOwner = false;
             for (ProductOwnerDTO owner : movedProduct.getOwnerHistory()) {
-                if (owner.getDeveloper() != null && owner.getDeveloper().getId().longValue() == developerIdToSplit.longValue()) {
+                if (owner.getDeveloper() != null
+                        && owner.getDeveloper().getId().longValue() == developerIdToSplit.longValue()) {
                     foundOldOwner = true;
                 }
             }

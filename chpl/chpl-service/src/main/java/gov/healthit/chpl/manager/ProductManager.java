@@ -13,6 +13,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public interface ProductManager {
     ProductDTO getById(Long id) throws EntityRetrievalException;
+    ProductDTO getById(Long id, boolean allowDeleted) throws EntityRetrievalException;
 
     List<ProductDTO> getAll();
 
@@ -20,10 +21,11 @@ public interface ProductManager {
 
     List<ProductDTO> getByDevelopers(List<Long> developerIds);
 
-    ProductDTO create(ProductDTO dto)
-            throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
+    ProductDTO create(ProductDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 
-    ProductDTO update(ProductDTO dto)
+    ProductDTO update(ProductDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
+
+    ProductDTO updateProductOwnership(ProductDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 
     ProductDTO merge(List<Long> productIdsToMerge, ProductDTO toCreate)

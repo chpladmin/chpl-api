@@ -11,7 +11,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.QuestionableActivityDAO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityCertificationResultDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityDTO;
@@ -27,6 +26,7 @@ import gov.healthit.chpl.entity.questionableActivity.QuestionableActivityListing
 import gov.healthit.chpl.entity.questionableActivity.QuestionableActivityProductEntity;
 import gov.healthit.chpl.entity.questionableActivity.QuestionableActivityTriggerEntity;
 import gov.healthit.chpl.entity.questionableActivity.QuestionableActivityVersionEntity;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("questionableActivityDao")
 public class QuestionableActivityDAOImpl extends BaseDAOImpl implements QuestionableActivityDAO {
@@ -74,7 +74,7 @@ public class QuestionableActivityDAOImpl extends BaseDAOImpl implements Question
         toCreate.setTriggerId(dto.getTriggerId());
         toCreate.setUserId(dto.getUserId());
         toCreate.setDeleted(false);
-        toCreate.setLastModifiedUser(Util.getAuditId());
+        toCreate.setLastModifiedUser(AuthUtil.getAuditId());
         entityManager.persist(toCreate);
         entityManager.flush();
         entityManager.clear();

@@ -82,7 +82,7 @@ public class ActivityDaoTest extends TestCase {
         ActivityDTO dto = new ActivityDTO();
         dto.setActivityDate(new Date());
         dto.setActivityObjectId(1L);
-        dto.setConcept(ActivityConcept.ATL);
+        dto.setConcept(ActivityConcept.TESTING_LAB);
         dto.setDeleted(false);
         dto.setDescription("Some activity occurred");
         dto.setOriginalData("Original");
@@ -96,7 +96,7 @@ public class ActivityDaoTest extends TestCase {
         assertEquals(created.getOriginalData(), check.getOriginalData());
         assertEquals(created.getActivityDate(), check.getActivityDate());
         assertEquals(created.getActivityObjectId(), check.getActivityObjectId());
-        assertEquals(ActivityConcept.ATL, check.getConcept());
+        assertEquals(ActivityConcept.TESTING_LAB, check.getConcept());
         assertEquals(created.getId(), check.getId());
 
         SecurityContextHolder.getContext().setAuthentication(null);
@@ -173,14 +173,14 @@ public class ActivityDaoTest extends TestCase {
 
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         Date fiveDaysAgo = new Date(System.currentTimeMillis() - (5 * 24 * 60 * 60 * 1000));
-        List<ActivityDTO> results = activityDAO.findByObjectId(1L, ActivityConcept.ATL, fiveDaysAgo,
+        List<ActivityDTO> results = activityDAO.findByObjectId(1L, ActivityConcept.TESTING_LAB, fiveDaysAgo,
                 null);
         assertEquals(0, results.size());
 
         ActivityDTO recent = new ActivityDTO();
         recent.setActivityDate(new Date());
         recent.setActivityObjectId(100L);
-        recent.setConcept(ActivityConcept.ATL);
+        recent.setConcept(ActivityConcept.TESTING_LAB);
         recent.setDescription("Description");
         recent.setOriginalData("Original");
         recent.setNewData("New");
@@ -188,7 +188,7 @@ public class ActivityDaoTest extends TestCase {
         ActivityDTO created = activityDAO.create(recent);
 
         List<ActivityDTO> results3 = activityDAO.findByObjectId(created.getActivityObjectId(),
-                ActivityConcept.ATL, fiveDaysAgo, null);
+                ActivityConcept.TESTING_LAB, fiveDaysAgo, null);
         assertEquals(1, results3.size());
 
         SecurityContextHolder.getContext().setAuthentication(null);
@@ -201,21 +201,21 @@ public class ActivityDaoTest extends TestCase {
     public void testFindByConceptInLastNDays() throws EntityCreationException, EntityRetrievalException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         Date fiveDaysAgo = new Date(System.currentTimeMillis() - (5 * 24 * 60 * 60 * 1000));
-        List<ActivityDTO> results = activityDAO.findByConcept(ActivityConcept.ATL, fiveDaysAgo,
+        List<ActivityDTO> results = activityDAO.findByConcept(ActivityConcept.TESTING_LAB, fiveDaysAgo,
                 new Date());
         assertEquals(0, results.size());
 
         ActivityDTO recent = new ActivityDTO();
         recent.setActivityDate(new Date());
         recent.setActivityObjectId(100L);
-        recent.setConcept(ActivityConcept.ATL);
+        recent.setConcept(ActivityConcept.TESTING_LAB);
         recent.setDescription("Description");
         recent.setOriginalData("Original");
         recent.setNewData("New");
 
         ActivityDTO created = activityDAO.create(recent);
 
-        List<ActivityDTO> results3 = activityDAO.findByConcept(ActivityConcept.ATL, fiveDaysAgo, null);
+        List<ActivityDTO> results3 = activityDAO.findByConcept(ActivityConcept.TESTING_LAB, fiveDaysAgo, null);
         assertEquals(1, results3.size());
 
         SecurityContextHolder.getContext().setAuthentication(null);

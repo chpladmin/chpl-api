@@ -15,7 +15,7 @@ public class LockedStatusActionPermissions extends ActionPermissions {
     }
 
     @Override
-    public boolean hasAccess(Object obj) {
+    public boolean hasAccess(final Object obj) {
         // TODO Auto-generated method stub
         return false;
     }

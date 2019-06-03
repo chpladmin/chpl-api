@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.ProductDAO;
@@ -52,13 +54,14 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
     private ChplProductNumberUtil chplProductNumberUtil;
     private ActivityManager activityManager;
     private ResourcePermissions resourcePermissions;
+    private FF4j ff4j;
 
     @Autowired
     public ProductManagerImpl(final ErrorMessageUtil msgUtil, final ProductDAO productDao,
             final ProductVersionDAO versionDao, final DeveloperDAO devDao, final CertifiedProductDAO cpDao,
             final CertifiedProductDetailsManager cpdManager, final CertificationBodyManager acbManager,
             final ChplProductNumberUtil chplProductNumberUtil, final ActivityManager activityManager,
-            final ResourcePermissions resourcePermissions) {
+            final ResourcePermissions resourcePermissions, final FF4j ff4j) {
         this.msgUtil = msgUtil;
         this.productDao = productDao;
         this.versionDao = versionDao;
@@ -69,12 +72,19 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.activityManager = activityManager;
         this.resourcePermissions = resourcePermissions;
+        this.ff4j = ff4j;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ProductDTO getById(final Long id, final boolean allowDeleted) throws EntityRetrievalException {
+        return productDao.getById(id, allowDeleted);
     }
 
     @Override
     @Transactional(readOnly = true)
     public ProductDTO getById(final Long id) throws EntityRetrievalException {
-        return productDao.getById(id);
+        return getById(id, false);
     }
 
     @Override
@@ -106,35 +116,168 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
             throw new EntityCreationException("Cannot create a product without a developer ID.");
         }
 
-        DeveloperDTO dev = devDao.getById(dto.getDeveloperId());
-        if (dev == null) {
-            throw new EntityRetrievalException("Cannot find developer with id " + dto.getDeveloperId());
-        }
-        DeveloperStatusEventDTO currDevStatus = dev.getStatus();
-        if (currDevStatus == null || currDevStatus.getStatus() == null) {
-            String msg = "The product " + dto.getName() + " cannot be created since the status of developer "
-                    + dev.getName() + " cannot be determined.";
-            LOGGER.error(msg);
-            throw new EntityCreationException(msg);
-        } else if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-            String msg = "The product " + dto.getName() + " cannot be created since the developer " + dev.getName()
-                    + " has a status of " + currDevStatus.getStatus().getStatusName();
-            LOGGER.error(msg);
-            throw new EntityCreationException(msg);
-        }
-
-        ProductDTO result = productDao.create(dto);
-        String activityMsg = "Product " + dto.getName() + " was created.";
-        activityManager.addActivity(ActivityConcept.PRODUCT, result.getId(), activityMsg, null,
-                result);
-        return getById(result.getId());
+        return createProduct(dto);
     }
 
     @Override
     @Transactional(readOnly = false)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
-            + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).UPDATE)")
+            + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).UPDATE_OWNERSHIP, #dto)")
+    public ProductDTO updateProductOwnership(final ProductDTO dto)
+            throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+        // This method was created to provide different security than the update() method
+        // even though it is the same functionality...
+        return updateProduct(dto);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
+            + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).UPDATE, #dto)")
     public ProductDTO update(final ProductDTO dto)
+            throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+        return updateProduct(dto);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
+            + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).MERGE, #productIdsToMerge)")
+    public ProductDTO merge(final List<Long> productIdsToMerge, final ProductDTO toCreate)
+            throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+
+        List<ProductDTO> beforeProducts = new ArrayList<ProductDTO>();
+        for (Long productId : productIdsToMerge) {
+            beforeProducts.add(productDao.getById(productId));
+        }
+
+        ProductDTO createdProduct = productDao.create(toCreate);
+
+        // search for any versions assigned to the list of products passed in
+        List<ProductVersionDTO> assignedVersions = versionDao.getByProductIds(productIdsToMerge);
+        // reassign those versions to the new product
+        for (ProductVersionDTO version : assignedVersions) {
+            version.setProductId(createdProduct.getId());
+            versionDao.update(version);
+        }
+
+        // - mark the passed in products as deleted
+        for (Long productId : productIdsToMerge) {
+            productDao.delete(productId);
+        }
+
+        String activityMsg = "Merged " + productIdsToMerge.size() + " products into new product '"
+                + createdProduct.getName() + "'.";
+        activityManager.addActivity(ActivityConcept.PRODUCT, createdProduct.getId(), activityMsg, beforeProducts,
+                createdProduct);
+
+        return createdProduct;
+    }
+
+    @Override
+    @Transactional(rollbackFor = {
+            EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class,
+            AccessDeniedException.class
+    })
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
+            + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).SPLIT, #oldProduct)")
+    public ProductDTO split(final ProductDTO oldProduct, final ProductDTO productToCreate, final String newProductCode,
+            final List<ProductVersionDTO> newProductVersions)
+            throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
+        // what ACB does the user have??
+        List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
+
+        // create the new product and log activity
+        // this method checks that the related developer is Active and will
+        // throw an exception if they aren't
+        ProductDTO createdProduct = createProduct(productToCreate);
+
+        // re-assign versions to the new product and log activity for each
+        List<Long> affectedVersionIds = new ArrayList<Long>();
+        for (ProductVersionDTO affectedVersion : newProductVersions) {
+            // get before and after for activity; update product owner
+            ProductVersionDTO beforeVersion = versionDao.getById(affectedVersion.getId());
+            affectedVersion.setProductId(createdProduct.getId());
+            affectedVersion.setProductName(createdProduct.getName());
+            versionDao.update(affectedVersion);
+            ProductVersionDTO afterVersion = versionDao.getById(affectedVersion.getId());
+            activityManager.addActivity(
+                    ActivityConcept.VERSION, afterVersion.getId(), "Product Version " + afterVersion.getVersion()
+                            + " product owner updated to " + afterVersion.getProductName(),
+                    beforeVersion, afterVersion);
+            affectedVersionIds.add(affectedVersion.getId());
+        }
+
+        // update product code on all associated certified products and log
+        // activity for each
+        List<CertifiedProductDTO> affectedCps = cpDao.getByVersionIds(affectedVersionIds);
+        for (CertifiedProductDTO affectedCp : affectedCps) {
+            // have to get the cpdetails for before and after code update
+            // because that is object sent into activity reports
+            CertifiedProductSearchDetails beforeListing = cpdManager.getCertifiedProductDetails(affectedCp.getId());
+            // make sure each cp listing associated with the newProduct ->
+            // version is owned by an ACB the user has access to
+            boolean hasAccessToAcb = false;
+            for (CertificationBodyDTO allowedAcb : allowedAcbs) {
+                if (allowedAcb.getId().longValue() == affectedCp.getCertificationBodyId().longValue()) {
+                    hasAccessToAcb = true;
+                }
+            }
+            if (!hasAccessToAcb) {
+                throw new AccessDeniedException(
+                        msgUtil.getMessage("acb.accessDenied.listingUpdate", beforeListing.getChplProductNumber(),
+                                beforeListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY)));
+            }
+
+            // make sure the updated CHPL product number is unique and that the
+            // new product code is valid
+            String chplNumber = beforeListing.getChplProductNumber();
+            if (!chplProductNumberUtil.isLegacy(chplNumber)) {
+                ChplProductNumberParts parts = chplProductNumberUtil.parseChplProductNumber(chplNumber);
+                String potentialChplNumber = chplProductNumberUtil.getChplProductNumber(parts.getEditionCode(),
+                        parts.getAtlCode(), parts.getAcbCode(), parts.getDeveloperCode(), newProductCode,
+                        parts.getVersionCode(), parts.getIcsCode(), parts.getAdditionalSoftwareCode(),
+                        parts.getCertifiedDateCode());
+                if (!chplProductNumberUtil.isUnique(potentialChplNumber)) {
+                    throw new EntityCreationException("Cannot update certified product " + chplNumber + " to "
+                            + potentialChplNumber + " because a certified product with that CHPL ID already exists.");
+                }
+                if (!ValidationUtils.chplNumberPartIsValid(potentialChplNumber,
+                        ChplProductNumberUtil.PRODUCT_CODE_INDEX, ChplProductNumberUtil.PRODUCT_CODE_REGEX)) {
+                    throw new EntityCreationException(msgUtil.getMessage("listing.badProductCodeChars",
+                            ChplProductNumberUtil.PRODUCT_CODE_LENGTH));
+                }
+                affectedCp.setProductCode(newProductCode);
+            }
+
+            // do the update and add activity
+            cpDao.update(affectedCp);
+            CertifiedProductSearchDetails afterListing = cpdManager.getCertifiedProductDetails(affectedCp.getId());
+            activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, beforeListing.getId(),
+                    "Updated certified product " + afterListing.getChplProductNumber() + ".", beforeListing,
+                    afterListing);
+        }
+
+        ProductDTO afterProduct = null;
+        if (ff4j.check(FeatureList.BETTER_SPLIT)) {
+            //the split is complete - log split activity
+            //getting the original product object from the db to make sure it's all filled in
+            ProductDTO origProduct = getById(oldProduct.getId());
+            afterProduct = getById(createdProduct.getId());
+            List<ProductDTO> splitProducts = new ArrayList<ProductDTO>();
+            splitProducts.add(origProduct);
+            splitProducts.add(afterProduct);
+            activityManager.addActivity(ActivityConcept.PRODUCT, afterProduct.getId(),
+                    "Split product " + origProduct.getName() + " into " + origProduct.getName() + " and " + afterProduct.getName(),
+                    origProduct, splitProducts);
+        } else {
+            afterProduct = getById(createdProduct.getId());
+        }
+
+        return afterProduct;
+    }
+
+    private ProductDTO updateProduct(final ProductDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 
         ProductDTO beforeDTO = productDao.getById(dto.getId());
@@ -169,147 +312,27 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
         result.setDeveloperName(devDto.getName());
 
         String activityMsg = "Product " + dto.getName() + " was updated.";
-        activityManager.addActivity(ActivityConcept.PRODUCT, result.getId(), activityMsg, beforeDTO,
-                result);
+        activityManager.addActivity(ActivityConcept.PRODUCT, result.getId(), activityMsg, beforeDTO, result);
         return result;
-
     }
 
-    @Override
-    @Transactional(readOnly = false)
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    public ProductDTO merge(final List<Long> productIdsToMerge, final ProductDTO toCreate)
+    private ProductDTO createProduct(final ProductDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
-
-        List<ProductDTO> beforeProducts = new ArrayList<ProductDTO>();
-        for (Long productId : productIdsToMerge) {
-            beforeProducts.add(productDao.getById(productId));
+        DeveloperDTO dev = devDao.getById(dto.getDeveloperId());
+        if (dev == null) {
+            throw new EntityRetrievalException("Cannot find developer with id " + dto.getDeveloperId());
+        }
+        DeveloperStatusEventDTO currDevStatus = dev.getStatus();
+        if (currDevStatus == null || currDevStatus.getStatus() == null) {
+            String msg = "The product " + dto.getName() + " cannot be created since the status of developer "
+                    + dev.getName() + " cannot be determined.";
+            LOGGER.error(msg);
+            throw new EntityCreationException(msg);
         }
 
-        for (ProductDTO beforeProduct : beforeProducts) {
-            Long devId = beforeProduct.getDeveloperId();
-            DeveloperDTO dev = devDao.getById(devId);
-            DeveloperStatusEventDTO currDevStatus = dev.getStatus();
-            if (currDevStatus == null || currDevStatus.getStatus() == null) {
-                String msg = "The product " + beforeProduct.getName()
-                        + " cannot be merged since the status of developer " + dev.getName() + " cannot be determined.";
-                LOGGER.error(msg);
-                throw new EntityCreationException(msg);
-            } else if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-                String msg = "The product " + beforeProduct.getName() + " cannot be merged since the developer "
-                        + dev.getName() + " has a status of " + currDevStatus.getStatus().getStatusName();
-                LOGGER.error(msg);
-                throw new EntityCreationException(msg);
-            }
-        }
-
-        ProductDTO createdProduct = productDao.create(toCreate);
-
-        // search for any versions assigned to the list of products passed in
-        List<ProductVersionDTO> assignedVersions = versionDao.getByProductIds(productIdsToMerge);
-        // reassign those versions to the new product
-        for (ProductVersionDTO version : assignedVersions) {
-            version.setProductId(createdProduct.getId());
-            versionDao.update(version);
-        }
-
-        // - mark the passed in products as deleted
-        for (Long productId : productIdsToMerge) {
-            productDao.delete(productId);
-        }
-
-        String activityMsg = "Merged " + productIdsToMerge.size() + " products into new product '"
-                + createdProduct.getName() + "'.";
-        activityManager.addActivity(ActivityConcept.PRODUCT, createdProduct.getId(), activityMsg,
-                beforeProducts, createdProduct);
-
-        return createdProduct;
-    }
-
-    @Override
-    @Transactional(rollbackFor = {
-            EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class,
-            AccessDeniedException.class
-    })
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
-            + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).SPLIT)")
-    public ProductDTO split(final ProductDTO oldProduct, final ProductDTO productToCreate, final String newProductCode,
-            final List<ProductVersionDTO> newProductVersions)
-            throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
-        // what ACB does the user have??
-        List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
-
-        // create the new product and log activity
-        // this method checks that the related developer is Active and will
-        // throw an exception if they aren't
-        ProductDTO createdProduct = create(productToCreate);
-
-        // re-assign versions to the new product and log activity for each
-        List<Long> affectedVersionIds = new ArrayList<Long>();
-        for (ProductVersionDTO affectedVersion : newProductVersions) {
-            // get before and after for activity; update product owner
-            ProductVersionDTO beforeVersion = versionDao.getById(affectedVersion.getId());
-            affectedVersion.setProductId(createdProduct.getId());
-            affectedVersion.setProductName(createdProduct.getName());
-            versionDao.update(affectedVersion);
-            ProductVersionDTO afterVersion = versionDao.getById(affectedVersion.getId());
-            activityManager.addActivity(
-                    ActivityConcept.VERSION, afterVersion.getId(), "Product Version "
-                            + afterVersion.getVersion() + " product owner updated to " + afterVersion.getProductName(),
-                    beforeVersion, afterVersion);
-            affectedVersionIds.add(affectedVersion.getId());
-        }
-
-        // update product code on all associated certified products and log
-        // activity for each
-        List<CertifiedProductDTO> affectedCps = cpDao.getByVersionIds(affectedVersionIds);
-        for (CertifiedProductDTO affectedCp : affectedCps) {
-            // have to get the cpdetails for before and after code update
-            // because that is object sent into activity reports
-            CertifiedProductSearchDetails beforeProduct = cpdManager.getCertifiedProductDetails(affectedCp.getId());
-            // make sure each cp listing associated with the newProduct ->
-            // version is owned by an ACB the user has access to
-            boolean hasAccessToAcb = false;
-            for (CertificationBodyDTO allowedAcb : allowedAcbs) {
-                if (allowedAcb.getId().longValue() == affectedCp.getCertificationBodyId().longValue()) {
-                    hasAccessToAcb = true;
-                }
-            }
-            if (!hasAccessToAcb) {
-                    throw new AccessDeniedException(msgUtil.getMessage("acb.accessDenied.listingUpdate",
-                            beforeProduct.getChplProductNumber(),
-                            beforeProduct.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY)));
-            }
-
-            // make sure the updated CHPL product number is unique and that the
-            // new product code is valid
-            String chplNumber = beforeProduct.getChplProductNumber();
-            if (!chplProductNumberUtil.isLegacy(chplNumber)) {
-                ChplProductNumberParts parts = chplProductNumberUtil.parseChplProductNumber(chplNumber);
-                String potentialChplNumber = chplProductNumberUtil.getChplProductNumber(parts.getEditionCode(),
-                        parts.getAtlCode(), parts.getAcbCode(), parts.getDeveloperCode(), newProductCode,
-                        parts.getVersionCode(), parts.getIcsCode(), parts.getAdditionalSoftwareCode(),
-                        parts.getCertifiedDateCode());
-                if (!chplProductNumberUtil.isUnique(potentialChplNumber)) {
-                    throw new EntityCreationException("Cannot update certified product " + chplNumber + " to "
-                            + potentialChplNumber + " because a certified product with that CHPL ID already exists.");
-                }
-                if (!ValidationUtils.chplNumberPartIsValid(potentialChplNumber,
-                        ChplProductNumberUtil.PRODUCT_CODE_INDEX, ChplProductNumberUtil.PRODUCT_CODE_REGEX)) {
-                    throw new EntityCreationException(msgUtil.getMessage("listing.badProductCodeChars",
-                            ChplProductNumberUtil.PRODUCT_CODE_LENGTH));
-                }
-                affectedCp.setProductCode(newProductCode);
-            }
-
-            // do the update and add activity
-            cpDao.update(affectedCp);
-            CertifiedProductSearchDetails afterProduct = cpdManager.getCertifiedProductDetails(affectedCp.getId());
-            activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, beforeProduct.getId(),
-                    "Updated certified product " + afterProduct.getChplProductNumber() + ".", beforeProduct,
-                    afterProduct);
-        }
-
-        return getById(createdProduct.getId());
+        ProductDTO result = productDao.create(dto);
+        String activityMsg = "Product " + dto.getName() + " was created.";
+        activityManager.addActivity(ActivityConcept.PRODUCT, result.getId(), activityMsg, null, result);
+        return getById(result.getId());
     }
 }

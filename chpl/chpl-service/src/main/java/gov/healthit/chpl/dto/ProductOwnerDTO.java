@@ -2,8 +2,11 @@ package gov.healthit.chpl.dto;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import gov.healthit.chpl.entity.ProductOwnerEntity;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ProductOwnerDTO implements Serializable {
     private static final long serialVersionUID = 6840423832565720086L;
     private Long id;

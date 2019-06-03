@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -14,6 +15,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.healthit.chpl.app.permissions.domain.ActionPermissionsBaseTest;
+import gov.healthit.chpl.dao.ProductVersionDAO;
+import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domains.productversion.UpdateActionPermissions;
 
@@ -25,6 +29,9 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Mock
     private ResourcePermissions resourcePermissions;
+
+    @Mock
+    private ProductVersionDAO productVersionDAO;
 
     @InjectMocks
     private UpdateActionPermissions permissions;
@@ -41,10 +48,8 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_Admin() throws Exception {
         setupForAdminUser(resourcePermissions);
 
-        assertTrue(permissions.hasAccess());
-
-        // Not used
-        assertFalse(permissions.hasAccess(new Object()));
+        assertFalse(permissions.hasAccess());
+        assertTrue(permissions.hasAccess(new ProductVersionDTO()));
     }
 
     @Override
@@ -52,10 +57,8 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_Onc() throws Exception {
         setupForOncUser(resourcePermissions);
 
-        assertTrue(permissions.hasAccess());
-
-        // Not used
-        assertFalse(permissions.hasAccess(new Object()));
+        assertFalse(permissions.hasAccess());
+        assertTrue(permissions.hasAccess(new ProductVersionDTO()));
     }
 
     @Override
@@ -63,10 +66,24 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
 
-        assertTrue(permissions.hasAccess());
+        assertFalse(permissions.hasAccess());
 
-        // Not used
-        assertFalse(permissions.hasAccess(new Object()));
+        ProductVersionDTO version = new ProductVersionDTO();
+        version.setId(1l);
+        version.setDeveloperId(2l);
+
+        DeveloperDTO dto = new DeveloperDTO();
+        dto.setId(1l);
+
+        Mockito.when(productVersionDAO.getById(ArgumentMatchers.anyLong())).thenReturn(version);
+
+        // If the current status is Active
+        Mockito.when(resourcePermissions.isDeveloperActive(ArgumentMatchers.anyLong())).thenReturn(true);
+        assertTrue(permissions.hasAccess(version));
+
+        // If the current status is Non-Active
+        Mockito.when(resourcePermissions.isDeveloperActive(ArgumentMatchers.anyLong())).thenReturn(false);
+        assertFalse(permissions.hasAccess(version));
     }
 
     @Override
@@ -75,9 +92,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         setupForAtlUser(resourcePermissions);
 
         assertFalse(permissions.hasAccess());
-
-        // Not used
-        assertFalse(permissions.hasAccess(new Object()));
+        assertFalse(permissions.hasAccess(new ProductVersionDTO()));
     }
 
     @Override
@@ -86,9 +101,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         setupForCmsUser(resourcePermissions);
 
         assertFalse(permissions.hasAccess());
-
-        // Not used
-        assertFalse(permissions.hasAccess(new Object()));
+        assertFalse(permissions.hasAccess(new ProductVersionDTO()));
     }
 
     @Override
@@ -97,8 +110,6 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         setupForAnonUser(resourcePermissions);
 
         assertFalse(permissions.hasAccess());
-
-        // Not used
-        assertFalse(permissions.hasAccess(new Object()));
+        assertFalse(permissions.hasAccess(new ProductVersionDTO()));
     }
 }

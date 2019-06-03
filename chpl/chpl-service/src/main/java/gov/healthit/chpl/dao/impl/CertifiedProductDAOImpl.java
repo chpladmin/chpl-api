@@ -15,7 +15,6 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -23,6 +22,7 @@ import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.AuthUtil;
 
 /**
  * Certified Product DAO.
@@ -110,7 +110,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
             if (dto.getLastModifiedUser() != null) {
                 entity.setLastModifiedUser(dto.getLastModifiedUser());
             } else {
-                entity.setLastModifiedUser(Util.getAuditId());
+                entity.setLastModifiedUser(AuthUtil.getAuditId());
             }
 
             try {
@@ -155,7 +155,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
         entity.setProductVersionId(dto.getProductVersionId());
 
         entity.setLastModifiedDate(new Date());
-        entity.setLastModifiedUser(Util.getAuditId());
+        entity.setLastModifiedUser(AuthUtil.getAuditId());
         try {
             update(entity);
         } catch (Exception ex) {

@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.ff4j.FF4j;
+import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -26,6 +29,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
@@ -50,19 +54,28 @@ import gov.healthit.chpl.manager.ProductManager;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
+@TestExecutionListeners({
+        DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
+})
 @DatabaseSetup("classpath:data/testData.xml")
 public class ProductManagerTest extends TestCase {
 
-    @Autowired private ProductManager productManager;
-    @Autowired private DeveloperManager developerManager;
-    @Autowired private CertifiedProductDetailsManager cpdManager;
-    @Autowired private DeveloperStatusDAO devStatusDao;
-    @Autowired private ContactDAO contactDao;
+    @Autowired
+    private ProductManager productManager;
+    @Autowired
+    private DeveloperManager developerManager;
+    @Autowired
+    private CertifiedProductDetailsManager cpdManager;
+    @Autowired
+    private DeveloperStatusDAO devStatusDao;
+    @Autowired
+    private ContactDAO contactDao;
+    @Autowired
+    private FF4j ff4j;
 
     @Rule
     @Autowired
@@ -94,6 +107,12 @@ public class ProductManagerTest extends TestCase {
         testUser3.getPermissions().add(new GrantedPermission("ROLE_ACB"));
     }
 
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
+        Mockito.doReturn(true).when(ff4j).check(FeatureList.BETTER_SPLIT);
+    }
+
     @Test
     @Transactional(readOnly = true)
     public void getAllProducts() {
@@ -117,7 +136,7 @@ public class ProductManagerTest extends TestCase {
         assertNotNull(product.getOwnerHistory());
         assertEquals(1, product.getOwnerHistory().size());
         List<ProductOwnerDTO> previousOwners = product.getOwnerHistory();
-        for(ProductOwnerDTO previousOwner : previousOwners) {
+        for (ProductOwnerDTO previousOwner : previousOwners) {
             assertNotNull(previousOwner.getDeveloper());
             assertEquals(-2, previousOwner.getDeveloper().getId().longValue());
             assertEquals("Test Developer 2", previousOwner.getDeveloper().getName());
@@ -358,7 +377,7 @@ public class ProductManagerTest extends TestCase {
             throws EntityRetrievalException, JsonProcessingException, MissingReasonException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        //change dev to suspended
+        // change dev to suspended
         DeveloperDTO developer = developerManager.getById(-1L);
         assertNotNull(developer);
         DeveloperStatusDTO newStatus = devStatusDao.getById(2L);
@@ -383,7 +402,7 @@ public class ProductManagerTest extends TestCase {
         assertNotNull(status.getStatus().getStatusName());
         assertEquals(DeveloperStatusType.SuspendedByOnc.toString(), status.getStatus().getStatusName());
 
-        //try to update product
+        // try to update product
         ProductDTO product = productManager.getById(-1L);
         assertNotNull(product);
         product.setName("new product name");
@@ -452,12 +471,11 @@ public class ProductManagerTest extends TestCase {
     @Test
     @Transactional
     @Rollback
-    public void testProductSplitFailsWithSuspendedDeveloper()
-            throws EntityRetrievalException, EntityCreationException,
+    public void testProductSplitFailsWithSuspendedDeveloper() throws EntityRetrievalException, EntityCreationException,
             JsonProcessingException, MissingReasonException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         DeveloperDTO developer = developerManager.getById(-1L);
-        //suspended by ONC
+        // suspended by ONC
         DeveloperStatusDTO newStatus = devStatusDao.getById(2L);
         DeveloperStatusEventDTO newStatusHistory = new DeveloperStatusEventDTO();
         newStatusHistory.setDeveloperId(developer.getId());
@@ -472,7 +490,7 @@ public class ProductManagerTest extends TestCase {
         newProduct.setDeveloperId(origProduct.getDeveloperId());
         List<ProductVersionDTO> newProductVersions = new ArrayList<ProductVersionDTO>();
         ProductVersionDTO newProductVersion = new ProductVersionDTO();
-        newProductVersion.setId(5L);
+        newProductVersion.setId(-5L);
         newProductVersions.add(newProductVersion);
         boolean productCreateError = false;
         try {
@@ -483,7 +501,7 @@ public class ProductManagerTest extends TestCase {
             fail(ex.getMessage());
         }
 
-        assertTrue(productCreateError);
+        assertFalse(productCreateError);
 
         SecurityContextHolder.getContext().setAuthentication(null);
     }
@@ -508,7 +526,7 @@ public class ProductManagerTest extends TestCase {
         newProduct.setDeveloperId(origProduct.getDeveloperId());
         List<ProductVersionDTO> newProductVersions = new ArrayList<ProductVersionDTO>();
         ProductVersionDTO newProductVersion = new ProductVersionDTO();
-        newProductVersion.setId(7L);
+        newProductVersion.setId(-7L);
         newProductVersions.add(newProductVersion);
         ProductDTO updatedNewProduct = null;
         try {
@@ -532,10 +550,11 @@ public class ProductManagerTest extends TestCase {
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
-    @Test
+    @Test(expected = AccessDeniedException.class)
     @Transactional
     @Rollback
-    public void testProductSplitAllowedAsAcbAdmin() throws EntityRetrievalException {
+    public void testProductSplitAllowedAsAcbAdmin()
+            throws EntityRetrievalException, AccessDeniedException, JsonProcessingException, EntityCreationException {
         SecurityContextHolder.getContext().setAuthentication(testUser3);
 
         String name = "Split Product";
@@ -557,23 +576,9 @@ public class ProductManagerTest extends TestCase {
         ProductDTO updatedNewProduct = null;
         try {
             updatedNewProduct = productManager.split(origProduct, newProduct, code, newProductVersions);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            fail(ex.getMessage());
+        } finally {
+            SecurityContextHolder.getContext().setAuthentication(null);
         }
-
-        ProductDTO updatedOrigProduct = productManager.getById(origProduct.getId());
-        assertNotNull(updatedOrigProduct.getProductVersions());
-        assertEquals(2, updatedOrigProduct.getProductVersions().size());
-
-        assertNotNull(updatedNewProduct);
-        assertEquals(name, updatedNewProduct.getName());
-        assertNotNull(updatedNewProduct.getProductVersions());
-        assertEquals(1, updatedNewProduct.getProductVersions().size());
-        cpDetails = cpdManager.getCertifiedProductDetails(7L);
-        assertTrue(cpDetails.getChplProductNumber().contains(code));
-
-        SecurityContextHolder.getContext().setAuthentication(null);
     }
 
     @Test

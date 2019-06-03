@@ -359,9 +359,9 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
 
         PendingTestTaskEntity task = new PendingTestTaskEntity();
         task.setUniqueId(record.get(colIndex++).trim());
-        if (task.getUniqueId().length() > msgUtil.getMaxLength("maxLength.taskIdentifier")) {
+        if (task.getUniqueId().length() > msgUtil.getMessageAsInteger("maxLength.taskIdentifier")) {
             pendingCertifiedProductEntity.getErrorMessages().add(msgUtil.getMessage("listing.taskIdentifier.maxlength",
-                    String.valueOf(msgUtil.getMaxLength("maxLength.taskIdentifier")), task.getUniqueId()));
+                    String.valueOf(msgUtil.getMessageAsInteger("maxLength.taskIdentifier")), task.getUniqueId()));
         }
         task.setDescription(record.get(colIndex++).trim());
         task.setTaskSuccessAverage(record.get(colIndex++).trim());
@@ -727,9 +727,9 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                     for (int i = 0; i < participantUniqueIds.length; i++) {
                         PendingTestParticipantEntity participantEntity = null;
                         for (PendingTestParticipantEntity participant : this.participants) {
-                            if (participant.getUniqueId().length() > msgUtil.getMaxLength("maxLength.participantIdentifier")) {
+                            if (participant.getUniqueId().length() > msgUtil.getMessageAsInteger("maxLength.participantIdentifier")) {
                                 product.getErrorMessages().add(msgUtil.getMessage("listing.participantIdentifier.maxlength",
-                                        String.valueOf(msgUtil.getMaxLength("maxLength.participantIdentifier")), participant.getUniqueId()));
+                                        String.valueOf(msgUtil.getMessageAsInteger("maxLength.participantIdentifier")), participant.getUniqueId()));
                             }
                             if (participant.getUniqueId().equals(participantUniqueIds[i].trim())) {
                                 participantEntity = participant;
