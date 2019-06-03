@@ -19,23 +19,22 @@ public class ComplaintEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
     @Column(name = "complaint_id", nullable = false)
     private Long id;
 
     @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "certification_body_id", unique = true, nullable = true)
+    @JoinColumn(name = "certification_body_id", nullable = false, insertable = true, updatable = false)
     private CertificationBodyEntity certificationBody;
 
     @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "complaint_type_id", unique = true, nullable = true)
+    @JoinColumn(name = "complaint_type_id", nullable = true, insertable = true, updatable = true)
     private ComplaintTypeEntity complaintType;
 
     @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "complaint_status_type_id", unique = true, nullable = true)
+    @JoinColumn(name = "complaint_status_type_id", nullable = true, insertable = true, updatable = true)
     private ComplaintStatusTypeEntity complaintStatusType;
 
     @Column(name = "onc_complaint_id", nullable = true)
@@ -201,4 +200,16 @@ public class ComplaintEntity {
     public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
+
+    @Override
+    public String toString() {
+        return "ComplaintEntity [id=" + id + ", certificationBody=" + certificationBody + ", complaintType="
+                + complaintType + ", complaintStatusType=" + complaintStatusType + ", oncComplaintId=" + oncComplaintId
+                + ", receivedDate=" + receivedDate + ", summary=" + summary + ", actions=" + actions
+                + ", complainantContacted=" + complainantContacted + ", developerContacted=" + developerContacted
+                + ", oncAtlContacted=" + oncAtlContacted + ", closedDate=" + closedDate + ", creationDate="
+                + creationDate + ", lastModifiedDate=" + lastModifiedDate + ", lastModifiedUser=" + lastModifiedUser
+                + ", deleted=" + deleted + "]";
+    }
+
 }

@@ -61,7 +61,7 @@ public class ComplaintController {
 
     @ApiOperation(value = "Update complaint for use in Surveillance Quarterly Report.",
             notes = "")
-    @RequestMapping(value = "", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/{complaintId}", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public @ResponseBody ComplaintDTO update(@RequestBody final ComplaintDTO complaint) throws EntityRetrievalException {
         if (ff4j.check(FeatureList.COMPLAINTS)) {
             ComplaintDTO dto = complaintManager.update(complaint);
