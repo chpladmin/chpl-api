@@ -1,5 +1,18 @@
 # Release Notes
 
+## Version 21.1.0
+_3 June 2019_
+
+### New Features
+* Add FF4j framework (feature flags)
+* Add endpoints to provide ability for users to save filters for admin reports
+* Updated product and version activity metadata to parse activity for merges and splits; better parsing of product and developer names if they have been deleted.
+
+### Bugs Fixed
+* Correctly handle scheduled job update when an ACB is renamed.
+
+---
+
 ## Version 21.0.0
 _20 May 2019_
 
