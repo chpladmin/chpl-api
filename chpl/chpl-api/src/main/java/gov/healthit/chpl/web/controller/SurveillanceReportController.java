@@ -140,6 +140,7 @@ public class SurveillanceReportController {
         QuarterDTO quarter = new QuarterDTO();
         quarter.setName(createRequest.getQuarter());
         quarterlyReport.setQuarter(quarter);
+        quarterlyReport.setActivitiesOutcomesSummary(createRequest.getSurveillanceActivitiesAndOutcomes());
         quarterlyReport.setPrioritizedElementSummary(createRequest.getPrioritizedElementSummary());
         quarterlyReport.setReactiveSummary(createRequest.getReactiveSummary());
         quarterlyReport.setTransparencyDisclosureSummary(createRequest.getTransparencyDisclosureSummary());
@@ -163,6 +164,7 @@ public class SurveillanceReportController {
         }
         QuarterlyReportDTO reportToUpdate = reportManager.getQuarterlyReport(updateRequest.getId());
         //above line throws entity retrieval exception if bad id
+        reportToUpdate.setActivitiesOutcomesSummary(updateRequest.getSurveillanceActivitiesAndOutcomes());
         reportToUpdate.setPrioritizedElementSummary(updateRequest.getPrioritizedElementSummary());
         reportToUpdate.setReactiveSummary(updateRequest.getReactiveSummary());
         reportToUpdate.setTransparencyDisclosureSummary(updateRequest.getTransparencyDisclosureSummary());

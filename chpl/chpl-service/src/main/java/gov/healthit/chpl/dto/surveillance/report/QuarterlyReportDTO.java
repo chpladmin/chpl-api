@@ -7,6 +7,7 @@ public class QuarterlyReportDTO {
     private Long id;
     private AnnualReportDTO annualReport;
     private QuarterDTO quarter;
+    private String activitiesOutcomesSummary;
     private String reactiveSummary;
     private String prioritizedElementSummary;
     private String transparencyDisclosureSummary;
@@ -15,6 +16,7 @@ public class QuarterlyReportDTO {
 
     public QuarterlyReportDTO(final QuarterlyReportEntity entity) {
         this.id = entity.getId();
+        this.activitiesOutcomesSummary = entity.getActivitiesOutcomesSummary();
         this.reactiveSummary = entity.getReactiveSummary();
         this.prioritizedElementSummary = entity.getPrioritizedElementSummary();
         this.transparencyDisclosureSummary = entity.getTransparencyDisclosureSummary();
@@ -56,6 +58,14 @@ public class QuarterlyReportDTO {
 
     public void setQuarter(final QuarterDTO quarter) {
         this.quarter = quarter;
+    }
+
+    public String getActivitiesOutcomesSummary() {
+        return activitiesOutcomesSummary;
+    }
+
+    public void setActivitiesOutcomesSummary(final String activitiesOutcomesSummary) {
+        this.activitiesOutcomesSummary = activitiesOutcomesSummary;
     }
 
     public String getReactiveSummary() {

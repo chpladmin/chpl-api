@@ -202,12 +202,14 @@ public class QuarterlyReportDaoTest extends TestCase {
     private QuarterlyReportDTO createReport(final Long acbId, final Integer year, final Long quarterId) throws EntityCreationException, EntityRetrievalException {
         QuarterDTO quarter = quarterDao.getById(quarterId);
         AnnualReportDTO annualReport = createAnnualReport(acbId, year);
+        String activitiesSummary = "test";
         String prioritizedElementSummary = "test";
         String reactiveSummary = "test";
         String transparencyDisclosureSummary = "test";
         QuarterlyReportDTO toCreate = new QuarterlyReportDTO();
         toCreate.setAnnualReport(annualReport);
         toCreate.setQuarter(quarter);
+        toCreate.setActivitiesOutcomesSummary(activitiesSummary);
         toCreate.setPrioritizedElementSummary(prioritizedElementSummary);
         toCreate.setReactiveSummary(reactiveSummary);
         toCreate.setTransparencyDisclosureSummary(transparencyDisclosureSummary);
@@ -215,6 +217,7 @@ public class QuarterlyReportDaoTest extends TestCase {
         assertNotNull(created);
         assertNotNull(created.getId());
         assertTrue(created.getId() > 0);
+        assertEquals(activitiesSummary, created.getActivitiesOutcomesSummary());
         assertEquals(prioritizedElementSummary, created.getPrioritizedElementSummary());
         assertEquals(reactiveSummary, created.getReactiveSummary());
         assertEquals(transparencyDisclosureSummary, created.getTransparencyDisclosureSummary());

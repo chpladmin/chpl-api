@@ -139,6 +139,7 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
         toCreateEntity.setAnnualReportId(toCreate.getAnnualReport().getId());
         toCreateEntity.setPrioritizedElementSummary(toCreate.getPrioritizedElementSummary());
         toCreateEntity.setQuarterId(toCreate.getQuarter().getId());
+        toCreateEntity.setActivitiesOutcomesSummary(toCreate.getActivitiesOutcomesSummary());
         toCreateEntity.setReactiveSummary(toCreate.getReactiveSummary());
         toCreateEntity.setTransparencyDisclosureSummary(toCreate.getTransparencyDisclosureSummary());
         toCreateEntity.setCreationDate(new Date());
@@ -152,6 +153,7 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
     @Override
     public QuarterlyReportDTO update(final QuarterlyReportDTO toUpdate) throws EntityRetrievalException {
         QuarterlyReportEntity toUpdateEntity = getEntityById(toUpdate.getId());
+        toUpdateEntity.setActivitiesOutcomesSummary(toUpdate.getActivitiesOutcomesSummary());
         toUpdateEntity.setPrioritizedElementSummary(toUpdate.getPrioritizedElementSummary());
         toUpdateEntity.setReactiveSummary(toUpdate.getReactiveSummary());
         toUpdateEntity.setTransparencyDisclosureSummary(toUpdate.getTransparencyDisclosureSummary());

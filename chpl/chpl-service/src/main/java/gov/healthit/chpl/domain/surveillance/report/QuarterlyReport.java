@@ -12,6 +12,7 @@ public class QuarterlyReport implements Serializable {
     private CertificationBody acb;
     private Integer year;
     private String quarter;
+    private String surveillanceActivitiesAndOutcomes;
     private String reactiveSummary;
     private String prioritizedElementSummary;
     private String transparencyDisclosureSummary;
@@ -21,6 +22,7 @@ public class QuarterlyReport implements Serializable {
 
     public QuarterlyReport(final QuarterlyReportDTO dto) {
         this.id = dto.getId();
+        this.surveillanceActivitiesAndOutcomes = dto.getActivitiesOutcomesSummary();
         this.reactiveSummary = dto.getReactiveSummary();
         this.prioritizedElementSummary = dto.getPrioritizedElementSummary();
         this.transparencyDisclosureSummary = dto.getTransparencyDisclosureSummary();
@@ -65,6 +67,14 @@ public class QuarterlyReport implements Serializable {
 
     public void setQuarter(final String quarter) {
         this.quarter = quarter;
+    }
+
+    public String getSurveillanceActivitiesAndOutcomes() {
+        return surveillanceActivitiesAndOutcomes;
+    }
+
+    public void setSurveillanceActivitiesAndOutcomes(final String surveillanceActivitiesAndOutcomes) {
+        this.surveillanceActivitiesAndOutcomes = surveillanceActivitiesAndOutcomes;
     }
 
     public String getReactiveSummary() {

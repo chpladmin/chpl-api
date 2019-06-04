@@ -116,6 +116,28 @@ public class QuarterlyReportManagerTest extends TestCase {
         createReport();
     }
 
+//    @Test(expected = EntityCreationException.class)
+//    @Rollback(true)
+//    @Transactional
+//    public void createReport_alreadyExists()
+//            throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException {
+//        SecurityContextHolder.getContext().setAuthentication(adminUser);
+//        AnnualReportDTO annualReport = createAnnualReport(-1L, 2019);
+//        QuarterlyReportDTO toCreate = new QuarterlyReportDTO();
+//        toCreate.setAnnualReport(annualReport);
+//        toCreate.setQuarter(quarterDao.getById(1L));
+//        QuarterlyReportDTO createdReport = reportManager.createQuarterlyReport(toCreate);
+//        assertNotNull(createdReport);
+//        assertNotNull(createdReport.getId());
+//
+//        //should not be allowed to create a second one with the same year, quarter, and acb
+//        toCreate = new QuarterlyReportDTO();
+//        toCreate.setAnnualReport(annualReport);
+//        toCreate.setQuarter(quarterDao.getById(1L));
+//        reportManager.createQuarterlyReport(toCreate);
+//        SecurityContextHolder.getContext().setAuthentication(null);
+//    }
+
     @Test(expected = InvalidArgumentsException.class)
     @Rollback(true)
     @Transactional
@@ -519,6 +541,10 @@ public class QuarterlyReportManagerTest extends TestCase {
         QuarterlyReportDTO toCreate = new QuarterlyReportDTO();
         toCreate.setAnnualReport(annualReport);
         toCreate.setQuarter(quarter);
+        toCreate.setActivitiesOutcomesSummary("In order to meet its obligation to conduct reactive surveillance, the ONC-ACB undertook the following activities and implemented the following measures to ensure that it was able to systematically obtain, synthesize and act on all facts and circumstances that would cause a reasonable person to question the ongoing compliance of any certified Complete EHR or certified Health IT Module. In order to meet its obligation to conduct reactive surveillance, the ONC-ACB undertook the following activities and implemented the following measures to ensure that it was able to systematically obtain, synthesize and act on all facts and circumstances that would cause a reasonable person to question the ongoing compliance of any certified Complete EHR or certified Health IT Module. ");
+        toCreate.setReactiveSummary("test reactive element summary");
+        toCreate.setPrioritizedElementSummary("test prioritized element summary");
+        toCreate.setTransparencyDisclosureSummary("test transparency and disclosure summary");
         QuarterlyReportDTO created = reportManager.createQuarterlyReport(toCreate);
 
         Workbook workbook = reportManager.exportQuarterlyReport(created.getId());
@@ -543,12 +569,14 @@ public class QuarterlyReportManagerTest extends TestCase {
     private QuarterlyReportDTO createReport(final Long acbId, final Integer year, final Long quarterId) throws EntityCreationException, EntityRetrievalException {
         QuarterDTO quarter = quarterDao.getById(quarterId);
         AnnualReportDTO annualReport = createAnnualReport(acbId, year);
+        String activitiesOutcomesSummary = "summary";
         String prioritizedElementSummary = "test";
         String reactiveSummary = "test";
         String transparencyDisclosureSummary = "test";
         QuarterlyReportDTO toCreate = new QuarterlyReportDTO();
         toCreate.setAnnualReport(annualReport);
         toCreate.setQuarter(quarter);
+        toCreate.setActivitiesOutcomesSummary(activitiesOutcomesSummary);
         toCreate.setPrioritizedElementSummary(prioritizedElementSummary);
         toCreate.setReactiveSummary(reactiveSummary);
         toCreate.setTransparencyDisclosureSummary(transparencyDisclosureSummary);
@@ -556,6 +584,7 @@ public class QuarterlyReportManagerTest extends TestCase {
         assertNotNull(created);
         assertNotNull(created.getId());
         assertTrue(created.getId() > 0);
+        assertEquals(activitiesOutcomesSummary, created.getActivitiesOutcomesSummary());
         assertEquals(prioritizedElementSummary, created.getPrioritizedElementSummary());
         assertEquals(reactiveSummary, created.getReactiveSummary());
         assertEquals(transparencyDisclosureSummary, created.getTransparencyDisclosureSummary());

@@ -44,6 +44,9 @@ public class QuarterlyReportEntity {
     @JoinColumn(name = "quarter_id", insertable = false, updatable = false)
     private QuarterEntity quarter;
 
+    @Column(name = "activities_and_outcomes_summary")
+    private String activitiesOutcomesSummary;
+
     @Column(name = "reactive_summary")
     private String reactiveSummary;
 
@@ -95,6 +98,14 @@ public class QuarterlyReportEntity {
 
     public QuarterEntity getQuarter() {
         return quarter;
+    }
+
+    public String getActivitiesOutcomesSummary() {
+        return activitiesOutcomesSummary;
+    }
+
+    public void setActivitiesOutcomesSummary(final String activitiesOutcomesSummary) {
+        this.activitiesOutcomesSummary = activitiesOutcomesSummary;
     }
 
     public String getReactiveSummary() {

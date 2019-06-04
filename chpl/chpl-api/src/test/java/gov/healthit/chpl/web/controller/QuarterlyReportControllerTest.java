@@ -111,16 +111,18 @@ public class QuarterlyReportControllerTest {
         Long acbId = -1L;
         Integer year = 2019;
         String quarter = "Q1";
+        String activities = "activities and outcomes";
         String pri = "prioritized element summary";
         String react = "reactive summary";
         String trans = "transparency disclosure summary";
 
-        QuarterlyReport created = createReport(acbId, year, quarter, pri, react, trans);
+        QuarterlyReport created = createReport(acbId, year, quarter, activities, pri, react, trans);
         assertNotNull(created);
         assertNotNull(created.getAcb());
         assertEquals(acbId, created.getAcb().getId());
         assertEquals(year, created.getYear());
         assertEquals(quarter, created.getQuarter());
+        assertEquals(activities, created.getSurveillanceActivitiesAndOutcomes());
         assertEquals(pri, created.getPrioritizedElementSummary());
         assertEquals(react, created.getReactiveSummary());
         assertEquals(trans, created.getTransparencyDisclosureSummary());
@@ -134,7 +136,7 @@ public class QuarterlyReportControllerTest {
     public void createReport_allowsNullFields()
             throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        QuarterlyReport created = createReport(-1L, 2019, "Q1", null, null, null);
+        QuarterlyReport created = createReport(-1L, 2019, "Q1", null, null, null, null);
         assertNotNull(created);
         assertNotNull(created.getId());
         assertTrue(created.getId() > 0);
@@ -151,16 +153,18 @@ public class QuarterlyReportControllerTest {
         Long acbId = -1L;
         Integer year = 2019;
         String quarter = "Q1";
+        String activities = "activities and outcomes";
         String pri = "prioritized element summary";
         String react = "reactive summary";
         String trans = "transparency disclosure summary";
 
-        QuarterlyReport created = createReport(acbId, year, quarter, pri, react, trans);
+        QuarterlyReport created = createReport(acbId, year, quarter, activities, pri, react, trans);
         assertNotNull(created);
         assertNotNull(created.getAcb());
         assertEquals(acbId, created.getAcb().getId());
         assertEquals(year, created.getYear());
         assertEquals(quarter, created.getQuarter());
+        assertEquals(activities, created.getSurveillanceActivitiesAndOutcomes());
         assertEquals(pri, created.getPrioritizedElementSummary());
         assertEquals(react, created.getReactiveSummary());
         assertEquals(trans, created.getTransparencyDisclosureSummary());
@@ -176,16 +180,18 @@ public class QuarterlyReportControllerTest {
         Long acbId = -1L;
         Integer year = 2019;
         String quarter = "Q1";
+        String activities = "activities and outcomes";
         String pri = "prioritized element summary";
         String react = "reactive summary";
         String trans = "transparency disclosure summary";
 
-        QuarterlyReport created = createReport(null, year, quarter, pri, react, trans);
+        QuarterlyReport created = createReport(null, year, quarter, activities, pri, react, trans);
         assertNotNull(created);
         assertNotNull(created.getAcb());
         assertEquals(acbId, created.getAcb().getId());
         assertEquals(year, created.getYear());
         assertEquals(quarter, created.getQuarter());
+        assertEquals(activities, created.getSurveillanceActivitiesAndOutcomes());
         assertEquals(pri, created.getPrioritizedElementSummary());
         assertEquals(react, created.getReactiveSummary());
         assertEquals(trans, created.getTransparencyDisclosureSummary());
@@ -198,7 +204,7 @@ public class QuarterlyReportControllerTest {
     @Test(expected = AccessDeniedException.class)
     public void createReportAsAcbUserNotAllowedAcb() throws EntityCreationException, InvalidArgumentsException {
         SecurityContextHolder.getContext().setAuthentication(acbUser);
-        createReport(-2L, 2019, "Q1", "", "", "");
+        createReport(-2L, 2019, "Q1", "", "", "", "");
     }
 
     @Transactional
@@ -206,7 +212,7 @@ public class QuarterlyReportControllerTest {
     @Test(expected = InvalidArgumentsException.class)
     public void createReport_MissingQuarter() throws EntityCreationException, InvalidArgumentsException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        createReport(-1L, 2019, null, "", "", "");
+        createReport(-1L, 2019, null, "", "", "", "");
     }
 
     @Transactional
@@ -214,7 +220,7 @@ public class QuarterlyReportControllerTest {
     @Test(expected = InvalidArgumentsException.class)
     public void createReport_MissingYear() throws EntityCreationException, InvalidArgumentsException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        createReport(-1L, null, "Q1", "", "", "");
+        createReport(-1L, null, "Q1", "", "", "", "");
     }
 
     @Transactional
@@ -222,7 +228,28 @@ public class QuarterlyReportControllerTest {
     @Test(expected = InvalidArgumentsException.class)
     public void createReport_MissingAcb() throws EntityCreationException, InvalidArgumentsException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        createReport(null, 2019, "Q1", "", "", "");
+        createReport(null, 2019, "Q1", "", "", "", "");
+    }
+
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void updateReport_activitiesAndOutcomes()
+            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        String oldActivities = "old activities";
+        String newActivities = "new activities!";
+
+        QuarterlyReport created = createReport(-1L, 2019, "Q1", oldActivities, "", "", "");
+        assertNotNull(created);
+        assertNotNull(created.getId());
+        assertTrue(created.getId() > 0);
+        assertEquals(oldActivities, created.getSurveillanceActivitiesAndOutcomes());
+        created.setSurveillanceActivitiesAndOutcomes(newActivities);
+        QuarterlyReport updated = reportController.updateQuarterlyReport(created);
+        assertNotNull(updated);
+        assertEquals(created.getId(), updated.getId());
+        assertEquals(newActivities, updated.getSurveillanceActivitiesAndOutcomes());
     }
 
     @Transactional
@@ -234,7 +261,7 @@ public class QuarterlyReportControllerTest {
         String oldTrans = "old summary";
         String newTrans = "new summary!";
 
-        QuarterlyReport created = createReport(-1L, 2019, "Q1", "", "", oldTrans);
+        QuarterlyReport created = createReport(-1L, 2019, "Q1", "", "", "", oldTrans);
         assertNotNull(created);
         assertNotNull(created.getId());
         assertTrue(created.getId() > 0);
@@ -255,7 +282,7 @@ public class QuarterlyReportControllerTest {
         String oldReact = "old summary";
         String newReact = "new summary!";
 
-        QuarterlyReport created = createReport(-1L, 2019, "Q1", "", oldReact, "");
+        QuarterlyReport created = createReport(-1L, 2019, "Q1", "", "", oldReact, "");
         assertNotNull(created);
         assertNotNull(created.getId());
         assertTrue(created.getId() > 0);
@@ -276,7 +303,7 @@ public class QuarterlyReportControllerTest {
         String oldPri = "old pri";
         String newPri = "new pri!";
 
-        QuarterlyReport created = createReport(-1L, 2019, "Q1", oldPri, "", "");
+        QuarterlyReport created = createReport(-1L, 2019, "Q1", "", oldPri, "", "");
         assertNotNull(created);
         assertNotNull(created.getId());
         assertTrue(created.getId() > 0);
@@ -294,7 +321,7 @@ public class QuarterlyReportControllerTest {
     public void updateReport_allowsNullFields()
             throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        QuarterlyReport created = createReport(-1L, 2019, "Q1", "test", "test", "test");
+        QuarterlyReport created = createReport(-1L, 2019, "Q1", "test", "test", "test", "test");
         assertNotNull(created);
         assertNotNull(created.getId());
         assertTrue(created.getId() > 0);
@@ -315,7 +342,7 @@ public class QuarterlyReportControllerTest {
     public void deleteReport()
             throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        QuarterlyReport created = createReport(-1L, 2019, "Q1", "test", "test", "test");
+        QuarterlyReport created = createReport(-1L, 2019, "Q1", "test", "test", "test", "test");
         assertNotNull(created);
         assertNotNull(created.getId());
         assertTrue(created.getId() > 0);
@@ -334,13 +361,14 @@ public class QuarterlyReportControllerTest {
     }
 
     private QuarterlyReport createReport(Long acbId, Integer year, String quarter, 
-            String pri, String react, String trans) throws EntityCreationException, InvalidArgumentsException {
+            String activities, String pri, String react, String trans) throws EntityCreationException, InvalidArgumentsException {
         QuarterlyReport toCreate = new QuarterlyReport();
         CertificationBody acb = new CertificationBody();
         acb.setId(acbId);
         toCreate.setAcb(acb);
         toCreate.setYear(year);
         toCreate.setQuarter(quarter);
+        toCreate.setSurveillanceActivitiesAndOutcomes(activities);
         toCreate.setPrioritizedElementSummary(pri);
         toCreate.setReactiveSummary(react);
         toCreate.setTransparencyDisclosureSummary(trans);
