@@ -115,11 +115,6 @@ public class ProductVersionManagerImpl extends SecuredManager implements Product
                     + dev.getName() + " cannot be determined.";
             LOGGER.error(msg);
             throw new EntityCreationException(msg);
-        } else if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-            String msg = "The version " + dto.getVersion() + " cannot be created since the developer " + dev.getName()
-                    + " has a status of " + currDevStatus.getStatus().getStatusName();
-            LOGGER.error(msg);
-            throw new EntityCreationException(msg);
         }
 
         ProductVersionDTO created = versionDao.create(dto);
