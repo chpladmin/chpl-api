@@ -89,7 +89,7 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
                         toCreate.getAnnualReport().getAcb().getId(),
                         toCreate.getAnnualReport().getYear());
         if (existingQuarterlyReport != null) {
-            throw new EntityCreationException("report.quarterlySurveillance.exists");
+            throw new EntityCreationException(msgUtil.getMessage("report.quarterlySurveillance.exists"));
         }
 
         QuarterlyReportDTO created = quarterlyDao.create(toCreate);

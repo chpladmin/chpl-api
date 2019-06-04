@@ -191,6 +191,10 @@ public class SurveillanceReportController {
     @RequestMapping(value = "/export/quarterly/{quarterlyReportId}", method = RequestMethod.GET)
     public void exportQuarterlyReport(@PathVariable("quarterlyReportId") final Long quarterlyReportId,
             final HttpServletResponse response) throws EntityRetrievalException, IOException {
+        if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
+            throw new NotImplementedException();
+        }
+
         //create the excel workbook object
         Workbook reportXlsx = reportManager.exportQuarterlyReport(quarterlyReportId);
 
