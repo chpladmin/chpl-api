@@ -53,5 +53,10 @@ public enum ActivityCategory implements Serializable {
     /**
      * An ATL was changed.
      */
-    TESTING_LAB;
+    TESTING_LAB,
+
+    /**
+     * A user was changed.
+     */
+    USER_MAINTENANCE;
 }

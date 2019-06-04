@@ -48,6 +48,7 @@ public class Permissions {
     public static final String SECURED_USER = "SECURED_USER";
     public static final String TESTING_LAB = "TESTING_LAB";
     public static final String FILTER = "FILTER";
+    public static final String ACTIVITY_METADATA = "ACTIVTY_METADATA";
 
     private Map<String, DomainPermissions> domainPermissions = new HashMap<String, DomainPermissions>();
 
