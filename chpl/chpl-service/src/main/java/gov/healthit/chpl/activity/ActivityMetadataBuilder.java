@@ -1,11 +1,16 @@
 package gov.healthit.chpl.activity;
 
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
+import gov.healthit.chpl.domain.activity.AnnouncementActivityMetadata;
 import gov.healthit.chpl.domain.activity.CertificationBodyActivityMetadata;
+import gov.healthit.chpl.domain.activity.CorrectiveActionPlanActivityMetadata;
 import gov.healthit.chpl.domain.activity.DeveloperActivityMetadata;
 import gov.healthit.chpl.domain.activity.ListingActivityMetadata;
+import gov.healthit.chpl.domain.activity.PendingListingActivityMetadata;
+import gov.healthit.chpl.domain.activity.PendingSurveillanceActivityMetadata;
 import gov.healthit.chpl.domain.activity.ProductActivityMetadata;
 import gov.healthit.chpl.domain.activity.TestingLabActivityMetadata;
+import gov.healthit.chpl.domain.activity.UserMaintenanceActivityMetadata;
 import gov.healthit.chpl.domain.activity.VersionActivityMetadata;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.dto.ActivityDTO;
@@ -43,6 +48,7 @@ public abstract class ActivityMetadataBuilder {
         metadata.setObjectId(dto.getActivityObjectId());
         metadata.setConcept(dto.getConcept());
         metadata.setResponsibleUser(dto.getUser() == null ? null : new User(dto.getUser()));
+        metadata.setDescription(dto.getDescription());
     }
 
     private ActivityMetadata createMetadataObject(final ActivityDTO dto) {
@@ -65,6 +71,21 @@ public abstract class ActivityMetadataBuilder {
             break;
         case TESTING_LAB:
             metadata = new TestingLabActivityMetadata();
+            break;
+        case USER:
+            metadata = new UserMaintenanceActivityMetadata();
+            break;
+        case ANNOUNCEMENT:
+            metadata = new AnnouncementActivityMetadata();
+            break;
+        case PENDING_CERTIFIED_PRODUCT:
+            metadata = new PendingListingActivityMetadata();
+            break;
+        case CORRECTIVE_ACTION_PLAN:
+            metadata = new CorrectiveActionPlanActivityMetadata();
+            break;
+        case PENDING_SURVEILLANCE:
+            metadata = new PendingSurveillanceActivityMetadata();
             break;
         default:
             break;

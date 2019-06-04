@@ -3,6 +3,6 @@
 _Date TBD_
 
 ### New Features
-* Add endpoint to retrieve all of the FF4j feature flags
+* Add endpoints to provide activity metadata for users, announcements, pending listings, corrective action plans, and pending surveillances
 
 ---

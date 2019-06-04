@@ -120,7 +120,7 @@ public class FilterDAOImpl extends BaseDAOImpl implements FilterDAO {
 
         Query query = entityManager.createQuery(
                 "FROM FilterEntity f " + "JOIN FETCH f.filterType " + "JOIN FETCH f.user u "
-                        + "JOIN FETCH u.permission " + "WHERE f.deleted = false " + "AND f.id = :entityid",
+                        + "JOIN FETCH u.permission p " + "WHERE f.deleted = false " + "AND f.id = :entityid",
                 FilterEntity.class);
         query.setParameter("entityid", id);
         List<FilterEntity> result = query.getResultList();

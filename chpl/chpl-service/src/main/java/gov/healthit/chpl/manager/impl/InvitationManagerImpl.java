@@ -1,26 +1,23 @@
 package gov.healthit.chpl.manager.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.auth.InvitationDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.dao.auth.UserPermissionDAO;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.domain.auth.CreateUserRequest;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -28,11 +25,13 @@ import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.auth.InvitationDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserInvitationDTO;
+import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.InvitationManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.manager.auth.UserManager;
@@ -59,6 +58,9 @@ public class InvitationManagerImpl extends SecuredManager implements InvitationM
 
     @Autowired
     private UserPermissionsManager userPermissionsManager;
+
+    @Autowired
+    private ActivityManager activityManager;
 
     @Autowired
     private ResourcePermissions resourcePermissions;
@@ -216,6 +218,8 @@ public class InvitationManagerImpl extends SecuredManager implements InvitationM
         SecurityContextHolder.getContext().setAuthentication(authenticator);
 
         try {
+            UserDTO origUser = userDao.getById(invitation.getCreatedUserId());
+
             // set the user signature date
             UserDTO user = userDao.getById(invitation.getCreatedUserId());
             if (user == null) {
@@ -226,6 +230,15 @@ public class InvitationManagerImpl extends SecuredManager implements InvitationM
             user.setSignatureDate(new Date());
             userDao.update(user);
             invitationDao.delete(invitation.getId());
+
+            String activityDescription = "User " + user.getSubjectName() + " was confirmed.";
+            try {
+                activityManager.addActivity(ActivityConcept.USER, user.getId(), activityDescription, origUser, user,
+                        user.getId());
+            } catch (JsonProcessingException | EntityCreationException | EntityRetrievalException e) {
+                LOGGER.error("Error creating user confirmation activity.  UserId: " + user.getId(), e);
+            }
+
             return user;
         } finally {
             SecurityContextHolder.getContext().setAuthentication(null);
@@ -246,8 +259,8 @@ public class InvitationManagerImpl extends SecuredManager implements InvitationM
 
         // have to give temporary permission to see all ACBs and ATLs
         // because the logged in user wouldn't already have permission on them
-        Authentication authenticator =
-                AuthUtil.getInvitedUserAuthenticator(userInvitation.getInvitation().getLastModifiedUserId());
+        Authentication authenticator = AuthUtil
+                .getInvitedUserAuthenticator(userInvitation.getInvitation().getLastModifiedUserId());
         SecurityContextHolder.getContext().setAuthentication(authenticator);
 
         handleInvitation(userInvitation.getInvitation(), userInvitation.getUser());
@@ -286,7 +299,8 @@ public class InvitationManagerImpl extends SecuredManager implements InvitationM
             if (userAcb == null) {
                 throw new InvalidArgumentsException("Could not find ACB with id " + invitation.getPermissionObjectId());
             }
-        } else if (invitation.getPermission() != null && invitation.getPermission().getAuthority().equals(Authority.ROLE_ATL)
+        } else if (invitation.getPermission() != null
+                && invitation.getPermission().getAuthority().equals(Authority.ROLE_ATL)
                 && invitation.getPermissionObjectId() != null) {
             userAtl = resourcePermissions.getAtlIfPermissionById(invitation.getPermissionObjectId());
             if (userAtl == null) {
