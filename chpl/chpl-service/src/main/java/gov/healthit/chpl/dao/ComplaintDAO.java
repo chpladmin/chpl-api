@@ -15,7 +15,7 @@ public interface ComplaintDAO {
 
     ComplaintDTO getComplaint(Long complaintId) throws EntityRetrievalException;
 
-    ComplaintDTO create(ComplaintDTO complaintDTO);
+    ComplaintDTO create(ComplaintDTO complaintDTO) throws EntityRetrievalException;
 
     ComplaintDTO update(ComplaintDTO complaintDTO) throws EntityRetrievalException;
 

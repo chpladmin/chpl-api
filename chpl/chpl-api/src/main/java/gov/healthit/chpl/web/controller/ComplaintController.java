@@ -50,7 +50,7 @@ public class ComplaintController {
     @ApiOperation(value = "Save complaint for use in Surveillance Quarterly Report.",
             notes = "")
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-    public @ResponseBody ComplaintDTO create(@RequestBody final ComplaintDTO complaint) {
+    public @ResponseBody ComplaintDTO create(@RequestBody final ComplaintDTO complaint) throws EntityRetrievalException {
         if (ff4j.check(FeatureList.COMPLAINTS)) {
             ComplaintDTO dto = complaintManager.create(complaint);
             return dto;

@@ -14,7 +14,7 @@ public interface ComplaintManager {
 
     List<ComplaintDTO> getAllComplaints();
 
-    ComplaintDTO create(ComplaintDTO complaintDTO);
+    ComplaintDTO create(ComplaintDTO complaintDTO) throws EntityRetrievalException;
 
     ComplaintDTO update(ComplaintDTO complaintDTO) throws EntityRetrievalException;
 

@@ -21,6 +21,7 @@ import gov.healthit.chpl.manager.ComplaintManager;
 
 @Component
 public class ComplaintManagerImpl extends SecuredManager implements ComplaintManager {
+    private static final String OPEN_STATUS = "Open";
     private ComplaintDAO complaintDAO;
 
     @Autowired
@@ -62,7 +63,8 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
             + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).CREATE, #complaintDTO)")
-    public ComplaintDTO create(final ComplaintDTO complaintDTO) {
+    public ComplaintDTO create(final ComplaintDTO complaintDTO) throws EntityRetrievalException {
+        complaintDTO.setComplaintStatusType(getComplaintStatusType(OPEN_STATUS));
         return complaintDAO.create(complaintDTO);
     }
 
@@ -83,5 +85,14 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
         if (dto != null) {
             complaintDAO.delete(dto);
         }
+    }
+
+    private ComplaintStatusTypeDTO getComplaintStatusType(String name) {
+        for (ComplaintStatusTypeDTO dto : complaintDAO.getComplaintStatusTypes()) {
+            if (dto.getName().equals(name)) {
+                return dto;
+            }
+        }
+        return null;
     }
 }

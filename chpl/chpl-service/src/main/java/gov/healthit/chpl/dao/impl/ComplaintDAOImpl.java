@@ -73,14 +73,26 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
     }
 
     @Override
-    public ComplaintDTO create(ComplaintDTO complaintDTO) {
+    public ComplaintDTO create(ComplaintDTO complaintDTO) throws EntityRetrievalException {
         ComplaintEntity entity = new ComplaintEntity();
-        entity.getCertificationBody().setId(complaintDTO.getCertificationBody().getId());
-        entity.getCertificationBody().setName(complaintDTO.getCertificationBody().getName());
-        entity.getComplaintType().setId(complaintDTO.getComplaintType().getId());
-        entity.getComplaintType().setName(complaintDTO.getComplaintType().getName());
-        entity.getComplaintStatusType().setId(complaintDTO.getComplaintStatusType().getId());
-        entity.getComplaintStatusType().setName(complaintDTO.getComplaintStatusType().getName());
+
+        if (complaintDTO.getCertificationBody() == null) {
+            entity.setCertificationBody(null);
+        } else {
+            entity.setCertificationBody(getAcbEntityById(complaintDTO.getCertificationBody().getId()));
+        }
+        if (complaintDTO.getComplaintStatusType() == null) {
+            entity.setComplaintStatusType(null);
+        } else {
+            entity.setComplaintStatusType(
+                    getComplaintStatusTypeEntityById(complaintDTO.getComplaintStatusType().getId()));
+        }
+        if (complaintDTO.getComplaintType() == null) {
+            entity.setComplaintType(null);
+        } else {
+            entity.setComplaintType(getComplaintTypeEntityById(complaintDTO.getComplaintType().getId()));
+        }
+
         entity.setOncComplaintId(complaintDTO.getOncComplaintId());
         entity.setReceivedDate(complaintDTO.getReceivedDate());
         entity.setSummary(complaintDTO.getSummary());
@@ -88,7 +100,11 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
         entity.setComplainantContacted(complaintDTO.isComplainantContacted());
         entity.setDeveloperContacted(complaintDTO.isDeveloperContacted());
         entity.setOncAtlContacted(complaintDTO.isOncAtlContacted());
-        entity.setClosedDate(complaintDTO.getClosedDate());
+        entity.setClosedDate(null);
+
+        entity.setDeleted(false);
+        entity.setLastModifiedUser(AuthUtil.getAuditId());
+
         entity.setDeleted(false);
         entity.setLastModifiedUser(AuthUtil.getAuditId());
         entity.setCreationDate(new Date());
