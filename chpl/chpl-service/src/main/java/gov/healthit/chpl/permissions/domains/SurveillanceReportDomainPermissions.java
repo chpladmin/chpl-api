@@ -52,6 +52,12 @@ public class SurveillanceReportDomainPermissions extends DomainPermissions {
             @Qualifier("surveillanceReportExportQuarterlyReportActionPermissions")
             final ExportQuarterlyReportActionPermissions exportQuarterlyReportActionPermissions) {
 
+        getActionPermissions().put(GET_ANNUAL, getAnnualReportActionPermissions);
+        getActionPermissions().put(CREATE_ANNUAL, createAnnualReportActionPermissions);
+        getActionPermissions().put(UPDATE_ANNUAL, updateAnnualReportActionPermissions);
+        getActionPermissions().put(DELETE_ANNUAL, deleteAnnualReportActionPermissions);
+        getActionPermissions().put(EXPORT_ANNUAL, exportAnnualReportActionPermissions);
+
         getActionPermissions().put(GET_QUARTERLY, getQuarterlyReportActionPermissions);
         getActionPermissions().put(CREATE_QUARTERLY, createQuarterlyReportActionPermissions);
         getActionPermissions().put(UPDATE_QUARTERLY, updateQuarterlyReportActionPermissions);

@@ -1,6 +1,5 @@
 package gov.healthit.chpl.web.controller;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -27,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.SurveillanceNonconformityDocument;
+import gov.healthit.chpl.domain.surveillance.report.AnnualReport;
 import gov.healthit.chpl.domain.surveillance.report.QuarterlyReport;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
@@ -61,6 +60,133 @@ public class SurveillanceReportController {
     private FileUtils fileUtils;
     @Autowired
     private FF4j ff4j;
+
+    @ApiOperation(value = "Get all annual surveillance reports this user has access to.",
+            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
+                    + "authority on the ACB associated with the report.")
+    @RequestMapping(value = "/annual", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<AnnualReport> getAllAnnualReports() throws AccessDeniedException {
+        if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
+            throw new NotImplementedException();
+        }
+        List<AnnualReportDTO> allReports = reportManager.getAnnualReports();
+        List<AnnualReport> response = new ArrayList<AnnualReport>();
+        for (AnnualReportDTO currReport : allReports) {
+            response.add(new AnnualReport(currReport));
+        }
+        return response;
+    }
+
+    @ApiOperation(value = "Get a specific annual surveillance report by ID.",
+            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
+                    + "authority on the ACB associated with the report.")
+    @RequestMapping(value = "/annual/{annualReportId}",
+        method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody AnnualReport getAnnualReport(@PathVariable final Long annualReportId)
+            throws AccessDeniedException, EntityRetrievalException {
+        if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
+            throw new NotImplementedException();
+        }
+        AnnualReportDTO reportDto = reportManager.getAnnualReport(annualReportId);
+        return new AnnualReport(reportDto);
+    }
+
+    @ApiOperation(value = "Create a new annual surveillance report.",
+            notes = "An effort will be made to determine which ACB the report belongs to "
+                    + "if one is not provided in the request."
+                    + "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
+                    + "authority on the ACB associated with the report.")
+    @RequestMapping(value = "/annual", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+    public synchronized AnnualReport createAnnualReport(
+        @RequestBody(required = true) final AnnualReport createRequest)
+                throws AccessDeniedException, InvalidArgumentsException, EntityCreationException {
+        if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
+            throw new NotImplementedException();
+        }
+        CertificationBody acb = determineAcb(createRequest.getAcb());
+        createRequest.setAcb(acb);
+        if (createRequest.getAcb() == null || createRequest.getAcb().getId() == null) {
+            throw new InvalidArgumentsException(msgUtil.getMessage("report.annualSurveillance.missingAcb"));
+        }
+
+        //create the report
+        AnnualReportDTO annualReport = new AnnualReportDTO();
+        CertificationBodyDTO associatedAcb = new CertificationBodyDTO();
+        associatedAcb.setId(createRequest.getAcb().getId());
+        annualReport.setAcb(associatedAcb);
+        annualReport.setYear(createRequest.getYear());
+        annualReport.setFindingsSummary(createRequest.getPriorityChangesFromFindingsSummary());
+        annualReport.setObstacleSummary(createRequest.getObstacleSummary());
+        AnnualReportDTO createdReport = reportManager.createAnnualReport(annualReport);
+        return new AnnualReport(createdReport);
+    }
+
+    @ApiOperation(value = "Update an existing annual surveillance report.",
+            notes = "The associated ACB and year of the report cannot be changed. "
+            + "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority "
+            + "on the ACB associated with the report.")
+    @RequestMapping(value = "/annual", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
+    public synchronized AnnualReport updateAnnualReport(
+        @RequestBody(required = true) final AnnualReport updateRequest)
+    throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException {
+        if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
+            throw new NotImplementedException();
+        }
+        if (updateRequest.getId() == null) {
+            throw new InvalidArgumentsException(msgUtil.getMessage("report.annualSurveillance.missingReportId"));
+        }
+        AnnualReportDTO reportToUpdate = reportManager.getAnnualReport(updateRequest.getId());
+        //above line throws entity retrieval exception if bad id
+        reportToUpdate.setFindingsSummary(updateRequest.getPriorityChangesFromFindingsSummary());
+        reportToUpdate.setObstacleSummary(updateRequest.getObstacleSummary());
+        AnnualReportDTO createdReport = reportManager.updateAnnualReport(reportToUpdate);
+        return new AnnualReport(createdReport);
+    }
+
+    @ApiOperation(value = "Delete an annual report.",
+            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority "
+            + "on the ACB associated with the report.")
+    @RequestMapping(value = "/annual/{annualReportId}", method = RequestMethod.DELETE,
+    produces = "application/json; charset=utf-8")
+    public void deleteAnnualReport(@PathVariable final Long annualReportId)
+            throws EntityRetrievalException {
+        if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
+            throw new NotImplementedException();
+        }
+        reportManager.deleteAnnualReport(annualReportId);
+    }
+
+    @ApiOperation(value = "Download an annaul report as an XLSX file.",
+            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority "
+                    + "on the ACB associated with the report.")
+    @RequestMapping(value = "/export/annual/{annualReportId}", method = RequestMethod.GET)
+    public void exportAnnualReport(@PathVariable("annualReportId") final Long annualReportId,
+            final HttpServletResponse response) throws EntityRetrievalException, IOException {
+        if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
+            throw new NotImplementedException();
+        }
+
+        //create the excel workbook object
+        Workbook reportXlsx = reportManager.exportAnnualReport(annualReportId);
+
+        //create a new file in the download directory
+        AnnualReportDTO report = reportManager.getAnnualReport(annualReportId);
+        String filename = report.getYear() + "-" + report.getAcb().getName() + "-annual-report";
+        File tempFileToStream = File.createTempFile(filename, ".xlsx");
+        //write out the workbook contents to this file
+        OutputStream outputStream = null;
+        try {
+            outputStream = new FileOutputStream(tempFileToStream);
+            reportXlsx.write(outputStream);
+        } catch (final Exception ex) {
+            LOGGER.error("Error writing excel document to file output stream.", ex);
+        } finally {
+            outputStream.flush();
+            outputStream.close();
+        }
+
+        fileUtils.streamFileAsResponse(tempFileToStream, XLSX_MIME_TYPE, response);
+    }
 
     @ApiOperation(value = "Get all quarterly surveillance reports this user has access to.",
             notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
@@ -104,26 +230,8 @@ public class SurveillanceReportController {
         if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
             throw new NotImplementedException();
         }
-        if (createRequest.getAcb() == null || (createRequest.getAcb().getId() == null
-                && StringUtils.isEmpty(createRequest.getAcb().getName()))) {
-            //no acb information was provided - check user permissions to see if
-            //we can determine which ACB the user has access to (this is fine if they have only one)
-            List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
-            if (allowedAcbs != null && allowedAcbs.size() == 1) {
-                CertificationBody acb = new CertificationBody(allowedAcbs.get(0));
-                createRequest.setAcb(acb);
-            }
-        } else if (createRequest.getAcb() != null && createRequest.getAcb().getId() == null
-                && !StringUtils.isEmpty(createRequest.getAcb().getName())) {
-            //just an ACB name was provided - fill in the ACB object if possible
-            List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
-            for (CertificationBodyDTO allowedAcb : allowedAcbs) {
-                if (createRequest.getAcb().getName().equals(allowedAcb.getName())) {
-                    CertificationBody acb = new CertificationBody(allowedAcb);
-                    createRequest.setAcb(acb);
-                }
-            }
-        }
+        CertificationBody acb = determineAcb(createRequest.getAcb());
+        createRequest.setAcb(acb);
 
         if (createRequest.getAcb() == null || createRequest.getAcb().getId() == null) {
             throw new InvalidArgumentsException(msgUtil.getMessage("report.quarterlySurveillance.missingAcb"));
@@ -216,5 +324,28 @@ public class SurveillanceReportController {
         }
 
         fileUtils.streamFileAsResponse(tempFileToStream, XLSX_MIME_TYPE, response);
+    }
+
+    private CertificationBody determineAcb(final CertificationBody requestAcb) {
+        CertificationBody result = requestAcb;
+        if (requestAcb == null || (requestAcb.getId() == null
+                && StringUtils.isEmpty(requestAcb.getName()))) {
+            //no acb information was provided - check user permissions to see if
+            //we can determine which ACB the user has access to (this is fine if they have only one)
+            List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
+            if (allowedAcbs != null && allowedAcbs.size() == 1) {
+                result = new CertificationBody(allowedAcbs.get(0));
+            }
+        } else if (requestAcb != null && requestAcb.getId() == null
+                && !StringUtils.isEmpty(requestAcb.getName())) {
+            //just an ACB name was provided - fill in the ACB object if possible
+            List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
+            for (CertificationBodyDTO allowedAcb : allowedAcbs) {
+                if (requestAcb.getName().equals(allowedAcb.getName())) {
+                    result = new CertificationBody(allowedAcb);
+                }
+            }
+        }
+        return result;
     }
 }
