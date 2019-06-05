@@ -548,17 +548,47 @@ public class QuarterlyReportManagerTest extends TestCase {
         QuarterlyReportDTO created = reportManager.createQuarterlyReport(toCreate);
 
         Workbook workbook = reportManager.exportQuarterlyReport(created.getId());
-        OutputStream outputStream = null;
-        try {
-            outputStream = new FileOutputStream("test.xlsx");
-            workbook.write(outputStream);
-        } catch(final Exception ex) {
-            fail(ex.getMessage());
-        } finally {
-            outputStream.flush();
-            outputStream.close();
-        }
+        assertNotNull(workbook);
 
+        //uncomment to write report
+//        OutputStream outputStream = null;
+//        try {
+//            outputStream = new FileOutputStream("test.xlsx");
+//            workbook.write(outputStream);
+//        } catch(final Exception ex) {
+//            fail(ex.getMessage());
+//        } finally {
+//            outputStream.flush();
+//            outputStream.close();
+//        }
+
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    @Test(expected = AccessDeniedException.class)
+    @Rollback(true)
+    @Transactional
+    public void writeQuarterlyReportAsExcelWorkbook_AcbNotAllowed()
+            throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException,
+            IOException {
+        SecurityContextHolder.getContext().setAuthentication(acbUser);
+        AnnualReportDTO annualReport = new AnnualReportDTO();
+        annualReport.setYear(2019);
+        CertificationBodyDTO acb = new CertificationBodyDTO();
+        acb.setId(-4L);
+        annualReport.setAcb(acb);
+        QuarterDTO quarter = new QuarterDTO();
+        quarter.setName("Q1");
+        QuarterlyReportDTO toCreate = new QuarterlyReportDTO();
+        toCreate.setAnnualReport(annualReport);
+        toCreate.setQuarter(quarter);
+        toCreate.setActivitiesOutcomesSummary("In order to meet its obligation to conduct reactive surveillance, the ONC-ACB undertook the following activities and implemented the following measures to ensure that it was able to systematically obtain, synthesize and act on all facts and circumstances that would cause a reasonable person to question the ongoing compliance of any certified Complete EHR or certified Health IT Module. In order to meet its obligation to conduct reactive surveillance, the ONC-ACB undertook the following activities and implemented the following measures to ensure that it was able to systematically obtain, synthesize and act on all facts and circumstances that would cause a reasonable person to question the ongoing compliance of any certified Complete EHR or certified Health IT Module. ");
+        toCreate.setReactiveSummary("test reactive element summary");
+        toCreate.setPrioritizedElementSummary("test prioritized element summary");
+        toCreate.setTransparencyDisclosureSummary("test transparency and disclosure summary");
+        QuarterlyReportDTO created = reportManager.createQuarterlyReport(toCreate);
+
+        reportManager.exportQuarterlyReport(created.getId());
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
