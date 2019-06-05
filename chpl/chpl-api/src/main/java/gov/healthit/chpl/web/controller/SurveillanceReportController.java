@@ -201,12 +201,12 @@ public class SurveillanceReportController {
         //create a new file in the download directory
         QuarterlyReportDTO report = reportManager.getQuarterlyReport(quarterlyReportId);
         String filename = report.getQuarter().getName() + "-" + report.getAnnualReport().getYear()
-                    + "-" + report.getAnnualReport().getAcb().getName() + "-quarterly-report.xlsx";
-        File downloadFile = fileUtils.createDownloadFile(filename);
+                    + "-" + report.getAnnualReport().getAcb().getName() + "-quarterly-report";
+        File tempFileToStream = File.createTempFile(filename, ".xlsx");
         //write out the workbook contents to this file
         OutputStream outputStream = null;
         try {
-            outputStream = new FileOutputStream(downloadFile);
+            outputStream = new FileOutputStream(tempFileToStream);
             reportXlsx.write(outputStream);
         } catch (final Exception ex) {
             LOGGER.error("Error writing excel document to file output stream.", ex);
@@ -215,6 +215,6 @@ public class SurveillanceReportController {
             outputStream.close();
         }
 
-        fileUtils.streamFileAsResponse(downloadFile, XLSX_MIME_TYPE, response);
+        fileUtils.streamFileAsResponse(tempFileToStream, XLSX_MIME_TYPE, response);
     }
 }
