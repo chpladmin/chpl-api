@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import java.util.ArrayList;
 import java.util.Date;
 
-import org.ff4j.FF4j;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +22,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
@@ -92,8 +90,6 @@ public class DeveloperStatusTest {
     private DeveloperUpdateValidator updateValidator;
     @Spy
     private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
-    @Spy
-    private FF4j ff4j;
 
     @Mock
     private ResourcePermissions permissionChecker;
@@ -113,7 +109,7 @@ public class DeveloperStatusTest {
         MockitoAnnotations.initMocks(this);
         developerManager = new DeveloperManagerImpl(devDao, productManager, acbManager, cpManager,
                 cpdManager, certificationBodyDao, certifiedProductDao, chplProductNumberUtil, activityManager,
-                creationValidator, updateValidator, msgUtil, permissionChecker, ff4j);
+                creationValidator, updateValidator, msgUtil, permissionChecker);
 
         Mockito.when(permissionChecker.getAllAcbsForCurrentUser()).thenReturn(new ArrayList<CertificationBodyDTO>());
         Mockito.when(acbManager.getAll()).thenReturn(new ArrayList<CertificationBodyDTO>());
@@ -122,7 +118,6 @@ public class DeveloperStatusTest {
         Mockito.doReturn(NO_ADMIN_NO_STATUS_CHANGE_ERROR).when(msgUtil)
             .getMessage(ArgumentMatchers.eq("developer.statusChangeNotAllowedWithoutAdmin"),
                     ArgumentMatchers.eq(DeveloperStatusType.UnderCertificationBanByOnc.toString()));
-        Mockito.doReturn(true).when(ff4j).check(FeatureList.BETTER_SPLIT);
     }
 
     @Test
