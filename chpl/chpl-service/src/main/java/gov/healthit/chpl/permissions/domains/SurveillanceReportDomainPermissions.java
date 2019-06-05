@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.permissions.domains.surveillance.report.CreateQuarterlyReportActionPermissions;
 import gov.healthit.chpl.permissions.domains.surveillance.report.DeleteQuarterlyReportActionPermissions;
+import gov.healthit.chpl.permissions.domains.surveillance.report.ExportQuarterlyReportActionPermissions;
 import gov.healthit.chpl.permissions.domains.surveillance.report.GetQuarterlyReportActionPermissions;
 import gov.healthit.chpl.permissions.domains.surveillance.report.UpdateQuarterlyReportActionPermissions;
 
@@ -15,6 +16,7 @@ public class SurveillanceReportDomainPermissions extends DomainPermissions {
     public static final String CREATE_QUARTERLY = "CREATE_QUARTERLY";
     public static final String UPDATE_QUARTERLY = "UPDATE_QUARTERLY";
     public static final String DELETE_QUARTERLY = "DELETE_QUARTERLY";
+    public static final String EXPORT_QUARTERLY = "EXPORT_QUARTERLY";
 
     @Autowired
     public SurveillanceReportDomainPermissions(
@@ -25,12 +27,15 @@ public class SurveillanceReportDomainPermissions extends DomainPermissions {
             @Qualifier("surveillanceReportUpdateQuarterlyReportActionPermissions")
             final UpdateQuarterlyReportActionPermissions updateQuarterlyReportActionPermissions,
             @Qualifier("surveillanceReportDeleteQuarterlyReportActionPermissions")
-            final DeleteQuarterlyReportActionPermissions deleteQuarterlyReportActionPermissions) {
+            final DeleteQuarterlyReportActionPermissions deleteQuarterlyReportActionPermissions,
+            @Qualifier("surveillanceReportExportQuarterlyReportActionPermissions")
+            final ExportQuarterlyReportActionPermissions exportQuarterlyReportActionPermissions) {
 
         getActionPermissions().put(GET_QUARTERLY, getQuarterlyReportActionPermissions);
         getActionPermissions().put(CREATE_QUARTERLY, createQuarterlyReportActionPermissions);
         getActionPermissions().put(UPDATE_QUARTERLY, updateQuarterlyReportActionPermissions);
         getActionPermissions().put(DELETE_QUARTERLY, deleteQuarterlyReportActionPermissions);
+        getActionPermissions().put(EXPORT_QUARTERLY, exportQuarterlyReportActionPermissions);
     }
 
 }

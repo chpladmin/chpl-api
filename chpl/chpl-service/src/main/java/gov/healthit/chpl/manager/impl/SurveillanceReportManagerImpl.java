@@ -137,6 +137,11 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
         return quarterlyDao.getById(id);
     }
 
+    @Override
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).EXPORT_QUARTERLY, "
+            + "#id)")
     public Workbook exportQuarterlyReport(final Long id) throws EntityRetrievalException,
         IOException {
         QuarterlyReportDTO report = getQuarterlyReport(id);
