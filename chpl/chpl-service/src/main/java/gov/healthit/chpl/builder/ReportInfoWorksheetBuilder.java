@@ -22,12 +22,15 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.PropertyTemplate;
 import org.apache.poi.xssf.usermodel.DefaultIndexedColorMap;
 import org.apache.poi.xssf.usermodel.XSSFColor;
+import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTCol;
 
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 
 public class ReportInfoWorksheetBuilder {
-    private static final int NUM_COLUMNS = 4;
+    private static final int MIN_COLUMN = 6;
+    private static final int DEFAULT_MAX_COLUMN = 16384;
 
     private Workbook workbook;
     private Font boldFont, smallFont, boldSmallFont, italicSmallFont, boldItalicSmallFont,
@@ -59,10 +62,19 @@ public class ReportInfoWorksheetBuilder {
             tabColor = new XSSFColor(
                     new java.awt.Color(141, 180, 226), colorMap);
             xssfSheet.setTabColor(tabColor);
+
+            //hide all the columns after E
+            CTCol col = xssfSheet.getCTWorksheet().getColsArray(0).addNewCol();
+            col.setMin(MIN_COLUMN);
+            col.setMax(DEFAULT_MAX_COLUMN); // the last column (1-indexed)
+            col.setHidden(true);
+
+            //TODO: figure out how to hide rows after about 60
         }
 
         //set some styling that applies to the whole sheet
         sheet.setDisplayGridlines(false);
+        sheet.setDisplayRowColHeadings(false);
 
         createHeader(sheet);
         createSectionOne(sheet, report);
