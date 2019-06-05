@@ -47,6 +47,84 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
     @Override
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).CREATE_ANNUAL, #toCreate)")
+    public AnnualReportDTO createAnnualReport(final AnnualReportDTO toCreate)
+    throws EntityCreationException, InvalidArgumentsException {
+        //Annual report has to be associated with a year and an ACB
+
+        if (toCreate == null || toCreate.getYear() == null) {
+            throw new InvalidArgumentsException(msgUtil.getMessage("report.annualSurveillance.missingYear"));
+        } else if (toCreate.getAcb() == null || toCreate.getAcb().getId() == null) {
+            throw new InvalidArgumentsException(msgUtil.getMessage("report.annualSurveillance.missingAcb"));
+        }
+
+        //make sure there's not already an annual report for this acb and year
+        AnnualReportDTO existingAnnualReport =
+                annualDao.getByAcbAndYear(toCreate.getAcb().getId(), toCreate.getYear());
+        if (existingAnnualReport != null) {
+            throw new EntityCreationException(msgUtil.getMessage("report.annualSurveillance.exists"));
+        }
+
+        AnnualReportDTO created = annualDao.create(toCreate);
+        return created;
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).UPDATE_ANNUAL, #toUpdate)")
+    public AnnualReportDTO updateAnnualReport(final AnnualReportDTO toUpdate)
+    throws EntityRetrievalException {
+        AnnualReportDTO updated = annualDao.update(toUpdate);
+        return updated;
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).DELETE_ANNUAL, #id)")
+    public void deleteAnnualReport(final Long id) throws EntityRetrievalException {
+        annualDao.delete(id);
+    }
+
+    /**
+     * Returns all the annual reports the current user has access to.
+     */
+    @Override
+    @Transactional
+    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).GET_ANNUAL, filterObject)")
+    public List<AnnualReportDTO> getAnnualReports() {
+        return annualDao.getAll();
+    }
+
+    /**
+     * Gets the quarterly report by ID if the user has access.
+     */
+    @Override
+    @Transactional
+    @PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).GET_ANNUAL,"
+            + "returnObject)")
+    public AnnualReportDTO getAnnualReport(final Long id) throws EntityRetrievalException {
+        return annualDao.getById(id);
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).EXPORT_ANNUAL, "
+            + "#id)")
+    public Workbook exportAnnualReport(final Long id) throws EntityRetrievalException,
+        IOException {
+        AnnualReportDTO report = getAnnualReport(id);
+        //TODO: build report
+        return null;
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).CREATE_QUARTERLY, #toCreate)")
     public QuarterlyReportDTO createQuarterlyReport(final QuarterlyReportDTO toCreate)
     throws EntityCreationException, InvalidArgumentsException {
