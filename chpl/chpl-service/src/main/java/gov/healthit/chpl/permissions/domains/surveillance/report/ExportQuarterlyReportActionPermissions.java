@@ -26,11 +26,11 @@ public class ExportQuarterlyReportActionPermissions extends ActionPermissions {
         } else if (getResourcePermissions().isUserRoleAdmin()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
-            Long idToDelete = (Long) obj;
-            QuarterlyReportDTO toDelete = null;
+            Long idToExport = (Long) obj;
+            QuarterlyReportDTO toExport = null;
             try {
-                toDelete = quarterlyReportDao.getById(idToDelete);
-                return isAcbValidForCurrentUser(toDelete.getAnnualReport().getAcb().getId());
+                toExport = quarterlyReportDao.getById(idToExport);
+                return isAcbValidForCurrentUser(toExport.getAnnualReport().getAcb().getId());
             } catch (EntityRetrievalException ex) {
                 return false;
             }
