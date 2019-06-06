@@ -23,7 +23,6 @@ public class QuarterlyReportBuilderXlsx {
         createActivitiesAndOutcomesWorksheet(workbook);
         createComplaintsWorksheet(workbook);
         createSurveillanceSummaryWorksheet(workbook);
-        createSurveillanceExperienceWorksheet(workbook);
         return workbook;
     }
 
@@ -37,9 +36,5 @@ public class QuarterlyReportBuilderXlsx {
 
     private void createSurveillanceSummaryWorksheet(final Workbook workbook) {
         workbook.createSheet("Surveillance Summary");
-    }
-
-    private void createSurveillanceExperienceWorksheet(final Workbook workbook) {
-        workbook.createSheet("Surveillance Experience");
     }
 }
