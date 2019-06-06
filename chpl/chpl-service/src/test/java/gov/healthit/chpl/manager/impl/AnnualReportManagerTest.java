@@ -1,6 +1,8 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Workbook;
@@ -325,16 +327,16 @@ public class AnnualReportManagerTest extends TestCase {
         assertNotNull(workbook);
 
         //uncomment to write report
-//        OutputStream outputStream = null;
-//        try {
-//            outputStream = new FileOutputStream("test.xlsx");
-//            workbook.write(outputStream);
-//        } catch(final Exception ex) {
-//            fail(ex.getMessage());
-//        } finally {
-//            outputStream.flush();
-//            outputStream.close();
-//        }
+        OutputStream outputStream = null;
+        try {
+            outputStream = new FileOutputStream("test-annual.xlsx");
+            workbook.write(outputStream);
+        } catch(final Exception ex) {
+            fail(ex.getMessage());
+        } finally {
+            outputStream.flush();
+            outputStream.close();
+        }
 
         SecurityContextHolder.getContext().setAuthentication(null);
     }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.builder.AnnualReportBuilderXlsx;
 import gov.healthit.chpl.builder.QuarterlyReportBuilderXlsx;
 import gov.healthit.chpl.dao.surveillance.report.AnnualReportDAO;
 import gov.healthit.chpl.dao.surveillance.report.QuarterDAO;
@@ -32,16 +33,19 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
     private QuarterDAO quarterDao;
     private ErrorMessageUtil msgUtil;
     private QuarterlyReportBuilderXlsx quarterlyReportBuilder;
+    private AnnualReportBuilderXlsx annualReportBuilder;
 
     @Autowired
     public SurveillanceReportManagerImpl(final QuarterlyReportDAO quarterlyDao,
             final AnnualReportDAO annualDao, final QuarterDAO quarterDao,
-            final ErrorMessageUtil msgUtil, final QuarterlyReportBuilderXlsx quarterlyReportBuilder) {
+            final ErrorMessageUtil msgUtil, final QuarterlyReportBuilderXlsx quarterlyReportBuilder,
+            final AnnualReportBuilderXlsx annualReportBuilder) {
         this.quarterlyDao = quarterlyDao;
         this.annualDao = annualDao;
         this.quarterDao = quarterDao;
         this.msgUtil = msgUtil;
         this.quarterlyReportBuilder = quarterlyReportBuilder;
+        this.annualReportBuilder = annualReportBuilder;
     }
 
     @Override
@@ -115,11 +119,9 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).EXPORT_ANNUAL, "
             + "#id)")
-    public Workbook exportAnnualReport(final Long id) throws EntityRetrievalException,
-        IOException {
+    public Workbook exportAnnualReport(final Long id) throws EntityRetrievalException, IOException {
         AnnualReportDTO report = getAnnualReport(id);
-        //TODO: build report
-        return null;
+        return annualReportBuilder.buildXlsx(report);
     }
 
     @Override

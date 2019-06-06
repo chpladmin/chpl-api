@@ -8,12 +8,6 @@ import java.util.Calendar;
 import org.apache.poi.ss.usermodel.BorderExtent;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Color;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
@@ -22,30 +16,20 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.PropertyTemplate;
 import org.apache.poi.xssf.usermodel.DefaultIndexedColorMap;
 import org.apache.poi.xssf.usermodel.XSSFColor;
-import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTCol;
 
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 
-public class ReportInfoWorksheetBuilder {
+public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
     private static final int MIN_COLUMN = 6;
-    private static final int DEFAULT_MAX_COLUMN = 16384;
 
-    private Workbook workbook;
-    private Font boldFont, smallFont, boldSmallFont, italicSmallFont, boldItalicSmallFont,
-        italicUnderlinedSmallFont;
-    private CellStyle boldStyle, smallStyle, italicSmallStyle, boldItalicSmallStyle,
-        italicUnderlinedSmallStyle, wrappedStyle, sectionNumberingStyle, sectionHeadingStyle,
-        tableHeadingStyle;
     private XSSFColor tabColor;
     private PropertyTemplate pt;
 
     public ReportInfoWorksheetBuilder(final Workbook workbook) {
-        this.workbook = workbook;
+        super(workbook);
         pt = new PropertyTemplate();
-        initializeFonts();
-        initializeStyles();
     }
 
     /**
@@ -85,9 +69,9 @@ public class ReportInfoWorksheetBuilder {
         createSectionSix(sheet, report);
 
         //columns B, C, and D need a certain width to get word wrap right
-        sheet.setColumnWidth(1, 13171);
-        sheet.setColumnWidth(2,  10952);
-        sheet.setColumnWidth(3, 10952);
+        sheet.setColumnWidth(1, getColumnWidth(51));
+        sheet.setColumnWidth(2,  getColumnWidth(42));
+        sheet.setColumnWidth(3, getColumnWidth(42));
 
         //apply the borders after the sheet has been created
         pt.applyBorders(sheet);
@@ -337,88 +321,5 @@ public class ReportInfoWorksheetBuilder {
         row = sheet.createRow(53);
         cell = createCell(row, 1);
         cell.setCellValue("Please log the complaints and any actions to the \"Complaints\" sheet of this workbook.");
-    }
-
-    private Cell createCell(final Row row, final int cellIndex) {
-        Cell cell = row.createCell(cellIndex);
-        cell.setCellStyle(smallStyle);
-        return cell;
-    }
-
-    private void initializeFonts() {
-        boldFont = workbook.createFont();
-        boldFont.setBold(true);
-        boldFont.setFontHeightInPoints((short)12);
-
-        smallFont = workbook.createFont();
-        smallFont.setFontHeightInPoints((short)10);
-
-        boldSmallFont = workbook.createFont();
-        boldSmallFont.setBold(true);
-        boldSmallFont.setFontHeightInPoints((short)10);
-
-        italicSmallFont = workbook.createFont();
-        italicSmallFont.setItalic(true);
-        italicSmallFont.setFontHeightInPoints((short)10);
-
-        boldItalicSmallFont = workbook.createFont();
-        boldItalicSmallFont.setBold(true);
-        boldItalicSmallFont.setItalic(true);
-        boldItalicSmallFont.setFontHeightInPoints((short)10);
-
-        italicUnderlinedSmallFont = workbook.createFont();
-        italicUnderlinedSmallFont.setItalic(true);
-        italicUnderlinedSmallFont.setUnderline(Font.U_SINGLE);
-        italicUnderlinedSmallFont.setFontHeightInPoints((short)10);
-    }
-
-    private void initializeStyles() {
-        boldStyle = workbook.createCellStyle();
-        boldStyle.setFont(boldFont);
-        boldStyle.setFillForegroundColor(IndexedColors.WHITE.index);
-        boldStyle.setFillBackgroundColor(IndexedColors.WHITE.index);
-
-        smallStyle = workbook.createCellStyle();
-        smallStyle.setFont(smallFont);
-        smallStyle.setFillForegroundColor(IndexedColors.WHITE.index);
-        smallStyle.setFillBackgroundColor(IndexedColors.WHITE.index);
-
-        italicSmallStyle = workbook.createCellStyle();
-        italicSmallStyle.setFont(italicSmallFont);
-        italicSmallStyle.setFillForegroundColor(IndexedColors.WHITE.index);
-        italicSmallStyle.setFillBackgroundColor(IndexedColors.WHITE.index);
-
-        wrappedStyle = workbook.createCellStyle();
-        wrappedStyle.setFont(smallFont);
-        wrappedStyle.setWrapText(true);
-        wrappedStyle.setFillForegroundColor(IndexedColors.WHITE.index);
-        wrappedStyle.setFillBackgroundColor(IndexedColors.WHITE.index);
-
-        sectionNumberingStyle = workbook.createCellStyle();
-        sectionNumberingStyle.setAlignment(HorizontalAlignment.RIGHT);
-        sectionNumberingStyle.setFont(boldSmallFont);
-        sectionNumberingStyle.setFillForegroundColor(IndexedColors.WHITE.index);
-        sectionNumberingStyle.setFillBackgroundColor(IndexedColors.WHITE.index);
-
-        sectionHeadingStyle = workbook.createCellStyle();
-        sectionHeadingStyle.setAlignment(HorizontalAlignment.LEFT);
-        sectionHeadingStyle.setFont(boldSmallFont);
-        sectionHeadingStyle.setFillForegroundColor(IndexedColors.WHITE.index);
-        sectionHeadingStyle.setFillBackgroundColor(IndexedColors.WHITE.index);
-
-        boldItalicSmallStyle = workbook.createCellStyle();
-        boldItalicSmallStyle.setFont(boldItalicSmallFont);
-        boldItalicSmallStyle.setFillForegroundColor(IndexedColors.WHITE.index);
-        boldItalicSmallStyle.setFillBackgroundColor(IndexedColors.WHITE.index);
-
-        italicUnderlinedSmallStyle = workbook.createCellStyle();
-        italicUnderlinedSmallStyle.setFont(italicUnderlinedSmallFont);
-        italicUnderlinedSmallStyle.setFillForegroundColor(IndexedColors.WHITE.index);
-        italicUnderlinedSmallStyle.setFillBackgroundColor(IndexedColors.WHITE.index);
-
-        tableHeadingStyle = workbook.createCellStyle();
-        tableHeadingStyle.setFillForegroundColor(IndexedColors.LIGHT_CORNFLOWER_BLUE.index);
-        tableHeadingStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        tableHeadingStyle.setFillBackgroundColor(IndexedColors.LIGHT_CORNFLOWER_BLUE.index);
     }
 }
