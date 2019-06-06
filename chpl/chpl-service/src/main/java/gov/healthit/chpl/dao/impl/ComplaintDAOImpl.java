@@ -172,7 +172,7 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
         List<ComplaintEntity> result = query.getResultList();
 
         if (result.size() > 1) {
-            throw new EntityRetrievalException("Data error. Duplicate filter id in database.");
+            throw new EntityRetrievalException("Data error. Duplicate complaint id in database.");
         } else if (result.size() == 1) {
             entity = result.get(0);
         }
