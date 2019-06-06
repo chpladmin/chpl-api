@@ -17,7 +17,7 @@ public class GetQuarterlyReportActionPermissions extends ActionPermissions {
     public boolean hasAccess(final Object obj) {
         if (!(obj instanceof QuarterlyReportDTO)) {
             return false;
-        } else if (getResourcePermissions().isUserRoleAdmin()) {
+        } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             QuarterlyReportDTO report = (QuarterlyReportDTO) obj;

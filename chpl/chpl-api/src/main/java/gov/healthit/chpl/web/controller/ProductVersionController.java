@@ -3,8 +3,6 @@ package gov.healthit.chpl.web.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.NotImplementedException;
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -21,13 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.SplitVersionsRequest;
 import gov.healthit.chpl.domain.UpdateVersionsRequest;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -55,8 +51,6 @@ public class ProductVersionController {
     private CertifiedProductManager cpManager;
     @Autowired
     private ChplProductNumberUtil chplProductNumberUtil;
-    @Autowired
-    private FF4j ff4j;
     @Autowired
     private ErrorMessageUtil msgUtil;
 
@@ -177,10 +171,6 @@ public class ProductVersionController {
             @RequestBody(required = true) final SplitVersionsRequest splitRequest)
                     throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
                     JsonProcessingException {
-        if (!ff4j.check(FeatureList.BETTER_SPLIT)) {
-            throw new NotImplementedException();
-        }
-
         if (splitRequest.getNewVersionCode() != null) {
             splitRequest.setNewVersionCode(splitRequest.getNewVersionCode().trim());
         }
