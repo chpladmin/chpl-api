@@ -17,6 +17,7 @@ import gov.healthit.chpl.dao.ComplaintDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ComplaintManager;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.web.controller.results.ComplaintResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -27,11 +28,13 @@ import io.swagger.annotations.ApiOperation;
 public class ComplaintController {
     private ComplaintManager complaintManager;
     private FF4j ff4j;
+    private ErrorMessageUtil errorMessageUtil;
     
     @Autowired
-    public ComplaintController(final ComplaintManager complaintManager, final FF4j ff4j) {
+    public ComplaintController(final ComplaintManager complaintManager, final FF4j ff4j, final ErrorMessageUtil errorMessageUtil) {
         this.complaintManager = complaintManager;
         this.ff4j = ff4j;
+        this.errorMessageUtil = errorMessageUtil;
     }
     
     @ApiOperation(value = "List all complaints the current user can view/edit.",
@@ -56,17 +59,7 @@ public class ComplaintController {
             ValidationException error = new ValidationException();
             //Make sure there is an ACB
             if (complaint.getCertificationBody() == null) {
-                error.getErrorMessages().add("Certification Body is required.");
-            }
-            
-            //Make sure the status exists and is 'Open'
-            if (complaint.getComplaintStatusType() == null) {
-                error.getErrorMessages().add("Complaint Status is required.");
-            } else if (! complaint.getComplaintStatusType().getId().equals(complaintManager.getComplaintStatusType("Open").getId())) {
-                error.getErrorMessages().add("Complaint Status must be 'Open'.");
-            }
-            
-            if (error.getErrorMessages().size() != 0) {
+                error.getErrorMessages().add(errorMessageUtil.getMessage("complaints.update.acbRequired"));
                 throw error;
             }
             
