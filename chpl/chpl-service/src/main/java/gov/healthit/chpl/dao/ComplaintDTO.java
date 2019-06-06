@@ -13,6 +13,7 @@ public class ComplaintDTO {
     private ComplaintTypeDTO complaintType;
     private ComplaintStatusTypeDTO complaintStatusType;
     private String oncComplaintId;
+    private String acbComplaintId;
     private Date receivedDate;
     private String summary;
     private String actions;
@@ -39,6 +40,7 @@ public class ComplaintDTO {
             this.complaintStatusType = new ComplaintStatusTypeDTO(entity.getComplaintStatusType());
         }
         this.oncComplaintId = entity.getOncComplaintId();
+        this.acbComplaintId = entity.getAcbComplaintId();
         this.receivedDate = entity.getReceivedDate();
         this.summary = entity.getSummary();
         this.actions = entity.getActions();
@@ -90,6 +92,14 @@ public class ComplaintDTO {
 
     public void setOncComplaintId(final String oncComplaintId) {
         this.oncComplaintId = oncComplaintId;
+    }
+
+    public String getAcbComplaintId() {
+        return acbComplaintId;
+    }
+
+    public void setAcbComplaintId(final String acbComplaintId) {
+        this.acbComplaintId = acbComplaintId;
     }
 
     public Date getReceivedDate() {

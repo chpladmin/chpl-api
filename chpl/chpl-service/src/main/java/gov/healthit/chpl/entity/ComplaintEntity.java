@@ -40,6 +40,9 @@ public class ComplaintEntity {
     @Column(name = "onc_complaint_id", nullable = true)
     private String oncComplaintId;
 
+    @Column(name = "acb_complaint_id", nullable = true)
+    private String acbComplaintId;
+
     @Column(name = "received_date", nullable = true)
     private Date receivedDate;
 
@@ -111,6 +114,14 @@ public class ComplaintEntity {
 
     public void setOncComplaintId(final String oncComplaintId) {
         this.oncComplaintId = oncComplaintId;
+    }
+
+    public String getAcbComplaintId() {
+        return acbComplaintId;
+    }
+
+    public void setAcbComplaintId(final String acbComplaintId) {
+        this.acbComplaintId = acbComplaintId;
     }
 
     public Date getReceivedDate() {
@@ -205,11 +216,10 @@ public class ComplaintEntity {
     public String toString() {
         return "ComplaintEntity [id=" + id + ", certificationBody=" + certificationBody + ", complaintType="
                 + complaintType + ", complaintStatusType=" + complaintStatusType + ", oncComplaintId=" + oncComplaintId
-                + ", receivedDate=" + receivedDate + ", summary=" + summary + ", actions=" + actions
-                + ", complainantContacted=" + complainantContacted + ", developerContacted=" + developerContacted
-                + ", oncAtlContacted=" + oncAtlContacted + ", closedDate=" + closedDate + ", creationDate="
-                + creationDate + ", lastModifiedDate=" + lastModifiedDate + ", lastModifiedUser=" + lastModifiedUser
-                + ", deleted=" + deleted + "]";
+                + ", acbComplaintId=" + acbComplaintId + ", receivedDate=" + receivedDate + ", summary=" + summary
+                + ", actions=" + actions + ", complainantContacted=" + complainantContacted + ", developerContacted="
+                + developerContacted + ", oncAtlContacted=" + oncAtlContacted + ", closedDate=" + closedDate
+                + ", creationDate=" + creationDate + ", lastModifiedDate=" + lastModifiedDate + ", lastModifiedUser="
+                + lastModifiedUser + ", deleted=" + deleted + "]";
     }
-
 }

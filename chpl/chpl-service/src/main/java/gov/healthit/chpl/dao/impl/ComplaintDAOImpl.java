@@ -93,6 +93,7 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
         }
 
         entity.setOncComplaintId(complaintDTO.getOncComplaintId());
+        entity.setAcbComplaintId(complaintDTO.getAcbComplaintId());
         entity.setReceivedDate(complaintDTO.getReceivedDate());
         entity.setSummary(complaintDTO.getSummary());
         entity.setActions(complaintDTO.getActions());
@@ -132,6 +133,7 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
         }
 
         entity.setOncComplaintId(complaintDTO.getOncComplaintId());
+        entity.setAcbComplaintId(complaintDTO.getAcbComplaintId());
         entity.setReceivedDate(complaintDTO.getReceivedDate());
         entity.setSummary(complaintDTO.getSummary());
         entity.setActions(complaintDTO.getActions());
