@@ -7,13 +7,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ff4j.FF4j;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -33,7 +31,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.UnitTestUtil;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
@@ -70,9 +67,6 @@ public class VersionControllerTest {
     @Autowired
     private CertifiedProductDAO cpDao;
 
-    @Autowired
-    private FF4j ff4j;
-
     @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
@@ -90,7 +84,6 @@ public class VersionControllerTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        Mockito.doReturn(true).when(ff4j).check(FeatureList.BETTER_SPLIT);
     }
 
     @Transactional
