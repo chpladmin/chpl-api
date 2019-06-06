@@ -32,8 +32,12 @@ public class ComplaintDTO {
     public ComplaintDTO(ComplaintEntity entity) {
         this.id = entity.getId();
         this.setCertificationBody(new CertificationBodyDTO(entity.getCertificationBody()));
-        this.complaintType = new ComplaintTypeDTO(entity.getComplaintType());
-        this.complaintStatusType = new ComplaintStatusTypeDTO(entity.getComplaintStatusType());
+        if (entity.getComplaintType() != null) {
+            this.complaintType = new ComplaintTypeDTO(entity.getComplaintType());
+        }
+        if (entity.getComplaintStatusType() != null) {
+            this.complaintStatusType = new ComplaintStatusTypeDTO(entity.getComplaintStatusType());
+        }
         this.oncComplaintId = entity.getOncComplaintId();
         this.receivedDate = entity.getReceivedDate();
         this.summary = entity.getSummary();

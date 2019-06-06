@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.ComplaintDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ComplaintManager;
 import gov.healthit.chpl.web.controller.results.ComplaintResults;
 import io.swagger.annotations.Api;
@@ -50,8 +51,25 @@ public class ComplaintController {
     @ApiOperation(value = "Save complaint for use in Surveillance Quarterly Report.",
             notes = "")
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-    public @ResponseBody ComplaintDTO create(@RequestBody final ComplaintDTO complaint) throws EntityRetrievalException {
+    public @ResponseBody ComplaintDTO create(@RequestBody final ComplaintDTO complaint) throws EntityRetrievalException, ValidationException {
         if (ff4j.check(FeatureList.COMPLAINTS)) {
+            ValidationException error = new ValidationException();
+            //Make sure there is an ACB
+            if (complaint.getCertificationBody() == null) {
+                error.getErrorMessages().add("Certification Body is required.");
+            }
+            
+            //Make sure the status exists and is 'Open'
+            if (complaint.getComplaintStatusType() == null) {
+                error.getErrorMessages().add("Complaint Status is required.");
+            } else if (! complaint.getComplaintStatusType().getId().equals(complaintManager.getComplaintStatusType("Open").getId())) {
+                error.getErrorMessages().add("Complaint Status must be 'Open'.");
+            }
+            
+            if (error.getErrorMessages().size() != 0) {
+                throw error;
+            }
+            
             ComplaintDTO dto = complaintManager.create(complaint);
             return dto;
         } else {
@@ -62,7 +80,7 @@ public class ComplaintController {
     @ApiOperation(value = "Update complaint for use in Surveillance Quarterly Report.",
             notes = "")
     @RequestMapping(value = "/{complaintId}", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
-    public @ResponseBody ComplaintDTO update(@RequestBody final ComplaintDTO complaint) throws EntityRetrievalException {
+    public @ResponseBody ComplaintDTO update(@RequestBody final ComplaintDTO complaint) throws EntityRetrievalException, ValidationException {
         if (ff4j.check(FeatureList.COMPLAINTS)) {
             ComplaintDTO dto = complaintManager.update(complaint);
             return dto;

@@ -1,10 +1,10 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,16 +17,24 @@ import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.dto.ComplaintStatusTypeDTO;
 import gov.healthit.chpl.dto.ComplaintTypeDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ComplaintManager;
+import gov.healthit.chpl.manager.rules.ValidationRule;
+import gov.healthit.chpl.manager.rules.complaints.ComplaintValidationContext;
+import gov.healthit.chpl.manager.rules.complaints.ComplaintValidationFactory;
 
 @Component
 public class ComplaintManagerImpl extends SecuredManager implements ComplaintManager {
     private static final String OPEN_STATUS = "Open";
+
     private ComplaintDAO complaintDAO;
+    private ComplaintValidationFactory complaintValidationFactory;
 
     @Autowired
-    public ComplaintManagerImpl(final ComplaintDAO complaintDAO, final FF4j ff4j) {
+    public ComplaintManagerImpl(final ComplaintDAO complaintDAO,
+            final ComplaintValidationFactory complaintValidationFactory) {
         this.complaintDAO = complaintDAO;
+        this.complaintValidationFactory = complaintValidationFactory;
     }
 
     @Override
@@ -63,7 +71,13 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
             + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).CREATE, #complaintDTO)")
-    public ComplaintDTO create(final ComplaintDTO complaintDTO) throws EntityRetrievalException {
+    public ComplaintDTO create(final ComplaintDTO complaintDTO) throws EntityRetrievalException, ValidationException {
+        ValidationException validationException = new ValidationException();
+        validationException.getErrorMessages().addAll(runCreateValidations(complaintDTO));
+        if (validationException.getErrorMessages().size() > 0) {
+            throw validationException;
+        }
+
         complaintDTO.setComplaintStatusType(getComplaintStatusType(OPEN_STATUS));
         return complaintDAO.create(complaintDTO);
     }
@@ -72,8 +86,15 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
             + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).UPDATE, #complaintDTO)")
-    public ComplaintDTO update(final ComplaintDTO complaintDTO) throws EntityRetrievalException {
+    public ComplaintDTO update(final ComplaintDTO complaintDTO) throws EntityRetrievalException, ValidationException {
+        ValidationException validationException = new ValidationException();
+        validationException.getErrorMessages().addAll(runUpdateValidations(complaintDTO));
+        if (validationException.getErrorMessages().size() > 0) {
+            throw validationException;
+        }
+
         return complaintDAO.update(complaintDTO);
+
     }
 
     @Override
@@ -87,7 +108,8 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
         }
     }
 
-    private ComplaintStatusTypeDTO getComplaintStatusType(String name) {
+    @Override
+    public ComplaintStatusTypeDTO getComplaintStatusType(String name) {
         for (ComplaintStatusTypeDTO dto : complaintDAO.getComplaintStatusTypes()) {
             if (dto.getName().equals(name)) {
                 return dto;
@@ -95,4 +117,33 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
         }
         return null;
     }
+
+    private List<String> runUpdateValidations(ComplaintDTO dto) {
+        List<ValidationRule<ComplaintValidationContext>> rules = new ArrayList<ValidationRule<ComplaintValidationContext>>();
+        rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.ACB_CHANGE));
+        rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.COMPLAINT_TYPE_EXISTS));
+        rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.COMPLAINT_STATUS_TYPE_EXISTS));
+        return runValidations(rules, dto);
+    }
+
+    private List<String> runCreateValidations(ComplaintDTO dto) {
+        List<ValidationRule<ComplaintValidationContext>> rules = new ArrayList<ValidationRule<ComplaintValidationContext>>();
+        rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.OPEN_STATUS));
+        rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.COMPLAINT_TYPE_EXISTS));
+        rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.COMPLAINT_STATUS_TYPE_EXISTS));
+        return runValidations(rules, dto);
+    }
+
+    private List<String> runValidations(List<ValidationRule<ComplaintValidationContext>> rules, ComplaintDTO dto) {
+        List<String> errorMessages = new ArrayList<String>();
+        ComplaintValidationContext context = new ComplaintValidationContext(dto, complaintDAO);
+
+        for (ValidationRule<ComplaintValidationContext> rule : rules) {
+            if (!rule.isValid(context)) {
+                errorMessages.addAll(rule.getMessages());
+            }
+        }
+        return errorMessages;
+    }
+
 }

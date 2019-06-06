@@ -52,11 +52,10 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
 
     @Override
     public List<ComplaintDTO> getAllComplaints() {
-        Query query = entityManager
-                .createQuery(
-                        "FROM ComplaintEntity c " + "JOIN FETCH c.certificationBody " + "JOIN FETCH c.complaintType "
-                                + "JOIN FETCH c.complaintStatusType " + "WHERE c.deleted = false ",
-                        ComplaintEntity.class);
+        Query query = entityManager.createQuery(
+                "FROM ComplaintEntity c " + "JOIN FETCH c.certificationBody " + "LEFT JOIN FETCH c.complaintType "
+                        + "LEFT JOIN FETCH c.complaintStatusType " + "WHERE c.deleted = false ",
+                ComplaintEntity.class);
         List<ComplaintEntity> results = query.getResultList();
 
         List<ComplaintDTO> complaintDTOs = new ArrayList<ComplaintDTO>();
@@ -164,10 +163,9 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
     private ComplaintEntity getEntityById(Long id) throws EntityRetrievalException {
         ComplaintEntity entity = null;
 
-        Query query = entityManager.createQuery(
-                "FROM ComplaintEntity c " + "JOIN FETCH c.certificationBody " + "JOIN FETCH c.complaintType "
-                        + "JOIN FETCH c.complaintStatusType " + "WHERE c.deleted = false " + "AND c.id = :complaintId",
-                ComplaintEntity.class);
+        Query query = entityManager.createQuery("FROM ComplaintEntity c " + "JOIN FETCH c.certificationBody "
+                + "LEFT JOIN FETCH c.complaintType " + "LEFT JOIN FETCH c.complaintStatusType "
+                + "WHERE c.deleted = false " + "AND c.id = :complaintId", ComplaintEntity.class);
         query.setParameter("complaintId", id);
         List<ComplaintEntity> result = query.getResultList();
 
