@@ -26,7 +26,7 @@ public class ComplaintAcbChanged extends ValidationRule<ComplaintValidationConte
                 return false;
             }
         } catch (Exception e) {
-            String error = getErrorMessage("complaints.update.acbChange.error");
+            String error = getErrorMessage("complaints.error");
             LOGGER.error(error, e);
             getMessages().add(error);
             return false;

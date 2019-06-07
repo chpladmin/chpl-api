@@ -29,7 +29,7 @@ public class ComplaintStatusTypeValidation extends ValidationRule<ComplaintValid
                 return false;
             }
         } catch (Exception e) {
-            String error = getErrorMessage("complaints.complaintStatusType.error");
+            String error = getErrorMessage("complaints.error");
             LOGGER.error(error, e);
             getMessages().add(error);
             return false;

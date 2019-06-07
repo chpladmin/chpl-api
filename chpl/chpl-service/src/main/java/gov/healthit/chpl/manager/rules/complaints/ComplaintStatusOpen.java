@@ -29,7 +29,7 @@ public class ComplaintStatusOpen extends ValidationRule<ComplaintValidationConte
             }
 
         } catch (Exception e) {
-            String error = getErrorMessage("complaints.create.statusOpen.error");
+            String error = getErrorMessage("complaints.error");
             LOGGER.error(error, e);
             getMessages().add(error);
             return false;

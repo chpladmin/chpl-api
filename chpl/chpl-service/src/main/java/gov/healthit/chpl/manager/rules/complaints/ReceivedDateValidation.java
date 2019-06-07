@@ -11,7 +11,6 @@ public class ReceivedDateValidation extends ValidationRule<ComplaintValidationCo
             getMessages().add(getErrorMessage("complaints.receivedDate.required"));
             return false;
         }
-
         return true;
     }
 

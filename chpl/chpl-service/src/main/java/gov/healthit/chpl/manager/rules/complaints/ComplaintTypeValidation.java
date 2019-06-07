@@ -34,7 +34,7 @@ public class ComplaintTypeValidation extends ValidationRule<ComplaintValidationC
             }
             return true;
         } catch (Exception e) {
-            String error = getErrorMessage("complaints.complaintType.error");
+            String error = getErrorMessage("complaints.error");
             LOGGER.error(error, e);
             getMessages().add(error);
             return false;
