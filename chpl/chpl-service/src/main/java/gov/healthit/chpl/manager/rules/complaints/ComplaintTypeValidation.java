@@ -8,11 +8,11 @@ import org.apache.logging.log4j.Logger;
 import gov.healthit.chpl.dto.ComplaintTypeDTO;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
-public class ComplaintTypeValid extends ValidationRule<ComplaintValidationContext> {
-    private static final Logger LOGGER = LogManager.getLogger(ComplaintTypeValid.class);
+public class ComplaintTypeValidation extends ValidationRule<ComplaintValidationContext> {
+    private static final Logger LOGGER = LogManager.getLogger(ComplaintTypeValidation.class);
     private ComplaintValidationContext context;
 
-    public ComplaintTypeValid() {
+    public ComplaintTypeValidation() {
         super();
     }
 
@@ -20,12 +20,19 @@ public class ComplaintTypeValid extends ValidationRule<ComplaintValidationContex
     public boolean isValid(ComplaintValidationContext context) {
         this.context = context;
         try {
-            if (doesComplaintTypeExist(context.getComplaintDTO().getComplaintType().getId())) {
-                return true;
-            } else {
+            // Complaint type is required
+            if (context.getComplaintDTO().getComplaintType() == null
+                    || context.getComplaintDTO().getComplaintType().getId() == null) {
+                getMessages().add(getErrorMessage("complaints.complaintType.required"));
+                return false;
+            }
+
+            // Complaint type value must exist
+            if (!doesComplaintTypeExist(context.getComplaintDTO().getComplaintType().getId())) {
                 getMessages().add(getErrorMessage("complaints.complaintType.notExists"));
                 return false;
             }
+            return true;
         } catch (Exception e) {
             String error = getErrorMessage("complaints.complaintType.error");
             LOGGER.error(error, e);

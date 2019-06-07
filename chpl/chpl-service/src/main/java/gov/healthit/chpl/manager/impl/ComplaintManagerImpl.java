@@ -129,7 +129,7 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
     private List<String> runUpdateValidations(ComplaintDTO dto) {
         List<ValidationRule<ComplaintValidationContext>> rules = new ArrayList<ValidationRule<ComplaintValidationContext>>();
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.ACB_CHANGE));
-        rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.COMPLAINT_TYPE_EXISTS));
+        rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.COMPLAINT_TYPE));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.COMPLAINT_STATUS_TYPE_EXISTS));
         return runValidations(rules, dto);
     }
@@ -137,7 +137,7 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
     private List<String> runCreateValidations(ComplaintDTO dto) {
         List<ValidationRule<ComplaintValidationContext>> rules = new ArrayList<ValidationRule<ComplaintValidationContext>>();
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.OPEN_STATUS));
-        rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.COMPLAINT_TYPE_EXISTS));
+        rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.COMPLAINT_TYPE));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.COMPLAINT_STATUS_TYPE_EXISTS));
         return runValidations(rules, dto);
     }
