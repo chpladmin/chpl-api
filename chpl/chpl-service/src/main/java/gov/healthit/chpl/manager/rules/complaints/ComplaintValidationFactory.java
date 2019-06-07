@@ -9,7 +9,8 @@ public class ComplaintValidationFactory {
     public final static String ACB_CHANGE = "ACB_CHANGE";
     public final static String OPEN_STATUS = "OPEN_STATUS";
     public final static String COMPLAINT_TYPE = "COMPLAINT_TYPE";
-    public final static String COMPLAINT_STATUS_TYPE_EXISTS = "COMPLAINT_STATUS_TYPE_EXISTS";
+    public final static String COMPLAINT_STATUS_TYPE = "COMPLAINT_STATUS_TYPE";
+    public final static String RECEIVED_DATE = "RECEIVED_DATE";
 
     public ValidationRule<ComplaintValidationContext> getRule(String name) {
         switch (name) {
@@ -19,8 +20,10 @@ public class ComplaintValidationFactory {
             return new ComplaintStatusOpen();
         case COMPLAINT_TYPE:
             return new ComplaintTypeValidation();
-        case COMPLAINT_STATUS_TYPE_EXISTS:
-            return new ComplaintStatusTypeValid();
+        case COMPLAINT_STATUS_TYPE:
+            return new ComplaintStatusTypeValidation();
+        case RECEIVED_DATE:
+            return new ReceivedDateValidation();
         default:
             return null;
         }

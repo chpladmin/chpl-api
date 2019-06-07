@@ -8,11 +8,11 @@ import org.apache.logging.log4j.Logger;
 import gov.healthit.chpl.dto.ComplaintStatusTypeDTO;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
-public class ComplaintStatusTypeValid extends ValidationRule<ComplaintValidationContext> {
-    private static final Logger LOGGER = LogManager.getLogger(ComplaintStatusTypeValid.class);
+public class ComplaintStatusTypeValidation extends ValidationRule<ComplaintValidationContext> {
+    private static final Logger LOGGER = LogManager.getLogger(ComplaintStatusTypeValidation.class);
     private ComplaintValidationContext context;
 
-    public ComplaintStatusTypeValid() {
+    public ComplaintStatusTypeValidation() {
         super();
     }
 
