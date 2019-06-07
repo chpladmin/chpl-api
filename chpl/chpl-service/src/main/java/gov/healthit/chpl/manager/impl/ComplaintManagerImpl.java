@@ -132,6 +132,7 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.COMPLAINT_TYPE));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.COMPLAINT_STATUS_TYPE));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.RECEIVED_DATE));
+        rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.ACB_COMPLAINT_ID));
         return runValidations(rules, dto);
     }
 
@@ -141,6 +142,7 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.COMPLAINT_TYPE));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.COMPLAINT_STATUS_TYPE));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.RECEIVED_DATE));
+        rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.ACB_COMPLAINT_ID));
         return runValidations(rules, dto);
     }
 
