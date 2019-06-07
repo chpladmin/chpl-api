@@ -51,6 +51,7 @@ public class CertifiedProductFlatSearchResult extends CertifiedProductSearchResu
         this.previousDevelopers = other.getPreviousDevelopers();
         this.criteriaMet = other.getCriteriaMet();
         this.cqmsMet = other.getCqmsMet();
+        this.surveillanceDates = other.getSurveillanceDates();
         this.apiDocumentation = other.getApiDocumentation();
     }
 

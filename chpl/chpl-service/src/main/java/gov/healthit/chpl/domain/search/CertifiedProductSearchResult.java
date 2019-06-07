@@ -119,6 +119,8 @@ public class CertifiedProductSearchResult implements Serializable {
         this.certificationStatus = other.getCertificationStatus();
         this.decertificationDate = other.getDecertificationDate();
         this.surveillanceCount = other.getSurveillanceCount();
+        this.openSurveillanceCount = other.getOpenSurveillanceCount();
+        this.closedSurveillanceCount = other.getClosedSurveillanceCount();
         this.openNonconformityCount = other.getOpenNonconformityCount();
         this.closedNonconformityCount = other.getClosedNonconformityCount();
         this.numMeaningfulUse = other.getNumMeaningfulUse();
