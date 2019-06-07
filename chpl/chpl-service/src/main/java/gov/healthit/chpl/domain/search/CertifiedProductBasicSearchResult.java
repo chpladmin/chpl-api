@@ -24,10 +24,17 @@ public class CertifiedProductBasicSearchResult extends CertifiedProductSearchRes
     })
     private Set<String> cqmsMet; // list of cmqs that were met (any version)
 
+    //list of start and end dates for surveillance, each entry will be start&end or just start&
+    @JsonView({
+        SearchViews.Default.class
+    })
+    private Set<String> surveillanceDates;
+
     public CertifiedProductBasicSearchResult() {
         previousDevelopers = new HashSet<String>();
         criteriaMet = new HashSet<String>();
         cqmsMet = new HashSet<String>();
+        surveillanceDates = new HashSet<String>();
     }
 
     public Set<String> getCriteriaMet() {
@@ -52,5 +59,13 @@ public class CertifiedProductBasicSearchResult extends CertifiedProductSearchRes
 
     public void setPreviousDevelopers(final Set<String> previousDevelopers) {
         this.previousDevelopers = previousDevelopers;
+    }
+
+    public Set<String> getSurveillanceDates() {
+        return surveillanceDates;
+    }
+
+    public void setSurveillanceDates(final Set<String> surveillanceDates) {
+        this.surveillanceDates = surveillanceDates;
     }
 }

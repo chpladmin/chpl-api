@@ -29,6 +29,13 @@ public class CertifiedProductFlatSearchResult extends CertifiedProductSearchResu
     private String cqmsMet; // unicode-char delimited string of cmqs that were
                             // met (any version)
 
+    //unicode-char delimited string of surveillance start and end dates
+    //format is start&end<char>start&
+    @JsonView({
+        SearchViews.Default.class
+    })
+    private String surveillanceDates;
+
     private String apiDocumentation;
 
     /**
@@ -80,5 +87,14 @@ public class CertifiedProductFlatSearchResult extends CertifiedProductSearchResu
 
     public void setApiDocumentation(final String apiDocumentation) {
         this.apiDocumentation = apiDocumentation;
+    }
+
+
+    public String getSurveillanceDates() {
+        return surveillanceDates;
+    }
+
+    public void setSurveillanceDates(final String surveillanceDates) {
+        this.surveillanceDates = surveillanceDates;
     }
 }

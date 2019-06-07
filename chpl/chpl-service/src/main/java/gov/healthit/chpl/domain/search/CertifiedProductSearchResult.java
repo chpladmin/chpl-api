@@ -78,6 +78,16 @@ public class CertifiedProductSearchResult implements Serializable {
     private Long surveillanceCount;
 
     @JsonView({
+        SearchViews.Default.class
+    })
+    private Long openSurveillanceCount;
+
+    @JsonView({
+        SearchViews.Default.class
+    })
+    private Long closedSurveillanceCount;
+
+    @JsonView({
             SearchViews.Default.class
     })
     private Long openNonconformityCount;
@@ -274,5 +284,21 @@ public class CertifiedProductSearchResult implements Serializable {
 
     public void setTransparencyAttestationUrl(final String transparencyAttestationUrl) {
         this.transparencyAttestationUrl = transparencyAttestationUrl;
+    }
+
+    public Long getOpenSurveillanceCount() {
+        return openSurveillanceCount;
+    }
+
+    public void setOpenSurveillanceCount(final Long openSurveillanceCount) {
+        this.openSurveillanceCount = openSurveillanceCount;
+    }
+
+    public Long getClosedSurveillanceCount() {
+        return closedSurveillanceCount;
+    }
+
+    public void setClosedSurveillanceCount(final Long closedSurveillanceCount) {
+        this.closedSurveillanceCount = closedSurveillanceCount;
     }
 }
