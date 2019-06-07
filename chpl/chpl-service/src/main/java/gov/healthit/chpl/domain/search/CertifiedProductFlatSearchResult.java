@@ -31,9 +31,6 @@ public class CertifiedProductFlatSearchResult extends CertifiedProductSearchResu
 
     //unicode-char delimited string of surveillance start and end dates
     //format is start&end<char>start&
-    @JsonView({
-        SearchViews.Default.class
-    })
     private String surveillanceDates;
 
     private String apiDocumentation;

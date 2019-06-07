@@ -25,9 +25,6 @@ public class CertifiedProductBasicSearchResult extends CertifiedProductSearchRes
     private Set<String> cqmsMet; // list of cmqs that were met (any version)
 
     //list of start and end dates for surveillance, each entry will be start&end or just start&
-    @JsonView({
-        SearchViews.Default.class
-    })
     private Set<String> surveillanceDates;
 
     public CertifiedProductBasicSearchResult() {

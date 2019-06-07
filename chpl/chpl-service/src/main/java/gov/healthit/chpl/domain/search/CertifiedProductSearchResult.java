@@ -78,16 +78,6 @@ public class CertifiedProductSearchResult implements Serializable {
     private Long surveillanceCount;
 
     @JsonView({
-        SearchViews.Default.class
-    })
-    private Long openSurveillanceCount;
-
-    @JsonView({
-        SearchViews.Default.class
-    })
-    private Long closedSurveillanceCount;
-
-    @JsonView({
             SearchViews.Default.class
     })
     private Long openNonconformityCount;
@@ -97,6 +87,8 @@ public class CertifiedProductSearchResult implements Serializable {
     })
     private Long closedNonconformityCount;
 
+    private Long openSurveillanceCount;
+    private Long closedSurveillanceCount;
     private Long decertificationDate;
     private Long numMeaningfulUse;
     private Long numMeaningfulUseDate;
