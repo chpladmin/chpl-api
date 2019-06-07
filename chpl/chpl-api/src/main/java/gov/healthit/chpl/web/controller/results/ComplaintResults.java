@@ -4,20 +4,18 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import gov.healthit.chpl.dao.ComplaintDTO;
-import gov.healthit.chpl.domain.Filter;
-import gov.healthit.chpl.dto.FilterDTO;
+import gov.healthit.chpl.domain.complaint.Complaint;
 
 public class ComplaintResults implements Serializable{
     private static final long serialVersionUID = 570551290486119131L;
    
-    private List<ComplaintDTO> results = new ArrayList<ComplaintDTO>();
+    private List<Complaint> results = new ArrayList<Complaint>();
     
-    public List<ComplaintDTO> getResults() {
+    public List<Complaint> getResults() {
         return results;
     }
     
-    public void setResults(List<ComplaintDTO> results) {
+    public void setResults(List<Complaint> results) {
         this.results = results;
     }
 }

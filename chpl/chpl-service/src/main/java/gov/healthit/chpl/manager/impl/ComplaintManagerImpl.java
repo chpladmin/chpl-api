@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.dao.ComplaintDAO;
 import gov.healthit.chpl.dao.ComplaintDTO;
 import gov.healthit.chpl.domain.KeyValueModel;
+import gov.healthit.chpl.domain.complaint.Complaint;
 import gov.healthit.chpl.dto.ComplaintStatusTypeDTO;
 import gov.healthit.chpl.dto.ComplaintTypeDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -63,15 +64,21 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
     @Transactional
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
             + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).GET_ALL, filterObject)")
-    public List<ComplaintDTO> getAllComplaints() {
-        return complaintDAO.getAllComplaints();
+    public List<Complaint> getAllComplaints() {
+        List<Complaint> complaints = new ArrayList<Complaint>();
+        List<ComplaintDTO> dtos = complaintDAO.getAllComplaints();
+        for (ComplaintDTO dto : dtos) {
+            complaints.add(new Complaint(dto));
+        }
+        return complaints;
     }
 
     @Override
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
-            + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).CREATE, #complaintDTO)")
-    public ComplaintDTO create(final ComplaintDTO complaintDTO) throws EntityRetrievalException, ValidationException {
+            + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).CREATE, #complaint)")
+    public Complaint create(final Complaint complaint) throws EntityRetrievalException, ValidationException {
+        ComplaintDTO complaintDTO = new ComplaintDTO(complaint);
         ValidationException validationException = new ValidationException();
         validationException.getErrorMessages().addAll(runCreateValidations(complaintDTO));
         if (validationException.getErrorMessages().size() > 0) {
@@ -79,21 +86,22 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
         }
 
         complaintDTO.setComplaintStatusType(getComplaintStatusType(OPEN_STATUS));
-        return complaintDAO.create(complaintDTO);
+        return new Complaint(complaintDAO.create(complaintDTO));
     }
 
     @Override
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
-            + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).UPDATE, #complaintDTO)")
-    public ComplaintDTO update(final ComplaintDTO complaintDTO) throws EntityRetrievalException, ValidationException {
+            + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).UPDATE, #complaint)")
+    public Complaint update(final Complaint complaint) throws EntityRetrievalException, ValidationException {
+        ComplaintDTO complaintDTO = new ComplaintDTO(complaint);
         ValidationException validationException = new ValidationException();
         validationException.getErrorMessages().addAll(runUpdateValidations(complaintDTO));
         if (validationException.getErrorMessages().size() > 0) {
             throw validationException;
         }
 
-        return complaintDAO.update(complaintDTO);
+        return new Complaint(complaintDAO.update(complaintDTO));
 
     }
 

@@ -2,6 +2,9 @@ package gov.healthit.chpl.dto;
 
 import java.util.Date;
 
+import org.springframework.beans.BeanUtils;
+
+import gov.healthit.chpl.domain.complaint.ComplaintStatusType;
 import gov.healthit.chpl.entity.ComplaintStatusTypeEntity;
 import gov.healthit.chpl.util.Util;
 
@@ -24,6 +27,10 @@ public class ComplaintStatusTypeDTO {
         this.lastModifiedDate = entity.getLastModifiedDate();
         this.lastModifiedUser = entity.getLastModifiedUser();
         this.deleted = entity.getDeleted();
+    }
+
+    public ComplaintStatusTypeDTO(final ComplaintStatusType domain) {
+        BeanUtils.copyProperties(domain, this);
     }
 
     public Long getId() {

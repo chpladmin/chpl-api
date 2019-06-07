@@ -4,9 +4,11 @@ import java.io.Serializable;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.entity.CertificationBodyEntity;
 
 /**
@@ -41,6 +43,10 @@ public class CertificationBodyDTO implements Serializable {
         if (entity.getAddress() != null) {
             this.address = new AddressDTO(entity.getAddress());
         }
+    }
+
+    public CertificationBodyDTO(final CertificationBody domain) {
+        BeanUtils.copyProperties(domain, this);
     }
 
     public Long getId() {

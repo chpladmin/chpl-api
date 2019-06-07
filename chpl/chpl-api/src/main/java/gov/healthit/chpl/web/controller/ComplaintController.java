@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.FeatureList;
-import gov.healthit.chpl.dao.ComplaintDTO;
+import gov.healthit.chpl.domain.complaint.Complaint;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ComplaintManager;
@@ -43,8 +43,8 @@ public class ComplaintController {
     public @ResponseBody ComplaintResults getComplaints() {
         if (ff4j.check(FeatureList.COMPLAINTS)) {
             ComplaintResults results = new ComplaintResults();
-            List<ComplaintDTO> dtos = complaintManager.getAllComplaints();
-            results.setResults(dtos);
+            List<Complaint> complaints = complaintManager.getAllComplaints();
+            results.setResults(complaints);
             return results;
         } else {
             throw new NotImplementedException();
@@ -54,7 +54,7 @@ public class ComplaintController {
     @ApiOperation(value = "Save complaint for use in Surveillance Quarterly Report.",
             notes = "")
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-    public @ResponseBody ComplaintDTO create(@RequestBody final ComplaintDTO complaint) throws EntityRetrievalException, ValidationException {
+    public @ResponseBody Complaint create(@RequestBody final Complaint complaint) throws EntityRetrievalException, ValidationException {
         if (ff4j.check(FeatureList.COMPLAINTS)) {
             ValidationException error = new ValidationException();
             //Make sure there is an ACB
@@ -63,8 +63,7 @@ public class ComplaintController {
                 throw error;
             }
             
-            ComplaintDTO dto = complaintManager.create(complaint);
-            return dto;
+            return complaintManager.create(complaint);
         } else {
             throw new NotImplementedException();
         }
@@ -73,10 +72,9 @@ public class ComplaintController {
     @ApiOperation(value = "Update complaint for use in Surveillance Quarterly Report.",
             notes = "")
     @RequestMapping(value = "/{complaintId}", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
-    public @ResponseBody ComplaintDTO update(@RequestBody final ComplaintDTO complaint) throws EntityRetrievalException, ValidationException {
+    public @ResponseBody Complaint update(@RequestBody final Complaint complaint) throws EntityRetrievalException, ValidationException {
         if (ff4j.check(FeatureList.COMPLAINTS)) {
-            ComplaintDTO dto = complaintManager.update(complaint);
-            return dto;
+            return complaintManager.update(complaint);
         } else {
             throw new NotImplementedException();
         }
