@@ -104,26 +104,6 @@ public class SurveillanceReportController {
         if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
             throw new NotImplementedException();
         }
-        if (createRequest.getAcb() == null || (createRequest.getAcb().getId() == null
-                && StringUtils.isEmpty(createRequest.getAcb().getName()))) {
-            //no acb information was provided - check user permissions to see if
-            //we can determine which ACB the user has access to (this is fine if they have only one)
-            List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
-            if (allowedAcbs != null && allowedAcbs.size() == 1) {
-                CertificationBody acb = new CertificationBody(allowedAcbs.get(0));
-                createRequest.setAcb(acb);
-            }
-        } else if (createRequest.getAcb() != null && createRequest.getAcb().getId() == null
-                && !StringUtils.isEmpty(createRequest.getAcb().getName())) {
-            //just an ACB name was provided - fill in the ACB object if possible
-            List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
-            for (CertificationBodyDTO allowedAcb : allowedAcbs) {
-                if (createRequest.getAcb().getName().equals(allowedAcb.getName())) {
-                    CertificationBody acb = new CertificationBody(allowedAcb);
-                    createRequest.setAcb(acb);
-                }
-            }
-        }
 
         if (createRequest.getAcb() == null || createRequest.getAcb().getId() == null) {
             throw new InvalidArgumentsException(msgUtil.getMessage("report.quarterlySurveillance.missingAcb"));

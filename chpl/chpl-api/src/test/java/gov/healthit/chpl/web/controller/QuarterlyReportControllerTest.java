@@ -174,33 +174,6 @@ public class QuarterlyReportControllerTest {
 
     @Transactional
     @Rollback(true)
-    @Test
-    public void createReportAsAcbUserNotProvidingAcb() throws EntityCreationException, InvalidArgumentsException {
-        SecurityContextHolder.getContext().setAuthentication(acbUser);
-        Long acbId = -1L;
-        Integer year = 2019;
-        String quarter = "Q1";
-        String activities = "activities and outcomes";
-        String pri = "prioritized element summary";
-        String react = "reactive summary";
-        String trans = "transparency disclosure summary";
-
-        QuarterlyReport created = createReport(null, year, quarter, activities, pri, react, trans);
-        assertNotNull(created);
-        assertNotNull(created.getAcb());
-        assertEquals(acbId, created.getAcb().getId());
-        assertEquals(year, created.getYear());
-        assertEquals(quarter, created.getQuarter());
-        assertEquals(activities, created.getSurveillanceActivitiesAndOutcomes());
-        assertEquals(pri, created.getPrioritizedElementSummary());
-        assertEquals(react, created.getReactiveSummary());
-        assertEquals(trans, created.getTransparencyDisclosureSummary());
-        assertNotNull(created.getId());
-        assertTrue(created.getId() > 0);
-    }
-
-    @Transactional
-    @Rollback(true)
     @Test(expected = AccessDeniedException.class)
     public void createReportAsAcbUserNotAllowedAcb() throws EntityCreationException, InvalidArgumentsException {
         SecurityContextHolder.getContext().setAuthentication(acbUser);
