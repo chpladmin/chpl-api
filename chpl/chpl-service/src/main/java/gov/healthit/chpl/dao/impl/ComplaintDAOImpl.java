@@ -14,7 +14,6 @@ import gov.healthit.chpl.dao.ComplaintDAO;
 import gov.healthit.chpl.dao.ComplaintDTO;
 import gov.healthit.chpl.dto.ComplaintStatusTypeDTO;
 import gov.healthit.chpl.dto.ComplaintTypeDTO;
-import gov.healthit.chpl.entity.CertificationBodyEntity;
 import gov.healthit.chpl.entity.ComplaintEntity;
 import gov.healthit.chpl.entity.ComplaintStatusTypeEntity;
 import gov.healthit.chpl.entity.ComplaintTypeEntity;
@@ -75,23 +74,9 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
     public ComplaintDTO create(ComplaintDTO complaintDTO) throws EntityRetrievalException {
         ComplaintEntity entity = new ComplaintEntity();
 
-        if (complaintDTO.getCertificationBody() == null) {
-            entity.setCertificationBody(null);
-        } else {
-            entity.setCertificationBody(getAcbEntityById(complaintDTO.getCertificationBody().getId()));
-        }
-        if (complaintDTO.getComplaintStatusType() == null) {
-            entity.setComplaintStatusType(null);
-        } else {
-            entity.setComplaintStatusType(
-                    getComplaintStatusTypeEntityById(complaintDTO.getComplaintStatusType().getId()));
-        }
-        if (complaintDTO.getComplaintType() == null) {
-            entity.setComplaintType(null);
-        } else {
-            entity.setComplaintType(getComplaintTypeEntityById(complaintDTO.getComplaintType().getId()));
-        }
-
+        entity.setCertificationBodyId(complaintDTO.getCertificationBody().getId());
+        entity.setComplaintTypeId(complaintDTO.getComplaintType().getId());
+        entity.setComplaintStatusTypeId(complaintDTO.getComplaintStatusType().getId());
         entity.setOncComplaintId(complaintDTO.getOncComplaintId());
         entity.setAcbComplaintId(complaintDTO.getAcbComplaintId());
         entity.setReceivedDate(complaintDTO.getReceivedDate());
@@ -104,34 +89,22 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
 
         entity.setDeleted(false);
         entity.setLastModifiedUser(AuthUtil.getAuditId());
-
-        entity.setDeleted(false);
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
         entity.setCreationDate(new Date());
         entity.setLastModifiedDate(new Date());
 
         entityManager.persist(entity);
         entityManager.flush();
-        return new ComplaintDTO(entity);
+        entityManager.clear();
+        return new ComplaintDTO(getEntityById(entity.getId()));
     }
 
     @Override
     public ComplaintDTO update(ComplaintDTO complaintDTO) throws EntityRetrievalException {
         ComplaintEntity entity = getEntityById(complaintDTO.getId());
 
-        if (complaintDTO.getComplaintStatusType() == null) {
-            entity.setComplaintStatusType(null);
-        } else {
-            entity.setComplaintStatusType(
-                    getComplaintStatusTypeEntityById(complaintDTO.getComplaintStatusType().getId()));
-        }
-
-        if (complaintDTO.getComplaintType() == null) {
-            entity.setComplaintType(null);
-        } else {
-            entity.setComplaintType(getComplaintTypeEntityById(complaintDTO.getComplaintType().getId()));
-        }
-
+        entity.setCertificationBodyId(complaintDTO.getCertificationBody().getId());
+        entity.setComplaintTypeId(complaintDTO.getComplaintType().getId());
+        entity.setComplaintStatusTypeId(complaintDTO.getComplaintStatusType().getId());
         entity.setOncComplaintId(complaintDTO.getOncComplaintId());
         entity.setAcbComplaintId(complaintDTO.getAcbComplaintId());
         entity.setReceivedDate(complaintDTO.getReceivedDate());
@@ -147,6 +120,7 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
 
         entityManager.merge(entity);
         entityManager.flush();
+        entityManager.clear();
 
         ComplaintEntity updatedEntity = getEntityById(complaintDTO.getId());
         return new ComplaintDTO(updatedEntity);
@@ -192,67 +166,4 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
         List<ComplaintStatusTypeEntity> result = query.getResultList();
         return result;
     }
-
-    private CertificationBodyEntity getAcbEntityById(final Long entityId) throws EntityRetrievalException {
-        CertificationBodyEntity entity = null;
-
-        String queryStr = "SELECT acb from CertificationBodyEntity acb " + "LEFT OUTER JOIN FETCH acb.address "
-                + "WHERE (acb.id = :entityid)" + " AND (acb.deleted = false)";
-
-        Query query = entityManager.createQuery(queryStr, CertificationBodyEntity.class);
-        query.setParameter("entityid", entityId);
-        List<CertificationBodyEntity> result = query.getResultList();
-
-        if (result == null || result.size() == 0) {
-            String msg = msgUtil.getMessage("acb.notFound");
-            throw new EntityRetrievalException(msg);
-        } else if (result.size() > 1) {
-            throw new EntityRetrievalException("Data error. Duplicate certificaiton body id in database.");
-        } else if (result.size() == 1) {
-            entity = result.get(0);
-        }
-        return entity;
-    }
-
-    private ComplaintTypeEntity getComplaintTypeEntityById(final Long entityId) throws EntityRetrievalException {
-        ComplaintTypeEntity entity = null;
-
-        String queryStr = "FROM ComplaintTypeEntity c " + "WHERE (c.id = :entityid) " + "AND (c.deleted = false)";
-
-        Query query = entityManager.createQuery(queryStr, ComplaintTypeEntity.class);
-        query.setParameter("entityid", entityId);
-        List<ComplaintTypeEntity> result = query.getResultList();
-
-        if (result == null || result.size() == 0) {
-            String msg = msgUtil.getMessage("Data error.  Complaint Type [" + entityId + "] not found.");
-            throw new EntityRetrievalException(msg);
-        } else if (result.size() > 1) {
-            throw new EntityRetrievalException("Data error. Duplicate Complaint Type id in database.");
-        } else if (result.size() == 1) {
-            entity = result.get(0);
-        }
-        return entity;
-    }
-
-    private ComplaintStatusTypeEntity getComplaintStatusTypeEntityById(final Long entityId)
-            throws EntityRetrievalException {
-        ComplaintStatusTypeEntity entity = null;
-
-        String queryStr = "FROM ComplaintStatusTypeEntity c " + "WHERE (c.id = :entityid) " + "AND (c.deleted = false)";
-
-        Query query = entityManager.createQuery(queryStr, ComplaintStatusTypeEntity.class);
-        query.setParameter("entityid", entityId);
-        List<ComplaintStatusTypeEntity> result = query.getResultList();
-
-        if (result == null || result.size() == 0) {
-            String msg = msgUtil.getMessage("Data error.  Complaint Status Type [" + entityId + "] not found.");
-            throw new EntityRetrievalException(msg);
-        } else if (result.size() > 1) {
-            throw new EntityRetrievalException("Data error. Duplicate Complaint Status Typeid in database.");
-        } else if (result.size() == 1) {
-            entity = result.get(0);
-        }
-        return entity;
-    }
-
 }

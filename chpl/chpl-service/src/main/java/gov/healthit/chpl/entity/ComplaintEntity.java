@@ -2,7 +2,6 @@ package gov.healthit.chpl.entity;
 
 import java.util.Date;
 
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -22,31 +21,37 @@ public class ComplaintEntity {
     @Column(name = "complaint_id", nullable = false)
     private Long id;
 
-    @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "certification_body_id", nullable = false, insertable = true, updatable = false)
+    @JoinColumn(name = "certification_body_id", insertable = false, updatable = false)
     private CertificationBodyEntity certificationBody;
 
-    @Basic(optional = true)
+    @Column(name = "certification_body_id", nullable = false)
+    private Long certificationBodyId;
+
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "complaint_type_id", nullable = true, insertable = true, updatable = true)
+    @JoinColumn(name = "complaint_type_id", insertable = false, updatable = false)
     private ComplaintTypeEntity complaintType;
 
-    @Basic(optional = true)
+    @Column(name = "complaint_type_id", nullable = false)
+    private Long complaintTypeId;
+
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "complaint_status_type_id", nullable = true, insertable = true, updatable = true)
+    @JoinColumn(name = "complaint_status_type_id", insertable = false, updatable = false)
     private ComplaintStatusTypeEntity complaintStatusType;
+
+    @Column(name = "complaint_status_type_id", nullable = false)
+    private Long complaintStatusTypeId;
 
     @Column(name = "onc_complaint_id", nullable = true)
     private String oncComplaintId;
 
-    @Column(name = "acb_complaint_id", nullable = true)
+    @Column(name = "acb_complaint_id", nullable = false)
     private String acbComplaintId;
 
-    @Column(name = "received_date", nullable = true)
+    @Column(name = "received_date", nullable = false)
     private Date receivedDate;
 
-    @Column(name = "summary", nullable = true)
+    @Column(name = "summary", nullable = false)
     private String summary;
 
     @Column(name = "actions", nullable = true)
@@ -210,6 +215,30 @@ public class ComplaintEntity {
 
     public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public Long getCertificationBodyId() {
+        return certificationBodyId;
+    }
+
+    public void setCertificationBodyId(Long certificationBodyId) {
+        this.certificationBodyId = certificationBodyId;
+    }
+
+    public Long getComplaintTypeId() {
+        return complaintTypeId;
+    }
+
+    public void setComplaintTypeId(Long complaintTypeId) {
+        this.complaintTypeId = complaintTypeId;
+    }
+
+    public Long getComplaintStatusTypeId() {
+        return complaintStatusTypeId;
+    }
+
+    public void setComplaintStatusTypeId(Long complaintStatusTypeId) {
+        this.complaintStatusTypeId = complaintStatusTypeId;
     }
 
     @Override
