@@ -63,7 +63,7 @@ public class SurveillanceReportController {
     private FF4j ff4j;
 
     @ApiOperation(value = "Get all quarterly surveillance reports this user has access to.",
-            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative "
                     + "authority on the ACB associated with the report.")
     @RequestMapping(value = "/quarterly", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<QuarterlyReport> getAllQuarterlyReports() throws AccessDeniedException {
@@ -79,7 +79,7 @@ public class SurveillanceReportController {
     }
 
     @ApiOperation(value = "Get a specific quarterly surveillance report by ID.",
-            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative "
                     + "authority on the ACB associated with the report.")
     @RequestMapping(value = "/quarterly/{quarterlyReportId}",
         method = RequestMethod.GET, produces = "application/json; charset=utf-8")
@@ -186,7 +186,7 @@ public class SurveillanceReportController {
     }
 
     @ApiOperation(value = "Download a quarterly report as an XLSX file.",
-            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority "
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative authority "
                     + "on the ACB associated with the report.")
     @RequestMapping(value = "/export/quarterly/{quarterlyReportId}", method = RequestMethod.GET)
     public void exportQuarterlyReport(@PathVariable("quarterlyReportId") final Long quarterlyReportId,
