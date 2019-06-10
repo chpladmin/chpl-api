@@ -812,7 +812,7 @@ public class SearchViewController {
     }
 
     @Secured({
-        Authority.ROLE_ADMIN, Authority.ROLE_ACB
+        Authority.ROLE_ADMIN, Authority.ROLE_ONC, Authority.ROLE_ACB
     })
     @ApiOperation(value = "Get all possible types of jobs that can be created in the system.")
     @RequestMapping(value = "/data/job_types", method = RequestMethod.GET,
@@ -822,21 +822,8 @@ public class SearchViewController {
         return dimensionalDataManager.getJobTypes();
     }
 
-    @Secured({
-        Authority.ROLE_ADMIN, Authority.ROLE_ACB
-    })
-    @ApiOperation(value = "Get a list of quarters for which a surveillance report can be created.")
-    @RequestMapping(value = "/data/quarters", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody Set<KeyValueModel> getQuarters() {
-        return dimensionalDataManager.getQuarters();
-    }
-
-    @Secured({
-        Authority.ROLE_ADMIN
-    })
-    @ApiOperation(value = "Get all fuzzy matching choices for the items that be fuzzy matched.")
+    @ApiOperation(value = "Get all fuzzy matching choices for the items that be fuzzy matched.",
+            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/data/fuzzy_choices", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -868,6 +855,14 @@ public class SearchViewController {
         FuzzyChoices result = fuzzyChoicesManager.updateFuzzyChoices(toUpdate);
         return result;
         //return new FuzzyChoices(result);
+    }
+
+    @ApiOperation(value = "Get a list of quarters for which a surveillance report can be created.")
+    @RequestMapping(value = "/data/quarters", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody Set<KeyValueModel> getQuarters() {
+        return dimensionalDataManager.getQuarters();
     }
 
     @ApiOperation(value = "Get all possible classifications in the CHPL",

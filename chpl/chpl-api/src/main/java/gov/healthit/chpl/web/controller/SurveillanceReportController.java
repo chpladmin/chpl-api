@@ -92,9 +92,7 @@ public class SurveillanceReportController {
     }
 
     @ApiOperation(value = "Create a new annual surveillance report.",
-            notes = "An effort will be made to determine which ACB the report belongs to "
-                    + "if one is not provided in the request."
-                    + "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
+            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
                     + "authority on the ACB associated with the report.")
     @RequestMapping(value = "/annual", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public synchronized AnnualReport createAnnualReport(
@@ -103,8 +101,6 @@ public class SurveillanceReportController {
         if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
             throw new NotImplementedException();
         }
-        CertificationBody acb = determineAcb(createRequest.getAcb());
-        createRequest.setAcb(acb);
         if (createRequest.getAcb() == null || createRequest.getAcb().getId() == null) {
             throw new InvalidArgumentsException(msgUtil.getMessage("report.annualSurveillance.missingAcb"));
         }
@@ -189,7 +185,7 @@ public class SurveillanceReportController {
     }
 
     @ApiOperation(value = "Get all quarterly surveillance reports this user has access to.",
-            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative "
                     + "authority on the ACB associated with the report.")
     @RequestMapping(value = "/quarterly", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<QuarterlyReport> getAllQuarterlyReports() throws AccessDeniedException {
@@ -205,7 +201,7 @@ public class SurveillanceReportController {
     }
 
     @ApiOperation(value = "Get a specific quarterly surveillance report by ID.",
-            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative "
                     + "authority on the ACB associated with the report.")
     @RequestMapping(value = "/quarterly/{quarterlyReportId}",
         method = RequestMethod.GET, produces = "application/json; charset=utf-8")
@@ -219,20 +215,15 @@ public class SurveillanceReportController {
     }
 
     @ApiOperation(value = "Create a new quarterly surveillance report.",
-                    notes = "An effort will be made to determine which ACB the report belongs to "
-                            + "if one is not provided in the request."
-                            + "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
+                    notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
                             + "authority on the ACB associated with the report.")
     @RequestMapping(value = "/quarterly", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public synchronized QuarterlyReport createQuarterlyReport(
-            @RequestBody(required = true) final QuarterlyReport createRequest) 
+            @RequestBody(required = true) final QuarterlyReport createRequest)
     throws AccessDeniedException, InvalidArgumentsException, EntityCreationException {
         if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
             throw new NotImplementedException();
         }
-        CertificationBody acb = determineAcb(createRequest.getAcb());
-        createRequest.setAcb(acb);
-
         if (createRequest.getAcb() == null || createRequest.getAcb().getId() == null) {
             throw new InvalidArgumentsException(msgUtil.getMessage("report.quarterlySurveillance.missingAcb"));
         }
@@ -294,7 +285,7 @@ public class SurveillanceReportController {
     }
 
     @ApiOperation(value = "Download a quarterly report as an XLSX file.",
-            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority "
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative authority "
                     + "on the ACB associated with the report.")
     @RequestMapping(value = "/export/quarterly/{quarterlyReportId}", method = RequestMethod.GET)
     public void exportQuarterlyReport(@PathVariable("quarterlyReportId") final Long quarterlyReportId,
@@ -324,28 +315,5 @@ public class SurveillanceReportController {
         }
 
         fileUtils.streamFileAsResponse(tempFileToStream, XLSX_MIME_TYPE, response);
-    }
-
-    private CertificationBody determineAcb(final CertificationBody requestAcb) {
-        CertificationBody result = requestAcb;
-        if (requestAcb == null || (requestAcb.getId() == null
-                && StringUtils.isEmpty(requestAcb.getName()))) {
-            //no acb information was provided - check user permissions to see if
-            //we can determine which ACB the user has access to (this is fine if they have only one)
-            List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
-            if (allowedAcbs != null && allowedAcbs.size() == 1) {
-                result = new CertificationBody(allowedAcbs.get(0));
-            }
-        } else if (requestAcb != null && requestAcb.getId() == null
-                && !StringUtils.isEmpty(requestAcb.getName())) {
-            //just an ACB name was provided - fill in the ACB object if possible
-            List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
-            for (CertificationBodyDTO allowedAcb : allowedAcbs) {
-                if (requestAcb.getName().equals(allowedAcb.getName())) {
-                    result = new CertificationBody(allowedAcb);
-                }
-            }
-        }
-        return result;
     }
 }
