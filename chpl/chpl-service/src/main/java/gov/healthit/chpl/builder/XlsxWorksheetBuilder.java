@@ -1,5 +1,7 @@
 package gov.healthit.chpl.builder;
 
+import java.awt.Color;
+
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.FillPatternType;
@@ -7,9 +9,14 @@ import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.DefaultIndexedColorMap;
+import org.apache.poi.xssf.usermodel.XSSFColor;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTCol;
 
-public class XlsxWorksheetBuilder {
+public abstract class XlsxWorksheetBuilder {
     public static final int DEFAULT_MAX_COLUMN = 16384;
     private static final int WORKSHEET_FONT_POINTS  = 10;
     private static final int WORKSHEET_LARGE_FONT_POINTS = 12;
@@ -25,6 +32,37 @@ public class XlsxWorksheetBuilder {
         this.workbook = workbook;
         initializeFonts();
         initializeStyles();
+    }
+
+    public abstract int getLastDataColumn();
+    public abstract int getLastDataRow();
+
+    /**
+     * Get or create a new worksheet within the workbook.
+     * Worksheets are identified by name.
+     * @param sheetName
+     * @return
+     */
+    public Sheet getSheet(final String sheetName, final Color tabColor) {
+        Sheet sheet = workbook.getSheet(sheetName);
+        if (sheet == null) {
+            sheet = workbook.createSheet(sheetName);
+            if (sheet instanceof XSSFSheet) {
+                XSSFSheet xssfSheet = (XSSFSheet) sheet;
+                DefaultIndexedColorMap colorMap = new DefaultIndexedColorMap();
+                XSSFColor xssfTabColor = new XSSFColor(tabColor, colorMap);
+                xssfSheet.setTabColor(xssfTabColor);
+
+                //hide all the columns after E
+                CTCol col = xssfSheet.getCTWorksheet().getColsArray(0).addNewCol();
+                col.setMin(getLastDataColumn());
+                col.setMax(DEFAULT_MAX_COLUMN); // the last column (1-indexed)
+                col.setHidden(true);
+
+                //TODO: figure out how to hide rows after lastDataRow
+            }
+        }
+        return sheet;
     }
 
     /**

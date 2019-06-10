@@ -32,6 +32,8 @@ import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.surveillance.report.AnnualReportDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
+import gov.healthit.chpl.dto.surveillance.report.QuarterDTO;
+import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -314,10 +316,61 @@ public class AnnualReportManagerTest extends TestCase {
             throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException,
             IOException {
         SecurityContextHolder.getContext().setAuthentication(acbUser);
-        AnnualReportDTO annualReport = new AnnualReportDTO();
-        annualReport.setYear(2019);
         CertificationBodyDTO acb = new CertificationBodyDTO();
         acb.setId(-1L);
+
+        //create some quarterly reports to go with the annual
+        QuarterDTO quarter = new QuarterDTO();
+        quarter.setName("Q1");
+        QuarterlyReportDTO toCreate = new QuarterlyReportDTO();
+        toCreate.setYear(2019);
+        toCreate.setAcb(acb);
+        toCreate.setQuarter(quarter);
+        toCreate.setActivitiesOutcomesSummary("In order to meet its obligation to conduct reactive surveillance, the ONC-ACB undertook the following activities and implemented the following measures to ensure that it was able to systematically obtain, synthesize and act on all facts and circumstances that would cause a reasonable person to question the ongoing compliance of any certified Complete EHR or certified Health IT Module. In order to meet its obligation to conduct reactive surveillance, the ONC-ACB undertook the following activities and implemented the following measures to ensure that it was able to systematically obtain, synthesize and act on all facts and circumstances that would cause a reasonable person to question the ongoing compliance of any certified Complete EHR or certified Health IT Module. ");
+        toCreate.setReactiveSummary("test reactive element summary");
+        toCreate.setPrioritizedElementSummary("test prioritized element summary for Q1");
+        toCreate.setTransparencyDisclosureSummary("test transparency and disclosure summary for Q1");
+        reportManager.createQuarterlyReport(toCreate);
+
+        quarter = new QuarterDTO();
+        quarter.setName("Q2");
+        toCreate = new QuarterlyReportDTO();
+        toCreate.setYear(2019);
+        toCreate.setAcb(acb);
+        toCreate.setQuarter(quarter);
+        toCreate.setActivitiesOutcomesSummary("Shorter summary for Q2. ");
+        toCreate.setReactiveSummary("test reactive element summary for Q2");
+        toCreate.setPrioritizedElementSummary("test prioritized element summary for Q2");
+        toCreate.setTransparencyDisclosureSummary("test transparency and disclosure summary for Q2");
+        reportManager.createQuarterlyReport(toCreate);
+
+        quarter = new QuarterDTO();
+        quarter.setName("Q3");
+        toCreate = new QuarterlyReportDTO();
+        toCreate.setYear(2019);
+        toCreate.setAcb(acb);
+        toCreate.setQuarter(quarter);
+        toCreate.setActivitiesOutcomesSummary("Shorter summary for Q3.");
+        toCreate.setReactiveSummary("test reactive element summary for Q3");
+        toCreate.setPrioritizedElementSummary("test prioritized element summary for Q3");
+        toCreate.setTransparencyDisclosureSummary("test transparency and disclosure summary for Q");
+        reportManager.createQuarterlyReport(toCreate);
+
+        quarter = new QuarterDTO();
+        quarter.setName("Q4");
+        toCreate = new QuarterlyReportDTO();
+        toCreate.setYear(2019);
+        toCreate.setAcb(acb);
+        toCreate.setQuarter(quarter);
+        toCreate.setActivitiesOutcomesSummary("Shorter summary for Q4.");
+        toCreate.setReactiveSummary("test reactive element summary for Q4");
+        toCreate.setPrioritizedElementSummary("test prioritized element summary for Q4");
+        toCreate.setTransparencyDisclosureSummary("test transparency and disclosure summary for Q4");
+        reportManager.createQuarterlyReport(toCreate);
+
+        //create the annual report
+        AnnualReportDTO annualReport = new AnnualReportDTO();
+        annualReport.setYear(2019);
         annualReport.setAcb(acb);
         annualReport.setFindingsSummary("test findings summary");
         annualReport.setObstacleSummary("test obstacle summary");
@@ -329,7 +382,7 @@ public class AnnualReportManagerTest extends TestCase {
         //uncomment to write report
 //        OutputStream outputStream = null;
 //        try {
-//            outputStream = new FileOutputStream("test-annual.xlsx");
+//            outputStream = new FileOutputStream("annual.xlsx");
 //            workbook.write(outputStream);
 //        } catch(final Exception ex) {
 //            fail(ex.getMessage());

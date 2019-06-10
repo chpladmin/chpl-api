@@ -1,6 +1,8 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Workbook;
@@ -437,7 +439,7 @@ public class QuarterlyReportManagerTest extends TestCase {
         //uncomment to write report
 //        OutputStream outputStream = null;
 //        try {
-//            outputStream = new FileOutputStream("test.xlsx");
+//            outputStream = new FileOutputStream("quarterly.xlsx");
 //            workbook.write(outputStream);
 //        } catch(final Exception ex) {
 //            fail(ex.getMessage());

@@ -1,5 +1,6 @@
 package gov.healthit.chpl.builder;
 
+import java.awt.Color;
 import java.io.IOException;
 
 import org.apache.poi.ss.usermodel.BorderExtent;
@@ -19,7 +20,8 @@ import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTCol;
 import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
 
 public class SurveillanceExperienceWorksheetBuilder extends XlsxWorksheetBuilder {
-    private static final int MIN_COLUMN = 8;
+    private static final int LAST_DATA_COLUMN = 8;
+    private static final int LAST_DATA_ROW = 60;
 
     private XSSFColor tabColor;
     private PropertyTemplate pt;
@@ -29,6 +31,16 @@ public class SurveillanceExperienceWorksheetBuilder extends XlsxWorksheetBuilder
         pt = new PropertyTemplate();
     }
 
+    @Override
+    public int getLastDataColumn() {
+        return LAST_DATA_COLUMN;
+    }
+
+    @Override
+    public int getLastDataRow() {
+        return LAST_DATA_ROW;
+    }
+
     /**
      * Creates a formatted Excel worksheet with the information in the report.
      * @param report
@@ -36,22 +48,7 @@ public class SurveillanceExperienceWorksheetBuilder extends XlsxWorksheetBuilder
      */
     public Sheet buildWorksheet(final AnnualReportDTO report) throws IOException {
         //create sheet
-        Sheet sheet = workbook.createSheet("Surveillance Experience");
-        if (sheet instanceof XSSFSheet) {
-            XSSFSheet xssfSheet = (XSSFSheet) sheet;
-            DefaultIndexedColorMap colorMap = new DefaultIndexedColorMap();
-            tabColor = new XSSFColor(
-                    new java.awt.Color(196, 215, 155), colorMap);
-            xssfSheet.setTabColor(tabColor);
-
-            //hide all the columns after E
-            CTCol col = xssfSheet.getCTWorksheet().getColsArray(0).addNewCol();
-            col.setMin(MIN_COLUMN);
-            col.setMax(DEFAULT_MAX_COLUMN); // the last column (1-indexed)
-            col.setHidden(true);
-
-            //TODO: figure out how to hide rows after the content of the sheet ends
-        }
+        Sheet sheet = getSheet("Surveillance Experience", new Color(196, 215, 155));
 
         //set some styling that applies to the whole sheet
         sheet.setDisplayGridlines(false);

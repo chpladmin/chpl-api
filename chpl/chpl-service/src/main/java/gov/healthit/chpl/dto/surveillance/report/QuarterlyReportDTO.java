@@ -1,5 +1,8 @@
 package gov.healthit.chpl.dto.surveillance.report;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.entity.surveillance.report.QuarterlyReportEntity;
 
@@ -73,6 +76,28 @@ public class QuarterlyReportDTO {
 
     public void setQuarter(final QuarterDTO quarter) {
         this.quarter = quarter;
+    }
+
+    public Date getStartDate() {
+        if (getYear() == null || getQuarter() == null) {
+            return null;
+        }
+        Calendar quarterStartCal = Calendar.getInstance();
+        quarterStartCal.set(Calendar.YEAR, getYear());
+        quarterStartCal.set(Calendar.MONTH, getQuarter().getStartMonth()-1);
+        quarterStartCal.set(Calendar.DAY_OF_MONTH, getQuarter().getStartDay());
+        return quarterStartCal.getTime();
+    }
+
+    public Date getEndDate() {
+        if (getYear() == null || getQuarter() == null) {
+            return null;
+        }
+        Calendar quarterEndCal = Calendar.getInstance();
+        quarterEndCal.set(Calendar.YEAR, getYear());
+        quarterEndCal.set(Calendar.MONTH, getQuarter().getEndMonth()-1);
+        quarterEndCal.set(Calendar.DAY_OF_MONTH, getQuarter().getEndDay());
+        return quarterEndCal.getTime();
     }
 
     public String getActivitiesOutcomesSummary() {
