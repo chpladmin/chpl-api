@@ -57,14 +57,17 @@ public class ComplaintEntity {
     @Column(name = "actions", nullable = true)
     private String actions;
 
-    @Column(name = "complainant_contacted", nullable = true)
+    @Column(name = "complainant_contacted", nullable = false)
     private boolean complainantContacted;
 
-    @Column(name = "developer_contacted", nullable = true)
+    @Column(name = "developer_contacted", nullable = false)
     private boolean developerContacted;
 
-    @Column(name = "onc_atl_contacted", nullable = true)
+    @Column(name = "onc_atl_contacted", nullable = false)
     private boolean oncAtlContacted;
+
+    @Column(name = "flag_for_onc_review", nullable = false)
+    private boolean flagForOncReview;
 
     @Column(name = "closed_date", nullable = true)
     private Date closedDate;
@@ -175,6 +178,14 @@ public class ComplaintEntity {
 
     public void setOncAtlContacted(final boolean oncAtlContacted) {
         this.oncAtlContacted = oncAtlContacted;
+    }
+
+    public boolean isFlagForOncReview() {
+        return flagForOncReview;
+    }
+
+    public void setFlagForOncReview(final boolean flagForOncReview) {
+        this.flagForOncReview = flagForOncReview;
     }
 
     public Date getClosedDate() {

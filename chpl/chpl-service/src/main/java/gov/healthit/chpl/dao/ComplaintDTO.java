@@ -23,6 +23,7 @@ public class ComplaintDTO {
     private boolean complainantContacted;
     private boolean developerContacted;
     private boolean oncAtlContacted;
+    private boolean flagForOncReview;
     private Date closedDate;
     private Date creationDate;
     private Date lastModifiedDate;
@@ -34,27 +35,17 @@ public class ComplaintDTO {
     }
 
     public ComplaintDTO(ComplaintEntity entity) {
-        this.id = entity.getId();
-        this.setCertificationBody(new CertificationBodyDTO(entity.getCertificationBody()));
+        BeanUtils.copyProperties(entity, this);
+
+        if (entity.getCertificationBody() != null) {
+            this.certificationBody = new CertificationBodyDTO(entity.getCertificationBody());
+        }
         if (entity.getComplaintType() != null) {
             this.complaintType = new ComplaintTypeDTO(entity.getComplaintType());
         }
         if (entity.getComplaintStatusType() != null) {
             this.complaintStatusType = new ComplaintStatusTypeDTO(entity.getComplaintStatusType());
         }
-        this.oncComplaintId = entity.getOncComplaintId();
-        this.acbComplaintId = entity.getAcbComplaintId();
-        this.receivedDate = entity.getReceivedDate();
-        this.summary = entity.getSummary();
-        this.actions = entity.getActions();
-        this.complainantContacted = entity.isComplainantContacted();
-        this.developerContacted = entity.isDeveloperContacted();
-        this.oncAtlContacted = entity.isOncAtlContacted();
-        this.closedDate = entity.getClosedDate();
-        this.creationDate = entity.getCreationDate();
-        this.lastModifiedDate = entity.getLastModifiedDate();
-        this.lastModifiedUser = entity.getLastModifiedUser();
-        this.deleted = entity.getDeleted();
     }
 
     public ComplaintDTO(Complaint domain) {
@@ -165,6 +156,14 @@ public class ComplaintDTO {
 
     public void setOncAtlContacted(final boolean oncAtlContacted) {
         this.oncAtlContacted = oncAtlContacted;
+    }
+
+    public boolean isFlagForOncReview() {
+        return flagForOncReview;
+    }
+
+    public void setFlagForOncReview(final boolean flagForOncReview) {
+        this.flagForOncReview = flagForOncReview;
     }
 
     public Date getClosedDate() {

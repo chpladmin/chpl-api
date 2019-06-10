@@ -20,6 +20,7 @@ public class Complaint {
     private boolean complainantContacted;
     private boolean developerContacted;
     private boolean oncAtlContacted;
+    private boolean flagForOncReview;
     private Date closedDate;
 
     public Complaint() {
@@ -37,7 +38,7 @@ public class Complaint {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -45,7 +46,7 @@ public class Complaint {
         return certificationBody;
     }
 
-    public void setCertificationBody(CertificationBody certificationBody) {
+    public void setCertificationBody(final CertificationBody certificationBody) {
         this.certificationBody = certificationBody;
     }
 
@@ -53,7 +54,7 @@ public class Complaint {
         return complaintType;
     }
 
-    public void setComplaintType(ComplaintType complaintType) {
+    public void setComplaintType(final ComplaintType complaintType) {
         this.complaintType = complaintType;
     }
 
@@ -61,7 +62,7 @@ public class Complaint {
         return complaintStatusType;
     }
 
-    public void setComplaintStatusType(ComplaintStatusType complaintStatusType) {
+    public void setComplaintStatusType(final ComplaintStatusType complaintStatusType) {
         this.complaintStatusType = complaintStatusType;
     }
 
@@ -69,7 +70,7 @@ public class Complaint {
         return oncComplaintId;
     }
 
-    public void setOncComplaintId(String oncComplaintId) {
+    public void setOncComplaintId(final String oncComplaintId) {
         this.oncComplaintId = oncComplaintId;
     }
 
@@ -77,7 +78,7 @@ public class Complaint {
         return acbComplaintId;
     }
 
-    public void setAcbComplaintId(String acbComplaintId) {
+    public void setAcbComplaintId(final String acbComplaintId) {
         this.acbComplaintId = acbComplaintId;
     }
 
@@ -85,7 +86,7 @@ public class Complaint {
         return receivedDate;
     }
 
-    public void setReceivedDate(Date receivedDate) {
+    public void setReceivedDate(final Date receivedDate) {
         this.receivedDate = receivedDate;
     }
 
@@ -93,7 +94,7 @@ public class Complaint {
         return summary;
     }
 
-    public void setSummary(String summary) {
+    public void setSummary(final String summary) {
         this.summary = summary;
     }
 
@@ -101,7 +102,7 @@ public class Complaint {
         return actions;
     }
 
-    public void setActions(String actions) {
+    public void setActions(final String actions) {
         this.actions = actions;
     }
 
@@ -109,7 +110,7 @@ public class Complaint {
         return complainantContacted;
     }
 
-    public void setComplainantContacted(boolean complainantContacted) {
+    public void setComplainantContacted(final boolean complainantContacted) {
         this.complainantContacted = complainantContacted;
     }
 
@@ -117,7 +118,7 @@ public class Complaint {
         return developerContacted;
     }
 
-    public void setDeveloperContacted(boolean developerContacted) {
+    public void setDeveloperContacted(final boolean developerContacted) {
         this.developerContacted = developerContacted;
     }
 
@@ -125,15 +126,23 @@ public class Complaint {
         return oncAtlContacted;
     }
 
-    public void setOncAtlContacted(boolean oncAtlContacted) {
+    public void setOncAtlContacted(final boolean oncAtlContacted) {
         this.oncAtlContacted = oncAtlContacted;
+    }
+
+    public boolean isFlagForOncReview() {
+        return flagForOncReview;
+    }
+
+    public void setFlagForOncReview(final boolean flagForOncReview) {
+        this.flagForOncReview = flagForOncReview;
     }
 
     public Date getClosedDate() {
         return closedDate;
     }
 
-    public void setClosedDate(Date closedDate) {
+    public void setClosedDate(final Date closedDate) {
         this.closedDate = closedDate;
     }
 

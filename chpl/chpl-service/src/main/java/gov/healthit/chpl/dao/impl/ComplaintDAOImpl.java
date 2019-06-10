@@ -6,10 +6,8 @@ import java.util.List;
 
 import javax.persistence.Query;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.ComplaintDAO;
 import gov.healthit.chpl.dao.ComplaintDTO;
 import gov.healthit.chpl.dto.ComplaintStatusTypeDTO;
@@ -22,12 +20,6 @@ import gov.healthit.chpl.util.AuthUtil;
 
 @Component
 public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
-    private CertificationBodyDAO certificationBodyDAO;
-
-    @Autowired
-    public ComplaintDAOImpl(final CertificationBodyDAO certificationBodyDAO) {
-        this.certificationBodyDAO = certificationBodyDAO;
-    }
 
     @Override
     public List<ComplaintTypeDTO> getComplaintTypes() {
@@ -85,8 +77,8 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
         entity.setComplainantContacted(complaintDTO.isComplainantContacted());
         entity.setDeveloperContacted(complaintDTO.isDeveloperContacted());
         entity.setOncAtlContacted(complaintDTO.isOncAtlContacted());
+        entity.setFlagForOncReview(complaintDTO.isFlagForOncReview());
         entity.setClosedDate(null);
-
         entity.setDeleted(false);
         entity.setLastModifiedUser(AuthUtil.getAuditId());
         entity.setCreationDate(new Date());
@@ -113,10 +105,11 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
         entity.setComplainantContacted(complaintDTO.isComplainantContacted());
         entity.setDeveloperContacted(complaintDTO.isDeveloperContacted());
         entity.setOncAtlContacted(complaintDTO.isOncAtlContacted());
+        entity.setFlagForOncReview(complaintDTO.isFlagForOncReview());
         entity.setClosedDate(complaintDTO.getClosedDate());
-
         entity.setDeleted(false);
         entity.setLastModifiedUser(AuthUtil.getAuditId());
+        entity.setLastModifiedDate(new Date());
 
         entityManager.merge(entity);
         entityManager.flush();
@@ -134,6 +127,7 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
 
         entityManager.merge(entity);
         entityManager.flush();
+        entityManager.clear();
     }
 
     private ComplaintEntity getEntityById(Long id) throws EntityRetrievalException {
