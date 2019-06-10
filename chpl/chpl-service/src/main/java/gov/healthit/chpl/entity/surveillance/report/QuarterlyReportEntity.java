@@ -1,10 +1,7 @@
 package gov.healthit.chpl.entity.surveillance.report;
 
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -12,14 +9,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Where;
-
-import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
-import gov.healthit.chpl.util.Util;
+import gov.healthit.chpl.entity.CertificationBodyEntity;
 
 @Entity
 @Table(name = "quarterly_report")
@@ -30,12 +23,15 @@ public class QuarterlyReportEntity {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "annual_report_id")
-    private Long annualReportId;
+    @Column(name = "certification_body_id")
+    private Long certificationBodyId;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "annual_report_id", insertable = false, updatable = false)
-    private AnnualReportEntity annualReport;
+    @JoinColumn(name = "certification_body_id", insertable = false, updatable = false)
+    private CertificationBodyEntity acb;
+
+    @Column(name = "year")
+    private Integer year;
 
     @Column(name = "quarter_id")
     private Long quarterId;
@@ -76,16 +72,24 @@ public class QuarterlyReportEntity {
         this.id = id;
     }
 
-    public Long getAnnualReportId() {
-        return annualReportId;
+    public Integer getYear() {
+        return year;
     }
 
-    public void setAnnualReportId(final Long annualReportId) {
-        this.annualReportId = annualReportId;
+    public void setYear(final Integer year) {
+        this.year = year;
     }
 
-    public AnnualReportEntity getAnnualReport() {
-        return annualReport;
+    public Long getCertificationBodyId() {
+        return certificationBodyId;
+    }
+
+    public void setCertificationBodyId(final Long certificationBodyId) {
+        this.certificationBodyId = certificationBodyId;
+    }
+
+    public CertificationBodyEntity getAcb() {
+        return acb;
     }
 
     public Long getQuarterId() {

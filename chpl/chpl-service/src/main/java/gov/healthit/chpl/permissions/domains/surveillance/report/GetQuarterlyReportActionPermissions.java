@@ -21,7 +21,7 @@ public class GetQuarterlyReportActionPermissions extends ActionPermissions {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             QuarterlyReportDTO report = (QuarterlyReportDTO) obj;
-            return isAcbValidForCurrentUser(report.getAnnualReport().getAcb().getId());
+            return isAcbValidForCurrentUser(report.getAcb().getId());
         } else {
             return false;
         }

@@ -1,11 +1,13 @@
 package gov.healthit.chpl.dto.surveillance.report;
 
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.entity.surveillance.report.QuarterlyReportEntity;
 
 public class QuarterlyReportDTO {
 
     private Long id;
-    private AnnualReportDTO annualReport;
+    private CertificationBodyDTO acb;
+    private Integer year;
     private QuarterDTO quarter;
     private String activitiesOutcomesSummary;
     private String reactiveSummary;
@@ -16,16 +18,21 @@ public class QuarterlyReportDTO {
 
     public QuarterlyReportDTO(final QuarterlyReportEntity entity) {
         this.id = entity.getId();
+        this.year = entity.getYear();
         this.activitiesOutcomesSummary = entity.getActivitiesOutcomesSummary();
         this.reactiveSummary = entity.getReactiveSummary();
         this.prioritizedElementSummary = entity.getPrioritizedElementSummary();
         this.transparencyDisclosureSummary = entity.getTransparencyDisclosureSummary();
 
-        if (entity.getAnnualReport() != null) {
-            this.annualReport = new AnnualReportDTO(entity.getAnnualReport());
+        if (entity.getAcb() != null) {
+            this.acb = new CertificationBodyDTO();
+            this.acb.setId(entity.getAcb().getId());
+            this.acb.setName(entity.getAcb().getName());
+            this.acb.setAcbCode(entity.getAcb().getAcbCode());
+            this.acb.setRetired(entity.getAcb().getRetired());
         } else {
-            this.annualReport = new AnnualReportDTO();
-            this.annualReport.setId(entity.getAnnualReportId());
+            this.acb = new CertificationBodyDTO();
+            this.acb.setId(entity.getCertificationBodyId());
         }
 
         if (entity.getQuarter() != null) {
@@ -44,12 +51,20 @@ public class QuarterlyReportDTO {
         this.id = id;
     }
 
-    public AnnualReportDTO getAnnualReport() {
-        return annualReport;
+    public CertificationBodyDTO getAcb() {
+        return acb;
     }
 
-    public void setAnnualReport(final AnnualReportDTO annualReport) {
-        this.annualReport = annualReport;
+    public void setAcb(final CertificationBodyDTO acb) {
+        this.acb = acb;
+    }
+
+    public Integer getYear() {
+        return year;
+    }
+
+    public void setYear(final Integer year) {
+        this.year = year;
     }
 
     public QuarterDTO getQuarter() {

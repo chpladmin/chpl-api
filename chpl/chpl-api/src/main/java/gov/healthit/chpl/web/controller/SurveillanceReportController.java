@@ -10,7 +10,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -25,7 +24,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.FeatureList;
-import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.surveillance.report.AnnualReport;
 import gov.healthit.chpl.domain.surveillance.report.QuarterlyReport;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -36,7 +34,6 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.manager.SurveillanceReportManager;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.FileUtils;
 import io.swagger.annotations.Api;
@@ -54,8 +51,6 @@ public class SurveillanceReportController {
     private ErrorMessageUtil msgUtil;
     @Autowired
     private SurveillanceReportManager reportManager;
-    @Autowired
-    private ResourcePermissions resourcePermissions;
     @Autowired
     private FileUtils fileUtils;
     @Autowired
@@ -230,12 +225,10 @@ public class SurveillanceReportController {
 
         //create the report
         QuarterlyReportDTO quarterlyReport = new QuarterlyReportDTO();
-        AnnualReportDTO associatedAnnualReport = new AnnualReportDTO();
+        quarterlyReport.setYear(createRequest.getYear());
         CertificationBodyDTO associatedAcb = new CertificationBodyDTO();
         associatedAcb.setId(createRequest.getAcb().getId());
-        associatedAnnualReport.setAcb(associatedAcb);
-        associatedAnnualReport.setYear(createRequest.getYear());
-        quarterlyReport.setAnnualReport(associatedAnnualReport);
+        quarterlyReport.setAcb(associatedAcb);
         QuarterDTO quarter = new QuarterDTO();
         quarter.setName(createRequest.getQuarter());
         quarterlyReport.setQuarter(quarter);
@@ -299,8 +292,8 @@ public class SurveillanceReportController {
 
         //create a new file in the download directory
         QuarterlyReportDTO report = reportManager.getQuarterlyReport(quarterlyReportId);
-        String filename = report.getQuarter().getName() + "-" + report.getAnnualReport().getYear()
-                    + "-" + report.getAnnualReport().getAcb().getName() + "-quarterly-report";
+        String filename = report.getQuarter().getName() + "-" + report.getYear()
+                    + "-" + report.getAcb().getName() + "-quarterly-report";
         File tempFileToStream = File.createTempFile(filename, ".xlsx");
         //write out the workbook contents to this file
         OutputStream outputStream = null;

@@ -30,7 +30,7 @@ public class ExportQuarterlyReportActionPermissions extends ActionPermissions {
             QuarterlyReportDTO toExport = null;
             try {
                 toExport = quarterlyReportDao.getById(idToExport);
-                return isAcbValidForCurrentUser(toExport.getAnnualReport().getAcb().getId());
+                return isAcbValidForCurrentUser(toExport.getAcb().getId());
             } catch (EntityRetrievalException ex) {
                 return false;
             }

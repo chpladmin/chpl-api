@@ -130,27 +130,13 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).CREATE_QUARTERLY, #toCreate)")
     public QuarterlyReportDTO createQuarterlyReport(final QuarterlyReportDTO toCreate)
     throws EntityCreationException, InvalidArgumentsException {
-        //Quarterly report has to be associated with a year (annual report)
-        //and a quarter (Q1, Q2, etc).
-        //Make sure those pieces of data exist.
-
-        AnnualReportDTO associatedAnnualReport = toCreate.getAnnualReport();
-        if (associatedAnnualReport == null || associatedAnnualReport.getYear() == null) {
+        //Quarterly report has to have an ACB, year, and quarter
+        if (toCreate.getYear() == null) {
             throw new InvalidArgumentsException(msgUtil.getMessage("report.quarterlySurveillance.missingYear"));
-        } else if (associatedAnnualReport.getAcb() == null || associatedAnnualReport.getAcb().getId() == null) {
-            throw new InvalidArgumentsException(msgUtil.getMessage("report.quarterlySurveillance.missingAcb"));
-        } else if (associatedAnnualReport.getId() == null) {
-            AnnualReportDTO existingAnnualReport =
-                    annualDao.getByAcbAndYear(associatedAnnualReport.getAcb().getId(), associatedAnnualReport.getYear());
-            //if there's no report yet for this year and acb, create one
-            if (existingAnnualReport == null) {
-                AnnualReportDTO createdAnnualReport = annualDao.create(associatedAnnualReport);
-                toCreate.setAnnualReport(createdAnnualReport);
-            } else {
-                toCreate.setAnnualReport(existingAnnualReport);
-            }
         }
-
+        if (toCreate.getAcb() == null || toCreate.getAcb().getId() == null) {
+            throw new InvalidArgumentsException(msgUtil.getMessage("report.quarterlySurveillance.missingAcb"));
+        } 
         if (toCreate.getQuarter() == null
                 || (toCreate.getQuarter().getId() == null && StringUtils.isEmpty(toCreate.getQuarter().getName()))) {
             throw new InvalidArgumentsException("report.quarterlySurveillance.missingQuarter");
@@ -166,8 +152,8 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
         //make sure there's not already a quarterly report for this acb and year and quarter
         QuarterlyReportDTO existingQuarterlyReport =
                 quarterlyDao.getByQuarterAndAcbAndYear(toCreate.getQuarter().getId(),
-                        toCreate.getAnnualReport().getAcb().getId(),
-                        toCreate.getAnnualReport().getYear());
+                        toCreate.getAcb().getId(),
+                        toCreate.getYear());
         if (existingQuarterlyReport != null) {
             throw new EntityCreationException(msgUtil.getMessage("report.quarterlySurveillance.exists"));
         }

@@ -30,7 +30,7 @@ public class DeleteQuarterlyReportActionPermissions extends ActionPermissions {
             QuarterlyReportDTO toDelete = null;
             try {
                 toDelete = quarterlyReportDao.getById(idToDelete);
-                return isAcbValidForCurrentUser(toDelete.getAnnualReport().getAcb().getId());
+                return isAcbValidForCurrentUser(toDelete.getAcb().getId());
             } catch (EntityRetrievalException ex) {
                 return false;
             }

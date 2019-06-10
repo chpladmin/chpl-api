@@ -1,8 +1,6 @@
 package gov.healthit.chpl.manager.impl;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Workbook;
@@ -29,11 +27,9 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
-import gov.healthit.chpl.dao.surveillance.report.AnnualReportDAO;
 import gov.healthit.chpl.dao.surveillance.report.QuarterDAO;
 import gov.healthit.chpl.dao.surveillance.report.QuarterlyReportDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -63,9 +59,6 @@ public class QuarterlyReportManagerTest extends TestCase {
 
     @Autowired
     private QuarterDAO quarterDao;
-
-    @Autowired
-    private AnnualReportDAO annualReportDao;
 
     @Rule
     @Autowired
@@ -116,41 +109,6 @@ public class QuarterlyReportManagerTest extends TestCase {
         createReport();
     }
 
-//    @Test(expected = EntityCreationException.class)
-//    @Rollback(true)
-//    @Transactional
-//    public void createReport_alreadyExists()
-//            throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException {
-//        SecurityContextHolder.getContext().setAuthentication(adminUser);
-//        AnnualReportDTO annualReport = createAnnualReport(-1L, 2019);
-//        QuarterlyReportDTO toCreate = new QuarterlyReportDTO();
-//        toCreate.setAnnualReport(annualReport);
-//        toCreate.setQuarter(quarterDao.getById(1L));
-//        QuarterlyReportDTO createdReport = reportManager.createQuarterlyReport(toCreate);
-//        assertNotNull(createdReport);
-//        assertNotNull(createdReport.getId());
-//
-//        //should not be allowed to create a second one with the same year, quarter, and acb
-//        toCreate = new QuarterlyReportDTO();
-//        toCreate.setAnnualReport(annualReport);
-//        toCreate.setQuarter(quarterDao.getById(1L));
-//        reportManager.createQuarterlyReport(toCreate);
-//        SecurityContextHolder.getContext().setAuthentication(null);
-//    }
-
-    @Test(expected = InvalidArgumentsException.class)
-    @Rollback(true)
-    @Transactional
-    public void createQuarterlyReportMissingAnnualReport()
-            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-        QuarterlyReportDTO toCreate = new QuarterlyReportDTO();
-        QuarterDTO quarter = quarterDao.getById(1L);
-        toCreate.setQuarter(quarter);
-        reportManager.createQuarterlyReport(toCreate);
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
-
     @Test(expected = InvalidArgumentsException.class)
     @Rollback(true)
     @Transactional
@@ -160,9 +118,7 @@ public class QuarterlyReportManagerTest extends TestCase {
         QuarterlyReportDTO toCreate = new QuarterlyReportDTO();
         QuarterDTO quarter = quarterDao.getById(1L);
         toCreate.setQuarter(quarter);
-        AnnualReportDTO annualReport = new AnnualReportDTO();
-        annualReport.setYear(2019);
-        toCreate.setAnnualReport(annualReport);
+        toCreate.setYear(2019);
         reportManager.createQuarterlyReport(toCreate);
         SecurityContextHolder.getContext().setAuthentication(null);
     }
@@ -176,11 +132,9 @@ public class QuarterlyReportManagerTest extends TestCase {
         QuarterlyReportDTO toCreate = new QuarterlyReportDTO();
         QuarterDTO quarter = quarterDao.getById(1L);
         toCreate.setQuarter(quarter);
-        AnnualReportDTO annualReport = new AnnualReportDTO();
         CertificationBodyDTO acb = new CertificationBodyDTO();
         acb.setId(-2L);
-        annualReport.setAcb(acb);
-        toCreate.setAnnualReport(annualReport);
+        toCreate.setAcb(acb);
         reportManager.createQuarterlyReport(toCreate);
         SecurityContextHolder.getContext().setAuthentication(null);
     }
@@ -190,9 +144,11 @@ public class QuarterlyReportManagerTest extends TestCase {
     @Transactional
     public void createQuarterlyReportMissingQuarter() throws EntityCreationException, InvalidArgumentsException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        AnnualReportDTO annualReport = createAnnualReport(-1L, 2019);
         QuarterlyReportDTO toCreate = new QuarterlyReportDTO();
-        toCreate.setAnnualReport(annualReport);
+        toCreate.setYear(2019);
+        CertificationBodyDTO acb = new CertificationBodyDTO();
+        acb.setId(-1L);
+        toCreate.setAcb(acb);
         reportManager.createQuarterlyReport(toCreate);
         SecurityContextHolder.getContext().setAuthentication(null);
     }
@@ -202,72 +158,15 @@ public class QuarterlyReportManagerTest extends TestCase {
     @Transactional
     public void createQuarterlyReportInvalidQuarter() throws EntityCreationException, InvalidArgumentsException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        AnnualReportDTO annualReport = createAnnualReport(-1L, 2019);
         QuarterlyReportDTO toCreate = new QuarterlyReportDTO();
-        toCreate.setAnnualReport(annualReport);
+        toCreate.setYear(2019);
+        CertificationBodyDTO acb = new CertificationBodyDTO();
+        acb.setId(-1L);
+        toCreate.setAcb(acb);
         QuarterDTO quarter = new QuarterDTO();
         quarter.setName("BOGUS");
         toCreate.setQuarter(quarter);
         reportManager.createQuarterlyReport(toCreate);
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
-
-    @Test
-    @Rollback(true)
-    @Transactional
-    public void createQuarterlyReportAnnualReportAlreadyExists()
-            throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-        AnnualReportDTO annualReport = createAnnualReport(-1L, 2019);
-        QuarterlyReportDTO toCreate = new QuarterlyReportDTO();
-        toCreate.setAnnualReport(annualReport);
-        toCreate.setQuarter(quarterDao.getById(1L));
-        QuarterlyReportDTO createdReport = reportManager.createQuarterlyReport(toCreate);
-        assertNotNull(createdReport);
-        assertNotNull(createdReport.getId());
-        assertTrue(createdReport.getId() > 0);
-        assertNotNull(createdReport.getAnnualReport());
-        assertEquals(createdReport.getAnnualReport().getId().longValue(), annualReport.getId().longValue());
-        assertNotNull(createdReport.getAnnualReport().getYear());
-        assertEquals(createdReport.getAnnualReport().getYear().intValue(), annualReport.getYear().longValue());
-        assertNotNull(createdReport.getAnnualReport().getAcb());
-        assertNotNull(createdReport.getAnnualReport().getAcb().getId());
-        assertEquals(createdReport.getAnnualReport().getAcb().getId().longValue(), annualReport.getAcb().getId().longValue());
-        assertNotNull(createdReport.getQuarter());
-        assertEquals(createdReport.getQuarter().getId().longValue(), toCreate.getQuarter().getId().longValue());
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
-
-    @Test
-    @Rollback(true)
-    @Transactional
-    public void createQuarterlyReportAnnualReportDoesNotExist()
-            throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-        Integer year = 2019;
-        Long acbId = -2L;
-
-        AnnualReportDTO annualReport = new AnnualReportDTO();
-        annualReport.setYear(year);
-        CertificationBodyDTO acb = new CertificationBodyDTO();
-        acb.setId(acbId);
-        annualReport.setAcb(acb);
-        QuarterlyReportDTO toCreate = new QuarterlyReportDTO();
-        toCreate.setAnnualReport(annualReport);
-        toCreate.setQuarter(quarterDao.getById(1L));
-        QuarterlyReportDTO createdReport = reportManager.createQuarterlyReport(toCreate);
-        assertNotNull(createdReport);
-        assertNotNull(createdReport.getId());
-        assertTrue(createdReport.getId() > 0);
-        assertNotNull(createdReport.getAnnualReport());
-        assertTrue(createdReport.getAnnualReport().getId() > 0);
-        assertNotNull(createdReport.getAnnualReport().getYear());
-        assertEquals(year.intValue(), createdReport.getAnnualReport().getYear().intValue());
-        assertNotNull(createdReport.getAnnualReport().getAcb());
-        assertNotNull(createdReport.getAnnualReport().getAcb().getId());
-        assertEquals(acbId.longValue(), createdReport.getAnnualReport().getAcb().getId().longValue());
-        assertNotNull(createdReport.getQuarter());
-        assertEquals(createdReport.getQuarter().getId().longValue(), toCreate.getQuarter().getId().longValue());
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
@@ -280,9 +179,11 @@ public class QuarterlyReportManagerTest extends TestCase {
         String quarterName = "Q1";
 
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        AnnualReportDTO annualReport = createAnnualReport(-1L, 2019);
         QuarterlyReportDTO toCreate = new QuarterlyReportDTO();
-        toCreate.setAnnualReport(annualReport);
+        toCreate.setYear(2019);
+        CertificationBodyDTO acb = new CertificationBodyDTO();
+        acb.setId(-1L);
+        toCreate.setAcb(acb);
         QuarterDTO quarter = new QuarterDTO();
         quarter.setName(quarterName);
         toCreate.setQuarter(quarter);
@@ -290,13 +191,10 @@ public class QuarterlyReportManagerTest extends TestCase {
         assertNotNull(createdReport);
         assertNotNull(createdReport.getId());
         assertTrue(createdReport.getId() > 0);
-        assertNotNull(createdReport.getAnnualReport());
-        assertEquals(createdReport.getAnnualReport().getId().longValue(), annualReport.getId().longValue());
-        assertNotNull(createdReport.getAnnualReport().getYear());
-        assertEquals(createdReport.getAnnualReport().getYear().intValue(), annualReport.getYear().longValue());
-        assertNotNull(createdReport.getAnnualReport().getAcb());
-        assertNotNull(createdReport.getAnnualReport().getAcb().getId());
-        assertEquals(createdReport.getAnnualReport().getAcb().getId().longValue(), annualReport.getAcb().getId().longValue());
+        assertEquals(toCreate.getYear(), createdReport.getYear());
+        assertNotNull(createdReport.getAcb());
+        assertNotNull(createdReport.getAcb().getId());
+        assertEquals(toCreate.getAcb().getId(), createdReport.getAcb().getId());
         assertNotNull(createdReport.getQuarter());
         assertEquals(createdReport.getQuarter().getName(), quarterName);
         SecurityContextHolder.getContext().setAuthentication(null);
@@ -307,15 +205,13 @@ public class QuarterlyReportManagerTest extends TestCase {
     @Transactional
     public void createQuarterlyReportAsAnonymousUser()
             throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException {
-        AnnualReportDTO annualReport = new AnnualReportDTO();
-        annualReport.setYear(2019);
-        CertificationBodyDTO acb = new CertificationBodyDTO();
-        acb.setId(-2L);
-        annualReport.setAcb(acb);
         QuarterDTO quarter = new QuarterDTO();
         quarter.setName("Q1");
         QuarterlyReportDTO toCreate = new QuarterlyReportDTO();
-        toCreate.setAnnualReport(annualReport);
+        toCreate.setYear(2019);
+        CertificationBodyDTO acb = new CertificationBodyDTO();
+        acb.setId(-2L);
+        toCreate.setAcb(acb);
         toCreate.setQuarter(quarter);
         reportManager.createQuarterlyReport(toCreate);
     }
@@ -326,15 +222,13 @@ public class QuarterlyReportManagerTest extends TestCase {
     public void createQuarterlyReportAsAtlUser()
             throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException {
         SecurityContextHolder.getContext().setAuthentication(atlUser);
-        AnnualReportDTO annualReport = new AnnualReportDTO();
-        annualReport.setYear(2019);
-        CertificationBodyDTO acb = new CertificationBodyDTO();
-        acb.setId(-2L);
-        annualReport.setAcb(acb);
         QuarterDTO quarter = new QuarterDTO();
         quarter.setName("Q1");
         QuarterlyReportDTO toCreate = new QuarterlyReportDTO();
-        toCreate.setAnnualReport(annualReport);
+        toCreate.setYear(2019);
+        CertificationBodyDTO acb = new CertificationBodyDTO();
+        acb.setId(-2L);
+        toCreate.setAcb(acb);
         toCreate.setQuarter(quarter);
         reportManager.createQuarterlyReport(toCreate);
         SecurityContextHolder.getContext().setAuthentication(null);
@@ -346,15 +240,13 @@ public class QuarterlyReportManagerTest extends TestCase {
     public void createQuarterlyReportAsOncUser()
             throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException {
         SecurityContextHolder.getContext().setAuthentication(oncUser);
-        AnnualReportDTO annualReport = new AnnualReportDTO();
-        annualReport.setYear(2019);
-        CertificationBodyDTO acb = new CertificationBodyDTO();
-        acb.setId(-2L);
-        annualReport.setAcb(acb);
         QuarterDTO quarter = new QuarterDTO();
         quarter.setName("Q1");
         QuarterlyReportDTO toCreate = new QuarterlyReportDTO();
-        toCreate.setAnnualReport(annualReport);
+        toCreate.setYear(2019);
+        CertificationBodyDTO acb = new CertificationBodyDTO();
+        acb.setId(-2L);
+        toCreate.setAcb(acb);
         toCreate.setQuarter(quarter);
         reportManager.createQuarterlyReport(toCreate);
         SecurityContextHolder.getContext().setAuthentication(null);
@@ -366,15 +258,13 @@ public class QuarterlyReportManagerTest extends TestCase {
     public void createQuarterlyReportAsCmsUser()
             throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException {
         SecurityContextHolder.getContext().setAuthentication(cmsUser);
-        AnnualReportDTO annualReport = new AnnualReportDTO();
-        annualReport.setYear(2019);
-        CertificationBodyDTO acb = new CertificationBodyDTO();
-        acb.setId(-2L);
-        annualReport.setAcb(acb);
         QuarterDTO quarter = new QuarterDTO();
         quarter.setName("Q1");
         QuarterlyReportDTO toCreate = new QuarterlyReportDTO();
-        toCreate.setAnnualReport(annualReport);
+        toCreate.setYear(2019);
+        CertificationBodyDTO acb = new CertificationBodyDTO();
+        acb.setId(-2L);
+        toCreate.setAcb(acb);
         toCreate.setQuarter(quarter);
         reportManager.createQuarterlyReport(toCreate);
         SecurityContextHolder.getContext().setAuthentication(null);
@@ -386,15 +276,13 @@ public class QuarterlyReportManagerTest extends TestCase {
     public void createQuarterlyReportForBadAcbAsAcbUser()
             throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException {
         SecurityContextHolder.getContext().setAuthentication(acbUser);
-        AnnualReportDTO annualReport = new AnnualReportDTO();
-        annualReport.setYear(2019);
-        CertificationBodyDTO acb = new CertificationBodyDTO();
-        acb.setId(-2L);
-        annualReport.setAcb(acb);
         QuarterDTO quarter = new QuarterDTO();
         quarter.setName("Q1");
         QuarterlyReportDTO toCreate = new QuarterlyReportDTO();
-        toCreate.setAnnualReport(annualReport);
+        toCreate.setYear(2019);
+        CertificationBodyDTO acb = new CertificationBodyDTO();
+        acb.setId(-2L);
+        toCreate.setAcb(acb);
         toCreate.setQuarter(quarter);
         reportManager.createQuarterlyReport(toCreate);
         SecurityContextHolder.getContext().setAuthentication(null);
@@ -406,15 +294,13 @@ public class QuarterlyReportManagerTest extends TestCase {
     public void createQuarterlyReportForAllowedAcbAsAcbUser()
             throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException {
         SecurityContextHolder.getContext().setAuthentication(acbUser);
-        AnnualReportDTO annualReport = new AnnualReportDTO();
-        annualReport.setYear(2019);
-        CertificationBodyDTO acb = new CertificationBodyDTO();
-        acb.setId(-1L);
-        annualReport.setAcb(acb);
         QuarterDTO quarter = new QuarterDTO();
         quarter.setName("Q1");
         QuarterlyReportDTO toCreate = new QuarterlyReportDTO();
-        toCreate.setAnnualReport(annualReport);
+        toCreate.setYear(2019);
+        CertificationBodyDTO acb = new CertificationBodyDTO();
+        acb.setId(-1L);
+        toCreate.setAcb(acb);
         toCreate.setQuarter(quarter);
         QuarterlyReportDTO created = reportManager.createQuarterlyReport(toCreate);
         assertNotNull(created);
@@ -531,15 +417,13 @@ public class QuarterlyReportManagerTest extends TestCase {
             throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException,
             IOException {
         SecurityContextHolder.getContext().setAuthentication(acbUser);
-        AnnualReportDTO annualReport = new AnnualReportDTO();
-        annualReport.setYear(2019);
-        CertificationBodyDTO acb = new CertificationBodyDTO();
-        acb.setId(-1L);
-        annualReport.setAcb(acb);
         QuarterDTO quarter = new QuarterDTO();
         quarter.setName("Q1");
         QuarterlyReportDTO toCreate = new QuarterlyReportDTO();
-        toCreate.setAnnualReport(annualReport);
+        toCreate.setYear(2019);
+        CertificationBodyDTO acb = new CertificationBodyDTO();
+        acb.setId(-1L);
+        toCreate.setAcb(acb);
         toCreate.setQuarter(quarter);
         toCreate.setActivitiesOutcomesSummary("In order to meet its obligation to conduct reactive surveillance, the ONC-ACB undertook the following activities and implemented the following measures to ensure that it was able to systematically obtain, synthesize and act on all facts and circumstances that would cause a reasonable person to question the ongoing compliance of any certified Complete EHR or certified Health IT Module. In order to meet its obligation to conduct reactive surveillance, the ONC-ACB undertook the following activities and implemented the following measures to ensure that it was able to systematically obtain, synthesize and act on all facts and circumstances that would cause a reasonable person to question the ongoing compliance of any certified Complete EHR or certified Health IT Module. ");
         toCreate.setReactiveSummary("test reactive element summary");
@@ -572,15 +456,13 @@ public class QuarterlyReportManagerTest extends TestCase {
             throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException,
             IOException {
         SecurityContextHolder.getContext().setAuthentication(acbUser);
-        AnnualReportDTO annualReport = new AnnualReportDTO();
-        annualReport.setYear(2019);
-        CertificationBodyDTO acb = new CertificationBodyDTO();
-        acb.setId(-4L);
-        annualReport.setAcb(acb);
         QuarterDTO quarter = new QuarterDTO();
         quarter.setName("Q1");
         QuarterlyReportDTO toCreate = new QuarterlyReportDTO();
-        toCreate.setAnnualReport(annualReport);
+        toCreate.setYear(2019);
+        CertificationBodyDTO acb = new CertificationBodyDTO();
+        acb.setId(-4L);
+        toCreate.setAcb(acb);
         toCreate.setQuarter(quarter);
         toCreate.setActivitiesOutcomesSummary("In order to meet its obligation to conduct reactive surveillance, the ONC-ACB undertook the following activities and implemented the following measures to ensure that it was able to systematically obtain, synthesize and act on all facts and circumstances that would cause a reasonable person to question the ongoing compliance of any certified Complete EHR or certified Health IT Module. In order to meet its obligation to conduct reactive surveillance, the ONC-ACB undertook the following activities and implemented the following measures to ensure that it was able to systematically obtain, synthesize and act on all facts and circumstances that would cause a reasonable person to question the ongoing compliance of any certified Complete EHR or certified Health IT Module. ");
         toCreate.setReactiveSummary("test reactive element summary");
@@ -598,13 +480,15 @@ public class QuarterlyReportManagerTest extends TestCase {
 
     private QuarterlyReportDTO createReport(final Long acbId, final Integer year, final Long quarterId) throws EntityCreationException, EntityRetrievalException {
         QuarterDTO quarter = quarterDao.getById(quarterId);
-        AnnualReportDTO annualReport = createAnnualReport(acbId, year);
         String activitiesOutcomesSummary = "summary";
         String prioritizedElementSummary = "test";
         String reactiveSummary = "test";
         String transparencyDisclosureSummary = "test";
         QuarterlyReportDTO toCreate = new QuarterlyReportDTO();
-        toCreate.setAnnualReport(annualReport);
+        toCreate.setYear(year);
+        CertificationBodyDTO acb = new CertificationBodyDTO();
+        acb.setId(acbId);
+        toCreate.setAcb(acb);
         toCreate.setQuarter(quarter);
         toCreate.setActivitiesOutcomesSummary(activitiesOutcomesSummary);
         toCreate.setPrioritizedElementSummary(prioritizedElementSummary);
@@ -618,31 +502,12 @@ public class QuarterlyReportManagerTest extends TestCase {
         assertEquals(prioritizedElementSummary, created.getPrioritizedElementSummary());
         assertEquals(reactiveSummary, created.getReactiveSummary());
         assertEquals(transparencyDisclosureSummary, created.getTransparencyDisclosureSummary());
-        assertNotNull(created.getAnnualReport());
-        assertEquals(annualReport.getId(), created.getAnnualReport().getId());
+        assertEquals(year, created.getYear());
+        assertNotNull(created.getAcb());
+        assertNotNull(created.getAcb().getId());
+        assertEquals(acbId, created.getAcb().getId());
         assertNotNull(created.getQuarter());
         assertEquals(quarter.getId(), created.getQuarter().getId());
-        return created;
-    }
-
-    private AnnualReportDTO createAnnualReport(Long acbId, Integer year) throws EntityCreationException {
-        String findingsSummary = "test";
-        String obstacleSummary = "test";
-        AnnualReportDTO toCreate = new AnnualReportDTO();
-        toCreate.setFindingsSummary(findingsSummary);
-        toCreate.setObstacleSummary(obstacleSummary);
-        toCreate.setYear(year);
-        CertificationBodyDTO acb = new CertificationBodyDTO();
-        acb.setId(acbId);
-        toCreate.setAcb(acb);
-        AnnualReportDTO created = annualReportDao.create(toCreate);
-        assertNotNull(created);
-        assertNotNull(created.getId());
-        assertTrue(created.getId() > 0);
-        assertEquals(findingsSummary, created.getFindingsSummary());
-        assertEquals(obstacleSummary, created.getObstacleSummary());
-        assertEquals(year, created.getYear());
-        assertEquals(acb.getId(), created.getAcb().getId());
         return created;
     }
 }

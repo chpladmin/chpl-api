@@ -123,7 +123,7 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
 
         row = sheet.createRow(9);
         cell = createCell(row, 1);
-        cell.setCellValue(report.getAnnualReport().getAcb().getName());
+        cell.setCellValue(report.getAcb().getName());
         pt.drawBorders(new CellRangeAddress(9, 9, 1, 1),
                 BorderStyle.MEDIUM, BorderExtent.ALL);
     }
@@ -144,11 +144,11 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
         row = sheet.createRow(13);
         cell = createCell(row, 1);
         Calendar quarterStartCal = Calendar.getInstance();
-        quarterStartCal.set(Calendar.YEAR, report.getAnnualReport().getYear());
+        quarterStartCal.set(Calendar.YEAR, report.getYear());
         quarterStartCal.set(Calendar.MONTH, report.getQuarter().getStartMonth()-1);
         quarterStartCal.set(Calendar.DAY_OF_MONTH, report.getQuarter().getStartDay());
         Calendar quarterEndCal = Calendar.getInstance();
-        quarterEndCal.set(Calendar.YEAR, report.getAnnualReport().getYear());
+        quarterEndCal.set(Calendar.YEAR, report.getYear());
         quarterEndCal.set(Calendar.MONTH, report.getQuarter().getEndMonth()-1);
         quarterEndCal.set(Calendar.DAY_OF_MONTH, report.getQuarter().getEndDay());
         DateFormat dateFormatter = new SimpleDateFormat("d MMMM yyyy");
