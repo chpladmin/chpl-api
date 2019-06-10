@@ -58,7 +58,7 @@ public class ComplaintController {
         if (ff4j.check(FeatureList.COMPLAINTS)) {
             ValidationException error = new ValidationException();
             //Make sure there is an ACB
-            if (complaint.getCertificationBody() == null) {
+            if (complaint.getCertificationBody() == null || complaint.getCertificationBody().getId() == null) {
                 error.getErrorMessages().add(errorMessageUtil.getMessage("complaints.update.acbRequired"));
                 throw error;
             }
