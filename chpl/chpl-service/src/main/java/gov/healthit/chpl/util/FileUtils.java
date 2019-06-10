@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -67,6 +68,44 @@ public final class FileUtils {
     }
 
     /**
+     * Get a reference to the system download folder.
+     * @return
+     * @throws IOException
+     */
+    public File getDownloadFolder() throws IOException {
+        String downloadFolderPath = env.getProperty(DOWNLOAD_FOLDER_PROPERTY_NAME);
+        File downloadFolder = new File(downloadFolderPath);
+        if (!downloadFolder.exists() || !downloadFolder.canRead()) {
+            throw new IOException(msgUtil.getMessage("resources.noReadPermission", downloadFolderPath));
+        }
+        return downloadFolder;
+    }
+
+    /**
+     * Creates a new file with the specified name in the system download directory.
+     * If a file already exists with the same name, makes an attempt to delete
+     * the existing file before creating the new one.
+     * @param filename
+     * @return
+     * @throws IOException
+     */
+    public File createDownloadFile(final String filename) throws IOException {
+        File downloadFolder = getDownloadFolder();
+        String absoluteFilename = downloadFolder.getAbsolutePath()
+                + File.separator + filename;
+        File newDownloadFile = new File(absoluteFilename);
+        if (newDownloadFile.exists()) {
+            if (!newDownloadFile.delete()) {
+                throw new IOException(msgUtil.getMessage("util.file.cannotDelete", absoluteFilename));
+            }
+        }
+        if (!newDownloadFile.createNewFile()) {
+            throw new IOException(msgUtil.getMessage("util.file.cannotCreate", absoluteFilename));
+        }
+        return newDownloadFile;
+    }
+
+    /**
      * Reads the contents of a file in the download folder into a byte array.
      * @param filename the name of the file in the download folder
      * @return the contents of the file as a byte array
@@ -86,15 +125,10 @@ public final class FileUtils {
      * found under downloadFolderPath or if the file exists but cannot be read.
      */
     public File getDownloadFile(final String filename) throws IOException {
-        String downloadFolderPath = env.getProperty(DOWNLOAD_FOLDER_PROPERTY_NAME);
-        File downloadFolder = new File(downloadFolderPath);
-        if (!downloadFolder.exists() || !downloadFolder.canRead()) {
-            throw new IOException(msgUtil.getMessage("resources.noReadPermission", downloadFolderPath));
-        }
-
-        File downloadFile = new File(downloadFolderPath + File.separator + filename);
+        File downloadFolder = getDownloadFolder();
+        File downloadFile = new File(downloadFolder.getAbsolutePath() + File.separator + filename);
         if (!downloadFile.exists() || !downloadFile.canRead()) {
-            throw new IOException("Cannot read download file at " + downloadFolderPath
+            throw new IOException("Cannot read download file at " + downloadFolder.getAbsolutePath()
                     + File.separator + filename
                     + ". File does not exist or cannot be read.");
         }
@@ -145,7 +179,7 @@ public final class FileUtils {
                 OutputStream outStream = response.getOutputStream();) {
 
             // set content attributes for the response
-            response.setContentType("text/csv");
+            response.setContentType(contentType);
             response.setContentLength((int) file.length());
 
             // set headers for the response

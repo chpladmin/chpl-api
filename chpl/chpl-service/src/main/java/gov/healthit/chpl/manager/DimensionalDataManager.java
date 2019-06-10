@@ -19,6 +19,8 @@ public interface DimensionalDataManager {
 
     Set<KeyValueModel> getJobTypes();
 
+    Set<KeyValueModel> getQuarters();
+
     Set<KeyValueModel> getClassificationNames();
 
     Set<KeyValueModel> getEditionNames(Boolean simple);
