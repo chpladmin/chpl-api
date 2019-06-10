@@ -1,5 +1,7 @@
 package gov.healthit.chpl.web.controller;
 
+import java.util.Set;
+
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -12,6 +14,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
@@ -21,6 +24,7 @@ import gov.healthit.chpl.UnitTestUtil;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
+import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.search.NonconformitySearchOptions;
 import gov.healthit.chpl.domain.search.SearchRequest;
 import gov.healthit.chpl.domain.search.SearchResponse;
@@ -543,5 +547,20 @@ public class SearchViewControllerTest extends TestCase {
         assertEquals(1, response.getRecordCount().intValue());
         assertNotNull(response.getResults());
         assertEquals(1, response.getResults().size());
+    }
+
+    @Transactional
+    @Test()
+    public void getQuarters() {
+        Set<KeyValueModel> response = searchViewController.getQuarters();
+        assertNotNull(response);
+        assertEquals(4, response.size());
+        for (KeyValueModel item : response) {
+            assertNotNull(item.getId());
+            assertTrue(item.getId() > 0);
+            assertTrue(!StringUtils.isEmpty(item.getName()));
+            assertTrue(item.getName().startsWith("Q"));
+            assertNotNull(item.getDescription());
+        }
     }
 }

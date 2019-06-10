@@ -47,12 +47,13 @@ public class AuthUtil {
 
         if (auth instanceof JWTAuthenticatedUser) {
             user = (JWTAuthenticatedUser) auth;
+            if (user.getImpersonatingUser() != null) {
+                return user.getImpersonatingUser().getId();
+            } else {
+                return user.getId();
+            }
         }
-        if (user.getImpersonatingUser() != null) {
-            return user.getImpersonatingUser().getId();
-        } else {
-            return user.getId();
-        }
+        return -1;
     }
 
     public static Authentication getCurrentAuthentication() {
