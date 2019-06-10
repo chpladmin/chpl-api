@@ -822,10 +822,8 @@ public class SearchViewController {
         return dimensionalDataManager.getJobTypes();
     }
 
-    @Secured({
-        Authority.ROLE_ADMIN, Authority.ROLE_ONC
-    })
-    @ApiOperation(value = "Get all fuzzy matching choices for the items that be fuzzy matched.")
+    @ApiOperation(value = "Get all fuzzy matching choices for the items that be fuzzy matched.",
+            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/data/fuzzy_choices", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)

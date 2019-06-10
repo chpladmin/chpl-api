@@ -14,6 +14,7 @@ import gov.healthit.chpl.permissions.domains.CorrectiveActionPlanDomainPermissio
 import gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions;
 import gov.healthit.chpl.permissions.domains.DomainPermissions;
 import gov.healthit.chpl.permissions.domains.FilterDomainPermissions;
+import gov.healthit.chpl.permissions.domains.FuzzyMatchPermissions;
 import gov.healthit.chpl.permissions.domains.InvitationDomainPermissions;
 import gov.healthit.chpl.permissions.domains.JobDomainPermissions;
 import gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions;
@@ -49,6 +50,7 @@ public class Permissions {
     public static final String TESTING_LAB = "TESTING_LAB";
     public static final String FILTER = "FILTER";
     public static final String ACTIVITY_METADATA = "ACTIVTY_METADATA";
+    public static final String FUZZY_MATCH = "FUZZY_MATCH";
 
     private Map<String, DomainPermissions> domainPermissions = new HashMap<String, DomainPermissions>();
 
@@ -70,7 +72,8 @@ public class Permissions {
             final SecuredUserDomainPermissions securedUserDomainPermissions,
             final SchedulerDomainPermissions schedulerDomainPermissions,
             final TestingLabDomainPermissions testingLabDomainPermissions,
-            final FilterDomainPermissions filterDomainPermissions) {
+            final FilterDomainPermissions filterDomainPermissions,
+            final FuzzyMatchPermissions fuzzyMatchPermissions) {
 
         domainPermissions.put(PENDING_SURVEILLANCE, pendingSurveillanceDomainPermissions);
         domainPermissions.put(CERTIFICATION_RESULTS, certificationResultsDomainPermissions);
@@ -91,6 +94,7 @@ public class Permissions {
         domainPermissions.put(SCHEDULER, schedulerDomainPermissions);
         domainPermissions.put(TESTING_LAB, testingLabDomainPermissions);
         domainPermissions.put(FILTER, filterDomainPermissions);
+        domainPermissions.put(FUZZY_MATCH, fuzzyMatchPermissions);
     }
 
     public boolean hasAccess(final String domain, final String action) {
