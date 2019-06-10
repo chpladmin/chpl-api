@@ -62,7 +62,7 @@ public class SurveillanceReportController {
     private FF4j ff4j;
 
     @ApiOperation(value = "Get all annual surveillance reports this user has access to.",
-            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative "
                     + "authority on the ACB associated with the report.")
     @RequestMapping(value = "/annual", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<AnnualReport> getAllAnnualReports() throws AccessDeniedException {
@@ -78,7 +78,7 @@ public class SurveillanceReportController {
     }
 
     @ApiOperation(value = "Get a specific annual surveillance report by ID.",
-            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative "
                     + "authority on the ACB associated with the report.")
     @RequestMapping(value = "/annual/{annualReportId}",
         method = RequestMethod.GET, produces = "application/json; charset=utf-8")
@@ -153,7 +153,7 @@ public class SurveillanceReportController {
     }
 
     @ApiOperation(value = "Download an annaul report as an XLSX file.",
-            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority "
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative authority "
                     + "on the ACB associated with the report.")
     @RequestMapping(value = "/export/annual/{annualReportId}", method = RequestMethod.GET)
     public void exportAnnualReport(@PathVariable("annualReportId") final Long annualReportId,
