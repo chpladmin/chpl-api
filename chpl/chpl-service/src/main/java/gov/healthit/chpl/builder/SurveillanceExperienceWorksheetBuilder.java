@@ -18,6 +18,7 @@ import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
 public class SurveillanceExperienceWorksheetBuilder extends XlsxWorksheetBuilder {
     private static final int LAST_DATA_COLUMN = 8;
     private static final int LAST_DATA_ROW = 60;
+    private static final int MIN_TEXT_AREA_LINES = 10;
 
     private PropertyTemplate pt;
 
@@ -83,11 +84,12 @@ public class SurveillanceExperienceWorksheetBuilder extends XlsxWorksheetBuilder
         cell = createCell(row, 1);
         cell.setCellStyle(wrappedStyle);
         cell.getCellStyle().setVerticalAlignment(VerticalAlignment.TOP);
-        //TODO: calculate row height based on the length of the text filling up
-        //the width of the cells and wrapping; height of 3 is the minimum
-        row.setHeightInPoints((25*sheet.getDefaultRowHeightInPoints()));
         cell.setCellValue(report.getObstacleSummary());
         sheet.addMergedRegion(new CellRangeAddress(2, 2, 1, 3));
+        //this is user-entered text that wraps so we should try to resize the height
+        //of the row to show all the lines of text.
+        int lineCount = calculateLineCount(cell.getStringCellValue(), sheet, 1, 3);
+        row.setHeightInPoints((Math.max(MIN_TEXT_AREA_LINES, lineCount) * sheet.getDefaultRowHeightInPoints()));
         pt.drawBorders(new CellRangeAddress(1, 2, 1, 3),
                 BorderStyle.MEDIUM, BorderExtent.ALL);
     }
@@ -108,10 +110,15 @@ public class SurveillanceExperienceWorksheetBuilder extends XlsxWorksheetBuilder
         cell = createCell(row, 5);
         cell.setCellStyle(wrappedStyle);
         cell.getCellStyle().setVerticalAlignment(VerticalAlignment.TOP);
-        //TODO: calculate row height based on the length of the text filling up
-        //the width of the cells and wrapping; height of 3 is the minimum
-        row.setHeightInPoints((25*sheet.getDefaultRowHeightInPoints()));
         cell.setCellValue(report.getFindingsSummary());
+        //this is user-entered text that wraps so we should try to resize the height
+        //of the row to show all the lines of text.
+        int lineCount = calculateLineCount(cell.getStringCellValue(), sheet, 5, 5);
+        //take the max of the height found for this row in the other section and the height
+        //found for this row in this section (two sections sharing the same row)
+        row.setHeightInPoints(Math.max(row.getHeightInPoints(), 
+                (Math.max(MIN_TEXT_AREA_LINES, lineCount) * sheet.getDefaultRowHeightInPoints())));
+
         pt.drawBorders(new CellRangeAddress(1, 2, 5, 5),
                 BorderStyle.MEDIUM, BorderExtent.ALL);
     }

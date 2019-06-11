@@ -25,6 +25,7 @@ import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
     private static final int LAST_DATA_COLUMN = 6;
     private static final int LAST_DATA_ROW = 60;
+    private static final int MIN_TEXT_AREA_LINES = 4;
     private PropertyTemplate pt;
 
     public ReportInfoWorksheetBuilder(final Workbook workbook) {
@@ -55,6 +56,11 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
         sheet.setDisplayGridlines(false);
         sheet.setDisplayRowColHeadings(false);
 
+        //columns B, C, and D need a certain width to get word wrap right
+        sheet.setColumnWidth(1, getColumnWidth(50.67));
+        sheet.setColumnWidth(2,  getColumnWidth(42));
+        sheet.setColumnWidth(3, getColumnWidth(42));
+
         createHeader(sheet);
         createSectionOne(sheet, reports);
         createSectionTwo(sheet, reports);
@@ -62,11 +68,6 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
         createSectionFour(sheet, reports);
         createSectionFive(sheet, reports);
         createSectionSix(sheet);
-
-        //columns B, C, and D need a certain width to get word wrap right
-        sheet.setColumnWidth(1, getColumnWidth(51));
-        sheet.setColumnWidth(2,  getColumnWidth(42));
-        sheet.setColumnWidth(3, getColumnWidth(42));
 
         //apply the borders after the sheet has been created
         pt.applyBorders(sheet);
@@ -189,9 +190,6 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
         cell = createCell(row, 1);
         cell.setCellStyle(wrappedStyle);
         cell.getCellStyle().setVerticalAlignment(VerticalAlignment.TOP);
-        //TODO: calculate row height based on the length of the text filling up
-        //the width of the cells and wrapping; height of 3 lines per report is the minimum
-        row.setHeightInPoints((3*reports.size()*sheet.getDefaultRowHeightInPoints()));
         if (reports.size() == 1) {
             cell.setCellValue(reports.get(0).getActivitiesOutcomesSummary());
         } else {
@@ -204,6 +202,11 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
             cell.setCellValue(buf.toString());
         }
         sheet.addMergedRegion(new CellRangeAddress(17, 17, 1, 3));
+        //this is user-entered text that wraps so we should try to resize the height
+        //of the row to show all the lines of text.
+        int lineCount = calculateLineCount(cell.getStringCellValue(), sheet, 1, 3);
+        row.setHeightInPoints((Math.max(MIN_TEXT_AREA_LINES, lineCount) * sheet.getDefaultRowHeightInPoints()));
+
         pt.drawBorders(new CellRangeAddress(17, 17, 1, 3),
                 BorderStyle.MEDIUM, BorderExtent.ALL);
 
@@ -267,8 +270,6 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
                 + "Health IT Module. ");
         sheet.addMergedRegion(new CellRangeAddress(38, 38, 1, 3));
         row = sheet.createRow(39);
-        //TODO: can we figure out the row height actually needed for the text provided?
-        row.setHeightInPoints((10*reports.size()*sheet.getDefaultRowHeightInPoints()));
         cell = createCell(row, 1);
         cell.setCellStyle(wrappedStyle);
         if (reports.size() == 1) {
@@ -282,6 +283,10 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
             }
             cell.setCellValue(buf.toString());
         }
+        //this is user-entered text that wraps so we should try to resize the height
+        //of the row to show all the lines of text.
+        int lineCount = calculateLineCount(cell.getStringCellValue(), sheet, 1, 3);
+        row.setHeightInPoints((Math.max(MIN_TEXT_AREA_LINES, lineCount) * sheet.getDefaultRowHeightInPoints()));
         pt.drawBorders(new CellRangeAddress(39, 39, 1, 3),
                 BorderStyle.MEDIUM, BorderExtent.OUTSIDE);
         sheet.addMergedRegion(new CellRangeAddress(39, 39, 1, 3));
@@ -308,8 +313,6 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
         row.setHeightInPoints((2*sheet.getDefaultRowHeightInPoints()));
         sheet.addMergedRegion(new CellRangeAddress(43, 43, 1, 3));
         row = sheet.createRow(45);
-        //TODO: can we figure out the row height actually needed for the text provided?
-        row.setHeightInPoints((10*reports.size()*sheet.getDefaultRowHeightInPoints()));
         cell = createCell(row, 1);
         cell.setCellStyle(wrappedStyle);
         if (reports.size() == 1) {
@@ -323,6 +326,10 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
             }
             cell.setCellValue(buf.toString());
         }
+        //this is user-entered text that wraps so we should try to resize the height
+        //of the row to show all the lines of text.
+        int lineCount = calculateLineCount(cell.getStringCellValue(), sheet, 1, 3);
+        row.setHeightInPoints((Math.max(MIN_TEXT_AREA_LINES, lineCount) * sheet.getDefaultRowHeightInPoints()));
         pt.drawBorders(new CellRangeAddress(45, 45, 1, 3),
                 BorderStyle.MEDIUM, BorderExtent.OUTSIDE);
         sheet.addMergedRegion(new CellRangeAddress(45, 45, 1, 3));
@@ -340,8 +347,6 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
         row.setHeightInPoints((2*sheet.getDefaultRowHeightInPoints()));
         sheet.addMergedRegion(new CellRangeAddress(48, 48, 1, 3));
         row = sheet.createRow(50);
-        //TODO: can we figure out the row height actually needed for the text provided?
-        row.setHeightInPoints((10*reports.size()*sheet.getDefaultRowHeightInPoints()));
         cell = createCell(row, 1);
         cell.setCellStyle(wrappedStyle);
         if (reports.size() == 1) {
@@ -355,6 +360,10 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
             }
             cell.setCellValue(buf.toString());
         }
+        //this is user-entered text that wraps so we should try to resize the height
+        //of the row to show all the lines of text.
+        lineCount = calculateLineCount(cell.getStringCellValue(), sheet, 1, 3);
+        row.setHeightInPoints((Math.max(MIN_TEXT_AREA_LINES, lineCount) * sheet.getDefaultRowHeightInPoints()));
         pt.drawBorders(new CellRangeAddress(50, 50, 1, 3),
                 BorderStyle.MEDIUM, BorderExtent.OUTSIDE);
         sheet.addMergedRegion(new CellRangeAddress(50, 50, 1, 3));

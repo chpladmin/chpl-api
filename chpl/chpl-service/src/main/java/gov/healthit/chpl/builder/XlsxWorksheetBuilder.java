@@ -1,6 +1,11 @@
 package gov.healthit.chpl.builder;
 
 import java.awt.Color;
+import java.awt.Toolkit;
+import java.awt.font.FontRenderContext;
+import java.awt.font.LineBreakMeasurer;
+import java.awt.font.TextAttribute;
+import java.text.AttributedString;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -11,10 +16,12 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.DefaultIndexedColorMap;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTCol;
+import org.springframework.util.StringUtils;
 
 public abstract class XlsxWorksheetBuilder {
     public static final int DEFAULT_MAX_COLUMN = 16384;
@@ -67,13 +74,96 @@ public abstract class XlsxWorksheetBuilder {
 
     /**
      * If you right click on a column in Excel, it gives you some number for the column width.
-     * That is in different units than the POI library uses. This function converts the excel
+     * That is in character units (i.e. if the width is 8.43 then 8.43 characters fit in the cell).
+     * The POI library uses different units (1/256 of a character width). This function converts the excel
      * width units into the POI width units. It's pretty close but not 100%.
      * @param excelWidth
      * @return
      */
-    public int getColumnWidth(final int excelWidth) {
-        return (excelWidth * 256) + 200;
+    public int getColumnWidth(final double excelWidth) {
+        return (int)(excelWidth * 256);
+    }
+
+
+    /**
+     * Given a string and the width of cell (in... units?? pixels?) figure out
+     * how many lines the string of text it will take up if it wraps.
+     * Using the "smallFont" as our default since most user-entered text cells
+     * are styled with that one.
+     * This is still a little rough and is erring on the side of
+     * getting too many lines so that all of the data is at least visible.
+     * It works pretty well if the entered text doesn't have a lot of newlines in it already;
+     * less well if the entered text has a lot of newline characters in it.
+     * @param text
+     * @param cells
+     * @return
+     */
+    protected int calculateLineCount(final String text, final Sheet sheet, final int firstColIndex, final int lastColIndex) {
+        int totalLineCount = 0;
+        //count newline characters that are present in the text first
+        int newlineCharCount = StringUtils.countOccurrencesOf(text, "\n");
+        newlineCharCount += StringUtils.countOccurrencesOf(text, "\r\n");
+        System.out.println("Found " + newlineCharCount + " newline characters.");
+
+        if (newlineCharCount == 0) {
+            totalLineCount = calculateLineCountWithoutNewlines(text, sheet, firstColIndex, lastColIndex);
+        } else {
+            totalLineCount = newlineCharCount;
+            //find each section of this text between newlines; check if that section
+            //wraps over multiple lines and add to the count
+            for (int i = 0; i < text.length(); i++) {
+                int indexOfNextNewline = text.indexOf("\n", i);
+                if (indexOfNextNewline >= i) {
+                    String sectionText = text.substring(i, indexOfNextNewline);
+                    int sectionLineCount = calculateLineCountWithoutNewlines(sectionText, sheet, firstColIndex, lastColIndex);
+                    System.out.println("Found " + sectionLineCount + " lines in section " + sectionText);
+                    //one line is already accounted for from counting the newline char itself
+                    //so no need to add to the line count unless there is more than 1 line
+                    if (sectionLineCount > 1) {
+                        totalLineCount += sectionLineCount - 1;
+                    }
+                    i = indexOfNextNewline+1;
+                }
+            }
+        }
+
+        return totalLineCount;
+    }
+
+    protected int calculateLineCountWithoutNewlines(final String textWithoutNewlines,
+            final Sheet sheet, final int firstColIndex, final int lastColIndex) {
+        int lineCount = 0;
+
+        if (StringUtils.isEmpty(textWithoutNewlines)) {
+            return lineCount;
+        }
+
+        //calculate the total column width available for the text
+        int totalColWidth = 0;
+        for (int i = firstColIndex; i <= lastColIndex; i++) {
+            totalColWidth += sheet.getColumnWidth(i);
+        }
+        //convert from 1/256 character units to character units
+        int totalColWidthInChars = totalColWidth / 256;
+        //not sure about the multiplier of 5.. there is almost certainly
+        //a better, less mysterious formula but I can't figure it out and '5' works.
+        int totalColWidthInUnits = totalColWidthInChars * 5;
+
+        //measure the text string against the column width to see how many lines it takes up
+        java.awt.Font currFont = new java.awt.Font(smallFont.getFontName(), 0, smallFont.getFontHeightInPoints());
+        AttributedString attrStr = new AttributedString(textWithoutNewlines);
+        attrStr.addAttribute(TextAttribute.FONT, currFont);
+        // Use LineBreakMeasurer to count number of lines needed for the text
+        FontRenderContext frc = new FontRenderContext(null, true, true);
+        LineBreakMeasurer measurer = new LineBreakMeasurer(attrStr.getIterator(), frc);
+        int nextPos = 0;
+
+        while (measurer.getPosition() < textWithoutNewlines.length()) {
+            nextPos = measurer.nextOffset(totalColWidthInUnits);
+            lineCount++;
+            measurer.setPosition(nextPos);
+        }
+        return lineCount;
     }
 
     /**
@@ -191,29 +281,4 @@ public abstract class XlsxWorksheetBuilder {
         tableSubheadingStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         tableSubheadingStyle.setFillBackgroundColor(IndexedColors.GREY_25_PERCENT.index);
     }
-
-
-    //TODO: pulled from the internet and don't want to lose this
-    //may be able to use it to auto size the rows containing free text
-//    private void autoSizeRowHeight() {
-//        java.awt.Font currFont = new java.awt.Font("Calibri", 0, 11);
-//        AttributedString attrStr = new AttributedString(record.getDescription());
-//        attrStr.addAttribute(TextAttribute.FONT, currFont);
-//
-//        // Use LineBreakMeasurer to count number of lines needed for the text
-//        FontRenderContext frc = new FontRenderContext(null, true, true);
-//        LineBreakMeasurer measurer = new LineBreakMeasurer(attrStr.getIterator(), frc);
-//        int nextPos = 0;
-//        int lineCnt = 0;
-//
-//        while (measurer.getPosition() < record.getDescription().length()) {
-//            System.out.println(measurer.getPosition());
-//            nextPos = measurer.nextOffset(mergedCellWidth); // mergedCellWidth is the max width of each line
-//            lineCnt++;
-//            measurer.setPosition(nextPos);
-//            System.out.println(measurer.getPosition());
-//        }
-//
-//        row.setHeight((short)(row.getHeight() * lineCnt));
-//    }
 }
