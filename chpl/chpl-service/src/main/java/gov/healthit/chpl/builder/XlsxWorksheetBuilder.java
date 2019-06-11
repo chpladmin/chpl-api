@@ -26,7 +26,7 @@ public abstract class XlsxWorksheetBuilder {
     italicUnderlinedSmallFont;
     protected CellStyle boldStyle, smallStyle, italicSmallStyle, boldItalicSmallStyle,
     italicUnderlinedSmallStyle, wrappedStyle, sectionNumberingStyle, sectionHeadingStyle,
-    tableHeadingStyle;
+    tableHeadingStyle, tableSubheadingStyle;
 
     public XlsxWorksheetBuilder(final Workbook workbook) {
         this.workbook = workbook;
@@ -86,6 +86,20 @@ public abstract class XlsxWorksheetBuilder {
         Cell cell = row.createCell(cellIndex);
         cell.setCellStyle(smallStyle);
         return cell;
+    }
+
+    /**
+     * Creates a row if it's not already created. Otherwise returns the existing row.
+     * @param sheet
+     * @param rowIndex
+     * @return
+     */
+    public Row createRow(final Sheet sheet, final int rowIndex) {
+        Row row = sheet.getRow(rowIndex);
+        if (row == null) {
+            row = sheet.createRow(rowIndex);
+        }
+        return row;
     }
 
     /**
@@ -166,9 +180,16 @@ public abstract class XlsxWorksheetBuilder {
         italicUnderlinedSmallStyle.setFillBackgroundColor(IndexedColors.WHITE.index);
 
         tableHeadingStyle = workbook.createCellStyle();
+        tableHeadingStyle.setFont(boldSmallFont);
         tableHeadingStyle.setFillForegroundColor(IndexedColors.LIGHT_CORNFLOWER_BLUE.index);
         tableHeadingStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         tableHeadingStyle.setFillBackgroundColor(IndexedColors.LIGHT_CORNFLOWER_BLUE.index);
+
+        tableSubheadingStyle = workbook.createCellStyle();
+        tableSubheadingStyle.setFont(boldSmallFont);
+        tableSubheadingStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.index);
+        tableSubheadingStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        tableSubheadingStyle.setFillBackgroundColor(IndexedColors.GREY_25_PERCENT.index);
     }
 
 

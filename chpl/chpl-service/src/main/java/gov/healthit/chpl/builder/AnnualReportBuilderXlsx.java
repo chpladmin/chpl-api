@@ -1,7 +1,6 @@
 package gov.healthit.chpl.builder;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Workbook;
@@ -38,7 +37,8 @@ public class AnnualReportBuilderXlsx {
             createActivitiesAndOutcomesWorksheet(workbook);
             createComplaintsWorksheet(workbook);
         }
-        createSurveillanceSummaryWorksheet(workbook);
+        SurveillanceSummaryWorksheetBuilder survSummaryBuilder = new SurveillanceSummaryWorksheetBuilder(workbook);
+        survSummaryBuilder.buildWorksheet();
         SurveillanceExperienceWorksheetBuilder builder = new SurveillanceExperienceWorksheetBuilder(workbook);
         builder.buildWorksheet(annualReport);
         return workbook;
@@ -50,9 +50,5 @@ public class AnnualReportBuilderXlsx {
 
     private void createComplaintsWorksheet(final Workbook workbook) {
         workbook.createSheet("Complaints");
-    }
-
-    private void createSurveillanceSummaryWorksheet(final Workbook workbook) {
-        workbook.createSheet("Surveillance Summary");
     }
 }

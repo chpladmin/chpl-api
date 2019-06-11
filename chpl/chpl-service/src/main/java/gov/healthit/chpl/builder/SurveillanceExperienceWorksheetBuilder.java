@@ -12,10 +12,6 @@ import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.PropertyTemplate;
-import org.apache.poi.xssf.usermodel.DefaultIndexedColorMap;
-import org.apache.poi.xssf.usermodel.XSSFColor;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTCol;
 
 import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
 
@@ -23,7 +19,6 @@ public class SurveillanceExperienceWorksheetBuilder extends XlsxWorksheetBuilder
     private static final int LAST_DATA_COLUMN = 8;
     private static final int LAST_DATA_ROW = 60;
 
-    private XSSFColor tabColor;
     private PropertyTemplate pt;
 
     public SurveillanceExperienceWorksheetBuilder(final Workbook workbook) {
