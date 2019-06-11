@@ -68,19 +68,13 @@ public class SurveillanceExperienceWorksheetBuilder extends XlsxWorksheetBuilder
     }
 
     private void addSurveillanceObstacles(final Sheet sheet, final AnnualReportDTO report) {
-        Row row = sheet.getRow(1);
-        if (row == null) {
-            row = sheet.createRow(1);
-        }
+        Row row = createRow(sheet, 1);
         Cell cell = createCell(row, 1);
         cell.setCellStyle(tableHeadingStyle);
         cell.setCellValue("List Any Obstacles Encountered During Surveillance");
         sheet.addMergedRegion(new CellRangeAddress(1, 1, 1, 3));
 
-        row = sheet.getRow(2);
-        if (row == null) {
-            row = sheet.createRow(2);
-        }
+        row = createRow(sheet, 2);
         cell = createCell(row, 1);
         cell.setCellStyle(wrappedStyle);
         cell.getCellStyle().setVerticalAlignment(VerticalAlignment.TOP);
@@ -95,18 +89,12 @@ public class SurveillanceExperienceWorksheetBuilder extends XlsxWorksheetBuilder
     }
 
     private void addFindingsSummary(final Sheet sheet, final AnnualReportDTO report) {
-        Row row = sheet.getRow(1);
-        if (row == null) {
-            row = sheet.createRow(1);
-        }
+        Row row = createRow(sheet, 1);
         Cell cell = createCell(row, 5);
         cell.setCellStyle(tableHeadingStyle);
         cell.setCellValue("Describe How Priorities May Have Shifted in Response to Findings in the Field");
 
-        row = sheet.getRow(2);
-        if (row == null) {
-            row = sheet.createRow(2);
-        }
+        row = createRow(sheet, 2);
         cell = createCell(row, 5);
         cell.setCellStyle(wrappedStyle);
         cell.getCellStyle().setVerticalAlignment(VerticalAlignment.TOP);
