@@ -6,14 +6,13 @@ import java.io.IOException;
 import org.apache.poi.ss.usermodel.BorderExtent;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.PropertyTemplate;
-
-import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
+import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 
 public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder {
     private static final int LAST_DATA_COLUMN = 35;
@@ -77,7 +76,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
      */
     public Sheet buildWorksheet() throws IOException {
         //create sheet
-        Sheet sheet = getSheet("Activities and outcomes", new Color(141, 180, 226));
+        Sheet sheet = getSheet("Activities and Outcomes", new Color(141, 180, 226));
 
         //set some styling that applies to the whole sheet
         sheet.setDisplayGridlines(false);
@@ -129,6 +128,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
         }
 
         //apply the borders after the sheet has been created
+        //TODO: increase the border above 5 depending on how many data rows there are
         pt.drawBorders(new CellRangeAddress(1, 5, 1, LAST_DATA_COLUMN-1),
                 BorderStyle.MEDIUM, BorderExtent.OUTSIDE);
         pt.applyBorders(sheet);
@@ -155,35 +155,105 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
         addHeadingCell(row, COL_K1_REVIEWED, "§170.523(k)(1) Reviewed?");
         addHeadingCell(row, COL_SURV_TYPE, "Type of Surveillance");
         addHeadingCell(row, COL_SURV_LOCATION_COUNT, "Number of Locations Surveilled");
-        Cell cell = addHeadingCell(row, COL_SURV_BEGIN, "Surveillance Began");
-        cell.getCellStyle().setAlignment(HorizontalAlignment.RIGHT);
-        cell = addHeadingCell(row, COL_SURV_END, "Surveillance Ended");
-        cell.getCellStyle().setAlignment(HorizontalAlignment.RIGHT);
+        addHeadingCell(row, COL_SURV_BEGIN, "Surveillance Began");
+        addHeadingCell(row, COL_SURV_END, "Surveillance Ended");
         addHeadingCell(row, COL_SURV_OUTCOME, "Outcome of Surveillance");
-        addHeadingCell(row, COL_NONCONFORMITY_TYPES_RESULTANT, "Non-Conformity Type(s) Resultant of Surveillance (i.e. \"170.xxx (x)(x)\")");
+        addHeadingCell(row, COL_NONCONFORMITY_TYPES_RESULTANT,
+                "Non-Conformity Type(s) Resultant of Surveillance (i.e. \"170.xxx (x)(x)\")");
         addHeadingCell(row, COL_CERT_STATUS_RESULTANT, "Certification Status Resultant of Surveillance");
         addHeadingCell(row, COL_SUSPENDED, "Suspended During Surveillance?");
         addHeadingCell(row, COL_SURV_PROCESS_TYPE, "Surveillance Process Type");
-        addHeadingCell(row, COL_SURV_GROUNDS, "Ground for Initiating Surveillance");
-        addHeadingCell(row, COL_NONCONFORMITY_CAUSES, "Potential Causes of Non-Conformities or Suspected Non-Conformities");
-        addHeadingCell(row, COL_NONCONFORMITY_NATURES, "Nature of any Substantiated Non-Conformities");
-        addHeadingCell(row, COL_SURV_STEPS, "Steps to Surveil and Substantiate");
-        addHeadingCell(row, COL_ENGAGEMENT_STEPS, "Steps to Engage and Work with Developer and End-Users");
-        addHeadingCell(row, COL_ADDITIONAL_COSTS, "Additional Costs Evaluation");
-        addHeadingCell(row, COL_LIMITATIONS_EVAL, "Limitations Evaluation");
-        addHeadingCell(row, COL_NONDISCLOSURE_EVAL, "Non-Disclosure Evaluation");
-        addHeadingCell(row, COL_DEV_RESOLUTION, "Direction for Developer Resolution");
-        addHeadingCell(row, COL_COMPLETED_CAP, "Verification of Completed CAP");
+
+        //these headings are more complicated with various fonts throughout the cell
+        String cellTitle = "Grounds for Initiating Surveillance";
+        String cellSubtitle = "On what grounds did the ONC-ACB initiate surveillance "
+                + "(i.e., the particular facts and circumstances from which a reasonable person would "
+                + "have had grounds to question the continued conformity of the Complete EHR or "
+                + "Health IT Module)? For randomized surveillance, it is acceptable to state it was chosen randomly.";
+        addRichTextHeadingCell(row, COL_SURV_GROUNDS, cellTitle, cellSubtitle);
+
+        cellTitle = "Potential Causes of Non-Conformities or Suspected Non-Conformities";
+        cellSubtitle = "What were the substantial factors that, in the ONC-ACB’s assessment, "
+                + "caused or contributed to the suspected non-conformity or non-conformities "
+                + "(e.g., implementation problem, user error, limitations on the use of capabilities "
+                + "in the field, a failure to disclose known material information, etc.)?";
+        addRichTextHeadingCell(row, COL_NONCONFORMITY_CAUSES, cellTitle, cellSubtitle);
+
+        cellTitle = "Nature of Any Substantiated Non-Conformities";
+        cellSubtitle = "Did ONC-ACB substantiate any non-conformities? If so, what was the nature "
+                + "of the non-conformity or non-conformities that were substantiated?\n"
+                + "Please include specific criteria involved.";
+        addRichTextHeadingCell(row, COL_NONCONFORMITY_NATURES, cellTitle, cellSubtitle);
+
+        cellTitle = "Steps to Surveil and Substantiate";
+        cellSubtitle = "What steps did the ONC-ACB take to surveil the Complete EHR or Health "
+                + "IT Module, to analyze evidence, and to substantiate the non-conformity or non-conformities?";
+        addRichTextHeadingCell(row, COL_SURV_STEPS, cellTitle, cellSubtitle);
+
+        cellTitle = "Steps to Engage and Work with Developer and End-Users";
+        cellSubtitle = "What steps were taken by ONC-ACB to engage and work with the developer and "
+                + "end-users to analyze and determine the causes of any suspected non-conformities and "
+                + "related deficiencies?";
+        addRichTextHeadingCell(row, COL_ENGAGEMENT_STEPS, cellTitle, cellSubtitle);
+
+        cellTitle = "Additional Costs Evaluation";
+        cellSubtitle = "If a suspected non-conformity resulted from additional types of costs "
+                + "that a user was required to pay in order to implement or use the Complete EHR "
+                + "or Health IT Module's certified capabilities, how did ONC-ACB evaluate that "
+                + "suspected non-conformity?";
+        addRichTextHeadingCell(row, COL_ADDITIONAL_COSTS, cellTitle, cellSubtitle);
+
+        cellTitle = "Limitations Evaluation";
+        cellSubtitle = "If a suspected non-conformity resulted from limitations that a user "
+                + "encountered in the course of implementing and using the Complete EHR or "
+                + "Health IT Module's certified capabilities, how did ONC-ACB evaluate that "
+                + "suspected non-conformity?";
+        addRichTextHeadingCell(row, COL_LIMITATIONS_EVAL, cellTitle, cellSubtitle);
+
+        cellTitle = "Non-Disclosure Evaluation";
+        cellSubtitle = "If a suspected non-conformity resulted from the non-disclosure of material "
+                + "information by the developer about limitations or additional types of costs associated "
+                + "with the Complete EHR or Health IT Module, how did the ONC-ACB evaluate the suspected "
+                + "non-conformity?";
+        addRichTextHeadingCell(row, COL_NONDISCLOSURE_EVAL, cellTitle, cellSubtitle);
+
+        cellTitle = "Direction for Developer Resolution";
+        cellSubtitle = "If a non-conformity was substantiated, what direction was given to the developer to "
+                + "resolve the non-conformity?";
+        addRichTextHeadingCell(row, COL_DEV_RESOLUTION, cellTitle, cellSubtitle);
+
+        cellTitle = "Verification of Completed CAP";
+        cellSubtitle = "If an approved Corrective Action Plan was received and completed, "
+                + "how did ONC-ACB verify that the developer has completed all requirements "
+                + "specified in the Plan?";
+        addRichTextHeadingCell(row, COL_COMPLETED_CAP, cellTitle, cellSubtitle);
     }
 
     private void addTableData(final Sheet sheet) {
         //TODO
+
+        int rowNum = 2;
+        //add top and bottom border to each row
+        //TODO: make rowNum dynamic
+        pt.drawBorders(new CellRangeAddress(rowNum, rowNum, 1, LAST_DATA_COLUMN-1),
+                BorderStyle.HAIR, BorderExtent.HORIZONTAL);
     }
 
     private Cell addHeadingCell(final Row row, final int cellNum, final String cellText) {
         Cell cell = createCell(row, cellNum);
         cell.setCellStyle(wrappedTableHeadingStyle);
         cell.setCellValue(cellText);
+        return cell;
+    }
+
+    private Cell addRichTextHeadingCell(final Row row, final int cellNum,
+            final String cellHeading, final String cellSubHeading) {
+        Cell cell = createCell(row, cellNum);
+        cell.setCellStyle(wrappedTableHeadingStyle);
+        RichTextString richTextTitle = new XSSFRichTextString(cellHeading + "\n" + cellSubHeading);
+        richTextTitle.applyFont(0, cellHeading.length(), boldSmallFont);
+        richTextTitle.applyFont(cellHeading.length()+1, richTextTitle.length(), italicSmallFont);
+        cell.setCellValue(richTextTitle);
         return cell;
     }
 }

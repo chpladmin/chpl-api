@@ -8,7 +8,6 @@ import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.PropertyTemplate;
@@ -70,14 +69,13 @@ public class SurveillanceExperienceWorksheetBuilder extends XlsxWorksheetBuilder
     private void addSurveillanceObstacles(final Sheet sheet, final AnnualReportDTO report) {
         Row row = createRow(sheet, 1);
         Cell cell = createCell(row, 1);
-        cell.setCellStyle(tableHeadingStyle);
+        cell.setCellStyle(leftAlignedTableHeadingStyle);
         cell.setCellValue("List Any Obstacles Encountered During Surveillance");
         sheet.addMergedRegion(new CellRangeAddress(1, 1, 1, 3));
 
         row = createRow(sheet, 2);
         cell = createCell(row, 1);
-        cell.setCellStyle(wrappedStyle);
-        cell.getCellStyle().setVerticalAlignment(VerticalAlignment.TOP);
+        cell.setCellStyle(topAlignedWrappedStyle);
         cell.setCellValue(report.getObstacleSummary());
         sheet.addMergedRegion(new CellRangeAddress(2, 2, 1, 3));
         //this is user-entered text that wraps so we should try to resize the height
@@ -91,13 +89,12 @@ public class SurveillanceExperienceWorksheetBuilder extends XlsxWorksheetBuilder
     private void addFindingsSummary(final Sheet sheet, final AnnualReportDTO report) {
         Row row = createRow(sheet, 1);
         Cell cell = createCell(row, 5);
-        cell.setCellStyle(tableHeadingStyle);
+        cell.setCellStyle(leftAlignedTableHeadingStyle);
         cell.setCellValue("Describe How Priorities May Have Shifted in Response to Findings in the Field");
 
         row = createRow(sheet, 2);
         cell = createCell(row, 5);
-        cell.setCellStyle(wrappedStyle);
-        cell.getCellStyle().setVerticalAlignment(VerticalAlignment.TOP);
+        cell.setCellStyle(topAlignedWrappedStyle);
         cell.setCellValue(report.getFindingsSummary());
         //this is user-entered text that wraps so we should try to resize the height
         //of the row to show all the lines of text.

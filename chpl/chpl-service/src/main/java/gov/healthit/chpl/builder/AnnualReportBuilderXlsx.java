@@ -34,7 +34,9 @@ public class AnnualReportBuilderXlsx {
         if (quarterlyReports != null && quarterlyReports.size() > 0) {
             ReportInfoWorksheetBuilder reportInfoBuilder = new ReportInfoWorksheetBuilder(workbook);
             reportInfoBuilder.buildWorksheet(quarterlyReports);
-            createActivitiesAndOutcomesWorksheet(workbook);
+            ActivitiesAndOutcomesWorksheetBuilder activitiesAndOutcomesBuilder =
+                    new ActivitiesAndOutcomesWorksheetBuilder(workbook);
+            activitiesAndOutcomesBuilder.buildWorksheet();
             createComplaintsWorksheet(workbook);
         }
         SurveillanceSummaryWorksheetBuilder survSummaryBuilder = new SurveillanceSummaryWorksheetBuilder(workbook);
@@ -42,10 +44,6 @@ public class AnnualReportBuilderXlsx {
         SurveillanceExperienceWorksheetBuilder builder = new SurveillanceExperienceWorksheetBuilder(workbook);
         builder.buildWorksheet(annualReport);
         return workbook;
-    }
-
-    private void createActivitiesAndOutcomesWorksheet(final Workbook workbook) {
-        workbook.createSheet("Activities and Outcomes");
     }
 
     private void createComplaintsWorksheet(final Workbook workbook) {

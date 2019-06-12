@@ -1,7 +1,6 @@
 package gov.healthit.chpl.builder;
 
 import java.awt.Color;
-import java.awt.Toolkit;
 import java.awt.font.FontRenderContext;
 import java.awt.font.LineBreakMeasurer;
 import java.awt.font.TextAttribute;
@@ -17,7 +16,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.DefaultIndexedColorMap;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -33,8 +31,8 @@ public abstract class XlsxWorksheetBuilder {
     protected Font boldFont, smallFont, boldSmallFont, italicSmallFont, boldItalicSmallFont,
     italicUnderlinedSmallFont;
     protected CellStyle boldStyle, smallStyle, italicSmallStyle, boldItalicSmallStyle,
-    italicUnderlinedSmallStyle, wrappedStyle, sectionNumberingStyle, sectionHeadingStyle,
-    tableHeadingStyle, wrappedTableHeadingStyle, tableSubheadingStyle;
+    italicUnderlinedSmallStyle, topAlignedWrappedStyle, sectionNumberingStyle, sectionHeadingStyle,
+    rightAlignedTableHeadingStyle, leftAlignedTableHeadingStyle, wrappedTableHeadingStyle, tableSubheadingStyle;
 
     public XlsxWorksheetBuilder(final Workbook workbook) {
         this.workbook = workbook;
@@ -251,11 +249,12 @@ public abstract class XlsxWorksheetBuilder {
         italicSmallStyle.setFillForegroundColor(IndexedColors.WHITE.index);
         italicSmallStyle.setFillBackgroundColor(IndexedColors.WHITE.index);
 
-        wrappedStyle = workbook.createCellStyle();
-        wrappedStyle.setFont(smallFont);
-        wrappedStyle.setWrapText(true);
-        wrappedStyle.setFillForegroundColor(IndexedColors.WHITE.index);
-        wrappedStyle.setFillBackgroundColor(IndexedColors.WHITE.index);
+        topAlignedWrappedStyle = workbook.createCellStyle();
+        topAlignedWrappedStyle.setFont(smallFont);
+        topAlignedWrappedStyle.setVerticalAlignment(VerticalAlignment.TOP);
+        topAlignedWrappedStyle.setWrapText(true);
+        topAlignedWrappedStyle.setFillForegroundColor(IndexedColors.WHITE.index);
+        topAlignedWrappedStyle.setFillBackgroundColor(IndexedColors.WHITE.index);
 
         sectionNumberingStyle = workbook.createCellStyle();
         sectionNumberingStyle.setAlignment(HorizontalAlignment.RIGHT);
@@ -279,15 +278,24 @@ public abstract class XlsxWorksheetBuilder {
         italicUnderlinedSmallStyle.setFillForegroundColor(IndexedColors.WHITE.index);
         italicUnderlinedSmallStyle.setFillBackgroundColor(IndexedColors.WHITE.index);
 
-        tableHeadingStyle = workbook.createCellStyle();
-        tableHeadingStyle.setFont(boldSmallFont);
-        tableHeadingStyle.setFillForegroundColor(IndexedColors.LIGHT_CORNFLOWER_BLUE.index);
-        tableHeadingStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        tableHeadingStyle.setFillBackgroundColor(IndexedColors.LIGHT_CORNFLOWER_BLUE.index);
+        rightAlignedTableHeadingStyle = workbook.createCellStyle();
+        rightAlignedTableHeadingStyle.setFont(boldSmallFont);
+        rightAlignedTableHeadingStyle.setAlignment(HorizontalAlignment.RIGHT);
+        rightAlignedTableHeadingStyle.setFillForegroundColor(IndexedColors.LIGHT_CORNFLOWER_BLUE.index);
+        rightAlignedTableHeadingStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        rightAlignedTableHeadingStyle.setFillBackgroundColor(IndexedColors.LIGHT_CORNFLOWER_BLUE.index);
+
+        leftAlignedTableHeadingStyle = workbook.createCellStyle();
+        leftAlignedTableHeadingStyle.setFont(boldSmallFont);
+        leftAlignedTableHeadingStyle.setAlignment(HorizontalAlignment.LEFT);
+        leftAlignedTableHeadingStyle.setFillForegroundColor(IndexedColors.LIGHT_CORNFLOWER_BLUE.index);
+        leftAlignedTableHeadingStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        leftAlignedTableHeadingStyle.setFillBackgroundColor(IndexedColors.LIGHT_CORNFLOWER_BLUE.index);
 
         wrappedTableHeadingStyle = workbook.createCellStyle();
         wrappedTableHeadingStyle.setFont(boldSmallFont);
         wrappedTableHeadingStyle.setVerticalAlignment(VerticalAlignment.BOTTOM);
+        wrappedTableHeadingStyle.setAlignment(HorizontalAlignment.LEFT);
         wrappedTableHeadingStyle.setWrapText(true);
         wrappedTableHeadingStyle.setFillForegroundColor(IndexedColors.LIGHT_CORNFLOWER_BLUE.index);
         wrappedTableHeadingStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);

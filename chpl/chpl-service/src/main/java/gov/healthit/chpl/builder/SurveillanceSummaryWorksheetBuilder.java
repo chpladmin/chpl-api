@@ -70,19 +70,16 @@ public class SurveillanceSummaryWorksheetBuilder extends XlsxWorksheetBuilder {
     private void addSurveillanceCounts(final Sheet sheet) {
         Row row = createRow(sheet, 1);
         Cell cell = createCell(row, 1);
-        cell.setCellStyle(tableHeadingStyle);
+        cell.setCellStyle(rightAlignedTableHeadingStyle);
         cell.setCellValue("");
         cell = createCell(row, 2);
-        cell.setCellStyle(tableHeadingStyle);
-        cell.getCellStyle().setAlignment(HorizontalAlignment.RIGHT);
+        cell.setCellStyle(rightAlignedTableHeadingStyle);
         cell.setCellValue("Reactive");
         cell = createCell(row, 3);
-        cell.setCellStyle(tableHeadingStyle);
-        cell.getCellStyle().setAlignment(HorizontalAlignment.RIGHT);
+        cell.setCellStyle(rightAlignedTableHeadingStyle);
         cell.setCellValue("Randomized");
         cell = createCell(row, 4);
-        cell.setCellStyle(tableHeadingStyle);
-        cell.getCellStyle().setAlignment(HorizontalAlignment.RIGHT);
+        cell.setCellStyle(rightAlignedTableHeadingStyle);
         cell.setCellValue("Total");
 
         createSurveillanceCountsSubheadingRow(sheet, "Surveillance Counts", 2);
@@ -126,11 +123,10 @@ public class SurveillanceSummaryWorksheetBuilder extends XlsxWorksheetBuilder {
     private void addComplaintsCounts(final Sheet sheet) {
         Row row = createRow(sheet, 1);
         Cell cell = createCell(row, 6);
-        cell.setCellStyle(tableHeadingStyle);
+        cell.setCellStyle(rightAlignedTableHeadingStyle);
         cell.setCellValue("");
         cell = createCell(row, 7);
-        cell.setCellStyle(tableHeadingStyle);
-        cell.getCellStyle().setAlignment(HorizontalAlignment.RIGHT);
+        cell.setCellStyle(rightAlignedTableHeadingStyle);
         cell.setCellValue("Total");
 
         createComplaintCountsSubheadingRow(sheet, "Complaint Counts", 2);
@@ -179,7 +175,7 @@ public class SurveillanceSummaryWorksheetBuilder extends XlsxWorksheetBuilder {
         cell.setCellValue(totalValue);
         //dotted top and bottom borders around each data field
         pt.drawBorders(new CellRangeAddress(rowNum, rowNum, 1, 4),
-                BorderStyle.DOTTED, BorderExtent.OUTSIDE_HORIZONTAL);
+                BorderStyle.HAIR, BorderExtent.OUTSIDE_HORIZONTAL);
     }
 
     private void createComplaintCountsSubheadingRow(final Sheet sheet, final String text, final int rowNum) {
@@ -202,6 +198,6 @@ public class SurveillanceSummaryWorksheetBuilder extends XlsxWorksheetBuilder {
         cell.setCellValue(value);
         //dotted top and bottom borders around each data field
         pt.drawBorders(new CellRangeAddress(rowNum, rowNum, 6, 7),
-                BorderStyle.DOTTED, BorderExtent.OUTSIDE_HORIZONTAL);
+                BorderStyle.HAIR, BorderExtent.OUTSIDE_HORIZONTAL);
     }
 }

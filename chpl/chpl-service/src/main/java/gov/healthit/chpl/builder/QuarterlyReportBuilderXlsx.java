@@ -25,15 +25,13 @@ public class QuarterlyReportBuilderXlsx {
         Workbook workbook = XSSFWorkbookFactory.create(true);
         ReportInfoWorksheetBuilder reportInfoBuilder = new ReportInfoWorksheetBuilder(workbook);
         reportInfoBuilder.buildWorksheet(reports);
-        createActivitiesAndOutcomesWorksheet(workbook);
+        ActivitiesAndOutcomesWorksheetBuilder activitiesAndOutcomesBuilder =
+                new ActivitiesAndOutcomesWorksheetBuilder(workbook);
+        activitiesAndOutcomesBuilder.buildWorksheet();
         createComplaintsWorksheet(workbook);
         SurveillanceSummaryWorksheetBuilder survSummaryBuilder = new SurveillanceSummaryWorksheetBuilder(workbook);
         survSummaryBuilder.buildWorksheet();
         return workbook;
-    }
-
-    private void createActivitiesAndOutcomesWorksheet(final Workbook workbook) {
-        workbook.createSheet("Activities and Outcomes");
     }
 
     private void createComplaintsWorksheet(final Workbook workbook) {

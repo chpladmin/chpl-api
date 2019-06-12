@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -15,7 +14,6 @@ import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.PropertyTemplate;
@@ -91,7 +89,7 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
         cell.setCellValue("Instructions");
         row = sheet.createRow(5);
         cell = createCell(row, 1);
-        cell.setCellStyle(wrappedStyle);
+        cell.setCellStyle(topAlignedWrappedStyle);
         //increase row height to accommodate four lines of text
         row.setHeightInPoints((4*sheet.getDefaultRowHeightInPoints()));
         //merged cells in rows B,C, and D
@@ -179,7 +177,7 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
         cell.setCellValue("Surveillance Activities and Outcomes");
         row = sheet.createRow(16);
         cell = createCell(row, 1);
-        cell.setCellStyle(wrappedStyle);
+        cell.setCellStyle(topAlignedWrappedStyle);
         row.setHeightInPoints((2*sheet.getDefaultRowHeightInPoints()));
         cell.setCellValue("The ONC-ACB used the following selection method to make its "
                 + "random selection of certified Complete EHRs and certified Health IT "
@@ -188,8 +186,7 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
 
         row = sheet.createRow(17);
         cell = createCell(row, 1);
-        cell.setCellStyle(wrappedStyle);
-        cell.getCellStyle().setVerticalAlignment(VerticalAlignment.TOP);
+        cell.setCellStyle(topAlignedWrappedStyle);
         if (reports.size() == 1) {
             cell.setCellValue(reports.get(0).getActivitiesOutcomesSummary());
         } else {
@@ -238,10 +235,10 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
         //this is the beginning of a big table
         row = sheet.createRow(25);
         cell = createCell(row, 1);
-        cell.setCellStyle(tableHeadingStyle);
+        cell.setCellStyle(leftAlignedTableHeadingStyle);
         cell.setCellValue("Complete EHR or Health IT Module (CHPL ID)");
         cell = createCell(row, 2);
-        cell.setCellStyle(tableHeadingStyle);
+        cell.setCellStyle(leftAlignedTableHeadingStyle);
         cell.setCellValue("Reason(s) for Exclusion");
         int tableStartRow = 25, tableEndRow = 35;
         for (int i = tableStartRow+1; i <= tableEndRow; i++) {
@@ -260,7 +257,7 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
         cell.setCellValue("Reactive Surveillance");
         row = sheet.createRow(38);
         cell = createCell(row, 1);
-        cell.setCellStyle(wrappedStyle);
+        cell.setCellStyle(topAlignedWrappedStyle);
         row.setHeightInPoints((3*sheet.getDefaultRowHeightInPoints()));
         cell.setCellValue("In order to meet its obligation to conduct reactive surveillance, "
                 + "the ONC-ACB undertook the following activities and implemented the following "
@@ -271,7 +268,7 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
         sheet.addMergedRegion(new CellRangeAddress(38, 38, 1, 3));
         row = sheet.createRow(39);
         cell = createCell(row, 1);
-        cell.setCellStyle(wrappedStyle);
+        cell.setCellStyle(topAlignedWrappedStyle);
         if (reports.size() == 1) {
             cell.setCellValue(reports.get(0).getReactiveSummary());
         } else {
@@ -306,7 +303,7 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
         cell.setCellValue("Prioritized Elements");
         row = sheet.createRow(43);
         cell = createCell(row, 1);
-        cell.setCellStyle(wrappedStyle);
+        cell.setCellStyle(topAlignedWrappedStyle);
         cell.setCellValue("The ONC-ACB undertook the following activities and implemented the "
                 + "following measures to evaluate and address the prioritized elements of "
                 + "surveillance referred to in Program Policy Guidance #15-01A (November 2015).");
@@ -314,7 +311,7 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
         sheet.addMergedRegion(new CellRangeAddress(43, 43, 1, 3));
         row = sheet.createRow(45);
         cell = createCell(row, 1);
-        cell.setCellStyle(wrappedStyle);
+        cell.setCellStyle(topAlignedWrappedStyle);
         if (reports.size() == 1) {
             cell.setCellValue(reports.get(0).getPrioritizedElementSummary());
         } else {
@@ -340,7 +337,7 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
         cell.setCellValue("Transparency and Disclosure Requirements");
         row = sheet.createRow(48);
         cell = createCell(row, 1);
-        cell.setCellStyle(wrappedStyle);
+        cell.setCellStyle(topAlignedWrappedStyle);
         cell.setCellValue("The ONC-ACB undertook the following activities and implemented the following measures "
                 + "to ensure adherence by developers to transparency and disclosure requirements, as required of "
                 + "the ONC-ACB under 45 CFR § 170.523(k):");
@@ -348,7 +345,7 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
         sheet.addMergedRegion(new CellRangeAddress(48, 48, 1, 3));
         row = sheet.createRow(50);
         cell = createCell(row, 1);
-        cell.setCellStyle(wrappedStyle);
+        cell.setCellStyle(topAlignedWrappedStyle);
         if (reports.size() == 1) {
             cell.setCellValue(reports.get(0).getTransparencyDisclosureSummary());
         } else {
