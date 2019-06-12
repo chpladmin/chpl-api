@@ -15,6 +15,7 @@ import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.DefaultIndexedColorMap;
@@ -33,7 +34,7 @@ public abstract class XlsxWorksheetBuilder {
     italicUnderlinedSmallFont;
     protected CellStyle boldStyle, smallStyle, italicSmallStyle, boldItalicSmallStyle,
     italicUnderlinedSmallStyle, wrappedStyle, sectionNumberingStyle, sectionHeadingStyle,
-    tableHeadingStyle, tableSubheadingStyle;
+    tableHeadingStyle, wrappedTableHeadingStyle, tableSubheadingStyle;
 
     public XlsxWorksheetBuilder(final Workbook workbook) {
         this.workbook = workbook;
@@ -86,10 +87,8 @@ public abstract class XlsxWorksheetBuilder {
 
 
     /**
-     * Given a string and the width of cell (in... units?? pixels?) figure out
+     * Given a string and the width of column (in... units?? pixels?) figure out
      * how many lines the string of text it will take up if it wraps.
-     * Using the "smallFont" as our default since most user-entered text cells
-     * are styled with that one.
      * This is still a little rough and is erring on the side of
      * getting too many lines so that all of the data is at least visible.
      * It works pretty well if the entered text doesn't have a lot of newlines in it already;
@@ -102,8 +101,9 @@ public abstract class XlsxWorksheetBuilder {
         int totalLineCount = 0;
         //count newline characters that are present in the text first
         int newlineCharCount = StringUtils.countOccurrencesOf(text, "\n");
-        newlineCharCount += StringUtils.countOccurrencesOf(text, "\r\n");
-        System.out.println("Found " + newlineCharCount + " newline characters.");
+        //do we need to account for other newlines? (specifically thinking of \r\n)
+        //not sure because i think all our users would be putting in data from windows
+        //which only has \n but this code will run on linux so... ??
 
         if (newlineCharCount == 0) {
             totalLineCount = calculateLineCountWithoutNewlines(text, sheet, firstColIndex, lastColIndex);
@@ -116,7 +116,6 @@ public abstract class XlsxWorksheetBuilder {
                 if (indexOfNextNewline >= i) {
                     String sectionText = text.substring(i, indexOfNextNewline);
                     int sectionLineCount = calculateLineCountWithoutNewlines(sectionText, sheet, firstColIndex, lastColIndex);
-                    System.out.println("Found " + sectionLineCount + " lines in section " + sectionText);
                     //one line is already accounted for from counting the newline char itself
                     //so no need to add to the line count unless there is more than 1 line
                     if (sectionLineCount > 1) {
@@ -130,6 +129,18 @@ public abstract class XlsxWorksheetBuilder {
         return totalLineCount;
     }
 
+    /**
+     * Calculate the amount of lines the given text will take up
+     * given the column width available and the fact that the supplied
+     * text does not have any explicit newlines in it.
+     * Using the "smallFont" as our default since most user-entered text cells
+     * are styled with that one.
+     * @param textWithoutNewlines
+     * @param sheet
+     * @param firstColIndex
+     * @param lastColIndex
+     * @return
+     */
     protected int calculateLineCountWithoutNewlines(final String textWithoutNewlines,
             final Sheet sheet, final int firstColIndex, final int lastColIndex) {
         int lineCount = 0;
@@ -139,27 +150,26 @@ public abstract class XlsxWorksheetBuilder {
         }
 
         //calculate the total column width available for the text
-        int totalColWidth = 0;
+        int totalColWidthInPoiUnits = 0;
         for (int i = firstColIndex; i <= lastColIndex; i++) {
-            totalColWidth += sheet.getColumnWidth(i);
+            totalColWidthInPoiUnits += sheet.getColumnWidth(i);
         }
         //convert from 1/256 character units to character units
-        int totalColWidthInChars = totalColWidth / 256;
+        int totalColWidthInChars = totalColWidthInPoiUnits / 256;
+        //convert from character units to java.awt.Font units
         //not sure about the multiplier of 5.. there is almost certainly
         //a better, less mysterious formula but I can't figure it out and '5' works.
-        int totalColWidthInUnits = totalColWidthInChars * 5;
+        int totalColWidth = totalColWidthInChars * 5;
 
         //measure the text string against the column width to see how many lines it takes up
         java.awt.Font currFont = new java.awt.Font(smallFont.getFontName(), 0, smallFont.getFontHeightInPoints());
         AttributedString attrStr = new AttributedString(textWithoutNewlines);
         attrStr.addAttribute(TextAttribute.FONT, currFont);
-        // Use LineBreakMeasurer to count number of lines needed for the text
         FontRenderContext frc = new FontRenderContext(null, true, true);
         LineBreakMeasurer measurer = new LineBreakMeasurer(attrStr.getIterator(), frc);
         int nextPos = 0;
-
         while (measurer.getPosition() < textWithoutNewlines.length()) {
-            nextPos = measurer.nextOffset(totalColWidthInUnits);
+            nextPos = measurer.nextOffset(totalColWidth);
             lineCount++;
             measurer.setPosition(nextPos);
         }
@@ -274,6 +284,14 @@ public abstract class XlsxWorksheetBuilder {
         tableHeadingStyle.setFillForegroundColor(IndexedColors.LIGHT_CORNFLOWER_BLUE.index);
         tableHeadingStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         tableHeadingStyle.setFillBackgroundColor(IndexedColors.LIGHT_CORNFLOWER_BLUE.index);
+
+        wrappedTableHeadingStyle = workbook.createCellStyle();
+        wrappedTableHeadingStyle.setFont(boldSmallFont);
+        wrappedTableHeadingStyle.setVerticalAlignment(VerticalAlignment.BOTTOM);
+        wrappedTableHeadingStyle.setWrapText(true);
+        wrappedTableHeadingStyle.setFillForegroundColor(IndexedColors.LIGHT_CORNFLOWER_BLUE.index);
+        wrappedTableHeadingStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        wrappedTableHeadingStyle.setFillBackgroundColor(IndexedColors.LIGHT_CORNFLOWER_BLUE.index);
 
         tableSubheadingStyle = workbook.createCellStyle();
         tableSubheadingStyle.setFont(boldSmallFont);
