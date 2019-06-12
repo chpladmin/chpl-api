@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.ComplaintDAO;
@@ -17,9 +18,17 @@ import gov.healthit.chpl.entity.ComplaintStatusTypeEntity;
 import gov.healthit.chpl.entity.ComplaintTypeEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.ChplProductNumberUtil;
 
 @Component
 public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
+
+    private ChplProductNumberUtil chplProductNumberUtil;
+
+    @Autowired
+    public ComplaintDAOImpl(final ChplProductNumberUtil chplProductNumberUtil) {
+        this.chplProductNumberUtil = chplProductNumberUtil;
+    }
 
     @Override
     public List<ComplaintTypeDTO> getComplaintTypes() {
@@ -43,14 +52,14 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
 
     @Override
     public List<ComplaintDTO> getAllComplaints() {
-        Query query = entityManager.createQuery(
-                "FROM ComplaintEntity c " + "JOIN FETCH c.certificationBody " + "LEFT JOIN FETCH c.complaintType "
-                        + "LEFT JOIN FETCH c.complaintStatusType " + "WHERE c.deleted = false ",
-                ComplaintEntity.class);
+        Query query = entityManager.createQuery("FROM ComplaintEntity c " + "JOIN FETCH c.certificationBody "
+                + "LEFT JOIN FETCH c.complaintType " + "LEFT JOIN FETCH c.complaintStatusType "
+                + "LEFT JOIN FETCH c.listings " + "WHERE c.deleted = false ", ComplaintEntity.class);
         List<ComplaintEntity> results = query.getResultList();
 
         List<ComplaintDTO> complaintDTOs = new ArrayList<ComplaintDTO>();
         for (ComplaintEntity entity : results) {
+            ChplProductNumberUtil
             complaintDTOs.add(new ComplaintDTO(entity));
         }
         return complaintDTOs;
@@ -135,7 +144,8 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
 
         Query query = entityManager.createQuery("FROM ComplaintEntity c " + "JOIN FETCH c.certificationBody "
                 + "LEFT JOIN FETCH c.complaintType " + "LEFT JOIN FETCH c.complaintStatusType "
-                + "WHERE c.deleted = false " + "AND c.id = :complaintId", ComplaintEntity.class);
+                + "LEFT JOIN FETCH c.listings " + "WHERE c.deleted = false " + "AND c.id = :complaintId",
+                ComplaintEntity.class);
         query.setParameter("complaintId", id);
         List<ComplaintEntity> result = query.getResultList();
 

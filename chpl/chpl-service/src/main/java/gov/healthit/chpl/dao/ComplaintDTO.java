@@ -1,14 +1,20 @@
 package gov.healthit.chpl.dao;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 
+import gov.healthit.chpl.domain.CertifiedProductSummary;
 import gov.healthit.chpl.domain.complaint.Complaint;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.dto.CertifiedProductSummaryDTO;
 import gov.healthit.chpl.dto.ComplaintStatusTypeDTO;
 import gov.healthit.chpl.dto.ComplaintTypeDTO;
 import gov.healthit.chpl.entity.ComplaintEntity;
+import gov.healthit.chpl.entity.listing.CertifiedProductSummaryEntity;
 
 public class ComplaintDTO {
     private Long id;
@@ -29,6 +35,7 @@ public class ComplaintDTO {
     private Date lastModifiedDate;
     private Long lastModifiedUser;
     private Boolean deleted;
+    private List<CertifiedProductDTO> listings = new ArrayList<CertifiedProductDTO>();
 
     public ComplaintDTO() {
 
@@ -46,6 +53,10 @@ public class ComplaintDTO {
         if (entity.getComplaintStatusType() != null) {
             this.complaintStatusType = new ComplaintStatusTypeDTO(entity.getComplaintStatusType());
         }
+
+        for (CertifiedProductSummaryEntity cpEntity : entity.getListings()) {
+            listings.add(new CertifiedProductSummaryDTO(cpEntity));
+        }
     }
 
     public ComplaintDTO(Complaint domain) {
@@ -59,6 +70,10 @@ public class ComplaintDTO {
         }
         if (domain.getComplaintStatusType() != null) {
             this.complaintStatusType = new ComplaintStatusTypeDTO(domain.getComplaintStatusType());
+        }
+
+        for (CertifiedProductSummary cp : domain.getListings()) {
+            listings.add(new CertifiedProductSummaryDTO(cp));
         }
     }
 
@@ -204,6 +219,14 @@ public class ComplaintDTO {
 
     public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public List<CertifiedProductDTO> getListings() {
+        return listings;
+    }
+
+    public void setListings(List<CertifiedProductDTO> listings) {
+        this.listings = listings;
     }
 
 }

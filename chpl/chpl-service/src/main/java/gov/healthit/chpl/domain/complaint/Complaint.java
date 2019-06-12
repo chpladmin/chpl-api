@@ -1,11 +1,15 @@
 package gov.healthit.chpl.domain.complaint;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 
 import gov.healthit.chpl.dao.ComplaintDTO;
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.CertifiedProduct;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
 
 public class Complaint {
     private Long id;
@@ -22,6 +26,7 @@ public class Complaint {
     private boolean oncAtlContacted;
     private boolean flagForOncReview;
     private Date closedDate;
+    private List<CertifiedProduct> listings = new ArrayList<CertifiedProduct>();
 
     public Complaint() {
 
@@ -32,6 +37,10 @@ public class Complaint {
         this.certificationBody = new CertificationBody(dto.getCertificationBody());
         this.complaintStatusType = new ComplaintStatusType(dto.getComplaintStatusType());
         this.complaintType = new ComplaintType(dto.getComplaintType());
+
+        for (CertifiedProductDTO listingDTO : dto.getListings()) {
+            listings.add(new CertifiedProduct(listingDTO));
+        }
     }
 
     public Long getId() {
@@ -144,6 +153,14 @@ public class Complaint {
 
     public void setClosedDate(final Date closedDate) {
         this.closedDate = closedDate;
+    }
+
+    public List<CertifiedProduct> getListings() {
+        return listings;
+    }
+
+    public void setListings(final List<CertifiedProduct> listings) {
+        this.listings = listings;
     }
 
 }

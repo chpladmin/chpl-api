@@ -1,6 +1,8 @@
 package gov.healthit.chpl.entity;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,8 +11,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 
 @Entity
 @Table(name = "complaint")
@@ -83,6 +89,12 @@ public class ComplaintEntity {
 
     @Column(name = "deleted", nullable = false)
     private Boolean deleted;
+
+    @ManyToMany()
+    @JoinTable(name = "complaint_listing_map",
+            joinColumns = @JoinColumn(name = "complaint_id", insertable = false, updatable = false),
+            inverseJoinColumns = @JoinColumn(name = "certified_product_id", insertable = false, updatable = false))
+    private Set<CertifiedProductEntity> listings = new HashSet<CertifiedProductEntity>();
 
     public Long getId() {
         return id;
@@ -250,6 +262,14 @@ public class ComplaintEntity {
 
     public void setComplaintStatusTypeId(Long complaintStatusTypeId) {
         this.complaintStatusTypeId = complaintStatusTypeId;
+    }
+
+    public Set<CertifiedProductEntity> getListings() {
+        return listings;
+    }
+
+    public void setListings(Set<CertifiedProductEntity> listings) {
+        this.listings = listings;
     }
 
     @Override

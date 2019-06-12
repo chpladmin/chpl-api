@@ -1,137 +1,64 @@
-package gov.healthit.chpl.entity.listing;
+package gov.healthit.chpl.dto;
 
-import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import org.springframework.beans.BeanUtils;
 
-import org.hibernate.annotations.Immutable;
-
+import gov.healthit.chpl.domain.CertifiedProductSummary;
+import gov.healthit.chpl.entity.listing.CertifiedProductSummaryEntity;
 import gov.healthit.chpl.util.Util;
 
-@Entity
-@Immutable
-@Table(name = "certified_product_summary")
-public class CertifiedProductSummaryEntity implements Serializable {
-    private static final long serialVersionUID = -7006206379019745873L;
-
-    @Id
-    @Column(name = "certified_product_id", nullable = false)
+public class CertifiedProductSummaryDTO {
     private Long id;
-
-    @Column(name = "certification_edition_id")
     private Long certificationEditionId;
-
-    @Column(name = "product_version_id")
     private Long productVersionId;
-
-    @Column(name = "certification_body_id")
     private Long certificationBodyId;
-
-    @Column(name = "chpl_product_number")
     private String chplProductNumber;
-
-    @Column(name = "report_file_location")
     private String reportFileLocation;
-
-    @Column(name = "sed_report_file_location")
     private String sedReportFileLocation;
-
-    @Column(name = "sed_intended_user_description")
     private String sedIntendedUserDescription;
-
-    @Column(name = "sed_testing_end")
     private Date sedTestingEnd;
-
-    @Column(name = "acb_certification_id")
     private Long acbCertificationId;
-
-    @Column(name = "practice_type_id")
     private Long practiceTypeId;
-
-    @Column(name = "product_classification_type_id")
     private Long productClassificationTypeId;
-
-    @Column(name = "product_additional_software")
     private String productAdditionalSoftware;
-
-    @Column(name = "other_acb")
     private String otherAcb;
-
-    @Column(name = "transparency_attestation_url")
     private String transparencyAttestationUrl;
-
-    @Column(name = "ics")
     private Boolean ics;
-
-    @Column(name = "sed")
     private Boolean sed;
-
-    @Column(name = "qms")
     private Boolean qms;
-
-    @Column(name = "accessibility_certified")
     private Boolean accessibilityCertified;
-
-    @Column(name = "product_code")
     private String productCode;
-
-    @Column(name = "version_code")
     private String versionCode;
-
-    @Column(name = "ics_code")
     private String icsCode;
-
-    @Column(name = "additional_software_code")
     private String additionalSoftwareCode;
-
-    @Column(name = "certified_date_code")
     private String certifiedDateCode;
-
-    @Column(name = "creation_date")
     private Date creationDate;
-
-    @Column(name = "last_modified_date")
     private Date lastModifiedDate;
-
-    @Column(name = "last_modified_user")
     private String lastModifiedUser;
-
-    @Column(name = "deleted")
     private Boolean deleted;
-
-    @Column(name = "meaningful_use_users")
     private Long meaninigfulUseUsers;
-
-    @Column(name = "pending_certified_product_id")
     private Long pendingCertifiedProductId;
-
-    @Column(name = "year")
     private String year;
-
-    @Column(name = "product_name")
     private String productName;
-
-    @Column(name = "vendor_name")
     private String developerName;
-
-    @Column(name = "vendor_code")
     private String developerCode;
-
-    @Column(name = "certification_status")
     private String certificationStatus;
-
-    @Column(name = "acb_code")
     private String acbCode;
-
-    @Column(name = "certification_body_name")
     private String certificationBodyName;
-
-    @Column(name = "certification_body_website")
     private String certificationBodyWebsite;
+
+    public CertifiedProductSummaryDTO() {
+
+    }
+
+    public CertifiedProductSummaryDTO(CertifiedProductSummaryEntity entity) {
+        BeanUtils.copyProperties(entity, this);
+    }
+
+    public CertifiedProductSummaryDTO(CertifiedProductSummary domain) {
+        BeanUtils.copyProperties(domain, this);
+    }
 
     public Long getId() {
         return id;
@@ -439,7 +366,7 @@ public class CertifiedProductSummaryEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "CertifiedProductSummaryEntity [id=" + id + ", certificationEditionId=" + certificationEditionId
+        return "CertifiedProductSummaryDTO [id=" + id + ", certificationEditionId=" + certificationEditionId
                 + ", productVersionId=" + productVersionId + ", certificationBodyId=" + certificationBodyId
                 + ", chplProductNumber=" + chplProductNumber + ", reportFileLocation=" + reportFileLocation
                 + ", sedReportFileLocation=" + sedReportFileLocation + ", sedIntendedUserDescription="
@@ -457,5 +384,4 @@ public class CertifiedProductSummaryEntity implements Serializable {
                 + ", certificationStatus=" + certificationStatus + ", acbCode=" + acbCode + ", certificationBodyName="
                 + certificationBodyName + ", certificationBodyWebsite=" + certificationBodyWebsite + "]";
     }
-
 }
