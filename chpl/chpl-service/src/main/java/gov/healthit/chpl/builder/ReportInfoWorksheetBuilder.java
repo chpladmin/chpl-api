@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.BorderExtent;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -192,9 +193,11 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
         } else {
             StringBuffer buf = new StringBuffer();
             for (QuarterlyReportDTO report : reports) {
-                buf.append(report.getQuarter().getName()).append(":")
-                    .append(report.getActivitiesOutcomesSummary())
-                    .append("\n");
+                if (!StringUtils.isEmpty(report.getActivitiesOutcomesSummary())) {
+                    buf.append(report.getQuarter().getName()).append(":")
+                        .append(report.getActivitiesOutcomesSummary())
+                        .append("\n");
+                }
             }
             cell.setCellValue(buf.toString());
         }
@@ -274,9 +277,11 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
         } else {
             StringBuffer buf = new StringBuffer();
             for (QuarterlyReportDTO report : reports) {
-                buf.append(report.getQuarter().getName()).append(":")
-                    .append(report.getReactiveSummary())
-                    .append("\n");
+                if (!StringUtils.isEmpty(report.getReactiveSummary())) {
+                    buf.append(report.getQuarter().getName()).append(":")
+                        .append(report.getReactiveSummary())
+                        .append("\n");
+                }
             }
             cell.setCellValue(buf.toString());
         }
@@ -317,9 +322,11 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
         } else {
             StringBuffer buf = new StringBuffer();
             for (QuarterlyReportDTO report : reports) {
-                buf.append(report.getQuarter().getName()).append(":")
-                    .append(report.getPrioritizedElementSummary())
-                    .append("\n");
+                if (!StringUtils.isEmpty(report.getPrioritizedElementSummary())) {
+                    buf.append(report.getQuarter().getName()).append(":")
+                        .append(report.getPrioritizedElementSummary())
+                        .append("\n");
+                }
             }
             cell.setCellValue(buf.toString());
         }
@@ -351,9 +358,11 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
         } else {
             StringBuffer buf = new StringBuffer();
             for (QuarterlyReportDTO report : reports) {
-                buf.append(report.getQuarter().getName()).append(":")
-                    .append(report.getTransparencyDisclosureSummary())
-                    .append("\n");
+                if (!StringUtils.isEmpty(report.getTransparencyDisclosureSummary())) {
+                    buf.append(report.getQuarter().getName()).append(":")
+                        .append(report.getTransparencyDisclosureSummary())
+                        .append("\n");
+                }
             }
             cell.setCellValue(buf.toString());
         }
