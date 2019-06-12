@@ -1,4 +1,4 @@
-package gov.healthit.chpl.dao;
+package gov.healthit.chpl.dao.surveillance;
 
 import java.util.List;
 

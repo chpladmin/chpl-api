@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.UserCertificationBodyMapDAO;
 import gov.healthit.chpl.dao.UserTestingLabMapDAO;
@@ -32,14 +33,16 @@ public class GetUserMaintenanceMetadataActionPermissions extends ActionPermissio
 
     @Override
     public boolean hasAccess() {
-        if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleAcbAdmin()) {
-            return true;
-        } else {
+        if (getResourcePermissions().isUserAnonymous()) {
             return false;
+        } else {
+            return true;
         }
+
     }
 
     @Override
+    @Transactional
     public boolean hasAccess(Object obj) {
         if (!(obj instanceof ActivityMetadata)) {
             return false;
