@@ -57,6 +57,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
+import gov.healthit.chpl.manager.ComplaintManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.manager.FilterManager;
@@ -104,6 +105,9 @@ public class SearchViewController {
     
     @Autowired
     private FilterManager filterManager;
+    
+    @Autowired
+    private ComplaintManager complaintManager;
 
     @Autowired private FileUtils fileUtils;
 
@@ -1216,6 +1220,30 @@ public class SearchViewController {
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getFilterTypes() {
         Set<KeyValueModel> data = filterManager.getFilterTypes();
+        SearchOption result = new SearchOption();
+        result.setExpandable(false);
+        result.setData(data);
+        return result;
+    }
+    
+    @ApiOperation(value = "Get all possible complaint types in the CHPL")
+    @RequestMapping(value = "/data/complaint_types", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody SearchOption getComplaintTypes() {
+        Set<KeyValueModel> data = complaintManager.getComplaintTypes();
+        SearchOption result = new SearchOption();
+        result.setExpandable(false);
+        result.setData(data);
+        return result;
+    }
+
+    @ApiOperation(value = "Get all possible complaint status types in the CHPL")
+    @RequestMapping(value = "/data/complaint_status_types", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody SearchOption getComplaintStatusTypes() {
+        Set<KeyValueModel> data = complaintManager.getComplaintStatusTypes();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);
