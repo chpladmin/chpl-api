@@ -1,9 +1,12 @@
 package gov.healthit.chpl.dto.surveillance.report;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.surveillance.report.QuarterlyReportEntity;
 
 public class QuarterlyReportDTO {
@@ -16,10 +19,14 @@ public class QuarterlyReportDTO {
     private String reactiveSummary;
     private String prioritizedElementSummary;
     private String transparencyDisclosureSummary;
+    private List<CertifiedProductDetailsDTO> relevantListings;
 
-    public QuarterlyReportDTO() {}
+    public QuarterlyReportDTO() {
+        this.relevantListings = new ArrayList<CertifiedProductDetailsDTO>();
+    }
 
     public QuarterlyReportDTO(final QuarterlyReportEntity entity) {
+        this();
         this.id = entity.getId();
         this.year = entity.getYear();
         this.activitiesOutcomesSummary = entity.getActivitiesOutcomesSummary();
@@ -130,6 +137,14 @@ public class QuarterlyReportDTO {
 
     public void setTransparencyDisclosureSummary(final String transparencyDisclosureSummary) {
         this.transparencyDisclosureSummary = transparencyDisclosureSummary;
+    }
+
+    public List<CertifiedProductDetailsDTO> getRelevantListings() {
+        return relevantListings;
+    }
+
+    public void setRelevantListings(List<CertifiedProductDetailsDTO> relevantListings) {
+        this.relevantListings = relevantListings;
     }
 
 }

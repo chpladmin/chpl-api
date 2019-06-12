@@ -368,6 +368,20 @@ public class CertifiedProductManagerImpl extends SecuredManager implements Certi
         return cpDao.getDetailsByProductId(productId);
     }
 
+    /**
+     * Gets listings owned by the provided ACB and that has at least one surveillance
+     * in an open status on the given date.
+     * @param acbId
+     * @param survDate
+     * @return
+     * @throws EntityRetrievalException
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<CertifiedProductDetailsDTO> getByAcbWithOpenSurveillance(final Long acbId, final Date survDate) {
+        return cpDao.findByAcbWithOpenSurveillance(acbId, survDate);
+    }
+
     @Override
     @Transactional(readOnly = true)
     public List<CertifiedProductDetailsDTO> getByVersionWithEditPermission(final Long versionId)

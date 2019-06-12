@@ -246,6 +246,36 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
         return products;
     }
 
+    /**
+     * Returns listings with at least one surveillance that was in an open state on the provided date.
+     * @param acb return listings owned by this acb
+     * @param survDate a date to check if surveillance was open
+     * @return
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<CertifiedProductDetailsDTO> findByAcbWithOpenSurveillance(final Long acbId, final Date survDate) {
+        String queryStr = "SELECT DISTINCT cp "
+                + "FROM CertifiedProductDetailsEntity cp, SurveillanceEntity surv "
+                + "WHERE cp.certificationBodyId = :acbId "
+                + "AND surv.certifiedProductId = cp.id "
+                + "AND cp.deleted = false "
+                + "AND surv.deleted = false "
+                + "AND surv.startDate <= :endDate "
+                + "AND (surv.endDate IS NULL OR surv.endDate <= :endDate)";
+        Query query = entityManager.createQuery(queryStr);
+        query.setParameter("acbId", acbId);
+        query.setParameter("endDate", survDate);
+        List<CertifiedProductDetailsEntity> entities = query.getResultList();
+
+        List<CertifiedProductDetailsDTO> products = new ArrayList<>();
+        for (CertifiedProductDetailsEntity entity : entities) {
+            CertifiedProductDetailsDTO product = new CertifiedProductDetailsDTO(entity);
+            products.add(product);
+        }
+        return products;
+    }
+
     @Override
     @Transactional(readOnly = true)
     public List<CertifiedProductDetailsDTO> findWithInheritance() {

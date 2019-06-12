@@ -14,6 +14,7 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.builder.AnnualReportBuilderXlsx;
 import gov.healthit.chpl.builder.QuarterlyReportBuilderXlsx;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.surveillance.report.AnnualReportDAO;
 import gov.healthit.chpl.dao.surveillance.report.QuarterDAO;
 import gov.healthit.chpl.dao.surveillance.report.QuarterlyReportDAO;
@@ -31,6 +32,7 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
     private QuarterlyReportDAO quarterlyDao;
     private AnnualReportDAO annualDao;
     private QuarterDAO quarterDao;
+    private CertifiedProductDAO listingDao;
     private ErrorMessageUtil msgUtil;
     private QuarterlyReportBuilderXlsx quarterlyReportBuilder;
     private AnnualReportBuilderXlsx annualReportBuilder;
@@ -38,11 +40,13 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
     @Autowired
     public SurveillanceReportManagerImpl(final QuarterlyReportDAO quarterlyDao,
             final AnnualReportDAO annualDao, final QuarterDAO quarterDao,
-            final ErrorMessageUtil msgUtil, final QuarterlyReportBuilderXlsx quarterlyReportBuilder,
+            final CertifiedProductDAO listingDao, final ErrorMessageUtil msgUtil,
+            final QuarterlyReportBuilderXlsx quarterlyReportBuilder,
             final AnnualReportBuilderXlsx annualReportBuilder) {
         this.quarterlyDao = quarterlyDao;
         this.annualDao = annualDao;
         this.quarterDao = quarterDao;
+        this.listingDao = listingDao;
         this.msgUtil = msgUtil;
         this.quarterlyReportBuilder = quarterlyReportBuilder;
         this.annualReportBuilder = annualReportBuilder;
@@ -188,7 +192,13 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).GET_QUARTERLY, filterObject)")
     public List<QuarterlyReportDTO> getQuarterlyReports() {
-        return quarterlyDao.getAll();
+        List<QuarterlyReportDTO> reports = quarterlyDao.getAll();
+        //get relevant listings for each report
+        for (QuarterlyReportDTO report : reports) {
+            report.setRelevantListings(
+                    listingDao.findByAcbWithOpenSurveillance(report.getAcb().getId(), report.getEndDate()));
+        }
+        return reports;
     }
 
     /**
@@ -200,7 +210,10 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).GET_QUARTERLY,"
             + "returnObject)")
     public QuarterlyReportDTO getQuarterlyReport(final Long id) throws EntityRetrievalException {
-        return quarterlyDao.getById(id);
+        QuarterlyReportDTO report = quarterlyDao.getById(id);
+        report.setRelevantListings(
+                listingDao.findByAcbWithOpenSurveillance(report.getAcb().getId(), report.getEndDate()));
+        return report;
     }
 
     @Override
