@@ -1,4 +1,7 @@
 
+_complaints_
+* Add endpoints for managing surveillance report complaints: get all complaints, delete complaint, create complaint, update complaint
+
 _surveillance-reporting_
 * Added endpoint /data/quarters to get back a list of options for quarterly reporting.
 * Added endpoints to get, create, update, and delete quarterly reports for authorized users.
