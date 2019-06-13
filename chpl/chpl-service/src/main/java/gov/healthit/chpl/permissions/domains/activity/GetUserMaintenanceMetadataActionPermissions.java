@@ -65,21 +65,21 @@ public class GetUserMaintenanceMetadataActionPermissions extends ActionPermissio
     private Boolean checkIfCurrentUserHasAcbAccessToUser(Long userId) {
         List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByUserId(userId);
         for (UserCertificationBodyMapDTO dto : dtos) {
-            if (!isAcbValidForCurrentUser(dto.getCertificationBody().getId())) {
-                return false;
+            if (isAcbValidForCurrentUser(dto.getCertificationBody().getId())) {
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     private Boolean checkIfCurrentUserHasAtlAccessToUser(Long userId) {
         List<UserTestingLabMapDTO> dtos = userTestingLabMapDAO.getByUserId(userId);
         for (UserTestingLabMapDTO dto : dtos) {
-            if (!isAtlValidForCurrentUser(dto.getTestingLab().getId())) {
-                return false;
+            if (isAtlValidForCurrentUser(dto.getTestingLab().getId())) {
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     private Boolean checkIfCurrentUserHasCmsAccessToUser(Long userId) {
