@@ -247,14 +247,16 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
     }
 
     /**
-     * Returns listings with at least one surveillance that was in an open state on the provided date.
+     * Returns listings with at least one surveillance that was in an open state during a time interval.
      * @param acb return listings owned by this acb
-     * @param survDate a date to check if surveillance was open
+     * @param startDate the beginning of the time interval to check for open surveillance
+     * @param endDate the end of the time interval to check for open surveillance
      * @return
      */
     @Override
     @Transactional(readOnly = true)
-    public List<CertifiedProductDetailsDTO> findByAcbWithOpenSurveillance(final Long acbId, final Date survDate) {
+    public List<CertifiedProductDetailsDTO> findByAcbWithOpenSurveillance(final Long acbId,
+            final Date startDate, final Date endDate) {
         String queryStr = "SELECT DISTINCT cp "
                 + "FROM CertifiedProductDetailsEntity cp, SurveillanceEntity surv "
                 + "WHERE cp.certificationBodyId = :acbId "
@@ -262,10 +264,11 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
                 + "AND cp.deleted = false "
                 + "AND surv.deleted = false "
                 + "AND surv.startDate <= :endDate "
-                + "AND (surv.endDate IS NULL OR surv.endDate <= :endDate)";
+                + "AND (surv.endDate IS NULL OR surv.endDate >= :startDate)";
         Query query = entityManager.createQuery(queryStr);
         query.setParameter("acbId", acbId);
-        query.setParameter("endDate", survDate);
+        query.setParameter("startDate", startDate);
+        query.setParameter("endDate", endDate);
         List<CertifiedProductDetailsEntity> entities = query.getResultList();
 
         List<CertifiedProductDetailsDTO> products = new ArrayList<>();

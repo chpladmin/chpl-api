@@ -1,7 +1,6 @@
 package gov.healthit.chpl.manager;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
@@ -37,7 +36,6 @@ public interface CertifiedProductManager {
 
     List<CertifiedProductDetailsDTO> getByVersionWithEditPermission(Long versionId)
             throws EntityRetrievalException;
-    List<CertifiedProductDetailsDTO> getByAcbWithOpenSurveillance(Long acbId, Date survDate);
 
     CertifiedProductDTO changeOwnership(Long certifiedProductId, Long acbId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException;

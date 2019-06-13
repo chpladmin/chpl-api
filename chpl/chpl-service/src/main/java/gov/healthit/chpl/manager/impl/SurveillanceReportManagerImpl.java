@@ -196,7 +196,8 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
         //get relevant listings for each report
         for (QuarterlyReportDTO report : reports) {
             report.setRelevantListings(
-                    listingDao.findByAcbWithOpenSurveillance(report.getAcb().getId(), report.getEndDate()));
+                    listingDao.findByAcbWithOpenSurveillance(report.getAcb().getId(),
+                            report.getStartDate(), report.getEndDate()));
         }
         return reports;
     }
@@ -212,7 +213,8 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
     public QuarterlyReportDTO getQuarterlyReport(final Long id) throws EntityRetrievalException {
         QuarterlyReportDTO report = quarterlyDao.getById(id);
         report.setRelevantListings(
-                listingDao.findByAcbWithOpenSurveillance(report.getAcb().getId(), report.getEndDate()));
+                listingDao.findByAcbWithOpenSurveillance(report.getAcb().getId(),
+                        report.getStartDate(), report.getEndDate()));
         return report;
     }
 

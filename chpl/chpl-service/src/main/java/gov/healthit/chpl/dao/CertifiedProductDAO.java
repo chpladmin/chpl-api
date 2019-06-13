@@ -28,7 +28,7 @@ public interface CertifiedProductDAO {
     List<CertifiedProductDetailsDTO> findByEdition(String edition);
 
     List<CertifiedProductDetailsDTO> findWithSurveillance();
-    List<CertifiedProductDetailsDTO> findByAcbWithOpenSurveillance(Long acbId, Date survDate);
+    List<CertifiedProductDetailsDTO> findByAcbWithOpenSurveillance(Long acbId, Date startDate, Date endDate);
 
     List<CertifiedProductDetailsDTO> findWithInheritance();
 
