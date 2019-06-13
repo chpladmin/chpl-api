@@ -1,8 +1,13 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -18,17 +23,29 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.surveillance.report.AnnualReportDAO;
 import gov.healthit.chpl.dao.surveillance.report.QuarterDAO;
 import gov.healthit.chpl.dao.surveillance.report.QuarterlyReportDAO;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.Product;
+import gov.healthit.chpl.domain.ProductVersion;
+import gov.healthit.chpl.domain.Surveillance;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
+import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.manager.SurveillanceReportManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Service
 public class SurveillanceReportManagerImpl extends SecuredManager implements SurveillanceReportManager {
+    private static final Logger LOGGER = LogManager.getLogger(SurveillanceReportManagerImpl.class);
+
+    private CertifiedProductDetailsManager detailsManager;
+    private SurveillanceManager survManager;
     private QuarterlyReportDAO quarterlyDao;
     private AnnualReportDAO annualDao;
     private QuarterDAO quarterDao;
@@ -38,18 +55,19 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
     private AnnualReportBuilderXlsx annualReportBuilder;
 
     @Autowired
-    public SurveillanceReportManagerImpl(final QuarterlyReportDAO quarterlyDao,
+    public SurveillanceReportManagerImpl(final CertifiedProductDetailsManager detailsManager,
+            final SurveillanceManager survManager, final QuarterlyReportDAO quarterlyDao,
             final AnnualReportDAO annualDao, final QuarterDAO quarterDao,
-            final CertifiedProductDAO listingDao, final ErrorMessageUtil msgUtil,
-            final QuarterlyReportBuilderXlsx quarterlyReportBuilder,
-            final AnnualReportBuilderXlsx annualReportBuilder) {
+            final CertifiedProductDAO listingDao, final ErrorMessageUtil msgUtil) {
+        this.detailsManager = detailsManager;
+        this.survManager = survManager;
         this.quarterlyDao = quarterlyDao;
         this.annualDao = annualDao;
         this.quarterDao = quarterDao;
         this.listingDao = listingDao;
         this.msgUtil = msgUtil;
-        this.quarterlyReportBuilder = quarterlyReportBuilder;
-        this.annualReportBuilder = annualReportBuilder;
+        this.quarterlyReportBuilder = new QuarterlyReportBuilderXlsx();
+        this.annualReportBuilder = new AnnualReportBuilderXlsx();
     }
 
     @Override
@@ -125,7 +143,18 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
             + "#id)")
     public Workbook exportAnnualReport(final Long id) throws EntityRetrievalException, IOException {
         AnnualReportDTO report = getAnnualReport(id);
-        return annualReportBuilder.buildXlsx(report);
+        List<QuarterlyReportDTO> quarterlyReports = 
+                getQuarterlyReports(report.getAcb().getId(), report.getYear());
+        Map<QuarterlyReportDTO, List<CertifiedProductSearchDetails>> reportListingMap = 
+                new HashMap<QuarterlyReportDTO, List<CertifiedProductSearchDetails>>(quarterlyReports.size());
+        for (QuarterlyReportDTO quarterlyReport : quarterlyReports) {
+            //get all of the surveillance details for the listings relevant to this report
+            //the details object included on the quarterly report has some of the data that is needed
+            //to build activities and outcomes worksheet but not all of it so we need to do
+            //some other work to get the necessary data and put it all together
+            reportListingMap.put(quarterlyReport, getRelevantListingDetails(quarterlyReport));
+        }
+        return annualReportBuilder.buildXlsx(report, reportListingMap);
     }
 
     @Override
@@ -203,6 +232,23 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
     }
 
     /**
+     * Gets the quarterly reports for a specific ACB and year.
+     */
+    @Override
+    @Transactional
+    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).GET_QUARTERLY, filterObject)")
+    public List<QuarterlyReportDTO> getQuarterlyReports(final Long acbId, final Integer year) {
+        List<QuarterlyReportDTO> reports = quarterlyDao.getByAcbAndYear(acbId, year);
+        //get relevant listings for each report
+        for (QuarterlyReportDTO report : reports) {
+            report.setRelevantListings(
+                    listingDao.findByAcbWithOpenSurveillance(report.getAcb().getId(),
+                            report.getStartDate(), report.getEndDate()));
+        }
+        return reports;
+    }
+    /**
      * Gets the quarterly report by ID if the user has access.
      */
     @Override
@@ -226,6 +272,56 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
     public Workbook exportQuarterlyReport(final Long id) throws EntityRetrievalException,
         IOException {
         QuarterlyReportDTO report = getQuarterlyReport(id);
-        return quarterlyReportBuilder.buildXlsx(report);
+        //get all of the surveillance details for the listings relevant to this report
+        //the details object included on the quarterly report has some of the data that is needed
+        //to build activities and outcomes worksheet but not all of it so we need to do
+        //some other work to get the necessary data and put it all together
+        List<CertifiedProductSearchDetails> relevantListingDetails = getRelevantListingDetails(report);
+        return quarterlyReportBuilder.buildXlsx(report, relevantListingDetails);
+    }
+
+    /**
+     * The relevant listings objects in the quarterly report have information about the listing
+     * itself but not about each surveillance. This method queries for each surveillance and
+     * adds it into a new details object that should have all of the fields needed to fill out
+     * the Activities and Outcomes worksheet.
+     * @param report
+     * @return
+     */
+    private List<CertifiedProductSearchDetails> getRelevantListingDetails(final QuarterlyReportDTO report) {
+        List<CertifiedProductSearchDetails> relevantListingDetails =
+                new ArrayList<CertifiedProductSearchDetails>();
+        for (CertifiedProductDetailsDTO listingDetails : report.getRelevantListings()) {
+            CertifiedProductSearchDetails completeListingDetails = new CertifiedProductSearchDetails();
+            completeListingDetails.setId(listingDetails.getId());
+            completeListingDetails.setChplProductNumber(listingDetails.getChplProductNumber());
+            Map<String, Object> editionMap = new HashMap<String, Object>();
+            editionMap.put("id", listingDetails.getCertificationEditionId());
+            editionMap.put("name", listingDetails.getYear());
+            completeListingDetails.setCertificationEdition(editionMap);
+            Developer dev = new Developer();
+            dev.setDeveloperId(listingDetails.getDeveloper().getId());
+            dev.setName(listingDetails.getDeveloper().getName());
+            completeListingDetails.setDeveloper(dev);
+            Product prod = new Product();
+            prod.setProductId(listingDetails.getProduct().getId());
+            prod.setName(listingDetails.getProduct().getName());
+            completeListingDetails.setProduct(prod);
+            ProductVersion ver = new ProductVersion();
+            ver.setVersionId(listingDetails.getVersion().getId());
+            ver.setVersion(listingDetails.getVersion().getVersion());
+            completeListingDetails.setVersion(ver);
+            try {
+                completeListingDetails.setCertificationEvents(
+                    detailsManager.getCertificationStatusEvents(listingDetails.getId()));
+            } catch (EntityRetrievalException ex) {
+                LOGGER.error("Could not get certification status events for listing id " + listingDetails.getId(), ex);
+            }
+            List<Surveillance> surveillances = survManager.getOpenBetweenDatesForCertifiedProduct(
+                    listingDetails.getId(), report.getStartDate(), report.getEndDate());
+            completeListingDetails.setSurveillance(surveillances);
+            relevantListingDetails.add(completeListingDetails);
+        }
+        return relevantListingDetails;
     }
 }

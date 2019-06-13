@@ -3,6 +3,7 @@ package gov.healthit.chpl.manager.impl;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -85,6 +86,22 @@ public class SurveillanceManagerImpl extends SecuredManager implements Surveilla
                 Surveillance surv = convertToDomain(survResult);
                 validator.validate(surv, true);
                 results.add(surv);
+            }
+        }
+        return results;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Surveillance> getOpenBetweenDatesForCertifiedProduct(final Long cpId,
+            final Date startDate, final Date endDate) {
+        List<Surveillance> allSurveillanceForListing = getByCertifiedProduct(cpId);
+        List<Surveillance> results = new ArrayList<Surveillance>();
+        for (Surveillance currSurv : allSurveillanceForListing) {
+            //surv starts before the end date and either hasn't ended or ends after the start date
+            if (currSurv.getStartDate().getTime() <= endDate.getTime()
+                    && (currSurv.getEndDate() == null || currSurv.getEndDate().getTime() >= startDate.getTime())) {
+                results.add(currSurv);
             }
         }
         return results;

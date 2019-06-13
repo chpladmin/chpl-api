@@ -2,7 +2,13 @@ package gov.healthit.chpl.builder;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.BorderExtent;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -13,6 +19,16 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.PropertyTemplate;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
+
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.Surveillance;
+import gov.healthit.chpl.domain.SurveillanceNonconformity;
+import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;
+import gov.healthit.chpl.domain.SurveillanceRequirement;
+import gov.healthit.chpl.domain.concept.RequirementTypeEnum;
+import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
+import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 
 public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder {
     private static final int LAST_DATA_COLUMN = 35;
@@ -52,10 +68,21 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
     private static final int COL_DEV_RESOLUTION = 31;
     private static final int COL_COMPLETED_CAP = 32;
 
+    private static final String OUTCOME_NO_NC = "No non-conformity";
+    private static final String OUTCOME_NC_RESOLVED = "Non-conformity substantiated - Resolved through corrective action";
+    private static final String OUTCOME_NC_UNRESOLVED_CAP = "Non-conformity substantiated - Unresolved - Corrective action ongoing";
+    private static final String OUTCOME_NC_UNRESOLVED_SUSPENDED = "Non-conformity substantiated - Unresolved - Certification suspended";
+    private static final String OUTCOME_NC_UNRESOLVED_WITHDRAWN = "Non-conformity substantiated - Unresolved - Certification withdrawn";
+    private static final String OUTCOME_NC_UNRESOLVED_SURV = "Non-conformity substantiated - Unresolved - Surveillance in process";
+    private static final String OUTCOME_NC_UNRESOLVED_REVIEW = "Non-conformity substantiated - Unresolved - Under investigation/review";
+    private static final String OUTCOME_NC_UNRESOLVED_OTHER = "Non-conformity substantiated - Unresolved - Other - [Please describe]";
+
+    private SimpleDateFormat dateFormatter;
     private PropertyTemplate pt;
 
     public ActivitiesAndOutcomesWorksheetBuilder(final Workbook workbook) {
         super(workbook);
+        dateFormatter = new SimpleDateFormat("MM/dd/yyyy");
         pt = new PropertyTemplate();
     }
 
@@ -74,7 +101,8 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
      * @param report
      * @return
      */
-    public Sheet buildWorksheet() throws IOException {
+    public Sheet buildWorksheet(final Map<QuarterlyReportDTO, List<CertifiedProductSearchDetails>> reportListingMap)
+            throws IOException {
         //create sheet
         Sheet sheet = getSheet("Activities and Outcomes", new Color(141, 180, 226));
 
@@ -120,7 +148,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
         sheet.setColumnWidth(COL_COMPLETED_CAP, longTextColWidth);
 
         addHeadingRow(sheet);
-        addTableData(sheet);
+        addTableData(sheet, reportListingMap);
 
         //hide some rows the ACBs are not expected to fill out (columns D-I)
         for (int i = 3; i < 9; i++) {
@@ -229,14 +257,154 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
         addRichTextHeadingCell(row, COL_COMPLETED_CAP, cellTitle, cellSubtitle);
     }
 
-    private void addTableData(final Sheet sheet) {
-        //TODO
-
+    private void addTableData(final Sheet sheet,
+            final Map<QuarterlyReportDTO, List<CertifiedProductSearchDetails>> reportListingMap) {
         int rowNum = 2;
-        //add top and bottom border to each row
-        //TODO: make rowNum dynamic
-        pt.drawBorders(new CellRangeAddress(rowNum, rowNum, 1, LAST_DATA_COLUMN-1),
-                BorderStyle.HAIR, BorderExtent.HORIZONTAL);
+        for (QuarterlyReportDTO quarterlyReport : reportListingMap.keySet()) {
+            for (CertifiedProductSearchDetails listing : reportListingMap.get(quarterlyReport)) {
+                //each listing has 1 or more relevant surveillances
+                for (Surveillance surv : listing.getSurveillance()) {
+                    Row row = createRow(sheet, rowNum);
+                    addDataCell(row, COL_CHPL_ID, listing.getChplProductNumber());
+                    addDataCell(row, COL_SURV_ID, surv.getFriendlyId());
+                    addDataCell(row, COL_CERT_EDITION, listing.getCertificationEdition().get("name").toString());
+                    addDataCell(row, COL_DEVELOPER_NAME, listing.getDeveloper().getName());
+                    addDataCell(row, COL_PRODUCT_NAME, listing.getProduct().getName());
+                    addDataCell(row, COL_PRODUCT_VERSION, listing.getVersion().getVersion());
+                    addDataCell(row, COL_K1_REVIEWED, determineIfK1Reviewed(surv));
+                    addDataCell(row, COL_SURV_TYPE, surv.getType().getName());
+                    addDataCell(row, COL_SURV_LOCATION_COUNT, surv.getRandomizedSitesUsed().toString());
+                    addDataCell(row, COL_SURV_BEGIN, dateFormatter.format(surv.getStartDate()));
+                    addDataCell(row, COL_SURV_END, surv.getEndDate() == null ? "" : dateFormatter.format(surv.getEndDate()));
+                    addDataCell(row, COL_SURV_OUTCOME, determineSurveillanceOutcome(listing, surv));
+                    addDataCell(row, COL_NONCONFORMITY_TYPES_RESULTANT, determineNonconformityTypes(surv));
+                    addDataCell(row, COL_CERT_STATUS_RESULTANT, "TBD");
+                    addDataCell(row, COL_SUSPENDED, "TBD");
+                    addDataCell(row, COL_SURV_PROCESS_TYPE, "TBD");
+                    pt.drawBorders(new CellRangeAddress(rowNum, rowNum, 1, LAST_DATA_COLUMN-1),
+                            BorderStyle.HAIR, BorderExtent.HORIZONTAL);
+                    rowNum++;
+                }
+            }
+        }
+    }
+
+    /**
+     * Makes a determination about whether (k)(1) was reviewed.
+     * @param surv
+     * @return "Yes" if it was reviewed and "No" if it wasn't.
+     */
+    private String determineIfK1Reviewed(final Surveillance surv) {
+        String result = "No";
+        for (SurveillanceRequirement req : surv.getRequirements()) {
+            if (req.getType().getName().equals(RequirementTypeEnum.K1.getName())) {
+                result = "Yes";
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Figure out what the outcome of the surveillance is based on fields in the listing
+     * and the surveillance.
+     * @param listing
+     * @param surv
+     * @return
+     */
+    private String determineSurveillanceOutcome(final CertifiedProductSearchDetails listing, final Surveillance surv) {
+        String result = null;
+        boolean hasNoNonconformities = true;
+        for (SurveillanceRequirement req : surv.getRequirements()) {
+            if (req.getResult() != null &&
+                    req.getResult().getName().equalsIgnoreCase(SurveillanceValidator.HAS_NON_CONFORMITY)) {
+                hasNoNonconformities = false;
+            }
+        }
+        if (hasNoNonconformities) {
+            result = OUTCOME_NO_NC;
+        } else {
+            //there is at least one nonconformity
+            boolean hasAllNonconformitiesResolved = true;
+            for (SurveillanceRequirement req : surv.getRequirements()) {
+                if (req.getResult() != null &&
+                        req.getResult().getName().equalsIgnoreCase(SurveillanceValidator.HAS_NON_CONFORMITY)) {
+                    for (SurveillanceNonconformity nc : req.getNonconformities()) {
+                        if (nc.getStatus().getName().equalsIgnoreCase(SurveillanceNonconformityStatus.OPEN)) {
+                            hasAllNonconformitiesResolved = false;
+                        }
+                    }
+                }
+            }
+            if (hasAllNonconformitiesResolved) {
+                result = OUTCOME_NC_RESOLVED;
+            } else {
+                //there is at least one open non-conformity
+                if (listing.getCurrentStatus().getStatus().getName().equals(CertificationStatusType.SuspendedByAcb.getName())
+                        || listing.getCurrentStatus().getStatus().getName().equals(CertificationStatusType.SuspendedByOnc.getName())) {
+                    //TODO: are these the right statuses to check?
+                    result = OUTCOME_NC_UNRESOLVED_SUSPENDED;
+                } else if (listing.getCurrentStatus().getStatus().getName().equals(CertificationStatusType.WithdrawnByAcb.getName())
+                        || listing.getCurrentStatus().getStatus().getName().equals(CertificationStatusType.WithdrawnByDeveloper.getName())) {
+                    //TODO: are these the right statuses to check?
+                    result = OUTCOME_NC_UNRESOLVED_WITHDRAWN;
+                } else if (listing.getCurrentStatus().getStatus().getName().equals(CertificationStatusType.WithdrawnByDeveloperUnderReview.getName())) {
+                    //TODO: is this the right logic to arrive at this result?
+                    result = OUTCOME_NC_UNRESOLVED_REVIEW;
+                }
+                boolean capOngoing = false;
+                for (SurveillanceRequirement req : surv.getRequirements()) {
+                    if (req.getResult() != null &&
+                            req.getResult().getName().equalsIgnoreCase(SurveillanceValidator.HAS_NON_CONFORMITY)) {
+                        for (SurveillanceNonconformity nc : req.getNonconformities()) {
+                            if (nc.getStatus().getName().equalsIgnoreCase(SurveillanceNonconformityStatus.OPEN)) {
+                                //TODO: check some combination of the corrective action plan dates
+                                //to determine if corrective action is ongoing
+                                capOngoing = true;
+                            }
+                        }
+                    }
+                }
+                if (capOngoing) {
+                    result = OUTCOME_NC_UNRESOLVED_CAP;
+                } else {
+                    //TODO: is this the right logic to arrive at this status?
+                    result = OUTCOME_NC_UNRESOLVED_SURV;
+                }
+            }
+        }
+        return result == null ? OUTCOME_NC_UNRESOLVED_OTHER : result;
+    }
+
+    private String determineNonconformityTypes(final Surveillance surv) {
+        Set<String> nonconformityTypes = new HashSet<String>();
+        //get unique set of nonconformity types
+        for (SurveillanceRequirement req : surv.getRequirements()) {
+            if (req.getResult() != null &&
+                    req.getResult().getName().equalsIgnoreCase(SurveillanceValidator.HAS_NON_CONFORMITY)) {
+                for (SurveillanceNonconformity nc : req.getNonconformities()) {
+                    if (!StringUtils.isEmpty(nc.getNonconformityType())) {
+                        nonconformityTypes.add(nc.getNonconformityType());
+                    }
+                }
+            }
+        }
+
+        //write out the nc types to a string
+        StringBuffer buf = new StringBuffer();
+        int i = 0;
+        for (String ncType : nonconformityTypes) {
+            buf.append(ncType);
+            if (nonconformityTypes.size() == 2 && i == 0) {
+                buf.append(" and ");
+            }
+            if (nonconformityTypes.size() > 2 && i < (nonconformityTypes.size()-2)) {
+                buf.append(", ");
+            } else if(nonconformityTypes.size() > 2 && i == (nonconformityTypes.size()-2)) {
+                buf.append(" and ");
+            }
+            i++;
+        }
+        return buf.toString();
     }
 
     private Cell addHeadingCell(final Row row, final int cellNum, final String cellText) {
@@ -254,6 +422,13 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
         richTextTitle.applyFont(0, cellHeading.length(), boldSmallFont);
         richTextTitle.applyFont(cellHeading.length()+1, richTextTitle.length(), italicSmallFont);
         cell.setCellValue(richTextTitle);
+        return cell;
+    }
+
+    private Cell addDataCell(final Row row, final int cellNum, final String cellText) {
+        Cell cell = createCell(row, cellNum);
+        cell.setCellStyle(smallStyle);
+        cell.setCellValue(cellText);
         return cell;
     }
 }

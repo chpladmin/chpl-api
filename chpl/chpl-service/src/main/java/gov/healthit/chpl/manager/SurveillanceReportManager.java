@@ -25,6 +25,7 @@ public interface SurveillanceReportManager {
     public QuarterlyReportDTO updateQuarterlyReport(QuarterlyReportDTO toUpdate) throws EntityRetrievalException;
     public void deleteQuarterlyReport(Long id) throws EntityRetrievalException;
     public List<QuarterlyReportDTO> getQuarterlyReports();
+    public List<QuarterlyReportDTO> getQuarterlyReports(Long acbId, Integer year);
     public QuarterlyReportDTO getQuarterlyReport(Long id) throws EntityRetrievalException;
     public Workbook exportQuarterlyReport(Long id) throws EntityRetrievalException, IOException;
 }

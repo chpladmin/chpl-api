@@ -39,9 +39,9 @@ import gov.healthit.chpl.util.ValidationUtils;
 public class SurveillanceValidator {
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceValidator.class);
 
+    public static final String HAS_NON_CONFORMITY = "Non-Conformity";
     private static final String CRITERION_REQUIREMENT_TYPE = "Certified Capability";
     private static final String TRANSPARENCY_REQUIREMENT_TYPE = "Transparency or Disclosure Requirement";
-    private static final String HAS_NON_CONFORMITY = "Non-Conformity";
 
     @Autowired
     private SurveillanceDAO survDao;

@@ -2,6 +2,7 @@ package gov.healthit.chpl.manager;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import gov.healthit.chpl.domain.Surveillance;
@@ -29,6 +30,7 @@ public interface SurveillanceManager {
     Surveillance getById(Long survId) throws EntityRetrievalException;
 
     List<Surveillance> getByCertifiedProduct(Long cpId);
+    List<Surveillance> getOpenBetweenDatesForCertifiedProduct(Long cpId, Date startDate, Date endDate);
 
     SurveillanceNonconformityDocument getDocumentById(Long docId, boolean getFileContents)
             throws EntityRetrievalException;
