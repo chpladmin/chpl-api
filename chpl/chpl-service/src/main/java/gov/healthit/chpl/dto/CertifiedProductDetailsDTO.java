@@ -3,8 +3,10 @@ package gov.healthit.chpl.dto;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.util.Util;
 
@@ -80,8 +82,6 @@ public class CertifiedProductDetailsDTO implements Serializable {
      * @param entity the entity
      */
     public CertifiedProductDetailsDTO(final CertifiedProductDetailsEntity entity) {
-        this();
-
         this.id = entity.getId();
         this.productCode = entity.getProductCode();
         this.versionCode = entity.getVersionCode();
@@ -177,6 +177,10 @@ public class CertifiedProductDetailsDTO implements Serializable {
         this.countOpenNonconformities = entity.getCountOpenNonconformities();
         this.countClosedNonconformities = entity.getCountClosedNonconformities();
         this.lastModifiedDate = entity.getLastModifiedDate();
+    }
+
+    public CertifiedProductDetailsDTO(final CertifiedProduct domain) {
+        BeanUtils.copyProperties(this, domain);
     }
 
     public Long getId() {

@@ -6,15 +6,14 @@ import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 
-import gov.healthit.chpl.domain.CertifiedProductSummary;
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.complaint.Complaint;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.dto.CertifiedProductSummaryDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.ComplaintStatusTypeDTO;
 import gov.healthit.chpl.dto.ComplaintTypeDTO;
 import gov.healthit.chpl.entity.ComplaintEntity;
-import gov.healthit.chpl.entity.listing.CertifiedProductSummaryEntity;
+import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 
 public class ComplaintDTO {
     private Long id;
@@ -35,7 +34,7 @@ public class ComplaintDTO {
     private Date lastModifiedDate;
     private Long lastModifiedUser;
     private Boolean deleted;
-    private List<CertifiedProductDTO> listings = new ArrayList<CertifiedProductDTO>();
+    private List<CertifiedProductDetailsDTO> listings = new ArrayList<CertifiedProductDetailsDTO>();
 
     public ComplaintDTO() {
 
@@ -43,6 +42,7 @@ public class ComplaintDTO {
 
     public ComplaintDTO(ComplaintEntity entity) {
         BeanUtils.copyProperties(entity, this);
+        listings = new ArrayList<CertifiedProductDetailsDTO>();
 
         if (entity.getCertificationBody() != null) {
             this.certificationBody = new CertificationBodyDTO(entity.getCertificationBody());
@@ -54,8 +54,8 @@ public class ComplaintDTO {
             this.complaintStatusType = new ComplaintStatusTypeDTO(entity.getComplaintStatusType());
         }
 
-        for (CertifiedProductSummaryEntity cpEntity : entity.getListings()) {
-            listings.add(new CertifiedProductSummaryDTO(cpEntity));
+        for (CertifiedProductDetailsEntity cpEntity : entity.getListings()) {
+            listings.add(new CertifiedProductDetailsDTO(cpEntity));
         }
     }
 
@@ -72,8 +72,8 @@ public class ComplaintDTO {
             this.complaintStatusType = new ComplaintStatusTypeDTO(domain.getComplaintStatusType());
         }
 
-        for (CertifiedProductSummary cp : domain.getListings()) {
-            listings.add(new CertifiedProductSummaryDTO(cp));
+        for (CertifiedProduct cp : domain.getListings()) {
+            listings.add(new CertifiedProductDetailsDTO(cp));
         }
     }
 
@@ -221,11 +221,11 @@ public class ComplaintDTO {
         this.deleted = deleted;
     }
 
-    public List<CertifiedProductDTO> getListings() {
+    public List<CertifiedProductDetailsDTO> getListings() {
         return listings;
     }
 
-    public void setListings(List<CertifiedProductDTO> listings) {
+    public void setListings(List<CertifiedProductDetailsDTO> listings) {
         this.listings = listings;
     }
 

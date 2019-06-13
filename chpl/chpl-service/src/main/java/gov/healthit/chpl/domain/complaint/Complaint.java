@@ -9,7 +9,7 @@ import org.springframework.beans.BeanUtils;
 import gov.healthit.chpl.dao.ComplaintDTO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertifiedProduct;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 
 public class Complaint {
     private Long id;
@@ -34,11 +34,13 @@ public class Complaint {
 
     public Complaint(ComplaintDTO dto) {
         BeanUtils.copyProperties(dto, this);
+        listings = new ArrayList<CertifiedProduct>();
+
         this.certificationBody = new CertificationBody(dto.getCertificationBody());
         this.complaintStatusType = new ComplaintStatusType(dto.getComplaintStatusType());
         this.complaintType = new ComplaintType(dto.getComplaintType());
 
-        for (CertifiedProductDTO listingDTO : dto.getListings()) {
+        for (CertifiedProductDetailsDTO listingDTO : dto.getListings()) {
             listings.add(new CertifiedProduct(listingDTO));
         }
     }

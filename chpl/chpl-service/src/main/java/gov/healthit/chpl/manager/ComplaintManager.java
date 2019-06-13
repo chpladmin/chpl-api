@@ -14,7 +14,7 @@ public interface ComplaintManager {
 
     Set<KeyValueModel> getComplaintStatusTypes();
 
-    List<Complaint> getAllComplaints();
+    List<Complaint> getAllComplaints() throws EntityRetrievalException;
 
     Complaint create(Complaint complaint) throws EntityRetrievalException, ValidationException;
 

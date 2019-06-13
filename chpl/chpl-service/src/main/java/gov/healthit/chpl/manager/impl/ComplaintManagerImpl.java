@@ -64,7 +64,7 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
     @Transactional
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
             + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).GET_ALL, filterObject)")
-    public List<Complaint> getAllComplaints() {
+    public List<Complaint> getAllComplaints() throws EntityRetrievalException {
         List<Complaint> complaints = new ArrayList<Complaint>();
         List<ComplaintDTO> dtos = complaintDAO.getAllComplaints();
         for (ComplaintDTO dto : dtos) {

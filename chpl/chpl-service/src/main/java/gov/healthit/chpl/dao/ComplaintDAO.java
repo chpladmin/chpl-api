@@ -11,7 +11,7 @@ public interface ComplaintDAO {
 
     List<ComplaintStatusTypeDTO> getComplaintStatusTypes();
 
-    List<ComplaintDTO> getAllComplaints();
+    List<ComplaintDTO> getAllComplaints() throws EntityRetrievalException;
 
     ComplaintDTO getComplaint(Long complaintId) throws EntityRetrievalException;
 
