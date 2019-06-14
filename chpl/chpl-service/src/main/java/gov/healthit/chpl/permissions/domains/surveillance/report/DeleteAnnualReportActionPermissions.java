@@ -3,16 +3,16 @@ package gov.healthit.chpl.permissions.domains.surveillance.report;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dao.surveillance.report.QuarterlyReportDAO;
-import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
+import gov.healthit.chpl.dao.surveillance.report.AnnualReportDAO;
+import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
-@Component("surveillanceReportDeleteQuarterlyReportActionPermissions")
-public class DeleteQuarterlyReportActionPermissions extends ActionPermissions {
+@Component("surveillanceReportDeleteAnnualReportActionPermissions")
+public class DeleteAnnualReportActionPermissions extends ActionPermissions {
 
     @Autowired
-    private QuarterlyReportDAO quarterlyReportDao;
+    private AnnualReportDAO annualReportDao;
 
     @Override
     public boolean hasAccess() {
@@ -27,9 +27,9 @@ public class DeleteQuarterlyReportActionPermissions extends ActionPermissions {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             Long idToDelete = (Long) obj;
-            QuarterlyReportDTO toDelete = null;
+            AnnualReportDTO toDelete = null;
             try {
-                toDelete = quarterlyReportDao.getById(idToDelete);
+                toDelete = annualReportDao.getById(idToDelete);
                 return isAcbValidForCurrentUser(toDelete.getAcb().getId());
             } catch (EntityRetrievalException ex) {
                 return false;

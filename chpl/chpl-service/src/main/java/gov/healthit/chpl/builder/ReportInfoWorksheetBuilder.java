@@ -1,93 +1,72 @@
 package gov.healthit.chpl.builder;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.BorderExtent;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Color;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.PropertyTemplate;
-import org.apache.poi.xssf.usermodel.DefaultIndexedColorMap;
-import org.apache.poi.xssf.usermodel.XSSFColor;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTCol;
 
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 
-public class ReportInfoWorksheetBuilder {
-    private static final int MIN_COLUMN = 6;
-    private static final int DEFAULT_MAX_COLUMN = 16384;
-
-    private Workbook workbook;
-    private Font boldFont, smallFont, boldSmallFont, italicSmallFont, boldItalicSmallFont,
-        italicUnderlinedSmallFont;
-    private CellStyle boldStyle, smallStyle, italicSmallStyle, boldItalicSmallStyle,
-        italicUnderlinedSmallStyle, wrappedStyle, sectionNumberingStyle, sectionHeadingStyle,
-        tableHeadingStyle;
-    private XSSFColor tabColor;
+public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
+    private static final int LAST_DATA_COLUMN = 6;
+    private static final int LAST_DATA_ROW = 60;
+    private static final int MIN_TEXT_AREA_LINES = 4;
     private PropertyTemplate pt;
 
     public ReportInfoWorksheetBuilder(final Workbook workbook) {
-        this.workbook = workbook;
+        super(workbook);
         pt = new PropertyTemplate();
-        initializeFonts();
-        initializeStyles();
+    }
+
+    @Override
+    public int getLastDataColumn() {
+        return LAST_DATA_COLUMN;
+    }
+
+    @Override
+    public int getLastDataRow() {
+        return LAST_DATA_ROW;
     }
 
     /**
-     * Creates a formatted Excel worksheet with the information in the report.
+     * Creates a formatted Excel worksheet with the information in the reports.
      * @param report
      * @return
      */
-    public Sheet buildWorksheet(final QuarterlyReportDTO report) throws IOException {
-        //create sheet
-        Sheet sheet = workbook.createSheet("Report Information");
-        if (sheet instanceof XSSFSheet) {
-            XSSFSheet xssfSheet = (XSSFSheet) sheet;
-            DefaultIndexedColorMap colorMap = new DefaultIndexedColorMap();
-            tabColor = new XSSFColor(
-                    new java.awt.Color(141, 180, 226), colorMap);
-            xssfSheet.setTabColor(tabColor);
-
-            //hide all the columns after E
-            CTCol col = xssfSheet.getCTWorksheet().getColsArray(0).addNewCol();
-            col.setMin(MIN_COLUMN);
-            col.setMax(DEFAULT_MAX_COLUMN); // the last column (1-indexed)
-            col.setHidden(true);
-
-            //TODO: figure out how to hide rows after about 60
-        }
+    public Sheet buildWorksheet(final List<QuarterlyReportDTO> reports) throws IOException {
+        //create sheet or get the sheet if it already exists
+        Sheet sheet = getSheet("Report Information", new Color(141, 180, 226));
 
         //set some styling that applies to the whole sheet
         sheet.setDisplayGridlines(false);
         sheet.setDisplayRowColHeadings(false);
 
-        createHeader(sheet);
-        createSectionOne(sheet, report);
-        createSectionTwo(sheet, report);
-        createSectionThree(sheet, report);
-        createSectionFour(sheet, report);
-        createSectionFive(sheet, report);
-        createSectionSix(sheet, report);
-
         //columns B, C, and D need a certain width to get word wrap right
-        sheet.setColumnWidth(1, 13171);
-        sheet.setColumnWidth(2,  10952);
-        sheet.setColumnWidth(3, 10952);
+        sheet.setColumnWidth(1, getColumnWidth(50.67));
+        sheet.setColumnWidth(2,  getColumnWidth(42));
+        sheet.setColumnWidth(3, getColumnWidth(42));
+
+        createHeader(sheet);
+        createSectionOne(sheet, reports);
+        createSectionTwo(sheet, reports);
+        createSectionThree(sheet, reports);
+        createSectionFour(sheet, reports);
+        createSectionFive(sheet, reports);
+        createSectionSix(sheet);
 
         //apply the borders after the sheet has been created
         pt.applyBorders(sheet);
@@ -111,7 +90,7 @@ public class ReportInfoWorksheetBuilder {
         cell.setCellValue("Instructions");
         row = sheet.createRow(5);
         cell = createCell(row, 1);
-        cell.setCellStyle(wrappedStyle);
+        cell.setCellStyle(topAlignedWrappedStyle);
         //increase row height to accommodate four lines of text
         row.setHeightInPoints((4*sheet.getDefaultRowHeightInPoints()));
         //merged cells in rows B,C, and D
@@ -123,7 +102,7 @@ public class ReportInfoWorksheetBuilder {
         sheet.addMergedRegion(new CellRangeAddress(5, 5, 1, 3));
     }
 
-    private void createSectionOne(final Sheet sheet, final QuarterlyReportDTO report) {
+    private void createSectionOne(final Sheet sheet, final List<QuarterlyReportDTO> reports) {
         Row row = sheet.createRow(7);
         Cell cell = createCell(row, 0);
         cell.setCellStyle(sectionNumberingStyle);
@@ -139,12 +118,25 @@ public class ReportInfoWorksheetBuilder {
 
         row = sheet.createRow(9);
         cell = createCell(row, 1);
-        cell.setCellValue(report.getAnnualReport().getAcb().getName());
+        //make sure we start with a unique set of ACB names
+        //and build the report's ACB name from that (in reality i think all acb names will be the same)
+        Set<String> acbNames = new HashSet<String>();
+        for (QuarterlyReportDTO report : reports) {
+            acbNames.add(report.getAcb().getName());
+        }
+        StringBuffer buf = new StringBuffer();
+        for (String acbName : acbNames) {
+            if (buf.length() > 0) {
+                buf.append("; ");
+            }
+            buf.append(acbName);
+        }
+        cell.setCellValue(buf.toString());
         pt.drawBorders(new CellRangeAddress(9, 9, 1, 1),
                 BorderStyle.MEDIUM, BorderExtent.ALL);
     }
 
-    private void createSectionTwo(final Sheet sheet, final QuarterlyReportDTO report) {
+    private void createSectionTwo(final Sheet sheet, final List<QuarterlyReportDTO> reports) {
         Row row = sheet.createRow(11);
         Cell cell = createCell(row, 0);
         cell.setCellStyle(sectionNumberingStyle);
@@ -159,22 +151,24 @@ public class ReportInfoWorksheetBuilder {
 
         row = sheet.createRow(13);
         cell = createCell(row, 1);
-        Calendar quarterStartCal = Calendar.getInstance();
-        quarterStartCal.set(Calendar.YEAR, report.getAnnualReport().getYear());
-        quarterStartCal.set(Calendar.MONTH, report.getQuarter().getStartMonth()-1);
-        quarterStartCal.set(Calendar.DAY_OF_MONTH, report.getQuarter().getStartDay());
-        Calendar quarterEndCal = Calendar.getInstance();
-        quarterEndCal.set(Calendar.YEAR, report.getAnnualReport().getYear());
-        quarterEndCal.set(Calendar.MONTH, report.getQuarter().getEndMonth()-1);
-        quarterEndCal.set(Calendar.DAY_OF_MONTH, report.getQuarter().getEndDay());
+        //calculate the minimum start date and maximum end dates out of all reports passed in
+        Date minDate = null;
+        Date maxDate = null;
+        for (QuarterlyReportDTO report : reports) {
+            if (minDate == null || report.getStartDate().getTime() < minDate.getTime()) {
+                minDate = report.getStartDate();
+            }
+            if (maxDate == null || report.getEndDate().getTime() > maxDate.getTime()) {
+                maxDate = report.getEndDate();
+            }
+        }
         DateFormat dateFormatter = new SimpleDateFormat("d MMMM yyyy");
-        cell.setCellValue(dateFormatter.format(quarterStartCal.getTime()) + " through "
-                + dateFormatter.format(quarterEndCal.getTime()));
+        cell.setCellValue(dateFormatter.format(minDate) + " through " + dateFormatter.format(maxDate));
         pt.drawBorders(new CellRangeAddress(13, 13, 1, 1),
                 BorderStyle.MEDIUM, BorderExtent.ALL);
     }
 
-    private void createSectionThree(final Sheet sheet, final QuarterlyReportDTO report) {
+    private void createSectionThree(final Sheet sheet, final List<QuarterlyReportDTO> reports) {
         Row row = sheet.createRow(15);
         Cell cell = createCell(row, 0);
         cell.setCellStyle(sectionNumberingStyle);
@@ -184,7 +178,7 @@ public class ReportInfoWorksheetBuilder {
         cell.setCellValue("Surveillance Activities and Outcomes");
         row = sheet.createRow(16);
         cell = createCell(row, 1);
-        cell.setCellStyle(wrappedStyle);
+        cell.setCellStyle(topAlignedWrappedStyle);
         row.setHeightInPoints((2*sheet.getDefaultRowHeightInPoints()));
         cell.setCellValue("The ONC-ACB used the following selection method to make its "
                 + "random selection of certified Complete EHRs and certified Health IT "
@@ -193,13 +187,26 @@ public class ReportInfoWorksheetBuilder {
 
         row = sheet.createRow(17);
         cell = createCell(row, 1);
-        cell.setCellStyle(wrappedStyle);
-        cell.getCellStyle().setVerticalAlignment(VerticalAlignment.TOP);
-        //TODO: calculate row height based on the length of the text filling up
-        //the width of the cells and wrapping; height of 3 is the minimum
-        row.setHeightInPoints((3*sheet.getDefaultRowHeightInPoints()));
-        cell.setCellValue(report.getActivitiesOutcomesSummary());
+        cell.setCellStyle(topAlignedWrappedStyle);
+        if (reports.size() == 1) {
+            cell.setCellValue(reports.get(0).getActivitiesOutcomesSummary());
+        } else {
+            StringBuffer buf = new StringBuffer();
+            for (QuarterlyReportDTO report : reports) {
+                if (!StringUtils.isEmpty(report.getActivitiesOutcomesSummary())) {
+                    buf.append(report.getQuarter().getName()).append(":")
+                        .append(report.getActivitiesOutcomesSummary())
+                        .append("\n");
+                }
+            }
+            cell.setCellValue(buf.toString());
+        }
         sheet.addMergedRegion(new CellRangeAddress(17, 17, 1, 3));
+        //this is user-entered text that wraps so we should try to resize the height
+        //of the row to show all the lines of text.
+        int lineCount = calculateLineCount(cell.getStringCellValue(), sheet, 1, 3);
+        row.setHeightInPoints((Math.max(MIN_TEXT_AREA_LINES, lineCount) * sheet.getDefaultRowHeightInPoints()));
+
         pt.drawBorders(new CellRangeAddress(17, 17, 1, 3),
                 BorderStyle.MEDIUM, BorderExtent.ALL);
 
@@ -210,7 +217,7 @@ public class ReportInfoWorksheetBuilder {
         sheet.addMergedRegion(new CellRangeAddress(19, 19, 1, 3));
     }
 
-    private void createSectionFour(final Sheet sheet, final QuarterlyReportDTO report) {
+    private void createSectionFour(final Sheet sheet, final List<QuarterlyReportDTO> reports) {
         Row row = sheet.createRow(21);
         Cell cell = createCell(row, 0);
         cell.setCellStyle(sectionNumberingStyle);
@@ -231,10 +238,10 @@ public class ReportInfoWorksheetBuilder {
         //this is the beginning of a big table
         row = sheet.createRow(25);
         cell = createCell(row, 1);
-        cell.setCellStyle(tableHeadingStyle);
+        cell.setCellStyle(leftAlignedTableHeadingStyle);
         cell.setCellValue("Complete EHR or Health IT Module (CHPL ID)");
         cell = createCell(row, 2);
-        cell.setCellStyle(tableHeadingStyle);
+        cell.setCellStyle(leftAlignedTableHeadingStyle);
         cell.setCellValue("Reason(s) for Exclusion");
         int tableStartRow = 25, tableEndRow = 35;
         for (int i = tableStartRow+1; i <= tableEndRow; i++) {
@@ -253,7 +260,7 @@ public class ReportInfoWorksheetBuilder {
         cell.setCellValue("Reactive Surveillance");
         row = sheet.createRow(38);
         cell = createCell(row, 1);
-        cell.setCellStyle(wrappedStyle);
+        cell.setCellStyle(topAlignedWrappedStyle);
         row.setHeightInPoints((3*sheet.getDefaultRowHeightInPoints()));
         cell.setCellValue("In order to meet its obligation to conduct reactive surveillance, "
                 + "the ONC-ACB undertook the following activities and implemented the following "
@@ -264,16 +271,30 @@ public class ReportInfoWorksheetBuilder {
         sheet.addMergedRegion(new CellRangeAddress(38, 38, 1, 3));
         row = sheet.createRow(39);
         cell = createCell(row, 1);
-        cell.setCellStyle(wrappedStyle);
-        cell.setCellValue(report.getReactiveSummary());
-        //TODO: can we figure out the row height actually needed for the text provided?
-        row.setHeightInPoints((10*sheet.getDefaultRowHeightInPoints()));
+        cell.setCellStyle(topAlignedWrappedStyle);
+        if (reports.size() == 1) {
+            cell.setCellValue(reports.get(0).getReactiveSummary());
+        } else {
+            StringBuffer buf = new StringBuffer();
+            for (QuarterlyReportDTO report : reports) {
+                if (!StringUtils.isEmpty(report.getReactiveSummary())) {
+                    buf.append(report.getQuarter().getName()).append(":")
+                        .append(report.getReactiveSummary())
+                        .append("\n");
+                }
+            }
+            cell.setCellValue(buf.toString());
+        }
+        //this is user-entered text that wraps so we should try to resize the height
+        //of the row to show all the lines of text.
+        int lineCount = calculateLineCount(cell.getStringCellValue(), sheet, 1, 3);
+        row.setHeightInPoints((Math.max(MIN_TEXT_AREA_LINES, lineCount) * sheet.getDefaultRowHeightInPoints()));
         pt.drawBorders(new CellRangeAddress(39, 39, 1, 3),
                 BorderStyle.MEDIUM, BorderExtent.OUTSIDE);
         sheet.addMergedRegion(new CellRangeAddress(39, 39, 1, 3));
     }
 
-    private void createSectionFive(final Sheet sheet, final QuarterlyReportDTO report) {
+    private void createSectionFive(final Sheet sheet, final List<QuarterlyReportDTO> reports) {
         Row row = sheet.createRow(41);
         Cell cell = createCell(row, 0);
         cell.setCellStyle(sectionNumberingStyle);
@@ -287,7 +308,7 @@ public class ReportInfoWorksheetBuilder {
         cell.setCellValue("Prioritized Elements");
         row = sheet.createRow(43);
         cell = createCell(row, 1);
-        cell.setCellStyle(wrappedStyle);
+        cell.setCellStyle(topAlignedWrappedStyle);
         cell.setCellValue("The ONC-ACB undertook the following activities and implemented the "
                 + "following measures to evaluate and address the prioritized elements of "
                 + "surveillance referred to in Program Policy Guidance #15-01A (November 2015).");
@@ -295,10 +316,24 @@ public class ReportInfoWorksheetBuilder {
         sheet.addMergedRegion(new CellRangeAddress(43, 43, 1, 3));
         row = sheet.createRow(45);
         cell = createCell(row, 1);
-        cell.setCellStyle(wrappedStyle);
-        cell.setCellValue(report.getPrioritizedElementSummary());
-        //TODO: can we figure out the row height actually needed for the text provided?
-        row.setHeightInPoints((10*sheet.getDefaultRowHeightInPoints()));
+        cell.setCellStyle(topAlignedWrappedStyle);
+        if (reports.size() == 1) {
+            cell.setCellValue(reports.get(0).getPrioritizedElementSummary());
+        } else {
+            StringBuffer buf = new StringBuffer();
+            for (QuarterlyReportDTO report : reports) {
+                if (!StringUtils.isEmpty(report.getPrioritizedElementSummary())) {
+                    buf.append(report.getQuarter().getName()).append(":")
+                        .append(report.getPrioritizedElementSummary())
+                        .append("\n");
+                }
+            }
+            cell.setCellValue(buf.toString());
+        }
+        //this is user-entered text that wraps so we should try to resize the height
+        //of the row to show all the lines of text.
+        int lineCount = calculateLineCount(cell.getStringCellValue(), sheet, 1, 3);
+        row.setHeightInPoints((Math.max(MIN_TEXT_AREA_LINES, lineCount) * sheet.getDefaultRowHeightInPoints()));
         pt.drawBorders(new CellRangeAddress(45, 45, 1, 3),
                 BorderStyle.MEDIUM, BorderExtent.OUTSIDE);
         sheet.addMergedRegion(new CellRangeAddress(45, 45, 1, 3));
@@ -309,7 +344,7 @@ public class ReportInfoWorksheetBuilder {
         cell.setCellValue("Transparency and Disclosure Requirements");
         row = sheet.createRow(48);
         cell = createCell(row, 1);
-        cell.setCellStyle(wrappedStyle);
+        cell.setCellStyle(topAlignedWrappedStyle);
         cell.setCellValue("The ONC-ACB undertook the following activities and implemented the following measures "
                 + "to ensure adherence by developers to transparency and disclosure requirements, as required of "
                 + "the ONC-ACB under 45 CFR § 170.523(k):");
@@ -317,16 +352,30 @@ public class ReportInfoWorksheetBuilder {
         sheet.addMergedRegion(new CellRangeAddress(48, 48, 1, 3));
         row = sheet.createRow(50);
         cell = createCell(row, 1);
-        cell.setCellStyle(wrappedStyle);
-        cell.setCellValue(report.getTransparencyDisclosureSummary());
-        //TODO: can we figure out the row height actually needed for the text provided?
-        row.setHeightInPoints((10*sheet.getDefaultRowHeightInPoints()));
+        cell.setCellStyle(topAlignedWrappedStyle);
+        if (reports.size() == 1) {
+            cell.setCellValue(reports.get(0).getTransparencyDisclosureSummary());
+        } else {
+            StringBuffer buf = new StringBuffer();
+            for (QuarterlyReportDTO report : reports) {
+                if (!StringUtils.isEmpty(report.getTransparencyDisclosureSummary())) {
+                    buf.append(report.getQuarter().getName()).append(":")
+                        .append(report.getTransparencyDisclosureSummary())
+                        .append("\n");
+                }
+            }
+            cell.setCellValue(buf.toString());
+        }
+        //this is user-entered text that wraps so we should try to resize the height
+        //of the row to show all the lines of text.
+        lineCount = calculateLineCount(cell.getStringCellValue(), sheet, 1, 3);
+        row.setHeightInPoints((Math.max(MIN_TEXT_AREA_LINES, lineCount) * sheet.getDefaultRowHeightInPoints()));
         pt.drawBorders(new CellRangeAddress(50, 50, 1, 3),
                 BorderStyle.MEDIUM, BorderExtent.OUTSIDE);
         sheet.addMergedRegion(new CellRangeAddress(50, 50, 1, 3));
     }
 
-    private void createSectionSix(final Sheet sheet, final QuarterlyReportDTO report) {
+    private void createSectionSix(final Sheet sheet) {
         Row row = sheet.createRow(52);
         Cell cell = createCell(row, 0);
         cell.setCellStyle(sectionNumberingStyle);
@@ -337,88 +386,5 @@ public class ReportInfoWorksheetBuilder {
         row = sheet.createRow(53);
         cell = createCell(row, 1);
         cell.setCellValue("Please log the complaints and any actions to the \"Complaints\" sheet of this workbook.");
-    }
-
-    private Cell createCell(final Row row, final int cellIndex) {
-        Cell cell = row.createCell(cellIndex);
-        cell.setCellStyle(smallStyle);
-        return cell;
-    }
-
-    private void initializeFonts() {
-        boldFont = workbook.createFont();
-        boldFont.setBold(true);
-        boldFont.setFontHeightInPoints((short)12);
-
-        smallFont = workbook.createFont();
-        smallFont.setFontHeightInPoints((short)10);
-
-        boldSmallFont = workbook.createFont();
-        boldSmallFont.setBold(true);
-        boldSmallFont.setFontHeightInPoints((short)10);
-
-        italicSmallFont = workbook.createFont();
-        italicSmallFont.setItalic(true);
-        italicSmallFont.setFontHeightInPoints((short)10);
-
-        boldItalicSmallFont = workbook.createFont();
-        boldItalicSmallFont.setBold(true);
-        boldItalicSmallFont.setItalic(true);
-        boldItalicSmallFont.setFontHeightInPoints((short)10);
-
-        italicUnderlinedSmallFont = workbook.createFont();
-        italicUnderlinedSmallFont.setItalic(true);
-        italicUnderlinedSmallFont.setUnderline(Font.U_SINGLE);
-        italicUnderlinedSmallFont.setFontHeightInPoints((short)10);
-    }
-
-    private void initializeStyles() {
-        boldStyle = workbook.createCellStyle();
-        boldStyle.setFont(boldFont);
-        boldStyle.setFillForegroundColor(IndexedColors.WHITE.index);
-        boldStyle.setFillBackgroundColor(IndexedColors.WHITE.index);
-
-        smallStyle = workbook.createCellStyle();
-        smallStyle.setFont(smallFont);
-        smallStyle.setFillForegroundColor(IndexedColors.WHITE.index);
-        smallStyle.setFillBackgroundColor(IndexedColors.WHITE.index);
-
-        italicSmallStyle = workbook.createCellStyle();
-        italicSmallStyle.setFont(italicSmallFont);
-        italicSmallStyle.setFillForegroundColor(IndexedColors.WHITE.index);
-        italicSmallStyle.setFillBackgroundColor(IndexedColors.WHITE.index);
-
-        wrappedStyle = workbook.createCellStyle();
-        wrappedStyle.setFont(smallFont);
-        wrappedStyle.setWrapText(true);
-        wrappedStyle.setFillForegroundColor(IndexedColors.WHITE.index);
-        wrappedStyle.setFillBackgroundColor(IndexedColors.WHITE.index);
-
-        sectionNumberingStyle = workbook.createCellStyle();
-        sectionNumberingStyle.setAlignment(HorizontalAlignment.RIGHT);
-        sectionNumberingStyle.setFont(boldSmallFont);
-        sectionNumberingStyle.setFillForegroundColor(IndexedColors.WHITE.index);
-        sectionNumberingStyle.setFillBackgroundColor(IndexedColors.WHITE.index);
-
-        sectionHeadingStyle = workbook.createCellStyle();
-        sectionHeadingStyle.setAlignment(HorizontalAlignment.LEFT);
-        sectionHeadingStyle.setFont(boldSmallFont);
-        sectionHeadingStyle.setFillForegroundColor(IndexedColors.WHITE.index);
-        sectionHeadingStyle.setFillBackgroundColor(IndexedColors.WHITE.index);
-
-        boldItalicSmallStyle = workbook.createCellStyle();
-        boldItalicSmallStyle.setFont(boldItalicSmallFont);
-        boldItalicSmallStyle.setFillForegroundColor(IndexedColors.WHITE.index);
-        boldItalicSmallStyle.setFillBackgroundColor(IndexedColors.WHITE.index);
-
-        italicUnderlinedSmallStyle = workbook.createCellStyle();
-        italicUnderlinedSmallStyle.setFont(italicUnderlinedSmallFont);
-        italicUnderlinedSmallStyle.setFillForegroundColor(IndexedColors.WHITE.index);
-        italicUnderlinedSmallStyle.setFillBackgroundColor(IndexedColors.WHITE.index);
-
-        tableHeadingStyle = workbook.createCellStyle();
-        tableHeadingStyle.setFillForegroundColor(IndexedColors.LIGHT_CORNFLOWER_BLUE.index);
-        tableHeadingStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        tableHeadingStyle.setFillBackgroundColor(IndexedColors.LIGHT_CORNFLOWER_BLUE.index);
     }
 }

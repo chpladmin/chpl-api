@@ -2,11 +2,11 @@ package gov.healthit.chpl.permissions.domains.surveillance.report;
 
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
+import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
-@Component("surveillanceReportUpdateQuarterlyReportActionPermissions")
-public class UpdateQuarterlyReportActionPermissions extends ActionPermissions {
+@Component("surveillanceReportUpdateAnnualReportActionPermissions")
+public class UpdateAnnualReportActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess() {
@@ -15,13 +15,14 @@ public class UpdateQuarterlyReportActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess(final Object obj) {
-        if (!(obj instanceof QuarterlyReportDTO)) {
+        if (!(obj instanceof AnnualReportDTO)) {
             return false;
         } else if (getResourcePermissions().isUserRoleAdmin()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
-            QuarterlyReportDTO toUpdate = (QuarterlyReportDTO) obj;
-            if (toUpdate.getAcb() == null || toUpdate.getAcb().getId() == null) {
+            AnnualReportDTO toUpdate = (AnnualReportDTO) obj;
+            if (toUpdate.getAcb() == null
+                    || toUpdate.getAcb().getId() == null) {
                 return false;
             }
             return isAcbValidForCurrentUser(toUpdate.getAcb().getId());

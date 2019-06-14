@@ -18,6 +18,23 @@ import gov.healthit.chpl.util.AuthUtil;
 @Repository("annualReportDao")
 public class AnnualReportDAOImpl extends BaseDAOImpl implements AnnualReportDAO {
 
+    @Override
+    public List<AnnualReportDTO> getAll() {
+        String queryStr = "SELECT ar "
+                + " FROM AnnualReportEntity ar "
+                + " JOIN FETCH ar.acb acb "
+                + " WHERE ar.deleted = false";
+        Query query = entityManager.createQuery(queryStr);
+        List<AnnualReportEntity> entityResults = query.getResultList();
+        List<AnnualReportDTO> results = new ArrayList<AnnualReportDTO>();
+        if (entityResults != null && entityResults.size() > 0) {
+            for (AnnualReportEntity entityResult : entityResults) {
+                results.add(new AnnualReportDTO(entityResult));
+            }
+        }
+        return results;
+    }
+
     /**
      * Get the report for a specific year and ACB.
      * There should only be zero or one result.
