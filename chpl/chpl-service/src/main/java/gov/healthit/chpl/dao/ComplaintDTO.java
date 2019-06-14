@@ -1,8 +1,8 @@
 package gov.healthit.chpl.dao;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
 
@@ -34,7 +34,7 @@ public class ComplaintDTO {
     private Date lastModifiedDate;
     private Long lastModifiedUser;
     private Boolean deleted;
-    private List<CertifiedProductDetailsDTO> listings = new ArrayList<CertifiedProductDetailsDTO>();
+    private Set<CertifiedProductDetailsDTO> listings = new HashSet<CertifiedProductDetailsDTO>();
 
     public ComplaintDTO() {
 
@@ -42,7 +42,7 @@ public class ComplaintDTO {
 
     public ComplaintDTO(ComplaintEntity entity) {
         BeanUtils.copyProperties(entity, this);
-        listings = new ArrayList<CertifiedProductDetailsDTO>();
+        listings = new HashSet<CertifiedProductDetailsDTO>();
 
         if (entity.getCertificationBody() != null) {
             this.certificationBody = new CertificationBodyDTO(entity.getCertificationBody());
@@ -61,6 +61,7 @@ public class ComplaintDTO {
 
     public ComplaintDTO(Complaint domain) {
         BeanUtils.copyProperties(domain, this);
+        listings = new HashSet<CertifiedProductDetailsDTO>();
 
         if (domain.getCertificationBody() != null) {
             this.certificationBody = new CertificationBodyDTO(domain.getCertificationBody());
@@ -221,11 +222,11 @@ public class ComplaintDTO {
         this.deleted = deleted;
     }
 
-    public List<CertifiedProductDetailsDTO> getListings() {
+    public Set<CertifiedProductDetailsDTO> getListings() {
         return listings;
     }
 
-    public void setListings(List<CertifiedProductDetailsDTO> listings) {
+    public void setListings(Set<CertifiedProductDetailsDTO> listings) {
         this.listings = listings;
     }
 

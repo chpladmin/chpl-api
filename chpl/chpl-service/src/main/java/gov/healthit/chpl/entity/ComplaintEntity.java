@@ -1,8 +1,8 @@
 package gov.healthit.chpl.entity;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,6 +15,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.WhereJoinTable;
 
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 
@@ -95,7 +97,8 @@ public class ComplaintEntity {
             joinColumns = @JoinColumn(name = "complaint_id", insertable = false, updatable = false),
             inverseJoinColumns = @JoinColumn(name = "certified_product_id",
                     referencedColumnName = "certified_product_id", insertable = false, updatable = false))
-    private List<CertifiedProductDetailsEntity> listings = new ArrayList<CertifiedProductDetailsEntity>();
+    @WhereJoinTable(clause = "not deleted")
+    private Set<CertifiedProductDetailsEntity> listings = new HashSet<CertifiedProductDetailsEntity>();
 
     public Long getId() {
         return id;
@@ -265,11 +268,11 @@ public class ComplaintEntity {
         this.complaintStatusTypeId = complaintStatusTypeId;
     }
 
-    public List<CertifiedProductDetailsEntity> getListings() {
+    public Set<CertifiedProductDetailsEntity> getListings() {
         return listings;
     }
 
-    public void setListings(List<CertifiedProductDetailsEntity> listings) {
+    public void setListings(Set<CertifiedProductDetailsEntity> listings) {
         this.listings = listings;
     }
 

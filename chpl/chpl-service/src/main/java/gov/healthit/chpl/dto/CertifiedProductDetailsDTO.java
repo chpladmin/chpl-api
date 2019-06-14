@@ -180,7 +180,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
     }
 
     public CertifiedProductDetailsDTO(final CertifiedProduct domain) {
-        BeanUtils.copyProperties(this, domain);
+        BeanUtils.copyProperties(domain, this);
     }
 
     public Long getId() {

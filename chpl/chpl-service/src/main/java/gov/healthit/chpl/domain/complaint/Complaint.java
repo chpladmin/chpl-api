@@ -1,8 +1,8 @@
 package gov.healthit.chpl.domain.complaint;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
 
@@ -26,7 +26,7 @@ public class Complaint {
     private boolean oncAtlContacted;
     private boolean flagForOncReview;
     private Date closedDate;
-    private List<CertifiedProduct> listings = new ArrayList<CertifiedProduct>();
+    private Set<CertifiedProduct> listings = new HashSet<CertifiedProduct>();
 
     public Complaint() {
 
@@ -34,7 +34,7 @@ public class Complaint {
 
     public Complaint(ComplaintDTO dto) {
         BeanUtils.copyProperties(dto, this);
-        listings = new ArrayList<CertifiedProduct>();
+        listings = new HashSet<CertifiedProduct>();
 
         this.certificationBody = new CertificationBody(dto.getCertificationBody());
         this.complaintStatusType = new ComplaintStatusType(dto.getComplaintStatusType());
@@ -157,11 +157,11 @@ public class Complaint {
         this.closedDate = closedDate;
     }
 
-    public List<CertifiedProduct> getListings() {
+    public Set<CertifiedProduct> getListings() {
         return listings;
     }
 
-    public void setListings(final List<CertifiedProduct> listings) {
+    public void setListings(final Set<CertifiedProduct> listings) {
         this.listings = listings;
     }
 
