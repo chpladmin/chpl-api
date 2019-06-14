@@ -8,8 +8,8 @@ import org.springframework.beans.BeanUtils;
 
 import gov.healthit.chpl.dao.ComplaintDTO;
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.CertifiedProduct;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.domain.ComplaintListingMap;
+import gov.healthit.chpl.dto.ComplaintListingMapDTO;
 
 public class Complaint {
     private Long id;
@@ -26,7 +26,7 @@ public class Complaint {
     private boolean oncAtlContacted;
     private boolean flagForOncReview;
     private Date closedDate;
-    private Set<CertifiedProduct> listings = new HashSet<CertifiedProduct>();
+    private Set<ComplaintListingMap> listings = new HashSet<ComplaintListingMap>();
 
     public Complaint() {
 
@@ -34,15 +34,15 @@ public class Complaint {
 
     public Complaint(ComplaintDTO dto) {
         BeanUtils.copyProperties(dto, this);
-        listings = new HashSet<CertifiedProduct>();
+
+        listings = new HashSet<ComplaintListingMap>();
+        for (ComplaintListingMapDTO clDTO : dto.getListings()) {
+            listings.add(new ComplaintListingMap(clDTO));
+        }
 
         this.certificationBody = new CertificationBody(dto.getCertificationBody());
         this.complaintStatusType = new ComplaintStatusType(dto.getComplaintStatusType());
         this.complaintType = new ComplaintType(dto.getComplaintType());
-
-        for (CertifiedProductDetailsDTO listingDTO : dto.getListings()) {
-            listings.add(new CertifiedProduct(listingDTO));
-        }
     }
 
     public Long getId() {
@@ -157,11 +157,11 @@ public class Complaint {
         this.closedDate = closedDate;
     }
 
-    public Set<CertifiedProduct> getListings() {
+    public Set<ComplaintListingMap> getListings() {
         return listings;
     }
 
-    public void setListings(final Set<CertifiedProduct> listings) {
+    public void setListings(final Set<ComplaintListingMap> listings) {
         this.listings = listings;
     }
 

@@ -8,11 +8,12 @@ import javax.persistence.Query;
 
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.Predicate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.ComplaintDAO;
 import gov.healthit.chpl.dao.ComplaintDTO;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.ComplaintListingMapDTO;
 import gov.healthit.chpl.dto.ComplaintStatusTypeDTO;
 import gov.healthit.chpl.dto.ComplaintTypeDTO;
 import gov.healthit.chpl.entity.ComplaintEntity;
@@ -21,9 +22,17 @@ import gov.healthit.chpl.entity.ComplaintStatusTypeEntity;
 import gov.healthit.chpl.entity.ComplaintTypeEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.ChplProductNumberUtil;
 
 @Component
 public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
+
+    private ChplProductNumberUtil chplProductNumberUtil;
+
+    @Autowired
+    public ComplaintDAOImpl(final ChplProductNumberUtil chplProductNumberUtil) {
+        this.chplProductNumberUtil = chplProductNumberUtil;
+    }
 
     @Override
     public List<ComplaintTypeDTO> getComplaintTypes() {
@@ -47,15 +56,16 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
 
     @Override
     public List<ComplaintDTO> getAllComplaints() throws EntityRetrievalException {
-        Query query = entityManager
-                .createQuery(
-                        "FROM ComplaintEntity c " + "JOIN FETCH c.certificationBody " + "JOIN FETCH c.complaintType "
-                                + "JOIN FETCH c.complaintStatusType " + "WHERE c.deleted = false ",
-                        ComplaintEntity.class);
+        Query query = entityManager.createQuery("SELECT DISTINCT c FROM ComplaintEntity c "
+                + "LEFT JOIN FETCH c.listings " + "JOIN FETCH c.certificationBody " + "JOIN FETCH c.complaintType "
+                + "JOIN FETCH c.complaintStatusType " + "WHERE c.deleted = false ", ComplaintEntity.class);
         List<ComplaintEntity> results = query.getResultList();
 
         List<ComplaintDTO> complaintDTOs = new ArrayList<ComplaintDTO>();
         for (ComplaintEntity entity : results) {
+            for (ComplaintListingMapEntity complaintListing : entity.getListings()) {
+                populateChplProductNumber(complaintListing);
+            }
             complaintDTOs.add(new ComplaintDTO(entity));
         }
 
@@ -142,7 +152,8 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
         ComplaintEntity entity = null;
 
         Query query = entityManager.createQuery(
-                "FROM ComplaintEntity c " + "JOIN FETCH c.certificationBody " + "JOIN FETCH c.complaintType "
+                "SELECT DISTINCT c FROM ComplaintEntity c " + "LEFT JOIN FETCH c.listings "
+                        + "JOIN FETCH c.certificationBody " + "JOIN FETCH c.complaintType "
                         + "JOIN FETCH c.complaintStatusType " + "WHERE c.deleted = false " + "AND c.id = :complaintId",
                 ComplaintEntity.class);
         query.setParameter("complaintId", id);
@@ -152,6 +163,9 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
             throw new EntityRetrievalException("Data error. Duplicate complaint id in database.");
         } else if (result.size() == 1) {
             entity = result.get(0);
+            for (ComplaintListingMapEntity complaintListing : entity.getListings()) {
+                populateChplProductNumber(complaintListing);
+            }
         }
         return entity;
     }
@@ -175,10 +189,10 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
         List<ComplaintListingMapEntity> existingListings = getComplaintListings(complaint.getId());
         // If the existing listing does not exist in the new list, delete it
         for (ComplaintListingMapEntity existing : existingListings) {
-            CertifiedProductDetailsDTO found = IterableUtils.find(complaint.getListings(),
-                    new Predicate<CertifiedProductDetailsDTO>() {
+            ComplaintListingMapDTO found = IterableUtils.find(complaint.getListings(),
+                    new Predicate<ComplaintListingMapDTO>() {
                         @Override
-                        public boolean evaluate(CertifiedProductDetailsDTO object) {
+                        public boolean evaluate(ComplaintListingMapDTO object) {
                             return object.getId().equals(existing.getCertifiedProductId());
                         }
                     });
@@ -188,7 +202,7 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
             }
         }
 
-        for (CertifiedProductDetailsDTO passedIn : complaint.getListings()) {
+        for (ComplaintListingMapDTO passedIn : complaint.getListings()) {
             ComplaintListingMapEntity found = IterableUtils.find(existingListings,
                     new Predicate<ComplaintListingMapEntity>() {
                         @Override
@@ -198,7 +212,7 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
                     });
             // Wasn't found in the list from DB, add it to the DB
             if (found == null) {
-                addListingToComplaint(complaint.getId(), passedIn.getId());
+                addListingToComplaint(complaint.getId(), passedIn.getCertifiedProductId());
             }
         }
     }
@@ -248,6 +262,10 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
         List<ComplaintListingMapEntity> result = query.getResultList();
 
         return result;
+    }
 
+    private void populateChplProductNumber(ComplaintListingMapEntity complaintListing) {
+        String chplProductNumber = chplProductNumberUtil.generate(complaintListing.getCertifiedProductId());
+        complaintListing.setChplProductNumber(chplProductNumber);
     }
 }

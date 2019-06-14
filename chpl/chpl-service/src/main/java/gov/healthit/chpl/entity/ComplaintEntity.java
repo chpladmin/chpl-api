@@ -1,9 +1,9 @@
 package gov.healthit.chpl.entity;
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -11,14 +11,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.WhereJoinTable;
-
-import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Table(name = "complaint")
@@ -92,13 +89,11 @@ public class ComplaintEntity {
     @Column(name = "deleted", nullable = false)
     private Boolean deleted;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "complaint_listing_map",
-            joinColumns = @JoinColumn(name = "complaint_id", insertable = false, updatable = false),
-            inverseJoinColumns = @JoinColumn(name = "certified_product_id",
-                    referencedColumnName = "certified_product_id", insertable = false, updatable = false))
-    @WhereJoinTable(clause = "not deleted")
-    private Set<CertifiedProductDetailsEntity> listings = new HashSet<CertifiedProductDetailsEntity>();
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "complaintId")
+    @Basic(optional = true)
+    @Column(name = "complaint_id", nullable = false)
+    @Where(clause = "deleted <> 'true'")
+    private Set<ComplaintListingMapEntity> listings;
 
     public Long getId() {
         return id;
@@ -268,11 +263,11 @@ public class ComplaintEntity {
         this.complaintStatusTypeId = complaintStatusTypeId;
     }
 
-    public Set<CertifiedProductDetailsEntity> getListings() {
+    public Set<ComplaintListingMapEntity> getListings() {
         return listings;
     }
 
-    public void setListings(Set<CertifiedProductDetailsEntity> listings) {
+    public void setListings(final Set<ComplaintListingMapEntity> listings) {
         this.listings = listings;
     }
 
