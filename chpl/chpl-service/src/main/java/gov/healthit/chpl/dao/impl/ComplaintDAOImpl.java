@@ -186,7 +186,7 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
 
     private void saveListings(ComplaintDTO complaint) throws EntityRetrievalException {
         // Get the existing listing for this complaint
-        List<ComplaintListingMapEntity> existingListings = getComplaintListings(complaint.getId());
+        List<ComplaintListingMapEntity> existingListings = getComplaintListingMapEntities(complaint.getId());
 
         deleteMissingListings(complaint, existingListings);
         addNewListings(complaint, existingListings);
@@ -267,7 +267,7 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
         return entity;
     }
 
-    private List<ComplaintListingMapEntity> getComplaintListings(final long complaintId) {
+    private List<ComplaintListingMapEntity> getComplaintListingMapEntities(final long complaintId) {
         Query query = entityManager.createQuery(
                 "FROM ComplaintListingMapEntity c " + "WHERE c.deleted = false " + "AND c.complaintId = :complaintId",
                 ComplaintListingMapEntity.class);
