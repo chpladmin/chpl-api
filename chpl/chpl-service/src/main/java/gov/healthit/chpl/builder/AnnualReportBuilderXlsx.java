@@ -31,6 +31,8 @@ public class AnnualReportBuilderXlsx {
     public Workbook buildXlsx(final AnnualReportDTO annualReport,
             Map<QuarterlyReportDTO, List<CertifiedProductSearchDetails>> reportListingMap) throws IOException {
         Workbook workbook = XSSFWorkbookFactory.create(true);
+        ListWorksheetBuilder listBuilder = new ListWorksheetBuilder(workbook);
+        listBuilder.buildWorksheet();
 
         Set<QuarterlyReportDTO> quarterlyReportSet = reportListingMap.keySet();
         if (quarterlyReportSet != null && quarterlyReportSet.size() > 0) {
@@ -47,6 +49,10 @@ public class AnnualReportBuilderXlsx {
         survSummaryBuilder.buildWorksheet();
         SurveillanceExperienceWorksheetBuilder builder = new SurveillanceExperienceWorksheetBuilder(workbook);
         builder.buildWorksheet(annualReport);
+
+        //hide the ListSheet
+        workbook.setSheetHidden(0, true);
+        workbook.setActiveSheet(1);
         return workbook;
     }
 

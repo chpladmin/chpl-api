@@ -67,13 +67,13 @@ public class SurveillanceExperienceWorksheetBuilder extends XlsxWorksheetBuilder
     }
 
     private void addSurveillanceObstacles(final Sheet sheet, final AnnualReportDTO report) {
-        Row row = createRow(sheet, 1);
+        Row row = getRow(sheet, 1);
         Cell cell = createCell(row, 1);
         cell.setCellStyle(leftAlignedTableHeadingStyle);
         cell.setCellValue("List Any Obstacles Encountered During Surveillance");
         sheet.addMergedRegion(new CellRangeAddress(1, 1, 1, 3));
 
-        row = createRow(sheet, 2);
+        row = getRow(sheet, 2);
         cell = createCell(row, 1);
         cell.setCellStyle(topAlignedWrappedStyle);
         cell.setCellValue(report.getObstacleSummary());
@@ -87,12 +87,12 @@ public class SurveillanceExperienceWorksheetBuilder extends XlsxWorksheetBuilder
     }
 
     private void addFindingsSummary(final Sheet sheet, final AnnualReportDTO report) {
-        Row row = createRow(sheet, 1);
+        Row row = getRow(sheet, 1);
         Cell cell = createCell(row, 5);
         cell.setCellStyle(leftAlignedTableHeadingStyle);
         cell.setCellValue("Describe How Priorities May Have Shifted in Response to Findings in the Field");
 
-        row = createRow(sheet, 2);
+        row = getRow(sheet, 2);
         cell = createCell(row, 5);
         cell.setCellStyle(topAlignedWrappedStyle);
         cell.setCellValue(report.getFindingsSummary());

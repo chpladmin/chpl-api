@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CertificationStatusEvent implements Serializable {
+public class CertificationStatusEvent implements Comparable<CertificationStatusEvent>, Serializable {
     private static final long serialVersionUID = -2498656549844148886L;
 
     /**
@@ -118,5 +118,25 @@ public class CertificationStatusEvent implements Serializable {
 
     public void setReason(final String reason) {
         this.reason = reason;
+    }
+
+    /**
+     * Returns a negative number if this status event is "before" the other status event.
+     * Returns a positive number if this status event is "after" the other status event.
+     * Returns 0 if either status event has a null date or if the dates are equal
+     */
+    @Override
+    public int compareTo(final CertificationStatusEvent other) {
+        if (this.getEventDate() == null || other.getEventDate() == null
+                || this.getEventDate().equals(other.getEventDate())) {
+            return 0;
+        }
+        if (this.getEventDate() < other.getEventDate()) {
+            return -1;
+        }
+        if (this.getEventDate() > other.getEventDate()) {
+            return 1;
+        }
+        return 0;
     }
 }
