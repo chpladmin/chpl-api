@@ -1,5 +1,16 @@
 # Release Notes
 
+## Version 21.2.0
+_17 June 2019_
+
+### New Features
+* Add endpoints to provide activity metadata for users, announcements, pending listings, corrective action plans, and pending surveillances
+* Add activity for split actions to allow for better history display in listing 'eye'.
+* Add temporary quartz job to insert missing split activity. Can only be run by ADMIN and should be removed in a following release.
+* Add /versions/{versionId}/split endpoint
+
+---
+
 ## Version 21.1.0
 _3 June 2019_
 
