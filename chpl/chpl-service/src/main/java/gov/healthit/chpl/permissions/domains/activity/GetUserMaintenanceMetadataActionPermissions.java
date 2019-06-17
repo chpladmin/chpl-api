@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.UserCertificationBodyMapDAO;
 import gov.healthit.chpl.dao.UserTestingLabMapDAO;
@@ -32,14 +33,16 @@ public class GetUserMaintenanceMetadataActionPermissions extends ActionPermissio
 
     @Override
     public boolean hasAccess() {
-        if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleAcbAdmin()) {
-            return true;
-        } else {
+        if (getResourcePermissions().isUserAnonymous()) {
             return false;
+        } else {
+            return true;
         }
+
     }
 
     @Override
+    @Transactional
     public boolean hasAccess(Object obj) {
         if (!(obj instanceof ActivityMetadata)) {
             return false;
@@ -62,21 +65,21 @@ public class GetUserMaintenanceMetadataActionPermissions extends ActionPermissio
     private Boolean checkIfCurrentUserHasAcbAccessToUser(Long userId) {
         List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByUserId(userId);
         for (UserCertificationBodyMapDTO dto : dtos) {
-            if (!isAcbValidForCurrentUser(dto.getCertificationBody().getId())) {
-                return false;
+            if (isAcbValidForCurrentUser(dto.getCertificationBody().getId())) {
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     private Boolean checkIfCurrentUserHasAtlAccessToUser(Long userId) {
         List<UserTestingLabMapDTO> dtos = userTestingLabMapDAO.getByUserId(userId);
         for (UserTestingLabMapDTO dto : dtos) {
-            if (!isAtlValidForCurrentUser(dto.getTestingLab().getId())) {
-                return false;
+            if (isAtlValidForCurrentUser(dto.getTestingLab().getId())) {
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     private Boolean checkIfCurrentUserHasCmsAccessToUser(Long userId) {

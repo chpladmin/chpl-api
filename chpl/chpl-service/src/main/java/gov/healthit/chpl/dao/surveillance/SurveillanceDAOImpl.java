@@ -1,4 +1,4 @@
-package gov.healthit.chpl.dao.impl;
+package gov.healthit.chpl.dao.surveillance;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +15,8 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
-import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.dao.auth.UserPermissionDAO;
+import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.SurveillanceNonconformityDocument;
