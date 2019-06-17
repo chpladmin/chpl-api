@@ -187,13 +187,39 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
     private void saveListings(ComplaintDTO complaint) throws EntityRetrievalException {
         // Get the existing listing for this complaint
         List<ComplaintListingMapEntity> existingListings = getComplaintListings(complaint.getId());
+
+        deleteMissingListings(complaint, existingListings);
+        addNewListings(complaint, existingListings);
+    }
+
+    private void addNewListings(final ComplaintDTO complaint, final List<ComplaintListingMapEntity> existingListings)
+            throws EntityRetrievalException {
+        // If there is a listing passed in and it does not exist in the DB, add it
+        for (ComplaintListingMapDTO passedIn : complaint.getListings()) {
+            ComplaintListingMapEntity found = IterableUtils.find(existingListings,
+                    new Predicate<ComplaintListingMapEntity>() {
+                        @Override
+                        public boolean evaluate(ComplaintListingMapEntity object) {
+                            return object.getListingId().equals(passedIn.getListingId());
+                        }
+                    });
+            // Wasn't found in the list from DB, add it to the DB
+            if (found == null) {
+                addListingToComplaint(complaint.getId(), passedIn.getListingId());
+            }
+        }
+    }
+
+    private void deleteMissingListings(final ComplaintDTO complaint,
+            final List<ComplaintListingMapEntity> existingListings) throws EntityRetrievalException {
         // If the existing listing does not exist in the new list, delete it
         for (ComplaintListingMapEntity existing : existingListings) {
             ComplaintListingMapDTO found = IterableUtils.find(complaint.getListings(),
                     new Predicate<ComplaintListingMapDTO>() {
                         @Override
-                        public boolean evaluate(ComplaintListingMapDTO object) {
-                            return object.getId().equals(existing.getCertifiedProductId());
+                        public boolean evaluate(ComplaintListingMapDTO existingComplaintListing) {
+                            return existingComplaintListing.getListingId()
+                                    .equals(existing.getListingId());
                         }
                     });
             // Wasn't found in the list passed in, delete it from the DB
@@ -202,25 +228,12 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
             }
         }
 
-        for (ComplaintListingMapDTO passedIn : complaint.getListings()) {
-            ComplaintListingMapEntity found = IterableUtils.find(existingListings,
-                    new Predicate<ComplaintListingMapEntity>() {
-                        @Override
-                        public boolean evaluate(ComplaintListingMapEntity object) {
-                            return object.getCertifiedProductId().equals(passedIn.getId());
-                        }
-                    });
-            // Wasn't found in the list from DB, add it to the DB
-            if (found == null) {
-                addListingToComplaint(complaint.getId(), passedIn.getCertifiedProductId());
-            }
-        }
     }
 
     private void addListingToComplaint(final long complaintId, final long listingId) {
         ComplaintListingMapEntity entity = new ComplaintListingMapEntity();
         entity.setComplaintId(complaintId);
-        entity.setCertifiedProductId(listingId);
+        entity.setListingId(listingId);
         entity.setDeleted(false);
         entity.setCreationDate(new Date());
         entity.setLastModifiedUser(AuthUtil.getAuditId());
@@ -265,7 +278,7 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
     }
 
     private void populateChplProductNumber(ComplaintListingMapEntity complaintListing) {
-        String chplProductNumber = chplProductNumberUtil.generate(complaintListing.getCertifiedProductId());
+        String chplProductNumber = chplProductNumberUtil.generate(complaintListing.getListingId());
         complaintListing.setChplProductNumber(chplProductNumber);
     }
 }

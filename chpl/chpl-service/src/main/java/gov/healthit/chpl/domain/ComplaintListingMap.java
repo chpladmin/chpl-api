@@ -9,7 +9,7 @@ import gov.healthit.chpl.dto.ComplaintListingMapDTO;
 public class ComplaintListingMap {
     private Long id;
     private Long complaintId;
-    private Long certifiedProductId;
+    private Long listingId;
     private Date creationDate;
     private Date lastModifiedDate;
     private Long lastModifiedUser;
@@ -40,12 +40,12 @@ public class ComplaintListingMap {
         this.complaintId = complaintId;
     }
 
-    public Long getCertifiedProductId() {
-        return certifiedProductId;
+    public Long getListingId() {
+        return listingId;
     }
 
-    public void setCertifiedProductId(final Long certifiedProductId) {
-        this.certifiedProductId = certifiedProductId;
+    public void setListingId(final Long listingId) {
+        this.listingId = listingId;
     }
 
     public Date getCreationDate() {
