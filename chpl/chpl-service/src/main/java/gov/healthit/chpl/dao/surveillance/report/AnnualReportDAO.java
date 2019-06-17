@@ -7,6 +7,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public interface AnnualReportDAO {
+    public List<AnnualReportDTO> getAll();
     public AnnualReportDTO getByAcbAndYear(Long acbId, Integer year);
     public List<AnnualReportDTO> getByAcb(Long acbId);
     public AnnualReportDTO getById(Long id) throws EntityRetrievalException;

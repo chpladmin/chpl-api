@@ -22,6 +22,7 @@ public class QuarterlyReport implements Serializable {
 
     public QuarterlyReport(final QuarterlyReportDTO dto) {
         this.id = dto.getId();
+        this.year = dto.getYear();
         this.surveillanceActivitiesAndOutcomes = dto.getActivitiesOutcomesSummary();
         this.reactiveSummary = dto.getReactiveSummary();
         this.prioritizedElementSummary = dto.getPrioritizedElementSummary();
@@ -29,11 +30,8 @@ public class QuarterlyReport implements Serializable {
         if (dto.getQuarter() != null) {
             this.quarter = dto.getQuarter().getName();
         }
-        if (dto.getAnnualReport() != null) {
-            this.year = dto.getAnnualReport().getYear();
-            if (dto.getAnnualReport().getAcb() != null) {
-                this.acb = new CertificationBody(dto.getAnnualReport().getAcb());
-            }
+        if (dto.getAcb() != null) {
+            this.acb = new CertificationBody(dto.getAcb());
         }
     }
 

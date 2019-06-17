@@ -23,10 +23,9 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
         String queryStr = "SELECT qr "
                 + " FROM QuarterlyReportEntity qr "
                 + " JOIN FETCH qr.quarter "
-                + " JOIN FETCH qr.annualReport ar"
-                + " JOIN FETCH ar.acb acb "
+                + " JOIN FETCH qr.acb acb "
                 + " WHERE qr.deleted = false "
-                + " AND ar.year = :year "
+                + " AND qr.year = :year "
                 + " AND acb.id = :acbId "
                 + " AND qr.id = :quarterId";
         Query query = entityManager.createQuery(queryStr);
@@ -50,10 +49,9 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
         String queryStr = "SELECT qr "
                 + " FROM QuarterlyReportEntity qr "
                 + " JOIN FETCH qr.quarter "
-                + " JOIN FETCH qr.annualReport ar"
-                + " JOIN FETCH ar.acb acb "
+                + " JOIN FETCH qr.acb acb "
                 + " WHERE qr.deleted = false "
-                + " AND ar.year = :year "
+                + " AND qr.year = :year "
                 + " AND acb.id = :acbId";
         Query query = entityManager.createQuery(queryStr);
         query.setParameter("year", year);
@@ -77,8 +75,7 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
         String queryStr = "SELECT qr "
                 + " FROM QuarterlyReportEntity qr "
                 + " JOIN FETCH qr.quarter "
-                + " JOIN FETCH qr.annualReport ar"
-                + " JOIN FETCH ar.acb acb "
+                + " JOIN FETCH qr.acb acb "
                 + " WHERE qr.deleted = false "
                 + " AND acb.id = :acbId";
         Query query = entityManager.createQuery(queryStr);
@@ -101,8 +98,7 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
         String queryStr = "SELECT qr "
                 + " FROM QuarterlyReportEntity qr "
                 + " JOIN FETCH qr.quarter "
-                + " JOIN FETCH qr.annualReport ar"
-                + " JOIN FETCH ar.acb acb "
+                + " JOIN FETCH qr.acb acb "
                 + " WHERE qr.deleted = false ";
         Query query = entityManager.createQuery(queryStr);
         List<QuarterlyReportEntity> entityResults = query.getResultList();
@@ -130,13 +126,17 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
     @Override
     public QuarterlyReportDTO create(final QuarterlyReportDTO toCreate) throws EntityCreationException {
         QuarterlyReportEntity toCreateEntity = new QuarterlyReportEntity();
-        if (toCreate.getAnnualReport() == null) {
-            throw new EntityCreationException("An annual report must be provided in order to create a quarterly report.");
+        if (toCreate.getAcb() == null || toCreate.getAcb().getId() == null) {
+            throw new EntityCreationException("An ACB must be provided in order to create a quarterly report.");
+        }
+        if (toCreate.getYear() == null) {
+            throw new EntityCreationException("A year must be provided in order to create a quarterly report.");
         }
         if (toCreate.getQuarter() == null) {
             throw new EntityCreationException("A quarter must be provided in order to create a quarterly report.");
         }
-        toCreateEntity.setAnnualReportId(toCreate.getAnnualReport().getId());
+        toCreateEntity.setCertificationBodyId(toCreate.getAcb().getId());
+        toCreateEntity.setYear(toCreate.getYear());
         toCreateEntity.setPrioritizedElementSummary(toCreate.getPrioritizedElementSummary());
         toCreateEntity.setQuarterId(toCreate.getQuarter().getId());
         toCreateEntity.setActivitiesOutcomesSummary(toCreate.getActivitiesOutcomesSummary());
@@ -175,8 +175,7 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
         String queryStr = "SELECT qr "
                 + " FROM QuarterlyReportEntity qr "
                 + " JOIN FETCH qr.quarter "
-                + " JOIN FETCH qr.annualReport ar"
-                + " JOIN FETCH ar.acb acb "
+                + " JOIN FETCH qr.acb acb "
                 + " WHERE qr.deleted = false "
                 + " AND qr.id = :id";
         Query query = entityManager.createQuery(queryStr);

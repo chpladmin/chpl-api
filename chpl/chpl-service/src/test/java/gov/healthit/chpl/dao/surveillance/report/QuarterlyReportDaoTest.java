@@ -20,7 +20,6 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -43,9 +42,6 @@ public class QuarterlyReportDaoTest extends TestCase {
 
     @Autowired
     private QuarterDAO quarterDao;
-
-    @Autowired
-    private AnnualReportDAO annualReportDao;
 
     @Rule
     @Autowired
@@ -72,9 +68,11 @@ public class QuarterlyReportDaoTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void createReportMissingQuarter() throws EntityCreationException {
-        AnnualReportDTO annualReport = createAnnualReport(-1L, 2019);
         QuarterlyReportDTO toCreate = new QuarterlyReportDTO();
-        toCreate.setAnnualReport(annualReport);
+        toCreate.setYear(2019);
+        CertificationBodyDTO acb = new CertificationBodyDTO();
+        acb.setId(-1L);
+        toCreate.setAcb(acb);
         quarterlyReportDao.create(toCreate);
     }
 
@@ -201,13 +199,15 @@ public class QuarterlyReportDaoTest extends TestCase {
 
     private QuarterlyReportDTO createReport(final Long acbId, final Integer year, final Long quarterId) throws EntityCreationException, EntityRetrievalException {
         QuarterDTO quarter = quarterDao.getById(quarterId);
-        AnnualReportDTO annualReport = createAnnualReport(acbId, year);
         String activitiesSummary = "test";
         String prioritizedElementSummary = "test";
         String reactiveSummary = "test";
         String transparencyDisclosureSummary = "test";
         QuarterlyReportDTO toCreate = new QuarterlyReportDTO();
-        toCreate.setAnnualReport(annualReport);
+        toCreate.setYear(year);
+        CertificationBodyDTO acb = new CertificationBodyDTO();
+        acb.setId(acbId);
+        toCreate.setAcb(acb);
         toCreate.setQuarter(quarter);
         toCreate.setActivitiesOutcomesSummary(activitiesSummary);
         toCreate.setPrioritizedElementSummary(prioritizedElementSummary);
@@ -221,31 +221,12 @@ public class QuarterlyReportDaoTest extends TestCase {
         assertEquals(prioritizedElementSummary, created.getPrioritizedElementSummary());
         assertEquals(reactiveSummary, created.getReactiveSummary());
         assertEquals(transparencyDisclosureSummary, created.getTransparencyDisclosureSummary());
-        assertNotNull(created.getAnnualReport());
-        assertEquals(annualReport.getId(), created.getAnnualReport().getId());
+        assertEquals(year, created.getYear());
+        assertNotNull(created.getAcb());
+        assertNotNull(created.getAcb().getId());
+        assertEquals(acbId, created.getAcb().getId());
         assertNotNull(created.getQuarter());
         assertEquals(quarter.getId(), created.getQuarter().getId());
-        return created;
-    }
-
-    private AnnualReportDTO createAnnualReport(Long acbId, Integer year) throws EntityCreationException {
-        String findingsSummary = "test";
-        String obstacleSummary = "test";
-        AnnualReportDTO toCreate = new AnnualReportDTO();
-        toCreate.setFindingsSummary(findingsSummary);
-        toCreate.setObstacleSummary(obstacleSummary);
-        toCreate.setYear(year);
-        CertificationBodyDTO acb = new CertificationBodyDTO();
-        acb.setId(acbId);
-        toCreate.setAcb(acb);
-        AnnualReportDTO created = annualReportDao.create(toCreate);
-        assertNotNull(created);
-        assertNotNull(created.getId());
-        assertTrue(created.getId() > 0);
-        assertEquals(findingsSummary, created.getFindingsSummary());
-        assertEquals(obstacleSummary, created.getObstacleSummary());
-        assertEquals(year, created.getYear());
-        assertEquals(acb.getId(), created.getAcb().getId());
         return created;
     }
 }

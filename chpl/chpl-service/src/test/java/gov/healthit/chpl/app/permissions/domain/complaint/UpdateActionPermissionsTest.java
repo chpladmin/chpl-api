@@ -14,8 +14,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.healthit.chpl.app.permissions.domain.ActionPermissionsBaseTest;
-import gov.healthit.chpl.dao.ComplaintDTO;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.complaint.Complaint;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domains.complaint.UpdateActionPermissions;
 
@@ -44,7 +44,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         setupForAdminUser(resourcePermissions);
         assertFalse(permissions.hasAccess());
 
-        ComplaintDTO complaint = new ComplaintDTO();
+        Complaint complaint = new Complaint();
         assertTrue(permissions.hasAccess(complaint));
     }
 
@@ -54,7 +54,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         setupForOncUser(resourcePermissions);
         assertFalse(permissions.hasAccess());
 
-        ComplaintDTO complaint = new ComplaintDTO();
+        Complaint complaint = new Complaint();
         assertTrue(permissions.hasAccess(complaint));
     }
 
@@ -64,8 +64,8 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         setupForAcbUser(resourcePermissions);
         assertFalse(permissions.hasAccess());
 
-        ComplaintDTO complaint = new ComplaintDTO();
-        complaint.setCertificationBody(new CertificationBodyDTO());
+        Complaint complaint = new Complaint();
+        complaint.setCertificationBody(new CertificationBody());
         complaint.getCertificationBody().setId(2l);
         assertTrue(permissions.hasAccess(complaint));
 
@@ -79,7 +79,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         setupForAtlUser(resourcePermissions);
         assertFalse(permissions.hasAccess());
 
-        ComplaintDTO complaint = new ComplaintDTO();
+        Complaint complaint = new Complaint();
         assertFalse(permissions.hasAccess(complaint));
     }
 
@@ -89,7 +89,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         setupForCmsUser(resourcePermissions);
         assertFalse(permissions.hasAccess());
 
-        ComplaintDTO complaint = new ComplaintDTO();
+        Complaint complaint = new Complaint();
         assertFalse(permissions.hasAccess(complaint));
     }
 
@@ -99,7 +99,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         setupForAnonUser(resourcePermissions);
         assertFalse(permissions.hasAccess());
 
-        ComplaintDTO complaint = new ComplaintDTO();
+        Complaint complaint = new Complaint();
         assertFalse(permissions.hasAccess(complaint));
     }
 

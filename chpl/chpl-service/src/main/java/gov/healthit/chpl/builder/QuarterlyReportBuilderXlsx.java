@@ -1,6 +1,8 @@
 package gov.healthit.chpl.builder;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbookFactory;
@@ -17,24 +19,22 @@ public class QuarterlyReportBuilderXlsx {
      * @return
      */
     public Workbook buildXlsx(QuarterlyReportDTO report) throws IOException {
+        List<QuarterlyReportDTO> reports = new ArrayList<QuarterlyReportDTO>();
+        reports.add(report);
+
         Workbook workbook = XSSFWorkbookFactory.create(true);
         ReportInfoWorksheetBuilder reportInfoBuilder = new ReportInfoWorksheetBuilder(workbook);
-        reportInfoBuilder.buildWorksheet(report);
-        createActivitiesAndOutcomesWorksheet(workbook);
+        reportInfoBuilder.buildWorksheet(reports);
+        ActivitiesAndOutcomesWorksheetBuilder activitiesAndOutcomesBuilder =
+                new ActivitiesAndOutcomesWorksheetBuilder(workbook);
+        activitiesAndOutcomesBuilder.buildWorksheet();
         createComplaintsWorksheet(workbook);
-        createSurveillanceSummaryWorksheet(workbook);
+        SurveillanceSummaryWorksheetBuilder survSummaryBuilder = new SurveillanceSummaryWorksheetBuilder(workbook);
+        survSummaryBuilder.buildWorksheet();
         return workbook;
-    }
-
-    private void createActivitiesAndOutcomesWorksheet(final Workbook workbook) {
-        workbook.createSheet("Activities and Outcomes");
     }
 
     private void createComplaintsWorksheet(final Workbook workbook) {
         workbook.createSheet("Complaints");
-    }
-
-    private void createSurveillanceSummaryWorksheet(final Workbook workbook) {
-        workbook.createSheet("Surveillance Summary");
     }
 }
