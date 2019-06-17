@@ -143,9 +143,9 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
             + "#id)")
     public Workbook exportAnnualReport(final Long id) throws EntityRetrievalException, IOException {
         AnnualReportDTO report = getAnnualReport(id);
-        List<QuarterlyReportDTO> quarterlyReports = 
+        List<QuarterlyReportDTO> quarterlyReports =
                 getQuarterlyReports(report.getAcb().getId(), report.getYear());
-        Map<QuarterlyReportDTO, List<CertifiedProductSearchDetails>> reportListingMap = 
+        Map<QuarterlyReportDTO, List<CertifiedProductSearchDetails>> reportListingMap =
                 new HashMap<QuarterlyReportDTO, List<CertifiedProductSearchDetails>>(quarterlyReports.size());
         for (QuarterlyReportDTO quarterlyReport : quarterlyReports) {
             //get all of the surveillance details for the listings relevant to this report
@@ -169,7 +169,7 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
         }
         if (toCreate.getAcb() == null || toCreate.getAcb().getId() == null) {
             throw new InvalidArgumentsException(msgUtil.getMessage("report.quarterlySurveillance.missingAcb"));
-        } 
+        }
         if (toCreate.getQuarter() == null
                 || (toCreate.getQuarter().getId() == null && StringUtils.isEmpty(toCreate.getQuarter().getName()))) {
             throw new InvalidArgumentsException("report.quarterlySurveillance.missingQuarter");
@@ -192,6 +192,9 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
         }
 
         QuarterlyReportDTO created = quarterlyDao.create(toCreate);
+        created.setRelevantListings(
+                listingDao.findByAcbWithOpenSurveillance(created.getAcb().getId(),
+                        created.getStartDate(), created.getEndDate()));
         return created;
     }
 
@@ -202,6 +205,9 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
     public QuarterlyReportDTO updateQuarterlyReport(final QuarterlyReportDTO toUpdate)
     throws EntityRetrievalException {
         QuarterlyReportDTO updated = quarterlyDao.update(toUpdate);
+        updated.setRelevantListings(
+                listingDao.findByAcbWithOpenSurveillance(updated.getAcb().getId(),
+                        updated.getStartDate(), updated.getEndDate()));
         return updated;
     }
 
@@ -281,9 +287,11 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
     }
 
     /**
-     * The relevant listings objects in the quarterly report have information about the listing
-     * itself but not about each surveillance. This method queries for each surveillance and
-     * adds it into a new details object that should have all of the fields needed to fill out
+     * The relevant listings objects in the quarterly report some have information about the listing
+     * itself but not everything that is needed to build the reports.
+     * This method queries for certification status events as well as relevant surveillance
+     * (surveillance that occurred during the quarter) and adds it into a new details object.
+     * The returned objects should have all of the fields needed to fill out
      * the Activities and Outcomes worksheet.
      * @param report
      * @return

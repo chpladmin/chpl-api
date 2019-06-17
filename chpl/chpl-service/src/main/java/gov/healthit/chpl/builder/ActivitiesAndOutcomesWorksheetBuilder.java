@@ -9,23 +9,30 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.DVConstraint;
 import org.apache.poi.ss.usermodel.BorderExtent;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DataValidation;
 import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.ss.util.PropertyTemplate;
+import org.apache.poi.xssf.usermodel.XSSFDataValidation;
+import org.apache.poi.xssf.usermodel.XSSFDataValidationConstraint;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
+import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTDataValidation;
+import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTDataValidations;
 
+import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;
 import gov.healthit.chpl.domain.SurveillanceRequirement;
-import gov.healthit.chpl.domain.concept.RequirementTypeEnum;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
@@ -77,6 +84,12 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
     private static final String OUTCOME_NC_UNRESOLVED_REVIEW = "Non-conformity substantiated - Unresolved - Under investigation/review";
     private static final String OUTCOME_NC_UNRESOLVED_OTHER = "Non-conformity substantiated - Unresolved - Other - [Please describe]";
 
+    private static final String PROCESS_TYPE_FIELD = "In-the-Field";
+    private static final String PROCESS_TYPE_CONTROLLED = "Controlled/Test Environment";
+    private static final String PROCESS_TYPE_CORRESPONDENCE = "Correspondence with Complainant/Developer";
+    private static final String PROCESS_TYPE_REVIEW = "Review of Websites/Written Documentation";
+    private static final String PROCESS_TYPE_OTHER = "Other - [Please describe]";
+
     private SimpleDateFormat dateFormatter;
     private PropertyTemplate pt;
 
@@ -98,11 +111,24 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
 
     /**
      * Creates a formatted Excel worksheet with the information in the report.
-     * @param report
+     * @param reportListingMap a mapping of quarterly reports to the listing details
+     * (including surveillance that occurred during the quarter)
      * @return
+     * @throws IOException
      */
     public Sheet buildWorksheet(final Map<QuarterlyReportDTO, List<CertifiedProductSearchDetails>> reportListingMap)
             throws IOException {
+        String[] outcomeChoices = new String[]{OUTCOME_NO_NC, OUTCOME_NC_RESOLVED, OUTCOME_NC_UNRESOLVED_CAP,
+                OUTCOME_NC_UNRESOLVED_SUSPENDED, OUTCOME_NC_UNRESOLVED_WITHDRAWN, OUTCOME_NC_UNRESOLVED_SURV,
+                OUTCOME_NC_UNRESOLVED_REVIEW, OUTCOME_NC_UNRESOLVED_OTHER};
+        String[] processTypeChoices = new String[] {PROCESS_TYPE_FIELD, PROCESS_TYPE_CORRESPONDENCE,
+                PROCESS_TYPE_CONTROLLED, PROCESS_TYPE_REVIEW, PROCESS_TYPE_OTHER};
+        String[] statusChoices = new String[] {CertificationStatusType.Active.getName(),
+                CertificationStatusType.WithdrawnByAcb.getName(),
+                CertificationStatusType.WithdrawnByDeveloper.getName(),
+                CertificationStatusType.WithdrawnByDeveloperUnderReview.getName()};
+        String[] booleanChoices = new String[] {"Yes", "No"};
+
         //create sheet
         Sheet sheet = getSheet("Activities and Outcomes", new Color(141, 180, 226));
 
@@ -150,6 +176,39 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
         addHeadingRow(sheet);
         addTableData(sheet, reportListingMap);
 
+        //some of the columns have dropdown lists of choices for the user - set those up
+        //k1 reviewed is a dropdown list of choices
+//        CellRangeAddressList addressList = new CellRangeAddressList(2, getLastDataRow(), COL_K1_REVIEWED, COL_K1_REVIEWED);
+//        XSSFDataValidationConstraint dvConstraint =
+//                new XSSFDataValidationConstraint(booleanChoices);
+//        DataValidation dataValidation = new XSSFDataValidation(dvConstraint, addressList, CTDataValidation.Factory.newInstance());
+//        dataValidation.setSuppressDropDownArrow(false);
+//        sheet.addValidationData(dataValidation);
+//        //outcome is a dropdown list of choices
+//        addressList = new CellRangeAddressList(2, getLastDataRow(), COL_SURV_OUTCOME, COL_SURV_OUTCOME);
+//        dvConstraint = new XSSFDataValidationConstraint(outcomeChoices);
+//        dataValidation = new XSSFDataValidation(dvConstraint, addressList, CTDataValidation.Factory.newInstance());
+//        dataValidation.setSuppressDropDownArrow(false);
+//        sheet.addValidationData(dataValidation);
+//        //certification status is a dropdown list of choices
+//        addressList = new CellRangeAddressList(2, getLastDataRow(), COL_CERT_STATUS_RESULTANT, COL_CERT_STATUS_RESULTANT);
+//        dvConstraint = new XSSFDataValidationConstraint(statusChoices);
+//        dataValidation = new XSSFDataValidation(dvConstraint, addressList, CTDataValidation.Factory.newInstance());
+//        dataValidation.setSuppressDropDownArrow(false);
+//        sheet.addValidationData(dataValidation);
+//        //process type is a dropdown list of choices
+//        addressList = new CellRangeAddressList(2, getLastDataRow(), COL_SURV_PROCESS_TYPE, COL_SURV_PROCESS_TYPE);
+//        dvConstraint = new XSSFDataValidationConstraint(processTypeChoices);
+//        dataValidation = new XSSFDataValidation(dvConstraint, addressList, CTDataValidation.Factory.newInstance());
+//        dataValidation.setSuppressDropDownArrow(false);
+//        sheet.addValidationData(dataValidation);
+//        //suspended is a dropdown list of choices
+//        addressList = new CellRangeAddressList(2, getLastDataRow(), COL_SUSPENDED, COL_SUSPENDED);
+//        dvConstraint = new XSSFDataValidationConstraint(booleanChoices);
+//        dataValidation = new XSSFDataValidation(dvConstraint, addressList, CTDataValidation.Factory.newInstance());
+//        dataValidation.setSuppressDropDownArrow(false);
+//        sheet.addValidationData(dataValidation);
+
         //hide some rows the ACBs are not expected to fill out (columns D-I)
         for (int i = 3; i < 9; i++) {
             sheet.setColumnHidden(i, true);
@@ -157,7 +216,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
 
         //apply the borders after the sheet has been created
         //TODO: increase the border above 5 depending on how many data rows there are
-        pt.drawBorders(new CellRangeAddress(1, 5, 1, LAST_DATA_COLUMN-1),
+        pt.drawBorders(new CellRangeAddress(1, getLastDataRow(), 1, LAST_DATA_COLUMN-1),
                 BorderStyle.MEDIUM, BorderExtent.OUTSIDE);
         pt.applyBorders(sheet);
         return sheet;
@@ -267,19 +326,32 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
                     Row row = createRow(sheet, rowNum);
                     addDataCell(row, COL_CHPL_ID, listing.getChplProductNumber());
                     addDataCell(row, COL_SURV_ID, surv.getFriendlyId());
+                    if (quarterlyReport.getQuarter().getName().equals("Q1")) {
+                        addDataCell(row, COL_Q1, "X");
+                    } else if (quarterlyReport.getQuarter().getName().equals("Q2")) {
+                        addDataCell(row, COL_Q2, "X");
+                    } else if (quarterlyReport.getQuarter().getName().equals("Q3")) {
+                        addDataCell(row, COL_Q3, "X");
+                    } else if (quarterlyReport.getQuarter().getName().equals("Q4")) {
+                        addDataCell(row, COL_Q4, "X");
+                    }
                     addDataCell(row, COL_CERT_EDITION, listing.getCertificationEdition().get("name").toString());
                     addDataCell(row, COL_DEVELOPER_NAME, listing.getDeveloper().getName());
                     addDataCell(row, COL_PRODUCT_NAME, listing.getProduct().getName());
                     addDataCell(row, COL_PRODUCT_VERSION, listing.getVersion().getVersion());
-                    addDataCell(row, COL_K1_REVIEWED, determineIfK1Reviewed(surv));
+                    //user has to enter this field
+                    addDataCell(row, COL_K1_REVIEWED, "");
                     addDataCell(row, COL_SURV_TYPE, surv.getType().getName());
                     addDataCell(row, COL_SURV_LOCATION_COUNT, surv.getRandomizedSitesUsed().toString());
                     addDataCell(row, COL_SURV_BEGIN, dateFormatter.format(surv.getStartDate()));
                     addDataCell(row, COL_SURV_END, surv.getEndDate() == null ? "" : dateFormatter.format(surv.getEndDate()));
+                    //waiting for answer from ONC on how to calculate this, may be user-entered
                     addDataCell(row, COL_SURV_OUTCOME, determineSurveillanceOutcome(listing, surv));
                     addDataCell(row, COL_NONCONFORMITY_TYPES_RESULTANT, determineNonconformityTypes(surv));
+                    //waiting for answer from ONC on how to calculate this, may be user-entered
                     addDataCell(row, COL_CERT_STATUS_RESULTANT, "TBD");
-                    addDataCell(row, COL_SUSPENDED, "TBD");
+                    addDataCell(row, COL_SUSPENDED, determineSuspendedStatus(listing, surv));
+                    //waiting for answer from ONC on how to calculate this, may be user-entered
                     addDataCell(row, COL_SURV_PROCESS_TYPE, "TBD");
                     pt.drawBorders(new CellRangeAddress(rowNum, rowNum, 1, LAST_DATA_COLUMN-1),
                             BorderStyle.HAIR, BorderExtent.HORIZONTAL);
@@ -287,21 +359,6 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
                 }
             }
         }
-    }
-
-    /**
-     * Makes a determination about whether (k)(1) was reviewed.
-     * @param surv
-     * @return "Yes" if it was reviewed and "No" if it wasn't.
-     */
-    private String determineIfK1Reviewed(final Surveillance surv) {
-        String result = "No";
-        for (SurveillanceRequirement req : surv.getRequirements()) {
-            if (req.getType().getName().equals(RequirementTypeEnum.K1.getName())) {
-                result = "Yes";
-            }
-        }
-        return result;
     }
 
     /**
@@ -405,6 +462,29 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
             i++;
         }
         return buf.toString();
+    }
+
+    /**
+     * Determines if a listing was in a suspended status at any point during the surveillance.
+     * @param listing
+     * @param surv
+     * @return
+     */
+    private String determineSuspendedStatus(final CertifiedProductSearchDetails listing,
+            final Surveillance surv) {
+        String result = "No";
+        for (CertificationStatusEvent statusEvent : listing.getCertificationEvents()) {
+            if (statusEvent.getStatus().getName().equals(CertificationStatusType.SuspendedByAcb.getName())
+                    || statusEvent.getStatus().getName().equals(CertificationStatusType.SuspendedByOnc.getName())) {
+                //the suspended status occurred after the surv start and either the surv hasn't
+                //ended yet or the end date occurrs after the suspended status.
+                if (statusEvent.getEventDate().longValue() >= surv.getStartDate().getTime()
+                        && (surv.getEndDate() == null || surv.getEndDate().getTime() >= statusEvent.getEventDate().longValue())) {
+                    result = "Yes";
+                }
+            }
+        }
+        return result;
     }
 
     private Cell addHeadingCell(final Row row, final int cellNum, final String cellText) {
