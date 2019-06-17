@@ -3,22 +3,21 @@ package gov.healthit.chpl.entity.listing;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Immutable;
-
 import gov.healthit.chpl.util.Util;
 
 @Entity
-@Immutable
 @Table(name = "certified_product_summary")
 public class CertifiedProductSummaryEntity implements Serializable {
     private static final long serialVersionUID = -7006206379019745873L;
 
     @Id
+    @Basic(optional = false)
     @Column(name = "certified_product_id", nullable = false)
     private Long id;
 
@@ -435,27 +434,6 @@ public class CertifiedProductSummaryEntity implements Serializable {
 
     public void setCertificationBodyWebsite(final String certificationBodyWebsite) {
         this.certificationBodyWebsite = certificationBodyWebsite;
-    }
-
-    @Override
-    public String toString() {
-        return "CertifiedProductSummaryEntity [id=" + id + ", certificationEditionId=" + certificationEditionId
-                + ", productVersionId=" + productVersionId + ", certificationBodyId=" + certificationBodyId
-                + ", chplProductNumber=" + chplProductNumber + ", reportFileLocation=" + reportFileLocation
-                + ", sedReportFileLocation=" + sedReportFileLocation + ", sedIntendedUserDescription="
-                + sedIntendedUserDescription + ", sedTestingEnd=" + sedTestingEnd + ", acbCertificationId="
-                + acbCertificationId + ", practiceTypeId=" + practiceTypeId + ", productClassificationTypeId="
-                + productClassificationTypeId + ", productAdditionalSoftware=" + productAdditionalSoftware
-                + ", otherAcb=" + otherAcb + ", transparencyAttestationUrl=" + transparencyAttestationUrl + ", ics="
-                + ics + ", sed=" + sed + ", qms=" + qms + ", accessibilityCertified=" + accessibilityCertified
-                + ", productCode=" + productCode + ", versionCode=" + versionCode + ", icsCode=" + icsCode
-                + ", additionalSoftwareCode=" + additionalSoftwareCode + ", certifiedDateCode=" + certifiedDateCode
-                + ", creationDate=" + creationDate + ", lastModifiedDate=" + lastModifiedDate + ", lastModifiedUser="
-                + lastModifiedUser + ", deleted=" + deleted + ", meaninigfulUseUsers=" + meaninigfulUseUsers
-                + ", pendingCertifiedProductId=" + pendingCertifiedProductId + ", year=" + year + ", productName="
-                + productName + ", developerName=" + developerName + ", developerCode=" + developerCode
-                + ", certificationStatus=" + certificationStatus + ", acbCode=" + acbCode + ", certificationBodyName="
-                + certificationBodyName + ", certificationBodyWebsite=" + certificationBodyWebsite + "]";
     }
 
 }
