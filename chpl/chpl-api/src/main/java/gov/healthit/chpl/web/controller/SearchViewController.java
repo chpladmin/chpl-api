@@ -33,7 +33,6 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
-import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
@@ -47,6 +46,7 @@ import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.UploadTemplateVersion;
+import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.domain.search.NonconformitySearchOptions;
 import gov.healthit.chpl.domain.search.SearchRequest;
 import gov.healthit.chpl.domain.search.SearchResponse;
@@ -57,8 +57,10 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
+import gov.healthit.chpl.manager.ComplaintManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.DimensionalDataManager;
+import gov.healthit.chpl.manager.FilterManager;
 import gov.healthit.chpl.manager.FuzzyChoicesManager;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
@@ -100,6 +102,12 @@ public class SearchViewController {
     @Lazy
     @Autowired
     private DeveloperManager developerManager;
+    
+    @Autowired
+    private FilterManager filterManager;
+    
+    @Autowired
+    private ComplaintManager complaintManager;
 
     @Autowired private FileUtils fileUtils;
 
@@ -808,7 +816,7 @@ public class SearchViewController {
     }
 
     @Secured({
-        Authority.ROLE_ADMIN, Authority.ROLE_ACB
+        Authority.ROLE_ADMIN, Authority.ROLE_ONC, Authority.ROLE_ACB
     })
     @ApiOperation(value = "Get all possible types of jobs that can be created in the system.")
     @RequestMapping(value = "/data/job_types", method = RequestMethod.GET,
@@ -818,10 +826,8 @@ public class SearchViewController {
         return dimensionalDataManager.getJobTypes();
     }
 
-    @Secured({
-        Authority.ROLE_ADMIN
-    })
-    @ApiOperation(value = "Get all fuzzy matching choices for the items that be fuzzy matched.")
+    @ApiOperation(value = "Get all fuzzy matching choices for the items that be fuzzy matched.",
+            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/data/fuzzy_choices", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -853,6 +859,14 @@ public class SearchViewController {
         FuzzyChoices result = fuzzyChoicesManager.updateFuzzyChoices(toUpdate);
         return result;
         //return new FuzzyChoices(result);
+    }
+
+    @ApiOperation(value = "Get a list of quarters for which a surveillance report can be created.")
+    @RequestMapping(value = "/data/quarters", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody Set<KeyValueModel> getQuarters() {
+        return dimensionalDataManager.getQuarters();
     }
 
     @ApiOperation(value = "Get all possible classifications in the CHPL",
@@ -1198,5 +1212,41 @@ public class SearchViewController {
         List<DecertifiedDeveloperResult> results = developerManager.getDecertifiedDevelopers();
         ddr.setDecertifiedDeveloperResults(results);
         return ddr;
+    }
+    
+    @ApiOperation(value = "Get all available filter type.")
+    @RequestMapping(value = "/data/filter_types", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody SearchOption getFilterTypes() {
+        Set<KeyValueModel> data = filterManager.getFilterTypes();
+        SearchOption result = new SearchOption();
+        result.setExpandable(false);
+        result.setData(data);
+        return result;
+    }
+    
+    @ApiOperation(value = "Get all possible complaint types in the CHPL")
+    @RequestMapping(value = "/data/complaint_types", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody SearchOption getComplaintTypes() {
+        Set<KeyValueModel> data = complaintManager.getComplaintTypes();
+        SearchOption result = new SearchOption();
+        result.setExpandable(false);
+        result.setData(data);
+        return result;
+    }
+
+    @ApiOperation(value = "Get all possible complaint status types in the CHPL")
+    @RequestMapping(value = "/data/complaint_status_types", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody SearchOption getComplaintStatusTypes() {
+        Set<KeyValueModel> data = complaintManager.getComplaintStatusTypes();
+        SearchOption result = new SearchOption();
+        result.setExpandable(false);
+        result.setData(data);
+        return result;
     }
 }

@@ -1,27 +1,25 @@
 package gov.healthit.chpl.job;
 
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.dao.UserPermissionDAO;
-import gov.healthit.chpl.auth.dto.UserPermissionDTO;
-import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.concept.JobTypeConcept;
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.dto.job.JobTypeDTO;
+import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Component
 public class RunnableJobFactory {
 
-    @Autowired private UserPermissionDAO userPermissionDao;
+    @Autowired private UserDAO userDao;
 
-    public RunnableJob getRunnableJob(JobDTO job) throws NoJobTypeException {
+    public RunnableJob getRunnableJob(final JobDTO job) throws NoJobTypeException {
         RunnableJob result = null;
         JobTypeDTO jobType = job.getJobType();
         if (jobType == null || StringUtils.isEmpty(jobType.getName())) {
@@ -46,7 +44,7 @@ public class RunnableJobFactory {
         }
 
         result.setJob(job);
-        if (Util.getCurrentUser() == null || Util.getCurrentUser().getId() == null) {
+        if (AuthUtil.getCurrentUser() == null || AuthUtil.getCurrentUser().getId() == null) {
             JWTAuthenticatedUser jobUser = new JWTAuthenticatedUser();
             jobUser.setFullName(job.getUser().getFullName());
             jobUser.setId(job.getUser().getId());
@@ -55,15 +53,15 @@ public class RunnableJobFactory {
 
             //add granted authorities which are like ROLE_ACB, ROLE_ADMIN, etc.
             //so that the jobs can make calls to methods with security on them
-            Set<UserPermissionDTO> userPermissions =
-                    userPermissionDao.findPermissionsForUser(job.getUser().getId());
-            for (UserPermissionDTO permission : userPermissions) {
-                GrantedPermission grantedPermission = new GrantedPermission(permission.getAuthority());
-                jobUser.addPermission(grantedPermission);
-            }
+            try {
+                UserDTO user = userDao.getById(job.getUser().getId());
+                if (user != null) {
+                    jobUser.addPermission(user.getPermission().getAuthority());
+                }
+            } catch (UserRetrievalException ex) { }
             result.setUser(jobUser);
         } else {
-            result.setUser(Util.getCurrentUser());
+            result.setUser(AuthUtil.getCurrentUser());
         }
         return result;
     }

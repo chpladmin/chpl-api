@@ -7,8 +7,6 @@ import javax.persistence.Query;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,8 +33,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements 
         if (entity != null) {
             dto = new CertifiedProductDetailsDTO(entity);
         } else {
-            String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.notFound"),
-                    LocaleContextHolder.getLocale()));
+            String msg =  msgUtil.getMessage("listing.notFound");
             LOGGER.error("Error retreiving listing with ID " + productId + ": " + msg);
             throw new EntityRetrievalException(msg);
         }

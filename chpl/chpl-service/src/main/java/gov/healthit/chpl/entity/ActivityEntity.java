@@ -20,8 +20,8 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import gov.healthit.chpl.auth.entity.UserEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.util.Util;
 
 @Entity

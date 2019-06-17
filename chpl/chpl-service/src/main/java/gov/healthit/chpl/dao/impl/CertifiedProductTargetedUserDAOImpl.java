@@ -8,12 +8,12 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.entity.listing.CertifiedProductTargetedUserEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Repository(value = "certifiedProductTargetedUserDao")
 public class CertifiedProductTargetedUserDAOImpl extends BaseDAOImpl implements CertifiedProductTargetedUserDAO {
@@ -26,7 +26,7 @@ public class CertifiedProductTargetedUserDAOImpl extends BaseDAOImpl implements 
         toCreateEntity.setCertifiedProductId(toCreate.getCertifiedProductId());
         toCreateEntity.setTargetedUserId(toCreate.getTargetedUserId());
         toCreateEntity.setLastModifiedDate(new Date());
-        toCreateEntity.setLastModifiedUser(Util.getAuditId());
+        toCreateEntity.setLastModifiedUser(AuthUtil.getAuditId());
         toCreateEntity.setCreationDate(new Date());
         toCreateEntity.setDeleted(false);
         entityManager.persist(toCreateEntity);
@@ -44,7 +44,7 @@ public class CertifiedProductTargetedUserDAOImpl extends BaseDAOImpl implements 
         }
         curr.setDeleted(true);
         curr.setLastModifiedDate(new Date());
-        curr.setLastModifiedUser(Util.getAuditId());
+        curr.setLastModifiedUser(AuthUtil.getAuditId());
         entityManager.persist(curr);
         entityManager.flush();
 

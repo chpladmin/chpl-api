@@ -8,10 +8,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Component(value = "schedulerGetAllActionPermissions")
 public class GetAllActionPermissions extends ActionPermissions {
@@ -48,7 +48,7 @@ public class GetAllActionPermissions extends ActionPermissions {
                 List<String> authorities = Arrays
                         .asList(job.getJobDataMap().get("authorities").toString().split(AUTHORITY_DELIMITER));
                 if (authorities.size() > 0) {
-                    Set<GrantedPermission> userRoles = Util.getCurrentUser().getPermissions();
+                    Set<GrantedPermission> userRoles = AuthUtil.getCurrentUser().getPermissions();
                     for (GrantedPermission permission : userRoles) {
                         for (String authority : authorities) {
                             if (permission.getAuthority().equalsIgnoreCase(authority)) {

@@ -17,17 +17,38 @@ public class ActivityMetadataBuilderFactory {
     private DeveloperActivityMetadataBuilder developerBuilder;
     private ProductActivityMetadataBuilder productBuilder;
     private VersionActivityMetadataBuilder versionBuilder;
+    private CertificationBodyActivityMetadataBuilder acbBuilder;
+    private TestingLabActivityMetadataBuilder atlBuilder;
+    private UserMaintenanceActivityMetadataBuilder userMaintenanceActivityMetadataBuilder;
+    private AnnouncementActivityMetadataBuilder announcementActivityMetadataBuilder;
+    private PendingListingActivityMetadataBuilder pendingListingActivityMetadataBuilder;
+    private CorrectActionPlanActivityMetadataBuilder correctActionPlanActivityMetadataBuilder;
+    private PendingSurveillanceActivityMetadataBuilder pendingSurveillanceActivityMetadataBuilder;
 
     @Autowired
     public ActivityMetadataBuilderFactory(
             @Qualifier("listingActivityMetadataBuilder") final ListingActivityMetadataBuilder listingBuilder,
             @Qualifier("developerActivityMetadataBuilder") final DeveloperActivityMetadataBuilder developerBuilder,
             @Qualifier("productActivityMetadataBuilder") final ProductActivityMetadataBuilder productBuilder,
-            @Qualifier("versionActivityMetadataBuilder") final VersionActivityMetadataBuilder versionBuilder) {
+            @Qualifier("versionActivityMetadataBuilder") final VersionActivityMetadataBuilder versionBuilder,
+            @Qualifier("acbActivityMetadataBuilder") final CertificationBodyActivityMetadataBuilder acbBuilder,
+            @Qualifier("atlActivityMetadataBuilder") final TestingLabActivityMetadataBuilder atlBuilder,
+            @Qualifier("userMaintenanceActivityMetadataBuilder") final UserMaintenanceActivityMetadataBuilder userMaintenanceActivityMetadataBuilder,
+            @Qualifier("announcementActivityMetadataBuilder") final AnnouncementActivityMetadataBuilder announcementActivityMetadataBuilder,
+            @Qualifier("pendingListingActivityMetadataBuilder") final PendingListingActivityMetadataBuilder pendingListingActivityMetadataBuilder,
+            @Qualifier("correctActionPlanActivityMetadataBuilder") final CorrectActionPlanActivityMetadataBuilder correctActionPlanActivityMetadataBuilder,
+            @Qualifier("pendingSurveillanceActivityMetadataBuilder") final PendingSurveillanceActivityMetadataBuilder pendingSurveillanceActivityMetadataBuilder) {
         this.listingBuilder = listingBuilder;
         this.developerBuilder = developerBuilder;
         this.productBuilder = productBuilder;
         this.versionBuilder = versionBuilder;
+        this.acbBuilder = acbBuilder;
+        this.atlBuilder = atlBuilder;
+        this.userMaintenanceActivityMetadataBuilder = userMaintenanceActivityMetadataBuilder;
+        this.announcementActivityMetadataBuilder = announcementActivityMetadataBuilder;
+        this.pendingListingActivityMetadataBuilder = pendingListingActivityMetadataBuilder;
+        this.correctActionPlanActivityMetadataBuilder = correctActionPlanActivityMetadataBuilder;
+        this.pendingSurveillanceActivityMetadataBuilder = pendingSurveillanceActivityMetadataBuilder;
     }
 
     /**
@@ -50,6 +71,27 @@ public class ActivityMetadataBuilderFactory {
             break;
         case VERSION:
             builder = versionBuilder;
+            break;
+        case CERTIFICATION_BODY:
+            builder = acbBuilder;
+            break;
+        case TESTING_LAB:
+            builder = atlBuilder;
+            break;
+        case USER:
+            builder = userMaintenanceActivityMetadataBuilder;
+            break;
+        case ANNOUNCEMENT:
+            builder = announcementActivityMetadataBuilder;
+            break;
+        case PENDING_CERTIFIED_PRODUCT:
+            builder = pendingListingActivityMetadataBuilder;
+            break;
+        case CORRECTIVE_ACTION_PLAN:
+            builder = correctActionPlanActivityMetadataBuilder;
+            break;
+        case PENDING_SURVEILLANCE:
+            builder = pendingSurveillanceActivityMetadataBuilder;
             break;
         default:
             break;

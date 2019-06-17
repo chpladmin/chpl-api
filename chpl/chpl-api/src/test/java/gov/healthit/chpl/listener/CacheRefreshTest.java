@@ -27,11 +27,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
-import gov.healthit.chpl.dao.SurveillanceDAO;
+import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatus;
@@ -52,6 +51,7 @@ import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.domain.UpdateDevelopersRequest;
 import gov.healthit.chpl.domain.UpdateProductsRequest;
 import gov.healthit.chpl.domain.UpdateVersionsRequest;
+import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -243,12 +243,12 @@ public class CacheRefreshTest extends TestCase {
 
         //update the version
         //should trigger the cache refresh
-        ProductVersion versionToUpdate = versionController.getProductVersionById(3L);
+        ProductVersion versionToUpdate = versionController.getProductVersionById(-3L);
         UpdateVersionsRequest req = new UpdateVersionsRequest();
         versionToUpdate.setVersion("2.0.Updated");
         req.setVersion(versionToUpdate);
         List<Long> idsToUpdate = new ArrayList<Long>();
-        idsToUpdate.add(3L);
+        idsToUpdate.add(-3L);
         req.setVersionIds(idsToUpdate);
         versionController.updateVersion(req);
 

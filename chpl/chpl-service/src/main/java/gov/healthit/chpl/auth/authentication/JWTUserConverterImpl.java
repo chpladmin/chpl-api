@@ -3,16 +3,17 @@ package gov.healthit.chpl.auth.authentication;
 import java.util.List;
 import java.util.Map;
 
+import org.jose4j.jwt.consumer.InvalidJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.jwt.JWTConsumer;
-import gov.healthit.chpl.auth.jwt.JWTValidationException;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.User;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.dao.auth.UserDAO;
+import gov.healthit.chpl.exception.JWTValidationException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 
 @Service
 public class JWTUserConverterImpl implements JWTUserConverter {
@@ -38,23 +39,24 @@ public class JWTUserConverterImpl implements JWTUserConverter {
         JWTAuthenticatedUser user = new JWTAuthenticatedUser();
         user.setAuthenticated(true);
 
-        Map<String, Object> validatedClaims = jwtConsumer.consume(jwt);
+        Map<String, Object> validatedClaims;
+        try {
+            validatedClaims = jwtConsumer.consume(jwt);
+        } catch (InvalidJwtException e) {
+            throw new JWTValidationException(e.getMessage());
+        }
 
         if (validatedClaims == null) {
             throw new JWTValidationException("Invalid authentication token.");
         } else {
             String subject = (String) validatedClaims.remove("sub");
-
             user.setSubjectName(subject);
 
-            List<String> authorities = (List<String>) validatedClaims.get("Authorities");
+            String role = (String) validatedClaims.get("Authority");
+            GrantedPermission permission = new GrantedPermission(role);
+            user.addPermission(permission);
+
             List<String> identityInfo = (List<String>) validatedClaims.get("Identity");
-
-            for (String claim : authorities) {
-                GrantedPermission permission = new GrantedPermission(claim);
-                user.addPermission(permission);
-            }
-
             Long userId = Long.valueOf(identityInfo.get(USER_ID));
             String fullName = identityInfo.get(FULL_NAME);
             user.setId(userId);
@@ -79,19 +81,21 @@ public class JWTUserConverterImpl implements JWTUserConverter {
         JWTAuthenticatedUser user = new JWTAuthenticatedUser();
         user.setAuthenticated(true);
 
-        Map<String, Object> validatedClaims = jwtConsumer.consume(jwt);
+        Map<String, Object> validatedClaims;
+        try {
+            validatedClaims = jwtConsumer.consume(jwt);
+        } catch (InvalidJwtException e) {
+            throw new JWTValidationException(e.getMessage());
+        }
 
         if (validatedClaims == null) {
             throw new JWTValidationException("Invalid authentication token.");
         } else {
-            List<String> authorities = (List<String>) validatedClaims.get("Authorities");
+            String role = (String) validatedClaims.get("Authority");
+            GrantedPermission permission = new GrantedPermission(role);
+            user.addPermission(permission);
+
             List<String> identityInfo = (List<String>) validatedClaims.get("Identity");
-
-            for (String claim : authorities) {
-                GrantedPermission permission = new GrantedPermission(claim);
-                user.addPermission(permission);
-            }
-
             Long userId = Long.valueOf(identityInfo.get(IMPERSONATING_USER_ID));
             String subjectName = identityInfo.get(IMPERSONATING_USER_SUBJECT_NAME);
 

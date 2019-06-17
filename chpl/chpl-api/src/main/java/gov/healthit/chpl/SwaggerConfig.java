@@ -54,7 +54,7 @@ public class SwaggerConfig implements EnvironmentAware {
                 + "select the \"Certified Health IT Products List (CHPL)\" category.",
                 "https://www.healthit.gov/form/healthit-feedback-form",
                 "");
-        return new ApiInfo("CHPL", "Certified Health IT Product Listing", "20.10.0", "",
+        return new ApiInfo("CHPL", "Certified Health IT Product Listing", "21.2.0", "",
                 contact, "License Text", "https://github.com/chpladmin/chpl-api/blob/staging/LICENSE");
     }
 
@@ -68,9 +68,10 @@ public class SwaggerConfig implements EnvironmentAware {
                 regex("/certification_ids.*"), regex("/certified_products.*"), regex("/certified_product_details.*"),
                 regex("/collections.*"), regex("/data/.*"), regex("/download.*"), regex("/files.*"), regex("/jobs.*"),
                 regex("/key.*"), regex("/meaningful_use.*"), regex("/products.*"),
-                regex("/search.*"), regex("/surveillance.*"), regex("/status"), regex("/cache_status"), regex("/system-status"),
+                regex("/search.*"), regex("/surveillance.*"), regex("/surveillance-report.*"),
+                regex("/status"), regex("/cache_status"), regex("/system-status"),
                 regex("/users.*"), regex("/developers.*"), regex("/versions.*"), regex("/decertifications/.*"),
-                regex("/schedules.*"));
+                regex("/schedules.*"), regex("/complaints.*"));
     }
 
     private class AbsolutePathProvider extends RelativePathProvider {

@@ -23,7 +23,6 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -57,6 +56,7 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
@@ -145,8 +145,9 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
 
     @Override
     @Transactional(readOnly = true)
-    public DeveloperDTO getById(final Long id) throws EntityRetrievalException {
-        DeveloperDTO developer = developerDao.getById(id);
+    public DeveloperDTO getById(final Long id, final boolean allowDeleted)
+            throws EntityRetrievalException {
+        DeveloperDTO developer = developerDao.getById(id, allowDeleted);
         List<CertificationBodyDTO> availableAcbs = resourcePermissions.getAllAcbsForCurrentUser();
         if (availableAcbs == null || availableAcbs.size() == 0) {
             availableAcbs = acbManager.getAll();
@@ -170,6 +171,12 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
             }
         }
         return developer;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public DeveloperDTO getById(final Long id) throws EntityRetrievalException {
+        return getById(id, false);
     }
 
     @Override
@@ -223,7 +230,7 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
         // then nothing can be changed
         if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
                 && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
-            String msg = msgUtil.getMessage("developer.notActiveNotAdminCantChangeStatus", Util.getUsername(),
+            String msg = msgUtil.getMessage("developer.notActiveNotAdminCantChangeStatus", AuthUtil.getUsername(),
                     beforeDev.getName());
             LOGGER.error(msg);
             throw new EntityCreationException(msg);
@@ -497,7 +504,7 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
             CacheNames.GET_DECERTIFIED_DEVELOPERS
     }, allEntries = true)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
-            + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).UPDATE, #oldDeveloper)")
+            + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).SPLIT, #oldDeveloper)")
     public DeveloperDTO split(final DeveloperDTO oldDeveloper, final DeveloperDTO developerToCreate,
             final List<Long> productIdsToMove) throws ValidationException, AccessDeniedException,
             EntityRetrievalException, EntityCreationException, JsonProcessingException {
@@ -556,18 +563,29 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
                 CertifiedProductSearchDetails afterListing = cpdManager
                         .getCertifiedProductDetails(affectedListing.getId());
                 CertifiedProductSearchDetails beforeListing = beforeListingDetails.get(afterListing.getId());
-                activityManager.addActivity(ActivityConcept.DEVELOPER, beforeListing.getId(),
+                activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, beforeListing.getId(),
                         "Updated certified product " + afterListing.getChplProductNumber() + ".", beforeListing,
                         afterListing);
             }
         }
 
-        return getById(createdDeveloper.getId());
+        DeveloperDTO afterDeveloper = null;
+        //the split is complete - log split activity
+        //get the original developer object from the db to make sure it's all filled in
+        DeveloperDTO origDeveloper = getById(oldDeveloper.getId());
+        afterDeveloper = getById(createdDeveloper.getId());
+        List<DeveloperDTO> splitDevelopers = new ArrayList<DeveloperDTO>();
+        splitDevelopers.add(origDeveloper);
+        splitDevelopers.add(afterDeveloper);
+        activityManager.addActivity(ActivityConcept.DEVELOPER, afterDeveloper.getId(),
+                "Split developer " + origDeveloper.getName() + " into " + origDeveloper.getName()
+                + " and " + afterDeveloper.getName(),
+                origDeveloper, splitDevelopers);
+        return afterDeveloper;
     }
 
     /**
      * Clones a list of DeveloperStatusEventDTO.
-     * 
      * @param original
      *            - List<DeveloperStatusEventDTO>
      * @return List<DeveloperStatusEventDTO>

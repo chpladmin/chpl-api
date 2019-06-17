@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -98,6 +100,11 @@ public class ProductManagerTest extends TestCase {
         testUser3.setFriendlyName("User3");
         testUser3.setSubjectName("testUser3");
         testUser3.getPermissions().add(new GrantedPermission("ROLE_ACB"));
+    }
+
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
     }
 
     @Test
@@ -477,7 +484,7 @@ public class ProductManagerTest extends TestCase {
         newProduct.setDeveloperId(origProduct.getDeveloperId());
         List<ProductVersionDTO> newProductVersions = new ArrayList<ProductVersionDTO>();
         ProductVersionDTO newProductVersion = new ProductVersionDTO();
-        newProductVersion.setId(5L);
+        newProductVersion.setId(-5L);
         newProductVersions.add(newProductVersion);
         boolean productCreateError = false;
         try {
@@ -513,7 +520,7 @@ public class ProductManagerTest extends TestCase {
         newProduct.setDeveloperId(origProduct.getDeveloperId());
         List<ProductVersionDTO> newProductVersions = new ArrayList<ProductVersionDTO>();
         ProductVersionDTO newProductVersion = new ProductVersionDTO();
-        newProductVersion.setId(7L);
+        newProductVersion.setId(-7L);
         newProductVersions.add(newProductVersion);
         ProductDTO updatedNewProduct = null;
         try {

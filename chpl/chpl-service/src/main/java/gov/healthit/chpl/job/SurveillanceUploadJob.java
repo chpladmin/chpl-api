@@ -20,9 +20,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.dao.SurveillanceDAO;
+import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
@@ -34,6 +33,7 @@ import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.manager.SurveillanceUploadManager;
 import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandler;
 import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandlerFactory;
+import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 
@@ -220,15 +220,15 @@ public class SurveillanceUploadJob extends RunnableJob {
                         try {
                             CertificationBodyDTO acbDTO = acbDAO.getById(owningCp.getCertificationBodyId());
                             msg = errorMessageUtil.getMessage("surveillance.permissionErrorWithAcb",
-                                    Util.getCurrentUser().getSubjectName(), owningCp.getChplProductNumber(),
+                                    AuthUtil.getCurrentUser().getSubjectName(), owningCp.getChplProductNumber(),
                                     acbDTO.getName());
                         } catch (Exception e) {
                             msg = errorMessageUtil.getMessage("surveillance.permissionError",
-                                    Util.getCurrentUser().getSubjectName());
+                                    AuthUtil.getCurrentUser().getSubjectName());
                         }
                     } else {
                         msg = errorMessageUtil.getMessage("surveillance.permissionError",
-                                Util.getCurrentUser().getSubjectName());
+                                AuthUtil.getCurrentUser().getSubjectName());
                     }
 
                     LOGGER.error(msg);

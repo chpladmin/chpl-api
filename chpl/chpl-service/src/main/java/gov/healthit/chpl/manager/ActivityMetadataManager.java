@@ -8,13 +8,35 @@ import com.fasterxml.jackson.core.JsonParseException;
 
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public interface ActivityMetadataManager {
-    List<ActivityMetadata> getActivityMetadataByConcept(
-            ActivityConcept concept, Date startDate, Date endDate)
+    List<ActivityMetadata> getCertificationBodyActivityMetadata(Date startDate, Date endDate)
             throws JsonParseException, IOException;
-    List<ActivityMetadata> getActivityMetadataByObject(
-            Long objectId, ActivityConcept concept,
-            Date startDate, Date endDate)
+
+    List<ActivityMetadata> getCertificationBodyActivityMetadata(Long acbId, Date startDate, Date endDate)
+            throws EntityRetrievalException, JsonParseException, IOException;
+
+    List<ActivityMetadata> getTestingLabActivityMetadata(Date startDate, Date endDate)
             throws JsonParseException, IOException;
+
+    List<ActivityMetadata> getTestingLabActivityMetadata(Long atlId, Date startDate, Date endDate)
+            throws EntityRetrievalException, JsonParseException, IOException;
+
+    List<ActivityMetadata> getActivityMetadataByConcept(ActivityConcept concept, Date startDate, Date endDate)
+            throws JsonParseException, IOException;
+
+    List<ActivityMetadata> getActivityMetadataByObject(Long objectId, ActivityConcept concept, Date startDate,
+            Date endDate) throws JsonParseException, IOException;
+
+    List<ActivityMetadata> getUserMaintenanceActivityMetadata(Date startDate, Date endDate)
+            throws JsonParseException, IOException;
+
+    List<ActivityMetadata> getPendingListingActivityMetadata(final Date startDate, final Date endDate)
+            throws IOException;
+
+    List<ActivityMetadata> getPendingSurveillanceActivityMetadata(final Date startDate, final Date endDate)
+            throws IOException;
+
+    List<ActivityMetadata> getAnnouncementActivityMetadata(final Date startDate, final Date endDate) throws IOException;
 }

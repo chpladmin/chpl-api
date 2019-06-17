@@ -13,7 +13,7 @@ import gov.healthit.chpl.permissions.domains.invitation.InviteAcbActionPermissio
 import gov.healthit.chpl.permissions.domains.invitation.InviteAdminActionPermissions;
 import gov.healthit.chpl.permissions.domains.invitation.InviteAtlActionPermissions;
 import gov.healthit.chpl.permissions.domains.invitation.InviteOncActionPermissions;
-import gov.healthit.chpl.permissions.domains.invitation.InviteRoleNoAccessActionPermissions;
+import gov.healthit.chpl.permissions.domains.invitation.UpdateFromInvitationActionPermissions;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
@@ -25,7 +25,7 @@ public class InvitationDomainPermissionsTest {
 
     @Test
     public void setupTest() {
-        assertTrue(permissions.getActionPermissions().size() == 5);
+        assertTrue(permissions.getActionPermissions().size() == 6);
 
         assertTrue(permissions.getActionPermissions()
                 .get(InvitationDomainPermissions.INVITE_ACB) instanceof InviteAcbActionPermissions);
@@ -37,10 +37,10 @@ public class InvitationDomainPermissionsTest {
                 .get(InvitationDomainPermissions.INVITE_ONC) instanceof InviteOncActionPermissions);
 
         assertTrue(permissions.getActionPermissions()
-                .get(InvitationDomainPermissions.INVITE_ROLE_NO_ACCESS) instanceof InviteRoleNoAccessActionPermissions);
+                .get(InvitationDomainPermissions.INVITE_ATL) instanceof InviteAtlActionPermissions);
 
         assertTrue(permissions.getActionPermissions()
-                .get(InvitationDomainPermissions.INVITE_ATL) instanceof InviteAtlActionPermissions);
+                .get(InvitationDomainPermissions.UPDATE_FROM_INVITATION) instanceof UpdateFromInvitationActionPermissions);
 
     }
 }

@@ -8,6 +8,8 @@ import java.util.Locale;
 import javax.sql.DataSource;
 
 import org.dbunit.ext.postgresql.PostgresqlDataTypeFactory;
+import org.ff4j.FF4j;
+import org.mockito.Mockito;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -68,7 +70,7 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.job.MeaningfulUseUploadJob;
 
 @Configuration
-@Import(ChplTestCacheConfig.class)
+@Import({ChplTestCacheConfig.class})
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @PropertySource("classpath:/environment.test.properties")
 @EnableCaching
@@ -342,4 +344,8 @@ public class CHPLTestConfig implements EnvironmentAware {
         return new MeaningfulUseUploadJob();
     }
 
+    @Bean
+    public FF4j ff4j() {
+        return Mockito.spy(new FF4j());
+    }
 }

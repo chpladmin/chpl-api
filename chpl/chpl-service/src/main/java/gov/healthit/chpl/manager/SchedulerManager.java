@@ -39,7 +39,7 @@ public interface SchedulerManager {
      * @throws SchedulerException if scheduler has an issue
      * @return the triggers
      */
-    List<ChplRepeatableTrigger> getAllTriggers() throws SchedulerException;
+    List<ChplRepeatableTrigger> getAllTriggersForUser() throws SchedulerException;
 
     /**
      * Update trigger with new data.

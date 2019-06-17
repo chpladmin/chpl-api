@@ -26,7 +26,7 @@ public class FieldLengthReviewer implements Reviewer {
         for (PendingCertifiedProductTargetedUserDTO tu : listing.getTargetedUsers()) {
             checkField(listing, tu.getName(), "targetedUser", WARNING);
             if (listing.getWarningMessages().contains(msgUtil.getMessage("listing.targetedUser.maxlength",
-                    String.valueOf(msgUtil.getMaxLength("maxLength.targetedUser")), tu.getName()))) {
+                    String.valueOf(msgUtil.getMessageAsInteger("maxLength.targetedUser")), tu.getName()))) {
                 toRemove.add(tu);
             }
         }
@@ -59,15 +59,15 @@ public class FieldLengthReviewer implements Reviewer {
         
         if (field instanceof Long) {
             Long fieldCasted = (Long) field;
-            if (fieldCasted.toString().length() > msgUtil.getMaxLength("maxLength." + errorField)) {
+            if (fieldCasted.toString().length() > msgUtil.getMessageAsInteger("maxLength." + errorField)) {
                 message = msgUtil.getMessage("listing." + errorField + ".maxlength",
-                        String.valueOf(msgUtil.getMaxLength("maxLength." + errorField)), fieldCasted);
+                        String.valueOf(msgUtil.getMessageAsInteger("maxLength." + errorField)), fieldCasted);
             }
         } else if (field instanceof String) {
             String fieldCasted = (String) field;
-            if (fieldCasted.length() > msgUtil.getMaxLength("maxLength." + errorField)) {
+            if (fieldCasted.length() > msgUtil.getMessageAsInteger("maxLength." + errorField)) {
                 message = msgUtil.getMessage("listing." + errorField + ".maxlength",
-                        String.valueOf(msgUtil.getMaxLength("maxLength." + errorField)), fieldCasted);
+                        String.valueOf(msgUtil.getMessageAsInteger("maxLength." + errorField)), fieldCasted);
             }
         }
         if(message != null) {

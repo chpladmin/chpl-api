@@ -22,13 +22,13 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.TestingUsers;
-import gov.healthit.chpl.auth.dao.UserDAO;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.TestingLabDAO;
+import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
@@ -142,14 +142,14 @@ public class TestingLabManagerTest extends TestingUsers {
         TestingLabDTO original = new TestingLabDTO();
         original.setId(-99l);
         original.setName("Testing Lab");
-        original.setRetired(false);
+        original.setRetired(true);
         original.setTestingLabCode("05");
         original.setAccredidationNumber("accr_nbr");
         original.setRetirementDate(new Date());
 
         Mockito.when(atlDao.getById(ArgumentMatchers.anyLong())).thenReturn(original);
         Mockito.when(atlDao.update(ArgumentMatchers.any(TestingLabDTO.class)))
-                .then(AdditionalAnswers.returnsFirstArg());
+                .thenReturn(original);
 
         original = atlManager.retire(original);
 

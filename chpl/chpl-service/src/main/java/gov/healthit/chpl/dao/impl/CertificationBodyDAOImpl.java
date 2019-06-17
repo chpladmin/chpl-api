@@ -8,18 +8,16 @@ import javax.persistence.Query;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.AddressDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.entity.CertificationBodyEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.AuthUtil;
 
 /**
  * Data access methods for certification bodies (ACBs).
@@ -61,7 +59,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
             entity.setWebsite(dto.getWebsite());
             entity.setAcbCode(dto.getAcbCode());
             entity.setRetired(Boolean.FALSE);
-            entity.setLastModifiedUser(Util.getAuditId());
+            entity.setLastModifiedUser(AuthUtil.getAuditId());
             create(entity);
             return new CertificationBodyDTO(entity);
         }
@@ -102,7 +100,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
             entity.setAcbCode(dto.getAcbCode());
         }
 
-        entity.setLastModifiedUser(Util.getAuditId());
+        entity.setLastModifiedUser(AuthUtil.getAuditId());
         update(entity);
         return new CertificationBodyDTO(entity);
     }
@@ -230,8 +228,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
         List<CertificationBodyEntity> result = query.getResultList();
 
         if (result == null || result.size() == 0) {
-            String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("acb.notFound"),
-                    LocaleContextHolder.getLocale()));
+            String msg = msgUtil.getMessage("acb.notFound");
             throw new EntityRetrievalException(msg);
         } else if (result.size() > 1) {
             throw new EntityRetrievalException("Data error. Duplicate certification body id in database.");

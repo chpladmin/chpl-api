@@ -2,27 +2,21 @@ package gov.healthit.chpl.dao.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.Query;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.AddressDAO;
 import gov.healthit.chpl.dao.ContactDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
-import gov.healthit.chpl.domain.DecertifiedDeveloper;
 import gov.healthit.chpl.domain.DeveloperTransparency;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.ContactDTO;
@@ -44,6 +38,7 @@ import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.listing.ListingsFromBannedDevelopersEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Repository("developerDAO")
@@ -105,7 +100,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
             if (dto.getLastModifiedUser() != null) {
                 entity.setLastModifiedUser(dto.getLastModifiedUser());
             } else {
-                entity.setLastModifiedUser(Util.getAuditId());
+                entity.setLastModifiedUser(AuthUtil.getAuditId());
             }
 
             if (dto.getLastModifiedDate() != null) {
@@ -180,7 +175,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
         mapping.setCreationDate(new Date());
         mapping.setDeleted(false);
         mapping.setLastModifiedDate(new Date());
-        mapping.setLastModifiedUser(Util.getAuditId());
+        mapping.setLastModifiedUser(AuthUtil.getAuditId());
         entityManager.persist(mapping);
         entityManager.flush();
         return new DeveloperACBMapDTO(mapping);
@@ -238,7 +233,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
         if (dto.getLastModifiedUser() != null) {
             entity.setLastModifiedUser(dto.getLastModifiedUser());
         } else {
-            entity.setLastModifiedUser(Util.getAuditId());
+            entity.setLastModifiedUser(AuthUtil.getAuditId());
         }
 
         if (dto.getLastModifiedDate() != null) {
@@ -266,7 +261,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
                 statusEvent.setDeveloperStatusId(defaultStatus.getId());
                 statusEvent.setReason(statusEventDto.getReason());
                 statusEvent.setStatusDate(statusEventDto.getStatusDate());
-                statusEvent.setLastModifiedUser(Util.getAuditId());
+                statusEvent.setLastModifiedUser(AuthUtil.getAuditId());
                 statusEvent.setDeleted(Boolean.FALSE);
                 entityManager.persist(statusEvent);
                 entityManager.flush();
@@ -336,7 +331,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 
         mapping.setTransparencyAttestation(AttestationType.getValue(dto.getTransparencyAttestation()));
         mapping.setLastModifiedDate(new Date());
-        mapping.setLastModifiedUser(Util.getAuditId());
+        mapping.setLastModifiedUser(AuthUtil.getAuditId());
         entityManager.persist(mapping);
         entityManager.flush();
         return new DeveloperACBMapDTO(mapping);
@@ -350,7 +345,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
         if (toDelete != null) {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(Util.getAuditId());
+            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             update(toDelete);
         }
     }
@@ -361,7 +356,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
         if (toDelete != null) {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(Util.getAuditId());
+            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             entityManager.persist(toDelete);
             entityManager.flush();
         }
@@ -443,9 +438,13 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
     }
 
     @Override
-    public DeveloperDTO getById(Long id) throws EntityRetrievalException {
+    public DeveloperDTO getById(final Long id) throws EntityRetrievalException {
+        return getById(id, false);
+    }
 
-        DeveloperEntity entity = getEntityById(id);
+    @Override
+    public DeveloperDTO getById(final Long id, final boolean includeDeleted) throws EntityRetrievalException {
+        DeveloperEntity entity = getEntityById(id, includeDeleted);
         DeveloperDTO dto = null;
         if (entity != null) {
             dto = new DeveloperDTO(entity);
@@ -634,20 +633,29 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
         return result;
     }
 
-    private DeveloperEntity getEntityById(Long id) throws EntityRetrievalException {
+    private DeveloperEntity getEntityById(final Long id) throws EntityRetrievalException {
+        return getEntityById(id, false);
+    }
+
+    private DeveloperEntity getEntityById(final Long id, final boolean includeDeleted) throws EntityRetrievalException {
 
         DeveloperEntity entity = null;
-        Query query = entityManager
-                .createQuery("SELECT DISTINCT v from " + "DeveloperEntity v " + "LEFT OUTER JOIN FETCH v.address "
-                        + "LEFT OUTER JOIN FETCH v.contact " + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
+        String queryStr = "SELECT DISTINCT v FROM "
+                        + "DeveloperEntity v "
+                        + "LEFT OUTER JOIN FETCH v.address "
+                        + "LEFT OUTER JOIN FETCH v.contact "
+                        + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
                         + "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
-                        + "where (NOT v.deleted = true) AND (v.id = :entityid) ", DeveloperEntity.class);
+                        + "WHERE v.id = :entityid ";
+        if (!includeDeleted) {
+            queryStr += " AND v.deleted = false";
+        }
+        Query query = entityManager.createQuery(queryStr, DeveloperEntity.class);
         query.setParameter("entityid", id);
         List<DeveloperEntity> result = query.getResultList();
 
         if (result == null || result.size() == 0) {
-            String msg = String.format(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("developer.notFound"), LocaleContextHolder.getLocale()));
+            String msg = msgUtil.getMessage("developer.notFound");
             throw new EntityRetrievalException(msg);
         } else if (result.size() > 0) {
             entity = result.get(0);
