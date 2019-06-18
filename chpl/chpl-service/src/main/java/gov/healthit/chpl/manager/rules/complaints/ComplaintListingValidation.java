@@ -15,18 +15,23 @@ public class ComplaintListingValidation extends ValidationRule<ComplaintValidati
                 CertifiedProductDTO listing = context.getCertifiedProductDAO()
                         .getById(complaintListingMapDTO.getListingId());
                 if (listing == null) {
-                    getMessages()
-                            .add("Certified Product {" + complaintListingMapDTO.getListingId() + "} is not valid.");
+                    getMessages().add(context.getErrorMessageUtil().getMessage("complaints.listingId.notFound",
+                            complaintListingMapDTO.getListingId()));
                     return false;
                 }
 
                 // Make sure the listing's ACB matches the complaint ACB
+                if (context.getComplaintDTO().getCertificationBody().getId() != listing.getCertificationBodyId()) {
+                    getMessages().add(context.getErrorMessageUtil().getMessage("complaints.listingId.doesNotMatchAcb",
+                            context.getChplProductNumberUtil().generate(complaintListingMapDTO.getListingId())));
+                    return false;
+                }
             } catch (EntityRetrievalException e) {
-                getMessages().add("Certified Product {" + complaintListingMapDTO.getListingId() + "} is not valid.");
+                getMessages().add(context.getErrorMessageUtil().getMessage("complaints.listingId.notFound",
+                        complaintListingMapDTO.getListingId()));
                 return false;
             }
-
         }
-
+        return true;
     }
 }
