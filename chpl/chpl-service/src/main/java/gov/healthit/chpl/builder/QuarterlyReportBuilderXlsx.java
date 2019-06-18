@@ -27,6 +27,8 @@ public class QuarterlyReportBuilderXlsx {
         reports.add(report);
 
         Workbook workbook = XSSFWorkbookFactory.create(true);
+        ListWorksheetBuilder listBuilder = new ListWorksheetBuilder(workbook);
+        listBuilder.buildWorksheet();
         ReportInfoWorksheetBuilder reportInfoBuilder = new ReportInfoWorksheetBuilder(workbook);
         reportInfoBuilder.buildWorksheet(reports);
         ActivitiesAndOutcomesWorksheetBuilder activitiesAndOutcomesBuilder =
@@ -38,6 +40,10 @@ public class QuarterlyReportBuilderXlsx {
         createComplaintsWorksheet(workbook);
         SurveillanceSummaryWorksheetBuilder survSummaryBuilder = new SurveillanceSummaryWorksheetBuilder(workbook);
         survSummaryBuilder.buildWorksheet();
+
+        //hide the ListSheet
+        workbook.setSheetHidden(0, true);
+        workbook.setActiveSheet(1);
         return workbook;
     }
 

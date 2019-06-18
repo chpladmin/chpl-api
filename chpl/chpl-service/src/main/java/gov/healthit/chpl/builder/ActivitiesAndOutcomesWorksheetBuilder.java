@@ -3,6 +3,7 @@ package gov.healthit.chpl.builder;
 import java.awt.Color;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -333,7 +334,12 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
     private void addTableData(final Sheet sheet,
             final Map<QuarterlyReportDTO, List<CertifiedProductSearchDetails>> reportListingMap) {
         int rowNum = 2;
-        for (QuarterlyReportDTO quarterlyReport : reportListingMap.keySet()) {
+        //order the quarterly reports by date so they show up in the right order in each sheet
+        QuarterlyReportDTO[] sortedQuarterlyReportsArray = reportListingMap.keySet().toArray(new QuarterlyReportDTO[0]);
+        Arrays.sort(sortedQuarterlyReportsArray);
+        List<QuarterlyReportDTO> sortedReports = Arrays.asList(sortedQuarterlyReportsArray);
+
+        for (QuarterlyReportDTO quarterlyReport : sortedReports) {
             for (CertifiedProductSearchDetails listing : reportListingMap.get(quarterlyReport)) {
                 //each listing has 1 or more relevant surveillances
                 for (Surveillance surv : listing.getSurveillance()) {
@@ -366,7 +372,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
                     addDataCell(row, COL_SUSPENDED, determineSuspendedStatus(listing, surv));
                     //user has to enter this field
                     addDataCell(row, COL_SURV_PROCESS_TYPE, "");
-                    pt.drawBorders(new CellRangeAddress(rowNum, rowNum, 1, LAST_DATA_COLUMN-1),
+                    pt.drawBorders(new CellRangeAddress(rowNum, rowNum, 1, LAST_DATA_COLUMN - 1),
                             BorderStyle.HAIR, BorderExtent.HORIZONTAL);
                     rowNum++;
                 }

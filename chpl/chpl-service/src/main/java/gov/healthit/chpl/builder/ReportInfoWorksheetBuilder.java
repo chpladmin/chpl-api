@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -48,6 +49,11 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
      * @return
      */
     public Sheet buildWorksheet(final List<QuarterlyReportDTO> reports) throws IOException {
+        //order the quarterly reports by date so they show up in the right order in each sheet
+        QuarterlyReportDTO[] sortedQuarterlyReportsArray = reports.toArray(new QuarterlyReportDTO[0]);
+        Arrays.sort(sortedQuarterlyReportsArray);
+        List<QuarterlyReportDTO> sortedReports = Arrays.asList(sortedQuarterlyReportsArray);
+
         //create sheet or get the sheet if it already exists
         Sheet sheet = getSheet("Report Information", new Color(141, 180, 226));
 
@@ -61,11 +67,11 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
         sheet.setColumnWidth(3, getColumnWidth(42));
 
         createHeader(sheet);
-        createSectionOne(sheet, reports);
-        createSectionTwo(sheet, reports);
-        createSectionThree(sheet, reports);
-        createSectionFour(sheet, reports);
-        createSectionFive(sheet, reports);
+        createSectionOne(sheet, sortedReports);
+        createSectionTwo(sheet, sortedReports);
+        createSectionThree(sheet, sortedReports);
+        createSectionFour(sheet, sortedReports);
+        createSectionFive(sheet, sortedReports);
         createSectionSix(sheet);
 
         //apply the borders after the sheet has been created

@@ -741,13 +741,14 @@ public class CertifiedProductSearchDetails implements Serializable {
         }
 
         //first we need to make sure the status events are in ascending order
-        Arrays.sort(this.getCertificationEvents().toArray());
+        CertificationStatusEvent[] sortedStatusEvents = this.getCertificationEvents().toArray(new CertificationStatusEvent[0]);
+        Arrays.sort(sortedStatusEvents);
 
         CertificationStatusEvent result = null;
-        for (int i = 0; i < this.getCertificationEvents().size() && result == null; i++) {
-            CertificationStatusEvent currEvent = this.getCertificationEvents().get(i);
-            if (i < this.getCertificationEvents().size() - 1) {
-                CertificationStatusEvent nextEvent = this.getCertificationEvents().get(i + 1);
+        for (int i = 0; i < sortedStatusEvents.length && result == null; i++) {
+            CertificationStatusEvent currEvent = sortedStatusEvents[i];
+            if (i < sortedStatusEvents.length - 1) {
+                CertificationStatusEvent nextEvent = sortedStatusEvents[i + 1];
                 //if the passed-in date is between currEvent and nextEvent then the currEvent
                 //gives the status on the passed-in date.
                 if (currEvent.getEventDate() != null && currEvent.getEventDate().longValue() <= date.getTime()

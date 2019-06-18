@@ -9,7 +9,7 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.surveillance.report.QuarterlyReportEntity;
 
-public class QuarterlyReportDTO {
+public class QuarterlyReportDTO implements Comparable<QuarterlyReportDTO> {
 
     private Long id;
     private CertificationBodyDTO acb;
@@ -145,6 +145,20 @@ public class QuarterlyReportDTO {
 
     public void setRelevantListings(List<CertifiedProductDetailsDTO> relevantListings) {
         this.relevantListings = relevantListings;
+    }
+
+    @Override
+    public int compareTo(final QuarterlyReportDTO other) {
+        if (this.getStartDate() == null || other.getStartDate() == null) {
+            return 0;
+        }
+        if (this.getStartDate().getTime() < other.getStartDate().getTime()) {
+            return -1;
+        }
+        if (this.getStartDate().getTime() > other.getStartDate().getTime()) {
+            return 1;
+        }
+        return 0;
     }
 
 }

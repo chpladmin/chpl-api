@@ -2,6 +2,7 @@ package gov.healthit.chpl.builder;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,10 +37,12 @@ public class AnnualReportBuilderXlsx {
 
         Set<QuarterlyReportDTO> quarterlyReportSet = reportListingMap.keySet();
         if (quarterlyReportSet != null && quarterlyReportSet.size() > 0) {
+            //order the quarterly reports by date so they show up in the right order in each sheet
+            QuarterlyReportDTO[] sortedQuarterlyReports = quarterlyReportSet.toArray(new QuarterlyReportDTO[0]);
+            Arrays.sort(sortedQuarterlyReports);
+
             ReportInfoWorksheetBuilder reportInfoBuilder = new ReportInfoWorksheetBuilder(workbook);
-            List<QuarterlyReportDTO> quarterlyReports = new ArrayList<QuarterlyReportDTO>();
-            CollectionUtils.addAll(quarterlyReports, quarterlyReportSet.iterator());
-            reportInfoBuilder.buildWorksheet(quarterlyReports);
+            reportInfoBuilder.buildWorksheet(Arrays.asList(sortedQuarterlyReports));
             ActivitiesAndOutcomesWorksheetBuilder activitiesAndOutcomesBuilder =
                     new ActivitiesAndOutcomesWorksheetBuilder(workbook);
             activitiesAndOutcomesBuilder.buildWorksheet(reportListingMap);
