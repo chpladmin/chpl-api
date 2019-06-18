@@ -3,10 +3,9 @@ package gov.healthit.chpl.builder;
 import java.awt.Color;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -38,7 +37,6 @@ import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 
 public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder {
     private static final int LAST_DATA_COLUMN = 35;
-    private static final int LAST_DATA_ROW = 60;
 
     private static final int COL_CHPL_ID = 1;
     private static final int COL_SURV_ID = 2;
@@ -74,6 +72,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
     private static final int COL_DEV_RESOLUTION = 31;
     private static final int COL_COMPLETED_CAP = 32;
 
+    private int lastDataRow;
     private SimpleDateFormat dateFormatter;
     private PropertyTemplate pt;
 
@@ -90,7 +89,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
 
     @Override
     public int getLastDataRow() {
-        return LAST_DATA_ROW;
+        return lastDataRow <= 1 ? 2 : lastDataRow;
     }
 
     /**
@@ -100,7 +99,8 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
      * @return
      * @throws IOException
      */
-    public Sheet buildWorksheet(final Map<QuarterlyReportDTO, List<CertifiedProductSearchDetails>> reportListingMap)
+    public Sheet buildWorksheet(final List<QuarterlyReportDTO> quarterlyReports,
+            final List<CertifiedProductSearchDetails> relevantListings)
             throws IOException {
         XSSFDataValidationHelper dvHelper = null;
 
@@ -152,8 +152,8 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
         sheet.setColumnWidth(COL_DEV_RESOLUTION, longTextColWidth);
         sheet.setColumnWidth(COL_COMPLETED_CAP, longTextColWidth);
 
-        addHeadingRow(sheet);
-        addTableData(sheet, reportListingMap);
+        lastDataRow += addHeadingRow(sheet);
+        lastDataRow += addTableData(sheet, quarterlyReports, relevantListings);
 
         //some of the columns have dropdown lists of choices for the user - set those up
 
@@ -230,14 +230,19 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
         }
 
         //apply the borders after the sheet has been created
-        //TODO: increase the border above 5 depending on how many data rows there are
         pt.drawBorders(new CellRangeAddress(1, getLastDataRow(), 1, LAST_DATA_COLUMN-1),
                 BorderStyle.MEDIUM, BorderExtent.OUTSIDE);
         pt.applyBorders(sheet);
         return sheet;
     }
 
-    private void addHeadingRow(final Sheet sheet) {
+    /**
+     * Creates the heading for this worksheet.
+     * Returns the number of rows added.
+     * @param sheet
+     * @return
+     */
+    private int addHeadingRow(final Sheet sheet) {
         Row row = getRow(sheet, 1);
         //row can have 6 lines of text
         row.setHeightInPoints(6 * sheet.getDefaultRowHeightInPoints());
@@ -329,30 +334,43 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
                 + "how did ONC-ACB verify that the developer has completed all requirements "
                 + "specified in the Plan?";
         addRichTextHeadingCell(row, COL_COMPLETED_CAP, cellTitle, cellSubtitle);
+        return 1;
     }
 
-    private void addTableData(final Sheet sheet,
-            final Map<QuarterlyReportDTO, List<CertifiedProductSearchDetails>> reportListingMap) {
+    /**
+     * Adds all of the surveillance data to this worksheet. 
+     * Returns the number of rows added.
+     * @param sheet
+     * @param reportListingMap
+     */
+    private int addTableData(final Sheet sheet,
+            final List<QuarterlyReportDTO> quarterlyReports, final List<CertifiedProductSearchDetails> listings) {
+        Set<Long> addedSurveillanceIds = new HashSet<Long>();
+        int addedRows = 0;
         int rowNum = 2;
-        //order the quarterly reports by date so they show up in the right order in each sheet
-        QuarterlyReportDTO[] sortedQuarterlyReportsArray = reportListingMap.keySet().toArray(new QuarterlyReportDTO[0]);
-        Arrays.sort(sortedQuarterlyReportsArray);
-        List<QuarterlyReportDTO> sortedReports = Arrays.asList(sortedQuarterlyReportsArray);
-
-        for (QuarterlyReportDTO quarterlyReport : sortedReports) {
-            for (CertifiedProductSearchDetails listing : reportListingMap.get(quarterlyReport)) {
-                //each listing has 1 or more relevant surveillances
-                for (Surveillance surv : listing.getSurveillance()) {
+        //TODO: get all relevant surveillances and order them??
+        for (CertifiedProductSearchDetails listing : listings) {
+            //each listing has 1 or more surveillances, but maybe not all are from one of the quarters we care about
+            List<Surveillance> relevantSurveillances
+                = determineRelevantSurveillances(quarterlyReports, listing.getSurveillance());
+            for (Surveillance surv : relevantSurveillances) {
+                //If a surveillance has no end date, it might be included multiple times in the list of listings
+                //because it may have matched as a relevant surveillance for multiple quarters.
+                //Check here that we don't add the same one twice.
+                if (!addedSurveillanceIds.contains(surv.getId())) {
                     Row row = getRow(sheet, rowNum);
                     addDataCell(row, COL_CHPL_ID, listing.getChplProductNumber());
                     addDataCell(row, COL_SURV_ID, surv.getFriendlyId());
-                    if (quarterlyReport.getQuarter().getName().equals("Q1")) {
+                    if (determineIfSurveillanceHappenedDuringQuarter("Q1", quarterlyReports, surv)) {
                         addDataCell(row, COL_Q1, "X");
-                    } else if (quarterlyReport.getQuarter().getName().equals("Q2")) {
+                    }
+                    if (determineIfSurveillanceHappenedDuringQuarter("Q2", quarterlyReports, surv)) {
                         addDataCell(row, COL_Q2, "X");
-                    } else if (quarterlyReport.getQuarter().getName().equals("Q3")) {
+                    }
+                    if (determineIfSurveillanceHappenedDuringQuarter("Q3", quarterlyReports, surv)) {
                         addDataCell(row, COL_Q3, "X");
-                    } else if (quarterlyReport.getQuarter().getName().equals("Q4")) {
+                    }
+                    if (determineIfSurveillanceHappenedDuringQuarter("Q4", quarterlyReports, surv)) {
                         addDataCell(row, COL_Q4, "X");
                     }
                     addDataCell(row, COL_CERT_EDITION, listing.getCertificationEdition().get("name").toString());
@@ -362,7 +380,8 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
                     //user has to enter this field
                     addDataCell(row, COL_K1_REVIEWED, "");
                     addDataCell(row, COL_SURV_TYPE, surv.getType().getName());
-                    addDataCell(row, COL_SURV_LOCATION_COUNT, surv.getRandomizedSitesUsed().toString());
+                    addDataCell(row, COL_SURV_LOCATION_COUNT,
+                            surv.getRandomizedSitesUsed() == null ? "" : surv.getRandomizedSitesUsed().toString());
                     addDataCell(row, COL_SURV_BEGIN, dateFormatter.format(surv.getStartDate()));
                     addDataCell(row, COL_SURV_END, surv.getEndDate() == null ? "" : dateFormatter.format(surv.getEndDate()));
                     //user has to enter this field
@@ -374,10 +393,59 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
                     addDataCell(row, COL_SURV_PROCESS_TYPE, "");
                     pt.drawBorders(new CellRangeAddress(rowNum, rowNum, 1, LAST_DATA_COLUMN - 1),
                             BorderStyle.HAIR, BorderExtent.HORIZONTAL);
+                    addedRows++;
                     rowNum++;
                 }
+                addedSurveillanceIds.add(surv.getId());
             }
         }
+        return addedRows;
+    }
+
+    /**
+     * A surveillance is relevant if its dates occur within any of the quarterlyReports passed in.
+     * @param quarterlyReports
+     * @param allSurveillances
+     * @return
+     */
+    private List<Surveillance> determineRelevantSurveillances(final List<QuarterlyReportDTO> quarterlyReports, 
+            final List<Surveillance> allSurveillances) {
+        List<Surveillance> relevantSurveillances = new ArrayList<Surveillance>();
+        for (Surveillance currSurv : allSurveillances) {
+            boolean isRelevantToAtLeastOneQuarter = false;
+            for (QuarterlyReportDTO quarterlyReport : quarterlyReports) {
+                if (currSurv.getStartDate().getTime() <= quarterlyReport.getEndDate().getTime()
+                        && (currSurv.getEndDate() == null
+                        || currSurv.getEndDate().getTime() >= quarterlyReport.getStartDate().getTime())) {
+                    isRelevantToAtLeastOneQuarter = true;
+                }
+            }
+            if (isRelevantToAtLeastOneQuarter) {
+                relevantSurveillances.add(currSurv);
+            }
+        }
+        return relevantSurveillances;
+    }
+
+    private boolean determineIfSurveillanceHappenedDuringQuarter(final String quarterName,
+            final List<QuarterlyReportDTO> quarterlyReports, final Surveillance surv) {
+        QuarterlyReportDTO quarterlyReport = null;
+        for (QuarterlyReportDTO currReport : quarterlyReports) {
+            if (currReport.getQuarter().getName().equals(quarterName)) {
+                quarterlyReport = currReport;
+            }
+        }
+        boolean result = false;
+        if (quarterlyReport != null) {
+            if (surv.getStartDate().getTime() <= quarterlyReport.getEndDate().getTime()
+                    && surv.getEndDate() == null) {
+                result = true;
+            } else if (surv.getStartDate().getTime() <= quarterlyReport.getEndDate().getTime()
+                    && surv.getEndDate() != null && surv.getEndDate().getTime() >= quarterlyReport.getStartDate().getTime()) {
+                result = true;
+            }
+        }
+        return result;
     }
 
     private String determineNonconformityTypes(final Surveillance surv) {

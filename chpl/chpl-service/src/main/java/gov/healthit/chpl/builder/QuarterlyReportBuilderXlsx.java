@@ -2,9 +2,7 @@ package gov.healthit.chpl.builder;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbookFactory;
@@ -33,10 +31,7 @@ public class QuarterlyReportBuilderXlsx {
         reportInfoBuilder.buildWorksheet(reports);
         ActivitiesAndOutcomesWorksheetBuilder activitiesAndOutcomesBuilder =
                 new ActivitiesAndOutcomesWorksheetBuilder(workbook);
-        Map<QuarterlyReportDTO, List<CertifiedProductSearchDetails>> reportListingMap =
-                new HashMap<QuarterlyReportDTO, List<CertifiedProductSearchDetails>>();
-        reportListingMap.put(report, relevantListingDetails);
-        activitiesAndOutcomesBuilder.buildWorksheet(reportListingMap);
+        activitiesAndOutcomesBuilder.buildWorksheet(reports, relevantListingDetails);
         createComplaintsWorksheet(workbook);
         SurveillanceSummaryWorksheetBuilder survSummaryBuilder = new SurveillanceSummaryWorksheetBuilder(workbook);
         survSummaryBuilder.buildWorksheet();

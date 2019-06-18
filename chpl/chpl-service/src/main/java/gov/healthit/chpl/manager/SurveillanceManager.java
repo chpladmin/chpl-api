@@ -30,7 +30,6 @@ public interface SurveillanceManager {
     Surveillance getById(Long survId) throws EntityRetrievalException;
 
     List<Surveillance> getByCertifiedProduct(Long cpId);
-    List<Surveillance> getOpenBetweenDatesForCertifiedProduct(Long cpId, Date startDate, Date endDate);
 
     SurveillanceNonconformityDocument getDocumentById(Long docId, boolean getFileContents)
             throws EntityRetrievalException;
