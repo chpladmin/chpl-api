@@ -66,9 +66,7 @@ public class CollectionsController {
             nonNullJsonMapper.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, false);
 
             // create a copy of the search results since we will be manipulating
-            // them
-            // by setting fields to null but do not want to overwrite the cached
-            // data
+            // them by setting fields to null but do not want to overwrite the cached data
             List<CertifiedProductFlatSearchResult> mutableSearchResults
             = new ArrayList<CertifiedProductFlatSearchResult>(cachedSearchResults.size());
             for (CertifiedProductFlatSearchResult cachedSearchResult : cachedSearchResults) {
