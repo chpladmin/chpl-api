@@ -55,7 +55,7 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
     }
 
     @Override
-    public List<ComplaintDTO> getAllComplaints() throws EntityRetrievalException {
+    public List<ComplaintDTO> getAllComplaints() {
         Query query = entityManager.createQuery("SELECT DISTINCT c FROM ComplaintEntity c "
                 + "LEFT JOIN FETCH c.listings " + "JOIN FETCH c.certificationBody " + "JOIN FETCH c.complaintType "
                 + "JOIN FETCH c.complaintStatusType " + "WHERE c.deleted = false ", ComplaintEntity.class);
@@ -218,8 +218,7 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
                     new Predicate<ComplaintListingMapDTO>() {
                         @Override
                         public boolean evaluate(ComplaintListingMapDTO existingComplaintListing) {
-                            return existingComplaintListing.getListingId()
-                                    .equals(existing.getListingId());
+                            return existingComplaintListing.getListingId().equals(existing.getListingId());
                         }
                     });
             // Wasn't found in the list passed in, delete it from the DB

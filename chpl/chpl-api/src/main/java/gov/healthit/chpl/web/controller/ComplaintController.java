@@ -40,7 +40,7 @@ public class ComplaintController {
     @ApiOperation(value = "List all complaints the current user can view/edit.",
             notes = "Security Restrictions: Only complaints owned by the current user's ACB will be returned")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody ComplaintResults getComplaints() throws EntityRetrievalException {
+    public @ResponseBody ComplaintResults getComplaints() {
         if (ff4j.check(FeatureList.COMPLAINTS)) {
             ComplaintResults results = new ComplaintResults();
             List<Complaint> complaints = complaintManager.getAllComplaints();
