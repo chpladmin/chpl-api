@@ -87,6 +87,8 @@ public class CertifiedProductSearchResult implements Serializable {
     })
     private Long closedNonconformityCount;
 
+    private Long openSurveillanceCount;
+    private Long closedSurveillanceCount;
     private Long decertificationDate;
     private Long numMeaningfulUse;
     private Long numMeaningfulUseDate;
@@ -117,6 +119,8 @@ public class CertifiedProductSearchResult implements Serializable {
         this.certificationStatus = other.getCertificationStatus();
         this.decertificationDate = other.getDecertificationDate();
         this.surveillanceCount = other.getSurveillanceCount();
+        this.openSurveillanceCount = other.getOpenSurveillanceCount();
+        this.closedSurveillanceCount = other.getClosedSurveillanceCount();
         this.openNonconformityCount = other.getOpenNonconformityCount();
         this.closedNonconformityCount = other.getClosedNonconformityCount();
         this.numMeaningfulUse = other.getNumMeaningfulUse();
@@ -274,5 +278,21 @@ public class CertifiedProductSearchResult implements Serializable {
 
     public void setTransparencyAttestationUrl(final String transparencyAttestationUrl) {
         this.transparencyAttestationUrl = transparencyAttestationUrl;
+    }
+
+    public Long getOpenSurveillanceCount() {
+        return openSurveillanceCount;
+    }
+
+    public void setOpenSurveillanceCount(final Long openSurveillanceCount) {
+        this.openSurveillanceCount = openSurveillanceCount;
+    }
+
+    public Long getClosedSurveillanceCount() {
+        return closedSurveillanceCount;
+    }
+
+    public void setClosedSurveillanceCount(final Long closedSurveillanceCount) {
+        this.closedSurveillanceCount = closedSurveillanceCount;
     }
 }

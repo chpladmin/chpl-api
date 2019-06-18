@@ -640,8 +640,11 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
             result.setTransparencyAttestationUrl(dbResult.getTransparencyAttestationUrl());
             result.setApiDocumentation(dbResult.getApiDocumentation());
             result.setSurveillanceCount(dbResult.getSurveillanceCount());
+            result.setOpenSurveillanceCount(dbResult.getOpenSurveillanceCount());
+            result.setClosedSurveillanceCount(dbResult.getClosedSurveillanceCount());
             result.setOpenNonconformityCount(dbResult.getOpenNonconformityCount());
             result.setClosedNonconformityCount(dbResult.getClosedNonconformityCount());
+            result.setSurveillanceDates(dbResult.getSurvDates());
             result.setCriteriaMet(dbResult.getCerts());
             result.setCqmsMet(dbResult.getCqms());
             result.setPreviousDevelopers(dbResult.getPreviousDevelopers());
