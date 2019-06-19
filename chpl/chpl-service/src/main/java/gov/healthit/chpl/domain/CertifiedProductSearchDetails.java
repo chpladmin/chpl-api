@@ -2,7 +2,7 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,7 +17,6 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
@@ -741,14 +740,28 @@ public class CertifiedProductSearchDetails implements Serializable {
         }
 
         //first we need to make sure the status events are in ascending order
-        CertificationStatusEvent[] sortedStatusEvents = this.getCertificationEvents().toArray(new CertificationStatusEvent[0]);
-        Arrays.sort(sortedStatusEvents);
+        this.getCertificationEvents().sort(new Comparator<CertificationStatusEvent>() {
+            @Override
+            public int compare(final CertificationStatusEvent o1, final CertificationStatusEvent o2) {
+                if (o1.getEventDate() == null || o2.getEventDate() == null
+                        || o1.getEventDate().equals(o2.getEventDate())) {
+                    return 0;
+                }
+                if (o1.getEventDate() < o2.getEventDate()) {
+                    return -1;
+                }
+                if (o1.getEventDate() > o2.getEventDate()) {
+                    return 1;
+                }
+                return 0;
+            }
+        });
 
         CertificationStatusEvent result = null;
-        for (int i = 0; i < sortedStatusEvents.length && result == null; i++) {
-            CertificationStatusEvent currEvent = sortedStatusEvents[i];
-            if (i < sortedStatusEvents.length - 1) {
-                CertificationStatusEvent nextEvent = sortedStatusEvents[i + 1];
+        for (int i = 0; i < this.getCertificationEvents().size() && result == null; i++) {
+            CertificationStatusEvent currEvent = this.getCertificationEvents().get(i);
+            if (i < this.getCertificationEvents().size() - 1) {
+                CertificationStatusEvent nextEvent = this.getCertificationEvents().get(i + 1);
                 //if the passed-in date is between currEvent and nextEvent then the currEvent
                 //gives the status on the passed-in date.
                 if (currEvent.getEventDate() != null && currEvent.getEventDate().longValue() <= date.getTime()

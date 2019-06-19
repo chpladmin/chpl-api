@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -150,13 +148,14 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
                 getQuarterlyReports(annualReport.getAcb().getId(), annualReport.getYear());
         List<CertifiedProductSearchDetails> relevantListingDetails =
                 new ArrayList<CertifiedProductSearchDetails>();
-        for (QuarterlyReportDTO quarterlyReport : quarterlyReports) {
+        for (QuarterlyReportDTO currReport : quarterlyReports) {
             //get all of the surveillance details for the listings relevant to this report
             //the details object included on the quarterly report has some of the data that is needed
             //to build activities and outcomes worksheet but not all of it so we need to do
             //some other work to get the necessary data and put it all together
+            List<CertifiedProductDetailsDTO> relevantListings = getRelevantListings(currReport);
             List<CertifiedProductDetailsDTO> missingListingDtos = new ArrayList<CertifiedProductDetailsDTO>();
-            for (CertifiedProductDetailsDTO listingFromReport : quarterlyReport.getRelevantListings()) {
+            for (CertifiedProductDetailsDTO listingFromReport : relevantListings) {
                 boolean alreadyGotDetails = false;
                 for (CertifiedProductSearchDetails existingDetails : relevantListingDetails) {
                     if (listingFromReport.getId() != null && existingDetails.getId() != null
@@ -210,9 +209,6 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
         }
 
         QuarterlyReportDTO created = quarterlyDao.create(toCreate);
-        created.setRelevantListings(
-                listingDao.findByAcbWithOpenSurveillance(created.getAcb().getId(),
-                        created.getStartDate(), created.getEndDate()));
         return created;
     }
 
@@ -223,9 +219,6 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
     public QuarterlyReportDTO updateQuarterlyReport(final QuarterlyReportDTO toUpdate)
     throws EntityRetrievalException {
         QuarterlyReportDTO updated = quarterlyDao.update(toUpdate);
-        updated.setRelevantListings(
-                listingDao.findByAcbWithOpenSurveillance(updated.getAcb().getId(),
-                        updated.getStartDate(), updated.getEndDate()));
         return updated;
     }
 
@@ -246,12 +239,6 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).GET_QUARTERLY, filterObject)")
     public List<QuarterlyReportDTO> getQuarterlyReports() {
         List<QuarterlyReportDTO> reports = quarterlyDao.getAll();
-        //get relevant listings for each report
-        for (QuarterlyReportDTO report : reports) {
-            report.setRelevantListings(
-                    listingDao.findByAcbWithOpenSurveillance(report.getAcb().getId(),
-                            report.getStartDate(), report.getEndDate()));
-        }
         return reports;
     }
 
@@ -264,14 +251,19 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).GET_QUARTERLY, filterObject)")
     public List<QuarterlyReportDTO> getQuarterlyReports(final Long acbId, final Integer year) {
         List<QuarterlyReportDTO> reports = quarterlyDao.getByAcbAndYear(acbId, year);
-        //get relevant listings for each report
-        for (QuarterlyReportDTO report : reports) {
-            report.setRelevantListings(
-                    listingDao.findByAcbWithOpenSurveillance(report.getAcb().getId(),
-                            report.getStartDate(), report.getEndDate()));
-        }
         return reports;
     }
+
+    @Override
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).GET_QUARTERLY,"
+            + "#report)")
+    public List<CertifiedProductDetailsDTO> getRelevantListings(final QuarterlyReportDTO report) {
+        return listingDao.findByAcbWithOpenSurveillance(report.getAcb().getId(),
+                            report.getStartDate(), report.getEndDate());
+    }
+
     /**
      * Gets the quarterly report by ID if the user has access.
      */
@@ -282,9 +274,6 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
             + "returnObject)")
     public QuarterlyReportDTO getQuarterlyReport(final Long id) throws EntityRetrievalException {
         QuarterlyReportDTO report = quarterlyDao.getById(id);
-        report.setRelevantListings(
-                listingDao.findByAcbWithOpenSurveillance(report.getAcb().getId(),
-                        report.getStartDate(), report.getEndDate()));
         return report;
     }
 
@@ -296,11 +285,12 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
     public Workbook exportQuarterlyReport(final Long id) throws EntityRetrievalException,
         IOException {
         QuarterlyReportDTO report = getQuarterlyReport(id);
+        List<CertifiedProductDetailsDTO> relevantListings = getRelevantListings(report);
         //get all of the surveillance details for the listings relevant to this report
         //the details object included on the quarterly report has some of the data that is needed
         //to build activities and outcomes worksheet but not all of it so we need to do
         //some other work to get the necessary data and put it all together
-        List<CertifiedProductSearchDetails> relevantListingDetails = getRelevantListingDetails(report.getRelevantListings());
+        List<CertifiedProductSearchDetails> relevantListingDetails = getRelevantListingDetails(relevantListings);
         return quarterlyReportBuilder.buildXlsx(report, relevantListingDetails);
     }
 

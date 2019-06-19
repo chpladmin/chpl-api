@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -345,59 +346,77 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
      */
     private int addTableData(final Sheet sheet,
             final List<QuarterlyReportDTO> quarterlyReports, final List<CertifiedProductSearchDetails> listings) {
-        Set<Long> addedSurveillanceIds = new HashSet<Long>();
         int addedRows = 0;
         int rowNum = 2;
-        //TODO: get all relevant surveillances and order them??
+        //get all the surveillances relevant to the time period of the report from the listings
+        List<Surveillance> relevantSuveillances = new ArrayList<Surveillance>();
         for (CertifiedProductSearchDetails listing : listings) {
-            //each listing has 1 or more surveillances, but maybe not all are from one of the quarters we care about
-            List<Surveillance> relevantSurveillances
+            //each listing has 1 or more surveillances
+            //but maybe not all are from the periods of time covered by the quarters
+            List<Surveillance> listingSurveillances
                 = determineRelevantSurveillances(quarterlyReports, listing.getSurveillance());
-            for (Surveillance surv : relevantSurveillances) {
-                //If a surveillance has no end date, it might be included multiple times in the list of listings
-                //because it may have matched as a relevant surveillance for multiple quarters.
-                //Check here that we don't add the same one twice.
-                if (!addedSurveillanceIds.contains(surv.getId())) {
-                    Row row = getRow(sheet, rowNum);
-                    addDataCell(row, COL_CHPL_ID, listing.getChplProductNumber());
-                    addDataCell(row, COL_SURV_ID, surv.getFriendlyId());
-                    if (determineIfSurveillanceHappenedDuringQuarter("Q1", quarterlyReports, surv)) {
-                        addDataCell(row, COL_Q1, "X");
-                    }
-                    if (determineIfSurveillanceHappenedDuringQuarter("Q2", quarterlyReports, surv)) {
-                        addDataCell(row, COL_Q2, "X");
-                    }
-                    if (determineIfSurveillanceHappenedDuringQuarter("Q3", quarterlyReports, surv)) {
-                        addDataCell(row, COL_Q3, "X");
-                    }
-                    if (determineIfSurveillanceHappenedDuringQuarter("Q4", quarterlyReports, surv)) {
-                        addDataCell(row, COL_Q4, "X");
-                    }
-                    addDataCell(row, COL_CERT_EDITION, listing.getCertificationEdition().get("name").toString());
-                    addDataCell(row, COL_DEVELOPER_NAME, listing.getDeveloper().getName());
-                    addDataCell(row, COL_PRODUCT_NAME, listing.getProduct().getName());
-                    addDataCell(row, COL_PRODUCT_VERSION, listing.getVersion().getVersion());
-                    //user has to enter this field
-                    addDataCell(row, COL_K1_REVIEWED, "");
-                    addDataCell(row, COL_SURV_TYPE, surv.getType().getName());
-                    addDataCell(row, COL_SURV_LOCATION_COUNT,
-                            surv.getRandomizedSitesUsed() == null ? "" : surv.getRandomizedSitesUsed().toString());
-                    addDataCell(row, COL_SURV_BEGIN, dateFormatter.format(surv.getStartDate()));
-                    addDataCell(row, COL_SURV_END, surv.getEndDate() == null ? "" : dateFormatter.format(surv.getEndDate()));
-                    //user has to enter this field
-                    addDataCell(row, COL_SURV_OUTCOME, "");
-                    addDataCell(row, COL_NONCONFORMITY_TYPES_RESULTANT, determineNonconformityTypes(surv));
-                    addDataCell(row, COL_CERT_STATUS_RESULTANT, determineResultantCertificationStatus(listing, surv));
-                    addDataCell(row, COL_SUSPENDED, determineSuspendedStatus(listing, surv));
-                    //user has to enter this field
-                    addDataCell(row, COL_SURV_PROCESS_TYPE, "");
-                    pt.drawBorders(new CellRangeAddress(rowNum, rowNum, 1, LAST_DATA_COLUMN - 1),
-                            BorderStyle.HAIR, BorderExtent.HORIZONTAL);
-                    addedRows++;
-                    rowNum++;
+            relevantSuveillances.addAll(listingSurveillances);
+        }
+        //sort the relevant surveillances with oldest start date first and newest start date last
+        relevantSuveillances.sort(new Comparator<Surveillance>() {
+            @Override
+            public int compare(final Surveillance o1, final Surveillance o2) {
+                if (o1.getStartDate().getTime() < o2.getStartDate().getTime()) {
+                    return -1;
+                } else if (o1.getStartDate().getTime() == o2.getStartDate().getTime()) {
+                    return 0;
+                } else {
+                    return 1;
                 }
-                addedSurveillanceIds.add(surv.getId());
             }
+        });
+        for (Surveillance surv : relevantSuveillances) {
+            CertifiedProductSearchDetails listing = null;
+            for (CertifiedProductSearchDetails currListing : listings) {
+                if (surv.getCertifiedProduct().getId().equals(currListing.getId())) {
+                    listing = currListing;
+                }
+            }
+            Row row = getRow(sheet, rowNum);
+            addDataCell(row, COL_CHPL_ID, listing.getChplProductNumber());
+            addDataCell(row, COL_SURV_ID, surv.getFriendlyId());
+            addDataCell(row, COL_SURV_ACTIVITY_TRACKER, listing.getChplProductNumber() + surv.getFriendlyId());
+            //chpl generated i think once we associate a complaint with surveillance?
+            addDataCell(row, COL_RELATED_COMPLAINT, "");
+            if (determineIfSurveillanceHappenedDuringQuarter("Q1", quarterlyReports, surv)) {
+                addDataCell(row, COL_Q1, "X");
+            }
+            if (determineIfSurveillanceHappenedDuringQuarter("Q2", quarterlyReports, surv)) {
+                addDataCell(row, COL_Q2, "X");
+            }
+            if (determineIfSurveillanceHappenedDuringQuarter("Q3", quarterlyReports, surv)) {
+                addDataCell(row, COL_Q3, "X");
+            }
+            if (determineIfSurveillanceHappenedDuringQuarter("Q4", quarterlyReports, surv)) {
+                addDataCell(row, COL_Q4, "X");
+            }
+            addDataCell(row, COL_CERT_EDITION, listing.getCertificationEdition().get("name").toString());
+            addDataCell(row, COL_DEVELOPER_NAME, listing.getDeveloper().getName());
+            addDataCell(row, COL_PRODUCT_NAME, listing.getProduct().getName());
+            addDataCell(row, COL_PRODUCT_VERSION, listing.getVersion().getVersion());
+            //user has to enter this field
+            addDataCell(row, COL_K1_REVIEWED, "");
+            addDataCell(row, COL_SURV_TYPE, surv.getType().getName());
+            addDataCell(row, COL_SURV_LOCATION_COUNT,
+                    surv.getRandomizedSitesUsed() == null ? "" : surv.getRandomizedSitesUsed().toString());
+            addDataCell(row, COL_SURV_BEGIN, dateFormatter.format(surv.getStartDate()));
+            addDataCell(row, COL_SURV_END, surv.getEndDate() == null ? "" : dateFormatter.format(surv.getEndDate()));
+            //user has to enter this field
+            addDataCell(row, COL_SURV_OUTCOME, "");
+            addDataCell(row, COL_NONCONFORMITY_TYPES_RESULTANT, determineNonconformityTypes(surv));
+            addDataCell(row, COL_CERT_STATUS_RESULTANT, determineResultantCertificationStatus(listing, surv));
+            addDataCell(row, COL_SUSPENDED, determineSuspendedStatus(listing, surv));
+            //user has to enter this field
+            addDataCell(row, COL_SURV_PROCESS_TYPE, "");
+            pt.drawBorders(new CellRangeAddress(rowNum, rowNum, 1, LAST_DATA_COLUMN - 1),
+                    BorderStyle.HAIR, BorderExtent.HORIZONTAL);
+            addedRows++;
+            rowNum++;
         }
         return addedRows;
     }
@@ -473,7 +492,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
             if (nonconformityTypes.size() > 2 && i < (nonconformityTypes.size()-2)) {
                 buf.append(", ");
             } else if (nonconformityTypes.size() > 2 && i == (nonconformityTypes.size()-2)) {
-                buf.append(" and ");
+                buf.append(", and ");
             }
             i++;
         }

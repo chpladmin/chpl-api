@@ -1,12 +1,8 @@
 package gov.healthit.chpl.domain.surveillance.report;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.CertifiedProduct;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 
 public class QuarterlyReport implements Serializable {
@@ -20,10 +16,8 @@ public class QuarterlyReport implements Serializable {
     private String reactiveSummary;
     private String prioritizedElementSummary;
     private String transparencyDisclosureSummary;
-    private List<CertifiedProduct> relevantListings;
 
     public QuarterlyReport() {
-        relevantListings = new ArrayList<CertifiedProduct>();
     }
 
     public QuarterlyReport(final QuarterlyReportDTO dto) {
@@ -39,11 +33,6 @@ public class QuarterlyReport implements Serializable {
         }
         if (dto.getAcb() != null) {
             this.acb = new CertificationBody(dto.getAcb());
-        }
-        if (dto.getRelevantListings() != null && dto.getRelevantListings().size() > 0) {
-            for (CertifiedProductDetailsDTO relevantListingDto : dto.getRelevantListings()) {
-                this.relevantListings.add(new CertifiedProduct(relevantListingDto));
-            }
         }
     }
 
@@ -109,13 +98,5 @@ public class QuarterlyReport implements Serializable {
 
     public void setTransparencyDisclosureSummary(final String transparencyDisclosureSummary) {
         this.transparencyDisclosureSummary = transparencyDisclosureSummary;
-    }
-
-    public List<CertifiedProduct> getRelevantListings() {
-        return relevantListings;
-    }
-
-    public void setRelevantListings(List<CertifiedProduct> relevantListings) {
-        this.relevantListings = relevantListings;
     }
 }

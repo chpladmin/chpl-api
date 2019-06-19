@@ -2,12 +2,14 @@ package gov.healthit.chpl.builder;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbookFactory;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 
@@ -30,15 +32,27 @@ public class AnnualReportBuilderXlsx {
 
         if (quarterlyReports != null && quarterlyReports.size() > 0) {
             //order the quarterly reports by date so they show up in the right order in each sheet
-            QuarterlyReportDTO[] sortedQuarterlyReports = quarterlyReports.toArray(new QuarterlyReportDTO[0]);
-            Arrays.sort(sortedQuarterlyReports);
-            List<QuarterlyReportDTO> sortedQuarterlyReportList = Arrays.asList(sortedQuarterlyReports);
+            quarterlyReports.sort(new Comparator<QuarterlyReportDTO>() {
+                @Override
+                public int compare(final QuarterlyReportDTO o1, final QuarterlyReportDTO o2) {
+                    if (o1.getStartDate() == null || o2.getStartDate() == null) {
+                        return 0;
+                    }
+                    if (o1.getStartDate().getTime() < o2.getStartDate().getTime()) {
+                        return -1;
+                    }
+                    if (o1.getStartDate().getTime() > o2.getStartDate().getTime()) {
+                        return 1;
+                    }
+                    return 0;
+                }
+            });
 
             ReportInfoWorksheetBuilder reportInfoBuilder = new ReportInfoWorksheetBuilder(workbook);
-            reportInfoBuilder.buildWorksheet(sortedQuarterlyReportList);
+            reportInfoBuilder.buildWorksheet(quarterlyReports);
             ActivitiesAndOutcomesWorksheetBuilder activitiesAndOutcomesBuilder =
                     new ActivitiesAndOutcomesWorksheetBuilder(workbook);
-            activitiesAndOutcomesBuilder.buildWorksheet(sortedQuarterlyReportList, relevantListings);
+            activitiesAndOutcomesBuilder.buildWorksheet(quarterlyReports, relevantListings);
             createComplaintsWorksheet(workbook);
         }
         SurveillanceSummaryWorksheetBuilder survSummaryBuilder = new SurveillanceSummaryWorksheetBuilder(workbook);

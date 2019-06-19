@@ -24,9 +24,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.surveillance.report.AnnualReport;
 import gov.healthit.chpl.domain.surveillance.report.QuarterlyReport;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
@@ -207,6 +209,29 @@ public class SurveillanceReportController {
         }
         QuarterlyReportDTO reportDto = reportManager.getQuarterlyReport(quarterlyReportId);
         return new QuarterlyReport(reportDto);
+    }
+
+    @ApiOperation(value = "Get listings that are relevant to a specific quarterly report. "
+            + "These are listings that had surveillance during the quarter.",
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative "
+                    + "authority on the ACB associated with the report.")
+    @RequestMapping(value = "/quarterly/{quarterlyReportId}/listings",
+        method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<CertifiedProduct> getRelevantListings(@PathVariable final Long quarterlyReportId)
+            throws AccessDeniedException, EntityRetrievalException {
+        if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
+            throw new NotImplementedException();
+        }
+        QuarterlyReportDTO reportDto = reportManager.getQuarterlyReport(quarterlyReportId);
+        List<CertifiedProductDetailsDTO> relevantListingDtos = reportManager.getRelevantListings(reportDto);
+
+        List<CertifiedProduct> relevantListings = new ArrayList<CertifiedProduct>();
+        if (relevantListingDtos != null && relevantListingDtos.size() > 0) {
+            for (CertifiedProductDetailsDTO relevantListingDto : relevantListingDtos) {
+                relevantListings.add(new CertifiedProduct(relevantListingDto));
+            }
+        }
+        return relevantListings;
     }
 
     @ApiOperation(value = "Create a new quarterly surveillance report.",
