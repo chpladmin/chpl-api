@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -21,6 +22,8 @@ public interface SurveillanceReportManager {
     public List<AnnualReportDTO> getAnnualReports();
     public AnnualReportDTO getAnnualReport(Long id) throws EntityRetrievalException;
     public Workbook exportAnnualReport(Long id) throws EntityRetrievalException, IOException;
+    public JobDTO exportAnnualReportAsBackgroundJob(Long id)
+            throws EntityRetrievalException, EntityCreationException, UserRetrievalException, IOException;
 
     public QuarterlyReportDTO createQuarterlyReport(QuarterlyReportDTO toCreate)
             throws EntityCreationException, InvalidArgumentsException;
@@ -31,6 +34,6 @@ public interface SurveillanceReportManager {
     public List<CertifiedProductDetailsDTO> getRelevantListings(QuarterlyReportDTO report);
     public QuarterlyReportDTO getQuarterlyReport(Long id) throws EntityRetrievalException;
     public Workbook exportQuarterlyReport(Long id) throws EntityRetrievalException, IOException;
-    public void exportQuarterlyReportAsBackgroundJob(Long id)
-            throws EntityRetrievalException, UserRetrievalException, IOException;
+    public JobDTO exportQuarterlyReportAsBackgroundJob(Long id)
+            throws EntityRetrievalException, EntityCreationException, UserRetrievalException, IOException;
 }

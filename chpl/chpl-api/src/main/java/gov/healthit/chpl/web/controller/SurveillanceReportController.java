@@ -1,9 +1,6 @@
 package gov.healthit.chpl.web.controller;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,9 +9,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,19 +23,21 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertifiedProduct;
+import gov.healthit.chpl.domain.Job;
 import gov.healthit.chpl.domain.surveillance.report.AnnualReport;
 import gov.healthit.chpl.domain.surveillance.report.QuarterlyReport;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.SurveillanceReportManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.util.FileUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -47,14 +47,11 @@ import io.swagger.annotations.ApiOperation;
 public class SurveillanceReportController {
 
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceReportController.class);
-    private static final String XLSX_MIME_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
     @Autowired
     private ErrorMessageUtil msgUtil;
     @Autowired
     private SurveillanceReportManager reportManager;
-    @Autowired
-    private FileUtils fileUtils;
     @Autowired
     private FF4j ff4j;
 
@@ -149,36 +146,22 @@ public class SurveillanceReportController {
         reportManager.deleteAnnualReport(annualReportId);
     }
 
-    @ApiOperation(value = "Download an annaul report as an XLSX file.",
+
+    @ApiOperation(value = "Generates an annual report as an XLSX file as a background job "
+            + "and emails the report to the logged in user",
             notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative authority "
                     + "on the ACB associated with the report.")
     @RequestMapping(value = "/export/annual/{annualReportId}", method = RequestMethod.GET)
-    public void exportAnnualReport(@PathVariable("annualReportId") final Long annualReportId,
-            final HttpServletResponse response) throws EntityRetrievalException, IOException {
+    public ResponseEntity<Job> exportAnnualReport(@PathVariable("annualReportId") final Long annualReportId,
+            final HttpServletResponse response) throws EntityRetrievalException, UserRetrievalException,
+            EntityCreationException, IOException {
         if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
             throw new NotImplementedException();
         }
 
-        //create the excel workbook object
-        Workbook reportXlsx = reportManager.exportAnnualReport(annualReportId);
-
-        //create a new file in the download directory
-        AnnualReportDTO report = reportManager.getAnnualReport(annualReportId);
-        String filename = report.getYear() + "-" + report.getAcb().getName() + "-annual-report";
-        File tempFileToStream = File.createTempFile(filename, ".xlsx");
-        //write out the workbook contents to this file
-        OutputStream outputStream = null;
-        try {
-            outputStream = new FileOutputStream(tempFileToStream);
-            reportXlsx.write(outputStream);
-        } catch (final Exception ex) {
-            LOGGER.error("Error writing excel document to file output stream.", ex);
-        } finally {
-            outputStream.flush();
-            outputStream.close();
-        }
-
-        fileUtils.streamFileAsResponse(tempFileToStream, XLSX_MIME_TYPE, response);
+        JobDTO exportJob = reportManager.exportAnnualReportAsBackgroundJob(annualReportId);
+        Job result = new Job(exportJob);
+        return new ResponseEntity<Job>(result, HttpStatus.OK);
     }
 
     @ApiOperation(value = "Get all quarterly surveillance reports this user has access to.",
@@ -302,36 +285,20 @@ public class SurveillanceReportController {
         reportManager.deleteQuarterlyReport(quarterlyReportId);
     }
 
-    @ApiOperation(value = "Download a quarterly report as an XLSX file.",
+    @ApiOperation(value = "Generates a quarterly report as an XLSX file as a background job "
+            + "and emails the report to the logged in user",
             notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative authority "
                     + "on the ACB associated with the report.")
     @RequestMapping(value = "/export/quarterly/{quarterlyReportId}", method = RequestMethod.GET)
-    public void exportQuarterlyReport(@PathVariable("quarterlyReportId") final Long quarterlyReportId,
-            final HttpServletResponse response) throws EntityRetrievalException, IOException {
+    public ResponseEntity<Job> exportQuarterlyReport(@PathVariable("quarterlyReportId") final Long quarterlyReportId,
+            final HttpServletResponse response) throws EntityRetrievalException, UserRetrievalException,
+            EntityCreationException, IOException {
         if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
             throw new NotImplementedException();
         }
 
-        //create the excel workbook object
-        Workbook reportXlsx = reportManager.exportQuarterlyReport(quarterlyReportId);
-
-        //create a new file in the download directory
-        QuarterlyReportDTO report = reportManager.getQuarterlyReport(quarterlyReportId);
-        String filename = report.getQuarter().getName() + "-" + report.getYear()
-                    + "-" + report.getAcb().getName() + "-quarterly-report";
-        File tempFileToStream = File.createTempFile(filename, ".xlsx");
-        //write out the workbook contents to this file
-        OutputStream outputStream = null;
-        try {
-            outputStream = new FileOutputStream(tempFileToStream);
-            reportXlsx.write(outputStream);
-        } catch (final Exception ex) {
-            LOGGER.error("Error writing excel document to file output stream.", ex);
-        } finally {
-            outputStream.flush();
-            outputStream.close();
-        }
-
-        fileUtils.streamFileAsResponse(tempFileToStream, XLSX_MIME_TYPE, response);
+        JobDTO exportJob = reportManager.exportQuarterlyReportAsBackgroundJob(quarterlyReportId);
+        Job result = new Job(exportJob);
+        return new ResponseEntity<Job>(result, HttpStatus.OK);
     }
 }
