@@ -1,7 +1,9 @@
 package gov.healthit.chpl.entity;
 
 import java.util.Date;
+import java.util.Set;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -9,8 +11,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Where;
 
 @Entity
 @Table(name = "complaint")
@@ -83,6 +88,12 @@ public class ComplaintEntity {
 
     @Column(name = "deleted", nullable = false)
     private Boolean deleted;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "complaintId")
+    @Basic(optional = true)
+    @Column(name = "complaint_id", nullable = false)
+    @Where(clause = "deleted <> 'true'")
+    private Set<ComplaintListingMapEntity> listings;
 
     public Long getId() {
         return id;
@@ -250,6 +261,14 @@ public class ComplaintEntity {
 
     public void setComplaintStatusTypeId(Long complaintStatusTypeId) {
         this.complaintStatusTypeId = complaintStatusTypeId;
+    }
+
+    public Set<ComplaintListingMapEntity> getListings() {
+        return listings;
+    }
+
+    public void setListings(final Set<ComplaintListingMapEntity> listings) {
+        this.listings = listings;
     }
 
     @Override

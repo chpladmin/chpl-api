@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.ComplaintDAO;
 import gov.healthit.chpl.dao.ComplaintDTO;
 import gov.healthit.chpl.domain.KeyValueModel;
@@ -23,6 +24,8 @@ import gov.healthit.chpl.manager.ComplaintManager;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.manager.rules.complaints.ComplaintValidationContext;
 import gov.healthit.chpl.manager.rules.complaints.ComplaintValidationFactory;
+import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
 public class ComplaintManagerImpl extends SecuredManager implements ComplaintManager {
@@ -30,15 +33,21 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
 
     private ComplaintDAO complaintDAO;
     private ComplaintValidationFactory complaintValidationFactory;
+    private CertifiedProductDAO certifiedProductDAO;
+    private ChplProductNumberUtil chplProductNumberUtil;
+    private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
     public ComplaintManagerImpl(final ComplaintDAO complaintDAO,
-            final ComplaintValidationFactory complaintValidationFactory) {
+            final ComplaintValidationFactory complaintValidationFactory, final CertifiedProductDAO certifiedProductDAO,
+            final ChplProductNumberUtil chplProductNumberUtil, final ErrorMessageUtil errorMessageUtil) {
         this.complaintDAO = complaintDAO;
         this.complaintValidationFactory = complaintValidationFactory;
+        this.certifiedProductDAO = certifiedProductDAO;
+        this.chplProductNumberUtil = chplProductNumberUtil;
+        this.errorMessageUtil = errorMessageUtil;
     }
 
-    @Override
     @Transactional
     public Set<KeyValueModel> getComplaintTypes() {
         List<ComplaintTypeDTO> complaintTypes = complaintDAO.getComplaintTypes();
@@ -136,6 +145,7 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.RECEIVED_DATE));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.ACB_COMPLAINT_ID));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.SUMMARY));
+        rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.LISTINGS));
         return runValidations(rules, dto);
     }
 
@@ -147,12 +157,14 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.RECEIVED_DATE));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.ACB_COMPLAINT_ID));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.SUMMARY));
+        rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.LISTINGS));
         return runValidations(rules, dto);
     }
 
     private List<String> runValidations(List<ValidationRule<ComplaintValidationContext>> rules, ComplaintDTO dto) {
         List<String> errorMessages = new ArrayList<String>();
-        ComplaintValidationContext context = new ComplaintValidationContext(dto, complaintDAO);
+        ComplaintValidationContext context = new ComplaintValidationContext(dto, complaintDAO, certifiedProductDAO,
+                errorMessageUtil, chplProductNumberUtil);
 
         for (ValidationRule<ComplaintValidationContext> rule : rules) {
             if (!rule.isValid(context)) {
