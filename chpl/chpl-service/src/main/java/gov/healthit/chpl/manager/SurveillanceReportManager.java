@@ -11,6 +11,7 @@ import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 
 public interface SurveillanceReportManager {
     public AnnualReportDTO createAnnualReport(AnnualReportDTO toCreate)
@@ -30,4 +31,6 @@ public interface SurveillanceReportManager {
     public List<CertifiedProductDetailsDTO> getRelevantListings(QuarterlyReportDTO report);
     public QuarterlyReportDTO getQuarterlyReport(Long id) throws EntityRetrievalException;
     public Workbook exportQuarterlyReport(Long id) throws EntityRetrievalException, IOException;
+    public void exportQuarterlyReportAsBackgroundJob(Long id)
+            throws EntityRetrievalException, UserRetrievalException, IOException;
 }

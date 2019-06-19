@@ -26,19 +26,28 @@ import gov.healthit.chpl.dao.surveillance.report.QuarterlyReportDAO;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.Job;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.Surveillance;
+import gov.healthit.chpl.domain.SurveillanceUploadResult;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.dto.job.JobDTO;
+import gov.healthit.chpl.dto.job.JobTypeDTO;
 import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
+import gov.healthit.chpl.manager.JobManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.manager.SurveillanceReportManager;
+import gov.healthit.chpl.manager.auth.UserManager;
+import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Service
@@ -47,6 +56,8 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
 
     private CertifiedProductDetailsManager detailsManager;
     private SurveillanceManager survManager;
+    private UserManager userManager;
+    private JobManager jobManager;
     private QuarterlyReportDAO quarterlyDao;
     private AnnualReportDAO annualDao;
     private QuarterDAO quarterDao;
@@ -57,11 +68,14 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
 
     @Autowired
     public SurveillanceReportManagerImpl(final CertifiedProductDetailsManager detailsManager,
-            final SurveillanceManager survManager, final QuarterlyReportDAO quarterlyDao,
+            final SurveillanceManager survManager, final UserManager userManager,
+            final JobManager jobManager, final QuarterlyReportDAO quarterlyDao,
             final AnnualReportDAO annualDao, final QuarterDAO quarterDao,
             final CertifiedProductDAO listingDao, final ErrorMessageUtil msgUtil) {
         this.detailsManager = detailsManager;
         this.survManager = survManager;
+        this.userManager = userManager;
+        this.jobManager = jobManager;
         this.quarterlyDao = quarterlyDao;
         this.annualDao = annualDao;
         this.quarterDao = quarterDao;
@@ -294,6 +308,54 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
         return quarterlyReportBuilder.buildXlsx(report, relevantListingDetails);
     }
 
+    @Override
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).EXPORT_QUARTERLY, "
+            + "#id)")
+    public void exportQuarterlyReportAsBackgroundJob(final Long id)
+            throws EntityRetrievalException, UserRetrievalException, IOException {
+        // figure out the user
+        UserDTO currentUser = userManager.getById(AuthUtil.getCurrentUser().getId());
+
+        JobTypeDTO jobType = null;
+        List<JobTypeDTO> jobTypes = jobManager.getAllJobTypes();
+        for (JobTypeDTO jt : jobTypes) {
+            if (jt.getName().equalsIgnoreCase(allowedJobType.getName())) {
+                jobType = jt;
+            }
+        }
+
+        JobDTO toCreate = new JobDTO();
+        //job data is the quarterly report id
+        toCreate.setData(id.toString());
+        toCreate.setUser(currentUser);
+        toCreate.setJobType(jobType);
+        JobDTO insertedJob = jobManager.createJob(toCreate);
+        JobDTO createdJob = jobManager.getJobById(insertedJob.getId());
+
+        try {
+            boolean isStarted = jobManager.start(createdJob);
+            if (!isStarted) {
+                result.setJob(new Job(createdJob));
+                result.setJobStatus(SurveillanceUploadResult.NOT_STARTED);
+                return result;
+            } else {
+                createdJob = jobManager.getJobById(insertedJob.getId());
+            }
+        } catch (final EntityRetrievalException ex) {
+            LOGGER.error("Could not mark job " + createdJob.getId() + " as started.");
+            result.setJob(new Job(createdJob));
+            result.setJobStatus(SurveillanceUploadResult.ERROR);
+            return result;
+
+        }
+
+        // query the now running job
+        result.setJob(new Job(createdJob));
+        result.setJobStatus(SurveillanceUploadResult.STARTED);
+        return result;
+    }
     /**
      * The relevant listings objects in the quarterly report some have information about the listing
      * itself but not everything that is needed to build the reports.
