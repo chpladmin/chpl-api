@@ -161,27 +161,6 @@ public class SurveillanceReportControllerAnnualReportsTest {
 
     @Transactional
     @Rollback(true)
-    @Test
-    public void createReportAsAcbUserNotProvidingAcb() throws EntityCreationException, InvalidArgumentsException {
-        SecurityContextHolder.getContext().setAuthentication(acbUser);
-        Long acbId = -1L;
-        Integer year = 2019;
-        String obstacles = "some obstacled";
-        String findings = "some findings";
-
-        AnnualReport created = createReport(null, year, obstacles, findings);
-        assertNotNull(created);
-        assertNotNull(created.getAcb());
-        assertEquals(acbId, created.getAcb().getId());
-        assertEquals(year, created.getYear());
-        assertEquals(obstacles, created.getObstacleSummary());
-        assertEquals(findings, created.getPriorityChangesFromFindingsSummary());
-        assertNotNull(created.getId());
-        assertTrue(created.getId() > 0);
-    }
-
-    @Transactional
-    @Rollback(true)
     @Test(expected = AccessDeniedException.class)
     public void createReportAsAcbUserNotAllowedAcb() throws EntityCreationException, InvalidArgumentsException {
         SecurityContextHolder.getContext().setAuthentication(acbUser);
