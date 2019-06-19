@@ -1,14 +1,19 @@
 package gov.healthit.chpl.dao;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
 
+import gov.healthit.chpl.domain.ComplaintListingMap;
 import gov.healthit.chpl.domain.complaint.Complaint;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.ComplaintListingMapDTO;
 import gov.healthit.chpl.dto.ComplaintStatusTypeDTO;
 import gov.healthit.chpl.dto.ComplaintTypeDTO;
 import gov.healthit.chpl.entity.ComplaintEntity;
+import gov.healthit.chpl.entity.ComplaintListingMapEntity;
 
 public class ComplaintDTO {
     private Long id;
@@ -29,6 +34,7 @@ public class ComplaintDTO {
     private Date lastModifiedDate;
     private Long lastModifiedUser;
     private Boolean deleted;
+    private Set<ComplaintListingMapDTO> listings = new HashSet<ComplaintListingMapDTO>();
 
     public ComplaintDTO() {
 
@@ -36,6 +42,11 @@ public class ComplaintDTO {
 
     public ComplaintDTO(ComplaintEntity entity) {
         BeanUtils.copyProperties(entity, this);
+
+        listings = new HashSet<ComplaintListingMapDTO>();
+        for (ComplaintListingMapEntity clEntity : entity.getListings()) {
+            listings.add(new ComplaintListingMapDTO(clEntity));
+        }
 
         if (entity.getCertificationBody() != null) {
             this.certificationBody = new CertificationBodyDTO(entity.getCertificationBody());
@@ -50,6 +61,11 @@ public class ComplaintDTO {
 
     public ComplaintDTO(Complaint domain) {
         BeanUtils.copyProperties(domain, this);
+
+        listings = new HashSet<ComplaintListingMapDTO>();
+        for (ComplaintListingMap cl : domain.getListings()) {
+            listings.add(new ComplaintListingMapDTO(cl));
+        }
 
         if (domain.getCertificationBody() != null) {
             this.certificationBody = new CertificationBodyDTO(domain.getCertificationBody());
@@ -204,6 +220,14 @@ public class ComplaintDTO {
 
     public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public Set<ComplaintListingMapDTO> getListings() {
+        return listings;
+    }
+
+    public void setListings(Set<ComplaintListingMapDTO> listings) {
+        this.listings = listings;
     }
 
 }

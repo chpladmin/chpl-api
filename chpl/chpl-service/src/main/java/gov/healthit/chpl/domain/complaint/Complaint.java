@@ -1,11 +1,15 @@
 package gov.healthit.chpl.domain.complaint;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
 
 import gov.healthit.chpl.dao.ComplaintDTO;
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.ComplaintListingMap;
+import gov.healthit.chpl.dto.ComplaintListingMapDTO;
 
 public class Complaint {
     private Long id;
@@ -22,6 +26,7 @@ public class Complaint {
     private boolean oncAtlContacted;
     private boolean flagForOncReview;
     private Date closedDate;
+    private Set<ComplaintListingMap> listings = new HashSet<ComplaintListingMap>();
 
     public Complaint() {
 
@@ -29,6 +34,12 @@ public class Complaint {
 
     public Complaint(ComplaintDTO dto) {
         BeanUtils.copyProperties(dto, this);
+
+        listings = new HashSet<ComplaintListingMap>();
+        for (ComplaintListingMapDTO clDTO : dto.getListings()) {
+            listings.add(new ComplaintListingMap(clDTO));
+        }
+
         this.certificationBody = new CertificationBody(dto.getCertificationBody());
         this.complaintStatusType = new ComplaintStatusType(dto.getComplaintStatusType());
         this.complaintType = new ComplaintType(dto.getComplaintType());
@@ -144,6 +155,14 @@ public class Complaint {
 
     public void setClosedDate(final Date closedDate) {
         this.closedDate = closedDate;
+    }
+
+    public Set<ComplaintListingMap> getListings() {
+        return listings;
+    }
+
+    public void setListings(final Set<ComplaintListingMap> listings) {
+        this.listings = listings;
     }
 
 }
