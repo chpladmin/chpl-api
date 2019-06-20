@@ -37,6 +37,8 @@ import gov.healthit.chpl.dto.job.JobTypeDTO;
 import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
+import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportExclusionDTO;
+import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportRelevantListingDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -60,7 +62,6 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
     private QuarterlyReportDAO quarterlyDao;
     private AnnualReportDAO annualDao;
     private QuarterDAO quarterDao;
-    private CertifiedProductDAO listingDao;
     private ErrorMessageUtil msgUtil;
     private QuarterlyReportBuilderXlsx quarterlyReportBuilder;
     private AnnualReportBuilderXlsx annualReportBuilder;
@@ -70,7 +71,7 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
             final SurveillanceManager survManager, final UserManager userManager,
             final JobManager jobManager, final QuarterlyReportDAO quarterlyDao,
             final AnnualReportDAO annualDao, final QuarterDAO quarterDao,
-            final CertifiedProductDAO listingDao, final ErrorMessageUtil msgUtil) {
+            final ErrorMessageUtil msgUtil) {
         this.detailsManager = detailsManager;
         this.survManager = survManager;
         this.userManager = userManager;
@@ -78,7 +79,6 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
         this.quarterlyDao = quarterlyDao;
         this.annualDao = annualDao;
         this.quarterDao = quarterDao;
-        this.listingDao = listingDao;
         this.msgUtil = msgUtil;
         this.quarterlyReportBuilder = new QuarterlyReportBuilderXlsx();
         this.annualReportBuilder = new AnnualReportBuilderXlsx();
@@ -162,13 +162,13 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
         List<CertifiedProductSearchDetails> relevantListingDetails =
                 new ArrayList<CertifiedProductSearchDetails>();
         for (QuarterlyReportDTO currReport : quarterlyReports) {
-            //get all of the surveillance details for the listings relevant to this report
+            //get all of thesurveillance details for the listings relevant to this report
             //the details object included on the quarterly report has some of the data that is needed
             //to build activities and outcomes worksheet but not all of it so we need to do
             //some other work to get the necessary data and put it all together
-            List<CertifiedProductDetailsDTO> relevantListings = getRelevantListings(currReport);
-            List<CertifiedProductDetailsDTO> missingListingDtos = new ArrayList<CertifiedProductDetailsDTO>();
-            for (CertifiedProductDetailsDTO listingFromReport : relevantListings) {
+            List<QuarterlyReportRelevantListingDTO> qrRelevantListings = getRelevantListings(currReport);
+            List<QuarterlyReportRelevantListingDTO> missingListingDtos = new ArrayList<QuarterlyReportRelevantListingDTO>();
+            for (QuarterlyReportRelevantListingDTO listingFromReport : qrRelevantListings) {
                 boolean alreadyGotDetails = false;
                 for (CertifiedProductSearchDetails existingDetails : relevantListingDetails) {
                     if (listingFromReport.getId() != null && existingDetails.getId() != null
@@ -258,6 +258,44 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
     @Override
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).CREATE_QUARTERLY, #report)")
+    public QuarterlyReportExclusionDTO createQuarterlyReportExclusion(final QuarterlyReportDTO report,
+            final Long listingId, final String reason)
+            throws EntityCreationException, InvalidArgumentsException {
+        //make sure there's not already an exclusion for this report and listing
+        QuarterlyReportExclusionDTO existingExclusion =
+                quarterlyDao.getExclusion(report.getId(), listingId);
+        if (existingExclusion != null) {
+            throw new EntityCreationException(
+                    msgUtil.getMessage("report.quarterlySurveillance.exclusion.exists", report.getQuarter().getName(), listingId));
+        }
+
+        //confirm that the specified listing is relevant to the report
+        boolean isRelevant = false;
+        List<QuarterlyReportRelevantListingDTO> relevantListings =
+                quarterlyDao.getRelevantListings(report.getAcb().getId(), report.getStartDate(), report.getEndDate());
+        for (QuarterlyReportRelevantListingDTO relevantListing : relevantListings) {
+            if (relevantListing.getId() != null && listingId != null
+                    && relevantListing.getId().longValue() == listingId) {
+                isRelevant = true;
+            }
+        }
+        if (!isRelevant) {
+            throw new EntityCreationException(
+                    msgUtil.getMessage("report.quarterlySurveillance.exclusion.notRelevant", report.getQuarter().getName(), listingId));
+        }
+
+        QuarterlyReportExclusionDTO toCreate = new QuarterlyReportExclusionDTO();
+        toCreate.setQuarterlyReportId(report.getId());
+        toCreate.setListingId(listingId);
+        toCreate.setReason(reason);
+        QuarterlyReportExclusionDTO created = quarterlyDao.createExclusion(toCreate);
+        return created;
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).UPDATE_QUARTERLY, #toUpdate)")
     public QuarterlyReportDTO updateQuarterlyReport(final QuarterlyReportDTO toUpdate)
     throws EntityRetrievalException {
@@ -268,9 +306,45 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
     @Override
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).UPDATE_QUARTERLY, #report)")
+    public QuarterlyReportExclusionDTO updateQuarterlyReportExclusion(final QuarterlyReportDTO report,
+            final Long listingId, final String reason) throws EntityRetrievalException {
+        //make sure there is already an exclusion for this report and listing
+        QuarterlyReportExclusionDTO existingExclusion =
+                quarterlyDao.getExclusion(report.getId(), listingId);
+        if (existingExclusion == null) {
+            throw new EntityRetrievalException(
+                    msgUtil.getMessage("report.quarterlySurveillance.exclusion.doesNotExist", report.getQuarter().getName(), listingId));
+        }
+
+        existingExclusion.setReason(reason);
+        QuarterlyReportExclusionDTO updated = quarterlyDao.updateExclusion(existingExclusion);
+        return updated;
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).DELETE_QUARTERLY, #id)")
     public void deleteQuarterlyReport(final Long id) throws EntityRetrievalException {
         quarterlyDao.delete(id);
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).DELETE_QUARTERLY, #report)")
+    public void deleteQuarterlyReportExclusion(final QuarterlyReportDTO report, final Long listingId)
+            throws EntityRetrievalException {
+        //make sure there is already an exclusion for this report and listing
+        QuarterlyReportExclusionDTO existingExclusion =
+                quarterlyDao.getExclusion(report.getId(), listingId);
+        if (existingExclusion == null) {
+            throw new EntityRetrievalException(
+                    msgUtil.getMessage("report.quarterlySurveillance.exclusion.doesNotExist", report.getQuarter().getName(), listingId));
+        }
+
+        quarterlyDao.deleteExclusion(existingExclusion.getId());
     }
 
     /**
@@ -297,14 +371,35 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
         return reports;
     }
 
+    /**
+     * Returns the listings that had open surveillance during the quarter
+     * included boolean fields about whether they are marked as excluded.
+     */
     @Override
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).GET_QUARTERLY,"
             + "#report)")
-    public List<CertifiedProductDetailsDTO> getRelevantListings(final QuarterlyReportDTO report) {
-        return listingDao.findByAcbWithOpenSurveillance(report.getAcb().getId(),
+    public List<QuarterlyReportRelevantListingDTO> getRelevantListings(final QuarterlyReportDTO report) {
+        List<QuarterlyReportRelevantListingDTO> relevantListings =
+                quarterlyDao.getRelevantListings(report.getAcb().getId(),
                             report.getStartDate(), report.getEndDate());
+        List<QuarterlyReportExclusionDTO> exclusions = quarterlyDao.getExclusions(report.getId());
+
+        //look at each relevant listing to see if it's been marked as excluded
+        List<QuarterlyReportRelevantListingDTO> results = new ArrayList<QuarterlyReportRelevantListingDTO>();
+        for (CertifiedProductDetailsDTO relevantListing : relevantListings) {
+            QuarterlyReportRelevantListingDTO qrRelevantListing = (QuarterlyReportRelevantListingDTO) relevantListing;
+            for (QuarterlyReportExclusionDTO exclusion : exclusions) {
+                if (exclusion.getListingId() != null && relevantListing.getId() != null
+                        && exclusion.getListingId().longValue() == relevantListing.getId().longValue()) {
+                    qrRelevantListing.setExcluded(true);
+                    qrRelevantListing.setExclusionReason(exclusion.getReason());
+                }
+            }
+            results.add(qrRelevantListing);
+        }
+        return results;
     }
 
     /**
@@ -328,7 +423,7 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
     public Workbook exportQuarterlyReport(final Long id) throws EntityRetrievalException,
         IOException {
         QuarterlyReportDTO report = getQuarterlyReport(id);
-        List<CertifiedProductDetailsDTO> relevantListings = getRelevantListings(report);
+        List<QuarterlyReportRelevantListingDTO> relevantListings = getRelevantListings(report);
         //get all of the surveillance details for the listings relevant to this report
         //the details object included on the quarterly report has some of the data that is needed
         //to build activities and outcomes worksheet but not all of it so we need to do
@@ -377,10 +472,10 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
      * @param report
      * @return
      */
-    private List<CertifiedProductSearchDetails> getRelevantListingDetails(final List<CertifiedProductDetailsDTO> listingDtos) {
+    private List<CertifiedProductSearchDetails> getRelevantListingDetails(final List<QuarterlyReportRelevantListingDTO> listingDtos) {
         List<CertifiedProductSearchDetails> relevantListingDetails =
                 new ArrayList<CertifiedProductSearchDetails>();
-        for (CertifiedProductDetailsDTO listingDetails : listingDtos) {
+        for (QuarterlyReportRelevantListingDTO listingDetails : listingDtos) {
             LOGGER.info("Creating CertifiedProductSearchDetails for listing " + listingDetails.getChplProductNumber());
             CertifiedProductSearchDetails completeListingDetails = new CertifiedProductSearchDetails();
             completeListingDetails.setId(listingDetails.getId());

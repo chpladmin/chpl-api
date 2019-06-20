@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
@@ -164,6 +165,7 @@ public class ChplProductNumberUtil {
      * @param certifiedProductId - Long
      * @return - String
      */
+    @Transactional
     public String generate(final Long certifiedProductId) {
         return chplProductNumberDAO.getChplProductNumber(certifiedProductId);
     }
