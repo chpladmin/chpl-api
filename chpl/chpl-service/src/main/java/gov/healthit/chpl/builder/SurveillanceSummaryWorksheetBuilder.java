@@ -68,7 +68,7 @@ public class SurveillanceSummaryWorksheetBuilder extends XlsxWorksheetBuilder {
     }
 
     private void addSurveillanceCounts(final Sheet sheet) {
-        Row row = createRow(sheet, 1);
+        Row row = getRow(sheet, 1);
         Cell cell = createCell(row, 1);
         cell.setCellStyle(rightAlignedTableHeadingStyle);
         cell.setCellValue("");
@@ -121,7 +121,7 @@ public class SurveillanceSummaryWorksheetBuilder extends XlsxWorksheetBuilder {
     }
 
     private void addComplaintsCounts(final Sheet sheet) {
-        Row row = createRow(sheet, 1);
+        Row row = getRow(sheet, 1);
         Cell cell = createCell(row, 6);
         cell.setCellStyle(rightAlignedTableHeadingStyle);
         cell.setCellValue("");
@@ -147,7 +147,7 @@ public class SurveillanceSummaryWorksheetBuilder extends XlsxWorksheetBuilder {
     }
 
     private void createSurveillanceCountsSubheadingRow(final Sheet sheet, final String text, final int rowNum) {
-        Row row = createRow(sheet, rowNum);
+        Row row = getRow(sheet, rowNum);
         Cell cell = createCell(row, 1);
         cell.setCellStyle(tableSubheadingStyle);
         cell.setCellValue(text);
@@ -164,7 +164,7 @@ public class SurveillanceSummaryWorksheetBuilder extends XlsxWorksheetBuilder {
 
     private void createSurveillanceCountsDataRow(final Sheet sheet, final String name,
             final int reactiveValue, final int randomziedValue, final int totalValue, final int rowNum) {
-        Row row = createRow(sheet, rowNum);
+        Row row = getRow(sheet, rowNum);
         Cell cell = createCell(row, 1);
         cell.setCellValue(name);
         cell = createCell(row, 2);
@@ -179,7 +179,7 @@ public class SurveillanceSummaryWorksheetBuilder extends XlsxWorksheetBuilder {
     }
 
     private void createComplaintCountsSubheadingRow(final Sheet sheet, final String text, final int rowNum) {
-        Row row = createRow(sheet, rowNum);
+        Row row = getRow(sheet, rowNum);
         Cell cell = createCell(row, 6);
         cell.setCellStyle(tableSubheadingStyle);
         cell.setCellValue(text);
@@ -191,7 +191,7 @@ public class SurveillanceSummaryWorksheetBuilder extends XlsxWorksheetBuilder {
     }
 
     private void createComplainCountsDataRow(final Sheet sheet, final String name, final int value, final int rowNum) {
-        Row row = createRow(sheet, rowNum);
+        Row row = getRow(sheet, rowNum);
         Cell cell = createCell(row, 6);
         cell.setCellValue(name);
         cell = createCell(row, 7);

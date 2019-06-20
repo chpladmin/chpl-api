@@ -17,9 +17,11 @@ public class QuarterlyReportDTO {
     private String prioritizedElementSummary;
     private String transparencyDisclosureSummary;
 
-    public QuarterlyReportDTO() {}
+    public QuarterlyReportDTO() {
+    }
 
     public QuarterlyReportDTO(final QuarterlyReportEntity entity) {
+        this();
         this.id = entity.getId();
         this.year = entity.getYear();
         this.activitiesOutcomesSummary = entity.getActivitiesOutcomesSummary();
@@ -131,5 +133,4 @@ public class QuarterlyReportDTO {
     public void setTransparencyDisclosureSummary(final String transparencyDisclosureSummary) {
         this.transparencyDisclosureSummary = transparencyDisclosureSummary;
     }
-
 }

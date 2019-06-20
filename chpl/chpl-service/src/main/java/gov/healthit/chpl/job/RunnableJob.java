@@ -1,7 +1,9 @@
 package gov.healthit.chpl.job;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.mail.MessagingException;
 
@@ -94,6 +96,17 @@ public class RunnableJob implements Runnable {
      */
     @Transactional
     public void complete() {
+        complete(null);
+    }
+
+    /**
+     * Create an email to send to the user responsible for this job. Email
+     * should say the job is done and include any status or messages from the
+     * job execution.
+     * May specify a list of attachments to be included in the email.
+     */
+    @Transactional
+    public void complete(final List<File> emailAttachments) {
         updateStatus(100, JobStatusType.Complete);
 
         JobDTO completedJob = jobDao.getById(this.job.getId());
@@ -136,6 +149,7 @@ public class RunnableJob implements Runnable {
             emailBuilder.recipients(new ArrayList<String>(Arrays.asList(to)))
                             .subject(subject)
                             .htmlMessage(htmlMessage.toString())
+                            .fileAttachments(emailAttachments)
                             .sendEmail();
         } catch (final MessagingException ex) {
             LOGGER.error("Error sending email " + ex.getMessage(), ex);

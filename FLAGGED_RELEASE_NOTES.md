@@ -17,5 +17,6 @@ _surveillance-reporting_
   * POST /surveillance-report/annual
   * PUT /surveillance-report/annual
   * DELETE /surveillance-report/annual/{id}
-* Added capability to export some annual report data as an XLSX spreadsheet.
+* Added capability to export some annual report data as an XLSX spreadsheet with a CHPL background job.
+* Added endpoint to get listings relevant to any quarterly report.
 
