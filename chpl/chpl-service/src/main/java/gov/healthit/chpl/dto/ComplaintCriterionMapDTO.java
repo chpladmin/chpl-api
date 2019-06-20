@@ -4,29 +4,31 @@ import java.util.Date;
 
 import org.springframework.beans.BeanUtils;
 
-import gov.healthit.chpl.domain.complaint.ComplaintListingMap;
-import gov.healthit.chpl.entity.ComplaintListingMapEntity;
+import gov.healthit.chpl.domain.complaint.ComplaintCriterionMap;
+import gov.healthit.chpl.entity.ComplaintCriterionMapEntity;
 
-public class ComplaintListingMapDTO {
+public class ComplaintCriterionMapDTO {
     private Long id;
     private Long complaintId;
-    private Long listingId;
+    private Long certificationCriterionId;
     private Date creationDate;
     private Date lastModifiedDate;
     private Long lastModifiedUser;
     private Boolean deleted;
-    private String chplProductNumber;
+    private CertificationCriterionDTO certificationCriterion;
 
-    public ComplaintListingMapDTO() {
+    public ComplaintCriterionMapDTO() {
 
     }
 
-    public ComplaintListingMapDTO(ComplaintListingMapEntity entity) {
+    public ComplaintCriterionMapDTO(ComplaintCriterionMapEntity entity) {
         BeanUtils.copyProperties(entity, this);
+        certificationCriterion = new CertificationCriterionDTO(entity.getCertificationCriterion());;
     }
 
-    public ComplaintListingMapDTO(ComplaintListingMap domain) {
+    public ComplaintCriterionMapDTO(ComplaintCriterionMap domain) {
         BeanUtils.copyProperties(domain, this);
+        certificationCriterion = new CertificationCriterionDTO(domain.getCertificationCriterion());
     }
 
     public Long getId() {
@@ -45,12 +47,12 @@ public class ComplaintListingMapDTO {
         this.complaintId = complaintId;
     }
 
-    public Long getListingId() {
-        return listingId;
+    public Long getCertificationCriterionId() {
+        return certificationCriterionId;
     }
 
-    public void setListingId(final Long listingId) {
-        this.listingId = listingId;
+    public void setCertificationCriterionId(final Long certificationCriterionId) {
+        this.certificationCriterionId = certificationCriterionId;
     }
 
     public Date getCreationDate() {
@@ -85,12 +87,11 @@ public class ComplaintListingMapDTO {
         this.deleted = deleted;
     }
 
-    public String getChplProductNumber() {
-        return chplProductNumber;
+    public CertificationCriterionDTO getCertificationCriterion() {
+        return certificationCriterion;
     }
 
-    public void setChplProductNumber(final String chplProductNumber) {
-        this.chplProductNumber = chplProductNumber;
+    public void setCertificationCriterion(CertificationCriterionDTO certificationCriterion) {
+        this.certificationCriterion = certificationCriterion;
     }
-
 }

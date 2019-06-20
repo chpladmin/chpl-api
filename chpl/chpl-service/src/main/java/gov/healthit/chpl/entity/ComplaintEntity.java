@@ -95,6 +95,12 @@ public class ComplaintEntity {
     @Where(clause = "deleted <> 'true'")
     private Set<ComplaintListingMapEntity> listings;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "complaintId")
+    @Basic(optional = true)
+    @Column(name = "complaint_id", nullable = false)
+    @Where(clause = "deleted <> 'true'")
+    private Set<ComplaintCriterionMapEntity> criteria;
+
     public Long getId() {
         return id;
     }
@@ -269,6 +275,14 @@ public class ComplaintEntity {
 
     public void setListings(final Set<ComplaintListingMapEntity> listings) {
         this.listings = listings;
+    }
+
+    public Set<ComplaintCriterionMapEntity> getCriteria() {
+        return criteria;
+    }
+
+    public void setCriteria(final Set<ComplaintCriterionMapEntity> criteria) {
+        this.criteria = criteria;
     }
 
     @Override

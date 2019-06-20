@@ -2,7 +2,7 @@ package gov.healthit.chpl.manager.rules.complaints;
 
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.ComplaintDAO;
-import gov.healthit.chpl.dao.ComplaintDTO;
+import gov.healthit.chpl.dto.ComplaintDTO;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 

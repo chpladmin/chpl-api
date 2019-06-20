@@ -2,6 +2,7 @@ package gov.healthit.chpl.dao;
 
 import java.util.List;
 
+import gov.healthit.chpl.dto.ComplaintDTO;
 import gov.healthit.chpl.dto.ComplaintStatusTypeDTO;
 import gov.healthit.chpl.dto.ComplaintTypeDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;

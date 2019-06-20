@@ -6,9 +6,9 @@ import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
 
-import gov.healthit.chpl.dao.ComplaintDTO;
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.ComplaintListingMap;
+import gov.healthit.chpl.dto.ComplaintCriterionMapDTO;
+import gov.healthit.chpl.dto.ComplaintDTO;
 import gov.healthit.chpl.dto.ComplaintListingMapDTO;
 
 public class Complaint {
@@ -27,6 +27,7 @@ public class Complaint {
     private boolean flagForOncReview;
     private Date closedDate;
     private Set<ComplaintListingMap> listings = new HashSet<ComplaintListingMap>();
+    private Set<ComplaintCriterionMap> criteria = new HashSet<ComplaintCriterionMap>();
 
     public Complaint() {
 
@@ -38,6 +39,11 @@ public class Complaint {
         listings = new HashSet<ComplaintListingMap>();
         for (ComplaintListingMapDTO clDTO : dto.getListings()) {
             listings.add(new ComplaintListingMap(clDTO));
+        }
+
+        criteria = new HashSet<ComplaintCriterionMap>();
+        for (ComplaintCriterionMapDTO criterionDTO : dto.getCriteria()) {
+            criteria.add(new ComplaintCriterionMap(criterionDTO));
         }
 
         this.certificationBody = new CertificationBody(dto.getCertificationBody());
@@ -163,6 +169,14 @@ public class Complaint {
 
     public void setListings(final Set<ComplaintListingMap> listings) {
         this.listings = listings;
+    }
+
+    public Set<ComplaintCriterionMap> getCriteria() {
+        return criteria;
+    }
+
+    public void setCriteria(Set<ComplaintCriterionMap> criteria) {
+        this.criteria = criteria;
     }
 
 }
