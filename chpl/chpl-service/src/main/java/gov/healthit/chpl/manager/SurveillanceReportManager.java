@@ -35,7 +35,7 @@ public interface SurveillanceReportManager {
     public QuarterlyReportExclusionDTO updateQuarterlyReportExclusion(QuarterlyReportDTO report,
             Long listingId, String reason) throws EntityRetrievalException;
     public void deleteQuarterlyReport(Long id) throws EntityRetrievalException;
-    public void deleteQuarterlyReportExclusion(QuarterlyReportDTO report, Long listingId) throws EntityRetrievalException;
+    public void deleteQuarterlyReportExclusion(Long reportId, Long listingId) throws EntityRetrievalException;
     public List<QuarterlyReportDTO> getQuarterlyReports();
     public List<QuarterlyReportDTO> getQuarterlyReports(Long acbId, Integer year);
     public List<QuarterlyReportRelevantListingDTO> getRelevantListings(QuarterlyReportDTO report);

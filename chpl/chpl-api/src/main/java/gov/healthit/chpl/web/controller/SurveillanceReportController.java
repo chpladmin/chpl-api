@@ -332,8 +332,7 @@ public class SurveillanceReportController {
         if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
             throw new NotImplementedException();
         }
-        QuarterlyReportDTO quarterlyReport = reportManager.getQuarterlyReport(quarterlyReportId);
-        reportManager.deleteQuarterlyReportExclusion(quarterlyReport, listingId);
+        reportManager.deleteQuarterlyReportExclusion(quarterlyReportId, listingId);
     }
 
     @ApiOperation(value = "Generates a quarterly report as an XLSX file as a background job "

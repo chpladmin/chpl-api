@@ -191,11 +191,11 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
      */
     @Override
     public QuarterlyReportExclusionDTO getExclusion(final Long quarterlyReportId, final Long listingId) {
-        String queryStr = "SELECT exclusions "
+        String queryStr = "SELECT exclusion "
                 + " FROM QuarterlyReportExcludedListingMapEntity exclusion "
                 + " WHERE exclusion.deleted = false "
                 + " AND exclusion.listingId = :listingId"
-                + " AND exclusions.quarterlyReportId = :quarterlyReportId";
+                + " AND exclusion.quarterlyReportId = :quarterlyReportId";
         Query query = entityManager.createQuery(queryStr);
         query.setParameter("listingId", listingId);
         query.setParameter("quarterlyReportId", quarterlyReportId);

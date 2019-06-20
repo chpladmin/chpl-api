@@ -282,7 +282,7 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
         }
         if (!isRelevant) {
             throw new EntityCreationException(
-                    msgUtil.getMessage("report.quarterlySurveillance.exclusion.notRelevant", report.getQuarter().getName(), listingId));
+                    msgUtil.getMessage("report.quarterlySurveillance.exclusion.notRelevant", listingId, report.getQuarter().getName()));
         }
 
         QuarterlyReportExclusionDTO toCreate = new QuarterlyReportExclusionDTO();
@@ -333,15 +333,15 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
     @Override
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
-            + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).DELETE_QUARTERLY, #report)")
-    public void deleteQuarterlyReportExclusion(final QuarterlyReportDTO report, final Long listingId)
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).DELETE_QUARTERLY, #reportId)")
+    public void deleteQuarterlyReportExclusion(final Long reportId, final Long listingId)
             throws EntityRetrievalException {
         //make sure there is already an exclusion for this report and listing
         QuarterlyReportExclusionDTO existingExclusion =
-                quarterlyDao.getExclusion(report.getId(), listingId);
+                quarterlyDao.getExclusion(reportId, listingId);
         if (existingExclusion == null) {
             throw new EntityRetrievalException(
-                    msgUtil.getMessage("report.quarterlySurveillance.exclusion.doesNotExist", report.getQuarter().getName(), listingId));
+                    msgUtil.getMessage("report.quarterlySurveillance.exclusion.doesNotExist", reportId, listingId));
         }
 
         quarterlyDao.deleteExclusion(existingExclusion.getId());

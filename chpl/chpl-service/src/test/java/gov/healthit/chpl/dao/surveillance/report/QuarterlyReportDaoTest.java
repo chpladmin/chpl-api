@@ -22,6 +22,7 @@ import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
+import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportExclusionDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import junit.framework.TestCase;
@@ -193,6 +194,67 @@ public class QuarterlyReportDaoTest extends TestCase {
         assertEquals(0, foundReports.size());
     }
 
+    @Test
+    @Rollback(true)
+    @Transactional
+    public void getExclusionsHasNone() throws EntityCreationException, EntityRetrievalException {
+        QuarterlyReportDTO report = createReport();
+        List<QuarterlyReportExclusionDTO> exclusions = quarterlyReportDao.getExclusions(report.getId());
+        assertNotNull(exclusions);
+        assertEquals(0, exclusions.size());
+    }
+
+    @Test
+    @Rollback(true)
+    @Transactional
+    public void getExclusions() throws EntityCreationException, EntityRetrievalException {
+        Long listingId = 1L;
+        String reason = "Test";
+        QuarterlyReportDTO report = createReport();
+        QuarterlyReportExclusionDTO createdExclusion = createExclusion(report.getId(), listingId, reason);
+        List<QuarterlyReportExclusionDTO> exclusions = quarterlyReportDao.getExclusions(report.getId());
+        assertNotNull(exclusions);
+        assertEquals(1, exclusions.size());
+        QuarterlyReportExclusionDTO foundExclusion = exclusions.get(0);
+        assertEquals(report.getId(), foundExclusion.getQuarterlyReportId());
+        assertEquals(listingId, foundExclusion.getListingId());
+        assertEquals(reason, foundExclusion.getReason());
+    }
+
+    @Test
+    @Rollback(true)
+    @Transactional
+    public void updateExclusionReason() throws EntityCreationException, EntityRetrievalException {
+        Long listingId = 1L;
+        String reason = "Test";
+        String updatedReason = "new test";
+        QuarterlyReportDTO report = createReport();
+        QuarterlyReportExclusionDTO createdExclusion = createExclusion(report.getId(), listingId, reason);
+        createdExclusion.setReason(updatedReason);
+        quarterlyReportDao.updateExclusion(createdExclusion);
+        List<QuarterlyReportExclusionDTO> exclusions = quarterlyReportDao.getExclusions(report.getId());
+        assertNotNull(exclusions);
+        assertEquals(1, exclusions.size());
+        QuarterlyReportExclusionDTO foundExclusion = exclusions.get(0);
+        assertEquals(report.getId(), foundExclusion.getQuarterlyReportId());
+        assertEquals(listingId, foundExclusion.getListingId());
+        assertEquals(updatedReason, foundExclusion.getReason());
+    }
+
+    @Test
+    @Rollback(true)
+    @Transactional
+    public void deleteExclusion() throws EntityCreationException, EntityRetrievalException {
+        Long listingId = 1L;
+        String reason = "Test";
+        QuarterlyReportDTO report = createReport();
+        QuarterlyReportExclusionDTO createdExclusion = createExclusion(report.getId(), listingId, reason);
+        quarterlyReportDao.deleteExclusion(createdExclusion.getId());
+        List<QuarterlyReportExclusionDTO> exclusions = quarterlyReportDao.getExclusions(report.getId());
+        assertNotNull(exclusions);
+        assertEquals(0, exclusions.size());
+    }
+
     private QuarterlyReportDTO createReport() throws EntityCreationException, EntityRetrievalException {
         return createReport(-1L, 2019, 1L);
     }
@@ -229,4 +291,21 @@ public class QuarterlyReportDaoTest extends TestCase {
         assertEquals(quarter.getId(), created.getQuarter().getId());
         return created;
     }
+
+    private QuarterlyReportExclusionDTO createExclusion(Long quarterlyReportId, Long listingId, String reason)
+            throws EntityCreationException {
+        QuarterlyReportExclusionDTO toCreate = new QuarterlyReportExclusionDTO();
+        toCreate.setQuarterlyReportId(quarterlyReportId);
+        toCreate.setListingId(listingId);
+        toCreate.setReason(reason);
+        QuarterlyReportExclusionDTO created = quarterlyReportDao.createExclusion(toCreate);
+        assertNotNull(created);
+        assertNotNull(created.getId());
+        assertTrue(created.getId().longValue() > 0);
+        assertEquals(quarterlyReportId, created.getQuarterlyReportId());
+        assertEquals(listingId, created.getListingId());
+        assertEquals(reason, created.getReason());
+        return created;
+    }
+
 }
