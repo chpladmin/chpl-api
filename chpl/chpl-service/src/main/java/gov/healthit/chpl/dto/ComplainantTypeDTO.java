@@ -4,11 +4,11 @@ import java.util.Date;
 
 import org.springframework.beans.BeanUtils;
 
-import gov.healthit.chpl.domain.complaint.ComplaintType;
-import gov.healthit.chpl.entity.ComplaintTypeEntity;
+import gov.healthit.chpl.domain.complaint.ComplainantType;
+import gov.healthit.chpl.entity.ComplainantTypeEntity;
 import gov.healthit.chpl.util.Util;
 
-public class ComplaintTypeDTO {
+public class ComplainantTypeDTO {
     private Long id;
     private String name;
     private String description;
@@ -17,10 +17,10 @@ public class ComplaintTypeDTO {
     private Long lastModifiedUser;
     private Boolean deleted;
 
-    public ComplaintTypeDTO() {
+    public ComplainantTypeDTO() {
     }
 
-    public ComplaintTypeDTO(final ComplaintTypeEntity entity) {
+    public ComplainantTypeDTO(final ComplainantTypeEntity entity) {
         this.id = entity.getId();
         this.name = entity.getName();
         this.creationDate = entity.getCreationDate();
@@ -29,7 +29,7 @@ public class ComplaintTypeDTO {
         this.deleted = entity.getDeleted();
     }
 
-    public ComplaintTypeDTO(final ComplaintType domain) {
+    public ComplainantTypeDTO(final ComplainantType domain) {
         BeanUtils.copyProperties(domain, this);
     }
 
