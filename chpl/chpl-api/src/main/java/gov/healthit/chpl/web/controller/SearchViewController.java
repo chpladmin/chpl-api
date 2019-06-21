@@ -1229,7 +1229,7 @@ public class SearchViewController {
     }
     
     @ApiOperation(value = "Get all possible complainant types in the CHPL")
-    @RequestMapping(value = "/data/complainant_types", method = RequestMethod.GET,
+    @RequestMapping(value = "/data/complainant-types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getComplainantTypes() {
@@ -1241,7 +1241,7 @@ public class SearchViewController {
     }
 
     @ApiOperation(value = "Get all possible complaint status types in the CHPL")
-    @RequestMapping(value = "/data/complaint_status_types", method = RequestMethod.GET,
+    @RequestMapping(value = "/data/complaint-status-types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getComplaintStatusTypes() {
