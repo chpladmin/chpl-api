@@ -4,6 +4,7 @@ import java.util.List;
 
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
@@ -132,5 +133,14 @@ public interface CertifiedProductDetailsManager {
      * @throws EntityRetrievalException when the certified product cannot be found
      */
     List<CertificationResult> getCertifiedProductCertificationResults(String chplProductNumber)
+            throws EntityRetrievalException;
+
+    /**
+     * Retrieves the certification status event history for the given listing based on CHPL ID.
+     * @param certifiedProductId
+     * @return
+     * @throws EntityRetrievalException
+     */
+    List<CertificationStatusEvent> getCertificationStatusEvents(Long certifiedProductId)
             throws EntityRetrievalException;
 }

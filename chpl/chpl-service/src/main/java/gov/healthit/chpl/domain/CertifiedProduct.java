@@ -54,7 +54,7 @@ public class CertifiedProduct implements Serializable {
     public CertifiedProduct() {
     }
 
-    public CertifiedProduct(CertifiedProductDetailsDTO dto) {
+    public CertifiedProduct(final CertifiedProductDetailsDTO dto) {
         this.id = dto.getId();
         if (!StringUtils.isEmpty(dto.getChplProductNumber())) {
             this.setChplProductNumber(dto.getChplProductNumber());

@@ -16,7 +16,8 @@ import gov.healthit.chpl.entity.ComplaintListingMapEntity;
 public class ComplaintDTO {
     private Long id;
     private CertificationBodyDTO certificationBody;
-    private ComplaintTypeDTO complaintType;
+    private ComplainantTypeDTO complainantType;
+    private String complainantTypeOther;
     private ComplaintStatusTypeDTO complaintStatusType;
     private String oncComplaintId;
     private String acbComplaintId;
@@ -55,8 +56,8 @@ public class ComplaintDTO {
         if (entity.getCertificationBody() != null) {
             this.certificationBody = new CertificationBodyDTO(entity.getCertificationBody());
         }
-        if (entity.getComplaintType() != null) {
-            this.complaintType = new ComplaintTypeDTO(entity.getComplaintType());
+        if (entity.getComplainantType() != null) {
+            this.complainantType = new ComplainantTypeDTO(entity.getComplainantType());
         }
         if (entity.getComplaintStatusType() != null) {
             this.complaintStatusType = new ComplaintStatusTypeDTO(entity.getComplaintStatusType());
@@ -79,8 +80,8 @@ public class ComplaintDTO {
         if (domain.getCertificationBody() != null) {
             this.certificationBody = new CertificationBodyDTO(domain.getCertificationBody());
         }
-        if (domain.getComplaintType() != null) {
-            this.complaintType = new ComplaintTypeDTO(domain.getComplaintType());
+        if (domain.getComplainantType() != null) {
+            this.complainantType = new ComplainantTypeDTO(domain.getComplainantType());
         }
         if (domain.getComplaintStatusType() != null) {
             this.complaintStatusType = new ComplaintStatusTypeDTO(domain.getComplaintStatusType());
@@ -103,12 +104,20 @@ public class ComplaintDTO {
         this.certificationBody = certificationBody;
     }
 
-    public ComplaintTypeDTO getComplaintType() {
-        return complaintType;
+    public ComplainantTypeDTO getComplainantType() {
+        return complainantType;
     }
 
-    public void setComplaintType(final ComplaintTypeDTO complaintType) {
-        this.complaintType = complaintType;
+    public void setComplainantType(final ComplainantTypeDTO complainantType) {
+        this.complainantType = complainantType;
+    }
+
+    public String getComplainantTypeOther() {
+        return complainantTypeOther;
+    }
+
+    public void setComplainantTypeOther(String complainantTypeOther) {
+        this.complainantTypeOther = complainantTypeOther;
     }
 
     public ComplaintStatusTypeDTO getComplaintStatusType() {

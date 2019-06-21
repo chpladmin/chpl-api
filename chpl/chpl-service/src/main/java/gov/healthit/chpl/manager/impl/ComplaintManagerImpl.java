@@ -15,9 +15,9 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.ComplaintDAO;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.complaint.Complaint;
+import gov.healthit.chpl.dto.ComplainantTypeDTO;
 import gov.healthit.chpl.dto.ComplaintDTO;
 import gov.healthit.chpl.dto.ComplaintStatusTypeDTO;
-import gov.healthit.chpl.dto.ComplaintTypeDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ComplaintManager;
@@ -48,11 +48,12 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
         this.errorMessageUtil = errorMessageUtil;
     }
 
+    @Override
     @Transactional
-    public Set<KeyValueModel> getComplaintTypes() {
-        List<ComplaintTypeDTO> complaintTypes = complaintDAO.getComplaintTypes();
+    public Set<KeyValueModel> getComplainantTypes() {
+        List<ComplainantTypeDTO> complaintTypes = complaintDAO.getComplainantTypes();
         Set<KeyValueModel> results = new HashSet<KeyValueModel>();
-        for (ComplaintTypeDTO complaintType : complaintTypes) {
+        for (ComplainantTypeDTO complaintType : complaintTypes) {
             results.add(new KeyValueModel(complaintType.getId(), complaintType.getName()));
         }
         return results;

@@ -18,6 +18,7 @@ import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.DefaultIndexedColorMap;
 import org.apache.poi.xssf.usermodel.XSSFColor;
+import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTCol;
 import org.springframework.util.StringUtils;
@@ -43,6 +44,10 @@ public abstract class XlsxWorksheetBuilder {
     public abstract int getLastDataColumn();
     public abstract int getLastDataRow();
 
+    public Sheet getSheet(final String sheetName) {
+        return getSheet(sheetName, null);
+    }
+
     /**
      * Get or create a new worksheet within the workbook.
      * Worksheets are identified by name.
@@ -55,11 +60,13 @@ public abstract class XlsxWorksheetBuilder {
             sheet = workbook.createSheet(sheetName);
             if (sheet instanceof XSSFSheet) {
                 XSSFSheet xssfSheet = (XSSFSheet) sheet;
-                DefaultIndexedColorMap colorMap = new DefaultIndexedColorMap();
-                XSSFColor xssfTabColor = new XSSFColor(tabColor, colorMap);
-                xssfSheet.setTabColor(xssfTabColor);
+                if (tabColor != null) {
+                    DefaultIndexedColorMap colorMap = new DefaultIndexedColorMap();
+                    XSSFColor xssfTabColor = new XSSFColor(tabColor, colorMap);
+                    xssfSheet.setTabColor(xssfTabColor);
+                }
 
-                //hide all the columns after E
+                //hide all the columns after the data
                 CTCol col = xssfSheet.getCTWorksheet().getColsArray(0).addNewCol();
                 col.setMin(getLastDataColumn());
                 col.setMax(DEFAULT_MAX_COLUMN); // the last column (1-indexed)
@@ -192,7 +199,7 @@ public abstract class XlsxWorksheetBuilder {
      * @param rowIndex
      * @return
      */
-    public Row createRow(final Sheet sheet, final int rowIndex) {
+    public Row getRow(final Sheet sheet, final int rowIndex) {
         Row row = sheet.getRow(rowIndex);
         if (row == null) {
             row = sheet.createRow(rowIndex);

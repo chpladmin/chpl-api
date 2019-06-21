@@ -34,6 +34,7 @@ import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.surveillance.report.QuarterlyReport;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -128,6 +129,28 @@ public class SurveillanceReportControllerQuarterlyReportsTest {
         assertEquals(trans, created.getTransparencyDisclosureSummary());
         assertNotNull(created.getId());
         assertTrue(created.getId() > 0);
+    }
+
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void createReport_GetRelevantListings() throws EntityRetrievalException,
+        EntityCreationException, InvalidArgumentsException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        Long acbId = -1L;
+        Integer year = 2019;
+        String quarter = "Q1";
+        String activities = "activities and outcomes";
+        String pri = "prioritized element summary";
+        String react = "reactive summary";
+        String trans = "transparency disclosure summary";
+
+        QuarterlyReport created = createReport(acbId, year, quarter, activities, pri, react, trans);
+        assertNotNull(created);
+        assertNotNull(created.getId());
+        assertTrue(created.getId() > 0);
+        List<CertifiedProduct> relevantListings = reportController.getRelevantListings(created.getId());
+        assertNotNull(relevantListings);
     }
 
     @Transactional

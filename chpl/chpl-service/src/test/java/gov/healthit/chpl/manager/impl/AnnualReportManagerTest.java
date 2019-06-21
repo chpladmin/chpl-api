@@ -3,6 +3,7 @@ package gov.healthit.chpl.manager.impl;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Workbook;
@@ -29,14 +30,26 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.dao.surveillance.report.AnnualReportDAO;
+import gov.healthit.chpl.domain.CertifiedProduct;
+import gov.healthit.chpl.domain.Surveillance;
+import gov.healthit.chpl.domain.SurveillanceNonconformity;
+import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;
+import gov.healthit.chpl.domain.SurveillanceRequirement;
+import gov.healthit.chpl.domain.SurveillanceRequirementType;
+import gov.healthit.chpl.domain.SurveillanceResultType;
+import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.manager.SurveillanceReportManager;
 import junit.framework.TestCase;
 
@@ -57,7 +70,16 @@ public class AnnualReportManagerTest extends TestCase {
     private SurveillanceReportManager reportManager;
 
     @Autowired
+    private SurveillanceManager survManager;
+
+    @Autowired
     private AnnualReportDAO annualReportDao;
+
+    @Autowired
+    private SurveillanceDAO survDao;
+
+    @Autowired
+    private CertifiedProductDAO cpDao;
 
     @Rule
     @Autowired
@@ -330,7 +352,11 @@ public class AnnualReportManagerTest extends TestCase {
         toCreate.setReactiveSummary("test reactive element summary");
         toCreate.setPrioritizedElementSummary("test prioritized element summary for Q1");
         toCreate.setTransparencyDisclosureSummary("test transparency and disclosure summary for Q1");
-        reportManager.createQuarterlyReport(toCreate);
+        QuarterlyReportDTO q1Report = reportManager.createQuarterlyReport(toCreate);
+
+        //create a surveillance to add to the report
+        //surv will start one day after the quarter begins
+        createSurveillance(1L, new Date(q1Report.getStartDate().getTime() + (24*60*60*1000)));
 
         quarter = new QuarterDTO();
         quarter.setName("Q2");
@@ -447,5 +473,65 @@ public class AnnualReportManagerTest extends TestCase {
         assertEquals(year, created.getYear());
         assertEquals(acb.getId(), created.getAcb().getId());
         return created;
+    }
+
+    private void createSurveillance(final Long listingId, final Date startDate) throws EntityRetrievalException {
+        Surveillance surv = new Surveillance();
+
+        CertifiedProductDTO cpDto = cpDao.getById(listingId);
+        CertifiedProduct cp = new CertifiedProduct();
+        cp.setId(cpDto.getId());
+        cp.setChplProductNumber(cp.getChplProductNumber());
+        cp.setEdition(cp.getEdition());
+        surv.setCertifiedProduct(cp);
+        surv.setStartDate(startDate);
+        surv.setRandomizedSitesUsed(10);
+        SurveillanceType type = survDao.findSurveillanceType("Randomized");
+        surv.setType(type);
+
+        SurveillanceRequirement req = new SurveillanceRequirement();
+        req.setRequirement("170.314 (a)(1)");
+        SurveillanceRequirementType reqType = survDao.findSurveillanceRequirementType("Certified Capability");
+        req.setType(reqType);
+        SurveillanceResultType resType = survDao.findSurveillanceResultType("No Non-Conformity");
+        req.setResult(resType);
+        surv.getRequirements().add(req);
+
+        SurveillanceRequirement req2 = new SurveillanceRequirement();
+        req2.setRequirement("170.314 (a)(2)");
+        reqType = survDao.findSurveillanceRequirementType("Certified Capability");
+        req2.setType(reqType);
+        resType = survDao.findSurveillanceResultType("Non-Conformity");
+        req2.setResult(resType);
+        surv.getRequirements().add(req2);
+
+        SurveillanceNonconformity nc = new SurveillanceNonconformity();
+        nc.setCapApprovalDate(new Date());
+        nc.setCapMustCompleteDate(new Date());
+        nc.setCapStartDate(new Date());
+        nc.setDateOfDetermination(new Date());
+        nc.setDeveloperExplanation("Something");
+        nc.setFindings("Findings!");
+        nc.setSitesPassed(2);
+        nc.setNonconformityType("170.314 (a)(2)");
+        nc.setSummary("summary");
+        nc.setTotalSites(5);
+        SurveillanceNonconformityStatus ncStatus = survDao.findSurveillanceNonconformityStatusType("Open");
+        nc.setStatus(ncStatus);
+        req2.getNonconformities().add(nc);
+
+        Long insertedId;
+        try {
+            insertedId = survManager.createSurveillance(-1L, surv);
+            assertNotNull(insertedId);
+            Surveillance got = survManager.getById(insertedId);
+            assertNotNull(got);
+            assertNotNull(got.getCertifiedProduct());
+            assertEquals(cpDto.getId(), got.getCertifiedProduct().getId());
+            assertEquals(cpDto.getChplProductNumber(), got.getCertifiedProduct().getChplProductNumber());
+            assertEquals(surv.getRandomizedSitesUsed(), got.getRandomizedSitesUsed());
+        } catch (Exception e) {
+            System.out.println(e.getClass() + ": " + e.getMessage());
+        }
     }
 }

@@ -21,6 +21,7 @@ public class QuarterlyReport implements Serializable {
     }
 
     public QuarterlyReport(final QuarterlyReportDTO dto) {
+        this();
         this.id = dto.getId();
         this.year = dto.getYear();
         this.surveillanceActivitiesAndOutcomes = dto.getActivitiesOutcomesSummary();

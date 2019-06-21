@@ -31,12 +31,6 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 
     @Override
-    //this annotation is here only because when this method gets called from InsertMissingSplitActivityJob
-    //it throws an exception about a transaction not existing on the flush() line near the bottom of this method.
-    //I can't figure out why... it's called from within another method marked transactional
-    //and the query for concept id works fine.
-    //Remove this annotation when InsertMissingSplitActivityJob is deleted.
-    @Transactional
     public ActivityDTO create(final ActivityDTO dto) throws EntityCreationException, EntityRetrievalException {
 
         //find the activity concept id for this concept

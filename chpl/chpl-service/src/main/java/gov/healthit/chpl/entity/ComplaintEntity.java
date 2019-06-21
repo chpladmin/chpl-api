@@ -34,11 +34,14 @@ public class ComplaintEntity {
     private Long certificationBodyId;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "complaint_type_id", insertable = false, updatable = false)
-    private ComplaintTypeEntity complaintType;
+    @JoinColumn(name = "complainant_type_id", insertable = false, updatable = false)
+    private ComplainantTypeEntity complainantType;
 
-    @Column(name = "complaint_type_id", nullable = false)
-    private Long complaintTypeId;
+    @Column(name = "complainant_type_other", nullable = true)
+    private String complainantTypeOther;
+
+    @Column(name = "complainant_type_id", nullable = false)
+    private Long complainantTypeId;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "complaint_status_type_id", insertable = false, updatable = false)
@@ -117,12 +120,20 @@ public class ComplaintEntity {
         this.certificationBody = certificationBody;
     }
 
-    public ComplaintTypeEntity getComplaintType() {
-        return complaintType;
+    public ComplainantTypeEntity getComplainantType() {
+        return complainantType;
     }
 
-    public void setComplaintType(final ComplaintTypeEntity complaintType) {
-        this.complaintType = complaintType;
+    public void setComplainantType(final ComplainantTypeEntity complainantType) {
+        this.complainantType = complainantType;
+    }
+
+    public String getComplainantTypeOther() {
+        return complainantTypeOther;
+    }
+
+    public void setComplainantTypeOther(final String complainantTypeOther) {
+        this.complainantTypeOther = complainantTypeOther;
     }
 
     public ComplaintStatusTypeEntity getComplaintStatusType() {
@@ -253,12 +264,12 @@ public class ComplaintEntity {
         this.certificationBodyId = certificationBodyId;
     }
 
-    public Long getComplaintTypeId() {
-        return complaintTypeId;
+    public Long getComplainantTypeId() {
+        return complainantTypeId;
     }
 
-    public void setComplaintTypeId(Long complaintTypeId) {
-        this.complaintTypeId = complaintTypeId;
+    public void setComplainantTypeId(Long complainantTypeId) {
+        this.complainantTypeId = complainantTypeId;
     }
 
     public Long getComplaintStatusTypeId() {
@@ -287,12 +298,12 @@ public class ComplaintEntity {
 
     @Override
     public String toString() {
-        return "ComplaintEntity [id=" + id + ", certificationBody=" + certificationBody + ", complaintType="
-                + complaintType + ", complaintStatusType=" + complaintStatusType + ", oncComplaintId=" + oncComplaintId
-                + ", acbComplaintId=" + acbComplaintId + ", receivedDate=" + receivedDate + ", summary=" + summary
-                + ", actions=" + actions + ", complainantContacted=" + complainantContacted + ", developerContacted="
-                + developerContacted + ", oncAtlContacted=" + oncAtlContacted + ", closedDate=" + closedDate
-                + ", creationDate=" + creationDate + ", lastModifiedDate=" + lastModifiedDate + ", lastModifiedUser="
-                + lastModifiedUser + ", deleted=" + deleted + "]";
+        return "ComplaintEntity [id=" + id + ", certificationBody=" + certificationBody + ", complainantType="
+                + complainantType + ", complaintStatusType=" + complaintStatusType + ", oncComplaintId="
+                + oncComplaintId + ", acbComplaintId=" + acbComplaintId + ", receivedDate=" + receivedDate
+                + ", summary=" + summary + ", actions=" + actions + ", complainantContacted=" + complainantContacted
+                + ", developerContacted=" + developerContacted + ", oncAtlContacted=" + oncAtlContacted
+                + ", closedDate=" + closedDate + ", creationDate=" + creationDate + ", lastModifiedDate="
+                + lastModifiedDate + ", lastModifiedUser=" + lastModifiedUser + ", deleted=" + deleted + "]";
     }
 }
