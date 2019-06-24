@@ -66,7 +66,7 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
     public List<ComplaintDTO> getAllComplaints() {
         Query query = entityManager.createQuery("SELECT DISTINCT c FROM ComplaintEntity c "
                 + "LEFT JOIN FETCH c.listings " + "LEFT JOIN FETCH c.criteria " + "JOIN FETCH c.certificationBody "
-                + "JOIN FETCH c.complainamtType " + "JOIN FETCH c.complaintStatusType " + "WHERE c.deleted = false ",
+                + "JOIN FETCH c.complainantType " + "JOIN FETCH c.complaintStatusType " + "WHERE c.deleted = false ",
                 ComplaintEntity.class);
         List<ComplaintEntity> results = query.getResultList();
 
