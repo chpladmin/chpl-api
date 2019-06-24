@@ -1252,8 +1252,8 @@ public class SearchViewController {
         return result;
     }
     
-    @ApiOperation(value = "Get all possible certifiecation criteria in the CHPL")
-    @RequestMapping(value = "/data/certification_criteria", method = RequestMethod.GET,
+    @ApiOperation(value = "Get all possible certification criteria in the CHPL")
+    @RequestMapping(value = "/data/certification-criteria", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertificationCriterionResults getCertificationCriteria() {
