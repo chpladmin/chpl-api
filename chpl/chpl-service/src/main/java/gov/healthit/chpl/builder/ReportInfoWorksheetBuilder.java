@@ -20,6 +20,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.PropertyTemplate;
 
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 
 public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
@@ -218,7 +219,8 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
         sheet.addMergedRegion(new CellRangeAddress(19, 19, 1, 3));
     }
 
-    private void createSectionFour(final Sheet sheet, final List<QuarterlyReportDTO> reports) {
+    private void createSectionFour(final Sheet sheet,
+            final List<QuarterlyReportDTO> reports) {
         Row row = sheet.createRow(21);
         Cell cell = createCell(row, 0);
         cell.setCellStyle(sectionNumberingStyle);

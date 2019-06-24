@@ -7,6 +7,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.ff4j.FF4j;
@@ -23,7 +24,6 @@ import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.Job;
 import gov.healthit.chpl.domain.surveillance.report.AnnualReport;
 import gov.healthit.chpl.domain.surveillance.report.QuarterlyReport;
-import gov.healthit.chpl.domain.surveillance.report.QuarterlyReportExclusion;
 import gov.healthit.chpl.domain.surveillance.report.RelevantListing;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.job.JobDTO;
@@ -248,22 +248,46 @@ public class SurveillanceReportController {
         return new QuarterlyReport(createdReport);
     }
 
-    @ApiOperation(value = "Marks one of the listings relevant to the specified quarterly surviellance report"
-            + "as 'excluded'.",
+    @ApiOperation(value = "Updates whether a relevant listing is marked as excluded from a quarterly "
+            + "report. If it's being excluded then the reason is required.",
             notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
                     + "authority on the ACB associated with the report.")
-    @RequestMapping(value = "/quarterly/{quarterlyReportId}/exclusion", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-    public synchronized QuarterlyReportExclusion addExclusion(@PathVariable final Long quarterlyReportId,
-        @RequestBody(required = true) final QuarterlyReportExclusion createExcludedListingRequest)
+    @RequestMapping(value = "/quarterly/{quarterlyReportId}/listings/{listingId}", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
+    public synchronized RelevantListing updateRelevantListing(@PathVariable final Long quarterlyReportId,
+            @PathVariable final Long listingId,
+            @RequestBody(required = true) final RelevantListing updateExclusionRequest)
                 throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException, EntityCreationException {
         if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
             throw new NotImplementedException();
         }
         QuarterlyReportDTO quarterlyReport = reportManager.getQuarterlyReport(quarterlyReportId);
-        QuarterlyReportExclusionDTO createdExclusion =
-                reportManager.createQuarterlyReportExclusion(quarterlyReport,
-                createExcludedListingRequest.getListingId(), createExcludedListingRequest.getReason());
-        return new QuarterlyReportExclusion(createdExclusion);
+        if (updateExclusionRequest.isExcluded() && StringUtils.isEmpty(updateExclusionRequest.getReason())) {
+            throw new InvalidArgumentsException(
+                    msgUtil.getMessage("report.quarterlySurveillance.exclusion.missingReason", quarterlyReport.getQuarter().getName()));
+        }
+
+        //see if a current exclusion exists for this listing to determine if it's being
+        //newly created with this request or just updated
+        QuarterlyReportExclusionDTO existingExclusion = reportManager.getExclusion(quarterlyReport, listingId);
+        if (existingExclusion == null && updateExclusionRequest.isExcluded()) {
+            //no existing exclusion - create one
+            reportManager.createQuarterlyReportExclusion(quarterlyReport, listingId,
+                    updateExclusionRequest.getReason());
+        } else if (existingExclusion != null && updateExclusionRequest.isExcluded()) {
+            //found existing exclusion for this listing - update the reason
+            reportManager.updateQuarterlyReportExclusion(quarterlyReport, listingId, updateExclusionRequest.getReason());
+        } else if (existingExclusion != null && !updateExclusionRequest.isExcluded()) {
+            reportManager.deleteQuarterlyReportExclusion(quarterlyReportId, listingId);
+        }
+
+        //get the relevant listing with its new exclusion fields
+        QuarterlyReportRelevantListingDTO updatedRelevantListing =
+                reportManager.getRelevantListing(quarterlyReport, listingId);
+        RelevantListing result = null;
+        if (updatedRelevantListing != null) {
+            result = new RelevantListing(updatedRelevantListing);
+        }
+        return result;
     }
 
     @ApiOperation(value = "Update an existing quarterly surveillance report.",
@@ -290,24 +314,6 @@ public class SurveillanceReportController {
         return new QuarterlyReport(createdReport);
     }
 
-    @ApiOperation(value = "Updates the exclusion reason for a listing that's already marked as excluded "
-            + "from a quarterly surveillance report.",
-            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
-                    + "authority on the ACB associated with the report.")
-    @RequestMapping(value = "/quarterly/{quarterlyReportId}/exclusion", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
-    public synchronized QuarterlyReportExclusion updateExclusion(@PathVariable final Long quarterlyReportId,
-        @RequestBody(required = true) final QuarterlyReportExclusion updateExcludedListingRequest)
-                throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException, EntityCreationException {
-        if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
-            throw new NotImplementedException();
-        }
-        QuarterlyReportDTO quarterlyReport = reportManager.getQuarterlyReport(quarterlyReportId);
-        QuarterlyReportExclusionDTO updatedExclusion =
-                reportManager.updateQuarterlyReportExclusion(quarterlyReport,
-                        updateExcludedListingRequest.getListingId(), updateExcludedListingRequest.getReason());
-        return new QuarterlyReportExclusion(updatedExclusion);
-    }
-
     @ApiOperation(value = "Delete a quarterly report.",
             notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority "
             + "on the ACB associated with the report.")
@@ -319,20 +325,6 @@ public class SurveillanceReportController {
             throw new NotImplementedException();
         }
         reportManager.deleteQuarterlyReport(quarterlyReportId);
-    }
-
-    @ApiOperation(value = "Delete an excluded listing from a quarterly report.",
-            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority "
-            + "on the ACB associated with the report.")
-    @RequestMapping(value = "/quarterly/{quarterlyReportId}/exclusion/{listingId}",
-        method = RequestMethod.DELETE,
-        produces = "application/json; charset=utf-8")
-    public void deleteExclusion(@PathVariable final Long quarterlyReportId, @PathVariable final Long listingId)
-            throws EntityRetrievalException {
-        if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
-            throw new NotImplementedException();
-        }
-        reportManager.deleteQuarterlyReportExclusion(quarterlyReportId, listingId);
     }
 
     @ApiOperation(value = "Generates a quarterly report as an XLSX file as a background job "

@@ -19,7 +19,6 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.builder.AnnualReportBuilderXlsx;
 import gov.healthit.chpl.builder.QuarterlyReportBuilderXlsx;
-import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.surveillance.report.AnnualReportDAO;
 import gov.healthit.chpl.dao.surveillance.report.QuarterDAO;
 import gov.healthit.chpl.dao.surveillance.report.QuarterlyReportDAO;
@@ -271,15 +270,8 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
         }
 
         //confirm that the specified listing is relevant to the report
-        boolean isRelevant = false;
-        List<QuarterlyReportRelevantListingDTO> relevantListings =
-                quarterlyDao.getRelevantListings(report.getAcb().getId(), report.getStartDate(), report.getEndDate());
-        for (QuarterlyReportRelevantListingDTO relevantListing : relevantListings) {
-            if (relevantListing.getId() != null && listingId != null
-                    && relevantListing.getId().longValue() == listingId) {
-                isRelevant = true;
-            }
-        }
+        boolean isRelevant =
+                quarterlyDao.isListingRelevant(listingId, report.getStartDate(), report.getEndDate());
         if (!isRelevant) {
             throw new EntityCreationException(
                     msgUtil.getMessage("report.quarterlySurveillance.exclusion.notRelevant", listingId, report.getQuarter().getName()));
@@ -334,17 +326,17 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).DELETE_QUARTERLY, #reportId)")
-    public void deleteQuarterlyReportExclusion(final Long reportId, final Long listingId)
-            throws EntityRetrievalException {
+    public void deleteQuarterlyReportExclusion(final Long reportId, final Long listingId) {
         //make sure there is already an exclusion for this report and listing
         QuarterlyReportExclusionDTO existingExclusion =
                 quarterlyDao.getExclusion(reportId, listingId);
-        if (existingExclusion == null) {
-            throw new EntityRetrievalException(
-                    msgUtil.getMessage("report.quarterlySurveillance.exclusion.doesNotExist", reportId, listingId));
+        if (existingExclusion != null) {
+            try {
+                quarterlyDao.deleteExclusion(existingExclusion.getId());
+            } catch (EntityRetrievalException ex) {
+                LOGGER.error("No existing exclusion for ID " + existingExclusion.getId() + " could be deleted.");
+            }
         }
-
-        quarterlyDao.deleteExclusion(existingExclusion.getId());
     }
 
     /**
@@ -369,6 +361,45 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
     public List<QuarterlyReportDTO> getQuarterlyReports(final Long acbId, final Integer year) {
         List<QuarterlyReportDTO> reports = quarterlyDao.getByAcbAndYear(acbId, year);
         return reports;
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).GET_QUARTERLY,"
+            + "#report)")
+    public QuarterlyReportExclusionDTO getExclusion(final QuarterlyReportDTO report, final Long listingId) {
+        QuarterlyReportExclusionDTO existingExclusion =
+                quarterlyDao.getExclusion(report.getId(), listingId);
+        return existingExclusion;
+    }
+
+    /**
+     * Get the relevant listing object (including whether it is excluded and the reason)
+     * for a specific listing and dates.
+     * Returns null if the listing is not relevant during the dates.
+     * @param report
+     * @param listingId
+     * @return
+     */
+    @Override
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).GET_QUARTERLY,"
+            + "#report)")
+    public QuarterlyReportRelevantListingDTO getRelevantListing(final QuarterlyReportDTO report, final Long listingId) {
+        QuarterlyReportRelevantListingDTO relevantListing =
+                quarterlyDao.getRelevantListing(listingId, report.getStartDate(), report.getEndDate());
+        if (relevantListing != null) {
+            QuarterlyReportExclusionDTO existingExclusion =
+                    quarterlyDao.getExclusion(report.getId(), relevantListing.getId());
+            if (existingExclusion != null) {
+                relevantListing.setExcluded(true);
+                relevantListing.setExclusionReason(existingExclusion.getReason());
+            }
+        }
+
+        return relevantListing;
     }
 
     /**

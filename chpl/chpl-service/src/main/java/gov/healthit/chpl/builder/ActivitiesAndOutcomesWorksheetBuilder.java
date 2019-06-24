@@ -190,7 +190,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
           dvHelper.createFormulaListConstraint("BooleanList");
         XSSFDataValidation validation = (XSSFDataValidation) dvHelper.createValidation(dvConstraint, addressList);
         validation.setSuppressDropDownArrow(true);
-        validation.setShowErrorBox(true);
+        validation.setShowErrorBox(false);
         sheet.addValidationData(validation);
 
         //outcome is a dropdown list of choices
@@ -198,7 +198,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
         dvConstraint = (XSSFDataValidationConstraint) dvHelper.createFormulaListConstraint("SurveillanceOutcomeList");
         validation = (XSSFDataValidation) dvHelper.createValidation(dvConstraint, addressList);
         validation.setSuppressDropDownArrow(true);
-        validation.setShowErrorBox(true);
+        validation.setShowErrorBox(false);
         sheet.addValidationData(validation);
 
         //certification status is a dropdown list of choices
@@ -206,7 +206,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
         dvConstraint = (XSSFDataValidationConstraint) dvHelper.createFormulaListConstraint("StatusList");
         validation = (XSSFDataValidation) dvHelper.createValidation(dvConstraint, addressList);
         validation.setSuppressDropDownArrow(true);
-        validation.setShowErrorBox(true);
+        validation.setShowErrorBox(false);
         sheet.addValidationData(validation);
 
         //process type is a dropdown list of choices
@@ -214,7 +214,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
         dvConstraint = (XSSFDataValidationConstraint) dvHelper.createFormulaListConstraint("ProcessTypeList");
         validation = (XSSFDataValidation) dvHelper.createValidation(dvConstraint, addressList);
         validation.setSuppressDropDownArrow(true);
-        validation.setShowErrorBox(true);
+        validation.setShowErrorBox(false);
         sheet.addValidationData(validation);
 
         //suspended is a dropdown list of choices
@@ -222,7 +222,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
         dvConstraint = (XSSFDataValidationConstraint) dvHelper.createFormulaListConstraint("BooleanList");
         validation = (XSSFDataValidation) dvHelper.createValidation(dvConstraint, addressList);
         validation.setSuppressDropDownArrow(true);
-        validation.setShowErrorBox(true);
+        validation.setShowErrorBox(false);
         sheet.addValidationData(validation);
 
         //hide some rows the ACBs are not expected to fill out (columns D-I)

@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.poi.ss.usermodel.Workbook;
 
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
@@ -35,9 +34,11 @@ public interface SurveillanceReportManager {
     public QuarterlyReportExclusionDTO updateQuarterlyReportExclusion(QuarterlyReportDTO report,
             Long listingId, String reason) throws EntityRetrievalException;
     public void deleteQuarterlyReport(Long id) throws EntityRetrievalException;
-    public void deleteQuarterlyReportExclusion(Long reportId, Long listingId) throws EntityRetrievalException;
+    public void deleteQuarterlyReportExclusion(Long reportId, Long listingId);
     public List<QuarterlyReportDTO> getQuarterlyReports();
     public List<QuarterlyReportDTO> getQuarterlyReports(Long acbId, Integer year);
+    public QuarterlyReportExclusionDTO getExclusion(QuarterlyReportDTO report, Long listingId);
+    public QuarterlyReportRelevantListingDTO getRelevantListing(QuarterlyReportDTO report, Long listingId);
     public List<QuarterlyReportRelevantListingDTO> getRelevantListings(QuarterlyReportDTO report);
     public QuarterlyReportDTO getQuarterlyReport(Long id) throws EntityRetrievalException;
     public Workbook exportQuarterlyReport(Long id) throws EntityRetrievalException, IOException;

@@ -7,13 +7,10 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportExclusionDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportRelevantListingDTO;
@@ -23,7 +20,6 @@ import gov.healthit.chpl.entity.surveillance.report.QuarterlyReportExcludedListi
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
-import gov.healthit.chpl.util.ChplProductNumberUtil;
 
 @Repository("quarterlyReportDao")
 public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyReportDAO {
@@ -134,6 +130,27 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
     }
 
     /**
+     * Returns true if a listing has an open surveillance between startDate and endDate;
+     * false otherwise.
+     */
+    public boolean isListingRelevant(final Long listingId, final Date startDate, final Date endDate) {
+        String queryStr = "SELECT DISTINCT cp "
+                + "FROM CertifiedProductDetailsEntity cp, SurveillanceEntity surv "
+                + "WHERE cp.id = :listingId "
+                + "AND surv.certifiedProductId = cp.id "
+                + "AND cp.deleted = false "
+                + "AND surv.deleted = false "
+                + "AND surv.startDate <= :endDate "
+                + "AND (surv.endDate IS NULL OR surv.endDate >= :startDate)";
+        Query query = entityManager.createQuery(queryStr);
+        query.setParameter("listingId", listingId);
+        query.setParameter("startDate", startDate);
+        query.setParameter("endDate", endDate);
+        List<CertifiedProductDetailsEntity> entities = query.getResultList();
+        return entities != null && entities.size() > 0;
+    }
+
+    /**
      * Returns listings with at least one surveillance that was in an open state during a time interval.
      * @param acb return listings owned by this acb
      * @param startDate the beginning of the time interval to check for open surveillance
@@ -164,6 +181,34 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
             products.add(product);
         }
         return products;
+    }
+
+    /**
+     * Returns a relevant listing object if the listing is relevant during the dates specified.
+     * Otherwise returns null.
+     */
+    @Override
+    public QuarterlyReportRelevantListingDTO getRelevantListing(final Long listingId,
+            final Date startDate, final Date endDate) {
+        String queryStr = "SELECT DISTINCT cp "
+                + "FROM CertifiedProductDetailsEntity cp, SurveillanceEntity surv "
+                + "WHERE cp.id = :listingId "
+                + "AND surv.certifiedProductId = cp.id "
+                + "AND cp.deleted = false "
+                + "AND surv.deleted = false "
+                + "AND surv.startDate <= :endDate "
+                + "AND (surv.endDate IS NULL OR surv.endDate >= :startDate)";
+        Query query = entityManager.createQuery(queryStr);
+        query.setParameter("listingId", listingId);
+        query.setParameter("startDate", startDate);
+        query.setParameter("endDate", endDate);
+        List<CertifiedProductDetailsEntity> entities = query.getResultList();
+
+        QuarterlyReportRelevantListingDTO result = null;
+        if (entities != null && entities.size() > 0) {
+            result = new QuarterlyReportRelevantListingDTO(entities.get(0));
+        }
+        return result;
     }
 
     /**
