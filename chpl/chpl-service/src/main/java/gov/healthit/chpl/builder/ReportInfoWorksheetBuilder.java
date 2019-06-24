@@ -25,9 +25,9 @@ import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 
 public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
     private static final int LAST_DATA_COLUMN = 6;
-    private static final int LAST_DATA_ROW = 60;
     private static final int MIN_TEXT_AREA_LINES = 4;
     private PropertyTemplate pt;
+    private int lastDataRow = 0;
 
     public ReportInfoWorksheetBuilder(final Workbook workbook) {
         super(workbook);
@@ -41,7 +41,7 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
 
     @Override
     public int getLastDataRow() {
-        return LAST_DATA_ROW;
+        return lastDataRow;
     }
 
     /**
@@ -62,13 +62,14 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
         sheet.setColumnWidth(2,  getColumnWidth(42));
         sheet.setColumnWidth(3, getColumnWidth(42));
 
-        createHeader(sheet);
-        createSectionOne(sheet, reports);
-        createSectionTwo(sheet, reports);
-        createSectionThree(sheet, reports);
-        createSectionFour(sheet, reports);
-        createSectionFive(sheet, reports);
-        createSectionSix(sheet);
+        int nextRow = 1;
+        nextRow = createHeader(sheet, nextRow) + 1;
+        nextRow = createAcbSection(sheet, reports, nextRow) + 1;
+        nextRow = createReportingPeriodSection(sheet, reports, nextRow) + 1;
+        nextRow = createActivitiesAndOutcomesSection(sheet, reports, nextRow) + 1;
+        nextRow = createSelectingAndSamplingSection(sheet, reports, nextRow) + 1;
+        nextRow = createPrioritizedSurveillanceSection(sheet, reports, nextRow) + 1;
+        lastDataRow = createComplaintsSection(sheet, nextRow) + 1;
 
         //apply the borders after the sheet has been created
         pt.applyBorders(sheet);
@@ -76,21 +77,29 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
         return sheet;
     }
 
-    private void createHeader(final Sheet sheet) {
-        Row row = sheet.createRow(1);
+    /**
+     * Creates the header section and returns the row number of the last row that was added.
+     * @param sheet
+     * @return
+     */
+    private int createHeader(final Sheet sheet, final int beginRow) {
+        int currRow = beginRow;
+        Row row = sheet.createRow(currRow++);
         Cell cell = createCell(row, 1);
         cell.setCellStyle(boldStyle);
         cell.setCellValue("ONC-Authorized Certification Body (ONC-ACB) 2019 "
                 + "Report Template for Surveillance Results");
-        row = sheet.createRow(2);
+        row = sheet.createRow(currRow++);
         cell = createCell(row, 1);
         cell.setCellStyle(boldItalicSmallStyle);
         cell.setCellValue("Template Version: SR19-1.0");
-        row = sheet.createRow(4);
+        //skip a row on purpose
+        currRow++;
+        row = sheet.createRow(currRow++);
         cell = createCell(row, 1);
         cell.setCellStyle(italicSmallStyle);
         cell.setCellValue("Instructions");
-        row = sheet.createRow(5);
+        row = sheet.createRow(currRow++);
         cell = createCell(row, 1);
         cell.setCellStyle(topAlignedWrappedStyle);
         //increase row height to accommodate four lines of text
@@ -101,24 +110,27 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
                 + "to be used alongside Program Policy Resources #18-01, #18-02, and #18-03 (October 5, 2018), "
                 + "and each ONC-ACB's surveillance plan.\n\n"
                 + "Please fill out the boxes below each question and data requested in the included worksheets.");
-        sheet.addMergedRegion(new CellRangeAddress(5, 5, 1, 3));
+        sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
+        return row.getRowNum()+1;
     }
 
-    private void createSectionOne(final Sheet sheet, final List<QuarterlyReportDTO> reports) {
-        Row row = sheet.createRow(7);
+    private int createAcbSection(final Sheet sheet, final List<QuarterlyReportDTO> reports,
+            final int beginRow) {
+        int currRow = beginRow;
+        Row row = sheet.createRow(currRow++);
         Cell cell = createCell(row, 0);
         cell.setCellStyle(sectionNumberingStyle);
         cell.setCellValue("I.");
         cell = createCell(row, 1);
         cell.setCellStyle(sectionHeadingStyle);
         cell.setCellValue("Reporting ONC-ACB");
-        row = sheet.createRow(8);
+        row = sheet.createRow(currRow++);
         cell = createCell(row, 1);
         cell.setCellValue("This report is submitted by the below named ONC-ACB in "
                 + "accordance with 45 CFR § 170.523(i)(2) and 45 CFR § 170.556(e).");
-        sheet.addMergedRegion(new CellRangeAddress(8, 8, 1, 3));
+        sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
 
-        row = sheet.createRow(9);
+        row = sheet.createRow(currRow++);
         cell = createCell(row, 1);
         //make sure we start with a unique set of ACB names
         //and build the report's ACB name from that (in reality i think all acb names will be the same)
@@ -134,24 +146,27 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
             buf.append(acbName);
         }
         cell.setCellValue(buf.toString());
-        pt.drawBorders(new CellRangeAddress(9, 9, 1, 1),
+        pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 1),
                 BorderStyle.MEDIUM, BorderExtent.ALL);
+        return row.getRowNum()+1;
     }
 
-    private void createSectionTwo(final Sheet sheet, final List<QuarterlyReportDTO> reports) {
-        Row row = sheet.createRow(11);
+    private int createReportingPeriodSection(final Sheet sheet,
+            final List<QuarterlyReportDTO> reports, final int beginRow) {
+        int currRow = beginRow;
+        Row row = sheet.createRow(currRow++);
         Cell cell = createCell(row, 0);
         cell.setCellStyle(sectionNumberingStyle);
         cell.setCellValue("II.");
         cell = createCell(row, 1);
         cell.setCellStyle(sectionHeadingStyle);
         cell.setCellValue("Reporting Period");
-        row = sheet.createRow(12);
+        row = sheet.createRow(currRow++);
         cell = createCell(row, 1);
         cell.setCellValue("This report relates to the following reporting period.");
-        sheet.addMergedRegion(new CellRangeAddress(12, 12, 1, 3));
+        sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
 
-        row = sheet.createRow(13);
+        row = sheet.createRow(currRow++);
         cell = createCell(row, 1);
         //calculate the minimum start date and maximum end dates out of all reports passed in
         Date minDate = null;
@@ -166,28 +181,31 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
         }
         DateFormat dateFormatter = new SimpleDateFormat("d MMMM yyyy");
         cell.setCellValue(dateFormatter.format(minDate) + " through " + dateFormatter.format(maxDate));
-        pt.drawBorders(new CellRangeAddress(13, 13, 1, 1),
+        pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 1),
                 BorderStyle.MEDIUM, BorderExtent.ALL);
+        return row.getRowNum()+1;
     }
 
-    private void createSectionThree(final Sheet sheet, final List<QuarterlyReportDTO> reports) {
-        Row row = sheet.createRow(15);
+    private int createActivitiesAndOutcomesSection(final Sheet sheet,
+            final List<QuarterlyReportDTO> reports, final int beginRow) {
+        int currRow = beginRow;
+        Row row = sheet.createRow(currRow++);
         Cell cell = createCell(row, 0);
         cell.setCellStyle(sectionNumberingStyle);
         cell.setCellValue("III.");
         cell = createCell(row, 1);
         cell.setCellStyle(sectionHeadingStyle);
         cell.setCellValue("Surveillance Activities and Outcomes");
-        row = sheet.createRow(16);
+        row = sheet.createRow(currRow++);
         cell = createCell(row, 1);
         cell.setCellStyle(topAlignedWrappedStyle);
         row.setHeightInPoints((2*sheet.getDefaultRowHeightInPoints()));
         cell.setCellValue("The ONC-ACB used the following selection method to make its "
                 + "random selection of certified Complete EHRs and certified Health IT "
                 + "Modules for surveillance initiated during the reporting period.");
-        sheet.addMergedRegion(new CellRangeAddress(16, 16, 1, 3));
+        sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
 
-        row = sheet.createRow(17);
+        row = sheet.createRow(currRow++);
         cell = createCell(row, 1);
         cell.setCellStyle(topAlignedWrappedStyle);
         if (reports.size() == 1) {
@@ -203,65 +221,73 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
             }
             cell.setCellValue(buf.toString());
         }
-        sheet.addMergedRegion(new CellRangeAddress(17, 17, 1, 3));
+        sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
         //this is user-entered text that wraps so we should try to resize the height
         //of the row to show all the lines of text.
         int lineCount = calculateLineCount(cell.getStringCellValue(), sheet, 1, 3);
         row.setHeightInPoints((Math.max(MIN_TEXT_AREA_LINES, lineCount) * sheet.getDefaultRowHeightInPoints()));
 
-        pt.drawBorders(new CellRangeAddress(17, 17, 1, 3),
+        pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3),
                 BorderStyle.MEDIUM, BorderExtent.ALL);
 
-        row = sheet.createRow(19);
+        //skip a row
+        currRow++;
+        row = sheet.createRow(currRow++);
         cell = createCell(row, 1);
         cell.setCellValue("Please log the surveillance activities and their outcomes to "
                 + "the \"Activities and Outcomes\" sheet of this workbook.");
-        sheet.addMergedRegion(new CellRangeAddress(19, 19, 1, 3));
+        sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
+        return row.getRowNum()+1;
     }
 
-    private void createSectionFour(final Sheet sheet,
-            final List<QuarterlyReportDTO> reports) {
-        Row row = sheet.createRow(21);
+    private int createSelectingAndSamplingSection(final Sheet sheet,
+            final List<QuarterlyReportDTO> reports, final int beginRow) {
+        int currRow = beginRow;
+        Row row = sheet.createRow(currRow++);
         Cell cell = createCell(row, 0);
         cell.setCellStyle(sectionNumberingStyle);
         cell.setCellValue("IV.");
         cell = createCell(row, 1);
         cell.setCellStyle(sectionHeadingStyle);
         cell.setCellValue("Sampling and Selecting");
-        row = sheet.createRow(22);
+        row = sheet.createRow(currRow++);
         cell = createCell(row, 1);
         cell.setCellStyle(italicUnderlinedSmallStyle);
         cell.setCellValue("Exclusion and Exhaustion");
-        row = sheet.createRow(23);
+        row = sheet.createRow(currRow++);
         cell = createCell(row, 1);
         cell.setCellValue("The following certified Complete EHRs and certified "
                 + "Health IT Modules were excluded from randomized surveillance for the reasons stated below.");
-        sheet.addMergedRegion(new CellRangeAddress(23, 23, 1, 3));
+        sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
 
         //this is the beginning of a big table
-        row = sheet.createRow(25);
+        //skip a row on purpose
+        currRow++;
+        row = sheet.createRow(currRow++);
         cell = createCell(row, 1);
         cell.setCellStyle(leftAlignedTableHeadingStyle);
         cell.setCellValue("Complete EHR or Health IT Module (CHPL ID)");
         cell = createCell(row, 2);
         cell.setCellStyle(leftAlignedTableHeadingStyle);
         cell.setCellValue("Reason(s) for Exclusion");
-        int tableStartRow = 25, tableEndRow = 35;
-        for (int i = tableStartRow+1; i <= tableEndRow; i++) {
-            row = sheet.createRow(i);
+        int tableStartRow = currRow, tableEndRow = currRow+10;
+        for (; currRow <= tableEndRow; currRow++) {
+            row = sheet.createRow(currRow);
             row.setHeightInPoints((2*sheet.getDefaultRowHeightInPoints()));
-            pt.drawBorders(new CellRangeAddress(i, i, 1, 2),
+            pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 2),
                     BorderStyle.THIN, BorderExtent.TOP);
         }
-         //draw border around the table
-        pt.drawBorders(new CellRangeAddress(tableStartRow, tableEndRow, 1, 2),
+         //draw border around the table, including the heading row
+        pt.drawBorders(new CellRangeAddress(tableStartRow-1, tableEndRow, 1, 2),
                 BorderStyle.MEDIUM, BorderExtent.OUTSIDE);
 
-        row = sheet.createRow(37);
+        //skip a row after the table
+        currRow++;
+        row = sheet.createRow(currRow++);
         cell = createCell(row, 1);
         cell.setCellStyle(italicUnderlinedSmallStyle);
         cell.setCellValue("Reactive Surveillance");
-        row = sheet.createRow(38);
+        row = sheet.createRow(currRow++);
         cell = createCell(row, 1);
         cell.setCellStyle(topAlignedWrappedStyle);
         row.setHeightInPoints((3*sheet.getDefaultRowHeightInPoints()));
@@ -271,8 +297,8 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
                 + "act on all facts and circumstances that would cause a reasonable person to "
                 + "question the ongoing compliance of any certified Complete EHR or certified "
                 + "Health IT Module. ");
-        sheet.addMergedRegion(new CellRangeAddress(38, 38, 1, 3));
-        row = sheet.createRow(39);
+        sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
+        row = sheet.createRow(currRow++);
         cell = createCell(row, 1);
         cell.setCellStyle(topAlignedWrappedStyle);
         if (reports.size() == 1) {
@@ -292,32 +318,37 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
         //of the row to show all the lines of text.
         int lineCount = calculateLineCount(cell.getStringCellValue(), sheet, 1, 3);
         row.setHeightInPoints((Math.max(MIN_TEXT_AREA_LINES, lineCount) * sheet.getDefaultRowHeightInPoints()));
-        pt.drawBorders(new CellRangeAddress(39, 39, 1, 3),
+        pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3),
                 BorderStyle.MEDIUM, BorderExtent.OUTSIDE);
-        sheet.addMergedRegion(new CellRangeAddress(39, 39, 1, 3));
+        sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
+        return row.getRowNum()+1;
     }
 
-    private void createSectionFive(final Sheet sheet, final List<QuarterlyReportDTO> reports) {
-        Row row = sheet.createRow(41);
+    private int createPrioritizedSurveillanceSection(final Sheet sheet,
+            final List<QuarterlyReportDTO> reports, final int beginRow) {
+        int currRow = beginRow;
+        Row row = sheet.createRow(currRow++);
         Cell cell = createCell(row, 0);
         cell.setCellStyle(sectionNumberingStyle);
         cell.setCellValue("V.");
         cell = createCell(row, 1);
         cell.setCellStyle(sectionHeadingStyle);
         cell.setCellValue("Prioritized Surveillance");
-        row = sheet.createRow(42);
+        row = sheet.createRow(currRow++);
         cell = createCell(row, 1);
         cell.setCellStyle(italicUnderlinedSmallStyle);
         cell.setCellValue("Prioritized Elements");
-        row = sheet.createRow(43);
+        row = sheet.createRow(currRow++);
         cell = createCell(row, 1);
         cell.setCellStyle(topAlignedWrappedStyle);
         cell.setCellValue("The ONC-ACB undertook the following activities and implemented the "
                 + "following measures to evaluate and address the prioritized elements of "
                 + "surveillance referred to in Program Policy Guidance #15-01A (November 2015).");
         row.setHeightInPoints((2*sheet.getDefaultRowHeightInPoints()));
-        sheet.addMergedRegion(new CellRangeAddress(43, 43, 1, 3));
-        row = sheet.createRow(45);
+        sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
+        //skip row
+        currRow++;
+        row = sheet.createRow(currRow++);
         cell = createCell(row, 1);
         cell.setCellStyle(topAlignedWrappedStyle);
         if (reports.size() == 1) {
@@ -337,23 +368,28 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
         //of the row to show all the lines of text.
         int lineCount = calculateLineCount(cell.getStringCellValue(), sheet, 1, 3);
         row.setHeightInPoints((Math.max(MIN_TEXT_AREA_LINES, lineCount) * sheet.getDefaultRowHeightInPoints()));
-        pt.drawBorders(new CellRangeAddress(45, 45, 1, 3),
+        pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3),
                 BorderStyle.MEDIUM, BorderExtent.OUTSIDE);
-        sheet.addMergedRegion(new CellRangeAddress(45, 45, 1, 3));
+        sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
 
-        row = sheet.createRow(47);
+        //skip row
+        currRow++;
+        row = sheet.createRow(currRow++);
         cell = createCell(row, 1);
         cell.setCellStyle(italicUnderlinedSmallStyle);
         cell.setCellValue("Transparency and Disclosure Requirements");
-        row = sheet.createRow(48);
+        row = sheet.createRow(currRow++);
         cell = createCell(row, 1);
         cell.setCellStyle(topAlignedWrappedStyle);
         cell.setCellValue("The ONC-ACB undertook the following activities and implemented the following measures "
                 + "to ensure adherence by developers to transparency and disclosure requirements, as required of "
                 + "the ONC-ACB under 45 CFR § 170.523(k):");
         row.setHeightInPoints((2*sheet.getDefaultRowHeightInPoints()));
-        sheet.addMergedRegion(new CellRangeAddress(48, 48, 1, 3));
-        row = sheet.createRow(50);
+        sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
+
+        //skip row
+        currRow++;
+        row = sheet.createRow(currRow++);
         cell = createCell(row, 1);
         cell.setCellStyle(topAlignedWrappedStyle);
         if (reports.size() == 1) {
@@ -373,21 +409,24 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
         //of the row to show all the lines of text.
         lineCount = calculateLineCount(cell.getStringCellValue(), sheet, 1, 3);
         row.setHeightInPoints((Math.max(MIN_TEXT_AREA_LINES, lineCount) * sheet.getDefaultRowHeightInPoints()));
-        pt.drawBorders(new CellRangeAddress(50, 50, 1, 3),
+        pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3),
                 BorderStyle.MEDIUM, BorderExtent.OUTSIDE);
-        sheet.addMergedRegion(new CellRangeAddress(50, 50, 1, 3));
+        sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
+        return row.getRowNum()+1;
     }
 
-    private void createSectionSix(final Sheet sheet) {
-        Row row = sheet.createRow(52);
+    private int createComplaintsSection(final Sheet sheet, final int beginRow) {
+        int currRow = beginRow;
+        Row row = sheet.createRow(currRow++);
         Cell cell = createCell(row, 0);
         cell.setCellStyle(sectionNumberingStyle);
         cell.setCellValue("VI.");
         cell = createCell(row, 1);
         cell.setCellStyle(sectionHeadingStyle);
         cell.setCellValue("Complaints Reporting");
-        row = sheet.createRow(53);
+        row = sheet.createRow(currRow++);
         cell = createCell(row, 1);
         cell.setCellValue("Please log the complaints and any actions to the \"Complaints\" sheet of this workbook.");
+        return row.getRowNum()+1;
     }
 }
