@@ -10,7 +10,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 
 public interface ComplaintManager {
-    Set<KeyValueModel> getComplaintTypes();
+    Set<KeyValueModel> getComplainantTypes();
 
     Set<KeyValueModel> getComplaintStatusTypes();
 

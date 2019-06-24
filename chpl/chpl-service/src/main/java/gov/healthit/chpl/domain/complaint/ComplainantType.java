@@ -2,18 +2,18 @@ package gov.healthit.chpl.domain.complaint;
 
 import org.springframework.beans.BeanUtils;
 
-import gov.healthit.chpl.dto.ComplaintTypeDTO;
+import gov.healthit.chpl.dto.ComplainantTypeDTO;
 
-public class ComplaintType {
+public class ComplainantType {
     private Long id;
     private String name;
     private String description;
 
-    public ComplaintType() {
+    public ComplainantType() {
 
     }
 
-    public ComplaintType(ComplaintTypeDTO dto) {
+    public ComplainantType(ComplainantTypeDTO dto) {
         BeanUtils.copyProperties(dto, this);
     }
 

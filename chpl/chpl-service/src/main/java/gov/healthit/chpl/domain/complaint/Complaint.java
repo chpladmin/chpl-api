@@ -14,7 +14,8 @@ import gov.healthit.chpl.dto.ComplaintListingMapDTO;
 public class Complaint {
     private Long id;
     private CertificationBody certificationBody;
-    private ComplaintType complaintType;
+    private ComplainantType complainantType;
+    private String complainantTypeOther;
     private ComplaintStatusType complaintStatusType;
     private String oncComplaintId;
     private String acbComplaintId;
@@ -42,7 +43,7 @@ public class Complaint {
 
         this.certificationBody = new CertificationBody(dto.getCertificationBody());
         this.complaintStatusType = new ComplaintStatusType(dto.getComplaintStatusType());
-        this.complaintType = new ComplaintType(dto.getComplaintType());
+        this.complainantType = new ComplainantType(dto.getComplainantType());
     }
 
     public Long getId() {
@@ -61,12 +62,20 @@ public class Complaint {
         this.certificationBody = certificationBody;
     }
 
-    public ComplaintType getComplaintType() {
-        return complaintType;
+    public ComplainantType getComplainantType() {
+        return complainantType;
     }
 
-    public void setComplaintType(final ComplaintType complaintType) {
-        this.complaintType = complaintType;
+    public void setComplainantType(final ComplainantType complainantType) {
+        this.complainantType = complainantType;
+    }
+
+    public String getComplainantTypeOther() {
+        return complainantTypeOther;
+    }
+
+    public void setComplainantTypeOther(String complainantTypeOther) {
+        this.complainantTypeOther = complainantTypeOther;
     }
 
     public ComplaintStatusType getComplaintStatusType() {

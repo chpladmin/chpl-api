@@ -11,13 +11,13 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "complaint_type")
-public class ComplaintTypeEntity {
+@Table(name = "complainant_type")
+public class ComplainantTypeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "complaint_type_id", nullable = false)
+    @Column(name = "complainant_type_id", nullable = false)
     private Long id;
 
     @Column(name = "name", nullable = false)
