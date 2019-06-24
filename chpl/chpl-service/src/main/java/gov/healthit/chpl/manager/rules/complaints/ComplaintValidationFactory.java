@@ -22,7 +22,7 @@ public class ComplaintValidationFactory {
         case OPEN_STATUS:
             return new ComplaintStatusOpen();
         case COMPLAINT_TYPE:
-            return new ComplaintTypeValidation();
+            return new ComplainantTypeValidation();
         case COMPLAINT_STATUS_TYPE:
             return new ComplaintStatusTypeValidation();
         case RECEIVED_DATE:
