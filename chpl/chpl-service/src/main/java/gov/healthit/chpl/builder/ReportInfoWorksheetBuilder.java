@@ -308,9 +308,9 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
             }
         }
 
-        int tableStartRow = currRow, tableEndRow = currRow + combinedExclusions.size();
+        int tableStartRow = currRow;
         for (String chplNumber : combinedExclusions.keySet()) {
-            row = sheet.createRow(currRow);
+            row = sheet.createRow(currRow++);
             cell = createCell(row, 1);
             cell.setCellValue(chplNumber);
             cell = createCell(row, 2);
@@ -335,11 +335,11 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
                 BorderStyle.THIN, BorderExtent.TOP);
         }
          //draw border around the table, including the heading row
-        pt.drawBorders(new CellRangeAddress(tableStartRow-1, tableEndRow, 1, 2),
+        pt.drawBorders(new CellRangeAddress(tableStartRow-1, row.getRowNum(), 1, 2),
                 BorderStyle.MEDIUM, BorderExtent.OUTSIDE);
 
         //skip a row after the table
-        currRow+=2;
+        currRow++;
         row = sheet.createRow(currRow++);
         cell = createCell(row, 1);
         cell.setCellStyle(italicUnderlinedSmallStyle);

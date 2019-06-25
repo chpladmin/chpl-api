@@ -343,7 +343,6 @@ public class AnnualReportManagerTest extends TestCase {
             throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException,
             IOException {
         SecurityContextHolder.getContext().setAuthentication(acbUser);
-        Long listingId = 1L;
         CertificationBodyDTO acb = new CertificationBodyDTO();
         acb.setId(-1L);
 
@@ -362,10 +361,13 @@ public class AnnualReportManagerTest extends TestCase {
 
         //create a surveillance to add to the report
         //surv will start one day after the quarter begins
-        createSurveillance(listingId, new Date(q1Report.getStartDate().getTime() + (24*60*60*1000)));
+        createSurveillance(1L, new Date(q1Report.getStartDate().getTime() + (24*60*60*1000)));
+        createSurveillance(2L, new Date(q1Report.getStartDate().getTime() + (48*60*60*1000)));
+        createSurveillance(3L, new Date(q1Report.getStartDate().getTime() + (72*60*60*1000)));
 
         //add excluded listing to the quarter
-        reportManager.createQuarterlyReportExclusion(q1Report, listingId, "A really good reason");
+        reportManager.createQuarterlyReportExclusion(q1Report, 1L, "A really good reason for q1");
+        reportManager.createQuarterlyReportExclusion(q1Report, 3L, "A really good reason for listing id 3");
 
         quarter = new QuarterDTO();
         quarter.setName("Q2");
@@ -380,7 +382,7 @@ public class AnnualReportManagerTest extends TestCase {
         QuarterlyReportDTO q2Report = reportManager.createQuarterlyReport(toCreate);
 
         //add excluded listing to the quarter
-        reportManager.createQuarterlyReportExclusion(q2Report, listingId, "A really good reason");
+        reportManager.createQuarterlyReportExclusion(q2Report, 1L, "A really good reason for q2");
 
         quarter = new QuarterDTO();
         quarter.setName("Q3");
@@ -394,9 +396,6 @@ public class AnnualReportManagerTest extends TestCase {
         toCreate.setTransparencyDisclosureSummary("test transparency and disclosure summary for Q");
         QuarterlyReportDTO q3Report = reportManager.createQuarterlyReport(toCreate);
 
-        //add excluded listing to the quarter
-        //reportManager.createQuarterlyReportExclusion(q3Report, listingId, "A different reason!");
-
         quarter = new QuarterDTO();
         quarter.setName("Q4");
         toCreate = new QuarterlyReportDTO();
@@ -408,9 +407,6 @@ public class AnnualReportManagerTest extends TestCase {
         toCreate.setPrioritizedElementSummary("test prioritized element summary for Q4");
         toCreate.setTransparencyDisclosureSummary("test transparency and disclosure summary for Q4");
         QuarterlyReportDTO q4Report = reportManager.createQuarterlyReport(toCreate);
-
-        //add excluded listing to the quarter
-        //reportManager.createQuarterlyReportExclusion(q4Report, listingId, "The reason for excluduing during Q4");
 
         //create the annual report
         AnnualReportDTO annualReport = new AnnualReportDTO();
@@ -435,16 +431,16 @@ public class AnnualReportManagerTest extends TestCase {
         assertNotNull(workbook);
 
         //uncomment to write report
-        OutputStream outputStream = null;
-        try {
-            outputStream = new FileOutputStream("annual.xlsx");
-            workbook.write(outputStream);
-        } catch(final Exception ex) {
-            fail(ex.getMessage());
-        } finally {
-            outputStream.flush();
-            outputStream.close();
-        }
+//        OutputStream outputStream = null;
+//        try {
+//            outputStream = new FileOutputStream("annual.xlsx");
+//            workbook.write(outputStream);
+//        } catch(final Exception ex) {
+//            fail(ex.getMessage());
+//        } finally {
+//            outputStream.flush();
+//            outputStream.close();
+//        }
 
         SecurityContextHolder.getContext().setAuthentication(null);
     }
