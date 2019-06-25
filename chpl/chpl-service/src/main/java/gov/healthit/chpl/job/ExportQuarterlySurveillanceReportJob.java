@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.builder.QuarterlyReportBuilderXlsx;
 import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.entity.job.JobStatusType;
@@ -29,12 +30,15 @@ public class ExportQuarterlySurveillanceReportJob extends RunnableJob {
     private static final Logger LOGGER = LogManager.getLogger(ExportQuarterlySurveillanceReportJob.class);
     private ErrorMessageUtil errorMessageUtil;
     private SurveillanceReportManager reportManager;
+    private QuarterlyReportBuilderXlsx reportBuilder;
 
     @Autowired
     public ExportQuarterlySurveillanceReportJob(final ErrorMessageUtil errorMessageUtil,
-            final SurveillanceReportManager reportManager) {
+            final SurveillanceReportManager reportManager,
+            final QuarterlyReportBuilderXlsx reportBuilder) {
         this.errorMessageUtil = errorMessageUtil;
         this.reportManager = reportManager;
+        this.reportBuilder = reportBuilder;
     }
 
     public ExportQuarterlySurveillanceReportJob() {
@@ -65,7 +69,10 @@ public class ExportQuarterlySurveillanceReportJob extends RunnableJob {
 
         Workbook workbook = null;
         try {
-            workbook = reportManager.exportQuarterlyReport(quarterlyReportId);
+            QuarterlyReportDTO report = reportManager.getQuarterlyReport(quarterlyReportId);
+            if (report != null) {
+                workbook = reportBuilder.buildXlsx(report);
+            }
         } catch (EntityRetrievalException ex) {
             String msg = errorMessageUtil.getMessage("report.quarterlySurveillance.export.badId", quarterlyReportId);
             LOGGER.error(msg);

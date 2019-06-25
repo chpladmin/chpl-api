@@ -1,46 +1,21 @@
 package gov.healthit.chpl.builder;
 
-import java.awt.Color;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.DVConstraint;
-import org.apache.poi.hssf.usermodel.HSSFDataValidation;
-import org.apache.poi.ss.usermodel.BorderExtent;
-import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.DataValidation;
-import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.ss.util.CellRangeAddressList;
-import org.apache.poi.ss.util.CellReference;
-import org.apache.poi.ss.util.PropertyTemplate;
-import org.apache.poi.xssf.usermodel.XSSFDataValidation;
-import org.apache.poi.xssf.usermodel.XSSFDataValidationConstraint;
-import org.apache.poi.xssf.usermodel.XSSFDataValidationHelper;
-import org.apache.poi.xssf.usermodel.XSSFRichTextString;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTDataValidation;
-import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTDataValidations;
+import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.domain.CertificationStatusEvent;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.Surveillance;
-import gov.healthit.chpl.domain.SurveillanceNonconformity;
-import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;
-import gov.healthit.chpl.domain.SurveillanceRequirement;
-import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
-import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 
+/**
+ * A hidden worksheet that contains values used to populate drop-down lists elsewhere in the workbook.
+ * The workbook must be "set" to a non-null Excel workbook object before building the worksheet.
+ * @author kekey
+ *
+ */
+@Component
 public class ListWorksheetBuilder extends XlsxWorksheetBuilder {
     private static final int LAST_DATA_COLUMN = 1;
     private static final int LAST_DATA_ROW = 60;
@@ -63,8 +38,8 @@ public class ListWorksheetBuilder extends XlsxWorksheetBuilder {
     private static final String BOOLEAN_YES = "Yes";
     private static final String BOOLEAN_NO = "No";
 
-    public ListWorksheetBuilder(final Workbook workbook) {
-        super(workbook);
+    public ListWorksheetBuilder() {
+        super();
     }
 
     @Override
@@ -87,8 +62,7 @@ public class ListWorksheetBuilder extends XlsxWorksheetBuilder {
  * @return
  * @throws IOException
  */
-    public Sheet buildWorksheet()
-            throws IOException {
+    public Sheet buildWorksheet() throws IOException {
 
         //create sheet
         Sheet sheet = getSheet("Lists");

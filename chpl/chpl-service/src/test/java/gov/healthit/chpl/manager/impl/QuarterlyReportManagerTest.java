@@ -1,6 +1,8 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
 
@@ -27,6 +29,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.builder.QuarterlyReportBuilderXlsx;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
@@ -49,6 +52,7 @@ import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportRelevantListingD
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.manager.SurveillanceReportManager;
 import junit.framework.TestCase;
@@ -84,6 +88,9 @@ public class QuarterlyReportManagerTest extends TestCase {
 
     @Autowired
     private CertifiedProductDAO cpDao;
+
+    @Autowired
+    private QuarterlyReportBuilderXlsx reportBuilder;
 
     @Rule
     @Autowired
@@ -556,20 +563,21 @@ public class QuarterlyReportManagerTest extends TestCase {
         toCreate.setTransparencyDisclosureSummary("test transparency and disclosure summary");
         QuarterlyReportDTO created = reportManager.createQuarterlyReport(toCreate);
 
-        Workbook workbook = reportManager.exportQuarterlyReport(created.getId());
+        QuarterlyReportDTO fetchedReport = reportManager.getQuarterlyReport(created.getId());
+        Workbook workbook = reportBuilder.buildXlsx(fetchedReport);
         assertNotNull(workbook);
 
         //uncomment to write report
-//        OutputStream outputStream = null;
-//        try {
-//            outputStream = new FileOutputStream("quarterly.xlsx");
-//            workbook.write(outputStream);
-//        } catch(final Exception ex) {
-//            fail(ex.getMessage());
-//        } finally {
-//            outputStream.flush();
-//            outputStream.close();
-//        }
+        OutputStream outputStream = null;
+        try {
+            outputStream = new FileOutputStream("quarterly.xlsx");
+            workbook.write(outputStream);
+        } catch(final Exception ex) {
+            fail(ex.getMessage());
+        } finally {
+            outputStream.flush();
+            outputStream.close();
+        }
 
         SecurityContextHolder.getContext().setAuthentication(null);
     }
@@ -579,7 +587,7 @@ public class QuarterlyReportManagerTest extends TestCase {
     @Transactional
     public void writeQuarterlyReportAsExcelWorkbook_AcbNotAllowed()
             throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException,
-            IOException {
+            UserRetrievalException, IOException {
         SecurityContextHolder.getContext().setAuthentication(acbUser);
         QuarterDTO quarter = new QuarterDTO();
         quarter.setName("Q1");
@@ -595,7 +603,7 @@ public class QuarterlyReportManagerTest extends TestCase {
         toCreate.setTransparencyDisclosureSummary("test transparency and disclosure summary");
         QuarterlyReportDTO created = reportManager.createQuarterlyReport(toCreate);
 
-        reportManager.exportQuarterlyReport(created.getId());
+        reportManager.exportQuarterlyReportAsBackgroundJob(created.getId());
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 

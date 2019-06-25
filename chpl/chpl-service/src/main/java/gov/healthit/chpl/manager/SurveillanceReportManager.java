@@ -22,7 +22,6 @@ public interface SurveillanceReportManager {
     public void deleteAnnualReport(Long id) throws EntityRetrievalException;
     public List<AnnualReportDTO> getAnnualReports();
     public AnnualReportDTO getAnnualReport(Long id) throws EntityRetrievalException;
-    public Workbook exportAnnualReport(Long id) throws EntityRetrievalException, IOException;
     public JobDTO exportAnnualReportAsBackgroundJob(Long id)
             throws EntityRetrievalException, EntityCreationException, UserRetrievalException, IOException;
 
@@ -41,7 +40,6 @@ public interface SurveillanceReportManager {
     public QuarterlyReportRelevantListingDTO getRelevantListing(QuarterlyReportDTO report, Long listingId);
     public List<QuarterlyReportRelevantListingDTO> getRelevantListings(QuarterlyReportDTO report);
     public QuarterlyReportDTO getQuarterlyReport(Long id) throws EntityRetrievalException;
-    public Workbook exportQuarterlyReport(Long id) throws EntityRetrievalException, IOException;
     public JobDTO exportQuarterlyReportAsBackgroundJob(Long id)
             throws EntityRetrievalException, EntityCreationException, UserRetrievalException, IOException;
 }

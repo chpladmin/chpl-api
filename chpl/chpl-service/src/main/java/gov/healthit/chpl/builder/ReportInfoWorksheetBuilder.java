@@ -4,9 +4,10 @@ import java.awt.Color;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -16,21 +17,34 @@ import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.PropertyTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
+import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportRelevantListingDTO;
+import gov.healthit.chpl.manager.SurveillanceReportManager;
 
+/**
+ * Creates a worksheet with high level information about the report.
+ * The workbook must be "set" to a non-null Excel workbook object before building the worksheet.
+ * @author kekey
+ *
+ */
+@Component
 public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
     private static final int LAST_DATA_COLUMN = 6;
     private static final int MIN_TEXT_AREA_LINES = 4;
+    private static final int MIN_EXCLUSION_LINES = 1;
+    private SurveillanceReportManager reportManager;
     private PropertyTemplate pt;
     private int lastDataRow = 0;
 
-    public ReportInfoWorksheetBuilder(final Workbook workbook) {
-        super(workbook);
+    @Autowired
+    public ReportInfoWorksheetBuilder(final SurveillanceReportManager reportManager) {
+        super();
+        this.reportManager = reportManager;
         pt = new PropertyTemplate();
     }
 
@@ -240,8 +254,7 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
         return row.getRowNum()+1;
     }
 
-    private int createSelectingAndSamplingSection(final Sheet sheet,
-            final List<QuarterlyReportDTO> reports, final int beginRow) {
+    private int createSelectingAndSamplingSection(final Sheet sheet, final List<QuarterlyReportDTO> reports, final int beginRow) {
         int currRow = beginRow;
         Row row = sheet.createRow(currRow++);
         Cell cell = createCell(row, 0);
@@ -270,19 +283,63 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
         cell = createCell(row, 2);
         cell.setCellStyle(leftAlignedTableHeadingStyle);
         cell.setCellValue("Reason(s) for Exclusion");
-        int tableStartRow = currRow, tableEndRow = currRow+10;
-        for (; currRow <= tableEndRow; currRow++) {
+
+        LinkedHashMap<String, List<QuarterlyExclusionReason>> combinedExclusions =
+                new LinkedHashMap<String, List<QuarterlyExclusionReason>>();
+        //Get the excluded listings for each quarterly report
+        //put them in a data structure we can use to write out to the table.
+        //Using a linked hash map to maintain insertion order.. also only doing the map thing
+        //in case the same listing is excluded across multiple quarters so we can combine it in the printed table.
+        for (QuarterlyReportDTO report : reports) {
+            List<QuarterlyReportRelevantListingDTO> relevantListings = reportManager.getRelevantListings(report);
+            for (QuarterlyReportRelevantListingDTO relevantListing : relevantListings) {
+                if (relevantListing.isExcluded()) {
+                    QuarterlyExclusionReason reason =
+                            new QuarterlyExclusionReason(report.getQuarter().getName(), relevantListing.getExclusionReason());
+                    //look to see if there's already an entry for this exclusion
+                    if (combinedExclusions.get(relevantListing.getChplProductNumber()) != null) {
+                        combinedExclusions.get(relevantListing.getChplProductNumber()).add(reason);
+                    } else {
+                        List<QuarterlyExclusionReason> reasons = new ArrayList<QuarterlyExclusionReason>();
+                        reasons.add(reason);
+                        combinedExclusions.put(relevantListing.getChplProductNumber(), reasons);
+                    }
+                }
+            }
+        }
+
+        int tableStartRow = currRow, tableEndRow = currRow + combinedExclusions.size();
+        for (String chplNumber : combinedExclusions.keySet()) {
             row = sheet.createRow(currRow);
-            row.setHeightInPoints((2*sheet.getDefaultRowHeightInPoints()));
+            cell = createCell(row, 1);
+            cell.setCellValue(chplNumber);
+            cell = createCell(row, 2);
+            cell.setCellStyle(topAlignedWrappedStyle);
+            List<QuarterlyExclusionReason> reasons = combinedExclusions.get(chplNumber);
+            if (reasons != null && reasons.size() == 1) {
+                cell.setCellValue(reasons.get(0).getReason().trim());
+            } else if (reasons != null && reasons.size() > 1) {
+                StringBuffer buf = new StringBuffer();
+                for (QuarterlyExclusionReason reason : combinedExclusions.get(chplNumber)) {
+                    if (buf.length() > 0) {
+                        buf.append("\n");
+                    }
+                    buf.append(reason.toString());
+                }
+                String value = buf.toString().trim();
+                cell.setCellValue(value);
+            }
+            int lineCount = calculateLineCount(cell.getStringCellValue(), sheet, 2, 2);
+            row.setHeightInPoints((Math.max(MIN_EXCLUSION_LINES, lineCount) * sheet.getDefaultRowHeightInPoints()));
             pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 2),
-                    BorderStyle.THIN, BorderExtent.TOP);
+                BorderStyle.THIN, BorderExtent.TOP);
         }
          //draw border around the table, including the heading row
         pt.drawBorders(new CellRangeAddress(tableStartRow-1, tableEndRow, 1, 2),
                 BorderStyle.MEDIUM, BorderExtent.OUTSIDE);
 
         //skip a row after the table
-        currRow++;
+        currRow+=2;
         row = sheet.createRow(currRow++);
         cell = createCell(row, 1);
         cell.setCellStyle(italicUnderlinedSmallStyle);
@@ -301,15 +358,18 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
         row = sheet.createRow(currRow++);
         cell = createCell(row, 1);
         cell.setCellStyle(topAlignedWrappedStyle);
+
         if (reports.size() == 1) {
             cell.setCellValue(reports.get(0).getReactiveSummary());
         } else {
             StringBuffer buf = new StringBuffer();
             for (QuarterlyReportDTO report : reports) {
                 if (!StringUtils.isEmpty(report.getReactiveSummary())) {
+                    if (buf.length() > 0) {
+                        buf.append("\n");
+                    }
                     buf.append(report.getQuarter().getName()).append(":")
-                        .append(report.getReactiveSummary())
-                        .append("\n");
+                        .append(report.getReactiveSummary());
                 }
             }
             cell.setCellValue(buf.toString());
@@ -428,5 +488,31 @@ public class ReportInfoWorksheetBuilder extends XlsxWorksheetBuilder {
         cell = createCell(row, 1);
         cell.setCellValue("Please log the complaints and any actions to the \"Complaints\" sheet of this workbook.");
         return row.getRowNum()+1;
+    }
+
+    private class QuarterlyExclusionReason {
+        private String quarterName;
+        private String reason;
+        public QuarterlyExclusionReason() {
+        }
+        public QuarterlyExclusionReason(final String quarterName, final String reason) {
+            this.quarterName = quarterName;
+            this.reason = reason;
+        }
+        public String getQuarterName() {
+            return quarterName;
+        }
+        public void setQuarterName(final String quarterName) {
+            this.quarterName = quarterName;
+        }
+        public String getReason() {
+            return reason;
+        }
+        public void setReason(final String reason) {
+            this.reason = reason;
+        }
+        public String toString() {
+            return this.quarterName + ": " + reason;
+        }
     }
 }

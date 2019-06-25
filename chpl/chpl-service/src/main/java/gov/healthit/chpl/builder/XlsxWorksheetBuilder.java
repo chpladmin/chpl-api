@@ -35,10 +35,7 @@ public abstract class XlsxWorksheetBuilder {
     italicUnderlinedSmallStyle, topAlignedWrappedStyle, sectionNumberingStyle, sectionHeadingStyle,
     rightAlignedTableHeadingStyle, leftAlignedTableHeadingStyle, wrappedTableHeadingStyle, tableSubheadingStyle;
 
-    public XlsxWorksheetBuilder(final Workbook workbook) {
-        this.workbook = workbook;
-        initializeFonts();
-        initializeStyles();
+    public XlsxWorksheetBuilder() {
     }
 
     public abstract int getLastDataColumn();
@@ -113,20 +110,25 @@ public abstract class XlsxWorksheetBuilder {
         if (newlineCharCount == 0) {
             totalLineCount = calculateLineCountWithoutNewlines(text, sheet, firstColIndex, lastColIndex);
         } else {
-            totalLineCount = newlineCharCount;
             //find each section of this text between newlines; check if that section
             //wraps over multiple lines and add to the count
             for (int i = 0; i < text.length(); i++) {
                 int indexOfNextNewline = text.indexOf("\n", i);
-                if (indexOfNextNewline >= i) {
+                if (indexOfNextNewline == i) {
+                    //a newline with no other text characters
+                    totalLineCount++;
+                } else if (indexOfNextNewline > i) {
+                    //a paragraph inbetween newlnes
                     String sectionText = text.substring(i, indexOfNextNewline);
                     int sectionLineCount = calculateLineCountWithoutNewlines(sectionText, sheet, firstColIndex, lastColIndex);
-                    //one line is already accounted for from counting the newline char itself
-                    //so no need to add to the line count unless there is more than 1 line
-                    if (sectionLineCount > 1) {
-                        totalLineCount += sectionLineCount - 1;
-                    }
-                    i = indexOfNextNewline+1;
+                    totalLineCount += sectionLineCount;
+                    i = indexOfNextNewline;
+                } else if (indexOfNextNewline == -1 && i < text.length()) {
+                    //last section, no newlines after it
+                    String sectionText = text.substring(i);
+                    int sectionLineCount = calculateLineCountWithoutNewlines(sectionText, sheet, firstColIndex, lastColIndex);
+                    totalLineCount += sectionLineCount;
+                    i = text.length();
                 }
             }
         }
@@ -313,5 +315,15 @@ public abstract class XlsxWorksheetBuilder {
         tableSubheadingStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.index);
         tableSubheadingStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         tableSubheadingStyle.setFillBackgroundColor(IndexedColors.GREY_25_PERCENT.index);
+    }
+
+    public Workbook getWorkbook() {
+        return workbook;
+    }
+
+    public void setWorkbook(final Workbook workbook) {
+        this.workbook = workbook;
+        initializeFonts();
+        initializeStyles();
     }
 }
