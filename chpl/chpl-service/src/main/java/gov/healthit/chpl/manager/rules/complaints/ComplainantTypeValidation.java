@@ -41,7 +41,8 @@ public class ComplainantTypeValidation extends ValidationRule<ComplaintValidatio
 
             // Complainant type other must exist if complaint type = other
             if (isComplainantTypeSetToOther(context.getComplaintDTO().getComplainantType())
-                    && context.getComplaintDTO().getComplainantTypeOther().trim() == "") {
+                    && (context.getComplaintDTO().getComplainantTypeOther() == null
+                            || context.getComplaintDTO().getComplainantTypeOther().trim() == "")) {
                 getMessages().add(getErrorMessage("complaints.complainantType.otherMissing"));
                 return false;
             }
