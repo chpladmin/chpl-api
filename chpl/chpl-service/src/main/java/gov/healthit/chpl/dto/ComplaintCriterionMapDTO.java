@@ -28,6 +28,7 @@ public class ComplaintCriterionMapDTO {
 
     public ComplaintCriterionMapDTO(ComplaintCriterionMap domain) {
         BeanUtils.copyProperties(domain, this);
+        this.certificationCriterionId = domain.getCertificationCriterion().getId();
         certificationCriterion = new CertificationCriterionDTO(domain.getCertificationCriterion());
     }
 
