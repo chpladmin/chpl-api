@@ -17,6 +17,8 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Where;
 
+import gov.healthit.chpl.util.Util;
+
 @Entity
 @Table(name = "complaint")
 public class ComplaintEntity {
@@ -161,11 +163,11 @@ public class ComplaintEntity {
     }
 
     public Date getReceivedDate() {
-        return receivedDate;
+        return Util.getNewDate(receivedDate);
     }
 
     public void setReceivedDate(final Date receivedDate) {
-        this.receivedDate = receivedDate;
+        this.receivedDate = Util.getNewDate(receivedDate);
     }
 
     public String getSummary() {
