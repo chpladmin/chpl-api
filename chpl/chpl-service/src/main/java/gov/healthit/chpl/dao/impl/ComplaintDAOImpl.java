@@ -32,6 +32,15 @@ import gov.healthit.chpl.util.ChplProductNumberUtil;
 @Component
 public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
     private static final Logger LOGGER = LogManager.getLogger(ComplaintDAOImpl.class);
+    private static final String GET_COMPLAINTS_HQL = "SELECT DISTINCT c "
+            + "FROM ComplaintEntity c "
+            + "LEFT JOIN FETCH c.listings "
+            + "LEFT JOIN FETCH c.criteria "
+            + "JOIN FETCH c.certificationBody "
+            + "JOIN FETCH c.complainantType "
+            + "JOIN FETCH c.complaintStatusType "
+            + "WHERE c.deleted = false ";
+
     private ChplProductNumberUtil chplProductNumberUtil;
     private CertificationCriterionDAO certificationCriterionDAO;
 
@@ -64,10 +73,36 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
 
     @Override
     public List<ComplaintDTO> getAllComplaints() {
-        Query query = entityManager.createQuery("SELECT DISTINCT c FROM ComplaintEntity c "
-                + "LEFT JOIN FETCH c.listings " + "LEFT JOIN FETCH c.criteria " + "JOIN FETCH c.certificationBody "
-                + "JOIN FETCH c.complainantType " + "JOIN FETCH c.complaintStatusType " + "WHERE c.deleted = false ",
+        Query query = entityManager.createQuery(GET_COMPLAINTS_HQL,
                 ComplaintEntity.class);
+        List<ComplaintEntity> results = query.getResultList();
+
+        List<ComplaintDTO> complaintDTOs = new ArrayList<ComplaintDTO>();
+        for (ComplaintEntity entity : results) {
+            for (ComplaintListingMapEntity complaintListing : entity.getListings()) {
+                populateChplProductNumber(complaintListing);
+            }
+            for (ComplaintCriterionMapEntity complaintCriteria : entity.getCriteria()) {
+                try {
+                    populateCertificationCriterion(complaintCriteria);
+                } catch (Exception e) {
+                    LOGGER.error("Error retreiving CertificationCriterion. - " + e.getMessage(), e);
+                }
+            }
+            complaintDTOs.add(new ComplaintDTO(entity));
+        }
+
+        return complaintDTOs;
+    }
+
+    @Override
+    public List<ComplaintDTO> getAllComplaintsBetweenDates(final Date startDate, final Date endDate) {
+        Query query = entityManager.createQuery(GET_COMPLAINTS_HQL
+                + " AND c.receivedDate >= :startDate "
+                + " AND c.receivedDate <= :endDate ",
+                ComplaintEntity.class);
+        query.setParameter("startDate", startDate);
+        query.setParameter("endDate", endDate);
         List<ComplaintEntity> results = query.getResultList();
 
         List<ComplaintDTO> complaintDTOs = new ArrayList<ComplaintDTO>();
@@ -171,10 +206,8 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
     private ComplaintEntity getEntityById(Long id) throws EntityRetrievalException {
         ComplaintEntity entity = null;
 
-        Query query = entityManager.createQuery("SELECT DISTINCT c FROM ComplaintEntity c "
-                + "LEFT JOIN FETCH c.listings " + "LEFT JOIN FETCH c.criteria " + "JOIN FETCH c.certificationBody "
-                + "JOIN FETCH c.complainantType " + "JOIN FETCH c.complaintStatusType " + "WHERE c.deleted = false "
-                + "AND c.id = :complaintId", ComplaintEntity.class);
+        Query query = entityManager.createQuery(GET_COMPLAINTS_HQL
+                + " AND c.id = :complaintId", ComplaintEntity.class);
         query.setParameter("complaintId", id);
         List<ComplaintEntity> result = query.getResultList();
 

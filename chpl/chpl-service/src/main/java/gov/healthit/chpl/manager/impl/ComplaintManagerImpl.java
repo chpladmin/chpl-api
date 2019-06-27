@@ -1,6 +1,7 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -79,6 +80,21 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
     public List<Complaint> getAllComplaints() {
         List<Complaint> complaints = new ArrayList<Complaint>();
         List<ComplaintDTO> dtos = complaintDAO.getAllComplaints();
+        for (ComplaintDTO dto : dtos) {
+            complaints.add(new Complaint(dto));
+        }
+        return complaints;
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
+            + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).GET_ALL)")
+    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
+            + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).GET_ALL, filterObject)")
+    public List<Complaint> getAllComplaintsBetweenDates(final Date startDate, final Date endDate) {
+        List<Complaint> complaints = new ArrayList<Complaint>();
+        List<ComplaintDTO> dtos = complaintDAO.getAllComplaintsBetweenDates(startDate, endDate);
         for (ComplaintDTO dto : dtos) {
             complaints.add(new Complaint(dto));
         }

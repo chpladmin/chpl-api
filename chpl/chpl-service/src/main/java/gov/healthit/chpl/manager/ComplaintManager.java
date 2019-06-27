@@ -1,5 +1,6 @@
 package gov.healthit.chpl.manager;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -15,6 +16,8 @@ public interface ComplaintManager {
     Set<KeyValueModel> getComplaintStatusTypes();
 
     List<Complaint> getAllComplaints();
+
+    List<Complaint> getAllComplaintsBetweenDates(Date startDate, Date endDate);
 
     Complaint create(Complaint complaint) throws EntityRetrievalException, ValidationException;
 

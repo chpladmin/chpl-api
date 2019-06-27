@@ -1,5 +1,6 @@
 package gov.healthit.chpl.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import gov.healthit.chpl.dto.ComplaintDTO;
@@ -13,6 +14,8 @@ public interface ComplaintDAO {
     List<ComplaintStatusTypeDTO> getComplaintStatusTypes();
 
     List<ComplaintDTO> getAllComplaints();
+
+    List<ComplaintDTO> getAllComplaintsBetweenDates(Date startDate, Date endDate);
 
     ComplaintDTO getComplaint(Long complaintId) throws EntityRetrievalException;
 
