@@ -5,7 +5,7 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import gov.healthit.chpl.domain.SurveillanceNonconformity;
+import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 
 /**
  * Generate &lt;nonconformities&gt;&lt;nonconformity&gt;&lt;/nonconformity&gt;&lt;/nonconformities&gt; nodes.

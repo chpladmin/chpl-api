@@ -7,10 +7,10 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.activity.ActivityCategory;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.ListingActivityMetadata;
+import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.dto.ActivityDTO;
 
 @Component("listingActivityMetadataBuilder")

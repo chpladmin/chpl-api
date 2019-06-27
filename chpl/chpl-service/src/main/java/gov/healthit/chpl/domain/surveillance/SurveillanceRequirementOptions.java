@@ -1,8 +1,10 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.domain.surveillance;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import gov.healthit.chpl.domain.KeyValueModel;
 
 public class SurveillanceRequirementOptions implements Serializable {
     private static final long serialVersionUID = 500382005925313527L;

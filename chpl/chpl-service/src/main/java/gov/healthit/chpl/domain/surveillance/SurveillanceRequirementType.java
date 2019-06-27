@@ -1,4 +1,4 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.domain.surveillance;
 
 import java.io.Serializable;
 
@@ -11,39 +11,37 @@ import org.apache.commons.lang3.StringUtils;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class SurveillanceNonconformityStatus implements Serializable {
-    private static final long serialVersionUID = -411041849666278903L;
-    public static final String OPEN = "Open";
-    public static final String CLOSED = "Closed";
+public class SurveillanceRequirementType implements Serializable {
+    private static final long serialVersionUID = -5865384642096284604L;
 
     /**
-     * Nonconformity status internal ID
+     * Surveillance requirement type internal ID
      */
     @XmlElement(required = true)
     private Long id;
 
     /**
-     * Nonconformity status name. Open or Closed.
+     * Surveillance requirement type name
      */
     @XmlElement(required = true)
     private String name;
 
-    public SurveillanceNonconformityStatus() {
+    public SurveillanceRequirementType() {
     }
 
     /**
      * Checks the id and name fields to determine if the two
-     * status fields are the same.
+     * requirement type fields are the same.
      * Expect one or both fields to be filled in always.
-     * @param anotherStatus
+     * @param anotherType
      * @return whether the two objects are the same
      */
-    public boolean matches(final SurveillanceNonconformityStatus anotherStatus) {
-        if (this.id != null && anotherStatus.id != null
-                && this.id.longValue() == anotherStatus.id.longValue()) {
+    public boolean matches(final SurveillanceRequirementType anotherType) {
+        if (this.id != null && anotherType.id != null
+                && this.id.longValue() == anotherType.id.longValue()) {
             return true;
-        } else if (!StringUtils.isEmpty(this.name) && !StringUtils.isEmpty(anotherStatus.name)
-                && this.name.equalsIgnoreCase(anotherStatus.name)) {
+        } else if (!StringUtils.isEmpty(this.name) && !StringUtils.isEmpty(anotherType.name)
+                && this.name.equalsIgnoreCase(anotherType.name)) {
             return true;
         }
         return false;

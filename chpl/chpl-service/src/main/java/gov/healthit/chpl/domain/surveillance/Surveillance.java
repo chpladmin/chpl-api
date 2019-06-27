@@ -1,4 +1,4 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.domain.surveillance;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.activity.ActivityCategory;
 import gov.healthit.chpl.util.Util;
 

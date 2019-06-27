@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-import gov.healthit.chpl.domain.Surveillance;
-import gov.healthit.chpl.domain.SurveillanceNonconformityDocument;
+import gov.healthit.chpl.domain.surveillance.Surveillance;
+import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityDocument;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;

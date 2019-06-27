@@ -2,12 +2,12 @@ package gov.healthit.chpl.dao.surveillance;
 
 import java.util.List;
 
-import gov.healthit.chpl.domain.Surveillance;
-import gov.healthit.chpl.domain.SurveillanceNonconformityDocument;
-import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;
-import gov.healthit.chpl.domain.SurveillanceRequirementType;
-import gov.healthit.chpl.domain.SurveillanceResultType;
-import gov.healthit.chpl.domain.SurveillanceType;
+import gov.healthit.chpl.domain.surveillance.Surveillance;
+import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityDocument;
+import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityStatus;
+import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
+import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
+import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityDocumentationEntity;

@@ -1,12 +1,17 @@
 package gov.healthit.chpl.builder;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.dao.ComplaintDAO;
+import gov.healthit.chpl.dto.ComplainantTypeDTO;
+import gov.healthit.chpl.dto.ComplaintStatusTypeDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 
 /**
@@ -38,8 +43,12 @@ public class ListWorksheetBuilder extends XlsxWorksheetBuilder {
     private static final String BOOLEAN_YES = "Yes";
     private static final String BOOLEAN_NO = "No";
 
-    public ListWorksheetBuilder() {
+    private ComplaintDAO complaintDao;
+
+    @Autowired
+    public ListWorksheetBuilder(final ComplaintDAO complaintDao) {
         super();
+        this.complaintDao = complaintDao;
     }
 
     @Override
@@ -135,6 +144,24 @@ public class ListWorksheetBuilder extends XlsxWorksheetBuilder {
         choicesRow = getRow(sheet, booleanRow++);
         choicesCell = choicesRow.createCell(booleanCol);
         choicesCell.setCellValue(BOOLEAN_NO);
+
+        int complainantTypeCol = 4;
+        int complainantTypeRow = 0;
+        List<ComplainantTypeDTO> complainantTypes = complaintDao.getComplainantTypes();
+        for (ComplainantTypeDTO complainantType : complainantTypes) {
+            choicesRow = getRow(sheet, complainantTypeRow++);
+            choicesCell = choicesRow.createCell(complainantTypeCol);
+            choicesCell.setCellValue(complainantType.getName());
+        }
+
+        int complaintStatusTypeCol = 5;
+        int complaintStatusTypeRow = 0;
+        List<ComplaintStatusTypeDTO> complaintStatusTypes = complaintDao.getComplaintStatusTypes();
+        for (ComplaintStatusTypeDTO complaintStatusType : complaintStatusTypes) {
+            choicesRow = getRow(sheet, complaintStatusTypeRow++);
+            choicesCell = choicesRow.createCell(complaintStatusTypeCol);
+            choicesCell.setCellValue(complaintStatusType.getName());
+        }
 
         // unselect that sheet because we will hide it later
         sheet.setSelected(false);
