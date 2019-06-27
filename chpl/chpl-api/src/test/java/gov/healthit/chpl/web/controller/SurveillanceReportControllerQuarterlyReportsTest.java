@@ -36,6 +36,7 @@ import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.surveillance.report.QuarterlyReport;
+import gov.healthit.chpl.domain.surveillance.report.RelevantListing;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -149,7 +150,7 @@ public class SurveillanceReportControllerQuarterlyReportsTest {
         assertNotNull(created);
         assertNotNull(created.getId());
         assertTrue(created.getId() > 0);
-        List<CertifiedProduct> relevantListings = reportController.getRelevantListings(created.getId());
+        List<RelevantListing> relevantListings = reportController.getRelevantListings(created.getId());
         assertNotNull(relevantListings);
     }
 

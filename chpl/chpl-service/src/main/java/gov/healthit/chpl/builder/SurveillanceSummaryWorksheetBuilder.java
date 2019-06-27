@@ -6,23 +6,21 @@ import java.io.IOException;
 import org.apache.poi.ss.usermodel.BorderExtent;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.PropertyTemplate;
+import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
-
+@Component
 public class SurveillanceSummaryWorksheetBuilder extends XlsxWorksheetBuilder {
     private static final int LAST_DATA_COLUMN = 10;
     private static final int LAST_DATA_ROW = 60;
 
     private PropertyTemplate pt;
 
-    public SurveillanceSummaryWorksheetBuilder(final Workbook workbook) {
-        super(workbook);
+    public SurveillanceSummaryWorksheetBuilder() {
+        super();
         pt = new PropertyTemplate();
     }
 

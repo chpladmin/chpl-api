@@ -29,6 +29,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.builder.AnnualReportBuilderXlsx;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
@@ -49,6 +50,7 @@ import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.manager.SurveillanceReportManager;
 import junit.framework.TestCase;
@@ -80,6 +82,9 @@ public class AnnualReportManagerTest extends TestCase {
 
     @Autowired
     private CertifiedProductDAO cpDao;
+
+    @Autowired
+    private AnnualReportBuilderXlsx reportBuilder;
 
     @Rule
     @Autowired
@@ -357,6 +362,12 @@ public class AnnualReportManagerTest extends TestCase {
         //create a surveillance to add to the report
         //surv will start one day after the quarter begins
         createSurveillance(1L, new Date(q1Report.getStartDate().getTime() + (24*60*60*1000)));
+        createSurveillance(2L, new Date(q1Report.getStartDate().getTime() + (48*60*60*1000)));
+        createSurveillance(3L, new Date(q1Report.getStartDate().getTime() + (72*60*60*1000)));
+
+        //add excluded listing to the quarter
+        reportManager.createQuarterlyReportExclusion(q1Report, 1L, "A really good reason for q1");
+        reportManager.createQuarterlyReportExclusion(q1Report, 3L, "A really good reason for listing id 3");
 
         quarter = new QuarterDTO();
         quarter.setName("Q2");
@@ -368,7 +379,10 @@ public class AnnualReportManagerTest extends TestCase {
         toCreate.setReactiveSummary("test reactive element summary for Q2");
         toCreate.setPrioritizedElementSummary("test prioritized element summary for Q2");
         toCreate.setTransparencyDisclosureSummary("test transparency and disclosure summary for Q2");
-        reportManager.createQuarterlyReport(toCreate);
+        QuarterlyReportDTO q2Report = reportManager.createQuarterlyReport(toCreate);
+
+        //add excluded listing to the quarter
+        reportManager.createQuarterlyReportExclusion(q2Report, 1L, "A really good reason for q2");
 
         quarter = new QuarterDTO();
         quarter.setName("Q3");
@@ -380,7 +394,7 @@ public class AnnualReportManagerTest extends TestCase {
         toCreate.setReactiveSummary("test reactive element summary for Q3");
         toCreate.setPrioritizedElementSummary("test prioritized element summary for Q3");
         toCreate.setTransparencyDisclosureSummary("test transparency and disclosure summary for Q");
-        reportManager.createQuarterlyReport(toCreate);
+        QuarterlyReportDTO q3Report = reportManager.createQuarterlyReport(toCreate);
 
         quarter = new QuarterDTO();
         quarter.setName("Q4");
@@ -392,7 +406,7 @@ public class AnnualReportManagerTest extends TestCase {
         toCreate.setReactiveSummary("test reactive element summary for Q4");
         toCreate.setPrioritizedElementSummary("test prioritized element summary for Q4");
         toCreate.setTransparencyDisclosureSummary("test transparency and disclosure summary for Q4");
-        reportManager.createQuarterlyReport(toCreate);
+        QuarterlyReportDTO q4Report = reportManager.createQuarterlyReport(toCreate);
 
         //create the annual report
         AnnualReportDTO annualReport = new AnnualReportDTO();
@@ -412,7 +426,8 @@ public class AnnualReportManagerTest extends TestCase {
                 "Barton did feebly change man she afford square add. Want eyes by neat so just must. Past draw tall up face show rent oh mr. Required is debating extended wondered as do. New get described applauded incommode shameless out extremity but. Resembled at perpetual no believing is otherwise sportsman. Is do he dispatched cultivated travelling astonished. Melancholy am considered possession on collecting everything. \n");
         AnnualReportDTO created = reportManager.createAnnualReport(annualReport);
 
-        Workbook workbook = reportManager.exportAnnualReport(created.getId());
+        AnnualReportDTO fetchedReport = reportManager.getAnnualReport(created.getId());
+        Workbook workbook = reportBuilder.buildXlsx(fetchedReport);
         assertNotNull(workbook);
 
         //uncomment to write report
@@ -435,7 +450,7 @@ public class AnnualReportManagerTest extends TestCase {
     @Transactional
     public void writeAnnualReportAsExcelWorkbook_AcbNotAllowed()
             throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException,
-            IOException {
+            UserRetrievalException, IOException {
         SecurityContextHolder.getContext().setAuthentication(acbUser);
         AnnualReportDTO annualReport = new AnnualReportDTO();
         annualReport.setYear(2019);
@@ -446,7 +461,7 @@ public class AnnualReportManagerTest extends TestCase {
         annualReport.setObstacleSummary("test obstacle summary");
         AnnualReportDTO created = reportManager.createAnnualReport(annualReport);
 
-        reportManager.exportAnnualReport(created.getId());
+        reportManager.exportAnnualReportAsBackgroundJob(created.getId());
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 

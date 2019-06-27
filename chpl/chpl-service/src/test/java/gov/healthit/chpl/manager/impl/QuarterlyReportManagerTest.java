@@ -3,6 +3,7 @@ package gov.healthit.chpl.manager.impl;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Workbook;
@@ -28,15 +29,31 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.builder.QuarterlyReportBuilderXlsx;
 import gov.healthit.chpl.caching.UnitTestRules;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.dao.surveillance.report.QuarterDAO;
 import gov.healthit.chpl.dao.surveillance.report.QuarterlyReportDAO;
+import gov.healthit.chpl.domain.CertifiedProduct;
+import gov.healthit.chpl.domain.Surveillance;
+import gov.healthit.chpl.domain.SurveillanceNonconformity;
+import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;
+import gov.healthit.chpl.domain.SurveillanceRequirement;
+import gov.healthit.chpl.domain.SurveillanceRequirementType;
+import gov.healthit.chpl.domain.SurveillanceResultType;
+import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
+import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportExclusionDTO;
+import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportRelevantListingDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.manager.SurveillanceReportManager;
 import junit.framework.TestCase;
 
@@ -57,10 +74,23 @@ public class QuarterlyReportManagerTest extends TestCase {
     private SurveillanceReportManager reportManager;
 
     @Autowired
+    private SurveillanceManager survManager;
+
+    @Autowired
     private QuarterlyReportDAO quarterlyReportDao;
 
     @Autowired
     private QuarterDAO quarterDao;
+
+
+    @Autowired
+    private SurveillanceDAO survDao;
+
+    @Autowired
+    private CertifiedProductDAO cpDao;
+
+    @Autowired
+    private QuarterlyReportBuilderXlsx reportBuilder;
 
     @Rule
     @Autowired
@@ -109,6 +139,56 @@ public class QuarterlyReportManagerTest extends TestCase {
     @Transactional
     public void createReportTest() throws EntityCreationException, EntityRetrievalException {
         createReport();
+    }
+
+    @Test(expected = EntityCreationException.class)
+    @Rollback(true)
+    @Transactional
+    public void createExclusionListingNotRelevantTest() throws EntityCreationException,
+        InvalidArgumentsException, EntityRetrievalException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        QuarterlyReportDTO createdReport = createReport();
+        QuarterlyReportExclusionDTO exclusion = reportManager.createQuarterlyReportExclusion(createdReport, 1L, "Test");
+        assertNotNull(exclusion);
+        assertNotNull(exclusion.getId());
+        assertTrue(exclusion.getId() > 0);
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    @Test
+    @Rollback(true)
+    @Transactional
+    public void createExclusion() throws EntityCreationException,
+        InvalidArgumentsException, EntityRetrievalException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        Long listingId = 1L;
+        String reason = "test";
+        QuarterlyReportDTO createdReport = createReport();
+        //need a relevant surveillance
+        createSurveillance(listingId, new Date(createdReport.getStartDate().getTime() + (24*60*60*1000)));
+        QuarterlyReportExclusionDTO exclusion = reportManager.createQuarterlyReportExclusion(createdReport, listingId, reason);
+        assertNotNull(exclusion);
+        assertNotNull(exclusion.getId());
+        assertTrue(exclusion.getId() > 0);
+        assertEquals(listingId, exclusion.getListingId());
+        assertEquals(reason, exclusion.getReason());
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    @Test(expected = EntityCreationException.class)
+    @Rollback(true)
+    @Transactional
+    public void createExclusionAlreadyExists() throws EntityCreationException,
+        InvalidArgumentsException, EntityRetrievalException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        QuarterlyReportDTO createdReport = createReport();
+        //need a relevant surveillance
+        createSurveillance(1L, new Date(createdReport.getStartDate().getTime() + (24*60*60*1000)));
+        //original exclusion
+        reportManager.createQuarterlyReportExclusion(createdReport, 1L, "original");
+        //duplicate exclusion
+        reportManager.createQuarterlyReportExclusion(createdReport, 1L, "duplicate");
+        SecurityContextHolder.getContext().setAuthentication(null);
     }
 
     @Test(expected = InvalidArgumentsException.class)
@@ -355,6 +435,31 @@ public class QuarterlyReportManagerTest extends TestCase {
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
+    @Test
+    @Rollback(true)
+    @Transactional
+    public void updateExclusionChangeReason() throws EntityCreationException,
+        InvalidArgumentsException, EntityRetrievalException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        Long listingId = 1L;
+        String reason = "test";
+        String changedReason = "updated test";
+        QuarterlyReportDTO createdReport = createReport();
+        //need a relevant surveillance
+        createSurveillance(listingId, new Date(createdReport.getStartDate().getTime() + (24*60*60*1000)));
+        QuarterlyReportExclusionDTO exclusion = reportManager.createQuarterlyReportExclusion(createdReport, listingId, reason);
+        assertNotNull(exclusion);
+        assertNotNull(exclusion.getId());
+        QuarterlyReportExclusionDTO updatedExclusion =
+                reportManager.updateQuarterlyReportExclusion(createdReport, listingId, changedReason);
+        assertNotNull(updatedExclusion);
+        assertNotNull(updatedExclusion.getId());
+        assertTrue(updatedExclusion.getId() > 0);
+        assertEquals(listingId, updatedExclusion.getListingId());
+        assertEquals(changedReason, updatedExclusion.getReason());
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
     @Test(expected = EntityRetrievalException.class)
     @Rollback(true)
     @Transactional
@@ -363,6 +468,31 @@ public class QuarterlyReportManagerTest extends TestCase {
         QuarterlyReportDTO report = createReport();
         reportManager.deleteQuarterlyReport(report.getId());
         reportManager.getQuarterlyReport(report.getId());
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    @Test
+    @Rollback(true)
+    @Transactional
+    public void deleteExclusion() throws EntityCreationException,
+        InvalidArgumentsException, EntityRetrievalException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        Long listingId = 1L;
+        String reason = "test";
+        QuarterlyReportDTO createdReport = createReport();
+        //need a relevant surveillance
+        createSurveillance(listingId, new Date(createdReport.getStartDate().getTime() + (24*60*60*1000)));
+        QuarterlyReportExclusionDTO exclusion = reportManager.createQuarterlyReportExclusion(createdReport, listingId, reason);
+        assertNotNull(exclusion);
+        assertNotNull(exclusion.getId());
+        reportManager.deleteQuarterlyReportExclusion(createdReport.getId(), listingId);
+        List<QuarterlyReportRelevantListingDTO> relevantListings =
+                reportManager.getRelevantListings(createdReport);
+        assertNotNull(relevantListings);
+        assertTrue(relevantListings.size() > 0);
+        for (QuarterlyReportRelevantListingDTO relevantListing : relevantListings) {
+            assertFalse(relevantListing.isExcluded());
+        }
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
@@ -433,7 +563,8 @@ public class QuarterlyReportManagerTest extends TestCase {
         toCreate.setTransparencyDisclosureSummary("test transparency and disclosure summary");
         QuarterlyReportDTO created = reportManager.createQuarterlyReport(toCreate);
 
-        Workbook workbook = reportManager.exportQuarterlyReport(created.getId());
+        QuarterlyReportDTO fetchedReport = reportManager.getQuarterlyReport(created.getId());
+        Workbook workbook = reportBuilder.buildXlsx(fetchedReport);
         assertNotNull(workbook);
 
         //uncomment to write report
@@ -456,7 +587,7 @@ public class QuarterlyReportManagerTest extends TestCase {
     @Transactional
     public void writeQuarterlyReportAsExcelWorkbook_AcbNotAllowed()
             throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException,
-            IOException {
+            UserRetrievalException, IOException {
         SecurityContextHolder.getContext().setAuthentication(acbUser);
         QuarterDTO quarter = new QuarterDTO();
         quarter.setName("Q1");
@@ -472,7 +603,7 @@ public class QuarterlyReportManagerTest extends TestCase {
         toCreate.setTransparencyDisclosureSummary("test transparency and disclosure summary");
         QuarterlyReportDTO created = reportManager.createQuarterlyReport(toCreate);
 
-        reportManager.exportQuarterlyReport(created.getId());
+        reportManager.exportQuarterlyReportAsBackgroundJob(created.getId());
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
@@ -511,5 +642,65 @@ public class QuarterlyReportManagerTest extends TestCase {
         assertNotNull(created.getQuarter());
         assertEquals(quarter.getId(), created.getQuarter().getId());
         return created;
+    }
+
+    private void createSurveillance(final Long listingId, final Date startDate) throws EntityRetrievalException {
+        Surveillance surv = new Surveillance();
+
+        CertifiedProductDTO cpDto = cpDao.getById(listingId);
+        CertifiedProduct cp = new CertifiedProduct();
+        cp.setId(cpDto.getId());
+        cp.setChplProductNumber(cp.getChplProductNumber());
+        cp.setEdition(cp.getEdition());
+        surv.setCertifiedProduct(cp);
+        surv.setStartDate(startDate);
+        surv.setRandomizedSitesUsed(10);
+        SurveillanceType type = survDao.findSurveillanceType("Randomized");
+        surv.setType(type);
+
+        SurveillanceRequirement req = new SurveillanceRequirement();
+        req.setRequirement("170.314 (a)(1)");
+        SurveillanceRequirementType reqType = survDao.findSurveillanceRequirementType("Certified Capability");
+        req.setType(reqType);
+        SurveillanceResultType resType = survDao.findSurveillanceResultType("No Non-Conformity");
+        req.setResult(resType);
+        surv.getRequirements().add(req);
+
+        SurveillanceRequirement req2 = new SurveillanceRequirement();
+        req2.setRequirement("170.314 (a)(2)");
+        reqType = survDao.findSurveillanceRequirementType("Certified Capability");
+        req2.setType(reqType);
+        resType = survDao.findSurveillanceResultType("Non-Conformity");
+        req2.setResult(resType);
+        surv.getRequirements().add(req2);
+
+        SurveillanceNonconformity nc = new SurveillanceNonconformity();
+        nc.setCapApprovalDate(new Date());
+        nc.setCapMustCompleteDate(new Date());
+        nc.setCapStartDate(new Date());
+        nc.setDateOfDetermination(new Date());
+        nc.setDeveloperExplanation("Something");
+        nc.setFindings("Findings!");
+        nc.setSitesPassed(2);
+        nc.setNonconformityType("170.314 (a)(2)");
+        nc.setSummary("summary");
+        nc.setTotalSites(5);
+        SurveillanceNonconformityStatus ncStatus = survDao.findSurveillanceNonconformityStatusType("Open");
+        nc.setStatus(ncStatus);
+        req2.getNonconformities().add(nc);
+
+        Long insertedId;
+        try {
+            insertedId = survManager.createSurveillance(-1L, surv);
+            assertNotNull(insertedId);
+            Surveillance got = survManager.getById(insertedId);
+            assertNotNull(got);
+            assertNotNull(got.getCertifiedProduct());
+            assertEquals(cpDto.getId(), got.getCertifiedProduct().getId());
+            assertEquals(cpDto.getChplProductNumber(), got.getCertifiedProduct().getChplProductNumber());
+            assertEquals(surv.getRandomizedSitesUsed(), got.getRandomizedSitesUsed());
+        } catch (Exception e) {
+            System.out.println(e.getClass() + ": " + e.getMessage());
+        }
     }
 }

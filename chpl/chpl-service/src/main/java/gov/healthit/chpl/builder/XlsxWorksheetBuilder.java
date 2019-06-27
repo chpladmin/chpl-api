@@ -18,7 +18,6 @@ import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.DefaultIndexedColorMap;
 import org.apache.poi.xssf.usermodel.XSSFColor;
-import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTCol;
 import org.springframework.util.StringUtils;
@@ -35,10 +34,7 @@ public abstract class XlsxWorksheetBuilder {
     italicUnderlinedSmallStyle, topAlignedWrappedStyle, sectionNumberingStyle, sectionHeadingStyle,
     rightAlignedTableHeadingStyle, leftAlignedTableHeadingStyle, wrappedTableHeadingStyle, tableSubheadingStyle;
 
-    public XlsxWorksheetBuilder(final Workbook workbook) {
-        this.workbook = workbook;
-        initializeFonts();
-        initializeStyles();
+    public XlsxWorksheetBuilder() {
     }
 
     public abstract int getLastDataColumn();
@@ -94,10 +90,6 @@ public abstract class XlsxWorksheetBuilder {
     /**
      * Given a string and the width of column (in... units?? pixels?) figure out
      * how many lines the string of text it will take up if it wraps.
-     * This is still a little rough and is erring on the side of
-     * getting too many lines so that all of the data is at least visible.
-     * It works pretty well if the entered text doesn't have a lot of newlines in it already;
-     * less well if the entered text has a lot of newline characters in it.
      * @param text
      * @param cells
      * @return
@@ -113,20 +105,25 @@ public abstract class XlsxWorksheetBuilder {
         if (newlineCharCount == 0) {
             totalLineCount = calculateLineCountWithoutNewlines(text, sheet, firstColIndex, lastColIndex);
         } else {
-            totalLineCount = newlineCharCount;
             //find each section of this text between newlines; check if that section
             //wraps over multiple lines and add to the count
             for (int i = 0; i < text.length(); i++) {
                 int indexOfNextNewline = text.indexOf("\n", i);
-                if (indexOfNextNewline >= i) {
+                if (indexOfNextNewline == i) {
+                    //a newline with no other text characters
+                    totalLineCount++;
+                } else if (indexOfNextNewline > i) {
+                    //a paragraph inbetween newlnes
                     String sectionText = text.substring(i, indexOfNextNewline);
                     int sectionLineCount = calculateLineCountWithoutNewlines(sectionText, sheet, firstColIndex, lastColIndex);
-                    //one line is already accounted for from counting the newline char itself
-                    //so no need to add to the line count unless there is more than 1 line
-                    if (sectionLineCount > 1) {
-                        totalLineCount += sectionLineCount - 1;
-                    }
-                    i = indexOfNextNewline+1;
+                    totalLineCount += sectionLineCount;
+                    i = indexOfNextNewline;
+                } else if (indexOfNextNewline == -1 && i < text.length()) {
+                    //last section, no newlines after it
+                    String sectionText = text.substring(i);
+                    int sectionLineCount = calculateLineCountWithoutNewlines(sectionText, sheet, firstColIndex, lastColIndex);
+                    totalLineCount += sectionLineCount;
+                    i = text.length();
                 }
             }
         }
@@ -139,7 +136,7 @@ public abstract class XlsxWorksheetBuilder {
      * given the column width available and the fact that the supplied
      * text does not have any explicit newlines in it.
      * Using the "smallFont" as our default since most user-entered text cells
-     * are styled with that one.
+     * are styled with that one. It sometimes returns one line too many and I'm not sure why.
      * @param textWithoutNewlines
      * @param sheet
      * @param firstColIndex
@@ -313,5 +310,15 @@ public abstract class XlsxWorksheetBuilder {
         tableSubheadingStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.index);
         tableSubheadingStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         tableSubheadingStyle.setFillBackgroundColor(IndexedColors.GREY_25_PERCENT.index);
+    }
+
+    public Workbook getWorkbook() {
+        return workbook;
+    }
+
+    public void setWorkbook(final Workbook workbook) {
+        this.workbook = workbook;
+        initializeFonts();
+        initializeStyles();
     }
 }

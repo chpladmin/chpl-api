@@ -8,12 +8,13 @@ import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.PropertyTemplate;
+import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
 
+@Component
 public class SurveillanceExperienceWorksheetBuilder extends XlsxWorksheetBuilder {
     private static final int LAST_DATA_COLUMN = 8;
     private static final int LAST_DATA_ROW = 60;
@@ -21,8 +22,8 @@ public class SurveillanceExperienceWorksheetBuilder extends XlsxWorksheetBuilder
 
     private PropertyTemplate pt;
 
-    public SurveillanceExperienceWorksheetBuilder(final Workbook workbook) {
-        super(workbook);
+    public SurveillanceExperienceWorksheetBuilder() {
+        super();
         pt = new PropertyTemplate();
     }
 
@@ -76,7 +77,7 @@ public class SurveillanceExperienceWorksheetBuilder extends XlsxWorksheetBuilder
         row = getRow(sheet, 2);
         cell = createCell(row, 1);
         cell.setCellStyle(topAlignedWrappedStyle);
-        cell.setCellValue(report.getObstacleSummary());
+        cell.setCellValue(report.getObstacleSummary().trim());
         sheet.addMergedRegion(new CellRangeAddress(2, 2, 1, 3));
         //this is user-entered text that wraps so we should try to resize the height
         //of the row to show all the lines of text.
@@ -95,7 +96,7 @@ public class SurveillanceExperienceWorksheetBuilder extends XlsxWorksheetBuilder
         row = getRow(sheet, 2);
         cell = createCell(row, 5);
         cell.setCellStyle(topAlignedWrappedStyle);
-        cell.setCellValue(report.getFindingsSummary());
+        cell.setCellValue(report.getFindingsSummary().trim());
         //this is user-entered text that wraps so we should try to resize the height
         //of the row to show all the lines of text.
         int lineCount = calculateLineCount(cell.getStringCellValue(), sheet, 5, 5);

@@ -18,5 +18,8 @@ _surveillance-reporting_
   * PUT /surveillance-report/annual
   * DELETE /surveillance-report/annual/{id}
 * Added capability to export some annual report data as an XLSX spreadsheet with a CHPL background job.
-* Added endpoint to get listings relevant to any quarterly report.
+* Added endpoint to get listings relevant to any quarterly report including whether they have been excluded.
+  * GET /surveillance-report/quarterly/{id}/listings
+* Added endpoint to update whether a relevant listing is excluded from a quarterly report.
+  * PUT /surveillance-report/quarterly/{id}/listings/{id}
 

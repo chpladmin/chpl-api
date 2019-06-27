@@ -7,12 +7,11 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,16 +21,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.FeatureList;
-import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.Job;
 import gov.healthit.chpl.domain.surveillance.report.AnnualReport;
 import gov.healthit.chpl.domain.surveillance.report.QuarterlyReport;
+import gov.healthit.chpl.domain.surveillance.report.RelevantListing;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
+import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportExclusionDTO;
+import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportRelevantListingDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -152,7 +152,7 @@ public class SurveillanceReportController {
             notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative authority "
                     + "on the ACB associated with the report.")
     @RequestMapping(value = "/export/annual/{annualReportId}", method = RequestMethod.GET)
-    public ResponseEntity<Job> exportAnnualReport(@PathVariable("annualReportId") final Long annualReportId,
+    public Job exportAnnualReport(@PathVariable("annualReportId") final Long annualReportId,
             final HttpServletResponse response) throws EntityRetrievalException, UserRetrievalException,
             EntityCreationException, IOException {
         if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
@@ -160,8 +160,7 @@ public class SurveillanceReportController {
         }
 
         JobDTO exportJob = reportManager.exportAnnualReportAsBackgroundJob(annualReportId);
-        Job result = new Job(exportJob);
-        return new ResponseEntity<Job>(result, HttpStatus.OK);
+        return new Job(exportJob);
     }
 
     @ApiOperation(value = "Get all quarterly surveillance reports this user has access to.",
@@ -200,18 +199,19 @@ public class SurveillanceReportController {
                     + "authority on the ACB associated with the report.")
     @RequestMapping(value = "/quarterly/{quarterlyReportId}/listings",
         method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<CertifiedProduct> getRelevantListings(@PathVariable final Long quarterlyReportId)
+    public @ResponseBody List<RelevantListing> getRelevantListings(@PathVariable final Long quarterlyReportId)
             throws AccessDeniedException, EntityRetrievalException {
         if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
             throw new NotImplementedException();
         }
         QuarterlyReportDTO reportDto = reportManager.getQuarterlyReport(quarterlyReportId);
-        List<CertifiedProductDetailsDTO> relevantListingDtos = reportManager.getRelevantListings(reportDto);
+        List<QuarterlyReportRelevantListingDTO> relevantListingDtos =
+                reportManager.getRelevantListings(reportDto);
 
-        List<CertifiedProduct> relevantListings = new ArrayList<CertifiedProduct>();
+        List<RelevantListing> relevantListings = new ArrayList<RelevantListing>();
         if (relevantListingDtos != null && relevantListingDtos.size() > 0) {
-            for (CertifiedProductDetailsDTO relevantListingDto : relevantListingDtos) {
-                relevantListings.add(new CertifiedProduct(relevantListingDto));
+            for (QuarterlyReportRelevantListingDTO relevantListingDto : relevantListingDtos) {
+                relevantListings.add(new RelevantListing(relevantListingDto));
             }
         }
         return relevantListings;
@@ -246,6 +246,48 @@ public class SurveillanceReportController {
         quarterlyReport.setTransparencyDisclosureSummary(createRequest.getTransparencyDisclosureSummary());
         QuarterlyReportDTO createdReport = reportManager.createQuarterlyReport(quarterlyReport);
         return new QuarterlyReport(createdReport);
+    }
+
+    @ApiOperation(value = "Updates whether a relevant listing is marked as excluded from a quarterly "
+            + "report. If it's being excluded then the reason is required.",
+            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
+                    + "authority on the ACB associated with the report.")
+    @RequestMapping(value = "/quarterly/{quarterlyReportId}/listings/{listingId}", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
+    public synchronized RelevantListing updateRelevantListing(@PathVariable final Long quarterlyReportId,
+            @PathVariable final Long listingId,
+            @RequestBody(required = true) final RelevantListing updateExclusionRequest)
+                throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException, EntityCreationException {
+        if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
+            throw new NotImplementedException();
+        }
+        QuarterlyReportDTO quarterlyReport = reportManager.getQuarterlyReport(quarterlyReportId);
+        if (updateExclusionRequest.isExcluded() && StringUtils.isEmpty(updateExclusionRequest.getReason())) {
+            throw new InvalidArgumentsException(
+                    msgUtil.getMessage("report.quarterlySurveillance.exclusion.missingReason", quarterlyReport.getQuarter().getName()));
+        }
+
+        //see if a current exclusion exists for this listing to determine if it's being
+        //newly created with this request or just updated
+        QuarterlyReportExclusionDTO existingExclusion = reportManager.getExclusion(quarterlyReport, listingId);
+        if (existingExclusion == null && updateExclusionRequest.isExcluded()) {
+            //no existing exclusion - create one
+            reportManager.createQuarterlyReportExclusion(quarterlyReport, listingId,
+                    updateExclusionRequest.getReason());
+        } else if (existingExclusion != null && updateExclusionRequest.isExcluded()) {
+            //found existing exclusion for this listing - update the reason
+            reportManager.updateQuarterlyReportExclusion(quarterlyReport, listingId, updateExclusionRequest.getReason());
+        } else if (existingExclusion != null && !updateExclusionRequest.isExcluded()) {
+            reportManager.deleteQuarterlyReportExclusion(quarterlyReportId, listingId);
+        }
+
+        //get the relevant listing with its new exclusion fields
+        QuarterlyReportRelevantListingDTO updatedRelevantListing =
+                reportManager.getRelevantListing(quarterlyReport, listingId);
+        RelevantListing result = null;
+        if (updatedRelevantListing != null) {
+            result = new RelevantListing(updatedRelevantListing);
+        }
+        return result;
     }
 
     @ApiOperation(value = "Update an existing quarterly surveillance report.",
@@ -290,7 +332,7 @@ public class SurveillanceReportController {
             notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative authority "
                     + "on the ACB associated with the report.")
     @RequestMapping(value = "/export/quarterly/{quarterlyReportId}", method = RequestMethod.GET)
-    public ResponseEntity<Job> exportQuarterlyReport(@PathVariable("quarterlyReportId") final Long quarterlyReportId,
+    public Job exportQuarterlyReport(@PathVariable("quarterlyReportId") final Long quarterlyReportId,
             final HttpServletResponse response) throws EntityRetrievalException, UserRetrievalException,
             EntityCreationException, IOException {
         if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
@@ -298,7 +340,6 @@ public class SurveillanceReportController {
         }
 
         JobDTO exportJob = reportManager.exportQuarterlyReportAsBackgroundJob(quarterlyReportId);
-        Job result = new Job(exportJob);
-        return new ResponseEntity<Job>(result, HttpStatus.OK);
+        return new Job(exportJob);
     }
 }
