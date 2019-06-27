@@ -34,6 +34,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.DescriptiveModel;
@@ -66,6 +67,7 @@ import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
+import gov.healthit.chpl.web.controller.results.CertificationCriterionResults;
 import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -1247,6 +1249,19 @@ public class SearchViewController {
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);
+        return result;
+    }
+    
+    @ApiOperation(value = "Get all possible certification criteria in the CHPL")
+    @RequestMapping(value = "/data/certification-criteria", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody CertificationCriterionResults getCertificationCriteria() {
+        Set<CertificationCriterion> criteria = dimensionalDataManager.getCertificationCriterion();
+        CertificationCriterionResults result = new CertificationCriterionResults();
+        for (CertificationCriterion criterion : criteria) {
+            result.getCriteria().add(criterion);
+        }
         return result;
     }
 }
