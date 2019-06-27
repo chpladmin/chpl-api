@@ -1,4 +1,4 @@
-package gov.healthit.chpl.dao;
+package gov.healthit.chpl.dto;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -6,12 +6,10 @@ import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
 
-import gov.healthit.chpl.domain.ComplaintListingMap;
 import gov.healthit.chpl.domain.complaint.Complaint;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.ComplainantTypeDTO;
-import gov.healthit.chpl.dto.ComplaintListingMapDTO;
-import gov.healthit.chpl.dto.ComplaintStatusTypeDTO;
+import gov.healthit.chpl.domain.complaint.ComplaintCriterionMap;
+import gov.healthit.chpl.domain.complaint.ComplaintListingMap;
+import gov.healthit.chpl.entity.ComplaintCriterionMapEntity;
 import gov.healthit.chpl.entity.ComplaintEntity;
 import gov.healthit.chpl.entity.ComplaintListingMapEntity;
 
@@ -36,6 +34,7 @@ public class ComplaintDTO {
     private Long lastModifiedUser;
     private Boolean deleted;
     private Set<ComplaintListingMapDTO> listings = new HashSet<ComplaintListingMapDTO>();
+    private Set<ComplaintCriterionMapDTO> criteria = new HashSet<ComplaintCriterionMapDTO>();
 
     public ComplaintDTO() {
 
@@ -47,6 +46,11 @@ public class ComplaintDTO {
         listings = new HashSet<ComplaintListingMapDTO>();
         for (ComplaintListingMapEntity clEntity : entity.getListings()) {
             listings.add(new ComplaintListingMapDTO(clEntity));
+        }
+
+        criteria = new HashSet<ComplaintCriterionMapDTO>();
+        for (ComplaintCriterionMapEntity criteriaEntity : entity.getCriteria()) {
+            criteria.add(new ComplaintCriterionMapDTO(criteriaEntity));
         }
 
         if (entity.getCertificationBody() != null) {
@@ -66,6 +70,11 @@ public class ComplaintDTO {
         listings = new HashSet<ComplaintListingMapDTO>();
         for (ComplaintListingMap cl : domain.getListings()) {
             listings.add(new ComplaintListingMapDTO(cl));
+        }
+
+        criteria = new HashSet<ComplaintCriterionMapDTO>();
+        for (ComplaintCriterionMap cc : domain.getCriteria()) {
+            criteria.add(new ComplaintCriterionMapDTO(cc));
         }
 
         if (domain.getCertificationBody() != null) {
@@ -237,6 +246,14 @@ public class ComplaintDTO {
 
     public void setListings(Set<ComplaintListingMapDTO> listings) {
         this.listings = listings;
+    }
+
+    public Set<ComplaintCriterionMapDTO> getCriteria() {
+        return criteria;
+    }
+
+    public void setCriteria(Set<ComplaintCriterionMapDTO> criteria) {
+        this.criteria = criteria;
     }
 
 }

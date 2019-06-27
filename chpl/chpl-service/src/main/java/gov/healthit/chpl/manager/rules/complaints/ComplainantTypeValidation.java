@@ -2,6 +2,7 @@ package gov.healthit.chpl.manager.rules.complaints;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -41,7 +42,7 @@ public class ComplainantTypeValidation extends ValidationRule<ComplaintValidatio
 
             // Complainant type other must exist if complaint type = other
             if (isComplainantTypeSetToOther(context.getComplaintDTO().getComplainantType())
-                    && context.getComplaintDTO().getComplainantTypeOther().trim() == "") {
+                    && StringUtils.isEmpty(context.getComplaintDTO().getComplainantTypeOther())) {
                 getMessages().add(getErrorMessage("complaints.complainantType.otherMissing"));
                 return false;
             }

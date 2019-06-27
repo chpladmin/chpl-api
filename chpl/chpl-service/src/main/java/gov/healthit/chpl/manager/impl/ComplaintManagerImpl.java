@@ -13,10 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.ComplaintDAO;
-import gov.healthit.chpl.dao.ComplaintDTO;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.complaint.Complaint;
 import gov.healthit.chpl.dto.ComplainantTypeDTO;
+import gov.healthit.chpl.dto.ComplaintDTO;
 import gov.healthit.chpl.dto.ComplaintStatusTypeDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
