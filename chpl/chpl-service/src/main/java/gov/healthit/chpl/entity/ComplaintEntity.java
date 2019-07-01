@@ -104,6 +104,12 @@ public class ComplaintEntity {
     @Where(clause = "deleted <> 'true'")
     private Set<ComplaintCriterionMapEntity> criteria;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "complaintId")
+    @Basic(optional = true)
+    @Column(name = "complaint_id", nullable = false)
+    @Where(clause = "deleted <> 'true'")
+    private Set<ComplaintSurveillanceMapEntity> surveillances;
+
     public Long getId() {
         return id;
     }
@@ -296,14 +302,26 @@ public class ComplaintEntity {
         this.criteria = criteria;
     }
 
+    public Set<ComplaintSurveillanceMapEntity> getSurveillances() {
+        return surveillances;
+    }
+
+    public void setSurveillances(Set<ComplaintSurveillanceMapEntity> surveillances) {
+        this.surveillances = surveillances;
+    }
+
     @Override
     public String toString() {
-        return "ComplaintEntity [id=" + id + ", certificationBody=" + certificationBody + ", complainantType="
-                + complainantType + ", complaintStatusType=" + complaintStatusType + ", oncComplaintId="
+        return "ComplaintEntity [id=" + id + ", certificationBody=" + certificationBody + ", certificationBodyId="
+                + certificationBodyId + ", complainantType=" + complainantType + ", complainantTypeOther="
+                + complainantTypeOther + ", complainantTypeId=" + complainantTypeId + ", complaintStatusType="
+                + complaintStatusType + ", complaintStatusTypeId=" + complaintStatusTypeId + ", oncComplaintId="
                 + oncComplaintId + ", acbComplaintId=" + acbComplaintId + ", receivedDate=" + receivedDate
                 + ", summary=" + summary + ", actions=" + actions + ", complainantContacted=" + complainantContacted
                 + ", developerContacted=" + developerContacted + ", oncAtlContacted=" + oncAtlContacted
-                + ", closedDate=" + closedDate + ", creationDate=" + creationDate + ", lastModifiedDate="
-                + lastModifiedDate + ", lastModifiedUser=" + lastModifiedUser + ", deleted=" + deleted + "]";
+                + ", flagForOncReview=" + flagForOncReview + ", closedDate=" + closedDate + ", creationDate="
+                + creationDate + ", lastModifiedDate=" + lastModifiedDate + ", lastModifiedUser=" + lastModifiedUser
+                + ", deleted=" + deleted + ", listings=" + listings + ", criteria=" + criteria + ", surveillances="
+                + surveillances + "]";
     }
 }
