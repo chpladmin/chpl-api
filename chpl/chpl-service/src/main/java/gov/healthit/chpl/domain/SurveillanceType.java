@@ -8,6 +8,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
+
+import gov.healthit.chpl.dto.SurveillanceTypeDTO;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -29,6 +32,10 @@ public class SurveillanceType implements Serializable {
     public SurveillanceType() {
     }
 
+    public SurveillanceType(SurveillanceTypeDTO dto) {
+        BeanUtils.copyProperties(dto, this);
+    }
+
     /**
      * Checks the id and name fields to determine if the two
      * surveillance type fields are the same.
@@ -37,8 +44,7 @@ public class SurveillanceType implements Serializable {
      * @return whether the two objects are the same
      */
     public boolean matches(final SurveillanceType anotherType) {
-        if (this.id != null && anotherType.id != null
-                && this.id.longValue() == anotherType.id.longValue()) {
+        if (this.id != null && anotherType.id != null && this.id.longValue() == anotherType.id.longValue()) {
             return true;
         } else if (!StringUtils.isEmpty(this.name) && !StringUtils.isEmpty(anotherType.name)
                 && this.name.equalsIgnoreCase(anotherType.name)) {

@@ -1,19 +1,24 @@
 package gov.healthit.chpl.dto;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
 
+import gov.healthit.chpl.domain.ComplaintSurveillanceMap;
 import gov.healthit.chpl.domain.complaint.Complaint;
 import gov.healthit.chpl.domain.complaint.ComplaintCriterionMap;
 import gov.healthit.chpl.domain.complaint.ComplaintListingMap;
 import gov.healthit.chpl.entity.ComplaintCriterionMapEntity;
 import gov.healthit.chpl.entity.ComplaintEntity;
 import gov.healthit.chpl.entity.ComplaintListingMapEntity;
+import gov.healthit.chpl.entity.ComplaintSurveillanceMapEntity;
 
-public class ComplaintDTO {
+public class ComplaintDTO implements Serializable {
+    private static final long serialVersionUID = 4098930121671510830L;
+
     private Long id;
     private CertificationBodyDTO certificationBody;
     private ComplainantTypeDTO complainantType;
@@ -34,6 +39,7 @@ public class ComplaintDTO {
     private Long lastModifiedUser;
     private Boolean deleted;
     private Set<ComplaintListingMapDTO> listings = new HashSet<ComplaintListingMapDTO>();
+    private Set<ComplaintSurveillanceMapDTO> surveillances = new HashSet<ComplaintSurveillanceMapDTO>();
     private Set<ComplaintCriterionMapDTO> criteria = new HashSet<ComplaintCriterionMapDTO>();
 
     public ComplaintDTO() {
@@ -51,6 +57,11 @@ public class ComplaintDTO {
         criteria = new HashSet<ComplaintCriterionMapDTO>();
         for (ComplaintCriterionMapEntity criteriaEntity : entity.getCriteria()) {
             criteria.add(new ComplaintCriterionMapDTO(criteriaEntity));
+        }
+
+        surveillances = new HashSet<ComplaintSurveillanceMapDTO>();
+        for (ComplaintSurveillanceMapEntity surveilanceEntity : entity.getSurveillances()) {
+            surveillances.add(new ComplaintSurveillanceMapDTO(surveilanceEntity));
         }
 
         if (entity.getCertificationBody() != null) {
@@ -75,6 +86,11 @@ public class ComplaintDTO {
         criteria = new HashSet<ComplaintCriterionMapDTO>();
         for (ComplaintCriterionMap cc : domain.getCriteria()) {
             criteria.add(new ComplaintCriterionMapDTO(cc));
+        }
+
+        surveillances = new HashSet<ComplaintSurveillanceMapDTO>();
+        for (ComplaintSurveillanceMap surveillance : domain.getSurveillances()) {
+            surveillances.add(new ComplaintSurveillanceMapDTO(surveillance));
         }
 
         if (domain.getCertificationBody() != null) {
@@ -256,4 +272,24 @@ public class ComplaintDTO {
         this.criteria = criteria;
     }
 
+    public Set<ComplaintSurveillanceMapDTO> getSurveillances() {
+        return surveillances;
+    }
+
+    public void setSurveillances(Set<ComplaintSurveillanceMapDTO> surveillances) {
+        this.surveillances = surveillances;
+    }
+
+    @Override
+    public String toString() {
+        return "ComplaintDTO [id=" + id + ", certificationBody=" + certificationBody + ", complainantType="
+                + complainantType + ", complainantTypeOther=" + complainantTypeOther + ", complaintStatusType="
+                + complaintStatusType + ", oncComplaintId=" + oncComplaintId + ", acbComplaintId=" + acbComplaintId
+                + ", receivedDate=" + receivedDate + ", summary=" + summary + ", actions=" + actions
+                + ", complainantContacted=" + complainantContacted + ", developerContacted=" + developerContacted
+                + ", oncAtlContacted=" + oncAtlContacted + ", flagForOncReview=" + flagForOncReview + ", closedDate="
+                + closedDate + ", creationDate=" + creationDate + ", lastModifiedDate=" + lastModifiedDate
+                + ", lastModifiedUser=" + lastModifiedUser + ", deleted=" + deleted + ", listings=" + listings
+                + ", surveillances=" + surveillances + ", criteria=" + criteria + "]";
+    }
 }
