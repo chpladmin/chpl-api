@@ -521,17 +521,17 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
 
     private void populateSurveillance(ComplaintSurveillanceMapEntity complaintSurveillance)
             throws EntityRetrievalException {
-        complaintSurveillance.setSurveillance(getSurveillanceLiteEntity(complaintSurveillance.getSurveillanceId()));
+        complaintSurveillance.setSurveillance(getSurveillanceBasicntity(complaintSurveillance.getSurveillanceId()));
         String chplProductNumber = chplProductNumberUtil
                 .generate(complaintSurveillance.getSurveillance().getCertifiedProductId());
         complaintSurveillance.getSurveillance().setChplProductNumber(chplProductNumber);
     }
 
-    private SurveillanceBasicEntity getSurveillanceLiteEntity(final long id) throws EntityRetrievalException {
+    private SurveillanceBasicEntity getSurveillanceBasicntity(final long id) throws EntityRetrievalException {
         SurveillanceBasicEntity entity = null;
 
         Query query = entityManager.createQuery(
-                "FROM SurveillanceLiteEntity s " + "WHERE s.deleted = false " + "AND s.id = :surveillanceId",
+                "FROM SurveillanceBasicEntity s " + "WHERE s.deleted = false " + "AND s.id = :surveillanceId",
                 SurveillanceBasicEntity.class);
         query.setParameter("surveillanceId", id);
         List<SurveillanceBasicEntity> result = query.getResultList();
