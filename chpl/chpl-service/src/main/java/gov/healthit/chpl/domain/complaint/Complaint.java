@@ -1,5 +1,6 @@
 package gov.healthit.chpl.domain.complaint;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -7,11 +8,15 @@ import java.util.Set;
 import org.springframework.beans.BeanUtils;
 
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.ComplaintSurveillanceMap;
 import gov.healthit.chpl.dto.ComplaintCriterionMapDTO;
 import gov.healthit.chpl.dto.ComplaintDTO;
 import gov.healthit.chpl.dto.ComplaintListingMapDTO;
+import gov.healthit.chpl.dto.ComplaintSurveillanceMapDTO;
 
-public class Complaint {
+public class Complaint implements Serializable {
+    private static final long serialVersionUID = -7018474294841580851L;
+
     private Long id;
     private CertificationBody certificationBody;
     private ComplainantType complainantType;
@@ -29,6 +34,7 @@ public class Complaint {
     private Date closedDate;
     private Set<ComplaintListingMap> listings = new HashSet<ComplaintListingMap>();
     private Set<ComplaintCriterionMap> criteria = new HashSet<ComplaintCriterionMap>();
+    private Set<ComplaintSurveillanceMap> surveillances = new HashSet<ComplaintSurveillanceMap>();
 
     public Complaint() {
 
@@ -45,6 +51,11 @@ public class Complaint {
         criteria = new HashSet<ComplaintCriterionMap>();
         for (ComplaintCriterionMapDTO criterionDTO : dto.getCriteria()) {
             criteria.add(new ComplaintCriterionMap(criterionDTO));
+        }
+
+        surveillances = new HashSet<ComplaintSurveillanceMap>();
+        for (ComplaintSurveillanceMapDTO surveillanceDTO : dto.getSurveillances()) {
+            surveillances.add(new ComplaintSurveillanceMap(surveillanceDTO));
         }
 
         this.certificationBody = new CertificationBody(dto.getCertificationBody());
@@ -186,6 +197,26 @@ public class Complaint {
 
     public void setCriteria(Set<ComplaintCriterionMap> criteria) {
         this.criteria = criteria;
+    }
+
+    public Set<ComplaintSurveillanceMap> getSurveillances() {
+        return surveillances;
+    }
+
+    public void setSurveillances(Set<ComplaintSurveillanceMap> surveillances) {
+        this.surveillances = surveillances;
+    }
+
+    @Override
+    public String toString() {
+        return "Complaint [id=" + id + ", certificationBody=" + certificationBody + ", complainantType="
+                + complainantType + ", complainantTypeOther=" + complainantTypeOther + ", complaintStatusType="
+                + complaintStatusType + ", oncComplaintId=" + oncComplaintId + ", acbComplaintId=" + acbComplaintId
+                + ", receivedDate=" + receivedDate + ", summary=" + summary + ", actions=" + actions
+                + ", complainantContacted=" + complainantContacted + ", developerContacted=" + developerContacted
+                + ", oncAtlContacted=" + oncAtlContacted + ", flagForOncReview=" + flagForOncReview + ", closedDate="
+                + closedDate + ", listings=" + listings + ", criteria=" + criteria + ", surveillances=" + surveillances
+                + "]";
     }
 
 }

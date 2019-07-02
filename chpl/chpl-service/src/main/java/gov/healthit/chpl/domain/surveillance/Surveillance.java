@@ -16,9 +16,7 @@ import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import gov.healthit.chpl.domain.CertifiedProduct;
-import gov.healthit.chpl.domain.activity.ActivityCategory;
 import gov.healthit.chpl.util.Util;
 
 /**
@@ -118,8 +116,7 @@ public class Surveillance implements Serializable {
      * @return whether the two surveillance objects are the same
      */
     public boolean matches(final Surveillance anotherSurveillance) {
-        if (this.id == null && anotherSurveillance.id != null
-                || this.id != null && anotherSurveillance.id == null) {
+        if (this.id == null && anotherSurveillance.id != null || this.id != null && anotherSurveillance.id == null) {
             return false;
         } else if (this.id != null && anotherSurveillance.id != null
                 && this.id.longValue() != anotherSurveillance.id.longValue()) {
@@ -146,8 +143,8 @@ public class Surveillance implements Serializable {
                 && this.endDate.getTime() != anotherSurveillance.endDate.getTime()) {
             return false;
         }
-        if (this.randomizedSitesUsed == null && anotherSurveillance.randomizedSitesUsed != null ||
-                this.randomizedSitesUsed != null && anotherSurveillance.randomizedSitesUsed == null) {
+        if (this.randomizedSitesUsed == null && anotherSurveillance.randomizedSitesUsed != null
+                || this.randomizedSitesUsed != null && anotherSurveillance.randomizedSitesUsed == null) {
             return false;
         } else if (this.randomizedSitesUsed != null && anotherSurveillance.randomizedSitesUsed != null
                 && this.randomizedSitesUsed.intValue() != anotherSurveillance.randomizedSitesUsed.intValue()) {
@@ -180,10 +177,10 @@ public class Surveillance implements Serializable {
             return false;
         } else if (this.requirements != null && anotherSurveillance.requirements != null
                 && this.requirements.size() != anotherSurveillance.requirements.size()) {
-            //easy check if the sizes are different
+            // easy check if the sizes are different
             return false;
         } else {
-            //surveillance requirements - were any removed?
+            // surveillance requirements - were any removed?
             for (SurveillanceRequirement thisReq : this.requirements) {
                 boolean foundInOtherSurveillance = false;
                 for (SurveillanceRequirement otherReq : anotherSurveillance.requirements) {
@@ -195,7 +192,7 @@ public class Surveillance implements Serializable {
                     return false;
                 }
             }
-            //surveillance requirements - were any added?
+            // surveillance requirements - were any added?
             for (SurveillanceRequirement otherReq : anotherSurveillance.requirements) {
                 boolean foundInThisSurveillance = false;
                 for (SurveillanceRequirement thisReq : this.requirements) {
@@ -207,7 +204,7 @@ public class Surveillance implements Serializable {
                     return false;
                 }
             }
-            //surveillance requirements - were any changed?
+            // surveillance requirements - were any changed?
             for (SurveillanceRequirement otherReq : anotherSurveillance.requirements) {
                 for (SurveillanceRequirement thisReq : this.requirements) {
                     if (thisReq.getId().longValue() == otherReq.getId().longValue()) {
@@ -218,8 +215,8 @@ public class Surveillance implements Serializable {
                 }
             }
         }
-        //all checks passed and turned out to be matching
-        //so the two surveillances must be identical
+        // all checks passed and turned out to be matching
+        // so the two surveillances must be identical
         return true;
     }
 
