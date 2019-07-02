@@ -96,11 +96,13 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
     }
 
     @Override
-    public List<ComplaintDTO> getAllComplaintsBetweenDates(final Date startDate, final Date endDate) {
+    public List<ComplaintDTO> getAllComplaintsBetweenDates(final Long acbId, final Date startDate, final Date endDate) {
         Query query = entityManager.createQuery(GET_COMPLAINTS_HQL
+                + " AND c.certificationBodyId = :acbId "
                 + " AND c.receivedDate >= :startDate "
                 + " AND c.receivedDate <= :endDate ",
                 ComplaintEntity.class);
+        query.setParameter("acbId", acbId);
         query.setParameter("startDate", startDate);
         query.setParameter("endDate", endDate);
         List<ComplaintEntity> results = query.getResultList();

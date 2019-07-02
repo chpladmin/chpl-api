@@ -490,7 +490,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
         List<CertifiedProductSearchDetails> relevantListingDetails =
                 new ArrayList<CertifiedProductSearchDetails>();
         for (QuarterlyReportRelevantListingDTO listingDetails : listingDtos) {
-            LOGGER.info("Creating CertifiedProductSearchDetails for listing " + listingDetails.getChplProductNumber());
+            LOGGER.debug("Creating CertifiedProductSearchDetails for listing " + listingDetails.getChplProductNumber());
             CertifiedProductSearchDetails completeListingDetails = new CertifiedProductSearchDetails();
             completeListingDetails.setId(listingDetails.getId());
             completeListingDetails.setChplProductNumber(listingDetails.getChplProductNumber());
@@ -512,20 +512,20 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
             completeListingDetails.setVersion(ver);
 
             try {
-                LOGGER.info("Getting certification status events for listing " + listingDetails.getChplProductNumber());
+                LOGGER.debug("Getting certification status events for listing " + listingDetails.getChplProductNumber());
                 List<CertificationStatusEvent> certStatusEvents =
                         detailsManager.getCertificationStatusEvents(listingDetails.getId());
                 completeListingDetails.setCertificationEvents(certStatusEvents);
-                LOGGER.info("Got " + completeListingDetails.getCertificationEvents().size()
+                LOGGER.debug("Got " + completeListingDetails.getCertificationEvents().size()
                         + " certification status events for listing " + listingDetails.getChplProductNumber());
             } catch (EntityRetrievalException ex) {
                 LOGGER.error("Could not get certification status events for listing " + listingDetails.getId());
             }
 
-            LOGGER.info("Getting surveillances for listing " + listingDetails.getChplProductNumber());
+            LOGGER.debug("Getting surveillances for listing " + listingDetails.getChplProductNumber());
             List<Surveillance> surveillances = survManager.getByCertifiedProduct(listingDetails.getId());
             completeListingDetails.setSurveillance(surveillances);
-            LOGGER.info("Got " + completeListingDetails.getSurveillance().size()
+            LOGGER.debug("Got " + completeListingDetails.getSurveillance().size()
                     + " surveillances for listing " + listingDetails.getChplProductNumber());
             relevantListingDetails.add(completeListingDetails);
         }

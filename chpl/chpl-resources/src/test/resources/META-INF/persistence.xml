@@ -30,6 +30,11 @@
         <class>gov.healthit.chpl.entity.CertificationIdEntity</class>
         <class>gov.healthit.chpl.entity.CertificationIdProductMapEntity</class>
         <class>gov.healthit.chpl.entity.CertificationStatusEntity</class>
+        <class>gov.healthit.chpl.entity.ComplainantTypeEntity</class>
+        <class>gov.healthit.chpl.entity.ComplaintCriterionMapEntity</class>
+        <class>gov.healthit.chpl.entity.ComplaintEntity</class>
+        <class>gov.healthit.chpl.entity.ComplaintListingMapEntity</class>
+        <class>gov.healthit.chpl.entity.ComplaintStatusTypeEntity</class>
         <class>gov.healthit.chpl.entity.ContactEntity</class>
         <class>gov.healthit.chpl.entity.CriterionProductStatisticsEntity</class>
         <class>gov.healthit.chpl.entity.EducationTypeEntity</class>

@@ -16,6 +16,7 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.ComplaintDAO;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.complaint.Complaint;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.ComplainantTypeDTO;
 import gov.healthit.chpl.dto.ComplaintDTO;
 import gov.healthit.chpl.dto.ComplaintStatusTypeDTO;
@@ -92,9 +93,9 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
             + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).GET_ALL)")
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
             + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).GET_ALL, filterObject)")
-    public List<Complaint> getAllComplaintsBetweenDates(final Date startDate, final Date endDate) {
+    public List<Complaint> getAllComplaintsBetweenDates(final CertificationBodyDTO acb, final Date startDate, final Date endDate) {
         List<Complaint> complaints = new ArrayList<Complaint>();
-        List<ComplaintDTO> dtos = complaintDAO.getAllComplaintsBetweenDates(startDate, endDate);
+        List<ComplaintDTO> dtos = complaintDAO.getAllComplaintsBetweenDates(acb.getId(), startDate, endDate);
         for (ComplaintDTO dto : dtos) {
             complaints.add(new Complaint(dto));
         }

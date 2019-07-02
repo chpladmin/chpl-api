@@ -17,16 +17,19 @@ public class QuarterlyReportBuilderXlsx {
     private ListWorksheetBuilder listWorksheetBuilder;
     private ReportInfoWorksheetBuilder reportInfoWorksheetBuilder;
     private ActivitiesAndOutcomesWorksheetBuilder activitiesAndOutcomesWorksheetBuilder;
+    private ComplaintsWorksheetBuilder complaintsWorksheetBuilder;
     private SurveillanceSummaryWorksheetBuilder survSummaryWorksheetBuilder;
 
     @Autowired
     public QuarterlyReportBuilderXlsx(final ListWorksheetBuilder listWorksheetBuilder,
             final ReportInfoWorksheetBuilder reportInfoWorksheetBuilder,
             final ActivitiesAndOutcomesWorksheetBuilder activitiesAndOutcomesWorksheetBuilder,
+            final ComplaintsWorksheetBuilder complaintsWorksheetBuilder,
             final SurveillanceSummaryWorksheetBuilder survSummaryWorksheetBuilder) {
         this.listWorksheetBuilder = listWorksheetBuilder;
         this.reportInfoWorksheetBuilder = reportInfoWorksheetBuilder;
         this.activitiesAndOutcomesWorksheetBuilder = activitiesAndOutcomesWorksheetBuilder;
+        this.complaintsWorksheetBuilder = complaintsWorksheetBuilder;
         this.survSummaryWorksheetBuilder = survSummaryWorksheetBuilder;
     }
 
@@ -46,7 +49,8 @@ public class QuarterlyReportBuilderXlsx {
         reportInfoWorksheetBuilder.buildWorksheet(reports);
         activitiesAndOutcomesWorksheetBuilder.setWorkbook(workbook);
         activitiesAndOutcomesWorksheetBuilder.buildWorksheet(reports);
-        createComplaintsWorksheet(workbook);
+        complaintsWorksheetBuilder.setWorkbook(workbook);
+        complaintsWorksheetBuilder.buildWorksheet(reports);
         survSummaryWorksheetBuilder.setWorkbook(workbook);
         survSummaryWorksheetBuilder.buildWorksheet();
 
@@ -54,9 +58,5 @@ public class QuarterlyReportBuilderXlsx {
         workbook.setSheetHidden(0, true);
         workbook.setActiveSheet(1);
         return workbook;
-    }
-
-    private void createComplaintsWorksheet(final Workbook workbook) {
-        workbook.createSheet("Complaints");
     }
 }

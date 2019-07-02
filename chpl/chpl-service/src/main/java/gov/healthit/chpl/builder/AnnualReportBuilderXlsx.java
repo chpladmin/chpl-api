@@ -19,6 +19,7 @@ public class AnnualReportBuilderXlsx {
     private ListWorksheetBuilder listWorksheetBuilder;
     private ReportInfoWorksheetBuilder reportInfoWorksheetBuilder;
     private ActivitiesAndOutcomesWorksheetBuilder activitiesAndOutcomesWorksheetBuilder;
+    private ComplaintsWorksheetBuilder complaintsWorksheetBuilder;
     private SurveillanceSummaryWorksheetBuilder survSummaryWorksheetBuilder;
     private SurveillanceExperienceWorksheetBuilder survExprienceWorksheetBuilder;
 
@@ -27,12 +28,14 @@ public class AnnualReportBuilderXlsx {
             final ListWorksheetBuilder listWorksheetBuilder,
             final ReportInfoWorksheetBuilder reportInfoWorksheetBuilder,
             final ActivitiesAndOutcomesWorksheetBuilder activitiesAndOutcomesWorksheetBuilder,
+            final ComplaintsWorksheetBuilder complaintsWorksheetBuilder,
             final SurveillanceSummaryWorksheetBuilder survSummaryWorksheetBuilder,
             final SurveillanceExperienceWorksheetBuilder survExprienceWorksheetBuilder) {
         this.reportManager = reportManager;
         this.listWorksheetBuilder = listWorksheetBuilder;
         this.reportInfoWorksheetBuilder = reportInfoWorksheetBuilder;
         this.activitiesAndOutcomesWorksheetBuilder = activitiesAndOutcomesWorksheetBuilder;
+        this.complaintsWorksheetBuilder = complaintsWorksheetBuilder;
         this.survSummaryWorksheetBuilder = survSummaryWorksheetBuilder;
         this.survExprienceWorksheetBuilder = survExprienceWorksheetBuilder;
     }
@@ -70,7 +73,8 @@ public class AnnualReportBuilderXlsx {
             reportInfoWorksheetBuilder.buildWorksheet(quarterlyReports);
             activitiesAndOutcomesWorksheetBuilder.setWorkbook(workbook);
             activitiesAndOutcomesWorksheetBuilder.buildWorksheet(quarterlyReports);
-            createComplaintsWorksheet(workbook);
+            complaintsWorksheetBuilder.setWorkbook(workbook);
+            complaintsWorksheetBuilder.buildWorksheet(quarterlyReports);
         }
         survSummaryWorksheetBuilder.setWorkbook(workbook);
         survSummaryWorksheetBuilder.buildWorksheet();

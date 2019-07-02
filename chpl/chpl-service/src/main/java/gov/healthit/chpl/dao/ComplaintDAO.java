@@ -15,7 +15,7 @@ public interface ComplaintDAO {
 
     List<ComplaintDTO> getAllComplaints();
 
-    List<ComplaintDTO> getAllComplaintsBetweenDates(Date startDate, Date endDate);
+    List<ComplaintDTO> getAllComplaintsBetweenDates(Long acbId, Date startDate, Date endDate);
 
     ComplaintDTO getComplaint(Long complaintId) throws EntityRetrievalException;
 
