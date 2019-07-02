@@ -17,7 +17,7 @@ import gov.healthit.chpl.util.Util;
 
 @Entity
 @Table(name = "surveillance")
-public class SurveillanceLiteEntity {
+public class SurveillanceBasicEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -178,7 +178,7 @@ public class SurveillanceLiteEntity {
 
     @Override
     public String toString() {
-        return "SurveillanceLiteEntity [id=" + id + ", friendlyId=" + friendlyId + ", certifiedProductId="
+        return "SurveillanceBasicEntity [id=" + id + ", friendlyId=" + friendlyId + ", certifiedProductId="
                 + certifiedProductId + ", startDate=" + startDate + ", endDate=" + endDate + ", surveillanceTypeId="
                 + surveillanceTypeId + ", surveillanceType=" + surveillanceType + ", numRandomizedSites="
                 + numRandomizedSites + ", deleted=" + deleted + ", lastModifiedUser=" + lastModifiedUser

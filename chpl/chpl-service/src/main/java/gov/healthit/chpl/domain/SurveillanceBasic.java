@@ -5,10 +5,10 @@ import java.util.Date;
 
 import org.springframework.beans.BeanUtils;
 
-import gov.healthit.chpl.dto.SurveillanceLiteDTO;
+import gov.healthit.chpl.dto.SurveillanceBasicDTO;
 import gov.healthit.chpl.util.Util;
 
-public class SurveillanceLite implements Serializable {
+public class SurveillanceBasic implements Serializable {
     private static final long serialVersionUID = 3750079664886758825L;
 
     private Long id;
@@ -22,11 +22,11 @@ public class SurveillanceLite implements Serializable {
     private Long userPermissionId;
     private String chplProductNumber;
 
-    public SurveillanceLite() {
+    public SurveillanceBasic() {
 
     }
 
-    public SurveillanceLite(SurveillanceLiteDTO dto) {
+    public SurveillanceBasic(SurveillanceBasicDTO dto) {
         BeanUtils.copyProperties(dto, this);
         this.surveillanceType = new SurveillanceType(dto.getSurveillanceType());
     }
@@ -113,7 +113,7 @@ public class SurveillanceLite implements Serializable {
 
     @Override
     public String toString() {
-        return "SurveillanceLite [id=" + id + ", friendlyId=" + friendlyId + ", certifiedProductId="
+        return "SurveillanceBasic [id=" + id + ", friendlyId=" + friendlyId + ", certifiedProductId="
                 + certifiedProductId + ", startDate=" + startDate + ", endDate=" + endDate + ", surveillanceTypeId="
                 + surveillanceTypeId + ", surveillanceType=" + surveillanceType + ", numRandomizedSites="
                 + numRandomizedSites + ", userPermissionId=" + userPermissionId + ", chplProductNumber="

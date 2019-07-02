@@ -27,7 +27,7 @@ import gov.healthit.chpl.entity.ComplaintEntity;
 import gov.healthit.chpl.entity.ComplaintListingMapEntity;
 import gov.healthit.chpl.entity.ComplaintStatusTypeEntity;
 import gov.healthit.chpl.entity.ComplaintSurveillanceMapEntity;
-import gov.healthit.chpl.entity.surveillance.SurveillanceLiteEntity;
+import gov.healthit.chpl.entity.surveillance.SurveillanceBasicEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
@@ -527,14 +527,14 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
         complaintSurveillance.getSurveillance().setChplProductNumber(chplProductNumber);
     }
 
-    private SurveillanceLiteEntity getSurveillanceLiteEntity(final long id) throws EntityRetrievalException {
-        SurveillanceLiteEntity entity = null;
+    private SurveillanceBasicEntity getSurveillanceLiteEntity(final long id) throws EntityRetrievalException {
+        SurveillanceBasicEntity entity = null;
 
         Query query = entityManager.createQuery(
                 "FROM SurveillanceLiteEntity s " + "WHERE s.deleted = false " + "AND s.id = :surveillanceId",
-                SurveillanceLiteEntity.class);
+                SurveillanceBasicEntity.class);
         query.setParameter("surveillanceId", id);
-        List<SurveillanceLiteEntity> result = query.getResultList();
+        List<SurveillanceBasicEntity> result = query.getResultList();
 
         if (result.size() > 1) {
             throw new EntityRetrievalException("Data error. Duplicate surveillance id in database.");

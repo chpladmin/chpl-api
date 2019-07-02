@@ -5,11 +5,11 @@ import java.util.Date;
 
 import org.springframework.beans.BeanUtils;
 
-import gov.healthit.chpl.domain.SurveillanceLite;
-import gov.healthit.chpl.entity.surveillance.SurveillanceLiteEntity;
+import gov.healthit.chpl.domain.SurveillanceBasic;
+import gov.healthit.chpl.entity.surveillance.SurveillanceBasicEntity;
 import gov.healthit.chpl.util.Util;
 
-public class SurveillanceLiteDTO implements Serializable {
+public class SurveillanceBasicDTO implements Serializable {
     private static final long serialVersionUID = -2434007762463213735L;
 
     private Long id;
@@ -27,18 +27,18 @@ public class SurveillanceLiteDTO implements Serializable {
     private Long userPermissionId;
     private String chplProductNumber;
 
-    public SurveillanceLiteDTO() {
+    public SurveillanceBasicDTO() {
 
     }
 
-    public SurveillanceLiteDTO(SurveillanceLiteEntity entity) {
+    public SurveillanceBasicDTO(SurveillanceBasicEntity entity) {
         BeanUtils.copyProperties(entity, this);
         if (entity.getSurveillanceType() != null) {
             this.surveillanceType = new SurveillanceTypeDTO(entity.getSurveillanceType());
         }
     }
 
-    public SurveillanceLiteDTO(SurveillanceLite domain) {
+    public SurveillanceBasicDTO(SurveillanceBasic domain) {
         BeanUtils.copyProperties(domain, this);
         if (domain.getSurveillanceType() != null) {
             this.surveillanceType = new SurveillanceTypeDTO(domain.getSurveillanceType());
@@ -159,7 +159,7 @@ public class SurveillanceLiteDTO implements Serializable {
 
     @Override
     public String toString() {
-        return "SurveillanceLiteDTO [id=" + id + ", friendlyId=" + friendlyId + ", certifiedProductId="
+        return "SurveillanceBasicDTO [id=" + id + ", friendlyId=" + friendlyId + ", certifiedProductId="
                 + certifiedProductId + ", startDate=" + startDate + ", endDate=" + endDate + ", surveillanceTypeId="
                 + surveillanceTypeId + ", surveillanceType=" + surveillanceType + ", numRandomizedSites="
                 + numRandomizedSites + ", deleted=" + deleted + ", lastModifiedUser=" + lastModifiedUser

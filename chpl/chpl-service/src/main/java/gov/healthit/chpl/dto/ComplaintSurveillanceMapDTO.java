@@ -18,7 +18,7 @@ public class ComplaintSurveillanceMapDTO implements Serializable {
     private Date lastModifiedDate;
     private Long lastModifiedUser;
     private Boolean deleted;
-    private SurveillanceLiteDTO surveillance;
+    private SurveillanceBasicDTO surveillance;
 
     public ComplaintSurveillanceMapDTO() {
 
@@ -26,12 +26,12 @@ public class ComplaintSurveillanceMapDTO implements Serializable {
 
     public ComplaintSurveillanceMapDTO(ComplaintSurveillanceMapEntity entity) {
         BeanUtils.copyProperties(entity, this);
-        this.surveillance = new SurveillanceLiteDTO(entity.getSurveillance());
+        this.surveillance = new SurveillanceBasicDTO(entity.getSurveillance());
     }
 
     public ComplaintSurveillanceMapDTO(ComplaintSurveillanceMap domain) {
         BeanUtils.copyProperties(domain, this);
-        this.surveillance = new SurveillanceLiteDTO(domain.getSurveillance());
+        this.surveillance = new SurveillanceBasicDTO(domain.getSurveillance());
     }
 
     public Long getId() {
@@ -90,11 +90,11 @@ public class ComplaintSurveillanceMapDTO implements Serializable {
         this.deleted = deleted;
     }
 
-    public SurveillanceLiteDTO getSurveillance() {
+    public SurveillanceBasicDTO getSurveillance() {
         return surveillance;
     }
 
-    public void setSurveillance(SurveillanceLiteDTO surveillance) {
+    public void setSurveillance(SurveillanceBasicDTO surveillance) {
         this.surveillance = surveillance;
     }
 

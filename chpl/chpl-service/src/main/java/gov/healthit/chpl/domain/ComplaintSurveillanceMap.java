@@ -12,7 +12,7 @@ public class ComplaintSurveillanceMap implements Serializable {
     private Long id;
     private Long complaintId;
     private Long surveillanceId;
-    private SurveillanceLite surveillance;
+    private SurveillanceBasic surveillance;
 
     public ComplaintSurveillanceMap() {
 
@@ -20,7 +20,7 @@ public class ComplaintSurveillanceMap implements Serializable {
 
     public ComplaintSurveillanceMap(ComplaintSurveillanceMapDTO dto) {
         BeanUtils.copyProperties(dto, this);
-        this.surveillance = new SurveillanceLite(dto.getSurveillance());
+        this.surveillance = new SurveillanceBasic(dto.getSurveillance());
     }
 
     public Long getId() {
@@ -47,11 +47,11 @@ public class ComplaintSurveillanceMap implements Serializable {
         this.surveillanceId = surveillanceId;
     }
 
-    public SurveillanceLite getSurveillance() {
+    public SurveillanceBasic getSurveillance() {
         return surveillance;
     }
 
-    public void setSurveillance(SurveillanceLite surveillance) {
+    public void setSurveillance(SurveillanceBasic surveillance) {
         this.surveillance = surveillance;
     }
 

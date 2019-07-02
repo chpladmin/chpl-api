@@ -10,7 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import gov.healthit.chpl.entity.surveillance.SurveillanceLiteEntity;
+import gov.healthit.chpl.entity.surveillance.SurveillanceBasicEntity;
 
 @Entity
 @Table(name = "complaint_surveillance_map")
@@ -39,7 +39,7 @@ public class ComplaintSurveillanceMapEntity {
     private Boolean deleted;
 
     @Transient
-    private SurveillanceLiteEntity surveillance;
+    private SurveillanceBasicEntity surveillance;
 
     public ComplaintSurveillanceMapEntity() {
 
@@ -101,11 +101,11 @@ public class ComplaintSurveillanceMapEntity {
         this.deleted = deleted;
     }
 
-    public SurveillanceLiteEntity getSurveillance() {
+    public SurveillanceBasicEntity getSurveillance() {
         return surveillance;
     }
 
-    public void setSurveillance(SurveillanceLiteEntity surveillance) {
+    public void setSurveillance(SurveillanceBasicEntity surveillance) {
         this.surveillance = surveillance;
     }
 
