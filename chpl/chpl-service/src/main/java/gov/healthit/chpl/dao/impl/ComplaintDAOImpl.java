@@ -248,7 +248,7 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
                     });
             // Wasn't found in the list from DB, add it to the DB
             if (found == null) {
-                addSurveillanceToComplaint(complaint.getId(), passedIn.getSurveillance().getId());
+                addSurveillanceToComplaint(complaint.getId(), passedIn.getSurveillanceId());
             }
         }
     }
@@ -543,17 +543,17 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
 
     private void populateSurveillance(final ComplaintSurveillanceMapEntity complaintSurveillance)
             throws EntityRetrievalException {
-        complaintSurveillance.setSurveillance(getSurveillanceLiteEntity(complaintSurveillance.getSurveillanceId()));
+        complaintSurveillance.setSurveillance(getSurveillanceBasicEntity(complaintSurveillance.getSurveillanceId()));
         String chplProductNumber = chplProductNumberUtil
                 .generate(complaintSurveillance.getSurveillance().getCertifiedProductId());
         complaintSurveillance.getSurveillance().setChplProductNumber(chplProductNumber);
     }
 
-    private SurveillanceBasicEntity getSurveillanceLiteEntity(final long id) throws EntityRetrievalException {
+    private SurveillanceBasicEntity getSurveillanceBasicEntity(final long id) throws EntityRetrievalException {
         SurveillanceBasicEntity entity = null;
 
         Query query = entityManager.createQuery(
-                "FROM SurveillanceLiteEntity s " + "WHERE s.deleted = false " + "AND s.id = :surveillanceId",
+                "FROM SurveillanceBasicEntity s " + "WHERE s.deleted = false " + "AND s.id = :surveillanceId",
                 SurveillanceBasicEntity.class);
         query.setParameter("surveillanceId", id);
         List<SurveillanceBasicEntity> result = query.getResultList();

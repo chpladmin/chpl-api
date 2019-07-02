@@ -431,16 +431,16 @@ public class AnnualReportManagerTest extends TestCase {
         assertNotNull(workbook);
 
         //uncomment to write report
-        OutputStream outputStream = null;
-        try {
-            outputStream = new FileOutputStream("annual.xlsx");
-            workbook.write(outputStream);
-        } catch(final Exception ex) {
-            fail(ex.getMessage());
-        } finally {
-            outputStream.flush();
-            outputStream.close();
-        }
+//        OutputStream outputStream = null;
+//        try {
+//            outputStream = new FileOutputStream("annual.xlsx");
+//            workbook.write(outputStream);
+//        } catch(final Exception ex) {
+//            fail(ex.getMessage());
+//        } finally {
+//            outputStream.flush();
+//            outputStream.close();
+//        }
 
         SecurityContextHolder.getContext().setAuthentication(null);
     }

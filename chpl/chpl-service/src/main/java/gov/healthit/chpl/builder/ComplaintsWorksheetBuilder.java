@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,6 +29,8 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.ComplaintSurveillanceMap;
+import gov.healthit.chpl.domain.SurveillanceBasic;
 import gov.healthit.chpl.domain.complaint.Complaint;
 import gov.healthit.chpl.domain.complaint.ComplaintCriterionMap;
 import gov.healthit.chpl.domain.complaint.ComplaintListingMap;
@@ -287,11 +291,15 @@ public class ComplaintsWorksheetBuilder extends XlsxWorksheetBuilder {
                 }
             });
 
+            Map<Long, CertifiedProductSearchDetails> listingDetailsCache =
+                    new LinkedHashMap<Long, CertifiedProductSearchDetails>();
             List<CertifiedProductSearchDetails> orderedListings = new ArrayList<CertifiedProductSearchDetails>();
             for (ComplaintListingMap listingMap : complaint.getListings()) {
                 try {
-                    orderedListings.add(cpdManager.getCertifiedProductDetailsBasicByChplProductNumber(
-                            listingMap.getChplProductNumber(), false));
+                    CertifiedProductSearchDetails cpd =
+                            cpdManager.getCertifiedProductDetailsBasicByChplProductNumber(listingMap.getChplProductNumber(), false);
+                    listingDetailsCache.put(cpd.getId(), cpd);
+                    orderedListings.add(cpd);
                 } catch (EntityRetrievalException ex) {
                     LOGGER.error("Could not find basic details for listing " + listingMap.getChplProductNumber(), ex);
                 }
@@ -303,7 +311,32 @@ public class ComplaintsWorksheetBuilder extends XlsxWorksheetBuilder {
                     return o1.getChplProductNumber().compareTo(o2.getChplProductNumber());
                 }
             });
-            //TODO: some kind of sorting on the surveillance
+            //sort the surveillances by chpl number + friendly surveillance id to keep data in consistent order
+            List<SurveillanceBasic> orderedSurveillances = new ArrayList<SurveillanceBasic>();
+            for (ComplaintSurveillanceMap survMap : complaint.getSurveillances()) {
+                orderedSurveillances.add(survMap.getSurveillance());
+            }
+            orderedSurveillances.sort(new Comparator<SurveillanceBasic>() {
+                @Override
+                public int compare(final SurveillanceBasic o1, final SurveillanceBasic o2) {
+                    String o1CompareStr = o1.getChplProductNumber() + o1.getFriendlyId();
+                    String o2CompareStr = o2.getChplProductNumber() + o2.getFriendlyId();
+                    return o1CompareStr.compareTo(o2CompareStr);
+                }
+            });
+
+            //we need the dev, product, and version for each listing associated with surveillance
+            //but in case listings are duplicated get the details only once
+            for (SurveillanceBasic surv : orderedSurveillances) {
+                if (listingDetailsCache.get(surv.getCertifiedProductId()) == null) {
+                    try {
+                        listingDetailsCache.put(surv.getCertifiedProductId(),
+                            cpdManager.getCertifiedProductDetailsBasic(surv.getCertifiedProductId()));
+                    } catch (EntityRetrievalException ex) {
+                        LOGGER.error("Could not find basic details for listing " + surv.getCertifiedProductId(), ex);
+                    }
+                }
+            }
 
             //A complaint can be associated with nothing at all, with a listing,
             //with a surveillance (and implicitly the listing associated with that surveillance),
@@ -341,7 +374,7 @@ public class ComplaintsWorksheetBuilder extends XlsxWorksheetBuilder {
                 addDataCell(row, COL_DEVELOPER, listing.getDeveloper().getName());
                 addDataCell(row, COL_PRODUCT, listing.getProduct().getName());
                 addDataCell(row, COL_VERSION, listing.getVersion().getVersion());
-                //nothing in surveillance outcome becaues this complaint is only
+                //nothing in surveillance outcome because this complaint is only
                 //associated at the listing level
                 addDataCell(row, COL_SURV_OUTCOME, "");
                 pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, LAST_DATA_COLUMN - 1),
@@ -349,7 +382,31 @@ public class ComplaintsWorksheetBuilder extends XlsxWorksheetBuilder {
                 addedRows++;
                 isFirstRowForComplaint = false;
             }
-            //TODO: need complaint to be associated with surveillance to finish this up
+
+            for (SurveillanceBasic surv : orderedSurveillances) {
+                if (!isFirstRowForComplaint) {
+                    row = getRow(sheet, rowNum++);
+                }
+                addDataCell(row, COL_CRITERIA_ID, "");
+                addDataCell(row, COL_CHPL_ID, surv.getChplProductNumber());
+                addDataCell(row, COL_SURV_ID, surv.getFriendlyId());
+                //if we have the listing details print them out, otherwise print an error
+                CertifiedProductSearchDetails cpd = listingDetailsCache.get(surv.getCertifiedProductId());
+                if (cpd != null) {
+                    addDataCell(row, COL_DEVELOPER, cpd.getDeveloper().getName());
+                    addDataCell(row, COL_PRODUCT, cpd.getProduct().getName());
+                    addDataCell(row, COL_VERSION, cpd.getVersion().getVersion());
+                } else {
+                    addDataCell(row, COL_DEVELOPER, "?");
+                    addDataCell(row, COL_PRODUCT, "?");
+                    addDataCell(row, COL_VERSION, "?");
+                }
+                addDataCell(row, COL_SURV_OUTCOME, "TBD");
+                pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, LAST_DATA_COLUMN - 1),
+                    BorderStyle.HAIR, BorderExtent.HORIZONTAL);
+                addedRows++;
+                isFirstRowForComplaint = false;
+            }
 
             pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, LAST_DATA_COLUMN - 1),
                     BorderStyle.HAIR, BorderExtent.HORIZONTAL);

@@ -35,6 +35,7 @@
         <class>gov.healthit.chpl.entity.ComplaintEntity</class>
         <class>gov.healthit.chpl.entity.ComplaintListingMapEntity</class>
         <class>gov.healthit.chpl.entity.ComplaintStatusTypeEntity</class>
+        <class>gov.healthit.chpl.entity.ComplaintSurveillanceMapEntity</class>
         <class>gov.healthit.chpl.entity.ContactEntity</class>
         <class>gov.healthit.chpl.entity.CriterionProductStatisticsEntity</class>
         <class>gov.healthit.chpl.entity.EducationTypeEntity</class>
@@ -139,6 +140,7 @@
         <class>gov.healthit.chpl.entity.surveillance.PendingSurveillanceNonconformityEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.PendingSurveillanceRequirementEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.PendingSurveillanceValidationEntity</class>
+        <class>gov.healthit.chpl.entity.surveillance.SurveillanceBasicEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.SurveillanceEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityDocumentationEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity</class>
