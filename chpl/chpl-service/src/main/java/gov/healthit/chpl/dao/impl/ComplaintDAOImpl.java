@@ -521,13 +521,13 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
 
     private void populateSurveillance(ComplaintSurveillanceMapEntity complaintSurveillance)
             throws EntityRetrievalException {
-        complaintSurveillance.setSurveillance(getSurveillanceBasicntity(complaintSurveillance.getSurveillanceId()));
+        complaintSurveillance.setSurveillance(getSurveillanceBasicEntity(complaintSurveillance.getSurveillanceId()));
         String chplProductNumber = chplProductNumberUtil
                 .generate(complaintSurveillance.getSurveillance().getCertifiedProductId());
         complaintSurveillance.getSurveillance().setChplProductNumber(chplProductNumber);
     }
 
-    private SurveillanceBasicEntity getSurveillanceBasicntity(final long id) throws EntityRetrievalException {
+    private SurveillanceBasicEntity getSurveillanceBasicEntity(final long id) throws EntityRetrievalException {
         SurveillanceBasicEntity entity = null;
 
         Query query = entityManager.createQuery(
