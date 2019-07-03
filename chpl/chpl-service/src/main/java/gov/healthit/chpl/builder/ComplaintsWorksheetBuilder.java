@@ -40,7 +40,7 @@ import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.ComplaintManager;
 
 @Component
-public class ComplaintsWorksheetBuilder extends XlsxWorksheetBuilder {
+public class ComplaintsWorksheetBuilder {
     private static final Logger LOGGER = LogManager.getLogger(ComplaintsWorksheetBuilder.class);
     private static final int LAST_DATA_COLUMN = 20;
 
@@ -72,19 +72,15 @@ public class ComplaintsWorksheetBuilder extends XlsxWorksheetBuilder {
     @Autowired
     public ComplaintsWorksheetBuilder(final ComplaintManager complaintManager,
             final CertifiedProductDetailsManager cpdManager) {
-        super();
         this.complaintManager = complaintManager;
         this.cpdManager = cpdManager;
         dateFormatter = new SimpleDateFormat("MM/dd/yyyy");
-        pt = new PropertyTemplate();
     }
 
-    @Override
     public int getLastDataColumn() {
         return LAST_DATA_COLUMN;
     }
 
-    @Override
     public int getLastDataRow() {
         return lastDataRow <= 1 ? 2 : lastDataRow;
     }
@@ -94,12 +90,14 @@ public class ComplaintsWorksheetBuilder extends XlsxWorksheetBuilder {
      * @return
      * @throws IOException
      */
-    public Sheet buildWorksheet(final List<QuarterlyReportDTO> quarterlyReports)
+    public Sheet buildWorksheet(final SurveillanceReportWorkbookWrapper workbook, final List<QuarterlyReportDTO> quarterlyReports)
             throws IOException {
+        pt = new PropertyTemplate();
+        lastDataRow = 0;
         XSSFDataValidationHelper dvHelper = null;
 
         //create sheet
-        Sheet sheet = getSheet("Complaints", new Color(141, 180, 226));
+        Sheet sheet = workbook.getSheet("Complaints", new Color(141, 180, 226), getLastDataColumn());
         if (sheet instanceof XSSFSheet) {
             XSSFSheet xssfSheet = (XSSFSheet) sheet;
             dvHelper = new XSSFDataValidationHelper(xssfSheet);
@@ -110,13 +108,13 @@ public class ComplaintsWorksheetBuilder extends XlsxWorksheetBuilder {
         sheet.setDisplayRowColHeadings(false);
 
         //all columns need a certain width to match the document format
-        int sharedColWidth = getColumnWidth(11.78);
+        int sharedColWidth = workbook.getColumnWidth(11.78);
         sheet.setColumnWidth(COL_COMPLAINT_DATE, sharedColWidth);
         sheet.setColumnWidth(COL_ACB_COMPLAINT_ID,  sharedColWidth);
         sheet.setColumnWidth(COL_ONC_COMPLAINT_ID, sharedColWidth);
-        sheet.setColumnWidth(COL_SUMMARY, getColumnWidth(36.78));
-        sheet.setColumnWidth(COL_ACTIONS_RESPONSE, getColumnWidth(78));
-        sheet.setColumnWidth(COL_COMPLAINANT_TYPE, getColumnWidth(22));
+        sheet.setColumnWidth(COL_SUMMARY, workbook.getColumnWidth(36.78));
+        sheet.setColumnWidth(COL_ACTIONS_RESPONSE, workbook.getColumnWidth(78));
+        sheet.setColumnWidth(COL_COMPLAINANT_TYPE, workbook.getColumnWidth(22));
         sheet.setColumnWidth(COL_CRITERIA_ID, sharedColWidth);
         sheet.setColumnWidth(COL_CHPL_ID, sharedColWidth);
         sheet.setColumnWidth(COL_SURV_ID, sharedColWidth);
@@ -129,8 +127,8 @@ public class ComplaintsWorksheetBuilder extends XlsxWorksheetBuilder {
         sheet.setColumnWidth(COL_ATL_CONTACTED, sharedColWidth);
         sheet.setColumnWidth(COL_COMPLAINT_STATUS, sharedColWidth);
 
-        lastDataRow += addHeadingRow(sheet);
-        lastDataRow += addTableData(sheet, quarterlyReports);
+        lastDataRow += addHeadingRow(workbook, sheet);
+        lastDataRow += addTableData(workbook, sheet, quarterlyReports);
 
         //some of the columns have dropdown lists of choices for the user - set those up
 
@@ -139,17 +137,17 @@ public class ComplaintsWorksheetBuilder extends XlsxWorksheetBuilder {
         //but if you read those same strings from another set of cells using a formula, it is allowed
         //to be as long as you want.
         //names for the list constraints
-        Name complainantTypeNamedCell = workbook.createName();
+        Name complainantTypeNamedCell = workbook.getWorkbook().createName();
         complainantTypeNamedCell.setNameName("ComplainantTypeList");
         String reference = "Lists!$E$1:$E$" + getNumberOfComplainantTypes();
         complainantTypeNamedCell.setRefersToFormula(reference);
 
-        Name complaintStatusTypeNamedCell = workbook.createName();
+        Name complaintStatusTypeNamedCell = workbook.getWorkbook().createName();
         complaintStatusTypeNamedCell.setNameName("ComplaintStatusTypeList");
         reference = "Lists!$F$1:$F$" + getNumberOfComplaintStatusTypes();
         complaintStatusTypeNamedCell.setRefersToFormula(reference);
 
-        Name booleanNamedCell = workbook.createName();
+        Name booleanNamedCell = workbook.getWorkbook().createName();
         booleanNamedCell.setNameName("ComplaintSheetBooleanList");
         reference = "Lists!$D$1:$D$2";
         booleanNamedCell.setRefersToFormula(reference);
@@ -218,28 +216,28 @@ public class ComplaintsWorksheetBuilder extends XlsxWorksheetBuilder {
      * @param sheet
      * @return
      */
-    private int addHeadingRow(final Sheet sheet) {
-        Row row = getRow(sheet, 1);
+    private int addHeadingRow(final SurveillanceReportWorkbookWrapper workbook, final Sheet sheet) {
+        Row row = workbook.getRow(sheet, 1);
         //row can have 6 lines of text
         row.setHeightInPoints(3 * sheet.getDefaultRowHeightInPoints());
 
-        addHeadingCell(row, COL_COMPLAINT_DATE, "Date Complaint Received");
-        addHeadingCell(row, COL_ACB_COMPLAINT_ID, "ONC-ACB Complaint ID");
-        addHeadingCell(row, COL_ONC_COMPLAINT_ID, "ONC Complaint ID (if applicable)");
-        addHeadingCell(row, COL_SUMMARY, "Complaint Summary");
-        addHeadingCell(row, COL_ACTIONS_RESPONSE, "Actions/Response");
-        addHeadingCell(row, COL_COMPLAINANT_TYPE, "Type of Complaint");
-        addHeadingCell(row, COL_CRITERIA_ID, "Criteria");
-        addHeadingCell(row, COL_CHPL_ID, "CHPL ID");
-        addHeadingCell(row, COL_SURV_ID, "Surveillance ID");
-        addHeadingCell(row, COL_DEVELOPER, "Developer");
-        addHeadingCell(row, COL_PRODUCT, "Product");
-        addHeadingCell(row, COL_VERSION, "Version");
-        addHeadingCell(row, COL_SURV_OUTCOME, "Outcome of Surveillance");
-        addHeadingCell(row, COL_COMPLAINANT_CONTACTED, "Complainant Contacted?");
-        addHeadingCell(row, COL_DEVELOPER_CONTACTED, "Developer Contacted?");
-        addHeadingCell(row, COL_ATL_CONTACTED, "ONC-ATL Contacted?");
-        addHeadingCell(row, COL_COMPLAINT_STATUS, "Complaint Status");
+        addHeadingCell(workbook, row, COL_COMPLAINT_DATE, "Date Complaint Received");
+        addHeadingCell(workbook, row, COL_ACB_COMPLAINT_ID, "ONC-ACB Complaint ID");
+        addHeadingCell(workbook, row, COL_ONC_COMPLAINT_ID, "ONC Complaint ID (if applicable)");
+        addHeadingCell(workbook, row, COL_SUMMARY, "Complaint Summary");
+        addHeadingCell(workbook, row, COL_ACTIONS_RESPONSE, "Actions/Response");
+        addHeadingCell(workbook, row, COL_COMPLAINANT_TYPE, "Type of Complaint");
+        addHeadingCell(workbook, row, COL_CRITERIA_ID, "Criteria");
+        addHeadingCell(workbook, row, COL_CHPL_ID, "CHPL ID");
+        addHeadingCell(workbook, row, COL_SURV_ID, "Surveillance ID");
+        addHeadingCell(workbook, row, COL_DEVELOPER, "Developer");
+        addHeadingCell(workbook, row, COL_PRODUCT, "Product");
+        addHeadingCell(workbook, row, COL_VERSION, "Version");
+        addHeadingCell(workbook, row, COL_SURV_OUTCOME, "Outcome of Surveillance");
+        addHeadingCell(workbook, row, COL_COMPLAINANT_CONTACTED, "Complainant Contacted?");
+        addHeadingCell(workbook, row, COL_DEVELOPER_CONTACTED, "Developer Contacted?");
+        addHeadingCell(workbook, row, COL_ATL_CONTACTED, "ONC-ATL Contacted?");
+        addHeadingCell(workbook, row, COL_COMPLAINT_STATUS, "Complaint Status");
         return 1;
     }
 
@@ -249,7 +247,7 @@ public class ComplaintsWorksheetBuilder extends XlsxWorksheetBuilder {
      * @param sheet
      * @param reportListingMap
      */
-    private int addTableData(final Sheet sheet,
+    private int addTableData(final SurveillanceReportWorkbookWrapper workbook, final Sheet sheet,
             final List<QuarterlyReportDTO> quarterlyReports) {
         int addedRows = 0;
         int rowNum = 2;
@@ -276,8 +274,11 @@ public class ComplaintsWorksheetBuilder extends XlsxWorksheetBuilder {
 
         for (Complaint complaint : allComplaints) {
             boolean isFirstRowForComplaint = true;
-            Row row = getRow(sheet, rowNum++);
-            addComplaintData(row, complaint);
+            Row row = workbook.getRow(sheet, rowNum++);
+            addComplaintData(workbook, row, complaint);
+            pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, LAST_DATA_COLUMN - 1),
+                    BorderStyle.HAIR, BorderExtent.HORIZONTAL);
+            addedRows++;
 
             //sort the criteria by criteria number so all data is in a predictable order
             List<CertificationCriterion> orderedCriterion = new ArrayList<CertificationCriterion>();
@@ -346,70 +347,67 @@ public class ComplaintsWorksheetBuilder extends XlsxWorksheetBuilder {
             //or criteria that the complaint is associated with.
             for (CertificationCriterion criteria : orderedCriterion) {
                 if (!isFirstRowForComplaint) {
-                    row = getRow(sheet, rowNum++);
+                    row = workbook.getRow(sheet, rowNum++);
+                    addedRows++;
                 }
-                addDataCell(row, COL_CRITERIA_ID, criteria.getNumber());
+                addDataCell(workbook, row, COL_CRITERIA_ID, criteria.getNumber());
                 //nothing to show in the rest of the cells since they are all listing/surv specific
-                addDataCell(row, COL_CHPL_ID, "");
-                addDataCell(row, COL_SURV_ID, "");
-                addDataCell(row, COL_DEVELOPER, "");
-                addDataCell(row, COL_PRODUCT, "");
-                addDataCell(row, COL_VERSION, "");
-                addDataCell(row, COL_SURV_OUTCOME, "");
+                addDataCell(workbook, row, COL_CHPL_ID, "");
+                addDataCell(workbook, row, COL_SURV_ID, "");
+                addDataCell(workbook, row, COL_DEVELOPER, "");
+                addDataCell(workbook, row, COL_PRODUCT, "");
+                addDataCell(workbook, row, COL_VERSION, "");
+                addDataCell(workbook, row, COL_SURV_OUTCOME, "");
                 pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, LAST_DATA_COLUMN - 1),
                         BorderStyle.HAIR, BorderExtent.HORIZONTAL);
-                addedRows++;
                 isFirstRowForComplaint = false;
             }
 
             for (CertifiedProductSearchDetails listing : orderedListings) {
                 if (!isFirstRowForComplaint) {
-                    row = getRow(sheet, rowNum++);
+                    row = workbook.getRow(sheet, rowNum++);
+                    addedRows++;
                 }
-                addDataCell(row, COL_CRITERIA_ID, "");
-                addDataCell(row, COL_CHPL_ID, listing.getChplProductNumber());
+                addDataCell(workbook, row, COL_CRITERIA_ID, "");
+                addDataCell(workbook, row, COL_CHPL_ID, listing.getChplProductNumber());
                 //nothing in surveillance because this complaint is only
                 //associated at the listing level
-                addDataCell(row, COL_SURV_ID, "");
-                addDataCell(row, COL_DEVELOPER, listing.getDeveloper().getName());
-                addDataCell(row, COL_PRODUCT, listing.getProduct().getName());
-                addDataCell(row, COL_VERSION, listing.getVersion().getVersion());
+                addDataCell(workbook, row, COL_SURV_ID, "");
+                addDataCell(workbook, row, COL_DEVELOPER, listing.getDeveloper().getName());
+                addDataCell(workbook, row, COL_PRODUCT, listing.getProduct().getName());
+                addDataCell(workbook, row, COL_VERSION, listing.getVersion().getVersion());
                 //nothing in surveillance outcome because this complaint is only
                 //associated at the listing level
-                addDataCell(row, COL_SURV_OUTCOME, "");
+                addDataCell(workbook, row, COL_SURV_OUTCOME, "");
                 pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, LAST_DATA_COLUMN - 1),
                     BorderStyle.HAIR, BorderExtent.HORIZONTAL);
-                addedRows++;
                 isFirstRowForComplaint = false;
             }
 
             for (SurveillanceBasic surv : orderedSurveillances) {
                 if (!isFirstRowForComplaint) {
-                    row = getRow(sheet, rowNum++);
+                    row = workbook.getRow(sheet, rowNum++);
+                    addedRows++;
                 }
-                addDataCell(row, COL_CRITERIA_ID, "");
-                addDataCell(row, COL_CHPL_ID, surv.getChplProductNumber());
-                addDataCell(row, COL_SURV_ID, surv.getFriendlyId());
+                addDataCell(workbook, row, COL_CRITERIA_ID, "");
+                addDataCell(workbook, row, COL_CHPL_ID, surv.getChplProductNumber());
+                addDataCell(workbook, row, COL_SURV_ID, surv.getFriendlyId());
                 //if we have the listing details print them out, otherwise print an error
                 CertifiedProductSearchDetails cpd = listingDetailsCache.get(surv.getCertifiedProductId());
                 if (cpd != null) {
-                    addDataCell(row, COL_DEVELOPER, cpd.getDeveloper().getName());
-                    addDataCell(row, COL_PRODUCT, cpd.getProduct().getName());
-                    addDataCell(row, COL_VERSION, cpd.getVersion().getVersion());
+                    addDataCell(workbook, row, COL_DEVELOPER, cpd.getDeveloper().getName());
+                    addDataCell(workbook, row, COL_PRODUCT, cpd.getProduct().getName());
+                    addDataCell(workbook, row, COL_VERSION, cpd.getVersion().getVersion());
                 } else {
-                    addDataCell(row, COL_DEVELOPER, "?");
-                    addDataCell(row, COL_PRODUCT, "?");
-                    addDataCell(row, COL_VERSION, "?");
+                    addDataCell(workbook, row, COL_DEVELOPER, "?");
+                    addDataCell(workbook, row, COL_PRODUCT, "?");
+                    addDataCell(workbook, row, COL_VERSION, "?");
                 }
-                addDataCell(row, COL_SURV_OUTCOME, "TBD");
+                addDataCell(workbook, row, COL_SURV_OUTCOME, "TBD");
                 pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, LAST_DATA_COLUMN - 1),
                     BorderStyle.HAIR, BorderExtent.HORIZONTAL);
-                addedRows++;
                 isFirstRowForComplaint = false;
             }
-
-            pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, LAST_DATA_COLUMN - 1),
-                    BorderStyle.HAIR, BorderExtent.HORIZONTAL);
         }
         return addedRows;
     }
@@ -422,29 +420,30 @@ public class ComplaintsWorksheetBuilder extends XlsxWorksheetBuilder {
         return complaintManager.getComplaintStatusTypes().size();
     }
 
-    private void addComplaintData(final Row row, final Complaint complaint) {
-        addDataCell(row, COL_COMPLAINT_DATE, dateFormatter.format(complaint.getReceivedDate()));
-        addDataCell(row, COL_ACB_COMPLAINT_ID, complaint.getAcbComplaintId());
-        addDataCell(row, COL_ONC_COMPLAINT_ID, complaint.getOncComplaintId());
-        addDataCell(row, COL_SUMMARY, complaint.getSummary());
-        addDataCell(row, COL_ACTIONS_RESPONSE, complaint.getActions());
-        addDataCell(row, COL_COMPLAINANT_TYPE, complaint.getComplainantType().getName());
-        addDataCell(row, COL_COMPLAINANT_CONTACTED, complaint.isComplainantContacted() ? "Yes" : "No");
-        addDataCell(row, COL_DEVELOPER_CONTACTED, complaint.isDeveloperContacted() ? "Yes" : "No");
-        addDataCell(row, COL_ATL_CONTACTED, complaint.isOncAtlContacted() ? "Yes" : "No");
-        addDataCell(row, COL_COMPLAINT_STATUS, complaint.getComplaintStatusType().getName());
+    private void addComplaintData(final SurveillanceReportWorkbookWrapper workbook,
+            final Row row, final Complaint complaint) {
+        addDataCell(workbook, row, COL_COMPLAINT_DATE, dateFormatter.format(complaint.getReceivedDate()));
+        addDataCell(workbook, row, COL_ACB_COMPLAINT_ID, complaint.getAcbComplaintId());
+        addDataCell(workbook, row, COL_ONC_COMPLAINT_ID, complaint.getOncComplaintId());
+        addDataCell(workbook, row, COL_SUMMARY, complaint.getSummary());
+        addDataCell(workbook, row, COL_ACTIONS_RESPONSE, complaint.getActions());
+        addDataCell(workbook, row, COL_COMPLAINANT_TYPE, complaint.getComplainantType().getName());
+        addDataCell(workbook, row, COL_COMPLAINANT_CONTACTED, complaint.isComplainantContacted() ? "Yes" : "No");
+        addDataCell(workbook, row, COL_DEVELOPER_CONTACTED, complaint.isDeveloperContacted() ? "Yes" : "No");
+        addDataCell(workbook, row, COL_ATL_CONTACTED, complaint.isOncAtlContacted() ? "Yes" : "No");
+        addDataCell(workbook, row, COL_COMPLAINT_STATUS, complaint.getComplaintStatusType().getName());
     }
 
-    private Cell addHeadingCell(final Row row, final int cellNum, final String cellText) {
-        Cell cell = createCell(row, cellNum);
-        cell.setCellStyle(wrappedTableHeadingStyle);
+    private Cell addHeadingCell(final SurveillanceReportWorkbookWrapper workbook,
+            final Row row, final int cellNum, final String cellText) {
+        Cell cell = workbook.createCell(row, cellNum, workbook.getWrappedTableHeadingStyle());
         cell.setCellValue(cellText);
         return cell;
     }
 
-    private Cell addDataCell(final Row row, final int cellNum, final String cellText) {
-        Cell cell = createCell(row, cellNum);
-        cell.setCellStyle(smallStyle);
+    private Cell addDataCell(final SurveillanceReportWorkbookWrapper workbook,
+            final Row row, final int cellNum, final String cellText) {
+        Cell cell = workbook.createCell(row, cellNum);
         cell.setCellValue(cellText);
         return cell;
     }

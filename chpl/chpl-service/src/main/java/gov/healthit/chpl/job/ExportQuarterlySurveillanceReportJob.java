@@ -67,9 +67,10 @@ public class ExportQuarterlySurveillanceReportJob extends RunnableJob {
             updateStatus(100, JobStatusType.Error);
         }
 
+        QuarterlyReportDTO report = null;
         Workbook workbook = null;
         try {
-            QuarterlyReportDTO report = reportManager.getQuarterlyReport(quarterlyReportId);
+            report = reportManager.getQuarterlyReport(quarterlyReportId);
             if (report != null) {
                 workbook = reportBuilder.buildXlsx(report);
             }
@@ -85,39 +86,26 @@ public class ExportQuarterlySurveillanceReportJob extends RunnableJob {
             updateStatus(100, JobStatusType.Error);
         }
 
-        if (workbook != null) {
+        if (workbook != null && report != null) {
             updateStatus(75, JobStatusType.In_Progress);
-
-            QuarterlyReportDTO report = null;
+            String filename = report.getQuarter().getName() + "-" + report.getYear()
+                        + "-" + report.getAcb().getName() + "-quarterly-report";
+            //write out the workbook contents to this file
+            OutputStream outputStream = null;
             try {
-                report = reportManager.getQuarterlyReport(quarterlyReportId);
-                updateStatus(80, JobStatusType.In_Progress);
-            } catch (EntityRetrievalException ex) {
-                String msg = errorMessageUtil.getMessage("report.quarterlySurveillance.export.badId", quarterlyReportId);
+                writtenFile = File.createTempFile(filename, ".xlsx");
+                outputStream = new FileOutputStream(writtenFile);
+                LOGGER.info("Writing quarterly report file to " + writtenFile.getAbsolutePath());
+                workbook.write(outputStream);
+                updateStatus(90, JobStatusType.In_Progress);
+            } catch (final Exception ex) {
+                String msg = errorMessageUtil.getMessage("report.quarterlySurveillance.export.writeError");
                 LOGGER.error(msg);
                 addJobMessage(msg);
                 updateStatus(100, JobStatusType.Error);
-            }
-
-            if (report != null) {
-                String filename = report.getQuarter().getName() + "-" + report.getYear()
-                            + "-" + report.getAcb().getName() + "-quarterly-report";
-                //write out the workbook contents to this file
-                OutputStream outputStream = null;
-                try {
-                    writtenFile = File.createTempFile(filename, ".xlsx");
-                    outputStream = new FileOutputStream(writtenFile);
-                    workbook.write(outputStream);
-                    updateStatus(90, JobStatusType.In_Progress);
-                } catch (final Exception ex) {
-                    String msg = errorMessageUtil.getMessage("report.quarterlySurveillance.export.writeError");
-                    LOGGER.error(msg);
-                    addJobMessage(msg);
-                    updateStatus(100, JobStatusType.Error);
-                } finally {
-                    try { outputStream.flush(); } catch (Exception ignore) {}
-                    try { outputStream.close(); } catch (Exception ignore) {}
-                }
+            } finally {
+                try { outputStream.flush(); } catch (Exception ignore) {}
+                try { outputStream.close(); } catch (Exception ignore) {}
             }
         } else {
             updateStatus(100, JobStatusType.Error);

@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.font.FontRenderContext;
 import java.awt.font.LineBreakMeasurer;
 import java.awt.font.TextAttribute;
+import java.io.IOException;
 import java.text.AttributedString;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -12,6 +13,7 @@ import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Name;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
@@ -19,29 +21,30 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.DefaultIndexedColorMap;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbookFactory;
 import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTCol;
 import org.springframework.util.StringUtils;
 
-public abstract class XlsxWorksheetBuilder {
+public class SurveillanceReportWorkbookWrapper {
     public static final int DEFAULT_MAX_COLUMN = 16384;
     private static final int WORKSHEET_FONT_POINTS  = 10;
     private static final int WORKSHEET_LARGE_FONT_POINTS = 12;
 
-    protected Workbook workbook;
-    protected Font boldFont, smallFont, boldSmallFont, italicSmallFont, boldItalicSmallFont,
+    private Workbook workbook;
+    private Font boldFont, smallFont, boldSmallFont, italicSmallFont, boldItalicSmallFont,
     italicUnderlinedSmallFont;
-    protected CellStyle boldStyle, smallStyle, italicSmallStyle, boldItalicSmallStyle,
+    private CellStyle boldStyle, smallStyle, italicSmallStyle, boldItalicSmallStyle,
     italicUnderlinedSmallStyle, topAlignedWrappedStyle, sectionNumberingStyle, sectionHeadingStyle,
     rightAlignedTableHeadingStyle, leftAlignedTableHeadingStyle, wrappedTableHeadingStyle, tableSubheadingStyle;
 
-    public XlsxWorksheetBuilder() {
+    public SurveillanceReportWorkbookWrapper() throws IOException {
+        this.workbook = XSSFWorkbookFactory.create(true);
+        initializeFonts();
+        initializeStyles();
     }
 
-    public abstract int getLastDataColumn();
-    public abstract int getLastDataRow();
-
-    public Sheet getSheet(final String sheetName) {
-        return getSheet(sheetName, null);
+    public Sheet getSheet(final String sheetName, final int lastDataColumn) {
+        return getSheet(sheetName, null, lastDataColumn);
     }
 
     /**
@@ -50,7 +53,7 @@ public abstract class XlsxWorksheetBuilder {
      * @param sheetName
      * @return
      */
-    public Sheet getSheet(final String sheetName, final Color tabColor) {
+    public Sheet getSheet(final String sheetName, final Color tabColor, final int lastDataColumn) {
         Sheet sheet = workbook.getSheet(sheetName);
         if (sheet == null) {
             sheet = workbook.createSheet(sheetName);
@@ -63,12 +66,12 @@ public abstract class XlsxWorksheetBuilder {
                 }
 
                 //hide all the columns after the data
-                CTCol col = xssfSheet.getCTWorksheet().getColsArray(0).addNewCol();
-                col.setMin(getLastDataColumn());
-                col.setMax(DEFAULT_MAX_COLUMN); // the last column (1-indexed)
-                col.setHidden(true);
-
-                //TODO: figure out how to hide rows after lastDataRow
+                if (lastDataColumn > 0) {
+                    CTCol col = xssfSheet.getCTWorksheet().getColsArray(0).addNewCol();
+                    col.setMin(lastDataColumn);
+                    col.setMax(DEFAULT_MAX_COLUMN); // the last column (1-indexed)
+                    col.setHidden(true);
+                }
             }
         }
         return sheet;
@@ -86,15 +89,29 @@ public abstract class XlsxWorksheetBuilder {
         return (int)(excelWidth * 256);
     }
 
+    /**
+     * Given a string and the width of the column figure out how many lines the text
+     * will take up using this workbooks default font.
+     * @param text
+     * @param sheet
+     * @param firstColIndex
+     * @param lastColIndex
+     * @return
+     */
+    public int calculateLineCount(final String text, final Sheet sheet,
+            final int firstColIndex, final int lastColIndex) {
+        return calculateLineCount(text, smallFont, sheet, firstColIndex, lastColIndex);
+    }
 
     /**
      * Given a string and the width of column (in... units?? pixels?) figure out
-     * how many lines the string of text it will take up if it wraps.
+     * how many lines the string of text it will take up using the given font if the text wraps.
      * @param text
      * @param cells
      * @return
      */
-    protected int calculateLineCount(final String text, final Sheet sheet, final int firstColIndex, final int lastColIndex) {
+    public int calculateLineCount(final String text, final Font font, final Sheet sheet,
+            final int firstColIndex, final int lastColIndex) {
         int totalLineCount = 0;
         //count newline characters that are present in the text first
         int newlineCharCount = StringUtils.countOccurrencesOf(text, "\n");
@@ -103,7 +120,7 @@ public abstract class XlsxWorksheetBuilder {
         //which only has \n but this code will run on linux so... ??
 
         if (newlineCharCount == 0) {
-            totalLineCount = calculateLineCountWithoutNewlines(text, sheet, firstColIndex, lastColIndex);
+            totalLineCount = calculateLineCountWithoutNewlines(text, font, sheet, firstColIndex, lastColIndex);
         } else {
             //find each section of this text between newlines; check if that section
             //wraps over multiple lines and add to the count
@@ -115,13 +132,13 @@ public abstract class XlsxWorksheetBuilder {
                 } else if (indexOfNextNewline > i) {
                     //a paragraph inbetween newlnes
                     String sectionText = text.substring(i, indexOfNextNewline);
-                    int sectionLineCount = calculateLineCountWithoutNewlines(sectionText, sheet, firstColIndex, lastColIndex);
+                    int sectionLineCount = calculateLineCountWithoutNewlines(sectionText, font, sheet, firstColIndex, lastColIndex);
                     totalLineCount += sectionLineCount;
                     i = indexOfNextNewline;
                 } else if (indexOfNextNewline == -1 && i < text.length()) {
                     //last section, no newlines after it
                     String sectionText = text.substring(i);
-                    int sectionLineCount = calculateLineCountWithoutNewlines(sectionText, sheet, firstColIndex, lastColIndex);
+                    int sectionLineCount = calculateLineCountWithoutNewlines(sectionText, font, sheet, firstColIndex, lastColIndex);
                     totalLineCount += sectionLineCount;
                     i = text.length();
                 }
@@ -143,7 +160,7 @@ public abstract class XlsxWorksheetBuilder {
      * @param lastColIndex
      * @return
      */
-    protected int calculateLineCountWithoutNewlines(final String textWithoutNewlines,
+    public int calculateLineCountWithoutNewlines(final String textWithoutNewlines, final Font font,
             final Sheet sheet, final int firstColIndex, final int lastColIndex) {
         int lineCount = 0;
 
@@ -164,7 +181,7 @@ public abstract class XlsxWorksheetBuilder {
         int totalColWidth = totalColWidthInChars * 5;
 
         //measure the text string against the column width to see how many lines it takes up
-        java.awt.Font currFont = new java.awt.Font(smallFont.getFontName(), 0, smallFont.getFontHeightInPoints());
+        java.awt.Font currFont = new java.awt.Font(font.getFontName(), 0, font.getFontHeightInPoints());
         AttributedString attrStr = new AttributedString(textWithoutNewlines);
         attrStr.addAttribute(TextAttribute.FONT, currFont);
         FontRenderContext frc = new FontRenderContext(null, true, true);
@@ -179,14 +196,30 @@ public abstract class XlsxWorksheetBuilder {
     }
 
     /**
-     * Create a new cell and apply the default worksheet style to it.
+     * Create a new cell and apply the default workbook style to it.
      * @param row
      * @param cellIndex
      * @return
      */
     public Cell createCell(final Row row, final int cellIndex) {
-        Cell cell = row.createCell(cellIndex);
-        cell.setCellStyle(smallStyle);
+        return createCell(row, cellIndex, smallStyle);
+    }
+
+    /**
+     * Create a new cell and apply the a style to it.
+     * @param row
+     * @param cellIndex
+     * @return
+     */
+    public Cell createCell(final Row row, final int cellIndex, final CellStyle style) {
+        Cell cell = null;
+        try {
+            cell = row.createCell(cellIndex);
+            cell.setCellStyle(style);
+        } catch (Exception ex) {
+            System.err.println("Error creating cell in row " + row.getRowNum() + " at column " + cellIndex);
+            ex.printStackTrace();
+        }
         return cell;
     }
 
@@ -316,9 +349,148 @@ public abstract class XlsxWorksheetBuilder {
         return workbook;
     }
 
-    public void setWorkbook(final Workbook workbook) {
-        this.workbook = workbook;
-        initializeFonts();
-        initializeStyles();
+    public Font getBoldFont() {
+        return boldFont;
     }
+
+    public void setBoldFont(Font boldFont) {
+        this.boldFont = boldFont;
+    }
+
+    public Font getSmallFont() {
+        return smallFont;
+    }
+
+    public void setSmallFont(Font smallFont) {
+        this.smallFont = smallFont;
+    }
+
+    public Font getBoldSmallFont() {
+        return boldSmallFont;
+    }
+
+    public void setBoldSmallFont(Font boldSmallFont) {
+        this.boldSmallFont = boldSmallFont;
+    }
+
+    public Font getItalicSmallFont() {
+        return italicSmallFont;
+    }
+
+    public void setItalicSmallFont(Font italicSmallFont) {
+        this.italicSmallFont = italicSmallFont;
+    }
+
+    public Font getBoldItalicSmallFont() {
+        return boldItalicSmallFont;
+    }
+
+    public void setBoldItalicSmallFont(Font boldItalicSmallFont) {
+        this.boldItalicSmallFont = boldItalicSmallFont;
+    }
+
+    public Font getItalicUnderlinedSmallFont() {
+        return italicUnderlinedSmallFont;
+    }
+
+    public void setItalicUnderlinedSmallFont(Font italicUnderlinedSmallFont) {
+        this.italicUnderlinedSmallFont = italicUnderlinedSmallFont;
+    }
+
+    public CellStyle getBoldStyle() {
+        return boldStyle;
+    }
+
+    public void setBoldStyle(CellStyle boldStyle) {
+        this.boldStyle = boldStyle;
+    }
+
+    public CellStyle getSmallStyle() {
+        return smallStyle;
+    }
+
+    public void setSmallStyle(CellStyle smallStyle) {
+        this.smallStyle = smallStyle;
+    }
+
+    public CellStyle getItalicSmallStyle() {
+        return italicSmallStyle;
+    }
+
+    public void setItalicSmallStyle(CellStyle italicSmallStyle) {
+        this.italicSmallStyle = italicSmallStyle;
+    }
+
+    public CellStyle getBoldItalicSmallStyle() {
+        return boldItalicSmallStyle;
+    }
+
+    public void setBoldItalicSmallStyle(CellStyle boldItalicSmallStyle) {
+        this.boldItalicSmallStyle = boldItalicSmallStyle;
+    }
+
+    public CellStyle getItalicUnderlinedSmallStyle() {
+        return italicUnderlinedSmallStyle;
+    }
+
+    public void setItalicUnderlinedSmallStyle(CellStyle italicUnderlinedSmallStyle) {
+        this.italicUnderlinedSmallStyle = italicUnderlinedSmallStyle;
+    }
+
+    public CellStyle getTopAlignedWrappedStyle() {
+        return topAlignedWrappedStyle;
+    }
+
+    public void setTopAlignedWrappedStyle(CellStyle topAlignedWrappedStyle) {
+        this.topAlignedWrappedStyle = topAlignedWrappedStyle;
+    }
+
+    public CellStyle getSectionNumberingStyle() {
+        return sectionNumberingStyle;
+    }
+
+    public void setSectionNumberingStyle(CellStyle sectionNumberingStyle) {
+        this.sectionNumberingStyle = sectionNumberingStyle;
+    }
+
+    public CellStyle getSectionHeadingStyle() {
+        return sectionHeadingStyle;
+    }
+
+    public void setSectionHeadingStyle(CellStyle sectionHeadingStyle) {
+        this.sectionHeadingStyle = sectionHeadingStyle;
+    }
+
+    public CellStyle getRightAlignedTableHeadingStyle() {
+        return rightAlignedTableHeadingStyle;
+    }
+
+    public void setRightAlignedTableHeadingStyle(CellStyle rightAlignedTableHeadingStyle) {
+        this.rightAlignedTableHeadingStyle = rightAlignedTableHeadingStyle;
+    }
+
+    public CellStyle getLeftAlignedTableHeadingStyle() {
+        return leftAlignedTableHeadingStyle;
+    }
+
+    public void setLeftAlignedTableHeadingStyle(CellStyle leftAlignedTableHeadingStyle) {
+        this.leftAlignedTableHeadingStyle = leftAlignedTableHeadingStyle;
+    }
+
+    public CellStyle getWrappedTableHeadingStyle() {
+        return wrappedTableHeadingStyle;
+    }
+
+    public void setWrappedTableHeadingStyle(CellStyle wrappedTableHeadingStyle) {
+        this.wrappedTableHeadingStyle = wrappedTableHeadingStyle;
+    }
+
+    public CellStyle getTableSubheadingStyle() {
+        return tableSubheadingStyle;
+    }
+
+    public void setTableSubheadingStyle(CellStyle tableSubheadingStyle) {
+        this.tableSubheadingStyle = tableSubheadingStyle;
+    }
+
 }
