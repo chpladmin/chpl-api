@@ -23,14 +23,15 @@ import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("quarterlyReportDao")
 public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyReportDAO {
-
+    private static final String QUARTERLY_REPORT_HQL = "SELECT qr "
+            + " FROM QuarterlyReportEntity qr "
+            + " JOIN FETCH qr.quarter "
+            + " JOIN FETCH qr.acb acb "
+            + " LEFT JOIN FETCH acb.address "
+            + " WHERE qr.deleted = false ";
     @Override
     public QuarterlyReportDTO getByQuarterAndAcbAndYear(final Long quarterId, final Long acbId, final Integer year) {
-        String queryStr = "SELECT qr "
-                + " FROM QuarterlyReportEntity qr "
-                + " JOIN FETCH qr.quarter "
-                + " JOIN FETCH qr.acb acb "
-                + " WHERE qr.deleted = false "
+        String queryStr = QUARTERLY_REPORT_HQL
                 + " AND qr.year = :year "
                 + " AND acb.id = :acbId "
                 + " AND qr.id = :quarterId";
@@ -52,11 +53,7 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
      */
     @Override
     public List<QuarterlyReportDTO> getByAcbAndYear(final Long acbId, final Integer year) {
-        String queryStr = "SELECT qr "
-                + " FROM QuarterlyReportEntity qr "
-                + " JOIN FETCH qr.quarter "
-                + " JOIN FETCH qr.acb acb "
-                + " WHERE qr.deleted = false "
+        String queryStr = QUARTERLY_REPORT_HQL
                 + " AND qr.year = :year "
                 + " AND acb.id = :acbId";
         Query query = entityManager.createQuery(queryStr);
@@ -78,11 +75,7 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
      */
     @Override
     public List<QuarterlyReportDTO> getByAcb(final Long acbId) {
-        String queryStr = "SELECT qr "
-                + " FROM QuarterlyReportEntity qr "
-                + " JOIN FETCH qr.quarter "
-                + " JOIN FETCH qr.acb acb "
-                + " WHERE qr.deleted = false "
+        String queryStr = QUARTERLY_REPORT_HQL
                 + " AND acb.id = :acbId";
         Query query = entityManager.createQuery(queryStr);
         query.setParameter("acbId", acbId);
@@ -101,12 +94,7 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
      */
     @Override
     public List<QuarterlyReportDTO> getAll() {
-        String queryStr = "SELECT qr "
-                + " FROM QuarterlyReportEntity qr "
-                + " JOIN FETCH qr.quarter "
-                + " JOIN FETCH qr.acb acb "
-                + " WHERE qr.deleted = false ";
-        Query query = entityManager.createQuery(queryStr);
+        Query query = entityManager.createQuery(QUARTERLY_REPORT_HQL);
         List<QuarterlyReportEntity> entityResults = query.getResultList();
         List<QuarterlyReportDTO> results = new ArrayList<QuarterlyReportDTO>();
         if (entityResults != null && entityResults.size() > 0) {
@@ -345,11 +333,7 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
     }
 
     private QuarterlyReportEntity getEntityById(final Long id) throws EntityRetrievalException {
-        String queryStr = "SELECT qr "
-                + " FROM QuarterlyReportEntity qr "
-                + " JOIN FETCH qr.quarter "
-                + " JOIN FETCH qr.acb acb "
-                + " WHERE qr.deleted = false "
+        String queryStr = QUARTERLY_REPORT_HQL
                 + " AND qr.id = :id";
         Query query = entityManager.createQuery(queryStr);
         query.setParameter("id", id);
