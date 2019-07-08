@@ -19,11 +19,7 @@ public class AnnualReportDTO {
         this.obstacleSummary = entity.getObstacleSummary();
         this.findingsSummary = entity.getFindingsSummary();
         if (entity.getAcb() != null) {
-            this.acb = new CertificationBodyDTO();
-            this.acb.setId(entity.getAcb().getId());
-            this.acb.setName(entity.getAcb().getName());
-            this.acb.setAcbCode(entity.getAcb().getAcbCode());
-            this.acb.setRetired(entity.getAcb().getRetired());
+            this.acb = new CertificationBodyDTO(entity.getAcb());
         } else {
             this.acb = new CertificationBodyDTO();
             this.acb.setId(entity.getCertificationBodyId());
