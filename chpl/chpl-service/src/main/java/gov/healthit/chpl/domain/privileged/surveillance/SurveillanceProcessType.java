@@ -1,4 +1,4 @@
-package gov.healthit.chpl.domain.surveillance;
+package gov.healthit.chpl.domain.privileged.surveillance;
 
 import java.io.Serializable;
 
@@ -11,7 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class SurveillanceOutcome implements Serializable {
+public class SurveillanceProcessType implements Serializable {
     private static final long serialVersionUID = 5788880200952752783L;
 
     /**
@@ -26,7 +26,7 @@ public class SurveillanceOutcome implements Serializable {
     @XmlElement(required = true)
     private String name;
 
-    public SurveillanceOutcome() {
+    public SurveillanceProcessType() {
     }
 
     /**
@@ -36,7 +36,7 @@ public class SurveillanceOutcome implements Serializable {
      * @param anotherType
      * @return whether the two objects are the same
      */
-    public boolean matches(final SurveillanceOutcome anotherType) {
+    public boolean matches(final SurveillanceProcessType anotherType) {
         if (this.id != null && anotherType.id != null
                 && this.id.longValue() == anotherType.id.longValue()) {
             return true;
