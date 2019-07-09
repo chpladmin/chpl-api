@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.Job;
+import gov.healthit.chpl.domain.complaint.Complaint;
 import gov.healthit.chpl.domain.surveillance.report.AnnualReport;
 import gov.healthit.chpl.domain.surveillance.report.QuarterlyReport;
 import gov.healthit.chpl.domain.surveillance.report.RelevantListing;
@@ -36,6 +37,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.manager.ComplaintManager;
 import gov.healthit.chpl.manager.SurveillanceReportManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import io.swagger.annotations.Api;
@@ -52,6 +54,8 @@ public class SurveillanceReportController {
     private ErrorMessageUtil msgUtil;
     @Autowired
     private SurveillanceReportManager reportManager;
+    @Autowired
+    private ComplaintManager complaintManager;
     @Autowired
     private FF4j ff4j;
 
@@ -215,6 +219,23 @@ public class SurveillanceReportController {
             }
         }
         return relevantListings;
+    }
+
+    @ApiOperation(value = "Get complaints that are relevant to a specific quarterly report. "
+            + "These are complaints that were open during the quarter.",
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative "
+                    + "authority on the ACB associated with the report.")
+    @RequestMapping(value = "/quarterly/{quarterlyReportId}/complaints",
+        method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<Complaint> getRelevantComplaints(@PathVariable final Long quarterlyReportId)
+            throws AccessDeniedException, EntityRetrievalException {
+        if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
+            throw new NotImplementedException();
+        }
+        QuarterlyReportDTO reportDto = reportManager.getQuarterlyReport(quarterlyReportId);
+        List<Complaint> relevantComplaints =
+                complaintManager.getAllComplaintsBetweenDates(reportDto.getAcb(), reportDto.getStartDate(), reportDto.getEndDate());
+        return relevantComplaints;
     }
 
     @ApiOperation(value = "Create a new quarterly surveillance report.",
