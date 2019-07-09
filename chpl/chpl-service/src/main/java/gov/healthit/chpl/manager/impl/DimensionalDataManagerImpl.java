@@ -141,8 +141,8 @@ public class DimensionalDataManagerImpl implements DimensionalDataManager {
         List<QuarterDTO> quarters = quarterDao.getAll();
         Set<KeyValueModel> results = new HashSet<KeyValueModel>();
         for (QuarterDTO dto : quarters) {
-            String description = dto.getStartDay() + "/" + dto.getStartMonth()
-                + " - " + dto.getEndDay() + "/" + dto.getEndMonth();
+            String description = dto.getStartMonth() + "/" + dto.getStartDay()
+                + " - " + dto.getEndMonth() + "/" + dto.getEndDay();
             results.add(new KeyValueModel(dto.getId(), dto.getName(), description));
         }
         return results;

@@ -121,7 +121,7 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
         entity.setDeveloperContacted(complaintDTO.isDeveloperContacted());
         entity.setOncAtlContacted(complaintDTO.isOncAtlContacted());
         entity.setFlagForOncReview(complaintDTO.isFlagForOncReview());
-        entity.setClosedDate(null);
+        entity.setClosedDate(complaintDTO.getClosedDate());
         entity.setDeleted(false);
         entity.setLastModifiedUser(AuthUtil.getAuditId());
         entity.setCreationDate(new Date());
