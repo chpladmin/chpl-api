@@ -141,6 +141,8 @@ public class ActivityMetadataManagerImpl extends SecuredManager implements Activ
     @Override
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_ANNOUNCEMENT_METADATA)")
+    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_ANNOUNCEMENT_METADATA, filterObject)")
     @Transactional
     public List<ActivityMetadata> getAnnouncementActivityMetadata(final Date startDate, final Date endDate)
             throws IOException {
