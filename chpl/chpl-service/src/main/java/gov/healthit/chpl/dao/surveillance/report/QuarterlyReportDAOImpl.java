@@ -2,19 +2,24 @@ package gov.healthit.chpl.dao.surveillance.report;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Query;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.message.ExitMessage;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.dto.SurveillanceBasicDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportExclusionDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportRelevantListingDTO;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
+import gov.healthit.chpl.entity.surveillance.SurveillanceBasicEntity;
 import gov.healthit.chpl.entity.surveillance.report.QuarterlyReportEntity;
 import gov.healthit.chpl.entity.surveillance.report.QuarterlyReportExcludedListingMapEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -149,8 +154,8 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
     @Transactional(readOnly = true)
     public List<QuarterlyReportRelevantListingDTO> getRelevantListings(final Long acbId,
             final Date startDate, final Date endDate) {
-        String queryStr = "SELECT DISTINCT cp "
-                + "FROM CertifiedProductDetailsEntity cp, SurveillanceEntity surv "
+        String queryStr = "SELECT DISTINCT cp, surv "
+                + "FROM CertifiedProductDetailsEntity cp, SurveillanceBasicEntity surv "
                 + "WHERE cp.certificationBodyId = :acbId "
                 + "AND surv.certifiedProductId = cp.id "
                 + "AND cp.deleted = false "
@@ -161,14 +166,28 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
         query.setParameter("acbId", acbId);
         query.setParameter("startDate", startDate);
         query.setParameter("endDate", endDate);
-        List<CertifiedProductDetailsEntity> entities = query.getResultList();
+        List<Object[]> entities = query.getResultList();
 
-        List<QuarterlyReportRelevantListingDTO> products = new ArrayList<QuarterlyReportRelevantListingDTO>();
-        for (CertifiedProductDetailsEntity entity : entities) {
-            QuarterlyReportRelevantListingDTO product = new QuarterlyReportRelevantListingDTO(entity);
-            products.add(product);
+        List<QuarterlyReportRelevantListingDTO> uniqueRelevantListings =
+                new ArrayList<QuarterlyReportRelevantListingDTO>();
+        for (Object[] entity : entities) {
+            CertifiedProductDetailsEntity listingDetails = (CertifiedProductDetailsEntity) entity[0];
+            SurveillanceBasicEntity survEntity = (SurveillanceBasicEntity) entity[1];
+            QuarterlyReportRelevantListingDTO relevantListingDto =
+                    new QuarterlyReportRelevantListingDTO(listingDetails);
+            if (!uniqueRelevantListings.contains(relevantListingDto)) {
+                relevantListingDto.getSurveillances().add(new SurveillanceBasicDTO(survEntity));
+                uniqueRelevantListings.add(relevantListingDto);
+            } else {
+                //find the existing listing in the set and add the surveillance to it
+                for (QuarterlyReportRelevantListingDTO existingListing : uniqueRelevantListings) {
+                    if (existingListing.equals(relevantListingDto)) {
+                        existingListing.getSurveillances().add(new SurveillanceBasicDTO(survEntity));
+                    }
+                }
+            }
         }
-        return products;
+        return uniqueRelevantListings;
     }
 
     /**
@@ -178,8 +197,8 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
     @Override
     public QuarterlyReportRelevantListingDTO getRelevantListing(final Long listingId,
             final Date startDate, final Date endDate) {
-        String queryStr = "SELECT DISTINCT cp "
-                + "FROM CertifiedProductDetailsEntity cp, SurveillanceEntity surv "
+        String queryStr = "SELECT DISTINCT cp, surv "
+                + "FROM CertifiedProductDetailsEntity cp, SurveillanceBasicEntity surv "
                 + "WHERE cp.id = :listingId "
                 + "AND surv.certifiedProductId = cp.id "
                 + "AND cp.deleted = false "
@@ -190,13 +209,18 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
         query.setParameter("listingId", listingId);
         query.setParameter("startDate", startDate);
         query.setParameter("endDate", endDate);
-        List<CertifiedProductDetailsEntity> entities = query.getResultList();
+        List<Object[]> entities = query.getResultList();
 
-        QuarterlyReportRelevantListingDTO result = null;
-        if (entities != null && entities.size() > 0) {
-            result = new QuarterlyReportRelevantListingDTO(entities.get(0));
+        QuarterlyReportRelevantListingDTO relevantListing = null;
+        for (Object[] entity : entities) {
+            CertifiedProductDetailsEntity listingDetails = (CertifiedProductDetailsEntity) entity[0];
+            SurveillanceBasicEntity survEntity = (SurveillanceBasicEntity) entity[1];
+            if (relevantListing == null) {
+                relevantListing = new QuarterlyReportRelevantListingDTO(listingDetails);
+            }
+            relevantListing.getSurveillances().add(new SurveillanceBasicDTO(survEntity));
         }
-        return result;
+        return relevantListing;
     }
 
     /**

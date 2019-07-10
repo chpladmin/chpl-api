@@ -44,6 +44,7 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
+import gov.healthit.chpl.domain.surveillance.report.RelevantListing;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.ComplaintCriterionMapDTO;
@@ -179,6 +180,18 @@ public class QuarterlyReportManagerTest extends TestCase {
         assertTrue(exclusion.getId() > 0);
         assertEquals(listingId, exclusion.getListingId());
         assertEquals(reason, exclusion.getReason());
+        //make sure the exclusion shows up when getting relevant listings
+        List<QuarterlyReportRelevantListingDTO> relevantListings = reportManager.getRelevantListings(createdReport);
+        assertNotNull(relevantListings);
+        assertTrue(relevantListings.size() > 0);
+        boolean foundExcludedListing = false;
+        for (QuarterlyReportRelevantListingDTO relevantListing : relevantListings) {
+            if (relevantListing.getId().longValue() == listingId.longValue()) {
+                foundExcludedListing = true;
+                assertTrue(relevantListing.isExcluded());
+            }
+        }
+        assertTrue(foundExcludedListing);
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
