@@ -2,7 +2,9 @@ package gov.healthit.chpl.manager;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
+import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
@@ -15,6 +17,8 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 
 public interface SurveillanceReportManager {
+    public Set<KeyValueModel> getSurveillanceOutcomes();
+    public Set<KeyValueModel> getSurveillanceProcessTypes();
     public AnnualReportDTO createAnnualReport(AnnualReportDTO toCreate)
         throws EntityCreationException, InvalidArgumentsException;
     public AnnualReportDTO updateAnnualReport(AnnualReportDTO toUpdate) throws EntityRetrievalException;

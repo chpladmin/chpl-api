@@ -2,7 +2,9 @@ package gov.healthit.chpl.manager.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,6 +20,7 @@ import gov.healthit.chpl.dao.surveillance.report.AnnualReportDAO;
 import gov.healthit.chpl.dao.surveillance.report.QuarterDAO;
 import gov.healthit.chpl.dao.surveillance.report.QuarterlyReportDAO;
 import gov.healthit.chpl.dao.surveillance.report.QuarterlyReportSurveillanceMapDAO;
+import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.concept.JobTypeConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
@@ -29,6 +32,8 @@ import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportExclusionDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportRelevantListingDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportSurveillanceMapDTO;
+import gov.healthit.chpl.dto.surveillance.report.SurveillanceOutcomeDTO;
+import gov.healthit.chpl.dto.surveillance.report.SurveillanceProcessTypeDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -64,6 +69,38 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
         this.annualDao = annualDao;
         this.quarterDao = quarterDao;
         this.msgUtil = msgUtil;
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).GET_QUARTERLY)")
+    public Set<KeyValueModel> getSurveillanceOutcomes() {
+        List<SurveillanceOutcomeDTO> outcomes = quarterlySurvMapDao.getSurveillanceOutcomes();
+        Set<KeyValueModel> result = new HashSet<KeyValueModel>();
+        for (SurveillanceOutcomeDTO outcome : outcomes) {
+            KeyValueModel currOutcome = new KeyValueModel();
+            currOutcome.setId(outcome.getId());
+            currOutcome.setName(outcome.getName());
+            result.add(currOutcome);
+        }
+        return result;
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).GET_QUARTERLY)")
+    public Set<KeyValueModel> getSurveillanceProcessTypes() {
+        List<SurveillanceProcessTypeDTO> pts = quarterlySurvMapDao.getSurveillanceProcessTypes();
+        Set<KeyValueModel> result = new HashSet<KeyValueModel>();
+        for (SurveillanceProcessTypeDTO pt : pts) {
+            KeyValueModel currProcessType = new KeyValueModel();
+            currProcessType.setId(pt.getId());
+            currProcessType.setName(pt.getName());
+            result.add(currProcessType);
+        }
+        return result;
     }
 
     @Override
