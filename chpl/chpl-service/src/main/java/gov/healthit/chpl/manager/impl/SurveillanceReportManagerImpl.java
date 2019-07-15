@@ -17,6 +17,7 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.dao.surveillance.report.AnnualReportDAO;
 import gov.healthit.chpl.dao.surveillance.report.QuarterDAO;
 import gov.healthit.chpl.dao.surveillance.report.QuarterlyReportDAO;
+import gov.healthit.chpl.dao.surveillance.report.QuarterlyReportSurveillanceMapDAO;
 import gov.healthit.chpl.domain.concept.JobTypeConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
@@ -27,6 +28,7 @@ import gov.healthit.chpl.dto.surveillance.report.QuarterDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportExclusionDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportRelevantListingDTO;
+import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportSurveillanceMapDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -44,18 +46,21 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
     private UserManager userManager;
     private JobManager jobManager;
     private QuarterlyReportDAO quarterlyDao;
+    private QuarterlyReportSurveillanceMapDAO quarterlySurvMapDao;
     private AnnualReportDAO annualDao;
     private QuarterDAO quarterDao;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public SurveillanceReportManagerImpl( final UserManager userManager,
+    public SurveillanceReportManagerImpl(final UserManager userManager,
             final JobManager jobManager, final QuarterlyReportDAO quarterlyDao,
+            final QuarterlyReportSurveillanceMapDAO quarterlySurvMapDao,
             final AnnualReportDAO annualDao, final QuarterDAO quarterDao,
             final ErrorMessageUtil msgUtil) {
         this.userManager = userManager;
         this.jobManager = jobManager;
         this.quarterlyDao = quarterlyDao;
+        this.quarterlySurvMapDao = quarterlySurvMapDao;
         this.annualDao = annualDao;
         this.quarterDao = quarterDao;
         this.msgUtil = msgUtil;
@@ -255,6 +260,26 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
         existingExclusion.setReason(reason);
         QuarterlyReportExclusionDTO updated = quarterlyDao.updateExclusion(existingExclusion);
         return updated;
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).UPDATE_QUARTERLY, #toUpdate.quarterlyReport)")
+    public QuarterlyReportSurveillanceMapDTO createOrUpdateQuarterlyReportSurveillanceMap(
+            final QuarterlyReportSurveillanceMapDTO toUpdate)
+            throws EntityCreationException, EntityRetrievalException {
+        QuarterlyReportSurveillanceMapDTO existing = quarterlySurvMapDao.getByReportAndSurveillance(
+                toUpdate.getQuarterlyReport().getId(),
+                toUpdate.getId());
+
+        QuarterlyReportSurveillanceMapDTO result = null;
+        if (existing == null) {
+            result = quarterlySurvMapDao.create(toUpdate);
+        } else {
+            result = quarterlySurvMapDao.update(toUpdate);
+        }
+        return result;
     }
 
     @Override

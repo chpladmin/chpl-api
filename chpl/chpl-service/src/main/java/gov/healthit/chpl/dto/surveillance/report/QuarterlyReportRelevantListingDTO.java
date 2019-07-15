@@ -4,23 +4,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.dto.SurveillanceBasicDTO;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 
 public class QuarterlyReportRelevantListingDTO extends CertifiedProductDetailsDTO {
     private static final long serialVersionUID = -2198910382314894675L;
     private boolean isExcluded;
     private String exclusionReason;
-    private List<SurveillanceBasicDTO> surveillances;
+    private List<QuarterlyReportSurveillanceMapDTO> surveillances;
 
     public QuarterlyReportRelevantListingDTO() {
         super();
-        this.surveillances = new ArrayList<SurveillanceBasicDTO>();
+        this.surveillances = new ArrayList<QuarterlyReportSurveillanceMapDTO>();
     }
 
     public QuarterlyReportRelevantListingDTO(final CertifiedProductDetailsEntity entity) {
         super(entity);
-        this.surveillances = new ArrayList<SurveillanceBasicDTO>();
+        this.surveillances = new ArrayList<QuarterlyReportSurveillanceMapDTO>();
     }
 
     public boolean isExcluded() {
@@ -39,11 +38,11 @@ public class QuarterlyReportRelevantListingDTO extends CertifiedProductDetailsDT
         this.exclusionReason = exclusionReason;
     }
 
-    public List<SurveillanceBasicDTO> getSurveillances() {
+    public List<QuarterlyReportSurveillanceMapDTO> getSurveillances() {
         return surveillances;
     }
 
-    public void setSurveillances(final List<SurveillanceBasicDTO> surveillances) {
+    public void setSurveillances(final List<QuarterlyReportSurveillanceMapDTO> surveillances) {
         this.surveillances = surveillances;
     }
 

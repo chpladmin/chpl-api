@@ -173,7 +173,8 @@ public class QuarterlyReportManagerTest extends TestCase {
         String reason = "test";
         QuarterlyReportDTO createdReport = createReport();
         //need a relevant surveillance
-        createSurveillance(listingId, new Date(createdReport.getStartDate().getTime() + (24*60*60*1000)));
+        Surveillance createdSurv =
+                createSurveillance(listingId, new Date(createdReport.getStartDate().getTime() + (24*60*60*1000)));
         QuarterlyReportExclusionDTO exclusion = reportManager.createQuarterlyReportExclusion(createdReport, listingId, reason);
         assertNotNull(exclusion);
         assertNotNull(exclusion.getId());

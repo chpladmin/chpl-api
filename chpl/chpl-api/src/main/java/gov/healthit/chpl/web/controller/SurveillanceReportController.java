@@ -23,6 +23,9 @@ import org.springframework.web.bind.annotation.RestController;
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.Job;
 import gov.healthit.chpl.domain.complaint.Complaint;
+import gov.healthit.chpl.domain.surveillance.privileged.PrivilegedSurveillance;
+import gov.healthit.chpl.domain.surveillance.privileged.SurveillanceOutcome;
+import gov.healthit.chpl.domain.surveillance.privileged.SurveillanceProcessType;
 import gov.healthit.chpl.domain.surveillance.report.AnnualReport;
 import gov.healthit.chpl.domain.surveillance.report.QuarterlyReport;
 import gov.healthit.chpl.domain.surveillance.report.RelevantListing;
@@ -33,6 +36,9 @@ import gov.healthit.chpl.dto.surveillance.report.QuarterDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportExclusionDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportRelevantListingDTO;
+import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportSurveillanceMapDTO;
+import gov.healthit.chpl.dto.surveillance.report.SurveillanceOutcomeDTO;
+import gov.healthit.chpl.dto.surveillance.report.SurveillanceProcessTypeDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -267,6 +273,48 @@ public class SurveillanceReportController {
         quarterlyReport.setTransparencyDisclosureSummary(createRequest.getTransparencyDisclosureSummary());
         QuarterlyReportDTO createdReport = reportManager.createQuarterlyReport(quarterlyReport);
         return new QuarterlyReport(createdReport);
+    }
+
+    @ApiOperation(value = "Updates surveillance data that is tied to the quarterly report. ",
+            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
+                    + "authority on the ACB associated with the report.")
+    @RequestMapping(value = "/quarterly/{quarterlyReportId}/surveillance/{surveillanceId}", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
+    public synchronized PrivilegedSurveillance updatePrivilegedSurveillanceData(
+            @PathVariable final Long quarterlyReportId,
+            @PathVariable final Long surveillanceId,
+            @RequestBody(required = true) final PrivilegedSurveillance updateRequest)
+                throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException, EntityCreationException {
+        if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
+            throw new NotImplementedException();
+        }
+        QuarterlyReportDTO quarterlyReport = reportManager.getQuarterlyReport(quarterlyReportId);
+        QuarterlyReportSurveillanceMapDTO toUpdate = new QuarterlyReportSurveillanceMapDTO();
+        toUpdate.setQuarterlyReport(quarterlyReport);
+        toUpdate.setId(surveillanceId);
+        toUpdate.setK1Reviewed(updateRequest.getK1Reviewed());
+        toUpdate.setGroundsForInitiating(updateRequest.getGroundsForInitiating());
+        toUpdate.setNonconformityCauses(updateRequest.getNonconformityCauses());
+        toUpdate.setNonconformityNature(updateRequest.getNonconformityNature());
+        toUpdate.setStepsToSurveil(updateRequest.getStepsToSurveil());
+        toUpdate.setStepsToEngage(updateRequest.getStepsToEngage());
+        toUpdate.setAdditionalCostsEvaluation(updateRequest.getAdditionalCostsEvaluation());
+        toUpdate.setLimitationsEvaluation(updateRequest.getLimitationsEvaluation());
+        toUpdate.setNondisclosureEvaluation(updateRequest.getNondisclosureEvaluation());
+        toUpdate.setDirectionDeveloperResolution(updateRequest.getDirectionDeveloperResolution());
+        toUpdate.setCompletedCapVerification(updateRequest.getCompletedCapVerification());
+        if (updateRequest.getSurveillanceOutcome() != null) {
+            SurveillanceOutcomeDTO survOutcome = new SurveillanceOutcomeDTO();
+            survOutcome.setId(updateRequest.getSurveillanceOutcome().getId());
+            toUpdate.setSurveillanceOutcome(survOutcome);
+        }
+        if (updateRequest.getSurveillanceProcessType() != null) {
+            SurveillanceProcessTypeDTO processType = new SurveillanceProcessTypeDTO();
+            processType.setId(updateRequest.getSurveillanceProcessType().getId());
+            toUpdate.setSurveillanceProcessType(processType);
+        }
+        QuarterlyReportSurveillanceMapDTO updated =
+                reportManager.createOrUpdateQuarterlyReportSurveillanceMap(toUpdate);
+        return new PrivilegedSurveillance(updated);
     }
 
     @ApiOperation(value = "Updates whether a relevant listing is marked as excluded from a quarterly "

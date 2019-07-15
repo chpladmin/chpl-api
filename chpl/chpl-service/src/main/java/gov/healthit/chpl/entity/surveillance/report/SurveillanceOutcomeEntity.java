@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity.surveillance;
+package gov.healthit.chpl.entity.surveillance.report;
 
 import java.util.Date;
 

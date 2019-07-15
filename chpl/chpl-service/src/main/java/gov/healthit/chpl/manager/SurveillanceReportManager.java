@@ -3,13 +3,12 @@ package gov.healthit.chpl.manager;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.poi.ss.usermodel.Workbook;
-
 import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportExclusionDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportRelevantListingDTO;
+import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportSurveillanceMapDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -32,6 +31,8 @@ public interface SurveillanceReportManager {
     public QuarterlyReportDTO updateQuarterlyReport(QuarterlyReportDTO toUpdate) throws EntityRetrievalException;
     public QuarterlyReportExclusionDTO updateQuarterlyReportExclusion(QuarterlyReportDTO report,
             Long listingId, String reason) throws EntityRetrievalException;
+    public QuarterlyReportSurveillanceMapDTO createOrUpdateQuarterlyReportSurveillanceMap(QuarterlyReportSurveillanceMapDTO toUpdate)
+            throws EntityCreationException, EntityRetrievalException;
     public void deleteQuarterlyReport(Long id) throws EntityRetrievalException;
     public void deleteQuarterlyReportExclusion(Long reportId, Long listingId);
     public List<QuarterlyReportDTO> getQuarterlyReports();

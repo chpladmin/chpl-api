@@ -1,11 +1,10 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.domain.surveillance;
 
 import java.io.Serializable;
 import java.util.Date;
 
 import org.springframework.beans.BeanUtils;
 
-import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.dto.SurveillanceBasicDTO;
 import gov.healthit.chpl.util.Util;
 
@@ -27,7 +26,7 @@ public class SurveillanceBasic implements Serializable {
 
     }
 
-    public SurveillanceBasic(SurveillanceBasicDTO dto) {
+    public SurveillanceBasic(final SurveillanceBasicDTO dto) {
         BeanUtils.copyProperties(dto, this);
         this.surveillanceType = new SurveillanceType(dto.getSurveillanceType());
     }
