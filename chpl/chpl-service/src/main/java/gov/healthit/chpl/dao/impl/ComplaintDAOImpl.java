@@ -87,8 +87,8 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
     public List<ComplaintDTO> getAllComplaintsBetweenDates(final Long acbId, final Date startDate, final Date endDate) {
         Query query = entityManager.createQuery(GET_COMPLAINTS_HQL
                 + " AND c.certificationBodyId = :acbId "
-                + " AND c.receivedDate >= :startDate "
-                + " AND c.receivedDate <= :endDate ",
+                + "AND c.receivedDate <= :endDate "
+                + "AND (c.closedDate IS NULL OR c.closedDate >= :startDate)",
                 ComplaintEntity.class);
         query.setParameter("acbId", acbId);
         query.setParameter("startDate", startDate);
