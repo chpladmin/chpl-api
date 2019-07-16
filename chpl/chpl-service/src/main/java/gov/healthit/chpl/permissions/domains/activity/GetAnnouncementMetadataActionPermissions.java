@@ -22,7 +22,7 @@ public class GetAnnouncementMetadataActionPermissions extends ActionPermissions 
 
     @Override
     public boolean hasAccess() {
-        return getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc();
+        return false;
     }
 
     @Override
