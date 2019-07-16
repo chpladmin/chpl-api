@@ -593,7 +593,8 @@ public class ActivityController {
         return activityManager.getAcbActivity(acbs, startDate, endDate);
     }
 
-    @ApiOperation(value = "Get auditable data for all announcements",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED - Get auditable data for all announcements",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date "
                     + "range of the results. Anonymous users will only receive activity for public "
                     + "announcements.")
@@ -607,7 +608,8 @@ public class ActivityController {
         return getActivityEventsForAnnouncements(startDate, endDate);
     }
     
-    @ApiOperation(value = "Get auditable data for a specific announcement",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED - Get auditable data for a specific announcement",
             notes = "A start and end date may optionally be provided to limit activity results.  "
                     + "Security Restrictions: Anonymous users are only allowed to see activity for public "
                     + "announcements.  All other roles can see private and public announcements.")
