@@ -22,8 +22,8 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("quarterlyReportSurveillanceMapDao")
-public class QuarterlyReportSurveillanceMapDAOImpl extends BaseDAOImpl implements QuarterlyReportSurveillanceMapDAO {
-    private static final Logger LOGGER = LogManager.getLogger(QuarterlyReportSurveillanceMapDAOImpl.class);
+public class PrivilegedSurveillanceDAOImpl extends BaseDAOImpl implements PrivilegedSurveillanceDAO {
+    private static final Logger LOGGER = LogManager.getLogger(PrivilegedSurveillanceDAOImpl.class);
 
     private static final String MAP_HQL = "SELECT map "
             + " FROM QuarterlyReportSurveillanceMapEntity map "

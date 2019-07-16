@@ -19,7 +19,7 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.dao.surveillance.report.AnnualReportDAO;
 import gov.healthit.chpl.dao.surveillance.report.QuarterDAO;
 import gov.healthit.chpl.dao.surveillance.report.QuarterlyReportDAO;
-import gov.healthit.chpl.dao.surveillance.report.QuarterlyReportSurveillanceMapDAO;
+import gov.healthit.chpl.dao.surveillance.report.PrivilegedSurveillanceDAO;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.concept.JobTypeConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -51,7 +51,7 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
     private UserManager userManager;
     private JobManager jobManager;
     private QuarterlyReportDAO quarterlyDao;
-    private QuarterlyReportSurveillanceMapDAO quarterlySurvMapDao;
+    private PrivilegedSurveillanceDAO quarterlySurvMapDao;
     private AnnualReportDAO annualDao;
     private QuarterDAO quarterDao;
     private ErrorMessageUtil msgUtil;
@@ -59,7 +59,7 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
     @Autowired
     public SurveillanceReportManagerImpl(final UserManager userManager,
             final JobManager jobManager, final QuarterlyReportDAO quarterlyDao,
-            final QuarterlyReportSurveillanceMapDAO quarterlySurvMapDao,
+            final PrivilegedSurveillanceDAO quarterlySurvMapDao,
             final AnnualReportDAO annualDao, final QuarterDAO quarterDao,
             final ErrorMessageUtil msgUtil) {
         this.userManager = userManager;

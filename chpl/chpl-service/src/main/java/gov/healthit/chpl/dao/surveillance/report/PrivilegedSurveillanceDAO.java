@@ -8,7 +8,7 @@ import gov.healthit.chpl.dto.surveillance.report.SurveillanceProcessTypeDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
-public interface QuarterlyReportSurveillanceMapDAO {
+public interface PrivilegedSurveillanceDAO {
     public PrivilegedSurveillanceDTO getByReportAndSurveillance(Long quarterlyReportId, Long surveillanceId);
     public List<PrivilegedSurveillanceDTO> getByReportsAndSurveillance(List<Long> quarterlyReportIds, Long surveillanceId);
     public List<PrivilegedSurveillanceDTO> getByReport(Long quarterlyReportId);
