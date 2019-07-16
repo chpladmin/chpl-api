@@ -5,7 +5,7 @@ import gov.healthit.chpl.entity.surveillance.SurveillanceBasicEntity;
 import gov.healthit.chpl.entity.surveillance.report.PrivilegedSurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.report.QuarterlyReportSurveillanceMapEntity;
 
-public class QuarterlyReportSurveillanceMapDTO extends SurveillanceBasicDTO {
+public class PrivilegedSurveillanceDTO extends SurveillanceBasicDTO {
     private static final long serialVersionUID = 849149508008111347L;
 
     private Long mappingId;
@@ -24,15 +24,15 @@ public class QuarterlyReportSurveillanceMapDTO extends SurveillanceBasicDTO {
     private String directionDeveloperResolution;
     private String completedCapVerification;
 
-    public QuarterlyReportSurveillanceMapDTO() {
+    public PrivilegedSurveillanceDTO() {
         super();
     }
 
-    public QuarterlyReportSurveillanceMapDTO(final SurveillanceBasicEntity entity) {
+    public PrivilegedSurveillanceDTO(final SurveillanceBasicEntity entity) {
         super(entity);
     }
 
-    public QuarterlyReportSurveillanceMapDTO(final PrivilegedSurveillanceEntity entity) {
+    public PrivilegedSurveillanceDTO(final PrivilegedSurveillanceEntity entity) {
         super(entity);
 
         this.k1Reviewed = entity.getK1Reviewed();
@@ -56,20 +56,20 @@ public class QuarterlyReportSurveillanceMapDTO extends SurveillanceBasicDTO {
 
         if (entity.getSurveillanceOutcome() != null) {
             this.surveillanceOutcome = new SurveillanceOutcomeDTO(entity.getSurveillanceOutcome());
-        } else {
+        } else if (entity.getSurveillanceOutcomeId() != null) {
             this.surveillanceOutcome = new SurveillanceOutcomeDTO();
             this.surveillanceOutcome.setId(entity.getSurveillanceOutcomeId());
         }
 
         if (entity.getSurveillanceProcessType() != null) {
             this.surveillanceProcessType = new SurveillanceProcessTypeDTO(entity.getSurveillanceProcessType());
-        } else {
+        } else if (entity.getSurveillanceProcessTypeId() != null){
             this.surveillanceProcessType = new SurveillanceProcessTypeDTO();
             this.surveillanceProcessType.setId(entity.getSurveillanceProcessTypeId());
         }
     }
 
-    public QuarterlyReportSurveillanceMapDTO(final QuarterlyReportSurveillanceMapEntity entity) {
+    public PrivilegedSurveillanceDTO(final QuarterlyReportSurveillanceMapEntity entity) {
         super(entity.getSurveillance());
 
         this.mappingId = entity.getId();
@@ -94,14 +94,14 @@ public class QuarterlyReportSurveillanceMapDTO extends SurveillanceBasicDTO {
 
         if (entity.getSurveillanceOutcome() != null) {
             this.surveillanceOutcome = new SurveillanceOutcomeDTO(entity.getSurveillanceOutcome());
-        } else {
+        } else if (entity.getSurveillanceOutcomeId() != null) {
             this.surveillanceOutcome = new SurveillanceOutcomeDTO();
             this.surveillanceOutcome.setId(entity.getSurveillanceOutcomeId());
         }
 
         if (entity.getSurveillanceProcessType() != null) {
             this.surveillanceProcessType = new SurveillanceProcessTypeDTO(entity.getSurveillanceProcessType());
-        } else {
+        } else if (entity.getSurveillanceProcessTypeId() != null){
             this.surveillanceProcessType = new SurveillanceProcessTypeDTO();
             this.surveillanceProcessType.setId(entity.getSurveillanceProcessTypeId());
         }
@@ -225,5 +225,48 @@ public class QuarterlyReportSurveillanceMapDTO extends SurveillanceBasicDTO {
 
     public void setCompletedCapVerification(final String completedCapVerification) {
         this.completedCapVerification = completedCapVerification;
+    }
+
+    @Override
+    public boolean equals(final Object anotherObject) {
+        if (anotherObject == null || !(anotherObject instanceof PrivilegedSurveillanceDTO)) {
+            return false;
+        }
+        PrivilegedSurveillanceDTO anotherSurv = (PrivilegedSurveillanceDTO) anotherObject;
+        if (this.getId() == null && anotherSurv.getId() != null
+                || this.getId() != null && anotherSurv.getId() == null
+                || this.getId() == null && anotherSurv.getId() == null) {
+            return false;
+        }
+        if (this.getId().longValue() == anotherSurv.getId().longValue()) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        if (this.getId() == null) {
+            return -1;
+        }
+        return this.getId().hashCode();
+    }
+
+    public void clearPrivilegedFields() {
+        this.mappingId = null;
+        this.k1Reviewed = null;
+        this.groundsForInitiating = null;
+        this.nonconformityCauses = null;
+        this.nonconformityNature = null;
+        this.stepsToSurveil = null;
+        this.stepsToEngage = null;
+        this.additionalCostsEvaluation = null;
+        this.limitationsEvaluation = null;
+        this.nondisclosureEvaluation = null;
+        this.directionDeveloperResolution = null;
+        this.completedCapVerification = null;
+        this.quarterlyReport = null;
+        this.surveillanceOutcome = null;
+        this.surveillanceProcessType = null;
     }
 }

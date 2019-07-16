@@ -10,16 +10,16 @@ public class QuarterlyReportRelevantListingDTO extends CertifiedProductDetailsDT
     private static final long serialVersionUID = -2198910382314894675L;
     private boolean isExcluded;
     private String exclusionReason;
-    private List<QuarterlyReportSurveillanceMapDTO> surveillances;
+    private List<PrivilegedSurveillanceDTO> surveillances;
 
     public QuarterlyReportRelevantListingDTO() {
         super();
-        this.surveillances = new ArrayList<QuarterlyReportSurveillanceMapDTO>();
+        this.surveillances = new ArrayList<>();
     }
 
     public QuarterlyReportRelevantListingDTO(final CertifiedProductDetailsEntity entity) {
         super(entity);
-        this.surveillances = new ArrayList<QuarterlyReportSurveillanceMapDTO>();
+        this.surveillances = new ArrayList<>();
     }
 
     public boolean isExcluded() {
@@ -38,11 +38,11 @@ public class QuarterlyReportRelevantListingDTO extends CertifiedProductDetailsDT
         this.exclusionReason = exclusionReason;
     }
 
-    public List<QuarterlyReportSurveillanceMapDTO> getSurveillances() {
+    public List<PrivilegedSurveillanceDTO> getSurveillances() {
         return surveillances;
     }
 
-    public void setSurveillances(final List<QuarterlyReportSurveillanceMapDTO> surveillances) {
+    public void setSurveillances(final List<PrivilegedSurveillanceDTO> surveillances) {
         this.surveillances = surveillances;
     }
 

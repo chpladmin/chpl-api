@@ -7,7 +7,8 @@ import java.util.List;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.surveillance.privileged.PrivilegedSurveillance;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportRelevantListingDTO;
-import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportSurveillanceMapDTO;
+import gov.healthit.chpl.dto.SurveillanceBasicDTO;
+import gov.healthit.chpl.dto.surveillance.report.PrivilegedSurveillanceDTO;
 
 public class RelevantListing extends CertifiedProduct implements Serializable {
     private static final long serialVersionUID = -4490178928672550687L;
@@ -27,7 +28,7 @@ public class RelevantListing extends CertifiedProduct implements Serializable {
         this.isExcluded = dto.isExcluded();
         this.reason = dto.getExclusionReason();
         if (dto.getSurveillances() != null && dto.getSurveillances().size() > 0) {
-            for (QuarterlyReportSurveillanceMapDTO survDto : dto.getSurveillances()) {
+            for (PrivilegedSurveillanceDTO survDto : dto.getSurveillances()) {
                 this.surveillances.add(new PrivilegedSurveillance(survDto));
             }
         }

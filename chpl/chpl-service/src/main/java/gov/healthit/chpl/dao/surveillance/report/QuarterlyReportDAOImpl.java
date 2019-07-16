@@ -1,30 +1,27 @@
 package gov.healthit.chpl.dao.surveillance.report;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.Query;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.message.ExitMessage;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.dto.SurveillanceBasicDTO;
+import gov.healthit.chpl.dto.surveillance.report.PrivilegedSurveillanceDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportExclusionDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportRelevantListingDTO;
-import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportSurveillanceMapDTO;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceBasicEntity;
 import gov.healthit.chpl.entity.surveillance.report.PrivilegedSurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.report.QuarterlyReportEntity;
 import gov.healthit.chpl.entity.surveillance.report.QuarterlyReportExcludedListingMapEntity;
-import gov.healthit.chpl.entity.surveillance.report.QuarterlyReportSurveillanceMapEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
@@ -155,8 +152,7 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
      */
     @Override
     @Transactional(readOnly = true)
-    public List<QuarterlyReportRelevantListingDTO> getRelevantListings(final Long acbId,
-            final Date startDate, final Date endDate) {
+    public List<QuarterlyReportRelevantListingDTO> getRelevantListings(final QuarterlyReportDTO quarterlyReport) {
         String queryStr = "SELECT DISTINCT cp, surv "
                 + "FROM CertifiedProductDetailsEntity cp, PrivilegedSurveillanceEntity surv "
                 + "LEFT JOIN FETCH surv.surveillanceType "
@@ -165,13 +161,15 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
                 + "LEFT JOIN FETCH surv.surveillanceProcessType "
                 + "WHERE cp.certificationBodyId = :acbId "
                 + "AND surv.certifiedProductId = cp.id "
+                + "AND (surv.quarterlyReportId IS NULL OR surv.quarterlyReportId = :quarterlyReportId) "
                 + "AND cp.deleted = false "
                 + "AND surv.startDate <= :endDate "
                 + "AND (surv.endDate IS NULL OR surv.endDate >= :startDate)";
         Query query = entityManager.createQuery(queryStr);
-        query.setParameter("acbId", acbId);
-        query.setParameter("startDate", startDate);
-        query.setParameter("endDate", endDate);
+        query.setParameter("acbId", quarterlyReport.getAcb().getId());
+        query.setParameter("quarterlyReportId", quarterlyReport.getId());
+        query.setParameter("startDate", quarterlyReport.getStartDate());
+        query.setParameter("endDate", quarterlyReport.getEndDate());
         List<Object[]> entities = query.getResultList();
 
         List<QuarterlyReportRelevantListingDTO> uniqueRelevantListings =
@@ -181,15 +179,25 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
             PrivilegedSurveillanceEntity survEntity = (PrivilegedSurveillanceEntity) entity[1];
             QuarterlyReportRelevantListingDTO relevantListingDto =
                     new QuarterlyReportRelevantListingDTO(listingDetails);
-            QuarterlyReportSurveillanceMapDTO survInfo = new QuarterlyReportSurveillanceMapDTO(survEntity);
+
+            PrivilegedSurveillanceDTO survDto = new PrivilegedSurveillanceDTO(survEntity);;
+            if (survEntity.getQuarterlyReportId() == null
+                    || survEntity.getQuarterlyReportId().longValue() != quarterlyReport.getId().longValue()) {
+                //the privileged surveillance data is not relevant to this report
+                //so remove it
+                survDto.clearPrivilegedFields();
+            }
+
             if (!uniqueRelevantListings.contains(relevantListingDto)) {
-                relevantListingDto.getSurveillances().add(survInfo);
+                relevantListingDto.getSurveillances().add(survDto);
                 uniqueRelevantListings.add(relevantListingDto);
             } else {
                 //find the existing listing in the set and add the surveillance to it
                 for (QuarterlyReportRelevantListingDTO existingListing : uniqueRelevantListings) {
                     if (existingListing.equals(relevantListingDto)) {
-                        existingListing.getSurveillances().add(survInfo);
+                        if (!existingListing.getSurveillances().contains(survDto)) {
+                            existingListing.getSurveillances().add(survDto);
+                        }
                     }
                 }
             }
@@ -226,7 +234,7 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
             CertifiedProductDetailsEntity listingDetails = (CertifiedProductDetailsEntity) entity[0];
             PrivilegedSurveillanceEntity survEntity = (PrivilegedSurveillanceEntity) entity[1];
             relevantListing = new QuarterlyReportRelevantListingDTO(listingDetails);
-            QuarterlyReportSurveillanceMapDTO survInfo = new QuarterlyReportSurveillanceMapDTO(survEntity);
+            PrivilegedSurveillanceDTO survInfo = new PrivilegedSurveillanceDTO(survEntity);
             relevantListing.getSurveillances().add(survInfo);
         }
         return relevantListing;

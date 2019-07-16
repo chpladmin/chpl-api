@@ -16,7 +16,7 @@ public interface QuarterlyReportDAO {
     public List<QuarterlyReportDTO> getAll();
     public QuarterlyReportDTO getById(Long id) throws EntityRetrievalException;
     public boolean isListingRelevant(Long listingId, Date startDate, Date endDate);
-    public List<QuarterlyReportRelevantListingDTO> getRelevantListings(Long acbId, Date startDate, Date endDate);
+    public List<QuarterlyReportRelevantListingDTO> getRelevantListings(QuarterlyReportDTO quarterlyReport);
     public QuarterlyReportRelevantListingDTO getRelevantListing(Long listingId, Date startDate, Date endDate);
     public List<QuarterlyReportExclusionDTO> getExclusions(Long quarterlyReportId);
     public QuarterlyReportExclusionDTO getExclusion(Long quarterlyReportId, Long listingId);

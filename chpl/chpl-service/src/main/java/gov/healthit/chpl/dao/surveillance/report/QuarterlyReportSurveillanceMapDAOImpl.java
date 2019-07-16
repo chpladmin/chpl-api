@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportSurveillanceMapDTO;
+import gov.healthit.chpl.dto.surveillance.report.PrivilegedSurveillanceDTO;
 import gov.healthit.chpl.dto.surveillance.report.SurveillanceOutcomeDTO;
 import gov.healthit.chpl.dto.surveillance.report.SurveillanceProcessTypeDTO;
 import gov.healthit.chpl.entity.surveillance.report.QuarterlyReportSurveillanceMapEntity;
@@ -42,10 +42,10 @@ public class QuarterlyReportSurveillanceMapDAOImpl extends BaseDAOImpl implement
      * a specific surveillance. Should only be one mapping.
      */
     @Override
-    public QuarterlyReportSurveillanceMapDTO getByReportAndSurveillance(final Long quarterlyReportId, final Long surveillanceId) {
+    public PrivilegedSurveillanceDTO getByReportAndSurveillance(final Long quarterlyReportId, final Long surveillanceId) {
         List<Long> quarterlyReportIds = new ArrayList<Long>();
         quarterlyReportIds.add(quarterlyReportId);
-        List<QuarterlyReportSurveillanceMapDTO> result = getByReportsAndSurveillance(quarterlyReportIds, surveillanceId);
+        List<PrivilegedSurveillanceDTO> result = getByReportsAndSurveillance(quarterlyReportIds, surveillanceId);
         if (result != null && result.size() == 1) {
             return result.get(0);
         } else if (result != null && result.size() > 1) {
@@ -60,7 +60,7 @@ public class QuarterlyReportSurveillanceMapDAOImpl extends BaseDAOImpl implement
      * (possibly useful when compiling annual report)
      */
     @Override
-    public List<QuarterlyReportSurveillanceMapDTO> getByReportsAndSurveillance(final List<Long> quarterlyReportIds,
+    public List<PrivilegedSurveillanceDTO> getByReportsAndSurveillance(final List<Long> quarterlyReportIds,
             final Long surveillanceId) {
         String queryStr = MAP_HQL
                 + " AND map.quarterlyReportId IN (:quarterlyReportIds) "
@@ -69,11 +69,11 @@ public class QuarterlyReportSurveillanceMapDAOImpl extends BaseDAOImpl implement
         query.setParameter("quarterlyReportIds", quarterlyReportIds);
         query.setParameter("surveillanceId", surveillanceId);
 
-        List<QuarterlyReportSurveillanceMapDTO> result = new ArrayList<QuarterlyReportSurveillanceMapDTO>();
+        List<PrivilegedSurveillanceDTO> result = new ArrayList<PrivilegedSurveillanceDTO>();
         List<QuarterlyReportSurveillanceMapEntity> entities = query.getResultList();
         if (entities != null && entities.size() > 0) {
             for (QuarterlyReportSurveillanceMapEntity entity : entities) {
-                result.add(new QuarterlyReportSurveillanceMapDTO(entity));
+                result.add(new PrivilegedSurveillanceDTO(entity));
             }
         }
         return result;
@@ -83,17 +83,17 @@ public class QuarterlyReportSurveillanceMapDAOImpl extends BaseDAOImpl implement
      * Get all surveillance mappings for a particular report.
      */
     @Override
-    public List<QuarterlyReportSurveillanceMapDTO> getByReport(final Long quarterlyReportId) {
+    public List<PrivilegedSurveillanceDTO> getByReport(final Long quarterlyReportId) {
         String queryStr = MAP_HQL
                 + " AND map.quarterlyReportId = :quarterlyReportId ";
         Query query = entityManager.createQuery(queryStr);
         query.setParameter("quarterlyReportId", quarterlyReportId);
 
-        List<QuarterlyReportSurveillanceMapDTO> result = new ArrayList<QuarterlyReportSurveillanceMapDTO>();
+        List<PrivilegedSurveillanceDTO> result = new ArrayList<PrivilegedSurveillanceDTO>();
         List<QuarterlyReportSurveillanceMapEntity> entities = query.getResultList();
         if (entities != null && entities.size() > 0) {
             for (QuarterlyReportSurveillanceMapEntity entity : entities) {
-                result.add(new QuarterlyReportSurveillanceMapDTO(entity));
+                result.add(new PrivilegedSurveillanceDTO(entity));
             }
         }
         return result;
@@ -103,29 +103,29 @@ public class QuarterlyReportSurveillanceMapDAOImpl extends BaseDAOImpl implement
      * Get all quarterly report mappings for a particular surveillance.
      */
     @Override
-    public List<QuarterlyReportSurveillanceMapDTO> getBySurveillance(final Long surveillanceId) {
+    public List<PrivilegedSurveillanceDTO> getBySurveillance(final Long surveillanceId) {
         String queryStr = MAP_HQL
                 + " AND map.surveillanceId = :surveillanceId";
         Query query = entityManager.createQuery(queryStr);
         query.setParameter("surveillanceId", surveillanceId);
 
-        List<QuarterlyReportSurveillanceMapDTO> result = new ArrayList<QuarterlyReportSurveillanceMapDTO>();
+        List<PrivilegedSurveillanceDTO> result = new ArrayList<PrivilegedSurveillanceDTO>();
         List<QuarterlyReportSurveillanceMapEntity> entities = query.getResultList();
         if (entities != null && entities.size() > 0) {
             for (QuarterlyReportSurveillanceMapEntity entity : entities) {
-                result.add(new QuarterlyReportSurveillanceMapDTO(entity));
+                result.add(new PrivilegedSurveillanceDTO(entity));
             }
         }
         return result;
     }
 
     @Override
-    public QuarterlyReportSurveillanceMapDTO getById(final Long id) throws EntityRetrievalException {
+    public PrivilegedSurveillanceDTO getById(final Long id) throws EntityRetrievalException {
         QuarterlyReportSurveillanceMapEntity entity = getEntityById(id);
         if (entity == null) {
             return null;
         }
-        return new QuarterlyReportSurveillanceMapDTO(entity);
+        return new PrivilegedSurveillanceDTO(entity);
     }
 
     @Override
@@ -133,8 +133,8 @@ public class QuarterlyReportSurveillanceMapDAOImpl extends BaseDAOImpl implement
         List<SurveillanceOutcomeEntity> entities =
                 entityManager.createQuery("SELECT soe FROM SurveillanceOutcomeEntity soe WHERE deleted = false").getResultList();
         List<SurveillanceOutcomeDTO> results = new ArrayList<SurveillanceOutcomeDTO>();
-        if(entities != null && entities.size() > 0) {
-            for(SurveillanceOutcomeEntity entity: entities) {
+        if (entities != null && entities.size() > 0) {
+            for (SurveillanceOutcomeEntity entity: entities) {
                 results.add(new SurveillanceOutcomeDTO(entity));
             }
         }
@@ -155,13 +155,17 @@ public class QuarterlyReportSurveillanceMapDAOImpl extends BaseDAOImpl implement
     }
 
     @Override
-    public QuarterlyReportSurveillanceMapDTO create(final QuarterlyReportSurveillanceMapDTO toCreate)
+    public PrivilegedSurveillanceDTO create(final PrivilegedSurveillanceDTO toCreate)
             throws EntityCreationException {
         QuarterlyReportSurveillanceMapEntity entity = new QuarterlyReportSurveillanceMapEntity();
         entity.setQuarterlyReportId(toCreate.getQuarterlyReport().getId());
         entity.setSurveillanceId(toCreate.getId());
-        entity.setSurveillanceOutcomeId(toCreate.getSurveillanceOutcome().getId());
-        entity.setSurveillanceProcessTypeId(toCreate.getSurveillanceProcessType().getId());
+        if (toCreate.getSurveillanceOutcome() != null) {
+            entity.setSurveillanceOutcomeId(toCreate.getSurveillanceOutcome().getId());
+        }
+        if (toCreate.getSurveillanceProcessType() != null) {
+            entity.setSurveillanceProcessTypeId(toCreate.getSurveillanceProcessType().getId());
+        }
         entity.setK1Reviewed(toCreate.getK1Reviewed());
         entity.setGroundsForInitiating(toCreate.getGroundsForInitiating());
         entity.setNonconformityCauses(toCreate.getNonconformityCauses());
@@ -178,17 +182,30 @@ public class QuarterlyReportSurveillanceMapDAOImpl extends BaseDAOImpl implement
         entity.setDeleted(false);
         entity.setLastModifiedUser(AuthUtil.getAuditId());
         create(entity);
-        return new QuarterlyReportSurveillanceMapDTO(entity);
+
+        PrivilegedSurveillanceDTO result = null;
+        try {
+            result = getById(entity.getId());
+        } catch (EntityRetrievalException ex) {
+            LOGGER.error("Cannot find newly created entity with id " + entity.getId(), ex);
+        }
+        return result;
     }
 
     @Override
-    public QuarterlyReportSurveillanceMapDTO update(final QuarterlyReportSurveillanceMapDTO toUpdate)
+    public PrivilegedSurveillanceDTO update(final PrivilegedSurveillanceDTO toUpdate)
             throws EntityRetrievalException {
         QuarterlyReportSurveillanceMapEntity entity = getEntityById(toUpdate.getMappingId());
-        entity.setQuarterlyReportId(toUpdate.getQuarterlyReport().getId());
-        entity.setSurveillanceId(toUpdate.getId());
-        entity.setSurveillanceOutcomeId(toUpdate.getSurveillanceOutcome().getId());
-        entity.setSurveillanceProcessTypeId(toUpdate.getSurveillanceProcessType().getId());
+        if (toUpdate.getSurveillanceOutcome() != null) {
+            entity.setSurveillanceOutcomeId(toUpdate.getSurveillanceOutcome().getId());
+        } else {
+            entity.setSurveillanceOutcomeId(null);
+        }
+        if (toUpdate.getSurveillanceProcessType() != null) {
+            entity.setSurveillanceProcessTypeId(toUpdate.getSurveillanceProcessType().getId());
+        } else {
+            entity.setSurveillanceProcessTypeId(null);
+        }
         entity.setK1Reviewed(toUpdate.getK1Reviewed());
         entity.setGroundsForInitiating(toUpdate.getGroundsForInitiating());
         entity.setNonconformityCauses(toUpdate.getNonconformityCauses());
@@ -201,10 +218,9 @@ public class QuarterlyReportSurveillanceMapDAOImpl extends BaseDAOImpl implement
         entity.setDirectionDeveloperResolution(toUpdate.getDirectionDeveloperResolution());
         entity.setCompletedCapVerification(toUpdate.getCompletedCapVerification());
         entity.setLastModifiedDate(new Date());
-        entity.setDeleted(false);
         entity.setLastModifiedUser(AuthUtil.getAuditId());
         update(entity);
-        return new QuarterlyReportSurveillanceMapDTO(entity);
+        return new PrivilegedSurveillanceDTO(entity);
     }
 
     @Override

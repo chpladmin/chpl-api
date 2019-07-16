@@ -31,7 +31,7 @@ import gov.healthit.chpl.dto.surveillance.report.QuarterDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportExclusionDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportRelevantListingDTO;
-import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportSurveillanceMapDTO;
+import gov.healthit.chpl.dto.surveillance.report.PrivilegedSurveillanceDTO;
 import gov.healthit.chpl.dto.surveillance.report.SurveillanceOutcomeDTO;
 import gov.healthit.chpl.dto.surveillance.report.SurveillanceProcessTypeDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -303,17 +303,18 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).UPDATE_QUARTERLY, #toUpdate.quarterlyReport)")
-    public QuarterlyReportSurveillanceMapDTO createOrUpdateQuarterlyReportSurveillanceMap(
-            final QuarterlyReportSurveillanceMapDTO toUpdate)
+    public PrivilegedSurveillanceDTO createOrUpdateQuarterlyReportSurveillanceMap(
+            final PrivilegedSurveillanceDTO toUpdate)
             throws EntityCreationException, EntityRetrievalException {
-        QuarterlyReportSurveillanceMapDTO existing = quarterlySurvMapDao.getByReportAndSurveillance(
+        PrivilegedSurveillanceDTO existing = quarterlySurvMapDao.getByReportAndSurveillance(
                 toUpdate.getQuarterlyReport().getId(),
                 toUpdate.getId());
 
-        QuarterlyReportSurveillanceMapDTO result = null;
+        PrivilegedSurveillanceDTO result = null;
         if (existing == null) {
             result = quarterlySurvMapDao.create(toUpdate);
         } else {
+            toUpdate.setMappingId(existing.getMappingId());
             result = quarterlySurvMapDao.update(toUpdate);
         }
         return result;
@@ -421,9 +422,7 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).GET_QUARTERLY,"
             + "#report)")
     public List<QuarterlyReportRelevantListingDTO> getRelevantListings(final QuarterlyReportDTO report) {
-        List<QuarterlyReportRelevantListingDTO> relevantListings =
-                quarterlyDao.getRelevantListings(report.getAcb().getId(),
-                            report.getStartDate(), report.getEndDate());
+        List<QuarterlyReportRelevantListingDTO> relevantListings = quarterlyDao.getRelevantListings(report);
         List<QuarterlyReportExclusionDTO> exclusions = quarterlyDao.getExclusions(report.getId());
 
         //look at each relevant listing to see if it's been marked as excluded

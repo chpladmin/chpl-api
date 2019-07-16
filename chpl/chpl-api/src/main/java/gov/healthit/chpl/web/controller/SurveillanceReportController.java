@@ -36,7 +36,7 @@ import gov.healthit.chpl.dto.surveillance.report.QuarterDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportExclusionDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportRelevantListingDTO;
-import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportSurveillanceMapDTO;
+import gov.healthit.chpl.dto.surveillance.report.PrivilegedSurveillanceDTO;
 import gov.healthit.chpl.dto.surveillance.report.SurveillanceOutcomeDTO;
 import gov.healthit.chpl.dto.surveillance.report.SurveillanceProcessTypeDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -288,7 +288,7 @@ public class SurveillanceReportController {
             throw new NotImplementedException();
         }
         QuarterlyReportDTO quarterlyReport = reportManager.getQuarterlyReport(quarterlyReportId);
-        QuarterlyReportSurveillanceMapDTO toUpdate = new QuarterlyReportSurveillanceMapDTO();
+        PrivilegedSurveillanceDTO toUpdate = new PrivilegedSurveillanceDTO();
         toUpdate.setQuarterlyReport(quarterlyReport);
         toUpdate.setId(surveillanceId);
         toUpdate.setK1Reviewed(updateRequest.getK1Reviewed());
@@ -312,7 +312,7 @@ public class SurveillanceReportController {
             processType.setId(updateRequest.getSurveillanceProcessType().getId());
             toUpdate.setSurveillanceProcessType(processType);
         }
-        QuarterlyReportSurveillanceMapDTO updated =
+        PrivilegedSurveillanceDTO updated =
                 reportManager.createOrUpdateQuarterlyReportSurveillanceMap(toUpdate);
         return new PrivilegedSurveillance(updated);
     }

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.BeforeClass;
@@ -51,10 +52,12 @@ import gov.healthit.chpl.dto.ComplaintCriterionMapDTO;
 import gov.healthit.chpl.dto.ComplaintDTO;
 import gov.healthit.chpl.dto.ComplaintListingMapDTO;
 import gov.healthit.chpl.dto.ComplaintSurveillanceMapDTO;
+import gov.healthit.chpl.dto.SurveillanceBasicDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportExclusionDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportRelevantListingDTO;
+import gov.healthit.chpl.dto.surveillance.report.PrivilegedSurveillanceDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -209,6 +212,46 @@ public class QuarterlyReportManagerTest extends TestCase {
         reportManager.createQuarterlyReportExclusion(createdReport, 1L, "original");
         //duplicate exclusion
         reportManager.createQuarterlyReportExclusion(createdReport, 1L, "duplicate");
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    @Test
+    @Rollback(true)
+    @Transactional
+    public void addPrivilegedSurveillanceData() throws EntityCreationException,
+        InvalidArgumentsException, EntityRetrievalException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        Long listingId = 1L;
+        String reason = "test";
+        QuarterlyReportDTO createdReport = createReport();
+        //need a relevant surveillance
+        Surveillance createdSurv =
+                createSurveillance(listingId, new Date(createdReport.getStartDate().getTime() + (24*60*60*1000)));
+        reportManager.createQuarterlyReportExclusion(createdReport, 1L, "a good reason");
+
+        PrivilegedSurveillanceDTO map = new PrivilegedSurveillanceDTO();
+        map.setQuarterlyReport(createdReport);
+        map.setCertifiedProductId(listingId);
+        map.setId(createdSurv.getId());
+        map.setK1Reviewed(true);
+        map.setGroundsForInitiating("some grounds");
+        reportManager.createOrUpdateQuarterlyReportSurveillanceMap(map);
+        //make sure the privileged data shows up when getting relevant listings
+        List<QuarterlyReportRelevantListingDTO> relevantListings = reportManager.getRelevantListings(createdReport);
+        assertNotNull(relevantListings);
+        assertTrue(relevantListings.size() > 0);
+        boolean foundListing = false;
+        for (QuarterlyReportRelevantListingDTO relevantListing : relevantListings) {
+            if (relevantListing.getId().longValue() == listingId.longValue()) {
+                foundListing = true;
+                assertNotNull(relevantListing.getSurveillances());
+                assertEquals(1, relevantListing.getSurveillances().size());
+                PrivilegedSurveillanceDTO surv = relevantListing.getSurveillances().get(0);
+                assertTrue(surv.getK1Reviewed());
+                assertEquals("some grounds", surv.getGroundsForInitiating());
+            }
+        }
+        assertTrue(foundListing);
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 

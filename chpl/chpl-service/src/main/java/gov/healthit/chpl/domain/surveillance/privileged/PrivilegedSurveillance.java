@@ -1,7 +1,8 @@
 package gov.healthit.chpl.domain.surveillance.privileged;
 
 import gov.healthit.chpl.domain.surveillance.SurveillanceBasic;
-import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportSurveillanceMapDTO;
+import gov.healthit.chpl.dto.SurveillanceBasicDTO;
+import gov.healthit.chpl.dto.surveillance.report.PrivilegedSurveillanceDTO;
 
 public class PrivilegedSurveillance extends SurveillanceBasic {
     private static final long serialVersionUID = 2839806198924296871L;
@@ -24,7 +25,11 @@ public class PrivilegedSurveillance extends SurveillanceBasic {
         super();
     }
 
-    public PrivilegedSurveillance(final QuarterlyReportSurveillanceMapDTO dto) {
+    public PrivilegedSurveillance(final SurveillanceBasicDTO dto) {
+        super(dto);
+    }
+
+    public PrivilegedSurveillance(final PrivilegedSurveillanceDTO dto) {
         super(dto);
         this.k1Reviewed = dto.getK1Reviewed();
         this.groundsForInitiating = dto.getGroundsForInitiating();
