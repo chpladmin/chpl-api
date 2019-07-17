@@ -472,7 +472,9 @@ public class ActivityController {
     }
     
     @ApiOperation(value = "Get metadata about auditable records in the system for announcements.",
-            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results." 
+                    + "Security Restrictions: Anonymous users are only allowed to see activity for public " 
+                    + "announcements.  All other roles can see private and public announcements. ")
     @RequestMapping(value = "/metadata/announcements", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForAnnouncements(@RequestParam final Long start,
