@@ -630,9 +630,17 @@ public class QuarterlyReportManagerTest extends TestCase {
         QuarterlyReportDTO createdReport = reportManager.createQuarterlyReport(toCreate);
 
         //create a surveillance to add to the report so we have relevant listings
-        Surveillance createdSurv = createSurveillance(1L, new Date(createdReport.getStartDate().getTime() + (24*60*60*1000)));
-        createSurveillance(2L, new Date(createdReport.getStartDate().getTime() + (48*60*60*1000)));
+        Surveillance createdSurv1 = createSurveillance(1L, new Date(createdReport.getStartDate().getTime() + (24*60*60*1000)));
+        Surveillance createdSurv2 = createSurveillance(2L, new Date(createdReport.getStartDate().getTime() + (48*60*60*1000)));
         createSurveillance(3L, new Date(createdReport.getStartDate().getTime() + (72*60*60*1000)));
+
+        PrivilegedSurveillanceDTO privilegedSurvData = new PrivilegedSurveillanceDTO();
+        privilegedSurvData.setId(createdSurv1.getId());
+        privilegedSurvData.setQuarterlyReport(createdReport);
+        privilegedSurvData.setK1Reviewed(true);
+        privilegedSurvData.setAdditionalCostsEvaluation("Some additional costs");
+        privilegedSurvData.setDirectionDeveloperResolution("direction!");
+        reportManager.createOrUpdateQuarterlyReportSurveillanceMap(privilegedSurvData);
 
         //add excluded listing to the quarter
         reportManager.createQuarterlyReportExclusion(createdReport, 1L, "A really good reason for q1");
@@ -684,7 +692,7 @@ public class QuarterlyReportManagerTest extends TestCase {
         //complaint associated with surveillance
         ComplaintDTO survComplaint = createComplaint(acbId, "surveillance", new Date(createdReport.getStartDate().getTime() + 72*60*60*1000));
         ComplaintSurveillanceMapDTO survMap = new ComplaintSurveillanceMapDTO();
-        survMap.setSurveillanceId(createdSurv.getId());
+        survMap.setSurveillanceId(createdSurv1.getId());
         survMap.setComplaintId(survComplaint.getId());
         survComplaint.getSurveillances().add(survMap);
         complaintDao.update(survComplaint);

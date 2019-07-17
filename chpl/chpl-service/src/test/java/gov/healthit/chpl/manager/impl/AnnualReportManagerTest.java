@@ -45,6 +45,7 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
+import gov.healthit.chpl.dto.surveillance.report.PrivilegedSurveillanceDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -361,9 +362,17 @@ public class AnnualReportManagerTest extends TestCase {
 
         //create a surveillance to add to the report
         //surv will start one day after the quarter begins
-        createSurveillance(1L, new Date(q1Report.getStartDate().getTime() + (24*60*60*1000)));
+        Surveillance createdSurv1 = createSurveillance(1L, new Date(q1Report.getStartDate().getTime() + (24*60*60*1000)));
         createSurveillance(2L, new Date(q1Report.getStartDate().getTime() + (48*60*60*1000)));
         createSurveillance(3L, new Date(q1Report.getStartDate().getTime() + (72*60*60*1000)));
+
+        PrivilegedSurveillanceDTO privilegedSurvData = new PrivilegedSurveillanceDTO();
+        privilegedSurvData.setId(createdSurv1.getId());
+        privilegedSurvData.setQuarterlyReport(q1Report);
+        privilegedSurvData.setK1Reviewed(true);
+        privilegedSurvData.setAdditionalCostsEvaluation("Some additional costs");
+        privilegedSurvData.setDirectionDeveloperResolution("direction!");
+        reportManager.createOrUpdateQuarterlyReportSurveillanceMap(privilegedSurvData);
 
         //add excluded listing to the quarter
         reportManager.createQuarterlyReportExclusion(q1Report, 1L, "A really good reason for q1");
@@ -381,6 +390,15 @@ public class AnnualReportManagerTest extends TestCase {
         toCreate.setTransparencyDisclosureSummary("test transparency and disclosure summary for Q2");
         QuarterlyReportDTO q2Report = reportManager.createQuarterlyReport(toCreate);
 
+        privilegedSurvData = new PrivilegedSurveillanceDTO();
+        privilegedSurvData.setId(createdSurv1.getId());
+        privilegedSurvData.setQuarterlyReport(q2Report);
+        privilegedSurvData.setK1Reviewed(false);
+        privilegedSurvData.setAdditionalCostsEvaluation("Some additional costs");
+        privilegedSurvData.setDirectionDeveloperResolution("a different developer resolution");
+        privilegedSurvData.setCompletedCapVerification("did it");
+        reportManager.createOrUpdateQuarterlyReportSurveillanceMap(privilegedSurvData);
+
         //add excluded listing to the quarter
         reportManager.createQuarterlyReportExclusion(q2Report, 1L, "A really good reason for q2");
 
@@ -396,6 +414,15 @@ public class AnnualReportManagerTest extends TestCase {
         toCreate.setTransparencyDisclosureSummary("test transparency and disclosure summary for Q");
         QuarterlyReportDTO q3Report = reportManager.createQuarterlyReport(toCreate);
 
+        privilegedSurvData = new PrivilegedSurveillanceDTO();
+        privilegedSurvData.setId(createdSurv1.getId());
+        privilegedSurvData.setQuarterlyReport(q3Report);
+        privilegedSurvData.setK1Reviewed(true);
+        privilegedSurvData.setAdditionalCostsEvaluation("Some additional costs");
+        privilegedSurvData.setDirectionDeveloperResolution("a q3 developer resolution");
+        privilegedSurvData.setCompletedCapVerification("did it");
+        reportManager.createOrUpdateQuarterlyReportSurveillanceMap(privilegedSurvData);
+
         quarter = new QuarterDTO();
         quarter.setName("Q4");
         toCreate = new QuarterlyReportDTO();
@@ -407,6 +434,15 @@ public class AnnualReportManagerTest extends TestCase {
         toCreate.setPrioritizedElementSummary("test prioritized element summary for Q4");
         toCreate.setTransparencyDisclosureSummary("test transparency and disclosure summary for Q4");
         QuarterlyReportDTO q4Report = reportManager.createQuarterlyReport(toCreate);
+
+        privilegedSurvData = new PrivilegedSurveillanceDTO();
+        privilegedSurvData.setId(createdSurv1.getId());
+        privilegedSurvData.setQuarterlyReport(q4Report);
+        privilegedSurvData.setK1Reviewed(true);
+        privilegedSurvData.setAdditionalCostsEvaluation("q4 additional costs");
+        privilegedSurvData.setDirectionDeveloperResolution("a q4 developer resolution");
+        privilegedSurvData.setCompletedCapVerification("did it");
+        reportManager.createOrUpdateQuarterlyReportSurveillanceMap(privilegedSurvData);
 
         //create the annual report
         AnnualReportDTO annualReport = new AnnualReportDTO();
@@ -490,7 +526,7 @@ public class AnnualReportManagerTest extends TestCase {
         return created;
     }
 
-    private void createSurveillance(final Long listingId, final Date startDate) throws EntityRetrievalException {
+    private Surveillance createSurveillance(final Long listingId, final Date startDate) throws EntityRetrievalException {
         Surveillance surv = new Surveillance();
 
         CertifiedProductDTO cpDto = cpDao.getById(listingId);
@@ -539,14 +575,15 @@ public class AnnualReportManagerTest extends TestCase {
         try {
             insertedId = survManager.createSurveillance(-1L, surv);
             assertNotNull(insertedId);
-            Surveillance got = survManager.getById(insertedId);
-            assertNotNull(got);
-            assertNotNull(got.getCertifiedProduct());
-            assertEquals(cpDto.getId(), got.getCertifiedProduct().getId());
-            assertEquals(cpDto.getChplProductNumber(), got.getCertifiedProduct().getChplProductNumber());
-            assertEquals(surv.getRandomizedSitesUsed(), got.getRandomizedSitesUsed());
+            surv = survManager.getById(insertedId);
+            assertNotNull(surv);
+            assertNotNull(surv.getCertifiedProduct());
+            assertEquals(cpDto.getId(), surv.getCertifiedProduct().getId());
+            assertEquals(cpDto.getChplProductNumber(), surv.getCertifiedProduct().getChplProductNumber());
+            assertEquals(surv.getRandomizedSitesUsed(), surv.getRandomizedSitesUsed());
         } catch (Exception e) {
             System.out.println(e.getClass() + ": " + e.getMessage());
         }
+        return surv;
     }
 }
