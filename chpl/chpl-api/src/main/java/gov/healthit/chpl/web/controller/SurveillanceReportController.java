@@ -46,6 +46,7 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.ComplaintManager;
 import gov.healthit.chpl.manager.SurveillanceReportManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.web.controller.results.ComplaintResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -233,7 +234,7 @@ public class SurveillanceReportController {
                     + "authority on the ACB associated with the report.")
     @RequestMapping(value = "/quarterly/{quarterlyReportId}/complaints",
         method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<Complaint> getRelevantComplaints(@PathVariable final Long quarterlyReportId)
+    public @ResponseBody ComplaintResults getRelevantComplaints(@PathVariable final Long quarterlyReportId)
             throws AccessDeniedException, EntityRetrievalException {
         if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
             throw new NotImplementedException();
@@ -241,7 +242,9 @@ public class SurveillanceReportController {
         QuarterlyReportDTO reportDto = reportManager.getQuarterlyReport(quarterlyReportId);
         List<Complaint> relevantComplaints =
                 complaintManager.getAllComplaintsBetweenDates(reportDto.getAcb(), reportDto.getStartDate(), reportDto.getEndDate());
-        return relevantComplaints;
+        ComplaintResults results = new ComplaintResults();
+        results.getResults().addAll(relevantComplaints);
+        return results;
     }
 
     @ApiOperation(value = "Create a new quarterly surveillance report.",
