@@ -106,6 +106,7 @@ public class ExportAnnualSurveillanceReportJob extends RunnableJob {
                 try {
                     writtenFile = File.createTempFile(filename, ".xlsx");
                     outputStream = new FileOutputStream(writtenFile);
+                    LOGGER.info("Writing annual report file to " + writtenFile.getAbsolutePath());
                     workbook.write(outputStream);
                     updateStatus(90, JobStatusType.In_Progress);
                 } catch (final Exception ex) {

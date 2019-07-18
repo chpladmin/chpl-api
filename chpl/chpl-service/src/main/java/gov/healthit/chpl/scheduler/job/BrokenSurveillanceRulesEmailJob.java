@@ -32,7 +32,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.scheduler.BrokenSurveillanceRulesDAO;
-import gov.healthit.chpl.domain.SurveillanceOversightRule;
+import gov.healthit.chpl.domain.surveillance.SurveillanceOversightRule;
 import gov.healthit.chpl.dto.scheduler.BrokenSurveillanceRulesDTO;
 import gov.healthit.chpl.util.EmailBuilder;
 

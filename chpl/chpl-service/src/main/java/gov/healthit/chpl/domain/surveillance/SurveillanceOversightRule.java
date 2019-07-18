@@ -1,4 +1,4 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.domain.surveillance;
 
 /**
  * The various things that can be found wrong with user-entered surveillance for listings.

@@ -5,7 +5,7 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import gov.healthit.chpl.domain.Surveillance;
+import gov.healthit.chpl.domain.surveillance.Surveillance;
 
 /**
  * Generate &lt;surveillances&gt;&lt;surveillance&gt;&lt;/surveillance&gt;&lt;/surveillances&gt; nodes.

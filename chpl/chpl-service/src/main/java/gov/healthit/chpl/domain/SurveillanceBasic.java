@@ -5,6 +5,7 @@ import java.util.Date;
 
 import org.springframework.beans.BeanUtils;
 
+import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.dto.SurveillanceBasicDTO;
 import gov.healthit.chpl.util.Util;
 

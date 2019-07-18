@@ -1,4 +1,4 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.domain.surveillance;
 
 import java.io.Serializable;
 
@@ -11,32 +11,32 @@ import org.apache.commons.lang3.StringUtils;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class SurveillanceResultType implements Serializable {
-    private static final long serialVersionUID = 120064764043803388L;
+public class SurveillanceRequirementType implements Serializable {
+    private static final long serialVersionUID = -5865384642096284604L;
 
     /**
-     * Surveillance result type internal ID
+     * Surveillance requirement type internal ID
      */
     @XmlElement(required = true)
     private Long id;
 
     /**
-     * Surveillance result type name. Nonconformity or No Nonconformity
+     * Surveillance requirement type name
      */
     @XmlElement(required = true)
     private String name;
 
-    public SurveillanceResultType() {
+    public SurveillanceRequirementType() {
     }
 
     /**
      * Checks the id and name fields to determine if the two
-     * result type fields are the same.
+     * requirement type fields are the same.
      * Expect one or both fields to be filled in always.
      * @param anotherType
      * @return whether the two objects are the same
      */
-    public boolean matches(final SurveillanceResultType anotherType) {
+    public boolean matches(final SurveillanceRequirementType anotherType) {
         if (this.id != null && anotherType.id != null
                 && this.id.longValue() == anotherType.id.longValue()) {
             return true;

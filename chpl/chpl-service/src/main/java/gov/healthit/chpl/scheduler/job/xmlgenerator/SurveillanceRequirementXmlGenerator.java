@@ -5,7 +5,7 @@ import java.util.Set;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import gov.healthit.chpl.domain.SurveillanceRequirement;
+import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 
 public class SurveillanceRequirementXmlGenerator extends XmlGenerator {
     public static void add(Set<SurveillanceRequirement> srs, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {

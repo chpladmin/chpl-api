@@ -1,6 +1,8 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.domain.surveillance;
 
 import java.util.List;
+
+import gov.healthit.chpl.domain.Job;
 
 public class SurveillanceUploadResult {
     public static final String UNAUTHORIZED = "UNAUTHORIZED";

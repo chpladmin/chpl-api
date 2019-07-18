@@ -32,19 +32,24 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.builder.QuarterlyReportBuilderXlsx;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.dao.ComplaintDAO;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.dao.surveillance.report.QuarterDAO;
 import gov.healthit.chpl.dao.surveillance.report.QuarterlyReportDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
-import gov.healthit.chpl.domain.Surveillance;
-import gov.healthit.chpl.domain.SurveillanceNonconformity;
-import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;
-import gov.healthit.chpl.domain.SurveillanceRequirement;
-import gov.healthit.chpl.domain.SurveillanceRequirementType;
-import gov.healthit.chpl.domain.SurveillanceResultType;
-import gov.healthit.chpl.domain.SurveillanceType;
+import gov.healthit.chpl.domain.surveillance.Surveillance;
+import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
+import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityStatus;
+import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
+import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
+import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
+import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.dto.ComplaintCriterionMapDTO;
+import gov.healthit.chpl.dto.ComplaintDTO;
+import gov.healthit.chpl.dto.ComplaintListingMapDTO;
+import gov.healthit.chpl.dto.ComplaintSurveillanceMapDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportExclusionDTO;
@@ -82,6 +87,8 @@ public class QuarterlyReportManagerTest extends TestCase {
     @Autowired
     private QuarterDAO quarterDao;
 
+    @Autowired
+    private ComplaintDAO complaintDao;
 
     @Autowired
     private SurveillanceDAO survDao;
@@ -549,21 +556,83 @@ public class QuarterlyReportManagerTest extends TestCase {
             throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException,
             IOException {
         SecurityContextHolder.getContext().setAuthentication(acbUser);
+        Long acbId = -1L;
+        CertificationBodyDTO acb = new CertificationBodyDTO();
+        acb.setId(acbId);
+
         QuarterDTO quarter = new QuarterDTO();
         quarter.setName("Q1");
         QuarterlyReportDTO toCreate = new QuarterlyReportDTO();
         toCreate.setYear(2019);
-        CertificationBodyDTO acb = new CertificationBodyDTO();
-        acb.setId(-1L);
         toCreate.setAcb(acb);
         toCreate.setQuarter(quarter);
         toCreate.setActivitiesOutcomesSummary("In order to meet its obligation to conduct reactive surveillance, the ONC-ACB undertook the following activities and implemented the following measures to ensure that it was able to systematically obtain, synthesize and act on all facts and circumstances that would cause a reasonable person to question the ongoing compliance of any certified Complete EHR or certified Health IT Module. In order to meet its obligation to conduct reactive surveillance, the ONC-ACB undertook the following activities and implemented the following measures to ensure that it was able to systematically obtain, synthesize and act on all facts and circumstances that would cause a reasonable person to question the ongoing compliance of any certified Complete EHR or certified Health IT Module. ");
         toCreate.setReactiveSummary("test reactive element summary");
         toCreate.setPrioritizedElementSummary("test prioritized element summary");
         toCreate.setTransparencyDisclosureSummary("test transparency and disclosure summary");
-        QuarterlyReportDTO created = reportManager.createQuarterlyReport(toCreate);
+        QuarterlyReportDTO createdReport = reportManager.createQuarterlyReport(toCreate);
 
-        QuarterlyReportDTO fetchedReport = reportManager.getQuarterlyReport(created.getId());
+        //create a surveillance to add to the report so we have relevant listings
+        Surveillance createdSurv = createSurveillance(1L, new Date(createdReport.getStartDate().getTime() + (24*60*60*1000)));
+        createSurveillance(2L, new Date(createdReport.getStartDate().getTime() + (48*60*60*1000)));
+        createSurveillance(3L, new Date(createdReport.getStartDate().getTime() + (72*60*60*1000)));
+
+        //add excluded listing to the quarter
+        reportManager.createQuarterlyReportExclusion(createdReport, 1L, "A really good reason for q1");
+        reportManager.createQuarterlyReportExclusion(createdReport, 3L, "A really good reason for listing id 3");
+
+        //complaint associated with nothing
+        createComplaint(acbId, "no associations", new Date(createdReport.getStartDate().getTime() + 128*60*60*1000));
+
+        //complaint associated with a listing
+        ComplaintDTO listingComplaint = createComplaint(acbId, "one listing", new Date(createdReport.getStartDate().getTime() + 24*60*60*1000));
+        ComplaintListingMapDTO listingMap = new ComplaintListingMapDTO();
+        listingMap.setListingId(1L);
+        listingMap.setComplaintId(listingComplaint.getId());
+        listingComplaint.getListings().add(listingMap);
+        complaintDao.update(listingComplaint);
+
+        //complaint associated with 2 listings
+        ComplaintDTO listingsComplaint = createComplaint(acbId, "two listings", new Date(createdReport.getStartDate().getTime() + 48*60*60*1000));
+        ComplaintListingMapDTO listingMap1 = new ComplaintListingMapDTO();
+        listingMap1.setListingId(2L);
+        listingMap1.setComplaintId(listingsComplaint.getId());
+        listingsComplaint.getListings().add(listingMap1);
+        ComplaintListingMapDTO listingMap2 = new ComplaintListingMapDTO();
+        listingMap2.setListingId(3L);
+        listingMap2.setComplaintId(listingsComplaint.getId());
+        listingsComplaint.getListings().add(listingMap2);
+        complaintDao.update(listingsComplaint);
+
+        //complaint associated with a criteria
+        ComplaintDTO criteriaComplaint = createComplaint(acbId, "one criteria", new Date(createdReport.getStartDate().getTime() + 72*60*60*1000));
+        ComplaintCriterionMapDTO criteriaMap = new ComplaintCriterionMapDTO();
+        criteriaMap.setCertificationCriterionId(2L);
+        criteriaMap.setComplaintId(criteriaComplaint.getId());
+        criteriaComplaint.getCriteria().add(criteriaMap);
+        complaintDao.update(criteriaComplaint);
+
+        //complaint associated with multiple criteria
+        ComplaintDTO criterionComplaint = createComplaint(acbId, "two criteria", new Date(createdReport.getStartDate().getTime() + 96*60*60*1000));
+        ComplaintCriterionMapDTO criteriaMap1 = new ComplaintCriterionMapDTO();
+        criteriaMap1.setCertificationCriterionId(3L);
+        criteriaMap1.setComplaintId(criterionComplaint.getId());
+        criterionComplaint.getCriteria().add(criteriaMap1);
+        ComplaintCriterionMapDTO criteriaMap2 = new ComplaintCriterionMapDTO();
+        criteriaMap2.setCertificationCriterionId(4L);
+        criteriaMap2.setComplaintId(criterionComplaint.getId());
+        criterionComplaint.getCriteria().add(criteriaMap2);
+        complaintDao.update(criterionComplaint);
+
+        //complaint associated with surveillance
+        ComplaintDTO survComplaint = createComplaint(acbId, "surveillance", new Date(createdReport.getStartDate().getTime() + 72*60*60*1000));
+        ComplaintSurveillanceMapDTO survMap = new ComplaintSurveillanceMapDTO();
+        survMap.setSurveillanceId(createdSurv.getId());
+        survMap.setComplaintId(survComplaint.getId());
+        survComplaint.getSurveillances().add(survMap);
+        complaintDao.update(survComplaint);
+
+        QuarterlyReportDTO fetchedReport = reportManager.getQuarterlyReport(createdReport.getId());
         Workbook workbook = reportBuilder.buildXlsx(fetchedReport);
         assertNotNull(workbook);
 
@@ -572,7 +641,7 @@ public class QuarterlyReportManagerTest extends TestCase {
 //        try {
 //            outputStream = new FileOutputStream("quarterly.xlsx");
 //            workbook.write(outputStream);
-//        } catch(final Exception ex) {
+//        } catch (final Exception ex) {
 //            fail(ex.getMessage());
 //        } finally {
 //            outputStream.flush();
@@ -644,7 +713,7 @@ public class QuarterlyReportManagerTest extends TestCase {
         return created;
     }
 
-    private void createSurveillance(final Long listingId, final Date startDate) throws EntityRetrievalException {
+    private Surveillance createSurveillance(final Long listingId, final Date startDate) throws EntityRetrievalException {
         Surveillance surv = new Surveillance();
 
         CertifiedProductDTO cpDto = cpDao.getById(listingId);
@@ -689,18 +758,42 @@ public class QuarterlyReportManagerTest extends TestCase {
         nc.setStatus(ncStatus);
         req2.getNonconformities().add(nc);
 
+        Surveillance created = null;
         Long insertedId;
         try {
             insertedId = survManager.createSurveillance(-1L, surv);
             assertNotNull(insertedId);
-            Surveillance got = survManager.getById(insertedId);
-            assertNotNull(got);
-            assertNotNull(got.getCertifiedProduct());
-            assertEquals(cpDto.getId(), got.getCertifiedProduct().getId());
-            assertEquals(cpDto.getChplProductNumber(), got.getCertifiedProduct().getChplProductNumber());
-            assertEquals(surv.getRandomizedSitesUsed(), got.getRandomizedSitesUsed());
+            created = survManager.getById(insertedId);
+            assertNotNull(created);
+            assertNotNull(created.getCertifiedProduct());
+            assertEquals(cpDto.getId(), created.getCertifiedProduct().getId());
+            assertEquals(cpDto.getChplProductNumber(), created.getCertifiedProduct().getChplProductNumber());
+            assertEquals(surv.getRandomizedSitesUsed(), created.getRandomizedSitesUsed());
         } catch (Exception e) {
             System.out.println(e.getClass() + ": " + e.getMessage());
         }
+        return created;
+    }
+
+    private ComplaintDTO createComplaint(final Long acbId, final String summary, final Date receivedDate) 
+    throws EntityRetrievalException {
+        CertificationBodyDTO acb = new CertificationBodyDTO();
+        acb.setId(acbId);
+
+        ComplaintDTO complaint = new ComplaintDTO();
+        complaint.setAcbComplaintId("ACB-ID-1");
+        complaint.setOncComplaintId("ONC-ID-1");
+        complaint.setActions("I took some actions");
+        complaint.setCertificationBody(acb);
+        complaint.setComplainantContacted(true);
+        complaint.setComplainantType(complaintDao.getComplainantTypes().get(0));
+        complaint.setComplaintStatusType(complaintDao.getComplaintStatusTypes().get(0));
+        complaint.setDeveloperContacted(false);
+        complaint.setFlagForOncReview(true);
+        complaint.setOncAtlContacted(false);
+        complaint.setReceivedDate(receivedDate);
+        complaint.setSummary(summary);
+        ComplaintDTO createdComplaint = complaintDao.create(complaint);
+        return createdComplaint;
     }
 }

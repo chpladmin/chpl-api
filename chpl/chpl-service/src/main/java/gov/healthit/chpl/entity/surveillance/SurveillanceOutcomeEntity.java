@@ -1,35 +1,39 @@
-package gov.healthit.chpl.dto;
+package gov.healthit.chpl.entity.surveillance;
 
-import java.io.Serializable;
 import java.util.Date;
 
-import org.springframework.beans.BeanUtils;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-import gov.healthit.chpl.domain.surveillance.SurveillanceType;
-import gov.healthit.chpl.entity.surveillance.SurveillanceTypeEntity;
 import gov.healthit.chpl.util.Util;
 
-public class SurveillanceTypeDTO implements Serializable {
-    private static final long serialVersionUID = -7207194303881851463L;
+@Entity
+@Table(name = "surveillance_outcome")
+public class SurveillanceOutcomeEntity {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
+
+    @Column(name = "name")
     private String name;
+
+    @Column(name = "deleted")
     private Boolean deleted;
+
+    @Column(name = "last_modified_user")
     private Long lastModifiedUser;
+
+    @Column(name = "creation_date", insertable = false, updatable = false)
     private Date creationDate;
+
+    @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
-
-    public SurveillanceTypeDTO() {
-
-    }
-
-    public SurveillanceTypeDTO(final SurveillanceTypeEntity entity) {
-        BeanUtils.copyProperties(entity, this);
-    }
-
-    public SurveillanceTypeDTO(final SurveillanceType domain) {
-        BeanUtils.copyProperties(domain, this);
-    }
 
     public Long getId() {
         return id;
@@ -77,11 +81,5 @@ public class SurveillanceTypeDTO implements Serializable {
 
     public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
-    }
-
-    @Override
-    public String toString() {
-        return "SurveillanceTypeDTO [id=" + id + ", name=" + name + ", deleted=" + deleted + ", lastModifiedUser="
-                + lastModifiedUser + ", creationDate=" + creationDate + ", lastModifiedDate=" + lastModifiedDate + "]";
     }
 }

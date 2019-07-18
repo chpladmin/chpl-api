@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import gov.healthit.chpl.domain.Surveillance;
+import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.exception.ValidationException;
 
 public interface SurveillanceUploadManager {

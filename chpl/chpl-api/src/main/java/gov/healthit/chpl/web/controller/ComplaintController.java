@@ -1,10 +1,12 @@
 package gov.healthit.chpl.web.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.complaint.Complaint;
+import gov.healthit.chpl.domain.surveillance.report.RelevantListing;
+import gov.healthit.chpl.dto.ComplaintDTO;
+import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
+import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportRelevantListingDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ComplaintManager;
@@ -29,14 +35,14 @@ public class ComplaintController {
     private ComplaintManager complaintManager;
     private FF4j ff4j;
     private ErrorMessageUtil errorMessageUtil;
-    
+
     @Autowired
     public ComplaintController(final ComplaintManager complaintManager, final FF4j ff4j, final ErrorMessageUtil errorMessageUtil) {
         this.complaintManager = complaintManager;
         this.ff4j = ff4j;
         this.errorMessageUtil = errorMessageUtil;
     }
-    
+
     @ApiOperation(value = "List all complaints the current user can view/edit.",
             notes = "Security Restrictions: Only complaints owned by the current user's ACB will be returned")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
@@ -50,7 +56,7 @@ public class ComplaintController {
             throw new NotImplementedException();
         }
     }
-    
+
     @ApiOperation(value = "Save complaint for use in Surveillance Quarterly Report.",
             notes = "")
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
@@ -62,7 +68,7 @@ public class ComplaintController {
                 error.getErrorMessages().add(errorMessageUtil.getMessage("complaints.update.acbRequired"));
                 throw error;
             }
-            
+
             return complaintManager.create(complaint);
         } else {
             throw new NotImplementedException();
@@ -79,7 +85,7 @@ public class ComplaintController {
             throw new NotImplementedException();
         }
     }
-    
+
     @ApiOperation(value = "Delete complaint for use in Surveillance Quarterly Report.",
             notes = "")
     @RequestMapping(value = "/{complaintId}", method = RequestMethod.DELETE, produces = "application/json; charset=utf-8")

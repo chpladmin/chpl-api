@@ -5,7 +5,7 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import gov.healthit.chpl.domain.SurveillanceNonconformityDocument;
+import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityDocument;
 
 public class SurveillanceNonConformityDocumentXmlGenerator extends XmlGenerator {
     public static void add(List<SurveillanceNonconformityDocument> docs, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {

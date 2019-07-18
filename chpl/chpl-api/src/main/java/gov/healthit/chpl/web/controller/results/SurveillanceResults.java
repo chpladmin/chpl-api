@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import gov.healthit.chpl.domain.Surveillance;
+import gov.healthit.chpl.domain.surveillance.Surveillance;
 
 public class SurveillanceResults implements Serializable {
     private static final long serialVersionUID = 6767406136348327093L;

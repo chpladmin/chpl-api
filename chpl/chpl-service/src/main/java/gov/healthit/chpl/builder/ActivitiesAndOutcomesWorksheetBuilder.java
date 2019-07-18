@@ -37,9 +37,9 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
-import gov.healthit.chpl.domain.Surveillance;
-import gov.healthit.chpl.domain.SurveillanceNonconformity;
-import gov.healthit.chpl.domain.SurveillanceRequirement;
+import gov.healthit.chpl.domain.surveillance.Surveillance;
+import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
+import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportRelevantListingDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
@@ -50,7 +50,7 @@ import gov.healthit.chpl.manager.SurveillanceReportManager;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 
 @Component
-public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder {
+public class ActivitiesAndOutcomesWorksheetBuilder {
     private static final Logger LOGGER = LogManager.getLogger(ActivitiesAndOutcomesWorksheetBuilder.class);
     private static final int LAST_DATA_COLUMN = 35;
 
@@ -99,20 +99,16 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
     public ActivitiesAndOutcomesWorksheetBuilder(final SurveillanceReportManager reportManager,
             final CertifiedProductDetailsManager detailsManager,
             final SurveillanceManager survManager) {
-        super();
         this.reportManager = reportManager;
         this.detailsManager = detailsManager;
         this.survManager = survManager;
         dateFormatter = new SimpleDateFormat("MM/dd/yyyy");
-        pt = new PropertyTemplate();
     }
 
-    @Override
     public int getLastDataColumn() {
         return LAST_DATA_COLUMN;
     }
 
-    @Override
     public int getLastDataRow() {
         return lastDataRow <= 1 ? 2 : lastDataRow;
     }
@@ -124,12 +120,14 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
      * @return
      * @throws IOException
      */
-    public Sheet buildWorksheet(final List<QuarterlyReportDTO> quarterlyReports)
+    public Sheet buildWorksheet(final SurveillanceReportWorkbookWrapper workbook, final List<QuarterlyReportDTO> quarterlyReports)
             throws IOException {
+        lastDataRow = 0;
+        pt = new PropertyTemplate();
         XSSFDataValidationHelper dvHelper = null;
 
         //create sheet
-        Sheet sheet = getSheet("Activities and Outcomes", new Color(141, 180, 226));
+        Sheet sheet = workbook.getSheet("Activities and Outcomes", new Color(141, 180, 226), getLastDataColumn());
         if (sheet instanceof XSSFSheet) {
             XSSFSheet xssfSheet = (XSSFSheet) sheet;
             dvHelper = new XSSFDataValidationHelper(xssfSheet);
@@ -140,12 +138,12 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
         sheet.setDisplayRowColHeadings(false);
 
         //all columns need a certain width to match the document format
-        int sharedColWidth = getColumnWidth(11.78);
+        int sharedColWidth = workbook.getColumnWidth(11.78);
         sheet.setColumnWidth(COL_CHPL_ID, sharedColWidth);
         sheet.setColumnWidth(COL_SURV_ID,  sharedColWidth);
         sheet.setColumnWidth(COL_SURV_ACTIVITY_TRACKER, sharedColWidth);
         sheet.setColumnWidth(COL_RELATED_COMPLAINT, sharedColWidth);
-        int quarterColWidth = getColumnWidth(2.22);
+        int quarterColWidth = workbook.getColumnWidth(2.22);
         sheet.setColumnWidth(COL_Q1, quarterColWidth);
         sheet.setColumnWidth(COL_Q2, quarterColWidth);
         sheet.setColumnWidth(COL_Q3, quarterColWidth);
@@ -155,16 +153,16 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
         sheet.setColumnWidth(COL_PRODUCT_NAME, sharedColWidth);
         sheet.setColumnWidth(COL_PRODUCT_VERSION, sharedColWidth);
         sheet.setColumnWidth(COL_K1_REVIEWED, sharedColWidth);
-        sheet.setColumnWidth(COL_SURV_TYPE, getColumnWidth(13.67));
+        sheet.setColumnWidth(COL_SURV_TYPE, workbook.getColumnWidth(13.67));
         sheet.setColumnWidth(COL_SURV_LOCATION_COUNT, sharedColWidth);
         sheet.setColumnWidth(COL_SURV_BEGIN, sharedColWidth);
         sheet.setColumnWidth(COL_SURV_END, sharedColWidth);
-        sheet.setColumnWidth(COL_SURV_OUTCOME, getColumnWidth(51.44));
-        sheet.setColumnWidth(COL_NONCONFORMITY_TYPES_RESULTANT, getColumnWidth(27));
-        sheet.setColumnWidth(COL_CERT_STATUS_RESULTANT, getColumnWidth(17.78));
-        sheet.setColumnWidth(COL_SUSPENDED, getColumnWidth(17.78));
-        sheet.setColumnWidth(COL_SURV_PROCESS_TYPE, getColumnWidth(30.67));
-        int longTextColWidth = getColumnWidth(59.44);
+        sheet.setColumnWidth(COL_SURV_OUTCOME, workbook.getColumnWidth(51.44));
+        sheet.setColumnWidth(COL_NONCONFORMITY_TYPES_RESULTANT, workbook.getColumnWidth(27));
+        sheet.setColumnWidth(COL_CERT_STATUS_RESULTANT, workbook.getColumnWidth(17.78));
+        sheet.setColumnWidth(COL_SUSPENDED, workbook.getColumnWidth(17.78));
+        sheet.setColumnWidth(COL_SURV_PROCESS_TYPE, workbook.getColumnWidth(30.67));
+        int longTextColWidth = workbook.getColumnWidth(59.44);
         sheet.setColumnWidth(COL_SURV_GROUNDS, longTextColWidth);
         sheet.setColumnWidth(COL_NONCONFORMITY_CAUSES, longTextColWidth);
         sheet.setColumnWidth(COL_NONCONFORMITY_NATURES, longTextColWidth);
@@ -176,8 +174,8 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
         sheet.setColumnWidth(COL_DEV_RESOLUTION, longTextColWidth);
         sheet.setColumnWidth(COL_COMPLETED_CAP, longTextColWidth);
 
-        lastDataRow += addHeadingRow(sheet);
-        lastDataRow += addTableData(sheet, quarterlyReports);
+        lastDataRow += addHeadingRow(workbook, sheet);
+        lastDataRow += addTableData(workbook, sheet, quarterlyReports);
 
         //some of the columns have dropdown lists of choices for the user - set those up
 
@@ -187,22 +185,22 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
         //to be as long as you want. The outcome choices are the only ones that are long enough 
         //to run into this problem.
         //names for the list constraints
-        Name surveillanceOutcomeNamedCell = workbook.createName();
+        Name surveillanceOutcomeNamedCell = workbook.getWorkbook().createName();
         surveillanceOutcomeNamedCell.setNameName("SurveillanceOutcomeList");
         String reference = "Lists!$A$1:$A$8";
         surveillanceOutcomeNamedCell.setRefersToFormula(reference);
 
-        Name processTypeNamedCell = workbook.createName();
+        Name processTypeNamedCell = workbook.getWorkbook().createName();
         processTypeNamedCell.setNameName("ProcessTypeList");
         reference = "Lists!$B$1:$B$5";
         processTypeNamedCell.setRefersToFormula(reference);
 
-        Name statusNamedCell = workbook.createName();
+        Name statusNamedCell = workbook.getWorkbook().createName();
         statusNamedCell.setNameName("StatusList");
         reference = "Lists!$C$1:$C$4";
         statusNamedCell.setRefersToFormula(reference);
 
-        Name booleanNamedCell = workbook.createName();
+        Name booleanNamedCell = workbook.getWorkbook().createName();
         booleanNamedCell.setNameName("BooleanList");
         reference = "Lists!$D$1:$D$2";
         booleanNamedCell.setRefersToFormula(reference);
@@ -266,34 +264,34 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
      * @param sheet
      * @return
      */
-    private int addHeadingRow(final Sheet sheet) {
-        Row row = getRow(sheet, 1);
+    private int addHeadingRow(final SurveillanceReportWorkbookWrapper workbook, final Sheet sheet) {
+        Row row = workbook.getRow(sheet, 1);
         //row can have 6 lines of text
         row.setHeightInPoints(6 * sheet.getDefaultRowHeightInPoints());
 
-        addHeadingCell(row, COL_CHPL_ID, "CHPL ID");
-        addHeadingCell(row, COL_SURV_ID, "Surveillance ID");
-        addHeadingCell(row, COL_SURV_ACTIVITY_TRACKER, "Surveillance Activity Tracker");
-        addHeadingCell(row, COL_RELATED_COMPLAINT, "Related Complaint (both if possible)");
-        addHeadingCell(row, COL_Q1, "Q1");
-        addHeadingCell(row, COL_Q2, "Q2");
-        addHeadingCell(row, COL_Q3, "Q3");
-        addHeadingCell(row, COL_Q4, "Q4");
-        addHeadingCell(row, COL_CERT_EDITION, "Certification Edition");
-        addHeadingCell(row, COL_DEVELOPER_NAME, "Developer Name");
-        addHeadingCell(row, COL_PRODUCT_NAME, "Product Name");
-        addHeadingCell(row, COL_PRODUCT_VERSION, "Product Version");
-        addHeadingCell(row, COL_K1_REVIEWED, "§170.523(k)(1) Reviewed?");
-        addHeadingCell(row, COL_SURV_TYPE, "Type of Surveillance");
-        addHeadingCell(row, COL_SURV_LOCATION_COUNT, "Number of Locations Surveilled");
-        addHeadingCell(row, COL_SURV_BEGIN, "Surveillance Began");
-        addHeadingCell(row, COL_SURV_END, "Surveillance Ended");
-        addHeadingCell(row, COL_SURV_OUTCOME, "Outcome of Surveillance");
-        addHeadingCell(row, COL_NONCONFORMITY_TYPES_RESULTANT,
+        addHeadingCell(workbook, row, COL_CHPL_ID, "CHPL ID");
+        addHeadingCell(workbook, row, COL_SURV_ID, "Surveillance ID");
+        addHeadingCell(workbook, row, COL_SURV_ACTIVITY_TRACKER, "Surveillance Activity Tracker");
+        addHeadingCell(workbook, row, COL_RELATED_COMPLAINT, "Related Complaint (both if possible)");
+        addHeadingCell(workbook, row, COL_Q1, "Q1");
+        addHeadingCell(workbook, row, COL_Q2, "Q2");
+        addHeadingCell(workbook, row, COL_Q3, "Q3");
+        addHeadingCell(workbook, row, COL_Q4, "Q4");
+        addHeadingCell(workbook, row, COL_CERT_EDITION, "Certification Edition");
+        addHeadingCell(workbook, row, COL_DEVELOPER_NAME, "Developer Name");
+        addHeadingCell(workbook, row, COL_PRODUCT_NAME, "Product Name");
+        addHeadingCell(workbook, row, COL_PRODUCT_VERSION, "Product Version");
+        addHeadingCell(workbook, row, COL_K1_REVIEWED, "§170.523(k)(1) Reviewed?");
+        addHeadingCell(workbook, row, COL_SURV_TYPE, "Type of Surveillance");
+        addHeadingCell(workbook, row, COL_SURV_LOCATION_COUNT, "Number of Locations Surveilled");
+        addHeadingCell(workbook, row, COL_SURV_BEGIN, "Surveillance Began");
+        addHeadingCell(workbook, row, COL_SURV_END, "Surveillance Ended");
+        addHeadingCell(workbook, row, COL_SURV_OUTCOME, "Outcome of Surveillance");
+        addHeadingCell(workbook, row, COL_NONCONFORMITY_TYPES_RESULTANT,
                 "Non-Conformity Type(s) Resultant of Surveillance (i.e. \"170.xxx (x)(x)\")");
-        addHeadingCell(row, COL_CERT_STATUS_RESULTANT, "Certification Status Resultant of Surveillance");
-        addHeadingCell(row, COL_SUSPENDED, "Suspended During Surveillance?");
-        addHeadingCell(row, COL_SURV_PROCESS_TYPE, "Surveillance Process Type");
+        addHeadingCell(workbook, row, COL_CERT_STATUS_RESULTANT, "Certification Status Resultant of Surveillance");
+        addHeadingCell(workbook, row, COL_SUSPENDED, "Suspended During Surveillance?");
+        addHeadingCell(workbook, row, COL_SURV_PROCESS_TYPE, "Surveillance Process Type");
 
         //these headings are more complicated with various fonts throughout the cell
         String cellTitle = "Grounds for Initiating Surveillance";
@@ -301,63 +299,63 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
                 + "(i.e., the particular facts and circumstances from which a reasonable person would "
                 + "have had grounds to question the continued conformity of the Complete EHR or "
                 + "Health IT Module)? For randomized surveillance, it is acceptable to state it was chosen randomly.";
-        addRichTextHeadingCell(row, COL_SURV_GROUNDS, cellTitle, cellSubtitle);
+        addRichTextHeadingCell(workbook, row, COL_SURV_GROUNDS, cellTitle, cellSubtitle);
 
         cellTitle = "Potential Causes of Non-Conformities or Suspected Non-Conformities";
         cellSubtitle = "What were the substantial factors that, in the ONC-ACB’s assessment, "
                 + "caused or contributed to the suspected non-conformity or non-conformities "
                 + "(e.g., implementation problem, user error, limitations on the use of capabilities "
                 + "in the field, a failure to disclose known material information, etc.)?";
-        addRichTextHeadingCell(row, COL_NONCONFORMITY_CAUSES, cellTitle, cellSubtitle);
+        addRichTextHeadingCell(workbook, row, COL_NONCONFORMITY_CAUSES, cellTitle, cellSubtitle);
 
         cellTitle = "Nature of Any Substantiated Non-Conformities";
         cellSubtitle = "Did ONC-ACB substantiate any non-conformities? If so, what was the nature "
                 + "of the non-conformity or non-conformities that were substantiated?\n"
                 + "Please include specific criteria involved.";
-        addRichTextHeadingCell(row, COL_NONCONFORMITY_NATURES, cellTitle, cellSubtitle);
+        addRichTextHeadingCell(workbook, row, COL_NONCONFORMITY_NATURES, cellTitle, cellSubtitle);
 
         cellTitle = "Steps to Surveil and Substantiate";
         cellSubtitle = "What steps did the ONC-ACB take to surveil the Complete EHR or Health "
                 + "IT Module, to analyze evidence, and to substantiate the non-conformity or non-conformities?";
-        addRichTextHeadingCell(row, COL_SURV_STEPS, cellTitle, cellSubtitle);
+        addRichTextHeadingCell(workbook, row, COL_SURV_STEPS, cellTitle, cellSubtitle);
 
         cellTitle = "Steps to Engage and Work with Developer and End-Users";
         cellSubtitle = "What steps were taken by ONC-ACB to engage and work with the developer and "
                 + "end-users to analyze and determine the causes of any suspected non-conformities and "
                 + "related deficiencies?";
-        addRichTextHeadingCell(row, COL_ENGAGEMENT_STEPS, cellTitle, cellSubtitle);
+        addRichTextHeadingCell(workbook, row, COL_ENGAGEMENT_STEPS, cellTitle, cellSubtitle);
 
         cellTitle = "Additional Costs Evaluation";
         cellSubtitle = "If a suspected non-conformity resulted from additional types of costs "
                 + "that a user was required to pay in order to implement or use the Complete EHR "
                 + "or Health IT Module's certified capabilities, how did ONC-ACB evaluate that "
                 + "suspected non-conformity?";
-        addRichTextHeadingCell(row, COL_ADDITIONAL_COSTS, cellTitle, cellSubtitle);
+        addRichTextHeadingCell(workbook, row, COL_ADDITIONAL_COSTS, cellTitle, cellSubtitle);
 
         cellTitle = "Limitations Evaluation";
         cellSubtitle = "If a suspected non-conformity resulted from limitations that a user "
                 + "encountered in the course of implementing and using the Complete EHR or "
                 + "Health IT Module's certified capabilities, how did ONC-ACB evaluate that "
                 + "suspected non-conformity?";
-        addRichTextHeadingCell(row, COL_LIMITATIONS_EVAL, cellTitle, cellSubtitle);
+        addRichTextHeadingCell(workbook, row, COL_LIMITATIONS_EVAL, cellTitle, cellSubtitle);
 
         cellTitle = "Non-Disclosure Evaluation";
         cellSubtitle = "If a suspected non-conformity resulted from the non-disclosure of material "
                 + "information by the developer about limitations or additional types of costs associated "
                 + "with the Complete EHR or Health IT Module, how did the ONC-ACB evaluate the suspected "
                 + "non-conformity?";
-        addRichTextHeadingCell(row, COL_NONDISCLOSURE_EVAL, cellTitle, cellSubtitle);
+        addRichTextHeadingCell(workbook, row, COL_NONDISCLOSURE_EVAL, cellTitle, cellSubtitle);
 
         cellTitle = "Direction for Developer Resolution";
         cellSubtitle = "If a non-conformity was substantiated, what direction was given to the developer to "
                 + "resolve the non-conformity?";
-        addRichTextHeadingCell(row, COL_DEV_RESOLUTION, cellTitle, cellSubtitle);
+        addRichTextHeadingCell(workbook, row, COL_DEV_RESOLUTION, cellTitle, cellSubtitle);
 
         cellTitle = "Verification of Completed CAP";
         cellSubtitle = "If an approved Corrective Action Plan was received and completed, "
                 + "how did ONC-ACB verify that the developer has completed all requirements "
                 + "specified in the Plan?";
-        addRichTextHeadingCell(row, COL_COMPLETED_CAP, cellTitle, cellSubtitle);
+        addRichTextHeadingCell(workbook, row, COL_COMPLETED_CAP, cellTitle, cellSubtitle);
         return 1;
     }
 
@@ -367,7 +365,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
      * @param sheet
      * @param reportListingMap
      */
-    private int addTableData(final Sheet sheet,
+    private int addTableData(final SurveillanceReportWorkbookWrapper workbook, final Sheet sheet,
             final List<QuarterlyReportDTO> quarterlyReports) {
         int addedRows = 0;
         int rowNum = 2;
@@ -402,42 +400,42 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
                     listing = currListing;
                 }
             }
-            Row row = getRow(sheet, rowNum);
-            addDataCell(row, COL_CHPL_ID, listing.getChplProductNumber());
-            addDataCell(row, COL_SURV_ID, surv.getFriendlyId());
-            addDataCell(row, COL_SURV_ACTIVITY_TRACKER, listing.getChplProductNumber() + surv.getFriendlyId());
+            Row row = workbook.getRow(sheet, rowNum);
+            addDataCell(workbook, row, COL_CHPL_ID, listing.getChplProductNumber());
+            addDataCell(workbook, row, COL_SURV_ID, surv.getFriendlyId());
+            addDataCell(workbook, row, COL_SURV_ACTIVITY_TRACKER, listing.getChplProductNumber() + surv.getFriendlyId());
             //chpl generated i think once we associate a complaint with surveillance?
-            addDataCell(row, COL_RELATED_COMPLAINT, "");
+            addDataCell(workbook, row, COL_RELATED_COMPLAINT, "");
             if (determineIfSurveillanceHappenedDuringQuarter("Q1", quarterlyReports, surv)) {
-                addDataCell(row, COL_Q1, "X");
+                addDataCell(workbook, row, COL_Q1, "X");
             }
             if (determineIfSurveillanceHappenedDuringQuarter("Q2", quarterlyReports, surv)) {
-                addDataCell(row, COL_Q2, "X");
+                addDataCell(workbook, row, COL_Q2, "X");
             }
             if (determineIfSurveillanceHappenedDuringQuarter("Q3", quarterlyReports, surv)) {
-                addDataCell(row, COL_Q3, "X");
+                addDataCell(workbook, row, COL_Q3, "X");
             }
             if (determineIfSurveillanceHappenedDuringQuarter("Q4", quarterlyReports, surv)) {
-                addDataCell(row, COL_Q4, "X");
+                addDataCell(workbook, row, COL_Q4, "X");
             }
-            addDataCell(row, COL_CERT_EDITION, listing.getCertificationEdition().get("name").toString());
-            addDataCell(row, COL_DEVELOPER_NAME, listing.getDeveloper().getName());
-            addDataCell(row, COL_PRODUCT_NAME, listing.getProduct().getName());
-            addDataCell(row, COL_PRODUCT_VERSION, listing.getVersion().getVersion());
+            addDataCell(workbook, row, COL_CERT_EDITION, listing.getCertificationEdition().get("name").toString());
+            addDataCell(workbook, row, COL_DEVELOPER_NAME, listing.getDeveloper().getName());
+            addDataCell(workbook, row, COL_PRODUCT_NAME, listing.getProduct().getName());
+            addDataCell(workbook, row, COL_PRODUCT_VERSION, listing.getVersion().getVersion());
             //user has to enter this field
-            addDataCell(row, COL_K1_REVIEWED, "");
-            addDataCell(row, COL_SURV_TYPE, surv.getType().getName());
-            addDataCell(row, COL_SURV_LOCATION_COUNT,
+            addDataCell(workbook, row, COL_K1_REVIEWED, "");
+            addDataCell(workbook, row, COL_SURV_TYPE, surv.getType().getName());
+            addDataCell(workbook, row, COL_SURV_LOCATION_COUNT,
                     surv.getRandomizedSitesUsed() == null ? "" : surv.getRandomizedSitesUsed().toString());
-            addDataCell(row, COL_SURV_BEGIN, dateFormatter.format(surv.getStartDate()));
-            addDataCell(row, COL_SURV_END, surv.getEndDate() == null ? "" : dateFormatter.format(surv.getEndDate()));
+            addDataCell(workbook, row, COL_SURV_BEGIN, dateFormatter.format(surv.getStartDate()));
+            addDataCell(workbook, row, COL_SURV_END, surv.getEndDate() == null ? "" : dateFormatter.format(surv.getEndDate()));
             //user has to enter this field
-            addDataCell(row, COL_SURV_OUTCOME, "");
-            addDataCell(row, COL_NONCONFORMITY_TYPES_RESULTANT, determineNonconformityTypes(surv));
-            addDataCell(row, COL_CERT_STATUS_RESULTANT, determineResultantCertificationStatus(listing, surv));
-            addDataCell(row, COL_SUSPENDED, determineSuspendedStatus(listing, surv));
+            addDataCell(workbook, row, COL_SURV_OUTCOME, "");
+            addDataCell(workbook, row, COL_NONCONFORMITY_TYPES_RESULTANT, determineNonconformityTypes(surv));
+            addDataCell(workbook, row, COL_CERT_STATUS_RESULTANT, determineResultantCertificationStatus(listing, surv));
+            addDataCell(workbook, row, COL_SUSPENDED, determineSuspendedStatus(listing, surv));
             //user has to enter this field
-            addDataCell(row, COL_SURV_PROCESS_TYPE, "");
+            addDataCell(workbook, row, COL_SURV_PROCESS_TYPE, "");
             pt.drawBorders(new CellRangeAddress(rowNum, rowNum, 1, LAST_DATA_COLUMN - 1),
                     BorderStyle.HAIR, BorderExtent.HORIZONTAL);
             addedRows++;
@@ -490,7 +488,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
         List<CertifiedProductSearchDetails> relevantListingDetails =
                 new ArrayList<CertifiedProductSearchDetails>();
         for (QuarterlyReportRelevantListingDTO listingDetails : listingDtos) {
-            LOGGER.info("Creating CertifiedProductSearchDetails for listing " + listingDetails.getChplProductNumber());
+            LOGGER.debug("Creating CertifiedProductSearchDetails for listing " + listingDetails.getChplProductNumber());
             CertifiedProductSearchDetails completeListingDetails = new CertifiedProductSearchDetails();
             completeListingDetails.setId(listingDetails.getId());
             completeListingDetails.setChplProductNumber(listingDetails.getChplProductNumber());
@@ -512,20 +510,20 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
             completeListingDetails.setVersion(ver);
 
             try {
-                LOGGER.info("Getting certification status events for listing " + listingDetails.getChplProductNumber());
+                LOGGER.debug("Getting certification status events for listing " + listingDetails.getChplProductNumber());
                 List<CertificationStatusEvent> certStatusEvents =
                         detailsManager.getCertificationStatusEvents(listingDetails.getId());
                 completeListingDetails.setCertificationEvents(certStatusEvents);
-                LOGGER.info("Got " + completeListingDetails.getCertificationEvents().size()
+                LOGGER.debug("Got " + completeListingDetails.getCertificationEvents().size()
                         + " certification status events for listing " + listingDetails.getChplProductNumber());
             } catch (EntityRetrievalException ex) {
                 LOGGER.error("Could not get certification status events for listing " + listingDetails.getId());
             }
 
-            LOGGER.info("Getting surveillances for listing " + listingDetails.getChplProductNumber());
+            LOGGER.debug("Getting surveillances for listing " + listingDetails.getChplProductNumber());
             List<Surveillance> surveillances = survManager.getByCertifiedProduct(listingDetails.getId());
             completeListingDetails.setSurveillance(surveillances);
-            LOGGER.info("Got " + completeListingDetails.getSurveillance().size()
+            LOGGER.debug("Got " + completeListingDetails.getSurveillance().size()
                     + " surveillances for listing " + listingDetails.getChplProductNumber());
             relevantListingDetails.add(completeListingDetails);
         }
@@ -653,27 +651,26 @@ public class ActivitiesAndOutcomesWorksheetBuilder extends XlsxWorksheetBuilder 
         return result;
     }
 
-    private Cell addHeadingCell(final Row row, final int cellNum, final String cellText) {
-        Cell cell = createCell(row, cellNum);
-        cell.setCellStyle(wrappedTableHeadingStyle);
+    private Cell addHeadingCell(final SurveillanceReportWorkbookWrapper workbook,
+            final Row row, final int cellNum, final String cellText) {
+        Cell cell = workbook.createCell(row, cellNum, workbook.getWrappedTableHeadingStyle());
         cell.setCellValue(cellText);
         return cell;
     }
 
-    private Cell addRichTextHeadingCell(final Row row, final int cellNum,
+    private Cell addRichTextHeadingCell(final SurveillanceReportWorkbookWrapper workbook, final Row row, final int cellNum,
             final String cellHeading, final String cellSubHeading) {
-        Cell cell = createCell(row, cellNum);
-        cell.setCellStyle(wrappedTableHeadingStyle);
+        Cell cell = workbook.createCell(row, cellNum, workbook.getWrappedTableHeadingStyle());
         RichTextString richTextTitle = new XSSFRichTextString(cellHeading + "\n" + cellSubHeading);
-        richTextTitle.applyFont(0, cellHeading.length(), boldSmallFont);
-        richTextTitle.applyFont(cellHeading.length()+1, richTextTitle.length(), italicSmallFont);
+        richTextTitle.applyFont(0, cellHeading.length(), workbook.getBoldSmallFont());
+        richTextTitle.applyFont(cellHeading.length()+1, richTextTitle.length(), workbook.getItalicSmallFont());
         cell.setCellValue(richTextTitle);
         return cell;
     }
 
-    private Cell addDataCell(final Row row, final int cellNum, final String cellText) {
-        Cell cell = createCell(row, cellNum);
-        cell.setCellStyle(smallStyle);
+    private Cell addDataCell(final SurveillanceReportWorkbookWrapper workbook,
+            final Row row, final int cellNum, final String cellText) {
+        Cell cell = workbook.createCell(row, cellNum);
         cell.setCellValue(cellText);
         return cell;
     }
