@@ -2,6 +2,7 @@ package gov.healthit.chpl.builder;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.poi.ss.usermodel.BorderExtent;
 import org.apache.poi.ss.usermodel.BorderStyle;
@@ -11,6 +12,8 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.PropertyTemplate;
 import org.springframework.stereotype.Component;
+
+import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 
 @Component
 public class SurveillanceSummaryWorksheetBuilder {
@@ -35,7 +38,8 @@ public class SurveillanceSummaryWorksheetBuilder {
      * @param report
      * @return
      */
-    public Sheet buildWorksheet(final SurveillanceReportWorkbookWrapper workbook) throws IOException {
+    public Sheet buildWorksheet(final SurveillanceReportWorkbookWrapper workbook,
+            final List<QuarterlyReportDTO> reports) throws IOException {
         pt = new PropertyTemplate();
 
         //create sheet
@@ -75,9 +79,14 @@ public class SurveillanceSummaryWorksheetBuilder {
         cell.setCellValue("Total");
 
         createSurveillanceCountsSubheadingRow(workbook, sheet, "Surveillance Counts", 2);
+        //number of listings that had an open surveillance during the period of time the reports cover
         createSurveillanceCountsDataRow(workbook, sheet, "Number of Certificates Surveilled",
                 -1, -1, -1, 3);
 
+        //number of surveillances open during the period of time the reports cover using the listed process
+        //a surveillance could potentially have one process during one report period
+        //and a different process during another report period so in that case
+        //the surveillance would be counted in more than one row
         createSurveillanceCountsSubheadingRow(workbook, sheet, "Primary Surveillance Processes", 4);
         createSurveillanceCountsDataRow(workbook, sheet, "In-the-Field",
                 -1, -1, -1, 5);
@@ -90,16 +99,28 @@ public class SurveillanceSummaryWorksheetBuilder {
         createSurveillanceCountsDataRow(workbook, sheet, "Other",
                 -1, -1, -1, 9);
 
+        //number of surveillances open during the period of time the reports cover with the listed outcome
+        //a surveillance could potentially have one outcome during one report period
+        //and a different outcome during another report period so in that case
+        //the surveillance would be counted in more than one row
         createSurveillanceCountsSubheadingRow(workbook, sheet, "Outcome of the Surveillance", 10);
-        createSurveillanceCountsDataRow(workbook, sheet, "Number of Certificates with No Non-Conformities Found",
+        //outcome = No non-conformity
+        createSurveillanceCountsDataRow(workbook, sheet, "Number of Surveillance with No Non-Conformities Found",
                 -1, -1, -1, 11);
-        createSurveillanceCountsDataRow(workbook, sheet, "Number of Certificates with Non-Conformities Found",
+        //outcome = Non-conformity substantiated
+        createSurveillanceCountsDataRow(workbook, sheet, "Number of Surveillance with Non-Conformities Found",
                 -1, -1, -1, 12);
+        //outcome = *Resolved through corrective action
         createSurveillanceCountsDataRow(workbook, sheet, "Number of Corrective Action Plans",
                 -1, -1, -1, 13);
 
+        //number of listings with open surveillance during the period of time the reports
+        //cover with the listed resultant status
+        //a listing could have one resultant status during one report period
+        //and a different resultant status during another report period so in that case
+        //the listing would be counted in more than one row
         createSurveillanceCountsSubheadingRow(workbook, sheet, "Certification Status Resultant of Surveillance", 14);
-        createSurveillanceCountsDataRow(workbook, sheet, "Number of Certificates with a Corrected Non-conformity",
+        createSurveillanceCountsDataRow(workbook, sheet, "Number of Certificates Active",
                 -1, -1, -1, 15);
         createSurveillanceCountsDataRow(workbook, sheet, "Number of Certificates Suspended",
                 -1, -1, -1, 16);

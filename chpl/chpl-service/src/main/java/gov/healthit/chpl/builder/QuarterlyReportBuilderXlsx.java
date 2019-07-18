@@ -17,16 +17,19 @@ public class QuarterlyReportBuilderXlsx {
     private ReportInfoWorksheetBuilder reportInfoWorksheetBuilder;
     private ActivitiesAndOutcomesWorksheetBuilder activitiesAndOutcomesWorksheetBuilder;
     private ComplaintsWorksheetBuilder complaintsWorksheetBuilder;
+    private SurveillanceSummaryWorksheetBuilder summaryWorksheetBuilder;
 
     @Autowired
     public QuarterlyReportBuilderXlsx(final ListWorksheetBuilder listWorksheetBuilder,
             final ReportInfoWorksheetBuilder reportInfoWorksheetBuilder,
             final ActivitiesAndOutcomesWorksheetBuilder activitiesAndOutcomesWorksheetBuilder,
-            final ComplaintsWorksheetBuilder complaintsWorksheetBuilder) {
+            final ComplaintsWorksheetBuilder complaintsWorksheetBuilder,
+            final SurveillanceSummaryWorksheetBuilder summaryWorksheetBuilder) {
         this.listWorksheetBuilder = listWorksheetBuilder;
         this.reportInfoWorksheetBuilder = reportInfoWorksheetBuilder;
         this.activitiesAndOutcomesWorksheetBuilder = activitiesAndOutcomesWorksheetBuilder;
         this.complaintsWorksheetBuilder = complaintsWorksheetBuilder;
+        this.summaryWorksheetBuilder = summaryWorksheetBuilder;
     }
 
     /**
@@ -44,6 +47,7 @@ public class QuarterlyReportBuilderXlsx {
         reportInfoWorksheetBuilder.buildWorksheet(workbook, reports);
         activitiesAndOutcomesWorksheetBuilder.buildWorksheet(workbook, reports);
         complaintsWorksheetBuilder.buildWorksheet(workbook, reports);
+        summaryWorksheetBuilder.buildWorksheet(workbook, reports);
 
         //hide the ListSheet
         workbook.getWorkbook().setSheetHidden(0, true);
