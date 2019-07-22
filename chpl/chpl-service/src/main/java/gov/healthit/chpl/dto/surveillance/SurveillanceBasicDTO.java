@@ -1,4 +1,4 @@
-package gov.healthit.chpl.dto;
+package gov.healthit.chpl.dto.surveillance;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -6,6 +6,7 @@ import java.util.Date;
 import org.springframework.beans.BeanUtils;
 
 import gov.healthit.chpl.domain.surveillance.SurveillanceBasic;
+import gov.healthit.chpl.dto.SurveillanceTypeDTO;
 import gov.healthit.chpl.entity.surveillance.SurveillanceBasicEntity;
 import gov.healthit.chpl.entity.surveillance.report.PrivilegedSurveillanceEntity;
 import gov.healthit.chpl.util.Util;
@@ -41,6 +42,7 @@ public class SurveillanceBasicDTO implements Serializable {
 
     public SurveillanceBasicDTO(final PrivilegedSurveillanceEntity entity) {
         BeanUtils.copyProperties(entity, this);
+        this.id = entity.getSurveillanceId();
         if (entity.getSurveillanceType() != null) {
             this.surveillanceType = new SurveillanceTypeDTO(entity.getSurveillanceType());
         }

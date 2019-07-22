@@ -1,6 +1,6 @@
 package gov.healthit.chpl.dto.surveillance.report;
 
-import gov.healthit.chpl.dto.SurveillanceBasicDTO;
+import gov.healthit.chpl.dto.surveillance.SurveillanceBasicDTO;
 import gov.healthit.chpl.entity.surveillance.SurveillanceBasicEntity;
 import gov.healthit.chpl.entity.surveillance.report.PrivilegedSurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.report.QuarterlyReportSurveillanceMapEntity;
@@ -34,6 +34,7 @@ public class PrivilegedSurveillanceDTO extends SurveillanceBasicDTO {
 
     public PrivilegedSurveillanceDTO(final PrivilegedSurveillanceEntity entity) {
         super(entity);
+        this.setId(entity.getSurveillanceId());
 
         this.k1Reviewed = entity.getK1Reviewed();
         this.groundsForInitiating = entity.getGroundsForInitiating();

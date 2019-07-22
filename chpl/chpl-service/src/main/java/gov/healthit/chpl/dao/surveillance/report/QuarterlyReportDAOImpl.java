@@ -180,7 +180,7 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
             QuarterlyReportRelevantListingDTO relevantListingDto =
                     new QuarterlyReportRelevantListingDTO(listingDetails);
 
-            PrivilegedSurveillanceDTO survDto = new PrivilegedSurveillanceDTO(survEntity);;
+            PrivilegedSurveillanceDTO survDto = new PrivilegedSurveillanceDTO(survEntity);
             if (survEntity.getQuarterlyReportId() == null
                     || survEntity.getQuarterlyReportId().longValue() != quarterlyReport.getId().longValue()) {
                 //the privileged surveillance data is not relevant to this report

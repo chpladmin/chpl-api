@@ -21,14 +21,13 @@ import gov.healthit.chpl.entity.surveillance.SurveillanceTypeEntity;
 @Immutable
 @Table(name = "privileged_surveillance")
 public class PrivilegedSurveillanceEntity {
-
-    /**
-     * This is the surveillance ID
-     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
+
+    @Column(name = "surveillance_id")
+    private Long surveillanceId;
 
     @Column(name = "friendly_id", insertable = false, updatable = false)
     private String friendlyId;
@@ -115,21 +114,20 @@ public class PrivilegedSurveillanceEntity {
     @Column(name = "deleted")
     private Boolean deleted;
 
-    @Column(name = "last_modified_user")
-    private Long lastModifiedUser;
-
-    @Column(name = "creation_date", insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", insertable = false, updatable = false)
-    private Date lastModifiedDate;
-
     public Long getId() {
         return id;
     }
 
     public void setId(final Long id) {
         this.id = id;
+    }
+
+    public Long getSurveillanceId() {
+        return surveillanceId;
+    }
+
+    public void setSurveillanceId(final Long surveillanceId) {
+        this.surveillanceId = surveillanceId;
     }
 
     public String getFriendlyId() {
@@ -346,29 +344,5 @@ public class PrivilegedSurveillanceEntity {
 
     public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    public Date getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
     }
 }

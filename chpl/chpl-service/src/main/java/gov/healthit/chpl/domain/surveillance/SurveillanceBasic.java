@@ -5,7 +5,7 @@ import java.util.Date;
 
 import org.springframework.beans.BeanUtils;
 
-import gov.healthit.chpl.dto.SurveillanceBasicDTO;
+import gov.healthit.chpl.dto.surveillance.SurveillanceBasicDTO;
 import gov.healthit.chpl.util.Util;
 
 public class SurveillanceBasic implements Serializable {

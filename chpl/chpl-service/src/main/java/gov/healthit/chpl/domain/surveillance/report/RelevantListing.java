@@ -7,7 +7,7 @@ import java.util.List;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.surveillance.privileged.PrivilegedSurveillance;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportRelevantListingDTO;
-import gov.healthit.chpl.dto.SurveillanceBasicDTO;
+import gov.healthit.chpl.dto.surveillance.SurveillanceBasicDTO;
 import gov.healthit.chpl.dto.surveillance.report.PrivilegedSurveillanceDTO;
 
 public class RelevantListing extends CertifiedProduct implements Serializable {
