@@ -29,7 +29,6 @@ import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
-import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
@@ -48,7 +47,6 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
     private DeveloperDAO devDao;
     private CertifiedProductDAO cpDao;
     private CertifiedProductDetailsManager cpdManager;
-    private CertificationBodyManager acbManager;
     private ChplProductNumberUtil chplProductNumberUtil;
     private ActivityManager activityManager;
     private ResourcePermissions resourcePermissions;
@@ -56,7 +54,7 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
     @Autowired
     public ProductManagerImpl(final ErrorMessageUtil msgUtil, final ProductDAO productDao,
             final ProductVersionDAO versionDao, final DeveloperDAO devDao, final CertifiedProductDAO cpDao,
-            final CertifiedProductDetailsManager cpdManager, final CertificationBodyManager acbManager,
+            final CertifiedProductDetailsManager cpdManager,
             final ChplProductNumberUtil chplProductNumberUtil, final ActivityManager activityManager,
             final ResourcePermissions resourcePermissions) {
         this.msgUtil = msgUtil;
@@ -65,7 +63,6 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
         this.devDao = devDao;
         this.cpDao = cpDao;
         this.cpdManager = cpdManager;
-        this.acbManager = acbManager;
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.activityManager = activityManager;
         this.resourcePermissions = resourcePermissions;
@@ -73,8 +70,14 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
 
     @Override
     @Transactional(readOnly = true)
+    public ProductDTO getById(final Long id, final boolean allowDeleted) throws EntityRetrievalException {
+        return productDao.getById(id, allowDeleted);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public ProductDTO getById(final Long id) throws EntityRetrievalException {
-        return productDao.getById(id);
+        return getById(id, false);
     }
 
     @Override
@@ -204,7 +207,7 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
         for (CertifiedProductDTO affectedCp : affectedCps) {
             // have to get the cpdetails for before and after code update
             // because that is object sent into activity reports
-            CertifiedProductSearchDetails beforeProduct = cpdManager.getCertifiedProductDetails(affectedCp.getId());
+            CertifiedProductSearchDetails beforeListing = cpdManager.getCertifiedProductDetails(affectedCp.getId());
             // make sure each cp listing associated with the newProduct ->
             // version is owned by an ACB the user has access to
             boolean hasAccessToAcb = false;
@@ -215,13 +218,13 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
             }
             if (!hasAccessToAcb) {
                 throw new AccessDeniedException(
-                        msgUtil.getMessage("acb.accessDenied.listingUpdate", beforeProduct.getChplProductNumber(),
-                                beforeProduct.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY)));
+                        msgUtil.getMessage("acb.accessDenied.listingUpdate", beforeListing.getChplProductNumber(),
+                                beforeListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY)));
             }
 
             // make sure the updated CHPL product number is unique and that the
             // new product code is valid
-            String chplNumber = beforeProduct.getChplProductNumber();
+            String chplNumber = beforeListing.getChplProductNumber();
             if (!chplProductNumberUtil.isLegacy(chplNumber)) {
                 ChplProductNumberParts parts = chplProductNumberUtil.parseChplProductNumber(chplNumber);
                 String potentialChplNumber = chplProductNumberUtil.getChplProductNumber(parts.getEditionCode(),
@@ -242,13 +245,25 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
 
             // do the update and add activity
             cpDao.update(affectedCp);
-            CertifiedProductSearchDetails afterProduct = cpdManager.getCertifiedProductDetails(affectedCp.getId());
-            activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, beforeProduct.getId(),
-                    "Updated certified product " + afterProduct.getChplProductNumber() + ".", beforeProduct,
-                    afterProduct);
+            CertifiedProductSearchDetails afterListing = cpdManager.getCertifiedProductDetails(affectedCp.getId());
+            activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, beforeListing.getId(),
+                    "Updated certified product " + afterListing.getChplProductNumber() + ".", beforeListing,
+                    afterListing);
         }
 
-        return getById(createdProduct.getId());
+        ProductDTO afterProduct = null;
+        //the split is complete - log split activity
+        //getting the original product object from the db to make sure it's all filled in
+        ProductDTO origProduct = getById(oldProduct.getId());
+        afterProduct = getById(createdProduct.getId());
+        List<ProductDTO> splitProducts = new ArrayList<ProductDTO>();
+        splitProducts.add(origProduct);
+        splitProducts.add(afterProduct);
+        activityManager.addActivity(ActivityConcept.PRODUCT, afterProduct.getId(),
+                "Split product " + origProduct.getName() + " into " + origProduct.getName() + " and " + afterProduct.getName(),
+                origProduct, splitProducts);
+
+        return afterProduct;
     }
 
     private ProductDTO updateProduct(final ProductDTO dto)

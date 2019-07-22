@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.domain.activity.ActivityConcept;

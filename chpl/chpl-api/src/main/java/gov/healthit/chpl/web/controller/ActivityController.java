@@ -257,13 +257,13 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get metadata about auditable records in the system for a specific developer.",
-            notes = "A start and end date may optionally be provided to limit activity results.")
+            notes = "A start or end date may optionally be provided to limit activity results.")
     @RequestMapping(value = "/metadata/developers/{id:^-?\\d+$}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForDeveloperById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
-        developerManager.getById(id); // returns 404 if bad id
+        developerManager.getById(id, true); // allows getting activity for deleted developer
 
         //if one of start of end is provided then the other must also be provided.
         //if neither is provided then query all dates
@@ -273,10 +273,10 @@ public class ActivityController {
             validateActivityDates(start, end);
             startDate = new Date(start);
             endDate = new Date(end);
-        } else if (start == null && end != null) {
-            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
-        } else if (start != null && end == null) {
-            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
+        } else if (start != null) {
+            startDate = new Date(start);
+        } else if (end != null) {
+            endDate = new Date(end);
         }
 
         return activityMetadataManager.getActivityMetadataByObject(
@@ -297,13 +297,13 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get metadata about auditable records in the system for a specific product.",
-            notes = "A start and end date may optionally be provided to limit activity results.")
+            notes = "A start or end date may optionally be provided to limit activity results.")
     @RequestMapping(value = "/metadata/products/{id:^-?\\d+$}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForProductById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
-        productManager.getById(id); // returns 404 if bad id
+        productManager.getById(id, true); //allows getting activity for deleted product
 
         //if one of start of end is provided then the other must also be provided.
         //if neither is provided then query all dates
@@ -313,10 +313,10 @@ public class ActivityController {
             validateActivityDates(start, end);
             startDate = new Date(start);
             endDate = new Date(end);
-        } else if (start == null && end != null) {
-            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
-        } else if (start != null && end == null) {
-            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
+        } else if (start != null) {
+            startDate = new Date(start);
+        } else if (end != null) {
+            endDate = new Date(end);
         }
 
         return activityMetadataManager.getActivityMetadataByObject(
@@ -337,13 +337,13 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get metadata about auditable records in the system for a specific version.",
-            notes = "A start and end date may optionally be provided to limit activity results.")
+            notes = "A start or end date may optionally be provided to limit activity results.")
     @RequestMapping(value = "/metadata/versions/{id:^-?\\d+$}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForVersionById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
-        versionManager.getById(id); // returns 404 if bad id
+        versionManager.getById(id, true); //allows getting activity for deleted version
 
         //if one of start of end is provided then the other must also be provided.
         //if neither is provided then query all dates
@@ -353,10 +353,10 @@ public class ActivityController {
             validateActivityDates(start, end);
             startDate = new Date(start);
             endDate = new Date(end);
-        } else if (start == null && end != null) {
-            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
-        } else if (start != null && end == null) {
-            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
+        } else if (start != null) {
+            startDate = new Date(start);
+        } else if (end != null) {
+            endDate = new Date(end);
         }
 
         return activityMetadataManager.getActivityMetadataByObject(
@@ -459,6 +459,69 @@ public class ActivityController {
                 id, startDate, endDate);
     }
 
+    @ApiOperation(value = "Get metadata about auditable records in the system for users.",
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+    @RequestMapping(value = "/metadata/users", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public List<ActivityMetadata> metadataForUsers(@RequestParam final Long start,
+            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
+        Date startDate = new Date(start);
+        Date endDate = new Date(end);
+        validateActivityDatesAndDateRange(start, end);
+        return activityMetadataManager.getUserMaintenanceActivityMetadata(startDate, endDate);
+    }
+    
+    @ApiOperation(value = "Get metadata about auditable records in the system for announcements.",
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results." 
+                    + "Security Restrictions: Anonymous users are only allowed to see activity for public " 
+                    + "announcements.  All other roles can see private and public announcements. ")
+    @RequestMapping(value = "/metadata/announcements", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public List<ActivityMetadata> metadataForAnnouncements(@RequestParam final Long start,
+            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
+        Date startDate = new Date(start);
+        Date endDate = new Date(end);
+        validateActivityDatesAndDateRange(start, end);
+        return activityMetadataManager.getAnnouncementActivityMetadata(startDate, endDate);
+    }
+    
+    @ApiOperation(value = "Get metadata about auditable records in the system for pending listings.",
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+    @RequestMapping(value = "/metadata/pending_listings", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public List<ActivityMetadata> metadataForPendingListings(@RequestParam final Long start,
+            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
+        Date startDate = new Date(start);
+        Date endDate = new Date(end);
+        validateActivityDatesAndDateRange(start, end);
+        return activityMetadataManager.getPendingListingActivityMetadata(startDate, endDate);
+    }
+    
+    @ApiOperation(value = "Get metadata about auditable records in the system for corrective action plans.",
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+    @RequestMapping(value = "/metadata/corrective_action_plans", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public List<ActivityMetadata> metadataForCorrectiveActionPlans(@RequestParam final Long start,
+            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
+        Date startDate = new Date(start);
+        Date endDate = new Date(end);
+        validateActivityDatesAndDateRange(start, end);
+        return activityMetadataManager.getActivityMetadataByConcept(
+                ActivityConcept.CORRECTIVE_ACTION_PLAN, startDate, endDate);
+    }
+    
+    @ApiOperation(value = "Get metadata about auditable records in the system for pending surveillances.",
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+    @RequestMapping(value = "/metadata/pending_surveillances", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public List<ActivityMetadata> metadataForPendingSurveillances(@RequestParam final Long start,
+            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
+        Date startDate = new Date(start);
+        Date endDate = new Date(end);
+        validateActivityDatesAndDateRange(start, end);
+        return activityMetadataManager.getPendingSurveillanceActivityMetadata(startDate, endDate);
+    }
+    
     @Deprecated
     @ApiOperation(value = "DEPRECATED. Get auditable data for certification bodies.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "
@@ -532,7 +595,8 @@ public class ActivityController {
         return activityManager.getAcbActivity(acbs, startDate, endDate);
     }
 
-    @ApiOperation(value = "Get auditable data for all announcements",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED - Get auditable data for all announcements",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date "
                     + "range of the results. Anonymous users will only receive activity for public "
                     + "announcements.")
@@ -545,8 +609,9 @@ public class ActivityController {
         validateActivityDatesAndDateRange(start, end);
         return getActivityEventsForAnnouncements(startDate, endDate);
     }
-
-    @ApiOperation(value = "Get auditable data for a specific announcement",
+    
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED - Get auditable data for a specific announcement",
             notes = "A start and end date may optionally be provided to limit activity results.  "
                     + "Security Restrictions: Anonymous users are only allowed to see activity for public "
                     + "announcements.  All other roles can see private and public announcements.")
@@ -955,7 +1020,8 @@ public class ActivityController {
         return getActivityEventsForVersions(id, startDate, endDate);
     }
 
-    @ApiOperation(value = "Get auditable data about all CHPL user accounts",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED. Get auditable data about all CHPL user accounts",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.  "
                     + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_CMS_STAFF "
                     + "(of ROLE_CMS_STAFF Users), ROLE_ACB (of their own), or ROLE_ATL (of their own).")
@@ -1060,7 +1126,8 @@ public class ActivityController {
         return getActivityEventsForDevelopers(id, startDate, endDate);
     }
 
-    @ApiOperation(value = "Track the actions of all users in the system",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED. Track the actions of all users in the system",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
                     + "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/user_activities", method = RequestMethod.GET,

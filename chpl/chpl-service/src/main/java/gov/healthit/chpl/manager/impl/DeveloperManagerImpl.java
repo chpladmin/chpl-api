@@ -145,8 +145,9 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
 
     @Override
     @Transactional(readOnly = true)
-    public DeveloperDTO getById(final Long id) throws EntityRetrievalException {
-        DeveloperDTO developer = developerDao.getById(id);
+    public DeveloperDTO getById(final Long id, final boolean allowDeleted)
+            throws EntityRetrievalException {
+        DeveloperDTO developer = developerDao.getById(id, allowDeleted);
         List<CertificationBodyDTO> availableAcbs = resourcePermissions.getAllAcbsForCurrentUser();
         if (availableAcbs == null || availableAcbs.size() == 0) {
             availableAcbs = acbManager.getAll();
@@ -170,6 +171,12 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
             }
         }
         return developer;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public DeveloperDTO getById(final Long id) throws EntityRetrievalException {
+        return getById(id, false);
     }
 
     @Override
@@ -556,18 +563,29 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
                 CertifiedProductSearchDetails afterListing = cpdManager
                         .getCertifiedProductDetails(affectedListing.getId());
                 CertifiedProductSearchDetails beforeListing = beforeListingDetails.get(afterListing.getId());
-                activityManager.addActivity(ActivityConcept.DEVELOPER, beforeListing.getId(),
+                activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, beforeListing.getId(),
                         "Updated certified product " + afterListing.getChplProductNumber() + ".", beforeListing,
                         afterListing);
             }
         }
 
-        return getById(createdDeveloper.getId());
+        DeveloperDTO afterDeveloper = null;
+        //the split is complete - log split activity
+        //get the original developer object from the db to make sure it's all filled in
+        DeveloperDTO origDeveloper = getById(oldDeveloper.getId());
+        afterDeveloper = getById(createdDeveloper.getId());
+        List<DeveloperDTO> splitDevelopers = new ArrayList<DeveloperDTO>();
+        splitDevelopers.add(origDeveloper);
+        splitDevelopers.add(afterDeveloper);
+        activityManager.addActivity(ActivityConcept.DEVELOPER, afterDeveloper.getId(),
+                "Split developer " + origDeveloper.getName() + " into " + origDeveloper.getName()
+                + " and " + afterDeveloper.getName(),
+                origDeveloper, splitDevelopers);
+        return afterDeveloper;
     }
 
     /**
      * Clones a list of DeveloperStatusEventDTO.
-     * 
      * @param original
      *            - List<DeveloperStatusEventDTO>
      * @return List<DeveloperStatusEventDTO>

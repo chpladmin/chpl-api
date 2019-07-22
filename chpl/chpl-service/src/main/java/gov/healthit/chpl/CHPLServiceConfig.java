@@ -37,6 +37,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
+import gov.healthit.chpl.job.ExportQuarterlySurveillanceReportJob;
 import gov.healthit.chpl.job.MeaningfulUseUploadJob;
 
 @Configuration
@@ -170,6 +171,11 @@ public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements Enviro
     @Bean
     public MeaningfulUseUploadJob meaningfulUseUploadJob() {
         return new MeaningfulUseUploadJob();
+    }
+
+    @Bean
+    public ExportQuarterlySurveillanceReportJob exportQuarterlySurveillanceReportJob() {
+        return new ExportQuarterlySurveillanceReportJob();
     }
 
     /**

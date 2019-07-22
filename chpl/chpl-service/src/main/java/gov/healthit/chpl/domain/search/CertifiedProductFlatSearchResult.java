@@ -29,6 +29,10 @@ public class CertifiedProductFlatSearchResult extends CertifiedProductSearchResu
     private String cqmsMet; // unicode-char delimited string of cmqs that were
                             // met (any version)
 
+    //unicode-char delimited string of surveillance start and end dates
+    //format is start&end<char>start&
+    private String surveillanceDates;
+
     private String apiDocumentation;
 
     /**
@@ -47,6 +51,7 @@ public class CertifiedProductFlatSearchResult extends CertifiedProductSearchResu
         this.previousDevelopers = other.getPreviousDevelopers();
         this.criteriaMet = other.getCriteriaMet();
         this.cqmsMet = other.getCqmsMet();
+        this.surveillanceDates = other.getSurveillanceDates();
         this.apiDocumentation = other.getApiDocumentation();
     }
 
@@ -80,5 +85,14 @@ public class CertifiedProductFlatSearchResult extends CertifiedProductSearchResu
 
     public void setApiDocumentation(final String apiDocumentation) {
         this.apiDocumentation = apiDocumentation;
+    }
+
+
+    public String getSurveillanceDates() {
+        return surveillanceDates;
+    }
+
+    public void setSurveillanceDates(final String surveillanceDates) {
+        this.surveillanceDates = surveillanceDates;
     }
 }

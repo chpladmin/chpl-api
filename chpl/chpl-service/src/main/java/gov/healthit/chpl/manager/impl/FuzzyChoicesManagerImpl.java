@@ -27,14 +27,14 @@ import me.xdrop.fuzzywuzzy.FuzzySearch;
 import me.xdrop.fuzzywuzzy.model.ExtractedResult;
 
 @Service
-public class FuzzyChoicesManagerImpl extends ApplicationObjectSupport implements FuzzyChoicesManager {
+public class FuzzyChoicesManagerImpl extends SecuredManager implements FuzzyChoicesManager {
 
     @Autowired
     private FuzzyChoicesDAO fuzzyChoicesDao;
     @Autowired
     private Environment env;
 
-    public String getTopFuzzyChoice(String query, FuzzyType type) {
+    public String getTopFuzzyChoice(final String query, final FuzzyType type) {
         int limit = Integer.parseInt(env.getProperty("fuzzyChoiceLimit"));
         int cutoff = Integer.parseInt(env.getProperty("fuzzyChoiceThreshold"));
         List<ExtractedResult> results = null;
@@ -52,20 +52,22 @@ public class FuzzyChoicesManagerImpl extends ApplicationObjectSupport implements
         return result;
     }
 
-    public List<String> getFuzzyChoicesByType(FuzzyType type)
+    public List<String> getFuzzyChoicesByType(final FuzzyType type)
             throws JsonParseException, JsonMappingException, EntityRetrievalException, IOException {
         FuzzyChoicesDTO choices = getByType(type);
         return choices.getChoices();
     }
 
     @Transactional(readOnly = true)
-    public FuzzyChoicesDTO getByType(FuzzyType type)
+    public FuzzyChoicesDTO getByType(final FuzzyType type)
             throws EntityRetrievalException, JsonParseException, JsonMappingException, IOException {
         return fuzzyChoicesDao.getByType(type);
     }
 
     @Transactional
     @Override
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).FUZZY_MATCH, "
+            + "T(gov.healthit.chpl.permissions.domains.FuzzyMatchPermissions).GET_ALL)")
     public Set<FuzzyChoices> getFuzzyChoices() throws EntityRetrievalException, JsonParseException,
     JsonMappingException, IOException {
         List<FuzzyChoicesDTO> fuzzyChoices = fuzzyChoicesDao.findAllTypes();
@@ -78,7 +80,8 @@ public class FuzzyChoicesManagerImpl extends ApplicationObjectSupport implements
 
     @Transactional
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).FUZZY_MATCH, "
+            + "T(gov.healthit.chpl.permissions.domains.FuzzyMatchPermissions).UPDATE)")
     public FuzzyChoices updateFuzzyChoices(final FuzzyChoicesDTO fuzzyChoicesDTO)
         throws EntityRetrievalException, JsonProcessingException, EntityCreationException, IOException {
 

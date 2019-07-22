@@ -125,7 +125,7 @@ public class CertifiedProductDaoTest {
     @Transactional(readOnly = true)
     public void getProductsByVersion() {
         final int expectedListings = 3;
-        Long versionId = BASIC_LISTING_ID;
+        Long versionId = -1L;
         List<CertifiedProductDetailsDTO> products = null;
         products = productDao.getDetailsByVersionId(versionId);
         assertNotNull(products);

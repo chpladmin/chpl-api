@@ -11,6 +11,17 @@
                 <Pattern>%p %C %m%n</Pattern>
             </PatternLayout>
         </Console>
+        <RollingFile name="insertMissingSplitActivityJob"
+            fileName="${logDir}/scheduler/insertMissingSplitActivityJob.log"
+            filePattern="${logDir}/scheduler/history/insertMissingSplitActivityJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
         <RollingFile name="FILE" fileName="${logDir}/chplservice.log"
             filePattern="${logDir}/chplservice-%d{yyyyMMdd}.log">
             <PatternLayout>
@@ -233,6 +244,10 @@
         </Logger>
         <Logger name="org.quartz" level="INFO" additivity="false">
             <AppenderRef ref="STDOUT" />
+        </Logger>
+        <Logger name="insertMissingSplitActivityJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="insertMissingSplitActivityJob" />
         </Logger>
         <Logger name="summaryStatisticsEmailJobLogger" level="INFO"
             additivity="false">

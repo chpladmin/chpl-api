@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -64,6 +66,7 @@ public class DeveloperManagerTest extends TestCase {
     private ProductManager productManager;
     @Autowired
     private DeveloperStatusDAO devStatusDao;
+
     @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
@@ -86,6 +89,11 @@ public class DeveloperManagerTest extends TestCase {
         testUser3.setFriendlyName("User3");
         testUser3.setSubjectName("testUser3");
         testUser3.getPermissions().add(new GrantedPermission("ROLE_ACB"));
+    }
+
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
     }
 
     @Test

@@ -220,67 +220,67 @@
         last_modified_date="2015-09-19 13:15:00"
         creation_date="2015-08-20 13:14:00" deleted="true" />
 
-    <product_version product_version_id="1"
+    <product_version product_version_id="-1"
         product_id="-1" version="1.0.0" last_modified_user="-2"
         last_modified_date="2015-08-20 13:15:00"
         creation_date="2015-08-20 13:14:00" deleted="false" />
-    <product_version product_version_id="2"
+    <product_version product_version_id="-2"
         product_id="-1" version="1.0.1" last_modified_user="-2"
         last_modified_date="2015-08-20 13:15:00"
         creation_date="2015-08-20 13:14:00" deleted="true" />
-    <product_version product_version_id="3"
+    <product_version product_version_id="-3"
         product_id="-1" version="2.0" last_modified_user="-2"
         last_modified_date="2015-08-20 13:15:00"
         creation_date="2015-08-20 13:14:00" deleted="false" />
-    <product_version product_version_id="4"
+    <product_version product_version_id="-4"
         product_id="-1" version="2.0.0.0.1" last_modified_user="-2"
         last_modified_date="2015-08-20 13:15:00"
         creation_date="2015-08-20 13:14:00" deleted="false" />
-    <product_version product_version_id="5"
+    <product_version product_version_id="-5"
         product_id="-2" version="1" last_modified_user="-2"
         last_modified_date="2015-08-20 13:15:00"
         creation_date="2015-08-20 13:14:00" deleted="false" />
-    <product_version product_version_id="6"
+    <product_version product_version_id="-6"
         product_id="-2" version="1.1" last_modified_user="-2"
         last_modified_date="2015-08-20 13:15:00"
         creation_date="2015-08-20 13:14:00" deleted="false" />
-    <product_version product_version_id="7"
+    <product_version product_version_id="-7"
         product_id="-2" version="2" last_modified_user="-2"
         last_modified_date="2015-08-20 13:15:00"
         creation_date="2015-08-20 13:14:00" deleted="false" />
-    <product_version product_version_id="8"
+    <product_version product_version_id="-8"
         product_id="-3" version="0.9alpha" last_modified_user="-2"
         last_modified_date="2015-08-20 13:15:00"
         creation_date="2015-08-20 13:14:00" deleted="false" />
-    <product_version product_version_id="9"
+    <product_version product_version_id="-9"
         product_id="-4" version="0.9 beta" last_modified_user="-2"
         last_modified_date="2015-08-20 13:15:00"
         creation_date="2015-08-20 13:14:00" deleted="false" />
-    <product_version product_version_id="10"
+    <product_version product_version_id="-10"
         product_id="-5" version="0.9 beta" last_modified_user="-2"
         last_modified_date="2015-08-20 13:15:00"
         creation_date="2015-08-20 13:14:00" deleted="true" />
-    <product_version product_version_id="11"
+    <product_version product_version_id="-11"
         product_id="-5" version="1.0 beta" last_modified_user="-2"
         last_modified_date="2015-08-20 13:15:00"
         creation_date="2015-08-20 13:14:00" deleted="false" />
-    <product_version product_version_id="12"
+    <product_version product_version_id="-12"
         product_id="-5" version="1.0.1 beta" last_modified_user="-2"
         last_modified_date="2015-08-20 13:15:00"
         creation_date="2015-08-20 13:14:00" deleted="false" />
-    <product_version product_version_id="13"
+    <product_version product_version_id="-13"
         product_id="-6" version="1.1 beta" last_modified_user="-2"
         last_modified_date="2015-08-20 13:15:00"
         creation_date="2015-08-20 13:14:00" deleted="false" />
-    <product_version product_version_id="14"
+    <product_version product_version_id="-14"
         product_id="-7" version="1.0.0" last_modified_user="-2"
         last_modified_date="2015-08-20 13:15:00"
         creation_date="2015-08-20 13:14:00" deleted="false" />
-    <product_version product_version_id="15"
+    <product_version product_version_id="-15"
         product_id="-8" version="1.0.1" last_modified_user="-2"
         last_modified_date="2015-08-20 13:15:00"
         creation_date="2015-08-20 13:14:00" deleted="false" />
-    <product_version product_version_id="16"
+    <product_version product_version_id="-16"
         product_id="-8" version="1.0.2" last_modified_user="-2"
         last_modified_date="2015-08-20 13:15:00"
         creation_date="2015-08-20 13:14:00" deleted="false" />
@@ -406,7 +406,7 @@
         deleted="false" />
 
     <certified_product certified_product_id="1"
-        certification_edition_id="2" product_version_id="1"
+        certification_edition_id="2" product_version_id="-1"
         certification_body_id="-1" chpl_product_number="CHP-024050"
         report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         sed_report_file_location="http://www.google.com"
@@ -418,7 +418,7 @@
         product_code="IC08" certified_date_code="160402"
         version_code="36" />
     <certified_product certified_product_id="2"
-        certification_edition_id="2" product_version_id="3"
+        certification_edition_id="2" product_version_id="-3"
         certification_body_id="-1" chpl_product_number="CHP-024051"
         report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2015-08-20 13:14:00" last_modified_user="-2"
@@ -428,7 +428,7 @@
         certified_date_code="160402" version_code="36"
         acb_certification_id="abcdef" />
     <certified_product certified_product_id="3"
-        certification_edition_id="1" product_version_id="3"
+        certification_edition_id="1" product_version_id="-3"
         certification_body_id="-1" chpl_product_number="CHP-024052"
         report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2015-08-20 13:14:00" last_modified_user="-2"
@@ -438,7 +438,7 @@
         certified_date_code="160402" version_code="36"
         acb_certification_id="abcdef" />
     <certified_product certified_product_id="4"
-        certification_edition_id="1" product_version_id="9"
+        certification_edition_id="1" product_version_id="-9"
         certification_body_id="-1" chpl_product_number="CHP-024053"
         report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2015-08-20 13:14:00" last_modified_user="-2"
@@ -448,7 +448,7 @@
         certified_date_code="160402" version_code="36"
         acb_certification_id="abcdef" />
     <certified_product certified_product_id="5"
-        certification_edition_id="3" product_version_id="5"
+        certification_edition_id="3" product_version_id="-5"
         certification_body_id="-1" chpl_product_number="CHP-024054"
         report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         sed_report_file_location="http://www.google.com"
@@ -459,7 +459,7 @@
         additional_software_code="1" product_code="IC12"
         certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="6"
-        certification_edition_id="3" product_version_id="6"
+        certification_edition_id="3" product_version_id="-6"
         certification_body_id="-1" chpl_product_number="CHP-024055"
         report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2016-07-15 13:14:00" last_modified_user="-2"
@@ -469,7 +469,7 @@
         additional_software_code="1" product_code="IC13"
         certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="7"
-        certification_edition_id="1" product_version_id="7"
+        certification_edition_id="1" product_version_id="-7"
         certification_body_id="-1"
         report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2016-07-15 13:14:00" last_modified_user="-2"
@@ -479,7 +479,7 @@
         additional_software_code="1" product_code="IC14"
         certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="8"
-        certification_edition_id="2" product_version_id="8"
+        certification_edition_id="2" product_version_id="-8"
         certification_body_id="-2"
         report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
@@ -489,7 +489,7 @@
         additional_software_code="1" product_code="IC15"
         certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="9"
-        certification_edition_id="3" product_version_id="4"
+        certification_edition_id="3" product_version_id="-4"
         certification_body_id="-2" chpl_product_number="CHP-024058"
         report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
@@ -499,7 +499,7 @@
         additional_software_code="1" product_code="IC16"
         certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="10"
-        certification_edition_id="3" product_version_id="1"
+        certification_edition_id="3" product_version_id="-1"
         certification_body_id="-2" ics="false"
         report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
@@ -509,7 +509,7 @@
         ics_code="00" additional_software_code="1" product_code="IC17"
         certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="11"
-        certification_edition_id="3" product_version_id="11"
+        certification_edition_id="3" product_version_id="-11"
         certification_body_id="-2"
         report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
@@ -519,7 +519,7 @@
         acb_certification_id="abcdef" product_code="IC18"
         certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="12"
-        certification_edition_id="3" product_version_id="12"
+        certification_edition_id="3" product_version_id="-12"
         certification_body_id="-2"
         report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
@@ -529,7 +529,7 @@
         additional_software_code="1" product_code="IC19"
         certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="13"
-        certification_edition_id="3" product_version_id="13"
+        certification_edition_id="3" product_version_id="-13"
         certification_body_id="-2"
         report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
@@ -539,7 +539,7 @@
         additional_software_code="1" product_code="IC20"
         certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="14"
-        certification_edition_id="3" product_version_id="14"
+        certification_edition_id="3" product_version_id="-14"
         certification_body_id="-3"
         report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
@@ -549,7 +549,7 @@
         additional_software_code="1" product_code="IC21"
         certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="15"
-        certification_edition_id="3" product_version_id="15"
+        certification_edition_id="3" product_version_id="-15"
         certification_body_id="-4"
         report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
@@ -559,7 +559,7 @@
         additional_software_code="1" product_code="IC22"
         certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="16"
-        certification_edition_id="3" product_version_id="16"
+        certification_edition_id="3" product_version_id="-16"
         certification_body_id="-5"
         report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
@@ -569,7 +569,7 @@
         additional_software_code="1" product_code="IC23"
         certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="17"
-        certification_edition_id="3" product_version_id="16"
+        certification_edition_id="3" product_version_id="-16"
         certification_body_id="-6"
         report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
@@ -579,7 +579,7 @@
         additional_software_code="1" product_code="IC24"
         certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="18"
-        certification_edition_id="3" product_version_id="1"
+        certification_edition_id="3" product_version_id="-1"
         certification_body_id="-5"
         report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
@@ -589,7 +589,7 @@
         additional_software_code="1" product_code="IC24"
         certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="19"
-        certification_edition_id="3" product_version_id="9"
+        certification_edition_id="3" product_version_id="-9"
         certification_body_id="-5"
         report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
@@ -1427,7 +1427,7 @@
         sed_report_file_location="''" sed_intended_user_description=" "
         sed_testing_end="2016-07-07 15:49:23.117772" ics="true"
         practice_type_id="1" vendor_id="-1" vendor_address_id="-1"
-        vendor_contact_id="-1" product_id="-1" product_version_id="1722"
+        vendor_contact_id="-1" product_id="-1" product_version_id="-1722"
         certification_edition_id="2" certification_body_id="-6"
         product_classification_id="1"
         creation_date="2016-04-01 23:46:27.707"
@@ -1457,7 +1457,7 @@
         sed_report_file_location="''" sed_intended_user_description=" "
         sed_testing_end="2016-07-07 15:49:23.117772" ics="true"
         practice_type_id="1" vendor_id="-1" vendor_address_id="-1"
-        vendor_contact_id="-1" product_id="-1" product_version_id="1722"
+        vendor_contact_id="-1" product_id="-1" product_version_id="-1722"
         certification_edition_id="2" certification_body_id="-1"
         product_classification_id="1"
         creation_date="2016-04-01 23:46:27.707"

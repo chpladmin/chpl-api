@@ -74,22 +74,23 @@ public class DeveloperStatusTest {
     @Autowired
     private ChplProductNumberUtil chplProductNumberUtil;
 
-    @Spy 
+    @Spy
     private DeveloperDAO devDao;
-    @Spy 
+    @Spy
     private CertificationBodyManager acbManager;
-    @Spy 
+    @Spy
     private CertifiedProductManager cpManager;
-    @Spy 
+    @Spy
     private CertifiedProductDetailsManager cpdManager;
-    @Spy 
+    @Spy
     private ActivityManager activityManager;
-    @Spy 
+    @Spy
     private DeveloperCreationValidator creationValidator;
-    @Spy 
+    @Spy
     private DeveloperUpdateValidator updateValidator;
-    @Spy 
+    @Spy
     private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
+
     @Mock
     private ResourcePermissions permissionChecker;
 
@@ -129,6 +130,11 @@ public class DeveloperStatusTest {
             Mockito.when(devDao.getById(ArgumentMatchers.anyLong())).thenReturn(activeDeveloper);
         } catch (EntityRetrievalException ex) {
         }
+        try {
+            Mockito.when(devDao.getById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+            .thenReturn(activeDeveloper);
+        } catch (EntityRetrievalException ex) {
+        }
 
         DeveloperDTO activeToSuspendedDeveloper = createDeveloper(1L, "0001", "Test Developer");
         activeToSuspendedDeveloper.getStatusEvents().add(createStatusEvent(2L, activeToSuspendedDeveloper.getId(),
@@ -148,6 +154,11 @@ public class DeveloperStatusTest {
         DeveloperDTO activeDeveloper = createDeveloper(1L, "0001", "Test Developer");
         try {
             Mockito.when(devDao.getById(ArgumentMatchers.anyLong())).thenReturn(activeDeveloper);
+        } catch (EntityRetrievalException ex) {
+        }
+        try {
+            Mockito.when(devDao.getById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+            .thenReturn(activeDeveloper);
         } catch (EntityRetrievalException ex) {
         }
 
@@ -175,6 +186,11 @@ public class DeveloperStatusTest {
             Mockito.when(devDao.getById(ArgumentMatchers.anyLong())).thenReturn(activeDeveloperWithStatusHistory);
         } catch (EntityRetrievalException ex) {
         }
+        try {
+            Mockito.when(devDao.getById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+            .thenReturn(activeDeveloperWithStatusHistory);
+        } catch (EntityRetrievalException ex) {
+        }
 
         activeDeveloperWithStatusHistory.setName("New Name");
         developerManager.update(activeDeveloperWithStatusHistory, false);
@@ -188,6 +204,12 @@ public class DeveloperStatusTest {
         DeveloperDTO activeDeveloper = createDeveloper(1L, "0001", "Test Developer");
         try {
             Mockito.when(devDao.getById(ArgumentMatchers.anyLong())).thenReturn(activeDeveloper);
+        } catch (EntityRetrievalException ex) {
+        }
+
+        try {
+            Mockito.when(devDao.getById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+            .thenReturn(activeDeveloper);
         } catch (EntityRetrievalException ex) {
         }
 
@@ -206,6 +228,12 @@ public class DeveloperStatusTest {
         DeveloperDTO activeDeveloper = createDeveloper(1L, "0001", "Test Developer");
         try {
             Mockito.when(devDao.getById(ArgumentMatchers.anyLong())).thenReturn(activeDeveloper);
+        } catch (EntityRetrievalException ex) {
+        }
+
+        try {
+            Mockito.when(devDao.getById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+            .thenReturn(activeDeveloper);
         } catch (EntityRetrievalException ex) {
         }
 

@@ -141,6 +141,10 @@
         <class>gov.healthit.chpl.entity.surveillance.SurveillanceRequirementTypeEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.SurveillanceResultTypeEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.SurveillanceTypeEntity</class>
+        <class>gov.healthit.chpl.entity.surveillance.report.AnnualReportEntity</class>
+        <class>gov.healthit.chpl.entity.surveillance.report.QuarterEntity</class>
+        <class>gov.healthit.chpl.entity.surveillance.report.QuarterlyReportEntity</class>
+        <class>gov.healthit.chpl.entity.surveillance.report.QuarterlyReportExcludedListingMapEntity</class>
         <properties>
             <property name="hibernate.show_sql" value="false" />
             <property name="hibernate.format_sql" value="false" />

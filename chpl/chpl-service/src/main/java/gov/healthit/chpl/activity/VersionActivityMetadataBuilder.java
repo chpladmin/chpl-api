@@ -13,8 +13,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.domain.activity.ActivityCategory;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
+import gov.healthit.chpl.domain.activity.ProductActivityMetadata;
 import gov.healthit.chpl.domain.activity.VersionActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
+import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 
@@ -31,7 +33,7 @@ public class VersionActivityMetadataBuilder extends ActivityMetadataBuilder {
         this.productDao = productDao;
     }
 
-    protected void addConceptSpecificMetadata(final ActivityDTO dto, final ActivityMetadata metadata) {
+    protected void addConceptSpecificMetadata(final ActivityDTO activity, final ActivityMetadata metadata) {
         if (!(metadata instanceof VersionActivityMetadata)) {
             return;
         }
@@ -42,49 +44,73 @@ public class VersionActivityMetadataBuilder extends ActivityMetadataBuilder {
         //otherwise we expect it to be a single ProductVersionDTO.
         ProductVersionDTO origVersion = null;
         List<ProductVersionDTO> origVersions = null;
-        if (dto.getOriginalData() != null) {
+        if (activity.getOriginalData() != null) {
             try {
                 origVersion =
-                    jsonMapper.readValue(dto.getOriginalData(), ProductVersionDTO.class);
+                    jsonMapper.readValue(activity.getOriginalData(), ProductVersionDTO.class);
             } catch (final Exception ignore) { }
 
             if (origVersion == null) {
                 try {
-                    origVersions =
-                            jsonMapper.readValue(dto.getOriginalData(), List.class);
+                    origVersions = jsonMapper.readValue(activity.getOriginalData(),
+                            jsonMapper.getTypeFactory().constructCollectionType(List.class, ProductVersionDTO.class));
                 } catch (Exception ignore) { }
             }
 
             if (origVersion == null && origVersions == null) {
-                LOGGER.error("Could not parse activity ID " + dto.getId() + " original data "
+                LOGGER.error("Could not parse activity ID " + activity.getId() + " original data "
                         + "as ProductVersionDTO or List<ProductVersionDTO>. "
-                        + "JSON was: " + dto.getOriginalData());
+                        + "JSON was: " + activity.getOriginalData());
             }
         }
 
         ProductVersionDTO newVersion = null;
-        if (dto.getNewData() != null) {
+        List<ProductVersionDTO> newVersions = null;
+        if (activity.getNewData() != null) {
             try {
                 newVersion =
-                    jsonMapper.readValue(dto.getNewData(), ProductVersionDTO.class);
-            } catch (final Exception ex) {
-                LOGGER.error("Could not parse activity ID " + dto.getId() + " new data. "
-                        + "JSON was: " + dto.getNewData(), ex);
+                    jsonMapper.readValue(activity.getNewData(), ProductVersionDTO.class);
+            } catch (final Exception ignore) { }
+
+            if (newVersion == null) {
+                try {
+                    newVersions = jsonMapper.readValue(activity.getNewData(),
+                            jsonMapper.getTypeFactory().constructCollectionType(List.class, ProductVersionDTO.class));
+                } catch (Exception ignore) { }
+            }
+
+            if (newVersion == null && newVersions == null) {
+                LOGGER.error("Could not parse activity ID " + activity.getId() + " new data "
+                        + "as ProductVersionDTO or List<ProductVersionDTO>. "
+                        + "JSON was: " + activity.getNewData());
             }
         }
 
-        if (newVersion != null) {
-            //if there is a new version that could mean the version
-            //was updated and we want to fill in the metadata with the
-            //latest version info
+        if (newVersion != null && origVersion != null
+                && newVersions == null && origVersions == null) {
+            //if there is a single new version and single original version
+            //that means the activity was editing the version
             parseVersionMetadata(versionMetadata, newVersion);
-        } else if (origVersion != null) {
+        } else if (origVersion != null && newVersion == null
+                && newVersions == null && origVersions == null) {
             //if there is an original version but no new version
             //then the version was deleted - pull its info from the orig object
             parseVersionMetadata(versionMetadata, origVersion);
-        } else if (origVersions != null && origVersions.size() > 0) {
-            //could be multiple origVersions on a merge action
-            parseVersionMetadata(versionMetadata, origVersions.get(0));
+        } else if (newVersion != null && origVersion == null
+                && newVersions == null && origVersions == null) {
+            //if there is a new version but no original version
+            //then the version was just created
+            parseVersionMetadata(versionMetadata, newVersion);
+        } else if (newVersions != null && origVersion != null
+                && newVersion == null && origVersions == null) {
+            //multiple new versions and a single original version
+            //means the activity was a split
+            parseVersionMetadata(versionMetadata, activity, newVersions);
+        } else if (origVersions != null && newVersion != null
+                && origVersion == null && newVersions == null) {
+            //multiple original versions and a single new version
+            //means the activity was a merge
+            parseVersionMetadata(versionMetadata, newVersion);
         }
 
         versionMetadata.getCategories().add(ActivityCategory.VERSION);
@@ -106,5 +132,17 @@ public class VersionActivityMetadataBuilder extends ActivityMetadataBuilder {
             }
         }
         versionMetadata.setVersion(version.getVersion());
+    }
+
+    private void parseVersionMetadata(
+            final VersionActivityMetadata versionMetadata, final ActivityDTO activity,
+            final List<ProductVersionDTO> versions) {
+        Long idToFind = activity.getActivityObjectId();
+        for (ProductVersionDTO currVersion : versions) {
+            if(currVersion.getId().longValue() == idToFind.longValue()) {
+                parseVersionMetadata(versionMetadata, currVersion);
+                break;
+            }
+        }
     }
 }

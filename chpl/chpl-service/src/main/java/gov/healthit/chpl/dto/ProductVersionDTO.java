@@ -25,7 +25,7 @@ public class ProductVersionDTO implements Serializable {
     public ProductVersionDTO() {
     }
 
-    public ProductVersionDTO(ProductVersionEntity entity) {
+    public ProductVersionDTO(final ProductVersionEntity entity) {
         if (entity != null) {
             this.id = entity.getId();
             this.creationDate = entity.getCreationDate();
@@ -36,10 +36,12 @@ public class ProductVersionDTO implements Serializable {
             if (entity.getProduct() != null) {
                 this.productId = entity.getProduct().getId();
                 this.productName = entity.getProduct().getName();
-                if(entity.getProduct().getDeveloper() != null) {
+                if (entity.getProduct().getDeveloper() != null) {
                     this.developerId = entity.getProduct().getDeveloper().getId();
                     this.developerName = entity.getProduct().getDeveloper().getName();
                 }
+            } else if (entity.getProductId() != null) {
+                this.productId = entity.getProductId();
             }
         }
     }

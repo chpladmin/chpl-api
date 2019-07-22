@@ -1,8 +1,11 @@
 package gov.healthit.chpl.dto.auth;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.entity.auth.UserPermissionEntity;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserPermissionDTO {
     private Long id;
     private String authority;

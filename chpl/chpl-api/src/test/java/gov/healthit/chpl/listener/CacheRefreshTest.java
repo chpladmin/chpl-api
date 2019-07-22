@@ -30,7 +30,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
-import gov.healthit.chpl.dao.SurveillanceDAO;
+import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatus;
@@ -243,12 +243,12 @@ public class CacheRefreshTest extends TestCase {
 
         //update the version
         //should trigger the cache refresh
-        ProductVersion versionToUpdate = versionController.getProductVersionById(3L);
+        ProductVersion versionToUpdate = versionController.getProductVersionById(-3L);
         UpdateVersionsRequest req = new UpdateVersionsRequest();
         versionToUpdate.setVersion("2.0.Updated");
         req.setVersion(versionToUpdate);
         List<Long> idsToUpdate = new ArrayList<Long>();
-        idsToUpdate.add(3L);
+        idsToUpdate.add(-3L);
         req.setVersionIds(idsToUpdate);
         versionController.updateVersion(req);
 
