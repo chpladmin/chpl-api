@@ -213,7 +213,9 @@ public class SurveillanceSummaryWorksheetBuilder {
 
         List<SurveillanceOutcomeDTO> allOutcomes = privSurvDao.getSurveillanceOutcomes();
         List<SurveillanceOutcomeDTO> outcomes = new ArrayList<SurveillanceOutcomeDTO>();
-        int i = 0;
+
+        //outcome = No non-conformity
+        i = 0;
         for (SurveillanceOutcomeDTO outcome : allOutcomes) {
             if (outcome.getName().equals(OUTCOME_TYPE_NO_NC)) {
                 SurveillanceOutcomeDTO removed = allOutcomes.remove(i);
@@ -221,17 +223,43 @@ public class SurveillanceSummaryWorksheetBuilder {
             }
             i++;
         }
-        SurveillanceSummaryDTO procTypeSummary =
-                summaryDao.getCountOfSurveillanceProcessTypesBySurveillanceType(acbId, procTypes, startDate, endDate);
-        //outcome = No non-conformity
+        SurveillanceSummaryDTO outcomeSummary =
+                summaryDao.getCountOfSurveillanceOutcomesBySurveillanceType(acbId, outcomes, startDate, endDate);
         createSurveillanceCountsDataRow(workbook, sheet, "Number of Surveillance with No Non-Conformities Found",
-                -1, -1, -1, 11);
-        //outcome = Non-conformity substantiated
+                outcomeSummary.getReactiveCount(), outcomeSummary.getRandomizedCount(),
+                outcomeSummary.getReactiveCount() + outcomeSummary.getRandomizedCount(), 11);
+
+        //outcome = Non-conformity substantiated*
+        outcomes.clear();
+        i = 0;
+        for (SurveillanceOutcomeDTO outcome : allOutcomes) {
+            if (outcome.getName().startsWith(OUTCOME_TYPE_NC)) {
+                SurveillanceOutcomeDTO removed = allOutcomes.remove(i);
+                outcomes.add(removed);
+            }
+            i++;
+        }
+        outcomeSummary =
+                summaryDao.getCountOfSurveillanceOutcomesBySurveillanceType(acbId, outcomes, startDate, endDate);
         createSurveillanceCountsDataRow(workbook, sheet, "Number of Surveillance with Non-Conformities Found",
-                -1, -1, -1, 12);
+                outcomeSummary.getReactiveCount(), outcomeSummary.getRandomizedCount(),
+                outcomeSummary.getReactiveCount() + outcomeSummary.getRandomizedCount(), 12);
+
         //outcome = *Resolved through corrective action
+        outcomes.clear();
+        i = 0;
+        for (SurveillanceOutcomeDTO outcome : allOutcomes) {
+            if (outcome.getName().endsWith(OUTCOME_TYPE_CAP)) {
+                SurveillanceOutcomeDTO removed = allOutcomes.remove(i);
+                outcomes.add(removed);
+            }
+            i++;
+        }
+        outcomeSummary =
+                summaryDao.getCountOfSurveillanceOutcomesBySurveillanceType(acbId, outcomes, startDate, endDate);
         createSurveillanceCountsDataRow(workbook, sheet, "Number of Corrective Action Plans",
-                -1, -1, -1, 13);
+                outcomeSummary.getReactiveCount(), outcomeSummary.getRandomizedCount(),
+                outcomeSummary.getReactiveCount() + outcomeSummary.getRandomizedCount(), 13);
 
         //number of listings with open surveillance during the period of time the reports
         //cover with the listed resultant status
