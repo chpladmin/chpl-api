@@ -103,6 +103,7 @@
         <class>gov.healthit.chpl.entity.listing.CertifiedProductTargetedUserEntity</class>
         <class>gov.healthit.chpl.entity.listing.CertifiedProductTestingLabMapEntity</class>
         <class>gov.healthit.chpl.entity.listing.ListingToListingMapEntity</class>
+        <class>gov.healthit.chpl.entity.listing.ListingWithPrivilegedSurveillanceEntity</class>
         <class>gov.healthit.chpl.entity.listing.TestTaskParticipantMapEntity</class>
         <class>gov.healthit.chpl.entity.listing.pending.PendingCertificationResultAdditionalSoftwareEntity</class>
         <class>gov.healthit.chpl.entity.listing.pending.PendingCertificationResultEntity</class>

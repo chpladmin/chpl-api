@@ -255,8 +255,7 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
         }
 
         //confirm that the specified listing is relevant to the report
-        boolean isRelevant =
-                quarterlyDao.isListingRelevant(listingId, report.getStartDate(), report.getEndDate());
+        boolean isRelevant = quarterlyDao.isListingRelevant(report.getAcb().getId(), listingId);
         if (!isRelevant) {
             throw new EntityCreationException(
                     msgUtil.getMessage("report.quarterlySurveillance.exclusion.notRelevant", listingId, report.getQuarter().getName()));
@@ -306,6 +305,13 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
     public PrivilegedSurveillanceDTO createOrUpdateQuarterlyReportSurveillanceMap(
             final PrivilegedSurveillanceDTO toUpdate)
             throws EntityCreationException, EntityRetrievalException {
+        // make sure passed-in surveillance is relevant to the report i.e. that it was open at some point
+        //during the reporting period
+        if (!quarterlyDao.isSurveillanceRelevant(toUpdate.getQuarterlyReport(), toUpdate.getId())) {
+            throw new EntityCreationException(
+                    msgUtil.getMessage("report.quarterlySurveillance.surveillance.notRelevant",
+                            toUpdate.getFriendlyId(), toUpdate.getQuarterlyReport().getQuarter().getName()));
+        }
         PrivilegedSurveillanceDTO existing = quarterlySurvMapDao.getByReportAndSurveillance(
                 toUpdate.getQuarterlyReport().getId(),
                 toUpdate.getId());
@@ -399,7 +405,7 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
             + "#report)")
     public QuarterlyReportRelevantListingDTO getRelevantListing(final QuarterlyReportDTO report, final Long listingId) {
         QuarterlyReportRelevantListingDTO relevantListing =
-                quarterlyDao.getRelevantListing(listingId, report.getStartDate(), report.getEndDate());
+                quarterlyDao.getRelevantListing(listingId, report);
         if (relevantListing != null) {
             QuarterlyReportExclusionDTO existingExclusion =
                     quarterlyDao.getExclusion(report.getId(), relevantListing.getId());

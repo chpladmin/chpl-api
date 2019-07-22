@@ -62,8 +62,8 @@ public class ListingWithPrivilegedSurveillanceEntity {
     @Column(name = "certification_body_code")
     private String certificationBodyCode;
 
-    @Column(name = "acb_is_retired")
-    private Boolean acbIsRetired;
+    @Column(name = "certification_date")
+    private Date certificationDate;
 
     @Column(name = "last_modified_date")
     private Date lastModifiedDate;
@@ -149,14 +149,6 @@ public class ListingWithPrivilegedSurveillanceEntity {
         this.certificationBodyCode = certificationBodyCode;
     }
 
-    public Boolean getAcbIsRetired() {
-        return acbIsRetired;
-    }
-
-    public void setAcbIsRetired(final Boolean acbIsRetired) {
-        this.acbIsRetired = acbIsRetired;
-    }
-
     public Date getLastModifiedDate() {
         return lastModifiedDate;
     }
@@ -179,5 +171,13 @@ public class ListingWithPrivilegedSurveillanceEntity {
 
     public void setSurveillances(final Set<PrivilegedSurveillanceEntity> surveillances) {
         this.surveillances = surveillances;
+    }
+
+    public Date getCertificationDate() {
+        return certificationDate;
+    }
+
+    public void setCertificationDate(final Date certificationDate) {
+        this.certificationDate = certificationDate;
     }
 }

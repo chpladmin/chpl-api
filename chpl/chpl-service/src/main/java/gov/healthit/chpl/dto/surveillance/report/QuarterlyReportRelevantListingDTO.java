@@ -5,6 +5,8 @@ import java.util.List;
 
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
+import gov.healthit.chpl.entity.listing.ListingWithPrivilegedSurveillanceEntity;
+import gov.healthit.chpl.entity.surveillance.report.PrivilegedSurveillanceEntity;
 
 public class QuarterlyReportRelevantListingDTO extends CertifiedProductDetailsDTO {
     private static final long serialVersionUID = -2198910382314894675L;
@@ -20,6 +22,26 @@ public class QuarterlyReportRelevantListingDTO extends CertifiedProductDetailsDT
     public QuarterlyReportRelevantListingDTO(final CertifiedProductDetailsEntity entity) {
         super(entity);
         this.surveillances = new ArrayList<>();
+    }
+
+    public QuarterlyReportRelevantListingDTO(final ListingWithPrivilegedSurveillanceEntity entity) {
+        this.setId(entity.getId());
+        this.setChplProductNumber(entity.getChplProductNumber());
+        this.setCertificationBodyId(entity.getCertificationBodyId());
+        this.setCertificationBodyName(entity.getCertificationBodyName());
+        this.setCertificationBodyCode(entity.getCertificationBodyCode());
+        this.setCertificationEditionId(entity.getCertificationEditionId());
+        this.setYear(entity.getYear());
+        this.setCertificationStatusId(entity.getCertificationStatusId());
+        this.setCertificationStatusName(entity.getCertificationStatusName());
+        this.setCertificationDate(entity.getCertificationDate());
+        this.setLastModifiedDate(entity.getLastModifiedDate());
+        this.surveillances = new ArrayList<PrivilegedSurveillanceDTO>();
+        if (entity.getSurveillances() != null && entity.getSurveillances().size() > 0) {
+            for (PrivilegedSurveillanceEntity entitySurv : entity.getSurveillances()) {
+                this.surveillances.add(new PrivilegedSurveillanceDTO(entitySurv));
+            }
+        }
     }
 
     public boolean isExcluded() {

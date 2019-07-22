@@ -1,6 +1,5 @@
 package gov.healthit.chpl.dao.surveillance.report;
 
-import java.util.Date;
 import java.util.List;
 
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
@@ -15,10 +14,11 @@ public interface QuarterlyReportDAO {
     public List<QuarterlyReportDTO> getByAcb(Long acbId);
     public List<QuarterlyReportDTO> getAll();
     public QuarterlyReportDTO getById(Long id) throws EntityRetrievalException;
-    public boolean isListingRelevant(Long listingId, Date startDate, Date endDate);
+    public boolean isListingRelevant(Long acbId, Long listingId);
+    public boolean isSurveillanceRelevant(QuarterlyReportDTO quarterlyReport, Long survId);
     public List<QuarterlyReportRelevantListingDTO> getListingsWithRelevantSurveillance(QuarterlyReportDTO quarterlyReport);
     public List<QuarterlyReportRelevantListingDTO> getRelevantListings(QuarterlyReportDTO quarterlyReport);
-    public QuarterlyReportRelevantListingDTO getRelevantListing(Long listingId, Date startDate, Date endDate);
+    public QuarterlyReportRelevantListingDTO getRelevantListing(Long listingId, QuarterlyReportDTO quarterlyReport);
     public List<QuarterlyReportExclusionDTO> getExclusions(Long quarterlyReportId);
     public QuarterlyReportExclusionDTO getExclusion(Long quarterlyReportId, Long listingId);
     public QuarterlyReportDTO create(QuarterlyReportDTO toCreate) throws EntityCreationException;
