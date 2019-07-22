@@ -1,5 +1,18 @@
 # Release Notes
 
+## Version 21.3.0
+_22 July 2019_
+
+## New Features
+* Add three more optional fields to the /collections/certified_products endpoint.
+  * openSurveillanceCount, closedSurveillanceCount, surveillanceDates
+* Remove insertMissingSplitActivity quartz job
+* Add new endpoint for activity metadata for announcements. Endpoint is:
+  * /activity/metadata/announcements
+
+---
+
+
 ## Version 21.2.0
 _17 June 2019_
 
