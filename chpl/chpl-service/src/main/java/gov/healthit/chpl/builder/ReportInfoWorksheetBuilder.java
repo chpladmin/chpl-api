@@ -273,7 +273,7 @@ public class ReportInfoWorksheetBuilder {
         //Using a linked hash map to maintain insertion order.. also only doing the map thing
         //in case the same listing is excluded across multiple quarters so we can combine it in the printed table.
         for (QuarterlyReportDTO report : reports) {
-            List<QuarterlyReportRelevantListingDTO> relevantListings = reportManager.getRelevantListings(report);
+            List<QuarterlyReportRelevantListingDTO> relevantListings = reportManager.getListingsWithRelevantSurveillance(report);
             for (QuarterlyReportRelevantListingDTO relevantListing : relevantListings) {
                 if (relevantListing.isExcluded()) {
                     QuarterlyExclusionReason reason =

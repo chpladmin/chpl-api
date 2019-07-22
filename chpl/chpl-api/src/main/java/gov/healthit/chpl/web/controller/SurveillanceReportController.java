@@ -205,7 +205,8 @@ public class SurveillanceReportController {
     }
 
     @ApiOperation(value = "Get listings that are relevant to a specific quarterly report. "
-            + "These are listings that had surveillance during the quarter.",
+            + "These are listings belonging to the ACB associtaed with the report "
+            + "that had a status of <TBD>. at any point during the quarter",
             notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative "
                     + "authority on the ACB associated with the report.")
     @RequestMapping(value = "/quarterly/{quarterlyReportId}/listings",

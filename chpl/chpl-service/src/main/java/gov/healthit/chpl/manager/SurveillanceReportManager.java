@@ -44,6 +44,7 @@ public interface SurveillanceReportManager {
     public QuarterlyReportExclusionDTO getExclusion(QuarterlyReportDTO report, Long listingId);
     public QuarterlyReportRelevantListingDTO getRelevantListing(QuarterlyReportDTO report, Long listingId);
     public List<QuarterlyReportRelevantListingDTO> getRelevantListings(QuarterlyReportDTO report);
+    public List<QuarterlyReportRelevantListingDTO> getListingsWithRelevantSurveillance(QuarterlyReportDTO report);
     public QuarterlyReportDTO getQuarterlyReport(Long id) throws EntityRetrievalException;
     public JobDTO exportQuarterlyReportAsBackgroundJob(Long id)
             throws EntityRetrievalException, EntityCreationException, UserRetrievalException, IOException;

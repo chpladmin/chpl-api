@@ -18,6 +18,7 @@ import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportExclusionDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportRelevantListingDTO;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
+import gov.healthit.chpl.entity.listing.ListingWithPrivilegedSurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceBasicEntity;
 import gov.healthit.chpl.entity.surveillance.report.PrivilegedSurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.report.QuarterlyReportEntity;
@@ -152,7 +153,7 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
      */
     @Override
     @Transactional(readOnly = true)
-    public List<QuarterlyReportRelevantListingDTO> getRelevantListings(final QuarterlyReportDTO quarterlyReport) {
+    public List<QuarterlyReportRelevantListingDTO> getListingsWithRelevantSurveillance(final QuarterlyReportDTO quarterlyReport) {
         String queryStr = "SELECT DISTINCT cp, surv "
                 + "FROM CertifiedProductDetailsEntity cp, PrivilegedSurveillanceEntity surv "
                 + "LEFT JOIN FETCH surv.surveillanceType "
@@ -238,6 +239,61 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
             relevantListing.getSurveillances().add(survInfo);
         }
         return relevantListing;
+    }
+
+    /**
+     * Returns listings owned by the ACB
+     * @param quarterly report return listings owned by this acb
+     * @return
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<QuarterlyReportRelevantListingDTO> getRelevantListings(final QuarterlyReportDTO quarterlyReport) {
+        String queryStr = "SELECT DISTINCT listing "
+                + "FROM ListingWithPrivilegedSurveillanceEntity listing "
+                + "LEFT JOIN FETCH listing.surveillances surv "
+                + "LEFT JOIN FETCH surv.surveillanceType "
+                + "LEFT JOIN FETCH surv.quarterlyReport "
+                + "LEFT JOIN FETCH surv.surveillanceOutcome "
+                + "LEFT JOIN FETCH surv.surveillanceProcessType "
+                + "WHERE cp.certificationBodyId = :acbId "
+                //TBD any restriction on status?
+                + "AND cp.deleted = false ";
+        Query query = entityManager.createQuery(queryStr);
+        query.setParameter("acbId", quarterlyReport.getAcb().getId());
+        List<ListingWithPrivilegedSurveillanceEntity> entities = query.getResultList();
+
+        List<QuarterlyReportRelevantListingDTO> uniqueRelevantListings =
+                new ArrayList<QuarterlyReportRelevantListingDTO>();
+        for (Object[] entity : entities) {
+            CertifiedProductDetailsEntity listingDetails = (CertifiedProductDetailsEntity) entity[0];
+            PrivilegedSurveillanceEntity survEntity = (PrivilegedSurveillanceEntity) entity[1];
+            QuarterlyReportRelevantListingDTO relevantListingDto =
+                    new QuarterlyReportRelevantListingDTO(listingDetails);
+
+            PrivilegedSurveillanceDTO survDto = new PrivilegedSurveillanceDTO(survEntity);
+            if (survEntity.getQuarterlyReportId() == null
+                    || survEntity.getQuarterlyReportId().longValue() != quarterlyReport.getId().longValue()) {
+                //the privileged surveillance data is not relevant to this report
+                //so remove it
+                survDto.clearPrivilegedFields();
+            }
+
+            if (!uniqueRelevantListings.contains(relevantListingDto)) {
+                relevantListingDto.getSurveillances().add(survDto);
+                uniqueRelevantListings.add(relevantListingDto);
+            } else {
+                //find the existing listing in the set and add the surveillance to it
+                for (QuarterlyReportRelevantListingDTO existingListing : uniqueRelevantListings) {
+                    if (existingListing.equals(relevantListingDto)) {
+                        if (!existingListing.getSurveillances().contains(survDto)) {
+                            existingListing.getSurveillances().add(survDto);
+                        }
+                    }
+                }
+            }
+        }
+        return uniqueRelevantListings;
     }
 
     /**

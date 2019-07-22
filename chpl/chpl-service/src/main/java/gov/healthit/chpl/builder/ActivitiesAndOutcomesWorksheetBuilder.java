@@ -484,7 +484,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
             //the details object included on the quarterly report has some of the data that is needed
             //to build activities and outcomes worksheet but not all of it so we need to do
             //some other work to get the necessary data and put it all together
-            List<QuarterlyReportRelevantListingDTO> qrRelevantListings = reportManager.getRelevantListings(currReport);
+            List<QuarterlyReportRelevantListingDTO> qrRelevantListings = reportManager.getListingsWithRelevantSurveillance(currReport);
             List<QuarterlyReportRelevantListingDTO> missingListingDtos = new ArrayList<QuarterlyReportRelevantListingDTO>();
             for (QuarterlyReportRelevantListingDTO listingFromReport : qrRelevantListings) {
                 boolean alreadyGotDetails = false;

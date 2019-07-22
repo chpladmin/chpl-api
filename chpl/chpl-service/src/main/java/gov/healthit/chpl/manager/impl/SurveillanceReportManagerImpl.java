@@ -413,7 +413,7 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
     }
 
     /**
-     * Returns the listings that had open surveillance during the quarter
+     * Returns the listings owned by the ACB associated with the report
      * included boolean fields about whether they are marked as excluded.
      */
     @Override
@@ -423,6 +423,36 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
             + "#report)")
     public List<QuarterlyReportRelevantListingDTO> getRelevantListings(final QuarterlyReportDTO report) {
         List<QuarterlyReportRelevantListingDTO> relevantListings = quarterlyDao.getRelevantListings(report);
+        List<QuarterlyReportExclusionDTO> exclusions = quarterlyDao.getExclusions(report.getId());
+
+        //look at each relevant listing to see if it's been marked as excluded
+        List<QuarterlyReportRelevantListingDTO> results = new ArrayList<QuarterlyReportRelevantListingDTO>();
+        for (CertifiedProductDetailsDTO relevantListing : relevantListings) {
+            QuarterlyReportRelevantListingDTO qrRelevantListing = (QuarterlyReportRelevantListingDTO) relevantListing;
+            for (QuarterlyReportExclusionDTO exclusion : exclusions) {
+                if (exclusion.getListingId() != null && relevantListing.getId() != null
+                        && exclusion.getListingId().longValue() == relevantListing.getId().longValue()) {
+                    qrRelevantListing.setExcluded(true);
+                    qrRelevantListing.setExclusionReason(exclusion.getReason());
+                }
+            }
+            results.add(qrRelevantListing);
+        }
+        return results;
+    }
+
+    /**
+     * Returns the listings owned by the ACB of the quarterly report
+     * that had open surveillance during the quarter
+     * included boolean fields about whether they are marked as excluded.
+     */
+    @Override
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).GET_QUARTERLY,"
+            + "#report)")
+    public List<QuarterlyReportRelevantListingDTO> getListingsWithRelevantSurveillance(final QuarterlyReportDTO report) {
+        List<QuarterlyReportRelevantListingDTO> relevantListings = quarterlyDao.getListingsWithRelevantSurveillance(report);
         List<QuarterlyReportExclusionDTO> exclusions = quarterlyDao.getExclusions(report.getId());
 
         //look at each relevant listing to see if it's been marked as excluded
