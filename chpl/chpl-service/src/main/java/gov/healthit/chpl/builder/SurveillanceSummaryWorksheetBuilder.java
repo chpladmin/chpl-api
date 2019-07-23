@@ -134,8 +134,7 @@ public class SurveillanceSummaryWorksheetBuilder {
         int i = 0;
         for (SurveillanceProcessTypeDTO procType : allProcTypes) {
             if (procType.getName().equals(PROC_TYPE_IN_THE_FIELD)) {
-                SurveillanceProcessTypeDTO removed = allProcTypes.remove(i);
-                procTypes.add(removed);
+                procTypes.add(procType);
             }
             i++;
         }
@@ -149,8 +148,7 @@ public class SurveillanceSummaryWorksheetBuilder {
         i = 0;
         for (SurveillanceProcessTypeDTO procType : allProcTypes) {
             if (procType.getName().equals(PROC_TYPE_CONTROLLED)) {
-                SurveillanceProcessTypeDTO removed = allProcTypes.remove(i);
-                procTypes.add(removed);
+                procTypes.add(procType);
             }
             i++;
         }
@@ -164,8 +162,7 @@ public class SurveillanceSummaryWorksheetBuilder {
         i = 0;
         for (SurveillanceProcessTypeDTO procType : allProcTypes) {
             if (procType.getName().equals(PROC_TYPE_CORRESPONDENCE)) {
-                SurveillanceProcessTypeDTO removed = allProcTypes.remove(i);
-                procTypes.add(removed);
+                procTypes.add(procType);
             }
             i++;
         }
@@ -179,8 +176,7 @@ public class SurveillanceSummaryWorksheetBuilder {
         i = 0;
         for (SurveillanceProcessTypeDTO procType : allProcTypes) {
             if (procType.getName().equals(PROC_TYPE_REVIEW)) {
-                SurveillanceProcessTypeDTO removed = allProcTypes.remove(i);
-                procTypes.add(removed);
+                procTypes.add(procType);
             }
             i++;
         }
@@ -194,8 +190,7 @@ public class SurveillanceSummaryWorksheetBuilder {
         i = 0;
         for (SurveillanceProcessTypeDTO procType : allProcTypes) {
             if (procType.getName().startsWith(PROC_TYPE_OTHER)) {
-                SurveillanceProcessTypeDTO removed = allProcTypes.remove(i);
-                procTypes.add(removed);
+                procTypes.add(procType);
             }
             i++;
         }
@@ -218,8 +213,7 @@ public class SurveillanceSummaryWorksheetBuilder {
         i = 0;
         for (SurveillanceOutcomeDTO outcome : allOutcomes) {
             if (outcome.getName().equals(OUTCOME_TYPE_NO_NC)) {
-                SurveillanceOutcomeDTO removed = allOutcomes.remove(i);
-                outcomes.add(removed);
+                outcomes.add(outcome);
             }
             i++;
         }
@@ -234,8 +228,7 @@ public class SurveillanceSummaryWorksheetBuilder {
         i = 0;
         for (SurveillanceOutcomeDTO outcome : allOutcomes) {
             if (outcome.getName().startsWith(OUTCOME_TYPE_NC)) {
-                SurveillanceOutcomeDTO removed = allOutcomes.remove(i);
-                outcomes.add(removed);
+                outcomes.add(outcome);
             }
             i++;
         }
@@ -250,8 +243,7 @@ public class SurveillanceSummaryWorksheetBuilder {
         i = 0;
         for (SurveillanceOutcomeDTO outcome : allOutcomes) {
             if (outcome.getName().endsWith(OUTCOME_TYPE_CAP)) {
-                SurveillanceOutcomeDTO removed = allOutcomes.remove(i);
-                outcomes.add(removed);
+                outcomes.add(outcome);
             }
             i++;
         }
@@ -319,7 +311,7 @@ public class SurveillanceSummaryWorksheetBuilder {
 
     private void createSurveillanceCountsDataRow(final SurveillanceReportWorkbookWrapper workbook,
             final Sheet sheet, final String name,
-            final int reactiveValue, final int randomziedValue, final int totalValue, final int rowNum) {
+            final long reactiveValue, final long randomziedValue, final long totalValue, final int rowNum) {
         Row row = workbook.getRow(sheet, rowNum);
         Cell cell = workbook.createCell(row, 1);
         cell.setCellValue(name);

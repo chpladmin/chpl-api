@@ -2,24 +2,22 @@ package gov.healthit.chpl.dto.surveillance.report;
 
 public class SurveillanceSummaryDTO {
 
-    private Integer reactiveCount;
-    private Integer randomizedCount;
+    private Long reactiveCount = 0L;
+    private Long randomizedCount = 0L;
 
-    public Integer getReactiveCount() {
+    public Long getReactiveCount() {
         return reactiveCount;
     }
 
-    public void setReactiveCount(final Integer reactiveCount) {
+    public void setReactiveCount(final Long reactiveCount) {
         this.reactiveCount = reactiveCount;
     }
 
-    public Integer getRandomizedCount() {
+    public Long getRandomizedCount() {
         return randomizedCount;
     }
 
-    public void setRandomizedCount(final Integer randomizedCount) {
+    public void setRandomizedCount(final Long randomizedCount) {
         this.randomizedCount = randomizedCount;
     }
-
-    public SurveillanceSummaryDTO() {}
 }

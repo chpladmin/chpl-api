@@ -27,13 +27,12 @@ public class SurveillanceSummaryDAOImpl extends BaseDAOImpl implements Surveilla
     @Override
     public SurveillanceSummaryDTO getCountOfListingsSurveilledByType(
             final Long acbId, final Date startDate, final Date endDate) {
-        String queryStr = "SELECT survType.name, COUNT(DISTINCT cp) "
-                + "FROM CertifiedProductEntity cp "
-                + "JOIN SurveillanceBasicEntity surv "
+        String queryStr = "SELECT survType.name, COUNT(DISTINCT listing) "
+                + "FROM ListingWithPrivilegedSurveillanceEntity listing "
+                + "JOIN listing.surveillances surv "
                 + "JOIN surv.surveillanceType survType "
-                + "WHERE cp.certificationBodyId = :acbId "
-                + "AND surv.certifiedProductId = cp.id "
-                + "AND cp.deleted = false "
+                + "WHERE listing.certificationBodyId = :acbId "
+                + "AND listing.deleted = false "
                 + "AND surv.deleted = false "
                 + "AND surv.startDate <= :endDate "
                 + "AND (surv.endDate IS NULL OR surv.endDate >= :startDate) "
@@ -47,7 +46,7 @@ public class SurveillanceSummaryDAOImpl extends BaseDAOImpl implements Surveilla
         List<Object[]> entities = query.getResultList();
         for (Object[] entity : entities) {
             String survTypeName = (String) entity[0];
-            Integer count = (Integer) entity[1];
+            Long count = (Long) entity[1];
             if (survTypeName.equals(SurveillanceType.REACTIVE)) {
                 result.setReactiveCount(count);
             } else if (survTypeName.equals(SurveillanceType.RANDOMIZED)) {
@@ -61,12 +60,11 @@ public class SurveillanceSummaryDAOImpl extends BaseDAOImpl implements Surveilla
     public SurveillanceSummaryDTO getCountOfSurveillanceProcessTypesBySurveillanceType(final Long acbId,
             final List<SurveillanceProcessTypeDTO> procTypes, final Date startDate, final Date endDate) {
         String queryStr = "SELECT survType.name, COUNT(DISTINCT surv.surveillanceId) "
-                + "FROM CertifiedProductEntity cp "
-                + "JOIN PrivilegedSurveillanceEntity surv "
+                + "FROM ListingWithPrivilegedSurveillanceEntity listing "
+                + "JOIN listing.surveillances surv "
                 + "JOIN surv.surveillanceType survType "
-                + "WHERE cp.certificationBodyId = :acbId "
-                + "AND surv.certifiedProductId = cp.id "
-                + "AND cp.deleted = false "
+                + "WHERE listing.certificationBodyId = :acbId "
+                + "AND listing.deleted = false "
                 + "AND surv.surveillanceProcessTypeId IN (:procTypeIds) "
                 + "AND surv.startDate <= :endDate "
                 + "AND (surv.endDate IS NULL OR surv.endDate >= :startDate) "
@@ -85,7 +83,7 @@ public class SurveillanceSummaryDAOImpl extends BaseDAOImpl implements Surveilla
         List<Object[]> entities = query.getResultList();
         for (Object[] entity : entities) {
             String survTypeName = (String) entity[0];
-            Integer count = (Integer) entity[1];
+            Long count = (Long) entity[1];
             if (survTypeName.equals(SurveillanceType.REACTIVE)) {
                 result.setReactiveCount(count);
             } else if (survTypeName.equals(SurveillanceType.RANDOMIZED)) {
@@ -99,12 +97,11 @@ public class SurveillanceSummaryDAOImpl extends BaseDAOImpl implements Surveilla
     public SurveillanceSummaryDTO getCountOfSurveillanceOutcomesBySurveillanceType(final Long acbId,
             final List<SurveillanceOutcomeDTO> outcomes, final Date startDate, final Date endDate) {
         String queryStr = "SELECT survType.name, COUNT(DISTINCT surv.surveillanceId) "
-                + "FROM CertifiedProductEntity cp "
-                + "JOIN PrivilegedSurveillanceEntity surv "
+                + "FROM ListingWithPrivilegedSurveillanceEntity listing "
+                + "JOIN listing.surveillances surv "
                 + "JOIN surv.surveillanceType survType "
-                + "WHERE cp.certificationBodyId = :acbId "
-                + "AND surv.certifiedProductId = cp.id "
-                + "AND cp.deleted = false "
+                + "WHERE listing.certificationBodyId = :acbId "
+                + "AND listing.deleted = false "
                 + "AND surv.surveillanceOutcomeId IN (:survOutcomeIds) "
                 + "AND surv.startDate <= :endDate "
                 + "AND (surv.endDate IS NULL OR surv.endDate >= :startDate) "
@@ -123,7 +120,7 @@ public class SurveillanceSummaryDAOImpl extends BaseDAOImpl implements Surveilla
         List<Object[]> entities = query.getResultList();
         for (Object[] entity : entities) {
             String survTypeName = (String) entity[0];
-            Integer count = (Integer) entity[1];
+            Long count = (Long) entity[1];
             if (survTypeName.equals(SurveillanceType.REACTIVE)) {
                 result.setReactiveCount(count);
             } else if (survTypeName.equals(SurveillanceType.RANDOMIZED)) {
