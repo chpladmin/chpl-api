@@ -248,7 +248,6 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
                 + "LEFT JOIN FETCH surv.surveillanceProcessType "
                 + "WHERE listing.certificationBodyId = :acbId "
                 + "AND (surv.quarterlyReportId IS NULL OR surv.quarterlyReportId = :quarterlyReportId) "
-                //TBD any restriction on listing status during the report time?
                 + "AND listing.deleted = false ";
         Query query = entityManager.createQuery(queryStr);
         query.setParameter("acbId", quarterlyReport.getAcb().getId());
