@@ -53,6 +53,27 @@ public class ListingWithPrivilegedSurveillanceEntity {
     @Column(name = "year")
     private String year;
 
+    @Column(name = "vendor_id")
+    private Long developerId;
+
+    @Column(name = "vendor_name")
+    private String developerName;
+
+    @Column(name = "vendor_code")
+    private String developerCode;
+
+    @Column(name = "product_id")
+    private Long productId;
+
+    @Column(name = "product_name")
+    private String productName;
+
+    @Column(name = "product_version_id")
+    private Long productVersionId;
+
+    @Column(name = "product_version")
+    private String productVersion;
+
     @Column(name = "certification_body_id")
     private Long certificationBodyId;
 
@@ -179,5 +200,61 @@ public class ListingWithPrivilegedSurveillanceEntity {
 
     public void setCertificationDate(final Date certificationDate) {
         this.certificationDate = certificationDate;
+    }
+
+    public Long getDeveloperId() {
+        return developerId;
+    }
+
+    public void setDeveloperId(Long developerId) {
+        this.developerId = developerId;
+    }
+
+    public String getDeveloperName() {
+        return developerName;
+    }
+
+    public void setDeveloperName(String developerName) {
+        this.developerName = developerName;
+    }
+
+    public String getDeveloperCode() {
+        return developerCode;
+    }
+
+    public void setDeveloperCode(String developerCode) {
+        this.developerCode = developerCode;
+    }
+
+    public Long getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Long productId) {
+        this.productId = productId;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public Long getProductVersionId() {
+        return productVersionId;
+    }
+
+    public void setProductVersionId(Long productVersionId) {
+        this.productVersionId = productVersionId;
+    }
+
+    public String getProductVersion() {
+        return productVersion;
+    }
+
+    public void setProductVersion(String productVersion) {
+        this.productVersion = productVersion;
     }
 }

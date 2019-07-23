@@ -76,20 +76,22 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
     private static final int COL_SURV_BEGIN = 16;
     private static final int COL_SURV_END = 17;
     private static final int COL_SURV_OUTCOME = 18;
-    private static final int COL_NONCONFORMITY_TYPES_RESULTANT = 19;
-    private static final int COL_CERT_STATUS_RESULTANT = 20;
-    private static final int COL_SUSPENDED = 21;
-    private static final int COL_SURV_PROCESS_TYPE = 22;
-    private static final int COL_SURV_GROUNDS = 23;
-    private static final int COL_NONCONFORMITY_CAUSES = 24;
-    private static final int COL_NONCONFORMITY_NATURES = 25;
-    private static final int COL_SURV_STEPS = 26;
-    private static final int COL_ENGAGEMENT_STEPS = 27;
-    private static final int COL_ADDITIONAL_COSTS = 28;
-    private static final int COL_LIMITATIONS_EVAL = 29;
-    private static final int COL_NONDISCLOSURE_EVAL = 30;
-    private static final int COL_DEV_RESOLUTION = 31;
-    private static final int COL_COMPLETED_CAP = 32;
+    private static final int COL_SURV_OUTCOME_OTHER = 19;
+    private static final int COL_NONCONFORMITY_TYPES_RESULTANT = 20;
+    private static final int COL_CERT_STATUS_RESULTANT = 21;
+    private static final int COL_SUSPENDED = 22;
+    private static final int COL_SURV_PROCESS_TYPE = 23;
+    private static final int COL_SURV_PROCESS_TYPE_OTHER = 24;
+    private static final int COL_SURV_GROUNDS = 25;
+    private static final int COL_NONCONFORMITY_CAUSES = 26;
+    private static final int COL_NONCONFORMITY_NATURES = 27;
+    private static final int COL_SURV_STEPS = 28;
+    private static final int COL_ENGAGEMENT_STEPS = 29;
+    private static final int COL_ADDITIONAL_COSTS = 30;
+    private static final int COL_LIMITATIONS_EVAL = 31;
+    private static final int COL_NONDISCLOSURE_EVAL = 32;
+    private static final int COL_DEV_RESOLUTION = 33;
+    private static final int COL_COMPLETED_CAP = 34;
 
     private SurveillanceReportManager reportManager;
     private CertifiedProductDetailsManager detailsManager;
@@ -163,10 +165,12 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
         sheet.setColumnWidth(COL_SURV_BEGIN, sharedColWidth);
         sheet.setColumnWidth(COL_SURV_END, sharedColWidth);
         sheet.setColumnWidth(COL_SURV_OUTCOME, workbook.getColumnWidth(51.44));
+        sheet.setColumnWidth(COL_SURV_OUTCOME_OTHER, workbook.getColumnWidth(51.44));
         sheet.setColumnWidth(COL_NONCONFORMITY_TYPES_RESULTANT, workbook.getColumnWidth(27));
         sheet.setColumnWidth(COL_CERT_STATUS_RESULTANT, workbook.getColumnWidth(17.78));
         sheet.setColumnWidth(COL_SUSPENDED, workbook.getColumnWidth(17.78));
         sheet.setColumnWidth(COL_SURV_PROCESS_TYPE, workbook.getColumnWidth(30.67));
+        sheet.setColumnWidth(COL_SURV_PROCESS_TYPE_OTHER, workbook.getColumnWidth(30.67));
         int longTextColWidth = workbook.getColumnWidth(59.44);
         sheet.setColumnWidth(COL_SURV_GROUNDS, longTextColWidth);
         sheet.setColumnWidth(COL_NONCONFORMITY_CAUSES, longTextColWidth);
@@ -292,11 +296,13 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
         addHeadingCell(workbook, row, COL_SURV_BEGIN, "Surveillance Began");
         addHeadingCell(workbook, row, COL_SURV_END, "Surveillance Ended");
         addHeadingCell(workbook, row, COL_SURV_OUTCOME, "Outcome of Surveillance");
+        addHeadingCell(workbook, row, COL_SURV_OUTCOME_OTHER, "Outcome of Surveillance - Other Explanation");
         addHeadingCell(workbook, row, COL_NONCONFORMITY_TYPES_RESULTANT,
                 "Non-Conformity Type(s) Resultant of Surveillance (i.e. \"170.xxx (x)(x)\")");
         addHeadingCell(workbook, row, COL_CERT_STATUS_RESULTANT, "Certification Status Resultant of Surveillance");
         addHeadingCell(workbook, row, COL_SUSPENDED, "Suspended During Surveillance?");
         addHeadingCell(workbook, row, COL_SURV_PROCESS_TYPE, "Surveillance Process Type");
+        addHeadingCell(workbook, row, COL_SURV_PROCESS_TYPE_OTHER, "Surveillance Process Type - Other Explanation");
 
         //these headings are more complicated with various fonts throughout the cell
         String cellTitle = "Grounds for Initiating Surveillance";
@@ -442,12 +448,16 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
             //user has to enter this field
             addDataCell(workbook, row, COL_SURV_OUTCOME,
                     generateSurveillanceOutcomeValue(quarterlyReports, privilegedSurvQuarterlyData));
+            addDataCell(workbook, row, COL_SURV_OUTCOME_OTHER,
+                    generateSurveillanceOutcomeOtherValue(quarterlyReports, privilegedSurvQuarterlyData));
             addDataCell(workbook, row, COL_NONCONFORMITY_TYPES_RESULTANT, determineNonconformityTypes(surv));
             addDataCell(workbook, row, COL_CERT_STATUS_RESULTANT, determineResultantCertificationStatus(listing, surv));
             addDataCell(workbook, row, COL_SUSPENDED, determineSuspendedStatus(listing, surv));
             //user has to enter this field
             addDataCell(workbook, row, COL_SURV_PROCESS_TYPE,
                     generateSurveillanceProcessTypeValue(quarterlyReports, privilegedSurvQuarterlyData));
+            addDataCell(workbook, row, COL_SURV_PROCESS_TYPE_OTHER,
+                    generateSurveillanceProcessTypeOtherValue(quarterlyReports, privilegedSurvQuarterlyData));
             addDataCell(workbook, row, COL_SURV_GROUNDS,
                     generateGroundsForInitiatingValue(quarterlyReports, privilegedSurvQuarterlyData));
             addDataCell(workbook, row, COL_NONCONFORMITY_CAUSES,
@@ -692,6 +702,42 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
         return result;
     }
 
+    private String generateSurveillanceOutcomeOtherValue(final List<QuarterlyReportDTO> quarterlyReports,
+            final List<PrivilegedSurveillanceDTO> privilegedSurvData) {
+        String result = "";
+        if (quarterlyReports.size() == 1) {
+            //find the privileged surv data for the single report
+            QuarterlyReportDTO report = quarterlyReports.get(0);
+            for (PrivilegedSurveillanceDTO currSurv : privilegedSurvData) {
+                if (currSurv.getQuarterlyReport().getId().longValue() == report.getId().longValue()
+                        && !StringUtils.isEmpty(currSurv.getSurveillanceOutcomeOther())) {
+                    result = currSurv.getSurveillanceOutcomeOther();
+                }
+            }
+        } else {
+            //there are multiple reports... combine the values for this field in a nice way for the user
+            //key is surveillance outcome name and value is applicable quarter name(s) like 'Q1, Q2'
+            Map<String, ArrayList<String>> valueMap = new LinkedHashMap<String, ArrayList<String>>();
+            for (QuarterlyReportDTO currReport : quarterlyReports) {
+                for (PrivilegedSurveillanceDTO currSurv : privilegedSurvData) {
+                    if (currSurv.getQuarterlyReport().getId().longValue() == currReport.getId().longValue()
+                            && !StringUtils.isEmpty(currSurv.getSurveillanceOutcomeOther())) {
+                        String survOutcomeVal = currSurv.getSurveillanceOutcomeOther();
+                        if (valueMap.get(survOutcomeVal) != null) {
+                            valueMap.get(survOutcomeVal).add(currReport.getQuarter().getName());
+                        } else {
+                            ArrayList<String> quarterNameList = new ArrayList<String>();
+                            quarterNameList.add(currReport.getQuarter().getName());
+                            valueMap.put(survOutcomeVal, quarterNameList);
+                        }
+                    }
+                }
+            }
+            result = buildStringFromMap(valueMap);
+        }
+        return result;
+    }
+
     /**
      * Creates a consolidated string for all quarterly reports.
      * @param quarterlyReports
@@ -719,6 +765,48 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
                     if (currSurv.getQuarterlyReport().getId().longValue() == currReport.getId().longValue()
                             && currSurv.getSurveillanceProcessType() != null) {
                         String survProcTypeVal = currSurv.getSurveillanceProcessType().getName();
+                        if (valueMap.get(survProcTypeVal) != null) {
+                            valueMap.get(survProcTypeVal).add(currReport.getQuarter().getName());
+                        } else {
+                            ArrayList<String> quarterNameList = new ArrayList<String>();
+                            quarterNameList.add(currReport.getQuarter().getName());
+                            valueMap.put(survProcTypeVal, quarterNameList);
+                        }
+                    }
+                }
+            }
+            result = buildStringFromMap(valueMap);
+        }
+        return result;
+    }
+
+    /**
+     * Creates a consolidated string for all quarterly reports.
+     * @param quarterlyReports
+     * @param privilegedSurvData
+     * @return
+     */
+    private String generateSurveillanceProcessTypeOtherValue(final List<QuarterlyReportDTO> quarterlyReports,
+            final List<PrivilegedSurveillanceDTO> privilegedSurvData) {
+        String result = "";
+        if (quarterlyReports.size() == 1) {
+            //find the privileged surv data for the single report
+            QuarterlyReportDTO report = quarterlyReports.get(0);
+            for (PrivilegedSurveillanceDTO currSurv : privilegedSurvData) {
+                if (currSurv.getQuarterlyReport().getId().longValue() == report.getId().longValue()
+                        && !StringUtils.isEmpty(currSurv.getSurveillanceProcessTypeOther())) {
+                    result = currSurv.getSurveillanceProcessTypeOther();
+                }
+            }
+        } else {
+            //there are multiple reports... combine the values for this field in a nice way for the user
+            //key is surveillance process type name and value is applicable quarter name(s) like 'Q1, Q2'
+            Map<String, ArrayList<String>> valueMap = new LinkedHashMap<String, ArrayList<String>>();
+            for (QuarterlyReportDTO currReport : quarterlyReports) {
+                for (PrivilegedSurveillanceDTO currSurv : privilegedSurvData) {
+                    if (currSurv.getQuarterlyReport().getId().longValue() == currReport.getId().longValue()
+                            && !StringUtils.isEmpty(currSurv.getSurveillanceProcessTypeOther())) {
+                        String survProcTypeVal = currSurv.getSurveillanceProcessTypeOther();
                         if (valueMap.get(survProcTypeVal) != null) {
                             valueMap.get(survProcTypeVal).add(currReport.getQuarter().getName());
                         } else {

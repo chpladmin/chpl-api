@@ -163,9 +163,11 @@ public class PrivilegedSurveillanceDAOImpl extends BaseDAOImpl implements Privil
         if (toCreate.getSurveillanceOutcome() != null) {
             entity.setSurveillanceOutcomeId(toCreate.getSurveillanceOutcome().getId());
         }
+        entity.setSurveillanceOutcomeOther(toCreate.getSurveillanceOutcomeOther());
         if (toCreate.getSurveillanceProcessType() != null) {
             entity.setSurveillanceProcessTypeId(toCreate.getSurveillanceProcessType().getId());
         }
+        entity.setSurveillanceProcessTypeOther(toCreate.getSurveillanceProcessTypeOther());
         entity.setK1Reviewed(toCreate.getK1Reviewed());
         entity.setGroundsForInitiating(toCreate.getGroundsForInitiating());
         entity.setNonconformityCauses(toCreate.getNonconformityCauses());
@@ -201,11 +203,15 @@ public class PrivilegedSurveillanceDAOImpl extends BaseDAOImpl implements Privil
         } else {
             entity.setSurveillanceOutcomeId(null);
         }
+        entity.setSurveillanceOutcomeOther(toUpdate.getSurveillanceOutcomeOther());
+
         if (toUpdate.getSurveillanceProcessType() != null) {
             entity.setSurveillanceProcessTypeId(toUpdate.getSurveillanceProcessType().getId());
         } else {
             entity.setSurveillanceProcessTypeId(null);
         }
+        entity.setSurveillanceProcessTypeOther(toUpdate.getSurveillanceProcessTypeOther());
+
         entity.setK1Reviewed(toUpdate.getK1Reviewed());
         entity.setGroundsForInitiating(toUpdate.getGroundsForInitiating());
         entity.setNonconformityCauses(toUpdate.getNonconformityCauses());

@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.ProductDTO;
+import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.listing.ListingWithPrivilegedSurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.report.PrivilegedSurveillanceEntity;
@@ -27,6 +30,18 @@ public class QuarterlyReportRelevantListingDTO extends CertifiedProductDetailsDT
     public QuarterlyReportRelevantListingDTO(final ListingWithPrivilegedSurveillanceEntity entity) {
         this.setId(entity.getId());
         this.setChplProductNumber(entity.getChplProductNumber());
+        DeveloperDTO developer = new DeveloperDTO();
+        developer.setId(entity.getDeveloperId());
+        developer.setName(entity.getDeveloperName());
+        this.setDeveloper(developer);
+        ProductDTO product = new ProductDTO();
+        product.setId(entity.getProductId());
+        product.setName(entity.getProductName());
+        this.setProduct(product);
+        ProductVersionDTO version = new ProductVersionDTO();
+        version.setId(entity.getProductVersionId());
+        version.setVersion(entity.getProductVersion());
+        this.setVersion(version);
         this.setCertificationBodyId(entity.getCertificationBodyId());
         this.setCertificationBodyName(entity.getCertificationBodyName());
         this.setCertificationBodyCode(entity.getCertificationBodyCode());

@@ -159,7 +159,7 @@ public class QuarterlyReportManagerTest extends TestCase {
         InvalidArgumentsException, EntityRetrievalException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         QuarterlyReportDTO createdReport = createReport();
-        QuarterlyReportExclusionDTO exclusion = reportManager.createQuarterlyReportExclusion(createdReport, 1L, "Test");
+        QuarterlyReportExclusionDTO exclusion = reportManager.createQuarterlyReportExclusion(createdReport, 10L, "Test");
         assertNotNull(exclusion);
         assertNotNull(exclusion.getId());
         assertTrue(exclusion.getId() > 0);

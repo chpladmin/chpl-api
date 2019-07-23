@@ -44,12 +44,18 @@ public class QuarterlyReportSurveillanceMapEntity {
     @JoinColumn(name = "surveillance_outcome_id", insertable = false, updatable = false)
     private SurveillanceOutcomeEntity surveillanceOutcome;
 
+    @Column(name = "surveillance_outcome_other")
+    private String surveillanceOutcomeOther;
+
     @Column(name = "surveillance_process_type_id")
     private Long surveillanceProcessTypeId;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "surveillance_process_type_id", insertable = false, updatable = false)
     private SurveillanceProcessTypeEntity surveillanceProcessType;
+
+    @Column(name = "surveillance_process_type_other")
+    private String surveillanceProcessTypeOther;
 
     @Column(name = "k1_reviewed")
     private Boolean k1Reviewed;
@@ -286,5 +292,21 @@ public class QuarterlyReportSurveillanceMapEntity {
 
     public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public String getSurveillanceOutcomeOther() {
+        return surveillanceOutcomeOther;
+    }
+
+    public void setSurveillanceOutcomeOther(final String surveillanceOutcomeOther) {
+        this.surveillanceOutcomeOther = surveillanceOutcomeOther;
+    }
+
+    public String getSurveillanceProcessTypeOther() {
+        return surveillanceProcessTypeOther;
+    }
+
+    public void setSurveillanceProcessTypeOther(final String surveillanceProcessTypeOther) {
+        this.surveillanceProcessTypeOther = surveillanceProcessTypeOther;
     }
 }

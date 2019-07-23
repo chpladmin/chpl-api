@@ -8,7 +8,9 @@ public class PrivilegedSurveillance extends SurveillanceBasic {
     private static final long serialVersionUID = 2839806198924296871L;
 
     private SurveillanceOutcome surveillanceOutcome;
+    private String surveillanceOutcomeOther;
     private SurveillanceProcessType surveillanceProcessType;
+    private String surveillanceProcessTypeOther;
     private Boolean k1Reviewed;
     private String groundsForInitiating;
     private String nonconformityCauses;
@@ -45,16 +47,18 @@ public class PrivilegedSurveillance extends SurveillanceBasic {
         if (dto.getSurveillanceOutcome() != null) {
             this.surveillanceOutcome = new SurveillanceOutcome(dto.getSurveillanceOutcome());
         }
+        this.surveillanceOutcomeOther = dto.getSurveillanceOutcomeOther();
         if (dto.getSurveillanceProcessType() != null) {
             this.surveillanceProcessType = new SurveillanceProcessType(dto.getSurveillanceProcessType());
         }
+        this.surveillanceProcessTypeOther = dto.getSurveillanceProcessTypeOther();
     }
 
     public SurveillanceOutcome getSurveillanceOutcome() {
         return surveillanceOutcome;
     }
 
-    public void setSurveillanceOutcome(SurveillanceOutcome surveillanceOutcome) {
+    public void setSurveillanceOutcome(final SurveillanceOutcome surveillanceOutcome) {
         this.surveillanceOutcome = surveillanceOutcome;
     }
 
@@ -62,7 +66,7 @@ public class PrivilegedSurveillance extends SurveillanceBasic {
         return surveillanceProcessType;
     }
 
-    public void setSurveillanceProcessType(SurveillanceProcessType surveillanceProcessType) {
+    public void setSurveillanceProcessType(final SurveillanceProcessType surveillanceProcessType) {
         this.surveillanceProcessType = surveillanceProcessType;
     }
 
@@ -70,7 +74,7 @@ public class PrivilegedSurveillance extends SurveillanceBasic {
         return k1Reviewed;
     }
 
-    public void setK1Reviewed(Boolean k1Reviewed) {
+    public void setK1Reviewed(final Boolean k1Reviewed) {
         this.k1Reviewed = k1Reviewed;
     }
 
@@ -78,7 +82,7 @@ public class PrivilegedSurveillance extends SurveillanceBasic {
         return groundsForInitiating;
     }
 
-    public void setGroundsForInitiating(String groundsForInitiating) {
+    public void setGroundsForInitiating(final String groundsForInitiating) {
         this.groundsForInitiating = groundsForInitiating;
     }
 
@@ -86,7 +90,7 @@ public class PrivilegedSurveillance extends SurveillanceBasic {
         return nonconformityCauses;
     }
 
-    public void setNonconformityCauses(String nonconformityCauses) {
+    public void setNonconformityCauses(final String nonconformityCauses) {
         this.nonconformityCauses = nonconformityCauses;
     }
 
@@ -94,7 +98,7 @@ public class PrivilegedSurveillance extends SurveillanceBasic {
         return nonconformityNature;
     }
 
-    public void setNonconformityNature(String nonconformityNature) {
+    public void setNonconformityNature(final String nonconformityNature) {
         this.nonconformityNature = nonconformityNature;
     }
 
@@ -102,7 +106,7 @@ public class PrivilegedSurveillance extends SurveillanceBasic {
         return stepsToSurveil;
     }
 
-    public void setStepsToSurveil(String stepsToSurveil) {
+    public void setStepsToSurveil(final String stepsToSurveil) {
         this.stepsToSurveil = stepsToSurveil;
     }
 
@@ -110,7 +114,7 @@ public class PrivilegedSurveillance extends SurveillanceBasic {
         return stepsToEngage;
     }
 
-    public void setStepsToEngage(String stepsToEngage) {
+    public void setStepsToEngage(final String stepsToEngage) {
         this.stepsToEngage = stepsToEngage;
     }
 
@@ -118,7 +122,7 @@ public class PrivilegedSurveillance extends SurveillanceBasic {
         return additionalCostsEvaluation;
     }
 
-    public void setAdditionalCostsEvaluation(String additionalCostsEvaluation) {
+    public void setAdditionalCostsEvaluation(final String additionalCostsEvaluation) {
         this.additionalCostsEvaluation = additionalCostsEvaluation;
     }
 
@@ -126,7 +130,7 @@ public class PrivilegedSurveillance extends SurveillanceBasic {
         return limitationsEvaluation;
     }
 
-    public void setLimitationsEvaluation(String limitationsEvaluation) {
+    public void setLimitationsEvaluation(final String limitationsEvaluation) {
         this.limitationsEvaluation = limitationsEvaluation;
     }
 
@@ -134,7 +138,7 @@ public class PrivilegedSurveillance extends SurveillanceBasic {
         return nondisclosureEvaluation;
     }
 
-    public void setNondisclosureEvaluation(String nondisclosureEvaluation) {
+    public void setNondisclosureEvaluation(final String nondisclosureEvaluation) {
         this.nondisclosureEvaluation = nondisclosureEvaluation;
     }
 
@@ -142,7 +146,7 @@ public class PrivilegedSurveillance extends SurveillanceBasic {
         return directionDeveloperResolution;
     }
 
-    public void setDirectionDeveloperResolution(String directionDeveloperResolution) {
+    public void setDirectionDeveloperResolution(final String directionDeveloperResolution) {
         this.directionDeveloperResolution = directionDeveloperResolution;
     }
 
@@ -150,7 +154,23 @@ public class PrivilegedSurveillance extends SurveillanceBasic {
         return completedCapVerification;
     }
 
-    public void setCompletedCapVerification(String completedCapVerification) {
+    public void setCompletedCapVerification(final String completedCapVerification) {
         this.completedCapVerification = completedCapVerification;
+    }
+
+    public String getSurveillanceOutcomeOther() {
+        return surveillanceOutcomeOther;
+    }
+
+    public void setSurveillanceOutcomeOther(final String surveillanceOutcomeOther) {
+        this.surveillanceOutcomeOther = surveillanceOutcomeOther;
+    }
+
+    public String getSurveillanceProcessTypeOther() {
+        return surveillanceProcessTypeOther;
+    }
+
+    public void setSurveillanceProcessTypeOther(final String surveillanceProcessTypeOther) {
+        this.surveillanceProcessTypeOther = surveillanceProcessTypeOther;
     }
 }

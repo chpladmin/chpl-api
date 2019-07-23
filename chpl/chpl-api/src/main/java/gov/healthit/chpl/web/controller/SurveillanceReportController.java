@@ -311,11 +311,13 @@ public class SurveillanceReportController {
             survOutcome.setId(updateRequest.getSurveillanceOutcome().getId());
             toUpdate.setSurveillanceOutcome(survOutcome);
         }
+        toUpdate.setSurveillanceOutcomeOther(updateRequest.getSurveillanceOutcomeOther());
         if (updateRequest.getSurveillanceProcessType() != null) {
             SurveillanceProcessTypeDTO processType = new SurveillanceProcessTypeDTO();
             processType.setId(updateRequest.getSurveillanceProcessType().getId());
             toUpdate.setSurveillanceProcessType(processType);
         }
+        toUpdate.setSurveillanceProcessTypeOther(updateRequest.getSurveillanceProcessTypeOther());
         PrivilegedSurveillanceDTO updated =
                 reportManager.createOrUpdateQuarterlyReportSurveillanceMap(toUpdate);
         return new PrivilegedSurveillance(updated);

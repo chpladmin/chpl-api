@@ -11,7 +11,9 @@ public class PrivilegedSurveillanceDTO extends SurveillanceBasicDTO {
     private Long mappingId;
     private QuarterlyReportDTO quarterlyReport;
     private SurveillanceOutcomeDTO surveillanceOutcome;
+    private String surveillanceOutcomeOther;
     private SurveillanceProcessTypeDTO surveillanceProcessType;
+    private String surveillanceProcessTypeOther;
     private Boolean k1Reviewed;
     private String groundsForInitiating;
     private String nonconformityCauses;
@@ -61,6 +63,7 @@ public class PrivilegedSurveillanceDTO extends SurveillanceBasicDTO {
             this.surveillanceOutcome = new SurveillanceOutcomeDTO();
             this.surveillanceOutcome.setId(entity.getSurveillanceOutcomeId());
         }
+        this.surveillanceOutcomeOther = entity.getSurveillanceOutcomeOther();
 
         if (entity.getSurveillanceProcessType() != null) {
             this.surveillanceProcessType = new SurveillanceProcessTypeDTO(entity.getSurveillanceProcessType());
@@ -68,6 +71,7 @@ public class PrivilegedSurveillanceDTO extends SurveillanceBasicDTO {
             this.surveillanceProcessType = new SurveillanceProcessTypeDTO();
             this.surveillanceProcessType.setId(entity.getSurveillanceProcessTypeId());
         }
+        this.surveillanceProcessTypeOther = entity.getSurveillanceProcessTypeOther();
     }
 
     public PrivilegedSurveillanceDTO(final QuarterlyReportSurveillanceMapEntity entity) {
@@ -99,6 +103,7 @@ public class PrivilegedSurveillanceDTO extends SurveillanceBasicDTO {
             this.surveillanceOutcome = new SurveillanceOutcomeDTO();
             this.surveillanceOutcome.setId(entity.getSurveillanceOutcomeId());
         }
+        this.surveillanceOutcomeOther = entity.getSurveillanceOutcomeOther();
 
         if (entity.getSurveillanceProcessType() != null) {
             this.surveillanceProcessType = new SurveillanceProcessTypeDTO(entity.getSurveillanceProcessType());
@@ -106,6 +111,7 @@ public class PrivilegedSurveillanceDTO extends SurveillanceBasicDTO {
             this.surveillanceProcessType = new SurveillanceProcessTypeDTO();
             this.surveillanceProcessType.setId(entity.getSurveillanceProcessTypeId());
         }
+        this.surveillanceProcessTypeOther = entity.getSurveillanceProcessTypeOther();
     }
 
     public Long getMappingId() {
@@ -253,6 +259,22 @@ public class PrivilegedSurveillanceDTO extends SurveillanceBasicDTO {
         return this.getId().hashCode();
     }
 
+    public String getSurveillanceOutcomeOther() {
+        return surveillanceOutcomeOther;
+    }
+
+    public void setSurveillanceOutcomeOther(final String surveillanceOutcomeOther) {
+        this.surveillanceOutcomeOther = surveillanceOutcomeOther;
+    }
+
+    public String getSurveillanceProcessTypeOther() {
+        return surveillanceProcessTypeOther;
+    }
+
+    public void setSurveillanceProcessTypeOther(final String surveillanceProcessTypeOther) {
+        this.surveillanceProcessTypeOther = surveillanceProcessTypeOther;
+    }
+
     public void clearPrivilegedFields() {
         this.mappingId = null;
         this.k1Reviewed = null;
@@ -268,6 +290,8 @@ public class PrivilegedSurveillanceDTO extends SurveillanceBasicDTO {
         this.completedCapVerification = null;
         this.quarterlyReport = null;
         this.surveillanceOutcome = null;
+        this.surveillanceOutcomeOther = null;
         this.surveillanceProcessType = null;
+        this.surveillanceProcessTypeOther = null;
     }
 }
