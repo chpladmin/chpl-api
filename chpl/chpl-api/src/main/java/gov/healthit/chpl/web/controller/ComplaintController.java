@@ -1,12 +1,10 @@
 package gov.healthit.chpl.web.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,12 +12,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.complaint.Complaint;
-import gov.healthit.chpl.domain.surveillance.report.RelevantListing;
-import gov.healthit.chpl.dto.ComplaintDTO;
-import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
-import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportRelevantListingDTO;
+import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ComplaintManager;
@@ -60,7 +57,7 @@ public class ComplaintController {
     @ApiOperation(value = "Save complaint for use in Surveillance Quarterly Report.",
             notes = "")
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-    public @ResponseBody Complaint create(@RequestBody final Complaint complaint) throws EntityRetrievalException, ValidationException {
+    public @ResponseBody Complaint create(@RequestBody final Complaint complaint) throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
         if (ff4j.check(FeatureList.COMPLAINTS)) {
             ValidationException error = new ValidationException();
             //Make sure there is an ACB
@@ -78,7 +75,7 @@ public class ComplaintController {
     @ApiOperation(value = "Update complaint for use in Surveillance Quarterly Report.",
             notes = "")
     @RequestMapping(value = "/{complaintId}", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
-    public @ResponseBody Complaint update(@RequestBody final Complaint complaint) throws EntityRetrievalException, ValidationException {
+    public @ResponseBody Complaint update(@RequestBody final Complaint complaint) throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
         if (ff4j.check(FeatureList.COMPLAINTS)) {
             return complaintManager.update(complaint);
         } else {
