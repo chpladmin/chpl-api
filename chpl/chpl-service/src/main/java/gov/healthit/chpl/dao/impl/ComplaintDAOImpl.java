@@ -35,14 +35,9 @@ import gov.healthit.chpl.util.ChplProductNumberUtil;
 @Component
 public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
     private static final Logger LOGGER = LogManager.getLogger(ComplaintDAOImpl.class);
-    private static final String GET_COMPLAINTS_HQL = "SELECT DISTINCT c "
-            + "FROM ComplaintEntity c "
-            + "LEFT JOIN FETCH c.listings "
-            + "LEFT JOIN FETCH c.surveillances "
-            + "LEFT JOIN FETCH c.criteria "
-            + "JOIN FETCH c.certificationBody "
-            + "JOIN FETCH c.complainantType "
-            + "JOIN FETCH c.complaintStatusType "
+    private static final String GET_COMPLAINTS_HQL = "SELECT DISTINCT c " + "FROM ComplaintEntity c "
+            + "LEFT JOIN FETCH c.listings " + "LEFT JOIN FETCH c.surveillances " + "LEFT JOIN FETCH c.criteria "
+            + "JOIN FETCH c.certificationBody " + "JOIN FETCH c.complainantType " + "JOIN FETCH c.complaintStatusType "
             + "WHERE c.deleted = false ";
 
     private ChplProductNumberUtil chplProductNumberUtil;
@@ -77,18 +72,15 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
 
     @Override
     public List<ComplaintDTO> getAllComplaints() {
-        Query query = entityManager.createQuery(GET_COMPLAINTS_HQL,
-                ComplaintEntity.class);
+        Query query = entityManager.createQuery(GET_COMPLAINTS_HQL, ComplaintEntity.class);
         List<ComplaintEntity> results = query.getResultList();
         return populateComplaintDTOs(results);
     }
 
     @Override
     public List<ComplaintDTO> getAllComplaintsBetweenDates(final Long acbId, final Date startDate, final Date endDate) {
-        Query query = entityManager.createQuery(GET_COMPLAINTS_HQL
-                + " AND c.certificationBodyId = :acbId "
-                + "AND c.receivedDate <= :endDate "
-                + "AND (c.closedDate IS NULL OR c.closedDate >= :startDate)",
+        Query query = entityManager.createQuery(GET_COMPLAINTS_HQL + " AND c.certificationBodyId = :acbId "
+                + "AND c.receivedDate <= :endDate " + "AND (c.closedDate IS NULL OR c.closedDate >= :startDate)",
                 ComplaintEntity.class);
         query.setParameter("acbId", acbId);
         query.setParameter("startDate", startDate);
@@ -182,8 +174,7 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
 
     private ComplaintEntity getEntityById(Long id) throws EntityRetrievalException {
         ComplaintEntity entity = null;
-        Query query = entityManager.createQuery(GET_COMPLAINTS_HQL
-                + " AND c.id = :complaintId", ComplaintEntity.class);
+        Query query = entityManager.createQuery(GET_COMPLAINTS_HQL + " AND c.id = :complaintId", ComplaintEntity.class);
         query.setParameter("complaintId", id);
         List<ComplaintEntity> result = query.getResultList();
 
@@ -242,13 +233,13 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
             ComplaintSurveillanceMapEntity found = IterableUtils.find(existingSurveillances,
                     new Predicate<ComplaintSurveillanceMapEntity>() {
                         @Override
-                        public boolean evaluate(ComplaintSurveillanceMapEntity object) {
-                            return object.getSurveillanceId().equals(passedIn.getSurveillanceId());
+                        public boolean evaluate(ComplaintSurveillanceMapEntity fromDb) {
+                            return fromDb.getSurveillanceId().equals(passedIn.getSurveillance().getId());
                         }
                     });
             // Wasn't found in the list from DB, add it to the DB
             if (found == null) {
-                addSurveillanceToComplaint(complaint.getId(), passedIn.getSurveillanceId());
+                addSurveillanceToComplaint(complaint.getId(), passedIn.getSurveillance().getId());
             }
         }
     }
@@ -256,18 +247,17 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
     private void deleteMissingSurveillances(final ComplaintDTO complaint,
             final List<ComplaintSurveillanceMapEntity> existingSurveillances) throws EntityRetrievalException {
         // If the existing surveillance does not exist in the new list, delete it
-        for (ComplaintSurveillanceMapEntity existing : existingSurveillances) {
+        for (ComplaintSurveillanceMapEntity fromDb : existingSurveillances) {
             ComplaintSurveillanceMapDTO found = IterableUtils.find(complaint.getSurveillances(),
                     new Predicate<ComplaintSurveillanceMapDTO>() {
                         @Override
-                        public boolean evaluate(ComplaintSurveillanceMapDTO existingComplaintSurveillance) {
-                            return existingComplaintSurveillance.getSurveillance().getId()
-                                    .equals(existing.getSurveillanceId());
+                        public boolean evaluate(ComplaintSurveillanceMapDTO passedIn) {
+                            return passedIn.getSurveillance().getId().equals(fromDb.getSurveillanceId());
                         }
                     });
             // Wasn't found in the list passed in, delete it from the DB
             if (found == null) {
-                deleteSurveillanceToComplaint(existing.getId());
+                deleteSurveillanceToComplaint(fromDb.getId());
             }
         }
 
@@ -502,7 +492,6 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
 
         return result;
     }
-
 
     private List<ComplaintDTO> populateComplaintDTOs(final List<ComplaintEntity> complaintEntities) {
         List<ComplaintDTO> complaintDTOs = new ArrayList<ComplaintDTO>();
