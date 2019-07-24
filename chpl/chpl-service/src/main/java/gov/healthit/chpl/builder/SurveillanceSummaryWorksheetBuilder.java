@@ -16,13 +16,22 @@ import org.apache.poi.ss.util.PropertyTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.dao.surveillance.report.ComplaintSummaryDAO;
 import gov.healthit.chpl.dao.surveillance.report.PrivilegedSurveillanceDAO;
 import gov.healthit.chpl.dao.surveillance.report.SurveillanceSummaryDAO;
+import gov.healthit.chpl.domain.CertificationStatusEvent;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.surveillance.Surveillance;
+import gov.healthit.chpl.dto.SurveillanceTypeDTO;
+import gov.healthit.chpl.dto.surveillance.report.PrivilegedSurveillanceDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
+import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportRelevantListingDTO;
 import gov.healthit.chpl.dto.surveillance.report.SurveillanceOutcomeDTO;
 import gov.healthit.chpl.dto.surveillance.report.SurveillanceProcessTypeDTO;
 import gov.healthit.chpl.dto.surveillance.report.SurveillanceSummaryDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 
 @Component
 public class SurveillanceSummaryWorksheetBuilder {
@@ -38,15 +47,21 @@ public class SurveillanceSummaryWorksheetBuilder {
     private static final String OUTCOME_TYPE_NC = "Non-conformity substantiated";
     private static final String OUTCOME_TYPE_CAP = "Resolved through corrective action";
 
-    private SurveillanceSummaryDAO summaryDao;
+    private CertifiedProductDetailsManager detailsManager;
+    private SurveillanceSummaryDAO survSummaryDao;
+    private ComplaintSummaryDAO complaintSummaryDao;
     private PrivilegedSurveillanceDAO privSurvDao;
     private PropertyTemplate pt;
 
     @Autowired
-    public SurveillanceSummaryWorksheetBuilder(final SurveillanceSummaryDAO summaryDao,
-            final PrivilegedSurveillanceDAO privSurvDao) {
-        this.summaryDao = summaryDao;
+    public SurveillanceSummaryWorksheetBuilder(final CertifiedProductDetailsManager detailsManager,
+            final SurveillanceSummaryDAO survSummaryDao,
+            final PrivilegedSurveillanceDAO privSurvDao,
+            final ComplaintSummaryDAO complaintSummaryDao) {
+        this.detailsManager = detailsManager;
+        this.survSummaryDao = survSummaryDao;
         this.privSurvDao = privSurvDao;
+        this.complaintSummaryDao = complaintSummaryDao;
     }
 
     public int getLastDataColumn() {
@@ -84,7 +99,7 @@ public class SurveillanceSummaryWorksheetBuilder {
         sheet.setColumnWidth(6, workbook.getColumnWidth(40));
 
         addSurveillanceCounts(workbook, sheet, reports);
-        addComplaintsCounts(workbook, sheet);
+        addComplaintsCounts(workbook, sheet, reports);
 
         //apply the borders after the sheet has been created
         pt.applyBorders(sheet);
@@ -120,7 +135,7 @@ public class SurveillanceSummaryWorksheetBuilder {
         createSurveillanceCountsSubheadingRow(workbook, sheet, "Surveillance Counts", 2);
         //number of listings that had an open surveillance during the period of time the reports cover
         SurveillanceSummaryDTO listingSummary =
-                summaryDao.getCountOfListingsSurveilledByType(acbId, startDate, endDate);
+                survSummaryDao.getCountOfListingsSurveilledByType(acbId, startDate, endDate);
         createSurveillanceCountsDataRow(workbook, sheet, "Number of Certificates Surveilled",
                 listingSummary.getReactiveCount(), listingSummary.getRandomizedCount(),
                 listingSummary.getReactiveCount() + listingSummary.getRandomizedCount(), 3);
@@ -138,7 +153,7 @@ public class SurveillanceSummaryWorksheetBuilder {
             }
         }
         SurveillanceSummaryDTO procTypeSummary =
-                summaryDao.getCountOfSurveillanceProcessTypesBySurveillanceType(acbId, procTypes, startDate, endDate);
+                survSummaryDao.getCountOfSurveillanceProcessTypesBySurveillanceType(acbId, procTypes, startDate, endDate);
         createSurveillanceCountsDataRow(workbook, sheet, PROC_TYPE_IN_THE_FIELD,
                 procTypeSummary.getReactiveCount(), procTypeSummary.getRandomizedCount(),
                 procTypeSummary.getReactiveCount() + procTypeSummary.getRandomizedCount(), 5);
@@ -150,7 +165,7 @@ public class SurveillanceSummaryWorksheetBuilder {
             }
         }
         procTypeSummary =
-                summaryDao.getCountOfSurveillanceProcessTypesBySurveillanceType(acbId, procTypes, startDate, endDate);
+                survSummaryDao.getCountOfSurveillanceProcessTypesBySurveillanceType(acbId, procTypes, startDate, endDate);
         createSurveillanceCountsDataRow(workbook, sheet, PROC_TYPE_CONTROLLED,
                 procTypeSummary.getReactiveCount(), procTypeSummary.getRandomizedCount(),
                 procTypeSummary.getReactiveCount() + procTypeSummary.getRandomizedCount(), 6);
@@ -162,7 +177,7 @@ public class SurveillanceSummaryWorksheetBuilder {
             }
         }
         procTypeSummary =
-                summaryDao.getCountOfSurveillanceProcessTypesBySurveillanceType(acbId, procTypes, startDate, endDate);
+                survSummaryDao.getCountOfSurveillanceProcessTypesBySurveillanceType(acbId, procTypes, startDate, endDate);
         createSurveillanceCountsDataRow(workbook, sheet, PROC_TYPE_CORRESPONDENCE,
                 procTypeSummary.getReactiveCount(), procTypeSummary.getRandomizedCount(),
                 procTypeSummary.getReactiveCount() + procTypeSummary.getRandomizedCount(), 7);
@@ -174,7 +189,7 @@ public class SurveillanceSummaryWorksheetBuilder {
             }
         }
         procTypeSummary =
-                summaryDao.getCountOfSurveillanceProcessTypesBySurveillanceType(acbId, procTypes, startDate, endDate);
+                survSummaryDao.getCountOfSurveillanceProcessTypesBySurveillanceType(acbId, procTypes, startDate, endDate);
         createSurveillanceCountsDataRow(workbook, sheet, PROC_TYPE_REVIEW,
                 procTypeSummary.getReactiveCount(), procTypeSummary.getRandomizedCount(),
                 procTypeSummary.getReactiveCount() + procTypeSummary.getRandomizedCount(), 8);
@@ -186,7 +201,7 @@ public class SurveillanceSummaryWorksheetBuilder {
             }
         }
         procTypeSummary =
-                summaryDao.getCountOfSurveillanceProcessTypesBySurveillanceType(acbId, procTypes, startDate, endDate);
+                survSummaryDao.getCountOfSurveillanceProcessTypesBySurveillanceType(acbId, procTypes, startDate, endDate);
         createSurveillanceCountsDataRow(workbook, sheet, PROC_TYPE_OTHER,
                 procTypeSummary.getReactiveCount(), procTypeSummary.getRandomizedCount(),
                 procTypeSummary.getReactiveCount() + procTypeSummary.getRandomizedCount(), 9);
@@ -207,7 +222,7 @@ public class SurveillanceSummaryWorksheetBuilder {
             }
         }
         SurveillanceSummaryDTO outcomeSummary =
-                summaryDao.getCountOfSurveillanceOutcomesBySurveillanceType(acbId, outcomes, startDate, endDate);
+                survSummaryDao.getCountOfSurveillanceOutcomesBySurveillanceType(acbId, outcomes, startDate, endDate);
         createSurveillanceCountsDataRow(workbook, sheet, "Number of Surveillance with No Non-Conformities Found",
                 outcomeSummary.getReactiveCount(), outcomeSummary.getRandomizedCount(),
                 outcomeSummary.getReactiveCount() + outcomeSummary.getRandomizedCount(), 11);
@@ -220,7 +235,7 @@ public class SurveillanceSummaryWorksheetBuilder {
             }
         }
         outcomeSummary =
-                summaryDao.getCountOfSurveillanceOutcomesBySurveillanceType(acbId, outcomes, startDate, endDate);
+                survSummaryDao.getCountOfSurveillanceOutcomesBySurveillanceType(acbId, outcomes, startDate, endDate);
         createSurveillanceCountsDataRow(workbook, sheet, "Number of Surveillance with Non-Conformities Found",
                 outcomeSummary.getReactiveCount(), outcomeSummary.getRandomizedCount(),
                 outcomeSummary.getReactiveCount() + outcomeSummary.getRandomizedCount(), 12);
@@ -233,7 +248,7 @@ public class SurveillanceSummaryWorksheetBuilder {
             }
         }
         outcomeSummary =
-                summaryDao.getCountOfSurveillanceOutcomesBySurveillanceType(acbId, outcomes, startDate, endDate);
+                survSummaryDao.getCountOfSurveillanceOutcomesBySurveillanceType(acbId, outcomes, startDate, endDate);
         createSurveillanceCountsDataRow(workbook, sheet, "Number of Corrective Action Plans",
                 outcomeSummary.getReactiveCount(), outcomeSummary.getRandomizedCount(),
                 outcomeSummary.getReactiveCount() + outcomeSummary.getRandomizedCount(), 13);
@@ -245,45 +260,151 @@ public class SurveillanceSummaryWorksheetBuilder {
         //the listing would be counted in more than one row
         createSurveillanceCountsSubheadingRow(workbook, sheet, "Certification Status Resultant of Surveillance", 14);
 
+        //get the listings with relevant surveillance of each type
+        SurveillanceTypeDTO reactiveType = new SurveillanceTypeDTO();
+        reactiveType.setName("Reactive");
+        SurveillanceTypeDTO randomizedType = new SurveillanceTypeDTO();
+        randomizedType.setName("Randomized");
+        List<QuarterlyReportRelevantListingDTO> listingsWithReactive =
+                survSummaryDao.getListingsBySurveillanceType(acbId, reactiveType, startDate, endDate);
+        List<QuarterlyReportRelevantListingDTO> listingsWithRandomized =
+                survSummaryDao.getListingsBySurveillanceType(acbId, randomizedType, startDate, endDate);
+
+        //need to get the certification status events of each listing
+        //to determine it's status during the surveillance
         List<CertificationStatusType> listingStatuses = new ArrayList<CertificationStatusType>();
         listingStatuses.add(CertificationStatusType.Active);
-        SurveillanceSummaryDTO statusSummary =
-                summaryDao.getCountOfListingStatusBySurveillanceType(acbId, listingStatuses, startDate, endDate);
+        long reactiveSurvActiveStatusCount = 0;
+        for (QuarterlyReportRelevantListingDTO listing : listingsWithReactive) {
+            if (determineIfListingHadStatusDuringRelevantSurveillance(listing, listingStatuses)) {
+                reactiveSurvActiveStatusCount++;
+            }
+        }
+        long randomizedSurvActiveStatusCount = 0;
+        for (QuarterlyReportRelevantListingDTO listing : listingsWithRandomized) {
+            if (determineIfListingHadStatusDuringRelevantSurveillance(listing, listingStatuses)) {
+                randomizedSurvActiveStatusCount++;
+            }
+        }
         createSurveillanceCountsDataRow(workbook, sheet, "Number of Certificates Active",
-                statusSummary.getReactiveCount(), statusSummary.getRandomizedCount(),
-                statusSummary.getReactiveCount() + statusSummary.getRandomizedCount(), 15);
+                reactiveSurvActiveStatusCount, randomizedSurvActiveStatusCount,
+                reactiveSurvActiveStatusCount + randomizedSurvActiveStatusCount, 15);
 
         listingStatuses.clear();
         listingStatuses.add(CertificationStatusType.SuspendedByAcb);
         listingStatuses.add(CertificationStatusType.SuspendedByOnc);
-        statusSummary =
-                summaryDao.getCountOfListingStatusBySurveillanceType(acbId, listingStatuses, startDate, endDate);
+        long reactiveSurvSuspendedStatusCount = 0;
+        for (QuarterlyReportRelevantListingDTO listing : listingsWithReactive) {
+            if (determineIfListingHadStatusDuringRelevantSurveillance(listing, listingStatuses)) {
+                reactiveSurvSuspendedStatusCount++;
+            }
+        }
+        long randomizedSurvSuspendedStatusCount = 0;
+        for (QuarterlyReportRelevantListingDTO listing : listingsWithRandomized) {
+            if (determineIfListingHadStatusDuringRelevantSurveillance(listing, listingStatuses)) {
+                randomizedSurvSuspendedStatusCount++;
+            }
+        }
         createSurveillanceCountsDataRow(workbook, sheet, "Number of Certificates Suspended",
-                statusSummary.getReactiveCount(), statusSummary.getRandomizedCount(),
-                statusSummary.getReactiveCount() + statusSummary.getRandomizedCount(), 16);
+                reactiveSurvSuspendedStatusCount, randomizedSurvSuspendedStatusCount,
+                reactiveSurvSuspendedStatusCount + randomizedSurvSuspendedStatusCount, 16);
 
         listingStatuses.clear();
         listingStatuses.add(CertificationStatusType.WithdrawnByDeveloper);
         listingStatuses.add(CertificationStatusType.WithdrawnByDeveloperUnderReview);
-        statusSummary =
-                summaryDao.getCountOfListingStatusBySurveillanceType(acbId, listingStatuses, startDate, endDate);
+        long reactiveSurvWithdrawnStatusCount = 0;
+        for (QuarterlyReportRelevantListingDTO listing : listingsWithReactive) {
+            if (determineIfListingHadStatusDuringRelevantSurveillance(listing, listingStatuses)) {
+                reactiveSurvWithdrawnStatusCount++;
+            }
+        }
+        long randomizedSurvWithdrawnStatusCount = 0;
+        for (QuarterlyReportRelevantListingDTO listing : listingsWithRandomized) {
+            if (determineIfListingHadStatusDuringRelevantSurveillance(listing, listingStatuses)) {
+                randomizedSurvWithdrawnStatusCount++;
+            }
+        }
         createSurveillanceCountsDataRow(workbook, sheet, "Number of Certificates Withdrawn by Developer",
-                statusSummary.getReactiveCount(), statusSummary.getRandomizedCount(),
-                statusSummary.getReactiveCount() + statusSummary.getRandomizedCount(), 17);
+                reactiveSurvWithdrawnStatusCount, randomizedSurvWithdrawnStatusCount,
+                reactiveSurvWithdrawnStatusCount + randomizedSurvWithdrawnStatusCount, 17);
 
         listingStatuses.clear();
         listingStatuses.add(CertificationStatusType.WithdrawnByAcb);
-        statusSummary =
-                summaryDao.getCountOfListingStatusBySurveillanceType(acbId, listingStatuses, startDate, endDate);
+        long reactiveSurvWithdrawnAcbStatusCount = 0;
+        for (QuarterlyReportRelevantListingDTO listing : listingsWithReactive) {
+            if (determineIfListingHadStatusDuringRelevantSurveillance(listing, listingStatuses)) {
+                reactiveSurvWithdrawnAcbStatusCount++;
+            }
+        }
+        long randomizedSurvWithdrawnAcbStatusCount = 0;
+        for (QuarterlyReportRelevantListingDTO listing : listingsWithRandomized) {
+            if (determineIfListingHadStatusDuringRelevantSurveillance(listing, listingStatuses)) {
+                randomizedSurvWithdrawnAcbStatusCount++;
+            }
+        }
         createSurveillanceCountsDataRow(workbook, sheet, "Number of Certificates Withdrawn by ONC-ACB",
-                statusSummary.getReactiveCount(), statusSummary.getRandomizedCount(),
-                statusSummary.getReactiveCount() + statusSummary.getRandomizedCount(), 18);
+                reactiveSurvWithdrawnAcbStatusCount, randomizedSurvWithdrawnAcbStatusCount,
+                reactiveSurvWithdrawnAcbStatusCount + randomizedSurvWithdrawnAcbStatusCount, 18);
 
         pt.drawBorders(new CellRangeAddress(1, 18, 1, 4),
                 BorderStyle.MEDIUM, BorderExtent.OUTSIDE);
     }
 
-    private void addComplaintsCounts(final SurveillanceReportWorkbookWrapper workbook, final Sheet sheet) {
+    private boolean determineIfListingHadStatusDuringRelevantSurveillance(final QuarterlyReportRelevantListingDTO listing,
+            final List<CertificationStatusType> statusesToCheck) {
+        boolean result = false;
+        //get the certification events for the listing
+        List<CertificationStatusEvent> statusEvents = new ArrayList<CertificationStatusEvent>();
+        try {
+            statusEvents = detailsManager.getCertificationStatusEvents(listing.getId());
+        } catch (EntityRetrievalException ex) {}
+        CertifiedProductSearchDetails details = new CertifiedProductSearchDetails();
+        details.setId(listing.getId());
+        details.setCertificationEvents(statusEvents);
+
+        //check each relevant surveillance to see if the listing's status matches 
+        //the status to check on the end date of the surveillance
+        for (PrivilegedSurveillanceDTO surv : listing.getSurveillances()) {
+            String resultantStatus = determineResultantCertificationStatus(details, surv);
+            for (CertificationStatusType statusToCheck : statusesToCheck) {
+                if (statusToCheck.getName().equals(resultantStatus)) {
+                    result = true;
+                }
+            }
+        }
+        return result;
+    }
+
+    private String determineResultantCertificationStatus(final CertifiedProductSearchDetails listing,
+            final PrivilegedSurveillanceDTO surv) {
+        String result = "";
+        if (surv.getEndDate() == null) {
+            result = listing.getCurrentStatus().getStatus().getName();
+        } else {
+            CertificationStatusEvent statusEvent = listing.getStatusOnDate(surv.getEndDate());
+            if (statusEvent != null) {
+                result = statusEvent.getStatus().getName();
+            }
+        }
+        return result;
+    }
+
+    private void addComplaintsCounts(final SurveillanceReportWorkbookWrapper workbook, final Sheet sheet,
+            final List<QuarterlyReportDTO> reports) {
+        //the reports must all be for the same ACB so just take the acb in the first one
+        Long acbId = reports.get(0).getAcb().getId();
+        //find the date range encompassing all the reports
+        Date startDate = reports.get(0).getStartDate();
+        Date endDate = reports.get(0).getEndDate();
+        for (QuarterlyReportDTO report : reports) {
+            if (report.getStartDate().getTime() < startDate.getTime()) {
+                startDate = report.getStartDate();
+            }
+            if (report.getEndDate().getTime() > endDate.getTime()) {
+                endDate = report.getEndDate();
+            }
+        }
+
         Row row = workbook.getRow(sheet, 1);
         Cell cell = workbook.createCell(row, 6, workbook.getRightAlignedTableHeadingStyle());
         cell.setCellValue("");
@@ -291,16 +412,22 @@ public class SurveillanceSummaryWorksheetBuilder {
         cell.setCellValue("Total");
 
         createComplaintCountsSubheadingRow(workbook, sheet, "Complaint Counts", 2);
-        createComplainCountsDataRow(workbook, sheet, "Total Number Received", -1, 3);
-        createComplainCountsDataRow(workbook, sheet, "Total Number Referred by ONC", -1, 4);
-
+        Long totalComplaintsReceived = complaintSummaryDao.getTotalComplaints(acbId, startDate, endDate);
+        createComplainCountsDataRow(workbook, sheet, "Total Number Received", totalComplaintsReceived, 3);
+        Long totalComplaintsFromOnc = complaintSummaryDao.getTotalComplaintsFromOnc(acbId, startDate, endDate);
+        createComplainCountsDataRow(workbook, sheet, "Total Number Referred by ONC", totalComplaintsFromOnc, 4);
         createComplaintCountsSubheadingRow(workbook, sheet, "Surveillance Activities Trigged by Complaints", 5);
-        createComplainCountsDataRow(workbook, sheet, "Number that Led to Surveillance Activities", -1, 6);
-        createComplainCountsDataRow(workbook, sheet, "Number of Surveillance Activities", -1, 7);
-
+        Long totalComplaintsWithSurv = complaintSummaryDao.getTotalComplaintsResultingInSurveillance(acbId, startDate, endDate);
+        createComplainCountsDataRow(workbook, sheet, "Number that Led to Surveillance Activities", totalComplaintsWithSurv, 6);
+        Long totalSurvFromComplaints = complaintSummaryDao.getTotalSurveillanceRelatedToComplaints(acbId, startDate, endDate);
+        createComplainCountsDataRow(workbook, sheet, "Number of Surveillance Activities", totalSurvFromComplaints, 7);
         createComplaintCountsSubheadingRow(workbook, sheet, "Non-Conformities Found by Complaints", 8);
-        createComplainCountsDataRow(workbook, sheet, "Number that Led to Non-conformities", -1, 9);
-        createComplainCountsDataRow(workbook, sheet, "Number of Non-conformities", -1, 10);
+        Long totalComplaintsResultingInNonconformities =
+                complaintSummaryDao.getTotalComplaintsResultingInNonconformities(acbId, startDate, endDate);
+        createComplainCountsDataRow(workbook, sheet, "Number that Led to Non-conformities", totalComplaintsResultingInNonconformities, 9);
+        Long totalNonconformitiesFromComplaints =
+                complaintSummaryDao.getTotalNonconformitiesRelatedToComplaints(acbId, startDate, endDate);
+        createComplainCountsDataRow(workbook, sheet, "Number of Non-conformities", totalNonconformitiesFromComplaints, 10);
 
         //dark outside border around the whole table
         pt.drawBorders(new CellRangeAddress(1, 10, 6, 7),
@@ -349,7 +476,7 @@ public class SurveillanceSummaryWorksheetBuilder {
     }
 
     private void createComplainCountsDataRow(final SurveillanceReportWorkbookWrapper workbook,
-            final Sheet sheet, final String name, final int value, final int rowNum) {
+            final Sheet sheet, final String name, final long value, final int rowNum) {
         Row row = workbook.getRow(sheet, rowNum);
         Cell cell = workbook.createCell(row, 6);
         cell.setCellValue(name);

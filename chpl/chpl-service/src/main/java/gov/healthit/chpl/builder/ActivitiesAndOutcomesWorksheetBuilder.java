@@ -516,7 +516,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
     }
 
     /**
-     * The relevant listings objects in the quarterly report some have information about the listing
+     * The relevant listings objects in the quarterly report has some information about the listing
      * itself but not everything that is needed to build the reports.
      * This method queries for certification status events as well as relevant surveillance
      * (surveillance that occurred during the quarter) and adds it into a new details object.
@@ -655,7 +655,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
                     }
                 }
             }
-            result = buildStringFromMap(valueMap);
+            result = MultiQuarterWorksheetBuilderUtil.buildStringFromMap(valueMap);
         }
         return result;
     }
@@ -697,7 +697,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
                     }
                 }
             }
-            result = buildStringFromMap(valueMap);
+            result = MultiQuarterWorksheetBuilderUtil.buildStringFromMap(valueMap);
         }
         return result;
     }
@@ -733,7 +733,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
                     }
                 }
             }
-            result = buildStringFromMap(valueMap);
+            result = MultiQuarterWorksheetBuilderUtil.buildStringFromMap(valueMap);
         }
         return result;
     }
@@ -775,7 +775,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
                     }
                 }
             }
-            result = buildStringFromMap(valueMap);
+            result = MultiQuarterWorksheetBuilderUtil.buildStringFromMap(valueMap);
         }
         return result;
     }
@@ -817,7 +817,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
                     }
                 }
             }
-            result = buildStringFromMap(valueMap);
+            result = MultiQuarterWorksheetBuilderUtil.buildStringFromMap(valueMap);
         }
         return result;
     }
@@ -859,7 +859,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
                     }
                 }
             }
-            result = buildStringFromMap(valueMap);
+            result = MultiQuarterWorksheetBuilderUtil.buildStringFromMap(valueMap);
         }
         return result;
     }
@@ -901,7 +901,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
                     }
                 }
             }
-            result = buildStringFromMap(valueMap);
+            result = MultiQuarterWorksheetBuilderUtil.buildStringFromMap(valueMap);
         }
         return result;
     }
@@ -943,7 +943,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
                     }
                 }
             }
-            result = buildStringFromMap(valueMap);
+            result = MultiQuarterWorksheetBuilderUtil.buildStringFromMap(valueMap);
         }
         return result;
     }
@@ -985,7 +985,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
                     }
                 }
             }
-            result = buildStringFromMap(valueMap);
+            result = MultiQuarterWorksheetBuilderUtil.buildStringFromMap(valueMap);
         }
         return result;
     }
@@ -1027,7 +1027,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
                     }
                 }
             }
-            result = buildStringFromMap(valueMap);
+            result = MultiQuarterWorksheetBuilderUtil.buildStringFromMap(valueMap);
         }
         return result;
     }
@@ -1069,7 +1069,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
                     }
                 }
             }
-            result = buildStringFromMap(valueMap);
+            result = MultiQuarterWorksheetBuilderUtil.buildStringFromMap(valueMap);
         }
         return result;
     }
@@ -1111,7 +1111,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
                     }
                 }
             }
-            result = buildStringFromMap(valueMap);
+            result = MultiQuarterWorksheetBuilderUtil.buildStringFromMap(valueMap);
         }
         return result;
     }
@@ -1153,7 +1153,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
                     }
                 }
             }
-            result = buildStringFromMap(valueMap);
+            result = MultiQuarterWorksheetBuilderUtil.buildStringFromMap(valueMap);
         }
         return result;
     }
@@ -1195,7 +1195,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
                     }
                 }
             }
-            result = buildStringFromMap(valueMap);
+            result = MultiQuarterWorksheetBuilderUtil.buildStringFromMap(valueMap);
         }
         return result;
     }
@@ -1237,33 +1237,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
                     }
                 }
             }
-            result = buildStringFromMap(valueMap);
-        }
-        return result;
-    }
-
-    /**
-     * Takes a map where the key is a user-entered privileged surveillance string
-     * and the value is an array of quarter names that the string applies to
-     * @param valueMap
-     * @return
-     */
-    private String buildStringFromMap(final Map<String, ArrayList<String>> valueMap) {
-        String result = "";
-      //build the string that goes in the cell
-        for (String uniqueVal : valueMap.keySet()) {
-            if (result.length() > 0) {
-                result += "\n";
-            }
-            ArrayList<String> quarterNameList = valueMap.get(uniqueVal);
-            String quarterNameStr = "";
-            for (String quarterName : quarterNameList) {
-                if (quarterNameStr.length() > 0) {
-                    quarterNameStr += ", ";
-                }
-                quarterNameStr += quarterName;
-            }
-            result += quarterNameStr + ": " + uniqueVal;
+            result = MultiQuarterWorksheetBuilderUtil.buildStringFromMap(valueMap);
         }
         return result;
     }
