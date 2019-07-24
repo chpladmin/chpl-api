@@ -50,6 +50,7 @@ import gov.healthit.chpl.dto.ComplaintCriterionMapDTO;
 import gov.healthit.chpl.dto.ComplaintDTO;
 import gov.healthit.chpl.dto.ComplaintListingMapDTO;
 import gov.healthit.chpl.dto.ComplaintSurveillanceMapDTO;
+import gov.healthit.chpl.dto.SurveillanceBasicDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportExclusionDTO;
@@ -586,6 +587,7 @@ public class QuarterlyReportManagerTest extends TestCase {
 
         //complaint associated with a listing
         ComplaintDTO listingComplaint = createComplaint(acbId, "one listing", new Date(createdReport.getStartDate().getTime() + 24*60*60*1000));
+        listingComplaint.setComplainantTypeOther("Other complaint type description");
         ComplaintListingMapDTO listingMap = new ComplaintListingMapDTO();
         listingMap.setListingId(1L);
         listingMap.setComplaintId(listingComplaint.getId());
@@ -628,6 +630,9 @@ public class QuarterlyReportManagerTest extends TestCase {
         ComplaintDTO survComplaint = createComplaint(acbId, "surveillance", new Date(createdReport.getStartDate().getTime() + 72*60*60*1000));
         ComplaintSurveillanceMapDTO survMap = new ComplaintSurveillanceMapDTO();
         survMap.setSurveillanceId(createdSurv.getId());
+        SurveillanceBasicDTO complaintSurv = new SurveillanceBasicDTO();
+        complaintSurv.setId(createdSurv.getId());
+        survMap.setSurveillance(complaintSurv);
         survMap.setComplaintId(survComplaint.getId());
         survComplaint.getSurveillances().add(survMap);
         complaintDao.update(survComplaint);
