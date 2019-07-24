@@ -50,18 +50,19 @@ public class ComplaintsWorksheetBuilder {
     private static final int COL_SUMMARY = 4;
     private static final int COL_ACTIONS_RESPONSE = 5;
     private static final int COL_COMPLAINANT_TYPE = 6;
-    private static final int COL_CRITERIA_ID = 7;
-    private static final int COL_CHPL_ID = 8;
-    private static final int COL_SURV_ID = 9;
+    private static final int COL_COMPLAINANT_TYPE_OTHER = 7;
+    private static final int COL_CRITERIA_ID = 8;
+    private static final int COL_CHPL_ID = 9;
+    private static final int COL_SURV_ID = 10;
     //columns 10 - 13 get hidden
-    private static final int COL_DEVELOPER = 10;
-    private static final int COL_PRODUCT = 11;
-    private static final int COL_VERSION = 12;
-    private static final int COL_SURV_OUTCOME = 13;
-    private static final int COL_COMPLAINANT_CONTACTED = 14;
-    private static final int COL_DEVELOPER_CONTACTED = 15;
-    private static final int COL_ATL_CONTACTED = 16;
-    private static final int COL_COMPLAINT_STATUS = 17;
+    private static final int COL_DEVELOPER = 11;
+    private static final int COL_PRODUCT = 12;
+    private static final int COL_VERSION = 13;
+    private static final int COL_SURV_OUTCOME = 14;
+    private static final int COL_COMPLAINANT_CONTACTED = 15;
+    private static final int COL_DEVELOPER_CONTACTED = 16;
+    private static final int COL_ATL_CONTACTED = 17;
+    private static final int COL_COMPLAINT_STATUS = 18;
 
     private ComplaintManager complaintManager;
     private CertifiedProductDetailsManager cpdManager; 
@@ -115,6 +116,7 @@ public class ComplaintsWorksheetBuilder {
         sheet.setColumnWidth(COL_SUMMARY, workbook.getColumnWidth(36.78));
         sheet.setColumnWidth(COL_ACTIONS_RESPONSE, workbook.getColumnWidth(78));
         sheet.setColumnWidth(COL_COMPLAINANT_TYPE, workbook.getColumnWidth(22));
+        sheet.setColumnWidth(COL_COMPLAINANT_TYPE_OTHER, workbook.getColumnWidth(22));
         sheet.setColumnWidth(COL_CRITERIA_ID, sharedColWidth);
         sheet.setColumnWidth(COL_CHPL_ID, sharedColWidth);
         sheet.setColumnWidth(COL_SURV_ID, sharedColWidth);
@@ -227,6 +229,7 @@ public class ComplaintsWorksheetBuilder {
         addHeadingCell(workbook, row, COL_SUMMARY, "Complaint Summary");
         addHeadingCell(workbook, row, COL_ACTIONS_RESPONSE, "Actions/Response");
         addHeadingCell(workbook, row, COL_COMPLAINANT_TYPE, "Type of Complaint");
+        addHeadingCell(workbook, row, COL_COMPLAINANT_TYPE_OTHER, "Type of Complaint - Other");
         addHeadingCell(workbook, row, COL_CRITERIA_ID, "Criteria");
         addHeadingCell(workbook, row, COL_CHPL_ID, "CHPL ID");
         addHeadingCell(workbook, row, COL_SURV_ID, "Surveillance ID");
@@ -427,7 +430,9 @@ public class ComplaintsWorksheetBuilder {
         addDataCell(workbook, row, COL_ONC_COMPLAINT_ID, complaint.getOncComplaintId());
         addDataCell(workbook, row, COL_SUMMARY, complaint.getSummary());
         addDataCell(workbook, row, COL_ACTIONS_RESPONSE, complaint.getActions());
-        addDataCell(workbook, row, COL_COMPLAINANT_TYPE, complaint.getComplainantType().getName());
+        addDataCell(workbook, row, COL_COMPLAINANT_TYPE, 
+                complaint.getComplainantType() != null ? complaint.getComplainantType().getName() : "");
+        addDataCell(workbook, row, COL_COMPLAINANT_TYPE_OTHER, complaint.getComplainantTypeOther());
         addDataCell(workbook, row, COL_COMPLAINANT_CONTACTED, complaint.isComplainantContacted() ? "Yes" : "No");
         addDataCell(workbook, row, COL_DEVELOPER_CONTACTED, complaint.isDeveloperContacted() ? "Yes" : "No");
         addDataCell(workbook, row, COL_ATL_CONTACTED, complaint.isOncAtlContacted() ? "Yes" : "No");
