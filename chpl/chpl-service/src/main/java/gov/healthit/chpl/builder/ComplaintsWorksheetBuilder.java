@@ -54,7 +54,7 @@ public class ComplaintsWorksheetBuilder {
     private static final int COL_CRITERIA_ID = 8;
     private static final int COL_CHPL_ID = 9;
     private static final int COL_SURV_ID = 10;
-    //columns 10 - 13 get hidden
+    //columns 11 - 14 get hidden
     private static final int COL_DEVELOPER = 11;
     private static final int COL_PRODUCT = 12;
     private static final int COL_VERSION = 13;
