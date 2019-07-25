@@ -12,6 +12,7 @@ import gov.healthit.chpl.permissions.domains.activity.GetActivityMetadataByConce
 import gov.healthit.chpl.permissions.domains.activity.GetAnnouncementMetadataActionPermissions;
 import gov.healthit.chpl.permissions.domains.activity.GetAtlActivityMetadataActionPermissions;
 import gov.healthit.chpl.permissions.domains.activity.GetByAcbActionPermissions;
+import gov.healthit.chpl.permissions.domains.activity.GetComplaintActivityMetadataActionPermissions;
 import gov.healthit.chpl.permissions.domains.activity.GetPendingListingActivityActionPermissions;
 import gov.healthit.chpl.permissions.domains.activity.GetPendingListingActivityByAcbActionPermissions;
 import gov.healthit.chpl.permissions.domains.activity.GetPendingListingMetadataActionPermissions;
@@ -35,6 +36,7 @@ public class ActivityDomainPermissions extends DomainPermissions {
     public static final String GET_PENDING_LISTING_METADATA = "GET_PENDING_LISTING_METADATA";
     public static final String GET_PENDING_SURVEILLANCE_METADATA = "GET_PENDING_SURVEILLANCE_METADATA";
     public static final String GET_ANNOUNCEMENT_METADATA = "GET_ANNOUNCEMENT_METADATA";
+    public static final String GET_COMPLAINT_METADATA = "GET_COMPLAINT_METADATA";
 
     @Autowired
     public ActivityDomainPermissions(
@@ -51,7 +53,8 @@ public class ActivityDomainPermissions extends DomainPermissions {
             @Qualifier("activityGetActivityMetadataByConceptActionPermissions") GetActivityMetadataByConceptActionPermissions getActivityMetadataByConceptActionPermissions,
             @Qualifier("activityGetPendingListingMetadataActionPermissions") GetPendingListingMetadataActionPermissions getPendingListingMetadataActionPermissions,
             @Qualifier("activityGetPendingSurveillanceMetadataActionPermissions") GetPendingSurveillanceMetadataActionPermissions getPendingSurveillanceMetadataActionPermissions,
-            @Qualifier("activityGetAnnouncementMetadataActionPermissions") GetAnnouncementMetadataActionPermissions getAnnouncementMetadataActionPermissions) {
+            @Qualifier("activityGetAnnouncementMetadataActionPermissions") GetAnnouncementMetadataActionPermissions getAnnouncementMetadataActionPermissions,
+            @Qualifier("activityGetComplaintActivityMetadataActionPermissions") GetComplaintActivityMetadataActionPermissions getComplaintActivityMetadataActionPermissions) {
 
         getActionPermissions().put(GET_BY_ACB, getByAcbActionPermissions);
         getActionPermissions().put(GET_ACB_METADATA, getAcbActivityMetadataActionPermissions);
@@ -67,5 +70,6 @@ public class ActivityDomainPermissions extends DomainPermissions {
         getActionPermissions().put(GET_PENDING_LISTING_METADATA, getPendingListingMetadataActionPermissions);
         getActionPermissions().put(GET_PENDING_SURVEILLANCE_METADATA, getPendingSurveillanceMetadataActionPermissions);
         getActionPermissions().put(GET_ANNOUNCEMENT_METADATA, getAnnouncementMetadataActionPermissions);
+        getActionPermissions().put(GET_COMPLAINT_METADATA, getComplaintActivityMetadataActionPermissions);
     }
 }

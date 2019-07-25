@@ -485,6 +485,20 @@ public class ActivityController {
         return activityMetadataManager.getAnnouncementActivityMetadata(startDate, endDate);
     }
     
+    @ApiOperation(value = "Get metadata about auditable records in the system for complaints.",
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results." 
+                    + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all testing labs.  "
+                    + "ROLE_ACB can see activity for their own ACBs.")
+    @RequestMapping(value = "/metadata/complaints", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public List<ActivityMetadata> metadataForComplaints(@RequestParam final Long start,
+            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
+        Date startDate = new Date(start);
+        Date endDate = new Date(end);
+        validateActivityDatesAndDateRange(start, end);
+        return activityMetadataManager.getComplaintActivityMetadata(startDate, endDate);
+    }
+    
     @ApiOperation(value = "Get metadata about auditable records in the system for pending listings.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
     @RequestMapping(value = "/metadata/pending_listings", method = RequestMethod.GET,
