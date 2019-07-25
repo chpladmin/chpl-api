@@ -562,47 +562,41 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
             }
 
             //copy privileged surveillance data
-            List<QuarterlyReportRelevantListingDTO> prevReportListingsWithSurveillance =
-                    quarterlyDao.getListingsWithRelevantSurveillance(prevReport);
+            List<PrivilegedSurveillanceDTO> prevReportSurveillanceWithPrivilegedData =
+                    quarterlySurvMapDao.getByReport(prevReport.getId());
             List<QuarterlyReportRelevantListingDTO> nextReportListingsWithSurveillance =
                     quarterlyDao.getListingsWithRelevantSurveillance(nextReport);
             for (QuarterlyReportRelevantListingDTO nextReportListingWithSurv : nextReportListingsWithSurveillance) {
-                for (QuarterlyReportRelevantListingDTO prevReportListingWithSurv : prevReportListingsWithSurveillance) {
-                    if (nextReportListingWithSurv.getId().equals(prevReportListingWithSurv.getId())) {
-                        //found the same listing in both reports
-                        //look for a matching relevant surveillance
-                        for (PrivilegedSurveillanceDTO nextReportSurv : nextReportListingWithSurv.getSurveillances()) {
-                            for (PrivilegedSurveillanceDTO prevReportSurv : prevReportListingWithSurv.getSurveillances()) {
-                                if (nextReportSurv.getId().equals(prevReportSurv.getId())) {
-                                    //same surveillance is relevant in both prev and next quarters!
-                                    //copy the data
-                                    nextReportSurv.setQuarterlyReport(nextReport);
-                                    nextReportSurv.setK1Reviewed(prevReportSurv.getK1Reviewed());
-                                    nextReportSurv.setGroundsForInitiating(prevReportSurv.getGroundsForInitiating());
-                                    nextReportSurv.setNonconformityCauses(prevReportSurv.getNonconformityCauses());
-                                    nextReportSurv.setNonconformityNature(prevReportSurv.getNonconformityNature());
-                                    nextReportSurv.setStepsToSurveil(prevReportSurv.getStepsToSurveil());
-                                    nextReportSurv.setStepsToEngage(prevReportSurv.getStepsToEngage());
-                                    nextReportSurv.setAdditionalCostsEvaluation(prevReportSurv.getAdditionalCostsEvaluation());
-                                    nextReportSurv.setLimitationsEvaluation(prevReportSurv.getLimitationsEvaluation());
-                                    nextReportSurv.setNondisclosureEvaluation(prevReportSurv.getNondisclosureEvaluation());
-                                    nextReportSurv.setDirectionDeveloperResolution(
-                                            prevReportSurv.getDirectionDeveloperResolution());
-                                    nextReportSurv.setCompletedCapVerification(prevReportSurv.getCompletedCapVerification());
-                                    nextReportSurv.setSurveillanceOutcome(prevReportSurv.getSurveillanceOutcome());
-                                    nextReportSurv.setSurveillanceOutcomeOther(prevReportSurv.getSurveillanceOutcomeOther());
-                                    nextReportSurv.setSurveillanceProcessType(prevReportSurv.getSurveillanceProcessType());
-                                    nextReportSurv.setSurveillanceProcessTypeOther(
-                                            prevReportSurv.getSurveillanceProcessTypeOther());
-                                    try {
-                                        quarterlySurvMapDao.create(nextReportSurv);
-                                    } catch (Exception ex) {
-                                        LOGGER.error("Could not copy privileged surveillance for surveillance "
-                                                + nextReportSurv.getId()
-                                                + " from " + prevReport.getQuarter().getName() + " into "
-                                                + nextReport.getQuarter().getName());
-                                    }
-                                }
+                for (PrivilegedSurveillanceDTO nextReportSurv : nextReportListingWithSurv.getSurveillances()) {
+                    //for each surveillance relevant to the new report, see if it has
+                    //and privileged data entered in the previous report
+                    for (PrivilegedSurveillanceDTO prevReportSurv : prevReportSurveillanceWithPrivilegedData) {
+                        if (nextReportSurv.getId().equals(prevReportSurv.getId())) {
+                            nextReportSurv.setQuarterlyReport(nextReport);
+                            nextReportSurv.setK1Reviewed(prevReportSurv.getK1Reviewed());
+                            nextReportSurv.setGroundsForInitiating(prevReportSurv.getGroundsForInitiating());
+                            nextReportSurv.setNonconformityCauses(prevReportSurv.getNonconformityCauses());
+                            nextReportSurv.setNonconformityNature(prevReportSurv.getNonconformityNature());
+                            nextReportSurv.setStepsToSurveil(prevReportSurv.getStepsToSurveil());
+                            nextReportSurv.setStepsToEngage(prevReportSurv.getStepsToEngage());
+                            nextReportSurv.setAdditionalCostsEvaluation(prevReportSurv.getAdditionalCostsEvaluation());
+                            nextReportSurv.setLimitationsEvaluation(prevReportSurv.getLimitationsEvaluation());
+                            nextReportSurv.setNondisclosureEvaluation(prevReportSurv.getNondisclosureEvaluation());
+                            nextReportSurv.setDirectionDeveloperResolution(
+                                    prevReportSurv.getDirectionDeveloperResolution());
+                            nextReportSurv.setCompletedCapVerification(prevReportSurv.getCompletedCapVerification());
+                            nextReportSurv.setSurveillanceOutcome(prevReportSurv.getSurveillanceOutcome());
+                            nextReportSurv.setSurveillanceOutcomeOther(prevReportSurv.getSurveillanceOutcomeOther());
+                            nextReportSurv.setSurveillanceProcessType(prevReportSurv.getSurveillanceProcessType());
+                            nextReportSurv.setSurveillanceProcessTypeOther(
+                                    prevReportSurv.getSurveillanceProcessTypeOther());
+                            try {
+                                quarterlySurvMapDao.create(nextReportSurv);
+                            } catch (Exception ex) {
+                                LOGGER.error("Could not copy privileged surveillance for surveillance "
+                                        + nextReportSurv.getId()
+                                        + " from " + prevReport.getQuarter().getName() + " into "
+                                        + nextReport.getQuarter().getName());
                             }
                         }
                     }

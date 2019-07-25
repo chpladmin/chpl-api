@@ -42,7 +42,7 @@ public class SurveillanceBasicDTO implements Serializable {
 
     public SurveillanceBasicDTO(final PrivilegedSurveillanceEntity entity) {
         BeanUtils.copyProperties(entity, this);
-        this.id = entity.getSurveillanceId();
+        //this.id = entity.getSurveillanceId();
         if (entity.getSurveillanceType() != null) {
             this.surveillanceType = new SurveillanceTypeDTO(entity.getSurveillanceType());
         }
