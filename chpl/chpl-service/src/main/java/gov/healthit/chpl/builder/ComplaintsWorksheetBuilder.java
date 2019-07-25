@@ -63,6 +63,7 @@ public class ComplaintsWorksheetBuilder {
     private static final int COL_DEVELOPER_CONTACTED = 16;
     private static final int COL_ATL_CONTACTED = 17;
     private static final int COL_COMPLAINT_STATUS = 18;
+    private static final int COL_FLAGGED_FOR_ONC = 19;
 
     private ComplaintManager complaintManager;
     private CertifiedProductDetailsManager cpdManager; 
@@ -128,6 +129,7 @@ public class ComplaintsWorksheetBuilder {
         sheet.setColumnWidth(COL_DEVELOPER_CONTACTED, sharedColWidth);
         sheet.setColumnWidth(COL_ATL_CONTACTED, sharedColWidth);
         sheet.setColumnWidth(COL_COMPLAINT_STATUS, sharedColWidth);
+        sheet.setColumnWidth(COL_FLAGGED_FOR_ONC, sharedColWidth);
 
         lastDataRow += addHeadingRow(workbook, sheet);
         lastDataRow += addTableData(workbook, sheet, quarterlyReports);
@@ -228,8 +230,8 @@ public class ComplaintsWorksheetBuilder {
         addHeadingCell(workbook, row, COL_ONC_COMPLAINT_ID, "ONC Complaint ID (if applicable)");
         addHeadingCell(workbook, row, COL_SUMMARY, "Complaint Summary");
         addHeadingCell(workbook, row, COL_ACTIONS_RESPONSE, "Actions/Response");
-        addHeadingCell(workbook, row, COL_COMPLAINANT_TYPE, "Type of Complaint");
-        addHeadingCell(workbook, row, COL_COMPLAINANT_TYPE_OTHER, "Type of Complaint - Other");
+        addHeadingCell(workbook, row, COL_COMPLAINANT_TYPE, "Type of Complainant");
+        addHeadingCell(workbook, row, COL_COMPLAINANT_TYPE_OTHER, "Type of Complainant - Other");
         addHeadingCell(workbook, row, COL_CRITERIA_ID, "Criteria");
         addHeadingCell(workbook, row, COL_CHPL_ID, "CHPL ID");
         addHeadingCell(workbook, row, COL_SURV_ID, "Surveillance ID");
@@ -241,6 +243,7 @@ public class ComplaintsWorksheetBuilder {
         addHeadingCell(workbook, row, COL_DEVELOPER_CONTACTED, "Developer Contacted?");
         addHeadingCell(workbook, row, COL_ATL_CONTACTED, "ONC-ATL Contacted?");
         addHeadingCell(workbook, row, COL_COMPLAINT_STATUS, "Complaint Status");
+        addHeadingCell(workbook, row, COL_FLAGGED_FOR_ONC, "Flag for ONC Review");
         return 1;
     }
 
@@ -437,6 +440,7 @@ public class ComplaintsWorksheetBuilder {
         addDataCell(workbook, row, COL_DEVELOPER_CONTACTED, complaint.isDeveloperContacted() ? "Yes" : "No");
         addDataCell(workbook, row, COL_ATL_CONTACTED, complaint.isOncAtlContacted() ? "Yes" : "No");
         addDataCell(workbook, row, COL_COMPLAINT_STATUS, complaint.getComplaintStatusType().getName());
+        addDataCell(workbook, row, COL_FLAGGED_FOR_ONC, complaint.isFlagForOncReview() ? "Yes" : "No");
     }
 
     private Cell addHeadingCell(final SurveillanceReportWorkbookWrapper workbook,
