@@ -29,7 +29,7 @@ public interface ComplaintManager {
     Complaint update(Complaint complaint)
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException;
 
-    void delete(Long complaintId) throws EntityRetrievalException;
+    void delete(Long complaintId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 
     ComplaintStatusTypeDTO getComplaintStatusType(String name);
 }

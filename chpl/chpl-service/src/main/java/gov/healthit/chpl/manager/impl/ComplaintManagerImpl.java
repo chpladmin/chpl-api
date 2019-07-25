@@ -162,6 +162,9 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
         ComplaintDTO dto = complaintDAO.getComplaint(complaintId);
         if (dto != null) {
             complaintDAO.delete(dto);
+
+            activityManager.addActivity(ActivityConcept.COMPLAINT, dto.getId(), "Complaint has been deleted", dto,
+                    null);
         }
     }
 
