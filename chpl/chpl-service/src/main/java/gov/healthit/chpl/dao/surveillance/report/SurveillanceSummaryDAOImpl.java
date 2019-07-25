@@ -64,13 +64,14 @@ public class SurveillanceSummaryDAOImpl extends BaseDAOImpl implements Surveilla
     @Override
     public SurveillanceSummaryDTO getCountOfSurveillanceProcessTypesBySurveillanceType(final Long acbId,
             final List<SurveillanceProcessTypeDTO> procTypes, final Date startDate, final Date endDate) {
-        String queryStr = "SELECT survType.name, COUNT(DISTINCT surv.surveillanceId) "
+        String queryStr = "SELECT survType.name, COUNT(DISTINCT surv.id) "
                 + "FROM ListingWithPrivilegedSurveillanceEntity listing "
                 + "JOIN listing.surveillances surv "
                 + "JOIN surv.surveillanceType survType "
+                + "JOIN surv.privSurvMap privSurvMap "
                 + "WHERE listing.certificationBodyId = :acbId "
                 + "AND listing.deleted = false "
-                + "AND surv.surveillanceProcessTypeId IN (:procTypeIds) "
+                + "AND privSurvMap.surveillanceProcessTypeId IN (:procTypeIds) "
                 + "AND surv.startDate <= :endDate "
                 + "AND (surv.endDate IS NULL OR surv.endDate >= :startDate) "
                 + "GROUP BY survType.name";
@@ -101,13 +102,14 @@ public class SurveillanceSummaryDAOImpl extends BaseDAOImpl implements Surveilla
     @Override
     public SurveillanceSummaryDTO getCountOfSurveillanceOutcomesBySurveillanceType(final Long acbId,
             final List<SurveillanceOutcomeDTO> outcomes, final Date startDate, final Date endDate) {
-        String queryStr = "SELECT survType.name, COUNT(DISTINCT surv.surveillanceId) "
+        String queryStr = "SELECT survType.name, COUNT(DISTINCT surv.id) "
                 + "FROM ListingWithPrivilegedSurveillanceEntity listing "
                 + "JOIN listing.surveillances surv "
                 + "JOIN surv.surveillanceType survType "
+                + "JOIN surv.privSurvMap privSurvMap "
                 + "WHERE listing.certificationBodyId = :acbId "
                 + "AND listing.deleted = false "
-                + "AND surv.surveillanceOutcomeId IN (:survOutcomeIds) "
+                + "AND privSurvMap.surveillanceOutcomeId IN (:survOutcomeIds) "
                 + "AND surv.startDate <= :endDate "
                 + "AND (surv.endDate IS NULL OR surv.endDate >= :startDate) "
                 + "GROUP BY survType.name";

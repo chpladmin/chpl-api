@@ -210,11 +210,12 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
                 + "FROM ListingWithPrivilegedSurveillanceEntity listing "
                 + "LEFT JOIN FETCH listing.surveillances surv "
                 + "LEFT JOIN FETCH surv.surveillanceType "
-                + "LEFT JOIN FETCH surv.quarterlyReport "
-                + "LEFT JOIN FETCH surv.surveillanceOutcome "
-                + "LEFT JOIN FETCH surv.surveillanceProcessType "
+                + "LEFT JOIN FETCH surv.privSurvMap privSurvMap "
+                + "LEFT JOIN FETCH privSurvMap.quarterlyReport "
+                + "LEFT JOIN FETCH privSurvMap.surveillanceOutcome "
+                + "LEFT JOIN FETCH privSurvMap.surveillanceProcessType "
                 + "WHERE listing.id = :listingId "
-                + "AND (surv.quarterlyReportId IS NULL OR surv.quarterlyReportId = :quarterlyReportId) "
+                + "AND (privSurvMap IS NULL OR privSurvMap.quarterlyReportId = :quarterlyReportId) "
                 + "AND listing.deleted = false "
                 + "AND surv.startDate <= :endDate "
                 + "AND (surv.endDate IS NULL OR surv.endDate >= :startDate)";
@@ -244,11 +245,12 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
                 + "FROM ListingWithPrivilegedSurveillanceEntity listing "
                 + "LEFT JOIN FETCH listing.surveillances surv "
                 + "LEFT JOIN FETCH surv.surveillanceType "
-                + "LEFT JOIN FETCH surv.quarterlyReport "
-                + "LEFT JOIN FETCH surv.surveillanceOutcome "
-                + "LEFT JOIN FETCH surv.surveillanceProcessType "
+                + "LEFT JOIN FETCH surv.privSurvMap privSurvMap "
+                + "LEFT JOIN FETCH privSurvMap.quarterlyReport "
+                + "LEFT JOIN FETCH privSurvMap.surveillanceOutcome "
+                + "LEFT JOIN FETCH privSurvMap.surveillanceProcessType "
                 + "WHERE listing.certificationBodyId = :acbId "
-                + "AND (surv.quarterlyReportId IS NULL OR surv.quarterlyReportId = :quarterlyReportId) "
+                + "AND (privSurvMap IS NULL OR privSurvMap.quarterlyReportId = :quarterlyReportId) "
                 + "AND listing.deleted = false ";
         Query query = entityManager.createQuery(queryStr);
         query.setParameter("acbId", quarterlyReport.getAcb().getId());

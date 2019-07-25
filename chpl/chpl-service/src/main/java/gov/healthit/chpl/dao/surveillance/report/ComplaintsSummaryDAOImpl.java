@@ -118,10 +118,11 @@ public class ComplaintsSummaryDAOImpl extends BaseDAOImpl implements ComplaintSu
                     + "AND c.receivedDate <= :endDate "
                     + "AND (c.closedDate IS NULL OR c.closedDate >= :startDate) "
                     + "AND survs.id IN ("
-                        + "SELECT DISTINCT ps.surveillanceId "
+                        + "SELECT DISTINCT ps.id "
                         + "FROM PrivilegedSurveillanceEntity ps "
-                        + "WHERE ps.deleted = false "
-                        + "AND ps.surveillanceOutcomeId in (:outcomeIds) "
+                        + "JOIN ps.privSurvMap privSurvMap "
+                        + "WHERE privSurvMap.deleted = false "
+                        + "AND privSurvMap.surveillanceOutcomeId in (:outcomeIds) "
                 + ")",
                 Long.class);
         List<SurveillanceOutcomeDTO> allOutcomes = survDao.getSurveillanceOutcomes();
@@ -146,9 +147,10 @@ public class ComplaintsSummaryDAOImpl extends BaseDAOImpl implements ComplaintSu
     public Long getTotalNonconformitiesRelatedToComplaints(final Long acbId, final Date startDate, final Date endDate) {
         Query query = entityManager.createQuery("SELECT COUNT(DISTINCT ps) "
                 + "FROM PrivilegedSurveillanceEntity ps "
+                + "JOIN ps.privSurvMap privSurvMap "
                 + "WHERE ps.deleted = false "
-                + "AND ps.surveillanceOutcomeId in (:outcomeIds) "
-                + "AND ps.surveillanceId in ("
+                + "AND privSurvMap.surveillanceOutcomeId in (:outcomeIds) "
+                + "AND ps.id in ("
                     + "SELECT DISTINCT survs.id "
                     + "FROM ComplaintEntity c "
                     + "JOIN c.certificationBody "
