@@ -487,7 +487,7 @@ public class ActivityController {
     
     @ApiOperation(value = "Get metadata about auditable records in the system for complaints.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results." 
-                    + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all testing labs.  "
+                    + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all complaints.  "
                     + "ROLE_ACB can see activity for their own ACBs.")
     @RequestMapping(value = "/metadata/complaints", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
