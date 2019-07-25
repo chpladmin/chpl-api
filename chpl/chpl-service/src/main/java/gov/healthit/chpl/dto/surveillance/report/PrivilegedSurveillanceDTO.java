@@ -51,14 +51,14 @@ public class PrivilegedSurveillanceDTO extends SurveillanceBasicDTO {
               this.nondisclosureEvaluation = privSurvMap.getNondisclosureEvaluation();
               this.directionDeveloperResolution = privSurvMap.getDirectionDeveloperResolution();
               this.completedCapVerification = privSurvMap.getCompletedCapVerification();
-      
+
               if (privSurvMap.getQuarterlyReport() != null) {
                   this.quarterlyReport = new QuarterlyReportDTO(privSurvMap.getQuarterlyReport());
               } else {
                   this.quarterlyReport = new QuarterlyReportDTO();
                   this.quarterlyReport.setId(privSurvMap.getQuarterlyReportId());
               }
-      
+
               if (privSurvMap.getSurveillanceOutcome() != null) {
                   this.surveillanceOutcome = new SurveillanceOutcomeDTO(privSurvMap.getSurveillanceOutcome());
               } else if (privSurvMap.getSurveillanceOutcomeId() != null) {
@@ -66,7 +66,7 @@ public class PrivilegedSurveillanceDTO extends SurveillanceBasicDTO {
                   this.surveillanceOutcome.setId(privSurvMap.getSurveillanceOutcomeId());
               }
               this.surveillanceOutcomeOther = privSurvMap.getSurveillanceOutcomeOther();
-      
+
               if (privSurvMap.getSurveillanceProcessType() != null) {
                   this.surveillanceProcessType = new SurveillanceProcessTypeDTO(privSurvMap.getSurveillanceProcessType());
               } else if (privSurvMap.getSurveillanceProcessTypeId() != null){
@@ -76,42 +76,6 @@ public class PrivilegedSurveillanceDTO extends SurveillanceBasicDTO {
               this.surveillanceProcessTypeOther = privSurvMap.getSurveillanceProcessTypeOther();
             }
         }
-//        this.setId(entity.getSurveillanceId());
-//
-//        this.k1Reviewed = entity.getK1Reviewed();
-//        this.groundsForInitiating = entity.getGroundsForInitiating();
-//        this.nonconformityCauses = entity.getNonconformityCauses();
-//        this.nonconformityNature = entity.getNonconformityNature();
-//        this.stepsToSurveil = entity.getStepsToSurveil();
-//        this.stepsToEngage = entity.getStepsToEngage();
-//        this.additionalCostsEvaluation = entity.getAdditionalCostsEvaluation();
-//        this.limitationsEvaluation = entity.getLimitationsEvaluation();
-//        this.nondisclosureEvaluation = entity.getNondisclosureEvaluation();
-//        this.directionDeveloperResolution = entity.getDirectionDeveloperResolution();
-//        this.completedCapVerification = entity.getCompletedCapVerification();
-//
-//        if (entity.getQuarterlyReport() != null) {
-//            this.quarterlyReport = new QuarterlyReportDTO(entity.getQuarterlyReport());
-//        } else {
-//            this.quarterlyReport = new QuarterlyReportDTO();
-//            this.quarterlyReport.setId(entity.getQuarterlyReportId());
-//        }
-//
-//        if (entity.getSurveillanceOutcome() != null) {
-//            this.surveillanceOutcome = new SurveillanceOutcomeDTO(entity.getSurveillanceOutcome());
-//        } else if (entity.getSurveillanceOutcomeId() != null) {
-//            this.surveillanceOutcome = new SurveillanceOutcomeDTO();
-//            this.surveillanceOutcome.setId(entity.getSurveillanceOutcomeId());
-//        }
-//        this.surveillanceOutcomeOther = entity.getSurveillanceOutcomeOther();
-//
-//        if (entity.getSurveillanceProcessType() != null) {
-//            this.surveillanceProcessType = new SurveillanceProcessTypeDTO(entity.getSurveillanceProcessType());
-//        } else if (entity.getSurveillanceProcessTypeId() != null){
-//            this.surveillanceProcessType = new SurveillanceProcessTypeDTO();
-//            this.surveillanceProcessType.setId(entity.getSurveillanceProcessTypeId());
-//        }
-//        this.surveillanceProcessTypeOther = entity.getSurveillanceProcessTypeOther();
     }
 
     public PrivilegedSurveillanceDTO(final QuarterlyReportSurveillanceMapEntity entity) {
