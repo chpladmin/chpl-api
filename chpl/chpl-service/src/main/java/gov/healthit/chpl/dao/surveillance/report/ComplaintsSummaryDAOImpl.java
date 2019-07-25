@@ -118,7 +118,7 @@ public class ComplaintsSummaryDAOImpl extends BaseDAOImpl implements ComplaintSu
                     + "AND c.receivedDate <= :endDate "
                     + "AND (c.closedDate IS NULL OR c.closedDate >= :startDate) "
                     + "AND survs.id IN ("
-                        + "SELECT (DISTINCT ps.surveillanceId) "
+                        + "SELECT DISTINCT ps.surveillanceId "
                         + "FROM PrivilegedSurveillanceEntity ps "
                         + "WHERE ps.deleted = false "
                         + "AND ps.surveillanceOutcomeId in (:outcomeIds) "

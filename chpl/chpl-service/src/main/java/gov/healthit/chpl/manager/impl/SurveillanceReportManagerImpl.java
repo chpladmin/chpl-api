@@ -1,7 +1,9 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -234,8 +236,8 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
         if (existingQuarterlyReport != null) {
             throw new EntityCreationException(msgUtil.getMessage("report.quarterlySurveillance.exists"));
         }
-
         QuarterlyReportDTO created = quarterlyDao.create(toCreate);
+        copyPreviousReportDataIntoNextReport(created);
         return created;
     }
 
@@ -518,5 +520,117 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
         jobManager.start(createdJob);
         JobDTO startedJob = jobManager.getJobById(insertedJob.getId());
         return startedJob;
+    }
+
+    private void copyPreviousReportDataIntoNextReport(final QuarterlyReportDTO nextReport) {
+        QuarterlyReportDTO prevReport = getPreviousReport(nextReport);
+        if (prevReport != null) {
+            //copy the four data fields
+            nextReport.setActivitiesOutcomesSummary(prevReport.getActivitiesOutcomesSummary());
+            nextReport.setPrioritizedElementSummary(prevReport.getPrioritizedElementSummary());
+            nextReport.setReactiveSummary(prevReport.getReactiveSummary());
+            nextReport.setTransparencyDisclosureSummary(prevReport.getTransparencyDisclosureSummary());
+            try {
+                quarterlyDao.update(nextReport);
+            } catch (Exception ex) {
+                LOGGER.error("Could not copy basic report data from "
+                + prevReport.getQuarter().getName() + " into "
+                + nextReport.getQuarter().getName());
+            }
+
+            //copy exclusions
+            List<QuarterlyReportExclusionDTO> prevReportExclusions = quarterlyDao.getExclusions(prevReport.getId());
+            if (prevReportExclusions != null && prevReportExclusions.size() > 0) {
+                List<QuarterlyReportRelevantListingDTO> nextReportListings = quarterlyDao.getRelevantListings(nextReport);
+                for (QuarterlyReportRelevantListingDTO nextReportListing : nextReportListings) {
+                    for (QuarterlyReportExclusionDTO prevReportExclusion : prevReportExclusions) {
+                        if (nextReportListing.getId().equals(prevReportExclusion.getListingId())) {
+                            QuarterlyReportExclusionDTO newReportExclusion = new QuarterlyReportExclusionDTO();
+                            newReportExclusion.setListingId(nextReportListing.getId());
+                            newReportExclusion.setQuarterlyReportId(nextReport.getId());
+                            newReportExclusion.setReason(prevReportExclusion.getReason());
+                            try {
+                                quarterlyDao.createExclusion(newReportExclusion);
+                            } catch (Exception ex) {
+                                LOGGER.error("Could not copy exclusion for listing " + nextReportListing.getId()
+                                        + " from " + prevReport.getQuarter().getName() + " into "
+                                        + nextReport.getQuarter().getName());
+                            }
+                        }
+                    }
+                }
+            }
+
+            //copy privileged surveillance data
+            List<QuarterlyReportRelevantListingDTO> prevReportListingsWithSurveillance =
+                    quarterlyDao.getListingsWithRelevantSurveillance(prevReport);
+            List<QuarterlyReportRelevantListingDTO> nextReportListingsWithSurveillance =
+                    quarterlyDao.getListingsWithRelevantSurveillance(nextReport);
+            for (QuarterlyReportRelevantListingDTO nextReportListingWithSurv : nextReportListingsWithSurveillance) {
+                for (QuarterlyReportRelevantListingDTO prevReportListingWithSurv : prevReportListingsWithSurveillance) {
+                    if (nextReportListingWithSurv.getId().equals(prevReportListingWithSurv.getId())) {
+                        //found the same listing in both reports
+                        //look for a matching relevant surveillance
+                        for (PrivilegedSurveillanceDTO nextReportSurv : nextReportListingWithSurv.getSurveillances()) {
+                            for (PrivilegedSurveillanceDTO prevReportSurv : prevReportListingWithSurv.getSurveillances()) {
+                                if (nextReportSurv.getId().equals(prevReportSurv.getId())) {
+                                    //same surveillance is relevant in both prev and next quarters!
+                                    //copy the data
+                                    nextReportSurv.setQuarterlyReport(nextReport);
+                                    nextReportSurv.setK1Reviewed(prevReportSurv.getK1Reviewed());
+                                    nextReportSurv.setGroundsForInitiating(prevReportSurv.getGroundsForInitiating());
+                                    nextReportSurv.setNonconformityCauses(prevReportSurv.getNonconformityCauses());
+                                    nextReportSurv.setNonconformityNature(prevReportSurv.getNonconformityNature());
+                                    nextReportSurv.setStepsToSurveil(prevReportSurv.getStepsToSurveil());
+                                    nextReportSurv.setStepsToEngage(prevReportSurv.getStepsToEngage());
+                                    nextReportSurv.setAdditionalCostsEvaluation(prevReportSurv.getAdditionalCostsEvaluation());
+                                    nextReportSurv.setLimitationsEvaluation(prevReportSurv.getLimitationsEvaluation());
+                                    nextReportSurv.setNondisclosureEvaluation(prevReportSurv.getNondisclosureEvaluation());
+                                    nextReportSurv.setDirectionDeveloperResolution(
+                                            prevReportSurv.getDirectionDeveloperResolution());
+                                    nextReportSurv.setCompletedCapVerification(prevReportSurv.getCompletedCapVerification());
+                                    nextReportSurv.setSurveillanceOutcome(prevReportSurv.getSurveillanceOutcome());
+                                    nextReportSurv.setSurveillanceOutcomeOther(prevReportSurv.getSurveillanceOutcomeOther());
+                                    nextReportSurv.setSurveillanceProcessType(prevReportSurv.getSurveillanceProcessType());
+                                    nextReportSurv.setSurveillanceProcessTypeOther(
+                                            prevReportSurv.getSurveillanceProcessTypeOther());
+                                    try {
+                                        quarterlySurvMapDao.create(nextReportSurv);
+                                    } catch (Exception ex) {
+                                        LOGGER.error("Could not copy privileged surveillance for surveillance "
+                                                + nextReportSurv.getId()
+                                                + " from " + prevReport.getQuarter().getName() + " into "
+                                                + nextReport.getQuarter().getName());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+        } else {
+            LOGGER.warn("Could not find a previous quarterly report to initialize data for "
+                    + nextReport.getAcb().getName() + "'s "
+                    + nextReport.getQuarter().getName() + " report.");
+        }
+    }
+
+    private QuarterlyReportDTO getPreviousReport(final QuarterlyReportDTO report) {
+        Calendar createdReportStartCal = Calendar.getInstance();
+        createdReportStartCal.setTime(report.getStartDate());
+        createdReportStartCal.add(Calendar.DATE, -1);
+        //now the calendar points to the last day of the previous quarter
+        //so just find the report that contains that date
+        QuarterlyReportDTO prevReport = null;
+        List<QuarterlyReportDTO> allReports = quarterlyDao.getAll();
+        for (QuarterlyReportDTO currReport : allReports) {
+            if (currReport.getAcb().getId().equals(report.getAcb().getId())
+                    && currReport.getStartDate().getTime() <= createdReportStartCal.getTimeInMillis()
+                    && currReport.getEndDate().getTime() >= createdReportStartCal.getTimeInMillis()) {
+                prevReport = currReport;
+            }
+        }
+        return prevReport;
     }
 }
