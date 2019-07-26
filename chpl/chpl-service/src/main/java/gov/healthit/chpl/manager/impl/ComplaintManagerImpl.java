@@ -158,7 +158,8 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
             + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).DELETE, #complaintId)")
-    public void delete(final Long complaintId) throws EntityRetrievalException {
+    public void delete(final Long complaintId) throws EntityRetrievalException,
+        JsonProcessingException, EntityCreationException {
         ComplaintDTO dto = complaintDAO.getComplaint(complaintId);
         if (dto != null) {
             complaintDAO.delete(dto);
