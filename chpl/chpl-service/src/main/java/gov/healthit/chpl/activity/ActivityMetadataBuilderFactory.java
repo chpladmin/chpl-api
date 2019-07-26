@@ -8,6 +8,7 @@ import gov.healthit.chpl.dto.ActivityDTO;
 
 /**
  * Creates an appropriate metadata buidler object for the type of activity.
+ * 
  * @author kekey
  *
  */
@@ -24,6 +25,7 @@ public class ActivityMetadataBuilderFactory {
     private PendingListingActivityMetadataBuilder pendingListingActivityMetadataBuilder;
     private CorrectActionPlanActivityMetadataBuilder correctActionPlanActivityMetadataBuilder;
     private PendingSurveillanceActivityMetadataBuilder pendingSurveillanceActivityMetadataBuilder;
+    private ComplaintActivityMetadataBuilder complaintActivityMetadataBuilder;
 
     @Autowired
     public ActivityMetadataBuilderFactory(
@@ -37,7 +39,8 @@ public class ActivityMetadataBuilderFactory {
             @Qualifier("announcementActivityMetadataBuilder") final AnnouncementActivityMetadataBuilder announcementActivityMetadataBuilder,
             @Qualifier("pendingListingActivityMetadataBuilder") final PendingListingActivityMetadataBuilder pendingListingActivityMetadataBuilder,
             @Qualifier("correctActionPlanActivityMetadataBuilder") final CorrectActionPlanActivityMetadataBuilder correctActionPlanActivityMetadataBuilder,
-            @Qualifier("pendingSurveillanceActivityMetadataBuilder") final PendingSurveillanceActivityMetadataBuilder pendingSurveillanceActivityMetadataBuilder) {
+            @Qualifier("pendingSurveillanceActivityMetadataBuilder") final PendingSurveillanceActivityMetadataBuilder pendingSurveillanceActivityMetadataBuilder,
+            @Qualifier("complaintActivityMetadataBuilder") final ComplaintActivityMetadataBuilder complaintActivityMetadataBuilder) {
         this.listingBuilder = listingBuilder;
         this.developerBuilder = developerBuilder;
         this.productBuilder = productBuilder;
@@ -49,12 +52,15 @@ public class ActivityMetadataBuilderFactory {
         this.pendingListingActivityMetadataBuilder = pendingListingActivityMetadataBuilder;
         this.correctActionPlanActivityMetadataBuilder = correctActionPlanActivityMetadataBuilder;
         this.pendingSurveillanceActivityMetadataBuilder = pendingSurveillanceActivityMetadataBuilder;
+        this.complaintActivityMetadataBuilder = complaintActivityMetadataBuilder;
     }
 
     /**
-     * Factory method to get a metadata builder of the appropriate class
-     * based on what type of activity object is passed in.
-     * @param dto the activity object
+     * Factory method to get a metadata builder of the appropriate class based
+     * on what type of activity object is passed in.
+     * 
+     * @param dto
+     *            the activity object
      * @return the appropriate builder
      */
     public ActivityMetadataBuilder getBuilder(final ActivityDTO dto) {
@@ -92,6 +98,9 @@ public class ActivityMetadataBuilderFactory {
             break;
         case PENDING_SURVEILLANCE:
             builder = pendingSurveillanceActivityMetadataBuilder;
+            break;
+        case COMPLAINT:
+            builder = complaintActivityMetadataBuilder;
             break;
         default:
             break;

@@ -12,16 +12,21 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.ComplaintDAO;
 import gov.healthit.chpl.domain.KeyValueModel;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.complaint.Complaint;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.ComplainantTypeDTO;
 import gov.healthit.chpl.dto.ComplaintDTO;
 import gov.healthit.chpl.dto.ComplaintStatusTypeDTO;
+import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.ComplaintManager;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.manager.rules.complaints.ComplaintValidationContext;
@@ -37,17 +42,20 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
     private ComplaintValidationFactory complaintValidationFactory;
     private CertifiedProductDAO certifiedProductDAO;
     private ChplProductNumberUtil chplProductNumberUtil;
+    private ActivityManager activityManager;
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
     public ComplaintManagerImpl(final ComplaintDAO complaintDAO,
             final ComplaintValidationFactory complaintValidationFactory, final CertifiedProductDAO certifiedProductDAO,
-            final ChplProductNumberUtil chplProductNumberUtil, final ErrorMessageUtil errorMessageUtil) {
+            final ChplProductNumberUtil chplProductNumberUtil, final ErrorMessageUtil errorMessageUtil,
+            final ActivityManager activityManager) {
         this.complaintDAO = complaintDAO;
         this.complaintValidationFactory = complaintValidationFactory;
         this.certifiedProductDAO = certifiedProductDAO;
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.errorMessageUtil = errorMessageUtil;
+        this.activityManager = activityManager;
     }
 
     @Override
@@ -93,7 +101,8 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
             + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).GET_ALL)")
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
             + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).GET_ALL, filterObject)")
-    public List<Complaint> getAllComplaintsBetweenDates(final CertificationBodyDTO acb, final Date startDate, final Date endDate) {
+    public List<Complaint> getAllComplaintsBetweenDates(final CertificationBodyDTO acb, final Date startDate,
+            final Date endDate) {
         List<Complaint> complaints = new ArrayList<Complaint>();
         List<ComplaintDTO> dtos = complaintDAO.getAllComplaintsBetweenDates(acb.getId(), startDate, endDate);
         for (ComplaintDTO dto : dtos) {
@@ -106,7 +115,8 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
             + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).CREATE, #complaint)")
-    public Complaint create(final Complaint complaint) throws EntityRetrievalException, ValidationException {
+    public Complaint create(final Complaint complaint)
+            throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
         ComplaintDTO complaintDTO = new ComplaintDTO(complaint);
         ValidationException validationException = new ValidationException();
         validationException.getErrorMessages().addAll(runCreateValidations(complaintDTO));
@@ -115,14 +125,20 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
         }
 
         complaintDTO.setComplaintStatusType(getComplaintStatusType(OPEN_STATUS));
-        return new Complaint(complaintDAO.create(complaintDTO));
+
+        ComplaintDTO newComplaint = complaintDAO.create(complaintDTO);
+
+        activityManager.addActivity(ActivityConcept.COMPLAINT, newComplaint.getId(), "Complaint has been created", null,
+                newComplaint);
+        return new Complaint(newComplaint);
     }
 
     @Override
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
             + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).UPDATE, #complaint)")
-    public Complaint update(final Complaint complaint) throws EntityRetrievalException, ValidationException {
+    public Complaint update(final Complaint complaint)
+            throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
         ComplaintDTO complaintDTO = new ComplaintDTO(complaint);
         ValidationException validationException = new ValidationException();
         validationException.getErrorMessages().addAll(runUpdateValidations(complaintDTO));
@@ -130,7 +146,11 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
             throw validationException;
         }
 
-        return new Complaint(complaintDAO.update(complaintDTO));
+        ComplaintDTO updatedComplaint = complaintDAO.update(complaintDTO);
+        activityManager.addActivity(ActivityConcept.COMPLAINT, updatedComplaint.getId(), "Complaint has been updated",
+                complaintDTO, updatedComplaint);
+
+        return new Complaint(updatedComplaint);
 
     }
 
@@ -142,6 +162,9 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
         ComplaintDTO dto = complaintDAO.getComplaint(complaintId);
         if (dto != null) {
             complaintDAO.delete(dto);
+
+            activityManager.addActivity(ActivityConcept.COMPLAINT, dto.getId(), "Complaint has been deleted", dto,
+                    null);
         }
     }
 

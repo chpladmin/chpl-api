@@ -16,9 +16,10 @@ import gov.healthit.chpl.domain.activity.ActivityDetails;
 import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.dto.AnnouncementDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.ComplaintDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
 @Component("actionGetActivityDetailsActionPermissions")
@@ -47,8 +48,8 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
             return true;
         } else {
             ActivityDetails details = (ActivityDetails) obj;
-            //There are different security rules depending on what type
-            //of activity this is.
+            // There are different security rules depending on what type
+            // of activity this is.
             switch (details.getConcept()) {
             case ANNOUNCEMENT:
                 if (details.getNewData() != null) {
@@ -72,10 +73,9 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
                 }
                 break;
             case API_KEY:
-                //Admin and Onc can see this activity.
-                //Others should get access denied.
-                return (getResourcePermissions().isUserRoleAdmin()
-                        || getResourcePermissions().isUserRoleOnc());
+                // Admin and Onc can see this activity.
+                // Others should get access denied.
+                return (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc());
             case PENDING_CERTIFIED_PRODUCT:
                 if (details.getNewData() != null) {
                     return hasAccessToPendingListing(details.getNewData());
@@ -90,18 +90,43 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
                     return hasAccessToUser(details.getOriginalData());
                 }
                 break;
+            case COMPLAINT:
+                if (details.getNewData() != null) {
+                    return hasAccessToComplaint(details.getNewData());
+                } else if (details.getOriginalData() != null) {
+                    return hasAccessToComplaint(details.getOriginalData());
+                }
+                break;
             default:
-                //all other types of activity
-                //are accessible to any logged-in or anonymous user
+                // all other types of activity
+                // are accessible to any logged-in or anonymous user
                 return true;
             }
         }
         return false;
     }
 
+    private boolean hasAccessToComplaint(final JsonNode complaintJson) {
+        if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
+            return true;
+        } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
+            ComplaintDTO complaint = null;
+            try {
+                complaint = jsonMapper.convertValue(complaintJson, ComplaintDTO.class);
+                return isAcbValidForCurrentUser(complaint.getCertificationBody().getId());
+            } catch (Exception e) {
+                LOGGER.error("Could not parse complaint activity as ComplaintDTO. JSON was: " + complaintJson, e);
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
     /**
-     * Non-logged in user can only see activity for public announcements.
-     * Other users can see all activity.
+     * Non-logged in user can only see activity for public announcements. Other
+     * users can see all activity.
+     * 
      * @param announcementJson
      * @return
      */
@@ -109,42 +134,36 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
         boolean hasAccess = false;
         AnnouncementDTO announcement = null;
         try {
-            announcement =
-                jsonMapper.convertValue(announcementJson, AnnouncementDTO.class);
+            announcement = jsonMapper.convertValue(announcementJson, AnnouncementDTO.class);
         } catch (final Exception ex) {
-            LOGGER.error("Could not parse announcement activity as AnnouncementDTO."
-                    + "JSON was: " + announcementJson, ex);
+            LOGGER.error("Could not parse announcement activity as AnnouncementDTO." + "JSON was: " + announcementJson,
+                    ex);
         }
 
         if (announcement != null && announcement.getIsPublic()) {
             hasAccess = true;
-        } else if (announcement != null && !announcement.getIsPublic()
-                && !getResourcePermissions().isUserAnonymous()) {
+        } else if (announcement != null && !announcement.getIsPublic() && !getResourcePermissions().isUserAnonymous()) {
             hasAccess = true;
         }
         return hasAccess;
     }
 
     /**
-     * Admin and onc can see all atl activity
-     * including for retired atls.
-     * Atl user can see activity for their own atl.
-     * Others should get access denied.
+     * Admin and onc can see all atl activity including for retired atls. Atl
+     * user can see activity for their own atl. Others should get access denied.
+     * 
      * @param atlJson
      * @return
      */
     private boolean hasAccessToTestingLab(final JsonNode atlJson) {
-        boolean hasAccess = getResourcePermissions().isUserRoleAdmin()
-                || getResourcePermissions().isUserRoleOnc();
+        boolean hasAccess = getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc();
 
         if (!hasAccess) {
             TestingLabDTO atl = null;
             try {
-                atl =
-                    jsonMapper.convertValue(atlJson, TestingLabDTO.class);
+                atl = jsonMapper.convertValue(atlJson, TestingLabDTO.class);
             } catch (final Exception ex) {
-                LOGGER.error("Could not parse activity as TestingLabDTO. "
-                        + "JSON was: " + atlJson, ex);
+                LOGGER.error("Could not parse activity as TestingLabDTO. " + "JSON was: " + atlJson, ex);
             }
 
             if (atl != null && atl.getId() != null) {
@@ -155,25 +174,21 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
     }
 
     /**
-     * Admin and onc can see all acb activity
-     * including for retired acbs.
-     * Acb user can see activity for their own acb.
-     * Others should get access denied.
+     * Admin and onc can see all acb activity including for retired acbs. Acb
+     * user can see activity for their own acb. Others should get access denied.
+     * 
      * @param acbJson
      * @return
      */
     private boolean hasAccessToCertificationBody(final JsonNode acbJson) {
-        boolean hasAccess = getResourcePermissions().isUserRoleAdmin()
-                || getResourcePermissions().isUserRoleOnc();
+        boolean hasAccess = getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc();
 
         if (!hasAccess) {
             CertificationBodyDTO acb = null;
             try {
-                acb =
-                    jsonMapper.convertValue(acbJson, CertificationBodyDTO.class);
+                acb = jsonMapper.convertValue(acbJson, CertificationBodyDTO.class);
             } catch (final Exception ex) {
-                LOGGER.error("Could not parse activity as CertificationBodyDTO. "
-                        + "JSON was: " + acbJson, ex);
+                LOGGER.error("Could not parse activity as CertificationBodyDTO. " + "JSON was: " + acbJson, ex);
             }
 
             if (acb != null && acb.getId() != null) {
@@ -184,24 +199,24 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
     }
 
     /**
-     * Admin and onc can see all pending listing activity.
-     * Acb user can see activity for listing uploaded to their Acb.
-     * Others should get access denied.
+     * Admin and onc can see all pending listing activity. Acb user can see
+     * activity for listing uploaded to their Acb. Others should get access
+     * denied.
+     * 
      * @param pendingListingJson
      * @return
      */
     private boolean hasAccessToPendingListing(final JsonNode pendingListingJson) {
-        boolean hasAccess = getResourcePermissions().isUserRoleAdmin()
-                || getResourcePermissions().isUserRoleOnc();
+        boolean hasAccess = getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc();
 
         if (!hasAccess) {
             PendingCertifiedProductDTO pcp = null;
             try {
-                pcp =
-                    jsonMapper.convertValue(pendingListingJson, PendingCertifiedProductDTO.class);
+                pcp = jsonMapper.convertValue(pendingListingJson, PendingCertifiedProductDTO.class);
             } catch (final Exception ex) {
-                LOGGER.error("Could not parse activity as PendingCertifiedProductDTO. "
-                        + "JSON was: " + pendingListingJson, ex);
+                LOGGER.error(
+                        "Could not parse activity as PendingCertifiedProductDTO. " + "JSON was: " + pendingListingJson,
+                        ex);
             }
 
             if (pcp != null && pcp.getCertificationBodyId() != null) {
@@ -212,40 +227,37 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
     }
 
     /**
-     * Admin and Onc can see activity for any user.
-     * Acb, Atl, and Cms staff users can see activity for any user
-     * they have access to.
-     * Non-logged in users get access denied.
+     * Admin and Onc can see activity for any user. Acb, Atl, and Cms staff
+     * users can see activity for any user they have access to. Non-logged in
+     * users get access denied.
+     * 
      * @param userJson
      * @return
      */
     private boolean hasAccessToUser(final JsonNode userJson) {
-        boolean hasAccess = getResourcePermissions().isUserRoleAdmin()
-                || getResourcePermissions().isUserRoleOnc();
+        boolean hasAccess = getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc();
 
         if (!hasAccess) {
             UserDTO user = null;
             try {
-                user =
-                    jsonMapper.convertValue(userJson, UserDTO.class);
+                user = jsonMapper.convertValue(userJson, UserDTO.class);
             } catch (final Exception ex) {
-                LOGGER.error("Could not parse activity as UserDTO. "
-                        + "JSON was: " + userJson, ex);
+                LOGGER.error("Could not parse activity as UserDTO. " + "JSON was: " + userJson, ex);
             }
 
             if (user != null) {
                 List<UserDTO> accessibleUsers = new ArrayList<UserDTO>();
                 if (getResourcePermissions().isUserRoleAcbAdmin()) {
-                    //find all users on the acbs that this user has access to
-                    //and see if the user in the activity is in that list
+                    // find all users on the acbs that this user has access to
+                    // and see if the user in the activity is in that list
                     List<CertificationBodyDTO> accessibleAcbs = getResourcePermissions().getAllAcbsForCurrentUser();
                     for (CertificationBodyDTO acb : accessibleAcbs) {
                         accessibleUsers.addAll(getResourcePermissions().getAllUsersOnAcb(acb));
                     }
                 }
                 if (getResourcePermissions().isUserRoleAtlAdmin()) {
-                    //find all users on the atls that this user has access to
-                    //and see if the user in the activity is in that list
+                    // find all users on the atls that this user has access to
+                    // and see if the user in the activity is in that list
                     List<TestingLabDTO> accessibleAtls = getResourcePermissions().getAllAtlsForCurrentUser();
                     for (TestingLabDTO atl : accessibleAtls) {
                         accessibleUsers.addAll(getResourcePermissions().getAllUsersOnAtl(atl));

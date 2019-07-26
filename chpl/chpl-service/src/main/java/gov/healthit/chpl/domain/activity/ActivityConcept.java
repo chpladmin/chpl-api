@@ -4,11 +4,11 @@ import java.io.Serializable;
 
 /**
  * Different types of activity the system will log.
+ * 
  * @author kekey
  *
  */
 public enum ActivityConcept implements Serializable {
-
     CERTIFIED_PRODUCT,
     PRODUCT,
     DEVELOPER,
@@ -23,5 +23,6 @@ public enum ActivityConcept implements Serializable {
     ANNOUNCEMENT,
     CERTIFICATION_ID,
     PENDING_SURVEILLANCE,
-    CORRECTIVE_ACTION_PLAN;
+    CORRECTIVE_ACTION_PLAN,
+    COMPLAINT;
 }
