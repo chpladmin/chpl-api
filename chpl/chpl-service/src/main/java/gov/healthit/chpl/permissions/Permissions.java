@@ -10,10 +10,12 @@ import gov.healthit.chpl.permissions.domains.ActivityDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CertificationResultsDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions;
+import gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CorrectiveActionPlanDomainPermissions;
 import gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions;
 import gov.healthit.chpl.permissions.domains.DomainPermissions;
 import gov.healthit.chpl.permissions.domains.FilterDomainPermissions;
+import gov.healthit.chpl.permissions.domains.FuzzyMatchPermissions;
 import gov.healthit.chpl.permissions.domains.InvitationDomainPermissions;
 import gov.healthit.chpl.permissions.domains.JobDomainPermissions;
 import gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions;
@@ -23,6 +25,7 @@ import gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions;
+import gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions;
 import gov.healthit.chpl.permissions.domains.TestingLabDomainPermissions;
 import gov.healthit.chpl.permissions.domains.UserPermissionsDomainPermissions;
 
@@ -35,6 +38,7 @@ public class Permissions {
     public static final String INVITATION = "INVITATION";
     public static final String PENDING_CERTIFIED_PRODUCT = "PENDING_CERTIFIED_PRODUCT";
     public static final String SURVEILLANCE = "SURVEILLANCE";
+    public static final String SURVEILLANCE_REPORT = "SURVEILLANCE_REPORT";
     public static final String CERTIFICATION_BODY = "CERTIFICATION_BODY";
     public static final String SCHEDULER = "SCHEDULER";
     public static final String USER_PERMISSIONS = "USER_PERMISSIONS";
@@ -46,6 +50,9 @@ public class Permissions {
     public static final String SECURED_USER = "SECURED_USER";
     public static final String TESTING_LAB = "TESTING_LAB";
     public static final String FILTER = "FILTER";
+    public static final String COMPLAINT = "COMPLAINT";
+    public static final String ACTIVITY_METADATA = "ACTIVTY_METADATA";
+    public static final String FUZZY_MATCH = "FUZZY_MATCH";
 
     private Map<String, DomainPermissions> domainPermissions = new HashMap<String, DomainPermissions>();
 
@@ -57,6 +64,7 @@ public class Permissions {
             final InvitationDomainPermissions invitationDomainPermissions,
             final PendingCertifiedProductDomainPermissions pendingCertifiedProductDomainPermissions,
             final SurveillanceDomainPermissions surveillanceDomainPermissions,
+            final SurveillanceReportDomainPermissions surveillanceReportDomainPermissions,
             final CertificationBodyDomainPermissions certificationBodyDomainPermissions,
             final UserPermissionsDomainPermissions userPermissionsDomainPermissions,
             final ActivityDomainPermissions activityDomainPermissions, final JobDomainPermissions jobDomainPermissions,
@@ -66,7 +74,9 @@ public class Permissions {
             final SecuredUserDomainPermissions securedUserDomainPermissions,
             final SchedulerDomainPermissions schedulerDomainPermissions,
             final TestingLabDomainPermissions testingLabDomainPermissions,
-            final FilterDomainPermissions filterDomainPermissions) {
+            final FilterDomainPermissions filterDomainPermissions,
+            final ComplaintDomainPermissions complaintDomainPermissions,
+            final FuzzyMatchPermissions fuzzyMatchPermissions) {
 
         domainPermissions.put(PENDING_SURVEILLANCE, pendingSurveillanceDomainPermissions);
         domainPermissions.put(CERTIFICATION_RESULTS, certificationResultsDomainPermissions);
@@ -75,6 +85,7 @@ public class Permissions {
         domainPermissions.put(INVITATION, invitationDomainPermissions);
         domainPermissions.put(PENDING_CERTIFIED_PRODUCT, pendingCertifiedProductDomainPermissions);
         domainPermissions.put(SURVEILLANCE, surveillanceDomainPermissions);
+        domainPermissions.put(SURVEILLANCE_REPORT, surveillanceReportDomainPermissions);
         domainPermissions.put(CERTIFICATION_BODY, certificationBodyDomainPermissions);
         domainPermissions.put(USER_PERMISSIONS, userPermissionsDomainPermissions);
         domainPermissions.put(ACTIVITY, activityDomainPermissions);
@@ -86,6 +97,8 @@ public class Permissions {
         domainPermissions.put(SCHEDULER, schedulerDomainPermissions);
         domainPermissions.put(TESTING_LAB, testingLabDomainPermissions);
         domainPermissions.put(FILTER, filterDomainPermissions);
+        domainPermissions.put(COMPLAINT, complaintDomainPermissions);
+        domainPermissions.put(FUZZY_MATCH, fuzzyMatchPermissions);
     }
 
     public boolean hasAccess(final String domain, final String action) {

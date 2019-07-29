@@ -4,13 +4,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.ff4j.FF4j;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -29,7 +27,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
@@ -74,8 +71,6 @@ public class ProductManagerTest extends TestCase {
     private DeveloperStatusDAO devStatusDao;
     @Autowired
     private ContactDAO contactDao;
-    @Autowired
-    private FF4j ff4j;
 
     @Rule
     @Autowired
@@ -110,7 +105,6 @@ public class ProductManagerTest extends TestCase {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        Mockito.doReturn(true).when(ff4j).check(FeatureList.BETTER_SPLIT);
     }
 
     @Test

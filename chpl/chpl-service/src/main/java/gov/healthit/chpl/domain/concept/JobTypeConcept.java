@@ -2,11 +2,13 @@ package gov.healthit.chpl.domain.concept;
 
 public enum JobTypeConcept {
     MUU_UPLOAD("MUU Upload"),
-    SURV_UPLOAD("Surveillance Upload");
+    SURV_UPLOAD("Surveillance Upload"),
+    EXPORT_QUARTERLY("Export Quarterly Report"),
+    EXPORT_ANNUAL("Export Annual Report");
 
     private String name;
 
-    JobTypeConcept(String name) {
+    JobTypeConcept(final String name) {
         this.name = name;
     }
 
@@ -14,7 +16,7 @@ public enum JobTypeConcept {
         return name;
     }
 
-    public static JobTypeConcept findByName(String jobTypeName) {
+    public static JobTypeConcept findByName(final String jobTypeName) {
         JobTypeConcept result = null;
         JobTypeConcept[] availableJobTypes = values();
         for (int i = 0; i < availableJobTypes.length && result == null; i++) {

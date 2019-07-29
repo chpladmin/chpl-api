@@ -255,8 +255,8 @@
         </dependency>
         <dependency>
             <groupId>xerces</groupId>
-            <artifactId>xerces</artifactId>
-            <version>2.4.0</version>
+            <artifactId>xercesImpl</artifactId>
+            <version>2.12.0</version>
         </dependency>
 
         <dependency>
@@ -296,7 +296,16 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.8.1</version>
         </dependency>
-        
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>4.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>4.1.0</version>
+        </dependency>
         <!-- for unit/integration testing of the dao calls -->
         <dependency>
             <groupId>gov.healthit.chpl</groupId>
@@ -482,14 +491,14 @@
                         <source>src/main/java/gov/healthit/chpl/domain/Product.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/ProductOwner.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/ProductVersion.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/Surveillance.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/SurveillanceNonconformity.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/SurveillanceNonconformityDocument.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/SurveillanceNonconformityStatus.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/SurveillanceRequirement.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/SurveillanceRequirementType.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/SurveillanceResultType.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/SurveillanceType.java</source>
+                        <source>src/main/java/gov/healthit/chpl/domain/surveillance/Surveillance.java</source>
+                        <source>src/main/java/gov/healthit/chpl/domain/surveillance/SurveillanceNonconformity.java</source>
+                        <source>src/main/java/gov/healthit/chpl/domain/surveillance/SurveillanceNonconformityDocument.java</source>
+                        <source>src/main/java/gov/healthit/chpl/domain/surveillance/SurveillanceNonconformityStatus.java</source>
+                        <source>src/main/java/gov/healthit/chpl/domain/surveillance/SurveillanceRequirement.java</source>
+                        <source>src/main/java/gov/healthit/chpl/domain/surveillance/SurveillanceRequirementType.java</source>
+                        <source>src/main/java/gov/healthit/chpl/domain/surveillance/SurveillanceResultType.java</source>
+                        <source>src/main/java/gov/healthit/chpl/domain/surveillance/SurveillanceType.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/TransparencyAttestationMap.java</source>
                     </sources>
                 </configuration>

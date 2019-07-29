@@ -26,14 +26,11 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
     @Autowired
     CertifiedProductSearchDAO searchDao;
 
-    @Autowired
-    CertifiedProductSearchDAO basicCpSearchDao;
-
     @Transactional(readOnly = true)
     @Override
     @Cacheable(CacheNames.COLLECTIONS_LISTINGS)
     public List<CertifiedProductFlatSearchResult> search() {
-        List<CertifiedProductFlatSearchResult> results = basicCpSearchDao.getAllCertifiedProducts();
+        List<CertifiedProductFlatSearchResult> results = searchDao.getAllCertifiedProducts();
         return results;
     }
 

@@ -9,15 +9,17 @@ import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.SearchableDimensionalData;
-import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.UploadTemplateVersion;
+import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementOptions;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public interface DimensionalDataManager {
 
     Set<KeyValueModel> getJobTypes();
+
+    Set<KeyValueModel> getQuarters();
 
     Set<KeyValueModel> getClassificationNames();
 

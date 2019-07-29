@@ -3,7 +3,7 @@ package gov.healthit.chpl.scheduler.job.xmlgenerator;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import gov.healthit.chpl.domain.SurveillanceResultType;
+import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 
 public class SurveillanceResultTypeXmlGenerator extends XmlGenerator {
     public static void add(SurveillanceResultType srt, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {

@@ -30,20 +30,20 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.dao.SurveillanceDAO;
+import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
-import gov.healthit.chpl.domain.Surveillance;
-import gov.healthit.chpl.domain.SurveillanceRequirement;
-import gov.healthit.chpl.domain.SurveillanceRequirementType;
-import gov.healthit.chpl.domain.SurveillanceResultType;
-import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.domain.activity.ActivityCategory;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
+import gov.healthit.chpl.domain.surveillance.Surveillance;
+import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
+import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
+import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
+import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
@@ -118,13 +118,15 @@ public class ListingActivityMetadataTest extends TestCase {
     @Test
     @Transactional
     public void testGetActivityMetadataForAllListingsLoggedIn() throws JsonParseException, IOException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
         Calendar start = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         start.set(2015, 9, 1, 0, 0);
         Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         end.set(2015, 9, 20, 0, 0);
 
-        List<ActivityMetadata> metadatas = metadataManager.getActivityMetadataByConcept(
-                ActivityConcept.CERTIFIED_PRODUCT, start.getTime(), end.getTime());
+        List<ActivityMetadata> metadatas = metadataManager
+                .getActivityMetadataByConcept(ActivityConcept.CERTIFIED_PRODUCT, start.getTime(), end.getTime());
         assertEquals(3, metadatas.size());
 
         for (ActivityMetadata metadata : metadatas) {
@@ -145,8 +147,8 @@ public class ListingActivityMetadataTest extends TestCase {
         Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         end.set(2015, 9, 20, 0, 0);
 
-        List<ActivityMetadata> metadatas = metadataManager.getActivityMetadataByObject(
-                objectId, ActivityConcept.CERTIFIED_PRODUCT, start.getTime(), end.getTime());
+        List<ActivityMetadata> metadatas = metadataManager.getActivityMetadataByObject(objectId,
+                ActivityConcept.CERTIFIED_PRODUCT, start.getTime(), end.getTime());
         assertEquals(3, metadatas.size());
 
         for (ActivityMetadata metadata : metadatas) {
@@ -161,9 +163,8 @@ public class ListingActivityMetadataTest extends TestCase {
     @Test
     @Rollback(true)
     @Transactional
-    public void testModifyCertificationStatusAndActivityHasStatusCategory()
-        throws EntityRetrievalException, ValidationException, IOException,
-        InvalidArgumentsException, EntityCreationException {
+    public void testModifyCertificationStatusAndActivityHasStatusCategory() throws EntityRetrievalException,
+            ValidationException, IOException, InvalidArgumentsException, EntityCreationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByAcb.getName());
         assertNotNull(stat);
@@ -185,13 +186,13 @@ public class ListingActivityMetadataTest extends TestCase {
         cpManager.update(acbId, toUpdate, beforeListing);
 
         CertifiedProductSearchDetails afterListing = cpdManager.getCertifiedProductDetails(listingId);
-        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, listingId,
-                "Updated certification status", beforeListing, afterListing);
+        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, listingId, "Updated certification status",
+                beforeListing, afterListing);
 
         Calendar start = getBeginningOfToday();
         Calendar end = getEndOfToday();
-        List<ActivityMetadata> metadatas = metadataManager.getActivityMetadataByConcept(
-                ActivityConcept.CERTIFIED_PRODUCT, start.getTime(), end.getTime());
+        List<ActivityMetadata> metadatas = metadataManager
+                .getActivityMetadataByConcept(ActivityConcept.CERTIFIED_PRODUCT, start.getTime(), end.getTime());
         assertEquals(1, metadatas.size());
         ActivityMetadata metadata = metadatas.get(0);
         assertEquals(listingId.longValue(), metadata.getObjectId().longValue());
@@ -206,7 +207,7 @@ public class ListingActivityMetadataTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void testAddSurveillanceAndActivityHasSurveillanceCategory()
-        throws EntityRetrievalException, EntityCreationException, IOException {
+            throws EntityRetrievalException, EntityCreationException, IOException {
         Long listingId = 1L;
 
         SecurityContextHolder.getContext().setAuthentication(acbUser);
@@ -237,13 +238,13 @@ public class ListingActivityMetadataTest extends TestCase {
             e.printStackTrace();
         }
         CertifiedProductSearchDetails afterListing = cpdManager.getCertifiedProductDetails(listingId);
-        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, listingId,
-                "Added surveillance", beforeListing, afterListing);
+        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, listingId, "Added surveillance", beforeListing,
+                afterListing);
 
         Calendar start = getBeginningOfToday();
         Calendar end = getEndOfToday();
-        List<ActivityMetadata> metadatas = metadataManager.getActivityMetadataByConcept(
-                ActivityConcept.CERTIFIED_PRODUCT, start.getTime(), end.getTime());
+        List<ActivityMetadata> metadatas = metadataManager
+                .getActivityMetadataByConcept(ActivityConcept.CERTIFIED_PRODUCT, start.getTime(), end.getTime());
         assertEquals(1, metadatas.size());
         ActivityMetadata metadata = metadatas.get(0);
         assertEquals(listingId.longValue(), metadata.getObjectId().longValue());
@@ -258,7 +259,7 @@ public class ListingActivityMetadataTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void testRemoveSurveillanceAndActivityHasSurveillanceCategory()
-        throws EntityRetrievalException, EntityCreationException, IOException {
+            throws EntityRetrievalException, EntityCreationException, IOException {
         Long listingId = 10L;
 
         SecurityContextHolder.getContext().setAuthentication(acbUser);
@@ -272,13 +273,13 @@ public class ListingActivityMetadataTest extends TestCase {
             e.printStackTrace();
         }
         CertifiedProductSearchDetails afterListing = cpdManager.getCertifiedProductDetails(listingId);
-        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, listingId,
-                "Deleted surveillance", beforeListing, afterListing);
+        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, listingId, "Deleted surveillance", beforeListing,
+                afterListing);
 
         Calendar start = getBeginningOfToday();
         Calendar end = getEndOfToday();
-        List<ActivityMetadata> metadatas = metadataManager.getActivityMetadataByConcept(
-                ActivityConcept.CERTIFIED_PRODUCT, start.getTime(), end.getTime());
+        List<ActivityMetadata> metadatas = metadataManager
+                .getActivityMetadataByConcept(ActivityConcept.CERTIFIED_PRODUCT, start.getTime(), end.getTime());
         assertEquals(1, metadatas.size());
         ActivityMetadata metadata = metadatas.get(0);
         assertEquals(listingId.longValue(), metadata.getObjectId().longValue());
@@ -293,7 +294,7 @@ public class ListingActivityMetadataTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void testModifySurveillanceEndDateAndActivityHasSurveillanceCategory()
-        throws EntityRetrievalException, EntityCreationException, IOException {
+            throws EntityRetrievalException, EntityCreationException, IOException {
         Long listingId = 10L;
 
         SecurityContextHolder.getContext().setAuthentication(acbUser);
@@ -309,13 +310,13 @@ public class ListingActivityMetadataTest extends TestCase {
             e.printStackTrace();
         }
         CertifiedProductSearchDetails afterListing = cpdManager.getCertifiedProductDetails(listingId);
-        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, listingId,
-                "Updated surveillance", beforeListing, afterListing);
+        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, listingId, "Updated surveillance", beforeListing,
+                afterListing);
 
         Calendar start = getBeginningOfToday();
         Calendar end = getEndOfToday();
-        List<ActivityMetadata> metadatas = metadataManager.getActivityMetadataByConcept(
-                ActivityConcept.CERTIFIED_PRODUCT, start.getTime(), end.getTime());
+        List<ActivityMetadata> metadatas = metadataManager
+                .getActivityMetadataByConcept(ActivityConcept.CERTIFIED_PRODUCT, start.getTime(), end.getTime());
         assertEquals(1, metadatas.size());
         ActivityMetadata metadata = metadatas.get(0);
         assertEquals(listingId.longValue(), metadata.getObjectId().longValue());

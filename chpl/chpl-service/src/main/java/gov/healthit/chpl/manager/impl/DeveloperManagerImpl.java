@@ -11,7 +11,6 @@ import java.util.Set;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -24,7 +23,6 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -89,7 +87,6 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
     private DeveloperUpdateValidator updateValidator;
     private ErrorMessageUtil msgUtil;
     private ResourcePermissions resourcePermissions;
-    private FF4j ff4j;
 
     /**
      * Autowired constructor for dependency injection.
@@ -110,7 +107,7 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
             final CertifiedProductDAO certifiedProductDAO, final ChplProductNumberUtil chplProductNumberUtil,
             final ActivityManager activityManager, final DeveloperCreationValidator creationValidator,
             final DeveloperUpdateValidator updateValidator, final ErrorMessageUtil msgUtil,
-            final ResourcePermissions resourcePermissions, final FF4j ff4j) {
+            final ResourcePermissions resourcePermissions) {
         this.developerDao = developerDao;
         this.productManager = productManager;
         this.acbManager = acbManager;
@@ -124,7 +121,6 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
         this.updateValidator = updateValidator;
         this.msgUtil = msgUtil;
         this.resourcePermissions = resourcePermissions;
-        this.ff4j = ff4j;
     }
 
     @Override
@@ -574,21 +570,17 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
         }
 
         DeveloperDTO afterDeveloper = null;
-        if (ff4j.check(FeatureList.BETTER_SPLIT)) {
-            //the split is complete - log split activity
-            //get the original developer object from the db to make sure it's all filled in
-            DeveloperDTO origDeveloper = getById(oldDeveloper.getId());
-            afterDeveloper = getById(createdDeveloper.getId());
-            List<DeveloperDTO> splitDevelopers = new ArrayList<DeveloperDTO>();
-            splitDevelopers.add(origDeveloper);
-            splitDevelopers.add(afterDeveloper);
-            activityManager.addActivity(ActivityConcept.DEVELOPER, afterDeveloper.getId(),
-                    "Split developer " + origDeveloper.getName() + " into " + origDeveloper.getName()
-                    + " and " + afterDeveloper.getName(),
-                    origDeveloper, splitDevelopers);
-        } else {
-            afterDeveloper = getById(createdDeveloper.getId());
-        }
+        //the split is complete - log split activity
+        //get the original developer object from the db to make sure it's all filled in
+        DeveloperDTO origDeveloper = getById(oldDeveloper.getId());
+        afterDeveloper = getById(createdDeveloper.getId());
+        List<DeveloperDTO> splitDevelopers = new ArrayList<DeveloperDTO>();
+        splitDevelopers.add(origDeveloper);
+        splitDevelopers.add(afterDeveloper);
+        activityManager.addActivity(ActivityConcept.DEVELOPER, afterDeveloper.getId(),
+                "Split developer " + origDeveloper.getName() + " into " + origDeveloper.getName()
+                + " and " + afterDeveloper.getName(),
+                origDeveloper, splitDevelopers);
         return afterDeveloper;
     }
 

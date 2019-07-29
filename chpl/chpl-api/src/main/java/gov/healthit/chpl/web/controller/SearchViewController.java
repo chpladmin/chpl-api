@@ -34,6 +34,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.DescriptiveModel;
@@ -42,7 +43,6 @@ import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.SearchOption;
 import gov.healthit.chpl.domain.SearchableDimensionalData;
-import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.UploadTemplateVersion;
@@ -51,12 +51,14 @@ import gov.healthit.chpl.domain.search.NonconformitySearchOptions;
 import gov.healthit.chpl.domain.search.SearchRequest;
 import gov.healthit.chpl.domain.search.SearchResponse;
 import gov.healthit.chpl.domain.search.SearchSetOperator;
+import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementOptions;
 import gov.healthit.chpl.dto.FuzzyChoicesDTO;
 import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
+import gov.healthit.chpl.manager.ComplaintManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.manager.FilterManager;
@@ -65,6 +67,7 @@ import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
+import gov.healthit.chpl.web.controller.results.CertificationCriterionResults;
 import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -104,6 +107,9 @@ public class SearchViewController {
     
     @Autowired
     private FilterManager filterManager;
+    
+    @Autowired
+    private ComplaintManager complaintManager;
 
     @Autowired private FileUtils fileUtils;
 
@@ -812,7 +818,7 @@ public class SearchViewController {
     }
 
     @Secured({
-        Authority.ROLE_ADMIN, Authority.ROLE_ACB
+        Authority.ROLE_ADMIN, Authority.ROLE_ONC, Authority.ROLE_ACB
     })
     @ApiOperation(value = "Get all possible types of jobs that can be created in the system.")
     @RequestMapping(value = "/data/job_types", method = RequestMethod.GET,
@@ -822,10 +828,8 @@ public class SearchViewController {
         return dimensionalDataManager.getJobTypes();
     }
 
-    @Secured({
-        Authority.ROLE_ADMIN
-    })
-    @ApiOperation(value = "Get all fuzzy matching choices for the items that be fuzzy matched.")
+    @ApiOperation(value = "Get all fuzzy matching choices for the items that be fuzzy matched.",
+            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/data/fuzzy_choices", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -857,6 +861,14 @@ public class SearchViewController {
         FuzzyChoices result = fuzzyChoicesManager.updateFuzzyChoices(toUpdate);
         return result;
         //return new FuzzyChoices(result);
+    }
+
+    @ApiOperation(value = "Get a list of quarters for which a surveillance report can be created.")
+    @RequestMapping(value = "/data/quarters", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody Set<KeyValueModel> getQuarters() {
+        return dimensionalDataManager.getQuarters();
     }
 
     @ApiOperation(value = "Get all possible classifications in the CHPL",
@@ -1213,6 +1225,43 @@ public class SearchViewController {
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);
+        return result;
+    }
+    
+    @ApiOperation(value = "Get all possible complainant types in the CHPL")
+    @RequestMapping(value = "/data/complainant-types", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody SearchOption getComplainantTypes() {
+        Set<KeyValueModel> data = complaintManager.getComplainantTypes();
+        SearchOption result = new SearchOption();
+        result.setExpandable(false);
+        result.setData(data);
+        return result;
+    }
+
+    @ApiOperation(value = "Get all possible complaint status types in the CHPL")
+    @RequestMapping(value = "/data/complaint-status-types", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody SearchOption getComplaintStatusTypes() {
+        Set<KeyValueModel> data = complaintManager.getComplaintStatusTypes();
+        SearchOption result = new SearchOption();
+        result.setExpandable(false);
+        result.setData(data);
+        return result;
+    }
+    
+    @ApiOperation(value = "Get all possible certification criteria in the CHPL")
+    @RequestMapping(value = "/data/certification-criteria", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody CertificationCriterionResults getCertificationCriteria() {
+        Set<CertificationCriterion> criteria = dimensionalDataManager.getCertificationCriterion();
+        CertificationCriterionResults result = new CertificationCriterionResults();
+        for (CertificationCriterion criterion : criteria) {
+            result.getCriteria().add(criterion);
+        }
         return result;
     }
 }

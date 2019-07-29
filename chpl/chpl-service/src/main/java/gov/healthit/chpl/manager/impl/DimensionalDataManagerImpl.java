@@ -21,7 +21,6 @@ import gov.healthit.chpl.dao.EducationTypeDAO;
 import gov.healthit.chpl.dao.JobDAO;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.QmsStandardDAO;
-import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
 import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
@@ -30,6 +29,8 @@ import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.UcdProcessDAO;
 import gov.healthit.chpl.dao.UploadTemplateVersionDAO;
+import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
+import gov.healthit.chpl.dao.surveillance.report.QuarterDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
@@ -38,16 +39,16 @@ import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.SearchableDimensionalData;
-import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;
-import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
-import gov.healthit.chpl.domain.SurveillanceRequirementType;
-import gov.healthit.chpl.domain.SurveillanceResultType;
-import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.TestTool;
 import gov.healthit.chpl.domain.UploadTemplateVersion;
 import gov.healthit.chpl.domain.concept.RequirementTypeEnum;
+import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityStatus;
+import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementOptions;
+import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
+import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
+import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AgeRangeDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -65,6 +66,7 @@ import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.dto.UploadTemplateVersionDTO;
 import gov.healthit.chpl.dto.job.JobTypeDTO;
+import gov.healthit.chpl.dto.surveillance.report.QuarterDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.manager.PrecacheableDimensionalDataManager;
@@ -109,6 +111,8 @@ public class DimensionalDataManagerImpl implements DimensionalDataManager {
     private SurveillanceDAO survDao;
     @Autowired
     private UploadTemplateVersionDAO uploadTemplateDao;
+    @Autowired
+    private QuarterDAO quarterDao;
 
 
     @Autowired
@@ -126,6 +130,20 @@ public class DimensionalDataManagerImpl implements DimensionalDataManager {
         Set<KeyValueModel> results = new HashSet<KeyValueModel>();
         for (JobTypeDTO dto : jobTypes) {
             results.add(new KeyValueModel(dto.getId(), dto.getName(), dto.getDescription()));
+        }
+        return results;
+    }
+
+    @Transactional
+    @Override
+    public Set<KeyValueModel> getQuarters() {
+        LOGGER.debug("Getting all quarters from the database (not cached).");
+        List<QuarterDTO> quarters = quarterDao.getAll();
+        Set<KeyValueModel> results = new HashSet<KeyValueModel>();
+        for (QuarterDTO dto : quarters) {
+            String description = dto.getStartMonth() + "/" + dto.getStartDay()
+                + " - " + dto.getEndMonth() + "/" + dto.getEndDay();
+            results.add(new KeyValueModel(dto.getId(), dto.getName(), description));
         }
         return results;
     }

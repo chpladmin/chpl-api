@@ -3,9 +3,9 @@ package gov.healthit.chpl.scheduler.surveillance.rules;
 import java.util.Date;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.Surveillance;
-import gov.healthit.chpl.domain.SurveillanceNonconformity;
-import gov.healthit.chpl.domain.SurveillanceOversightRule;
+import gov.healthit.chpl.domain.surveillance.Surveillance;
+import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
+import gov.healthit.chpl.domain.surveillance.SurveillanceOversightRule;
 
 public interface RuleComplianceChecker {
     SurveillanceOversightRule getRuleChecked();
