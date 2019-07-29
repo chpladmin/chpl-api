@@ -3,6 +3,7 @@ package gov.healthit.chpl.activity;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.AnnouncementActivityMetadata;
 import gov.healthit.chpl.domain.activity.CertificationBodyActivityMetadata;
+import gov.healthit.chpl.domain.activity.ComplaintActivityMetadata;
 import gov.healthit.chpl.domain.activity.CorrectiveActionPlanActivityMetadata;
 import gov.healthit.chpl.domain.activity.DeveloperActivityMetadata;
 import gov.healthit.chpl.domain.activity.ListingActivityMetadata;
@@ -16,18 +17,20 @@ import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.dto.ActivityDTO;
 
 /**
- * Builds an appropriate metadata object for the type
- * of activity that is provided.
+ * Builds an appropriate metadata object for the type of activity that is
+ * provided.
+ * 
  * @author kekey
  *
  */
 public abstract class ActivityMetadataBuilder {
 
     /**
-     * Create an activity metadata object from activity DTO.
-     * Fill in the basic fields that all metadata will have (date, id, etc)
-     * and then add fields specific to the type of activity.
-     * Finally, categorize the activity based on what actually happened.
+     * Create an activity metadata object from activity DTO. Fill in the basic
+     * fields that all metadata will have (date, id, etc) and then add fields
+     * specific to the type of activity. Finally, categorize the activity based
+     * on what actually happened.
+     * 
      * @param dto
      * @return
      */
@@ -86,6 +89,9 @@ public abstract class ActivityMetadataBuilder {
             break;
         case PENDING_SURVEILLANCE:
             metadata = new PendingSurveillanceActivityMetadata();
+            break;
+        case COMPLAINT:
+            metadata = new ComplaintActivityMetadata();
             break;
         default:
             break;

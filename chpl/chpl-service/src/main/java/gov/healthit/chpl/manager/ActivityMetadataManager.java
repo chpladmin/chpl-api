@@ -39,4 +39,6 @@ public interface ActivityMetadataManager {
             throws IOException;
 
     List<ActivityMetadata> getAnnouncementActivityMetadata(final Date startDate, final Date endDate) throws IOException;
+
+    List<ActivityMetadata> getComplaintActivityMetadata(final Date startDate, final Date endDate) throws IOException;
 }

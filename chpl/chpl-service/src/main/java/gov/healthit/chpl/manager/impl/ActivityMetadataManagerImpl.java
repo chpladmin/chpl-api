@@ -69,8 +69,10 @@ public class ActivityMetadataManagerImpl extends SecuredManager implements Activ
     @Transactional
     public List<ActivityMetadata> getCertificationBodyActivityMetadata(final Date startDate, final Date endDate)
             throws JsonParseException, IOException {
-        // there is very little ACB activity so just get it all for the date range
-        // and apply a post filter to remove whatever the current user should not see.
+        // there is very little ACB activity so just get it all for the date
+        // range
+        // and apply a post filter to remove whatever the current user should
+        // not see.
         return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.CERTIFICATION_BODY, startDate, endDate);
     }
 
@@ -93,8 +95,10 @@ public class ActivityMetadataManagerImpl extends SecuredManager implements Activ
     @Transactional
     public List<ActivityMetadata> getTestingLabActivityMetadata(final Date startDate, final Date endDate)
             throws JsonParseException, IOException {
-        // there is very little ATL activity so just get it all for the date range
-        // and apply a post filter to remove whatever the current user should not see.
+        // there is very little ATL activity so just get it all for the date
+        // range
+        // and apply a post filter to remove whatever the current user should
+        // not see.
         return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.TESTING_LAB, startDate, endDate);
     }
 
@@ -145,6 +149,17 @@ public class ActivityMetadataManagerImpl extends SecuredManager implements Activ
     public List<ActivityMetadata> getAnnouncementActivityMetadata(final Date startDate, final Date endDate)
             throws IOException {
         return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.ANNOUNCEMENT, startDate, endDate);
+    }
+
+    @Override
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_COMPLAINT_METADATA)")
+    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_COMPLAINT_METADATA, filterObject)")
+    @Transactional
+    public List<ActivityMetadata> getComplaintActivityMetadata(final Date startDate, final Date endDate)
+            throws IOException {
+        return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.COMPLAINT, startDate, endDate);
     }
 
     private List<ActivityMetadata> getActivityMetadataByConceptWithoutSecurity(final ActivityConcept concept,
