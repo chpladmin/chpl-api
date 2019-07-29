@@ -298,4 +298,24 @@ public class PrivilegedSurveillanceDTO extends SurveillanceBasicDTO {
         this.surveillanceProcessType = null;
         this.surveillanceProcessTypeOther = null;
     }
+
+    public void copyPrivilegedFields(final PrivilegedSurveillanceDTO another) {
+        this.mappingId = another.getMappingId();
+        this.k1Reviewed = another.getK1Reviewed();
+        this.groundsForInitiating = another.getGroundsForInitiating();
+        this.nonconformityCauses = another.getNonconformityCauses();
+        this.nonconformityNature = another.getNonconformityNature();
+        this.stepsToSurveil = another.getStepsToSurveil();
+        this.stepsToEngage = another.getStepsToEngage();
+        this.additionalCostsEvaluation = another.getAdditionalCostsEvaluation();
+        this.limitationsEvaluation = another.getLimitationsEvaluation();
+        this.nondisclosureEvaluation = another.getNondisclosureEvaluation();
+        this.directionDeveloperResolution = another.getDirectionDeveloperResolution();
+        this.completedCapVerification = another.getCompletedCapVerification();
+        this.quarterlyReport = another.getQuarterlyReport();
+        this.surveillanceOutcome = another.getSurveillanceOutcome();
+        this.surveillanceOutcomeOther = another.getSurveillanceOutcomeOther();
+        this.surveillanceProcessType = another.getSurveillanceProcessType();
+        this.surveillanceProcessTypeOther = another.getSurveillanceProcessTypeOther();
+    }
 }

@@ -406,9 +406,19 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).GET_QUARTERLY,"
             + "#report)")
     public QuarterlyReportRelevantListingDTO getRelevantListing(final QuarterlyReportDTO report, final Long listingId) {
-        QuarterlyReportRelevantListingDTO relevantListing =
-                quarterlyDao.getRelevantListing(listingId, report);
+        QuarterlyReportRelevantListingDTO relevantListing = quarterlyDao.getRelevantListing(listingId, report);
         if (relevantListing != null) {
+            List<PrivilegedSurveillanceDTO> privilegedSurvForReport = quarterlySurvMapDao.getByReport(report.getId());
+            //inject privileged surv data into relevant listing
+            for (PrivilegedSurveillanceDTO relevantListingSurv : relevantListing.getSurveillances()) {
+                for (PrivilegedSurveillanceDTO privSurv : privilegedSurvForReport) {
+                    if (relevantListingSurv.getId().equals(privSurv.getId())) {
+                        relevantListingSurv.copyPrivilegedFields(privSurv);
+                    }
+                }
+            }
+
+            //inject exclusion data ito relevant listing
             QuarterlyReportExclusionDTO existingExclusion =
                     quarterlyDao.getExclusion(report.getId(), relevantListing.getId());
             if (existingExclusion != null) {
@@ -431,9 +441,21 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
             + "#report)")
     public List<QuarterlyReportRelevantListingDTO> getRelevantListings(final QuarterlyReportDTO report) {
         List<QuarterlyReportRelevantListingDTO> relevantListings = quarterlyDao.getRelevantListings(report);
+        List<PrivilegedSurveillanceDTO> privilegedSurvForReport = quarterlySurvMapDao.getByReport(report.getId());
         List<QuarterlyReportExclusionDTO> exclusions = quarterlyDao.getExclusions(report.getId());
 
-        //look at each relevant listing to see if it's been marked as excluded
+        //inject privileged surv data into report
+        for (QuarterlyReportRelevantListingDTO relevantListing : relevantListings) {
+            for (PrivilegedSurveillanceDTO relevantListingSurv : relevantListing.getSurveillances()) {
+                for (PrivilegedSurveillanceDTO privSurv : privilegedSurvForReport) {
+                    if (relevantListingSurv.getId().equals(privSurv.getId())) {
+                        relevantListingSurv.copyPrivilegedFields(privSurv);
+                    }
+                }
+            }
+        }
+
+        //inject exclusion data into report
         List<QuarterlyReportRelevantListingDTO> results = new ArrayList<QuarterlyReportRelevantListingDTO>();
         for (CertifiedProductDetailsDTO relevantListing : relevantListings) {
             QuarterlyReportRelevantListingDTO qrRelevantListing = (QuarterlyReportRelevantListingDTO) relevantListing;
@@ -461,9 +483,21 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
             + "#report)")
     public List<QuarterlyReportRelevantListingDTO> getListingsWithRelevantSurveillance(final QuarterlyReportDTO report) {
         List<QuarterlyReportRelevantListingDTO> relevantListings = quarterlyDao.getListingsWithRelevantSurveillance(report);
+        List<PrivilegedSurveillanceDTO> privilegedSurvForReport = quarterlySurvMapDao.getByReport(report.getId());
         List<QuarterlyReportExclusionDTO> exclusions = quarterlyDao.getExclusions(report.getId());
 
-        //look at each relevant listing to see if it's been marked as excluded
+        //inject privileged surv data into report
+        for (QuarterlyReportRelevantListingDTO relevantListing : relevantListings) {
+            for (PrivilegedSurveillanceDTO relevantListingSurv : relevantListing.getSurveillances()) {
+                for (PrivilegedSurveillanceDTO privSurv : privilegedSurvForReport) {
+                    if (relevantListingSurv.getId().equals(privSurv.getId())) {
+                        relevantListingSurv.copyPrivilegedFields(privSurv);
+                    }
+                }
+            }
+        }
+
+        //inject exclusion data into report
         List<QuarterlyReportRelevantListingDTO> results = new ArrayList<QuarterlyReportRelevantListingDTO>();
         for (CertifiedProductDetailsDTO relevantListing : relevantListings) {
             QuarterlyReportRelevantListingDTO qrRelevantListing = (QuarterlyReportRelevantListingDTO) relevantListing;

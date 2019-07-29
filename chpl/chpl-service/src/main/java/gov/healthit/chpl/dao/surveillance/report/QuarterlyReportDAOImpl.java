@@ -176,25 +176,19 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
                 + "FROM ListingWithPrivilegedSurveillanceEntity listing "
                 + "JOIN FETCH listing.surveillances surv "
                 + "LEFT JOIN FETCH surv.surveillanceType "
-                + "LEFT JOIN FETCH surv.privSurvMap privSurvMap "
-                + "LEFT JOIN FETCH privSurvMap.quarterlyReport "
-                + "LEFT JOIN FETCH privSurvMap.surveillanceOutcome "
-                + "LEFT JOIN FETCH privSurvMap.surveillanceProcessType "
                 + "WHERE listing.certificationBodyId = :acbId "
-                + "AND (privSurvMap IS NULL OR privSurvMap.quarterlyReportId = :quarterlyReportId) "
                 + "AND listing.deleted = false "
                 + "AND surv.startDate <= :endDate "
                 + "AND (surv.endDate IS NULL OR surv.endDate >= :startDate)";
         Query query = entityManager.createQuery(queryStr);
         query.setParameter("acbId", quarterlyReport.getAcb().getId());
-        query.setParameter("quarterlyReportId", quarterlyReport.getId());
         query.setParameter("startDate", quarterlyReport.getStartDate());
         query.setParameter("endDate", quarterlyReport.getEndDate());
 
-        List<ListingWithPrivilegedSurveillanceEntity> entities = query.getResultList();
+        List<ListingWithPrivilegedSurveillanceEntity> listingsWithSurvEntities = query.getResultList();
         List<QuarterlyReportRelevantListingDTO> result = new ArrayList<QuarterlyReportRelevantListingDTO>();
-        for (ListingWithPrivilegedSurveillanceEntity entity : entities) {
-            result.add(new QuarterlyReportRelevantListingDTO(entity));
+        for (ListingWithPrivilegedSurveillanceEntity listingsWithSurvEntity : listingsWithSurvEntities) {
+            result.add(new QuarterlyReportRelevantListingDTO(listingsWithSurvEntity));
         }
         return result;
     }
@@ -210,18 +204,12 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
                 + "FROM ListingWithPrivilegedSurveillanceEntity listing "
                 + "LEFT JOIN FETCH listing.surveillances surv "
                 + "LEFT JOIN FETCH surv.surveillanceType "
-                + "LEFT JOIN FETCH surv.privSurvMap privSurvMap "
-                + "LEFT JOIN FETCH privSurvMap.quarterlyReport "
-                + "LEFT JOIN FETCH privSurvMap.surveillanceOutcome "
-                + "LEFT JOIN FETCH privSurvMap.surveillanceProcessType "
                 + "WHERE listing.id = :listingId "
-                + "AND (privSurvMap IS NULL OR privSurvMap.quarterlyReportId = :quarterlyReportId) "
                 + "AND listing.deleted = false "
                 + "AND surv.startDate <= :endDate "
                 + "AND (surv.endDate IS NULL OR surv.endDate >= :startDate)";
         Query query = entityManager.createQuery(queryStr);
         query.setParameter("listingId", listingId);
-        query.setParameter("quarterlyReportId", quarterlyReport.getId());
         query.setParameter("startDate", quarterlyReport.getStartDate());
         query.setParameter("endDate", quarterlyReport.getEndDate());
         List<ListingWithPrivilegedSurveillanceEntity> entities = query.getResultList();
@@ -245,16 +233,10 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
                 + "FROM ListingWithPrivilegedSurveillanceEntity listing "
                 + "LEFT JOIN FETCH listing.surveillances surv "
                 + "LEFT JOIN FETCH surv.surveillanceType "
-                + "LEFT JOIN FETCH surv.privSurvMap privSurvMap "
-                + "LEFT JOIN FETCH privSurvMap.quarterlyReport "
-                + "LEFT JOIN FETCH privSurvMap.surveillanceOutcome "
-                + "LEFT JOIN FETCH privSurvMap.surveillanceProcessType "
                 + "WHERE listing.certificationBodyId = :acbId "
-                + "AND (privSurvMap IS NULL OR privSurvMap.quarterlyReportId = :quarterlyReportId) "
                 + "AND listing.deleted = false ";
         Query query = entityManager.createQuery(queryStr);
         query.setParameter("acbId", quarterlyReport.getAcb().getId());
-        query.setParameter("quarterlyReportId", quarterlyReport.getId());
 
         List<ListingWithPrivilegedSurveillanceEntity> entities = query.getResultList();
         List<QuarterlyReportRelevantListingDTO> result = new ArrayList<QuarterlyReportRelevantListingDTO>();
