@@ -59,7 +59,6 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
 
     private static final int COL_CHPL_ID = 1;
     private static final int COL_SURV_ID = 2;
-    //cols 3-8 get hidden
     private static final int COL_SURV_ACTIVITY_TRACKER = 3;
     private static final int COL_RELATED_COMPLAINT = 4;
     private static final int COL_Q1 = 5;
@@ -92,6 +91,8 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
     private static final int COL_NONDISCLOSURE_EVAL = 32;
     private static final int COL_DEV_RESOLUTION = 33;
     private static final int COL_COMPLETED_CAP = 34;
+    private static final int[] HIDDEN_COLS =
+        {COL_SURV_ACTIVITY_TRACKER, COL_RELATED_COMPLAINT, COL_Q1, COL_Q2, COL_Q3, COL_Q4};
 
     private SurveillanceReportManager reportManager;
     private CertifiedProductDetailsManager detailsManager;
@@ -256,8 +257,8 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
         sheet.addValidationData(validation);
 
         //hide some rows the ACBs are not expected to fill out (columns D-I)
-        for (int i = 3; i < 9; i++) {
-            sheet.setColumnHidden(i, true);
+        for (int i = 0; i < HIDDEN_COLS.length; i++) {
+            sheet.setColumnHidden(HIDDEN_COLS[i], true);
         }
 
         //apply the borders after the sheet has been created

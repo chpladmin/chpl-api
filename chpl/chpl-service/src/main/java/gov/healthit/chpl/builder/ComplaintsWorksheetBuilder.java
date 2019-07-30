@@ -6,10 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -39,7 +37,6 @@ import gov.healthit.chpl.domain.complaint.ComplaintListingMap;
 import gov.healthit.chpl.domain.surveillance.SurveillanceBasic;
 import gov.healthit.chpl.dto.surveillance.report.PrivilegedSurveillanceDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
-import gov.healthit.chpl.dto.surveillance.report.SurveillanceOutcomeDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.ComplaintManager;
@@ -59,7 +56,6 @@ public class ComplaintsWorksheetBuilder {
     private static final int COL_CRITERIA_ID = 8;
     private static final int COL_CHPL_ID = 9;
     private static final int COL_SURV_ID = 10;
-    //columns L-O get hidden
     private static final int COL_DEVELOPER = 11;
     private static final int COL_PRODUCT = 12;
     private static final int COL_VERSION = 13;
@@ -69,6 +65,8 @@ public class ComplaintsWorksheetBuilder {
     private static final int COL_ATL_CONTACTED = 17;
     private static final int COL_COMPLAINT_STATUS = 18;
     private static final int COL_FLAGGED_FOR_ONC = 19;
+    private static final int[] HIDDEN_COLS =
+        {COL_DEVELOPER, COL_PRODUCT, COL_VERSION, COL_FLAGGED_FOR_ONC};
 
     private ComplaintManager complaintManager;
     private CertifiedProductDetailsManager cpdManager;
@@ -210,13 +208,13 @@ public class ComplaintsWorksheetBuilder {
         validation.setShowErrorBox(false);
         sheet.addValidationData(validation);
 
-        //hide some rows the ACBs are not expected to fill out (columns L-O)
-        for (int i = 11; i < 14; i++) {
-            sheet.setColumnHidden(i, true);
+        //hide some rows the ACBs are not expected to fill out
+        for (int i = 0; i < HIDDEN_COLS.length; i++) {
+            sheet.setColumnHidden(HIDDEN_COLS[i], true);
         }
 
         //apply the borders after the sheet has been created
-        pt.drawBorders(new CellRangeAddress(1, getLastDataRow(), 1, LAST_DATA_COLUMN-1),
+        pt.drawBorders(new CellRangeAddress(1, getLastDataRow(), 1, LAST_DATA_COLUMN - 1),
                 BorderStyle.MEDIUM, BorderExtent.OUTSIDE);
         pt.applyBorders(sheet);
         return sheet;
