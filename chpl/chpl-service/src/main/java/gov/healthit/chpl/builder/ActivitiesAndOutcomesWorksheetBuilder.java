@@ -55,7 +55,7 @@ import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 @Component
 public class ActivitiesAndOutcomesWorksheetBuilder {
     private static final Logger LOGGER = LogManager.getLogger(ActivitiesAndOutcomesWorksheetBuilder.class);
-    private static final int LAST_DATA_COLUMN = 35;
+    private static final int LAST_DATA_COLUMN = 37;
 
     private static final int COL_CHPL_ID = 1;
     private static final int COL_SURV_ID = 2;

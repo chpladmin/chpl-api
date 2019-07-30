@@ -150,10 +150,10 @@ public class SurveillanceSummaryDAOImpl extends BaseDAOImpl implements Surveilla
                 + "AND surv.startDate <= :endDate "
                 + "AND (surv.endDate IS NULL OR surv.endDate >= :startDate) ";
 
-        //get all of the distinct listings that had Reactive surveillance during the date range
+        //get all of the distinct listings that had randomized or reactive surveillance during the date range
         Query query = entityManager.createQuery(queryStr, ListingWithPrivilegedSurveillanceEntity.class);
         query.setParameter("acbId", acbId);
-        query.setParameter("survTypeName", "Reactive");
+        query.setParameter("survTypeName", survType.getName());
         query.setParameter("startDate", startDate);
         query.setParameter("endDate", endDate);
         List<ListingWithPrivilegedSurveillanceEntity> entities = query.getResultList();

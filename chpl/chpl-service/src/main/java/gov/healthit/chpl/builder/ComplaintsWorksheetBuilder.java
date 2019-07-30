@@ -45,7 +45,7 @@ import gov.healthit.chpl.manager.ComplaintManager;
 @Component
 public class ComplaintsWorksheetBuilder {
     private static final Logger LOGGER = LogManager.getLogger(ComplaintsWorksheetBuilder.class);
-    private static final int LAST_DATA_COLUMN = 20;
+    private static final int LAST_DATA_COLUMN = 21;
 
     private static final int COL_COMPLAINT_DATE = 1;
     private static final int COL_ACB_COMPLAINT_ID = 2;
@@ -57,7 +57,7 @@ public class ComplaintsWorksheetBuilder {
     private static final int COL_CRITERIA_ID = 8;
     private static final int COL_CHPL_ID = 9;
     private static final int COL_SURV_ID = 10;
-    //columns 11 - 14 get hidden
+    //columns L-O get hidden
     private static final int COL_DEVELOPER = 11;
     private static final int COL_PRODUCT = 12;
     private static final int COL_VERSION = 13;
@@ -208,8 +208,8 @@ public class ComplaintsWorksheetBuilder {
         validation.setShowErrorBox(false);
         sheet.addValidationData(validation);
 
-        //hide some rows the ACBs are not expected to fill out (columns E-J)
-        for (int i = 10; i < 13; i++) {
+        //hide some rows the ACBs are not expected to fill out (columns L-O)
+        for (int i = 11; i < 14; i++) {
             sheet.setColumnHidden(i, true);
         }
 
@@ -429,20 +429,26 @@ public class ComplaintsWorksheetBuilder {
         for (QuarterlyReportDTO report : reports) {
             reportIds.add(report.getId());
         }
+        String result = "";
         List<PrivilegedSurveillanceDTO> privSurvs = survDao.getByReportsAndSurveillance(reportIds, survId);
-        Map<String, ArrayList<String>> outcomeToQuarterMap = new LinkedHashMap<String, ArrayList<String>>();
-        for (PrivilegedSurveillanceDTO privSurv : privSurvs) {
-            String outcomeStr = (privSurv.getSurveillanceOutcome() != null ?
-                    privSurv.getSurveillanceOutcome().getName() : "");
-            if (outcomeToQuarterMap.get(outcomeStr) != null) {
-                outcomeToQuarterMap.get(outcomeStr).add(privSurv.getQuarterlyReport().getQuarter().getName());
-            } else {
-                ArrayList<String> quarterNames = new ArrayList<String>();
-                quarterNames.add(privSurv.getQuarterlyReport().getQuarter().getName());
-                outcomeToQuarterMap.put(outcomeStr, quarterNames);
+        if (reportIds.size() == 1 && privSurvs.size() > 0) {
+            result = privSurvs.get(0).getSurveillanceOutcome().getName();
+        } else if (privSurvs.size() > 0){
+            Map<String, ArrayList<String>> outcomeToQuarterMap = new LinkedHashMap<String, ArrayList<String>>();
+            for (PrivilegedSurveillanceDTO privSurv : privSurvs) {
+                String outcomeStr = (privSurv.getSurveillanceOutcome() != null ?
+                        privSurv.getSurveillanceOutcome().getName() : "");
+                if (outcomeToQuarterMap.get(outcomeStr) != null) {
+                    outcomeToQuarterMap.get(outcomeStr).add(privSurv.getQuarterlyReport().getQuarter().getName());
+                } else {
+                    ArrayList<String> quarterNames = new ArrayList<String>();
+                    quarterNames.add(privSurv.getQuarterlyReport().getQuarter().getName());
+                    outcomeToQuarterMap.put(outcomeStr, quarterNames);
+                }
             }
+            result = MultiQuarterWorksheetBuilderUtil.buildStringFromMap(outcomeToQuarterMap);
         }
-        return MultiQuarterWorksheetBuilderUtil.buildStringFromMap(outcomeToQuarterMap);
+        return result;
     }
 
     private void addComplaintData(final SurveillanceReportWorkbookWrapper workbook,

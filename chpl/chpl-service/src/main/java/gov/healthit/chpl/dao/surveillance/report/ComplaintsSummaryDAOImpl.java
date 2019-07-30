@@ -117,12 +117,12 @@ public class ComplaintsSummaryDAOImpl extends BaseDAOImpl implements ComplaintSu
                     + "AND c.certificationBodyId = :acbId "
                     + "AND c.receivedDate <= :endDate "
                     + "AND (c.closedDate IS NULL OR c.closedDate >= :startDate) "
-                    + "AND survs.id IN ("
+                    + "AND survs.surveillanceId IN ("
                         + "SELECT DISTINCT ps.id "
                         + "FROM PrivilegedSurveillanceEntity ps "
                         + "JOIN ps.privSurvMap privSurvMap "
                         + "WHERE privSurvMap.deleted = false "
-                        + "AND privSurvMap.surveillanceOutcomeId in (:outcomeIds) "
+                        + "AND privSurvMap.surveillanceOutcomeId IN (:outcomeIds) "
                 + ")",
                 Long.class);
         List<SurveillanceOutcomeDTO> allOutcomes = survDao.getSurveillanceOutcomes();
@@ -151,7 +151,7 @@ public class ComplaintsSummaryDAOImpl extends BaseDAOImpl implements ComplaintSu
                 + "WHERE ps.deleted = false "
                 + "AND privSurvMap.surveillanceOutcomeId in (:outcomeIds) "
                 + "AND ps.id in ("
-                    + "SELECT DISTINCT survs.id "
+                    + "SELECT DISTINCT survs.surveillanceId "
                     + "FROM ComplaintEntity c "
                     + "JOIN c.certificationBody "
                     + "JOIN c.surveillances survs "
