@@ -6,8 +6,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -264,14 +266,20 @@ public class ComplaintsWorksheetBuilder {
         int addedRows = 0;
         int rowNum = 2;
 
-        List<Complaint> allComplaints = new ArrayList<Complaint>();
+        List<Complaint> uniqueComplaints = new ArrayList<Complaint>();
         //get the complaints for each quarterly report
+        //a complaint could be relevant to multiple quarterly reports so filter out duplicates
         for (QuarterlyReportDTO report : quarterlyReports) {
-            allComplaints.addAll(complaintManager.getAllComplaintsBetweenDates(
-                    report.getAcb(), report.getStartDate(), report.getEndDate()));
+            List<Complaint> complaintsRelevantToReport = complaintManager.getAllComplaintsBetweenDates(
+                    report.getAcb(), report.getStartDate(), report.getEndDate());
+            for (Complaint relevantComplaint : complaintsRelevantToReport) {
+                if (!uniqueComplaints.contains(relevantComplaint)) {
+                    uniqueComplaints.add(relevantComplaint);
+                }
+            }
         }
-        //sort the complaints with oldest receied date first
-        allComplaints.sort(new Comparator<Complaint>() {
+        //sort the complaints with oldest received date first
+        uniqueComplaints.sort(new Comparator<Complaint>() {
             @Override
             public int compare(final Complaint o1, final Complaint o2) {
                 if (o1.getReceivedDate().getTime() < o2.getReceivedDate().getTime()) {
@@ -284,7 +292,7 @@ public class ComplaintsWorksheetBuilder {
             }
         });
 
-        for (Complaint complaint : allComplaints) {
+        for (Complaint complaint : uniqueComplaints) {
             boolean isFirstRowForComplaint = true;
             Row row = workbook.getRow(sheet, rowNum++);
             addComplaintData(workbook, row, complaint);
