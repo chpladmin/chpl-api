@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 /**
  * Different types of activity the system will log.
- * 
+ *
  * @author kekey
  *
  */
@@ -24,5 +24,7 @@ public enum ActivityConcept implements Serializable {
     CERTIFICATION_ID,
     PENDING_SURVEILLANCE,
     CORRECTIVE_ACTION_PLAN,
-    COMPLAINT;
+    COMPLAINT,
+    QUARTERLY_REPORT,
+    ANNUAL_REPORT;
 }

@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
@@ -17,35 +19,40 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 
 public interface SurveillanceReportManager {
-    public Set<KeyValueModel> getSurveillanceOutcomes();
-    public Set<KeyValueModel> getSurveillanceProcessTypes();
-    public AnnualReportDTO createAnnualReport(AnnualReportDTO toCreate)
-        throws EntityCreationException, InvalidArgumentsException;
-    public AnnualReportDTO updateAnnualReport(AnnualReportDTO toUpdate) throws EntityRetrievalException;
-    public void deleteAnnualReport(Long id) throws EntityRetrievalException;
-    public List<AnnualReportDTO> getAnnualReports();
-    public AnnualReportDTO getAnnualReport(Long id) throws EntityRetrievalException;
-    public JobDTO exportAnnualReportAsBackgroundJob(Long id)
+    Set<KeyValueModel> getSurveillanceOutcomes();
+    Set<KeyValueModel> getSurveillanceProcessTypes();
+    AnnualReportDTO createAnnualReport(AnnualReportDTO toCreate)
+        throws EntityCreationException, InvalidArgumentsException, JsonProcessingException, EntityRetrievalException;
+    AnnualReportDTO updateAnnualReport(AnnualReportDTO toUpdate)
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
+    void deleteAnnualReport(Long id)
+            throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
+    List<AnnualReportDTO> getAnnualReports();
+    AnnualReportDTO getAnnualReport(Long id) throws EntityRetrievalException;
+    JobDTO exportAnnualReportAsBackgroundJob(Long id)
             throws EntityRetrievalException, EntityCreationException, UserRetrievalException, IOException;
 
-    public QuarterlyReportDTO createQuarterlyReport(QuarterlyReportDTO toCreate)
-            throws EntityCreationException, InvalidArgumentsException;
-    public QuarterlyReportExclusionDTO createQuarterlyReportExclusion(QuarterlyReportDTO report,
-            Long listingId, String reason) throws EntityCreationException, InvalidArgumentsException;
-    public QuarterlyReportDTO updateQuarterlyReport(QuarterlyReportDTO toUpdate) throws EntityRetrievalException;
-    public QuarterlyReportExclusionDTO updateQuarterlyReportExclusion(QuarterlyReportDTO report,
-            Long listingId, String reason) throws EntityRetrievalException;
-    public PrivilegedSurveillanceDTO createOrUpdateQuarterlyReportSurveillanceMap(PrivilegedSurveillanceDTO toUpdate)
-            throws EntityCreationException, EntityRetrievalException;
-    public void deleteQuarterlyReport(Long id) throws EntityRetrievalException;
-    public void deleteQuarterlyReportExclusion(Long reportId, Long listingId);
-    public List<QuarterlyReportDTO> getQuarterlyReports();
-    public List<QuarterlyReportDTO> getQuarterlyReports(Long acbId, Integer year);
-    public QuarterlyReportExclusionDTO getExclusion(QuarterlyReportDTO report, Long listingId);
-    public QuarterlyReportRelevantListingDTO getRelevantListing(QuarterlyReportDTO report, Long listingId);
-    public List<QuarterlyReportRelevantListingDTO> getRelevantListings(QuarterlyReportDTO report);
-    public List<QuarterlyReportRelevantListingDTO> getListingsWithRelevantSurveillance(QuarterlyReportDTO report);
-    public QuarterlyReportDTO getQuarterlyReport(Long id) throws EntityRetrievalException;
-    public JobDTO exportQuarterlyReportAsBackgroundJob(Long id)
+    QuarterlyReportDTO createQuarterlyReport(QuarterlyReportDTO toCreate)
+            throws EntityCreationException, InvalidArgumentsException, JsonProcessingException, EntityRetrievalException;
+    QuarterlyReportExclusionDTO createQuarterlyReportExclusion(QuarterlyReportDTO report,
+            Long listingId, String reason) throws EntityCreationException, InvalidArgumentsException,
+            JsonProcessingException, EntityRetrievalException;
+    QuarterlyReportDTO updateQuarterlyReport(QuarterlyReportDTO toUpdate)
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
+    QuarterlyReportExclusionDTO updateQuarterlyReportExclusion(QuarterlyReportDTO report,
+            Long listingId, String reason) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
+    PrivilegedSurveillanceDTO createOrUpdateQuarterlyReportSurveillanceMap(PrivilegedSurveillanceDTO toUpdate)
+            throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
+    void deleteQuarterlyReport(Long id) throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
+    void deleteQuarterlyReportExclusion(Long reportId, Long listingId)
+            throws JsonProcessingException, EntityRetrievalException, EntityCreationException;
+    List<QuarterlyReportDTO> getQuarterlyReports();
+    List<QuarterlyReportDTO> getQuarterlyReports(Long acbId, Integer year);
+    QuarterlyReportExclusionDTO getExclusion(QuarterlyReportDTO report, Long listingId);
+    QuarterlyReportRelevantListingDTO getRelevantListing(QuarterlyReportDTO report, Long listingId);
+    List<QuarterlyReportRelevantListingDTO> getRelevantListings(QuarterlyReportDTO report);
+    List<QuarterlyReportRelevantListingDTO> getListingsWithRelevantSurveillance(QuarterlyReportDTO report);
+    QuarterlyReportDTO getQuarterlyReport(Long id) throws EntityRetrievalException;
+    JobDTO exportQuarterlyReportAsBackgroundJob(Long id)
             throws EntityRetrievalException, EntityCreationException, UserRetrievalException, IOException;
 }

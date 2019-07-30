@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.Job;
 import gov.healthit.chpl.domain.complaint.Complaint;
@@ -102,7 +104,8 @@ public class SurveillanceReportController {
     @RequestMapping(value = "/annual", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public synchronized AnnualReport createAnnualReport(
         @RequestBody(required = true) final AnnualReport createRequest)
-                throws AccessDeniedException, InvalidArgumentsException, EntityCreationException {
+                throws AccessDeniedException, InvalidArgumentsException, EntityCreationException,
+                JsonProcessingException, EntityRetrievalException {
         if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
             throw new NotImplementedException();
         }
@@ -129,7 +132,8 @@ public class SurveillanceReportController {
     @RequestMapping(value = "/annual", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public synchronized AnnualReport updateAnnualReport(
         @RequestBody(required = true) final AnnualReport updateRequest)
-    throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException {
+    throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
+    EntityCreationException {
         if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
             throw new NotImplementedException();
         }
@@ -150,7 +154,7 @@ public class SurveillanceReportController {
     @RequestMapping(value = "/annual/{annualReportId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public void deleteAnnualReport(@PathVariable final Long annualReportId)
-            throws EntityRetrievalException {
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
             throw new NotImplementedException();
         }
@@ -254,7 +258,8 @@ public class SurveillanceReportController {
     @RequestMapping(value = "/quarterly", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public synchronized QuarterlyReport createQuarterlyReport(
             @RequestBody(required = true) final QuarterlyReport createRequest)
-    throws AccessDeniedException, InvalidArgumentsException, EntityCreationException {
+    throws AccessDeniedException, InvalidArgumentsException, EntityCreationException,
+    JsonProcessingException, EntityRetrievalException {
         if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
             throw new NotImplementedException();
         }
@@ -287,7 +292,8 @@ public class SurveillanceReportController {
             @PathVariable final Long quarterlyReportId,
             @PathVariable final Long surveillanceId,
             @RequestBody(required = true) final PrivilegedSurveillance updateRequest)
-                throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException, EntityCreationException {
+                throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException,
+                EntityCreationException, JsonProcessingException {
         if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
             throw new NotImplementedException();
         }
@@ -331,7 +337,8 @@ public class SurveillanceReportController {
     public synchronized RelevantListing updateRelevantListing(@PathVariable final Long quarterlyReportId,
             @PathVariable final Long listingId,
             @RequestBody(required = true) final RelevantListing updateExclusionRequest)
-                throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException, EntityCreationException {
+                throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException, EntityCreationException,
+                JsonProcessingException {
         if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
             throw new NotImplementedException();
         }
@@ -372,7 +379,8 @@ public class SurveillanceReportController {
     @RequestMapping(value = "/quarterly", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public synchronized QuarterlyReport updateQuarterlyReport(
         @RequestBody(required = true) final QuarterlyReport updateRequest)
-    throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException {
+    throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
+    EntityCreationException {
         if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
             throw new NotImplementedException();
         }
@@ -395,7 +403,7 @@ public class SurveillanceReportController {
     @RequestMapping(value = "/quarterly/{quarterlyReportId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public void deleteQuarterlyReport(@PathVariable final Long quarterlyReportId)
-            throws EntityRetrievalException {
+            throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
         if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
             throw new NotImplementedException();
         }
