@@ -13,6 +13,7 @@ import gov.healthit.chpl.entity.surveillance.report.PrivilegedSurveillanceEntity
 
 public class QuarterlyReportRelevantListingDTO extends CertifiedProductDetailsDTO {
     private static final long serialVersionUID = -2198910382314894675L;
+    private QuarterlyReportDTO quarterlyReport;
     private boolean isExcluded;
     private String exclusionReason;
     private List<PrivilegedSurveillanceDTO> surveillances;
@@ -81,6 +82,14 @@ public class QuarterlyReportRelevantListingDTO extends CertifiedProductDetailsDT
 
     public void setSurveillances(final List<PrivilegedSurveillanceDTO> surveillances) {
         this.surveillances = surveillances;
+    }
+
+    public QuarterlyReportDTO getQuarterlyReport() {
+        return quarterlyReport;
+    }
+
+    public void setQuarterlyReport(final QuarterlyReportDTO quarterlyReport) {
+        this.quarterlyReport = quarterlyReport;
     }
 
     @Override

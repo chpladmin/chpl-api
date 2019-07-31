@@ -26,5 +26,6 @@ public enum ActivityConcept implements Serializable {
     CORRECTIVE_ACTION_PLAN,
     COMPLAINT,
     QUARTERLY_REPORT,
+    QUARTERLY_REPORT_LISTING,
     ANNUAL_REPORT;
 }

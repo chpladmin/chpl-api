@@ -32,13 +32,16 @@ public interface ActivityMetadataManager {
     List<ActivityMetadata> getUserMaintenanceActivityMetadata(Date startDate, Date endDate)
             throws JsonParseException, IOException;
 
-    List<ActivityMetadata> getPendingListingActivityMetadata(final Date startDate, final Date endDate)
+    List<ActivityMetadata> getPendingListingActivityMetadata(Date startDate, Date endDate)
             throws IOException;
 
-    List<ActivityMetadata> getPendingSurveillanceActivityMetadata(final Date startDate, final Date endDate)
+    List<ActivityMetadata> getPendingSurveillanceActivityMetadata(Date startDate, Date endDate)
             throws IOException;
 
-    List<ActivityMetadata> getAnnouncementActivityMetadata(final Date startDate, final Date endDate) throws IOException;
+    List<ActivityMetadata> getAnnouncementActivityMetadata(Date startDate, Date endDate) throws IOException;
 
-    List<ActivityMetadata> getComplaintActivityMetadata(final Date startDate, final Date endDate) throws IOException;
+    List<ActivityMetadata> getComplaintActivityMetadata(Date startDate, Date endDate) throws IOException;
+    List<ActivityMetadata> getQuarterlyReportActivityMetadata(Date startDate, Date endDate) throws IOException;
+    List<ActivityMetadata> getQuarterlyReportListingActivityMetadata(Date startDate, Date endDate) throws IOException;
+    List<ActivityMetadata> getAnnualReportActivityMetadata(Date startDate, Date endDate) throws IOException;
 }

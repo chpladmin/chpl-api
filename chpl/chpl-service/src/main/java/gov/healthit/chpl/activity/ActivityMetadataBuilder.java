@@ -2,6 +2,7 @@ package gov.healthit.chpl.activity;
 
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.AnnouncementActivityMetadata;
+import gov.healthit.chpl.domain.activity.AnnualReportActivityMetadata;
 import gov.healthit.chpl.domain.activity.CertificationBodyActivityMetadata;
 import gov.healthit.chpl.domain.activity.ComplaintActivityMetadata;
 import gov.healthit.chpl.domain.activity.CorrectiveActionPlanActivityMetadata;
@@ -10,6 +11,7 @@ import gov.healthit.chpl.domain.activity.ListingActivityMetadata;
 import gov.healthit.chpl.domain.activity.PendingListingActivityMetadata;
 import gov.healthit.chpl.domain.activity.PendingSurveillanceActivityMetadata;
 import gov.healthit.chpl.domain.activity.ProductActivityMetadata;
+import gov.healthit.chpl.domain.activity.QuarterlyReportActivityMetadata;
 import gov.healthit.chpl.domain.activity.TestingLabActivityMetadata;
 import gov.healthit.chpl.domain.activity.UserMaintenanceActivityMetadata;
 import gov.healthit.chpl.domain.activity.VersionActivityMetadata;
@@ -19,7 +21,7 @@ import gov.healthit.chpl.dto.ActivityDTO;
 /**
  * Builds an appropriate metadata object for the type of activity that is
  * provided.
- * 
+ *
  * @author kekey
  *
  */
@@ -30,9 +32,9 @@ public abstract class ActivityMetadataBuilder {
      * fields that all metadata will have (date, id, etc) and then add fields
      * specific to the type of activity. Finally, categorize the activity based
      * on what actually happened.
-     * 
+     *
      * @param dto
-     * @return
+     * @return parsed metadata object
      */
     public ActivityMetadata build(final ActivityDTO dto) {
         ActivityMetadata metadata = createMetadataObject(dto);
@@ -93,6 +95,12 @@ public abstract class ActivityMetadataBuilder {
         case COMPLAINT:
             metadata = new ComplaintActivityMetadata();
             break;
+        case QUARTERLY_REPORT:
+        case QUARTERLY_REPORT_LISTING:
+            metadata = new QuarterlyReportActivityMetadata();
+            break;
+        case ANNUAL_REPORT:
+            metadata = new AnnualReportActivityMetadata();
         default:
             break;
         }

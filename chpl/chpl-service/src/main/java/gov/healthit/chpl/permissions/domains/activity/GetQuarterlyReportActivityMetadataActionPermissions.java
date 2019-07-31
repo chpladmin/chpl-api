@@ -2,11 +2,11 @@ package gov.healthit.chpl.permissions.domains.activity;
 
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.domain.activity.ComplaintActivityMetadata;
+import gov.healthit.chpl.domain.activity.QuarterlyReportActivityMetadata;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
-@Component("activityGetComplaintActivityMetadataActionPermissions")
-public class GetComplaintActivityMetadataActionPermissions extends ActionPermissions {
+@Component("activityGetQuarterlyReportActivityMetadataActionPermissions")
+public class GetQuarterlyReportActivityMetadataActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess() {
@@ -16,13 +16,13 @@ public class GetComplaintActivityMetadataActionPermissions extends ActionPermiss
 
     @Override
     public boolean hasAccess(final Object obj) {
-        if (!(obj instanceof ComplaintActivityMetadata)) {
+        if (!(obj instanceof QuarterlyReportActivityMetadata)) {
             return false;
         } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
-            ComplaintActivityMetadata activity = (ComplaintActivityMetadata) obj;
-            return isAcbValidForCurrentUser(activity.getCertificationBody().getId());
+            QuarterlyReportActivityMetadata activity = (QuarterlyReportActivityMetadata) obj;
+            return isAcbValidForCurrentUser(activity.getAcb().getId());
         } else {
             return false;
         }

@@ -12,6 +12,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.dao.auth.UserDAO;
+import gov.healthit.chpl.dao.surveillance.report.AnnualReportDAO;
+import gov.healthit.chpl.dao.surveillance.report.QuarterlyReportDAO;
 import gov.healthit.chpl.domain.activity.ActivityDetails;
 import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.dto.AnnouncementDTO;
@@ -20,19 +22,28 @@ import gov.healthit.chpl.dto.ComplaintDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
+import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
+import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportRelevantListingDTO;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
 @Component("actionGetActivityDetailsActionPermissions")
 public class GetActivityDetailsActionPermissions extends ActionPermissions {
     private static final Logger LOGGER = LogManager.getLogger(GetActivityDetailsActionPermissions.class);
 
-    @Autowired
     private UserDAO userDao;
-
+    private QuarterlyReportDAO quarterlyReportDao;
+    private AnnualReportDAO annualReportDao;
     private ObjectMapper jsonMapper;
 
-    public GetActivityDetailsActionPermissions() {
+    @Autowired
+    public GetActivityDetailsActionPermissions(final UserDAO userDao,
+            final QuarterlyReportDAO quarterlyReportDao,
+            final AnnualReportDAO annualReportDao) {
         jsonMapper = new ObjectMapper();
+        this.userDao = userDao;
+        this.quarterlyReportDao = quarterlyReportDao;
+        this.annualReportDao = annualReportDao;
     }
 
     @Override
@@ -97,6 +108,27 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
                     return hasAccessToComplaint(details.getOriginalData());
                 }
                 break;
+            case QUARTERLY_REPORT:
+                if (details.getNewData() != null) {
+                    return hasAccessToQuarterlyReport(details.getActivityObjectId(), details.getNewData());
+                } else if (details.getOriginalData() != null) {
+                    return hasAccessToQuarterlyReport(details.getActivityObjectId(), details.getOriginalData());
+                }
+                break;
+            case QUARTERLY_REPORT_LISTING:
+                if (details.getNewData() != null) {
+                    return hasAccessToQuarterlyReportListing(details.getNewData());
+                } else if (details.getOriginalData() != null) {
+                    return hasAccessToQuarterlyReportListing(details.getOriginalData());
+                }
+                break;
+            case ANNUAL_REPORT:
+                if (details.getNewData() != null) {
+                    return hasAccessToAnnualReport(details.getActivityObjectId(), details.getNewData());
+                } else if (details.getOriginalData() != null) {
+                    return hasAccessToAnnualReport(details.getActivityObjectId(), details.getOriginalData());
+                }
+                break;
             default:
                 // all other types of activity
                 // are accessible to any logged-in or anonymous user
@@ -116,6 +148,74 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
                 return isAcbValidForCurrentUser(complaint.getCertificationBody().getId());
             } catch (Exception e) {
                 LOGGER.error("Could not parse complaint activity as ComplaintDTO. JSON was: " + complaintJson, e);
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    private boolean hasAccessToQuarterlyReport(final Long reportId, final JsonNode quarterlyReportJson) {
+        if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
+            return true;
+        } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
+            //data could be a QuarterlyReportDTO or a UserDTO if the action was to export the report
+            try {
+                QuarterlyReportDTO report = jsonMapper.convertValue(quarterlyReportJson, QuarterlyReportDTO.class);
+                return isAcbValidForCurrentUser(report.getAcb().getId());
+            } catch (Exception e) {
+                LOGGER.warn("Could not parse complaint activity as QuarterlyReportDTO. JSON was: " + quarterlyReportJson);
+            }
+            //if we haven't returned then it's not a quarterly report object
+            //so must be an export action - look up the quarterly report by id to see if the user has access
+            try {
+                QuarterlyReportDTO report = quarterlyReportDao.getById(reportId);
+                return isAcbValidForCurrentUser(report.getAcb().getId());
+            } catch (Exception ignore) {
+                LOGGER.warn("Could find quarterly report with ID " + reportId);
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    private boolean hasAccessToQuarterlyReportListing(final JsonNode quarterlyReportListingJson) {
+        if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
+            return true;
+        } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
+            QuarterlyReportRelevantListingDTO listing = null;
+            try {
+                listing = jsonMapper.convertValue(quarterlyReportListingJson, QuarterlyReportRelevantListingDTO.class);
+                return isAcbValidForCurrentUser(listing.getCertificationBodyId());
+            } catch (Exception e) {
+                LOGGER.error("Could not parse complaint activity as QuarterlyReportRelevantListingDTO. JSON was: "
+                        + quarterlyReportListingJson);
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    private boolean hasAccessToAnnualReport(final Long reportId, final JsonNode annualReportJson) {
+        if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
+            return true;
+        } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
+            //json could be an annual report object or a user object if the action was an export
+            try {
+                AnnualReportDTO report = jsonMapper.convertValue(annualReportJson, AnnualReportDTO.class);
+                return isAcbValidForCurrentUser(report.getAcb().getId());
+            } catch (Exception e) {
+                LOGGER.warn("Could not parse complaint activity as AnnualReportDTO. JSON was: " + annualReportJson);
+            }
+            //if we haven't returned then it's not an annual report object
+            //so must be an export action - look up the annual report by id to see if the user has access
+            try {
+                AnnualReportDTO report = annualReportDao.getById(reportId);
+                return isAcbValidForCurrentUser(report.getAcb().getId());
+            } catch (Exception ignore) {
+                LOGGER.warn("Could find annual report with ID " + reportId);
                 return false;
             }
         } else {

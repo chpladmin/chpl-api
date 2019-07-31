@@ -1,7 +1,6 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
@@ -219,7 +218,7 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
 
         AnnualReportDTO report = annualDao.getById(id);
         activityManager.addActivity(ActivityConcept.ANNUAL_REPORT, id,
-                "Exported annual report.", report, report);
+                "Exported annual report.", null, currentUser);
         return startedJob;
     }
 
@@ -292,7 +291,7 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
         toCreate.setReason(reason);
         QuarterlyReportExclusionDTO created = quarterlyDao.createExclusion(toCreate);
         QuarterlyReportRelevantListingDTO afterRelevantListing = getRelevantListing(report, listingId);
-        activityManager.addActivity(ActivityConcept.QUARTERLY_REPORT, report.getId(),
+        activityManager.addActivity(ActivityConcept.QUARTERLY_REPORT_LISTING, report.getId(),
                 "Updated relevant listing for quarterly report.", beforeRelevantListing, afterRelevantListing);
         return created;
     }
@@ -329,7 +328,7 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
         existingExclusion.setReason(reason);
         QuarterlyReportExclusionDTO updated = quarterlyDao.updateExclusion(existingExclusion);
         QuarterlyReportRelevantListingDTO afterRelevantListing = getRelevantListing(report, listingId);
-        activityManager.addActivity(ActivityConcept.QUARTERLY_REPORT, report.getId(),
+        activityManager.addActivity(ActivityConcept.QUARTERLY_REPORT_LISTING, report.getId(),
                 "Updated relevant listing for quarterly report.", beforeRelevantListing, afterRelevantListing);
         return updated;
     }
@@ -363,7 +362,7 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
         }
         QuarterlyReportRelevantListingDTO afterRelevantListing = getRelevantListing(
                 toUpdate.getQuarterlyReport(), toUpdate.getCertifiedProductId());
-        activityManager.addActivity(ActivityConcept.QUARTERLY_REPORT, toUpdate.getQuarterlyReport().getId(),
+        activityManager.addActivity(ActivityConcept.QUARTERLY_REPORT_LISTING, toUpdate.getQuarterlyReport().getId(),
                 "Updated relevant listing for quarterly report.", beforeRelevantListing, afterRelevantListing);
         return result;
     }
@@ -396,7 +395,7 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
                 QuarterlyReportRelevantListingDTO beforeRelevantListing = getRelevantListing(report, listingId);
                 quarterlyDao.deleteExclusion(existingExclusion.getId());
                 QuarterlyReportRelevantListingDTO afterRelevantListing = getRelevantListing(report, listingId);
-                activityManager.addActivity(ActivityConcept.QUARTERLY_REPORT, reportId,
+                activityManager.addActivity(ActivityConcept.QUARTERLY_REPORT_LISTING, reportId,
                         "Updated relevant listing for quarterly report.", beforeRelevantListing, afterRelevantListing);
             } catch (EntityRetrievalException ex) {
                 LOGGER.error("No existing exclusion for ID " + existingExclusion.getId() + " could be deleted.");
@@ -459,6 +458,8 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
     public QuarterlyReportRelevantListingDTO getRelevantListing(final QuarterlyReportDTO report, final Long listingId) {
         QuarterlyReportRelevantListingDTO relevantListing = quarterlyDao.getRelevantListing(listingId, report);
         if (relevantListing != null) {
+            relevantListing.setQuarterlyReport(report);
+
             List<PrivilegedSurveillanceDTO> privilegedSurvForReport = quarterlySurvMapDao.getByReport(report.getId());
             //inject privileged surv data into relevant listing
             for (PrivilegedSurveillanceDTO relevantListingSurv : relevantListing.getSurveillances()) {
@@ -606,7 +607,7 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
         JobDTO startedJob = jobManager.getJobById(insertedJob.getId());
         QuarterlyReportDTO report = quarterlyDao.getById(id);
         activityManager.addActivity(ActivityConcept.QUARTERLY_REPORT, id,
-                "Exported quarterly report.", report, report);
+                "Exported quarterly report.", null, currentUser);
         return startedJob;
     }
 

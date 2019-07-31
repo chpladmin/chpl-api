@@ -484,7 +484,7 @@ public class ActivityController {
         validateActivityDatesAndDateRange(start, end);
         return activityMetadataManager.getAnnouncementActivityMetadata(startDate, endDate);
     }
-    
+
     @ApiOperation(value = "Get metadata about auditable records in the system for complaints.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results." 
                     + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all complaints.  "
@@ -498,7 +498,45 @@ public class ActivityController {
         validateActivityDatesAndDateRange(start, end);
         return activityMetadataManager.getComplaintActivityMetadata(startDate, endDate);
     }
-    
+
+    @ApiOperation(value = "Get metadata about auditable records in the system for quarterly reports.",
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
+                    + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all quarterly reports.  "
+                    + "ROLE_ACB can see activity for their own ACBs.")
+    @RequestMapping(value = "/metadata/quarterly-reports", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public List<ActivityMetadata> metadataForQuarterlyReports(@RequestParam final Long start,
+            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
+        Date startDate = new Date(start);
+        Date endDate = new Date(end);
+        validateActivityDatesAndDateRange(start, end);
+        List<ActivityMetadata> results = new ArrayList<ActivityMetadata>();
+        List<ActivityMetadata> reportMetadata = activityMetadataManager.getQuarterlyReportActivityMetadata(startDate, endDate);
+        if (reportMetadata != null && reportMetadata.size() > 0) {
+            results.addAll(reportMetadata);
+        }
+        List<ActivityMetadata> relevantListingMetadata
+            = activityMetadataManager.getQuarterlyReportListingActivityMetadata(startDate, endDate);
+        if (relevantListingMetadata != null && relevantListingMetadata.size() > 0) {
+            results.addAll(relevantListingMetadata);
+        }
+        return results;
+    }
+
+    @ApiOperation(value = "Get metadata about auditable records in the system for annual reports.",
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
+                    + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all annual reports.  "
+                    + "ROLE_ACB can see activity for their own ACBs.")
+    @RequestMapping(value = "/metadata/annual-reports", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public List<ActivityMetadata> metadataForAnnualReports(@RequestParam final Long start,
+            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
+        Date startDate = new Date(start);
+        Date endDate = new Date(end);
+        validateActivityDatesAndDateRange(start, end);
+        return activityMetadataManager.getAnnualReportActivityMetadata(startDate, endDate);
+    }
+
     @ApiOperation(value = "Get metadata about auditable records in the system for pending listings.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
     @RequestMapping(value = "/metadata/pending_listings", method = RequestMethod.GET,
