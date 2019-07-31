@@ -72,7 +72,7 @@ public class AnnualReportBuilderXlsx {
             activitiesAndOutcomesWorksheetBuilder.buildWorksheet(workbook, quarterlyReports);
             complaintsWorksheetBuilder.buildWorksheet(workbook, quarterlyReports);
         }
-        survSummaryWorksheetBuilder.buildWorksheet(workbook);
+        survSummaryWorksheetBuilder.buildWorksheet(workbook, quarterlyReports);
         survExprienceWorksheetBuilder.buildWorksheet(workbook, annualReport);
 
         //hide the ListSheet

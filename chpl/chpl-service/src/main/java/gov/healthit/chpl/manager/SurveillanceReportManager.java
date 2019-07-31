@@ -2,20 +2,23 @@ package gov.healthit.chpl.manager;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
-import org.apache.poi.ss.usermodel.Workbook;
-
+import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportExclusionDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportRelevantListingDTO;
+import gov.healthit.chpl.dto.surveillance.report.PrivilegedSurveillanceDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 
 public interface SurveillanceReportManager {
+    public Set<KeyValueModel> getSurveillanceOutcomes();
+    public Set<KeyValueModel> getSurveillanceProcessTypes();
     public AnnualReportDTO createAnnualReport(AnnualReportDTO toCreate)
         throws EntityCreationException, InvalidArgumentsException;
     public AnnualReportDTO updateAnnualReport(AnnualReportDTO toUpdate) throws EntityRetrievalException;
@@ -32,6 +35,8 @@ public interface SurveillanceReportManager {
     public QuarterlyReportDTO updateQuarterlyReport(QuarterlyReportDTO toUpdate) throws EntityRetrievalException;
     public QuarterlyReportExclusionDTO updateQuarterlyReportExclusion(QuarterlyReportDTO report,
             Long listingId, String reason) throws EntityRetrievalException;
+    public PrivilegedSurveillanceDTO createOrUpdateQuarterlyReportSurveillanceMap(PrivilegedSurveillanceDTO toUpdate)
+            throws EntityCreationException, EntityRetrievalException;
     public void deleteQuarterlyReport(Long id) throws EntityRetrievalException;
     public void deleteQuarterlyReportExclusion(Long reportId, Long listingId);
     public List<QuarterlyReportDTO> getQuarterlyReports();
@@ -39,6 +44,7 @@ public interface SurveillanceReportManager {
     public QuarterlyReportExclusionDTO getExclusion(QuarterlyReportDTO report, Long listingId);
     public QuarterlyReportRelevantListingDTO getRelevantListing(QuarterlyReportDTO report, Long listingId);
     public List<QuarterlyReportRelevantListingDTO> getRelevantListings(QuarterlyReportDTO report);
+    public List<QuarterlyReportRelevantListingDTO> getListingsWithRelevantSurveillance(QuarterlyReportDTO report);
     public QuarterlyReportDTO getQuarterlyReport(Long id) throws EntityRetrievalException;
     public JobDTO exportQuarterlyReportAsBackgroundJob(Long id)
             throws EntityRetrievalException, EntityCreationException, UserRetrievalException, IOException;

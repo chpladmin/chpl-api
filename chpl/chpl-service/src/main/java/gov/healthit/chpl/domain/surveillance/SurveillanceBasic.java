@@ -1,16 +1,15 @@
-package gov.healthit.chpl.dto;
+package gov.healthit.chpl.domain.surveillance;
 
 import java.io.Serializable;
 import java.util.Date;
 
 import org.springframework.beans.BeanUtils;
 
-import gov.healthit.chpl.domain.SurveillanceBasic;
-import gov.healthit.chpl.entity.surveillance.SurveillanceBasicEntity;
+import gov.healthit.chpl.dto.surveillance.SurveillanceBasicDTO;
 import gov.healthit.chpl.util.Util;
 
-public class SurveillanceBasicDTO implements Serializable {
-    private static final long serialVersionUID = -2434007762463213735L;
+public class SurveillanceBasic implements Serializable {
+    private static final long serialVersionUID = 3750079664886758825L;
 
     private Long id;
     private String friendlyId;
@@ -18,31 +17,18 @@ public class SurveillanceBasicDTO implements Serializable {
     private Date startDate;
     private Date endDate;
     private Long surveillanceTypeId;
-    private SurveillanceTypeDTO surveillanceType;
+    private SurveillanceType surveillanceType;
     private Integer numRandomizedSites;
-    private Boolean deleted;
-    private Long lastModifiedUser;
-    private Date creationDate;
-    private Date lastModifiedDate;
     private Long userPermissionId;
     private String chplProductNumber;
 
-    public SurveillanceBasicDTO() {
+    public SurveillanceBasic() {
 
     }
 
-    public SurveillanceBasicDTO(SurveillanceBasicEntity entity) {
-        BeanUtils.copyProperties(entity, this);
-        if (entity.getSurveillanceType() != null) {
-            this.surveillanceType = new SurveillanceTypeDTO(entity.getSurveillanceType());
-        }
-    }
-
-    public SurveillanceBasicDTO(SurveillanceBasic domain) {
-        BeanUtils.copyProperties(domain, this);
-        if (domain.getSurveillanceType() != null) {
-            this.surveillanceType = new SurveillanceTypeDTO(domain.getSurveillanceType());
-        }
+    public SurveillanceBasic(final SurveillanceBasicDTO dto) {
+        BeanUtils.copyProperties(dto, this);
+        this.surveillanceType = new SurveillanceType(dto.getSurveillanceType());
     }
 
     public Long getId() {
@@ -77,38 +63,6 @@ public class SurveillanceBasicDTO implements Serializable {
         this.numRandomizedSites = numRandomizedSites;
     }
 
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
     public Long getCertifiedProductId() {
         return certifiedProductId;
     }
@@ -125,11 +79,11 @@ public class SurveillanceBasicDTO implements Serializable {
         this.surveillanceTypeId = surveillanceTypeId;
     }
 
-    public SurveillanceTypeDTO getSurveillanceType() {
+    public SurveillanceType getSurveillanceType() {
         return surveillanceType;
     }
 
-    public void setSurveillanceType(final SurveillanceTypeDTO surveillanceType) {
+    public void setSurveillanceType(final SurveillanceType surveillanceType) {
         this.surveillanceType = surveillanceType;
     }
 
@@ -159,11 +113,10 @@ public class SurveillanceBasicDTO implements Serializable {
 
     @Override
     public String toString() {
-        return "SurveillanceBasicDTO [id=" + id + ", friendlyId=" + friendlyId + ", certifiedProductId="
+        return "SurveillanceBasic [id=" + id + ", friendlyId=" + friendlyId + ", certifiedProductId="
                 + certifiedProductId + ", startDate=" + startDate + ", endDate=" + endDate + ", surveillanceTypeId="
                 + surveillanceTypeId + ", surveillanceType=" + surveillanceType + ", numRandomizedSites="
-                + numRandomizedSites + ", deleted=" + deleted + ", lastModifiedUser=" + lastModifiedUser
-                + ", creationDate=" + creationDate + ", lastModifiedDate=" + lastModifiedDate + ", userPermissionId="
-                + userPermissionId + ", chplProductNumber=" + chplProductNumber + "]";
+                + numRandomizedSites + ", userPermissionId=" + userPermissionId + ", chplProductNumber="
+                + chplProductNumber + "]";
     }
 }

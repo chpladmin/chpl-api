@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import org.springframework.beans.BeanUtils;
 
+import gov.healthit.chpl.domain.surveillance.SurveillanceBasic;
 import gov.healthit.chpl.dto.ComplaintSurveillanceMapDTO;
 
 public class ComplaintSurveillanceMap implements Serializable {

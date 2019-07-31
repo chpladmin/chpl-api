@@ -17,6 +17,9 @@ import gov.healthit.chpl.dto.SurveillanceTypeDTO;
 public class SurveillanceType implements Serializable {
     private static final long serialVersionUID = 5788880200952752783L;
 
+    public static final String REACTIVE = "Reactive";
+    public static final String RANDOMIZED = "Randomized";
+
     /**
      * Surveillance type internal ID
      */
