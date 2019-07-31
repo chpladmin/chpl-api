@@ -48,6 +48,7 @@ import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.PrivilegedSurveillanceDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
+import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportExclusionDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -400,7 +401,10 @@ public class AnnualReportManagerTest extends TestCase {
         reportManager.createOrUpdateQuarterlyReportSurveillanceMap(privilegedSurvData);
 
         //add excluded listing to the quarter
-        reportManager.createQuarterlyReportExclusion(q2Report, 1L, "A really good reason for q2");
+        //exclusion was copied from q1 report; get it and update the reason
+        QuarterlyReportExclusionDTO exclusion = reportManager.getExclusion(q2Report, 1L);
+        assertNotNull(exclusion);
+        reportManager.updateQuarterlyReportExclusion(q2Report, 1L, "A really good reason for q2");
 
         quarter = new QuarterDTO();
         quarter.setName("Q3");
