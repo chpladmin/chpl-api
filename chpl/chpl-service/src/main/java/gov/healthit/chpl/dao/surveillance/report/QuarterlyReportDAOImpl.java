@@ -32,7 +32,7 @@ import gov.healthit.chpl.util.AuthUtil;
 public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyReportDAO {
     private static final String QUARTERLY_REPORT_HQL = "SELECT qr "
             + " FROM QuarterlyReportEntity qr "
-            + " JOIN FETCH qr.quarter "
+            + " JOIN FETCH qr.quarter quarter "
             + " JOIN FETCH qr.acb acb "
             + " LEFT JOIN FETCH acb.address "
             + " WHERE qr.deleted = false ";
@@ -41,7 +41,7 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
         String queryStr = QUARTERLY_REPORT_HQL
                 + " AND qr.year = :year "
                 + " AND acb.id = :acbId "
-                + " AND qr.id = :quarterId";
+                + " AND quarter.id = :quarterId";
         Query query = entityManager.createQuery(queryStr);
         query.setParameter("quarterId", quarterId);
         query.setParameter("year", year);
