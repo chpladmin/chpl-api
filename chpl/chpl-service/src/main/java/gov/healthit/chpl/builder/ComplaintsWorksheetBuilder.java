@@ -438,12 +438,14 @@ public class ComplaintsWorksheetBuilder {
         String result = "";
         List<PrivilegedSurveillanceDTO> privSurvs = survDao.getByReportsAndSurveillance(reportIds, survId);
         if (reportIds.size() == 1 && privSurvs.size() > 0) {
-            result = privSurvs.get(0).getSurveillanceOutcome().getName();
-        } else if (privSurvs.size() > 0){
+            PrivilegedSurveillanceDTO privSurv = privSurvs.get(0);
+            result =  (privSurv.getSurveillanceOutcome() != null
+                    ? privSurv.getSurveillanceOutcome().getName() : "");
+        } else if (privSurvs.size() > 0) {
             Map<String, ArrayList<String>> outcomeToQuarterMap = new LinkedHashMap<String, ArrayList<String>>();
             for (PrivilegedSurveillanceDTO privSurv : privSurvs) {
-                String outcomeStr = (privSurv.getSurveillanceOutcome() != null ?
-                        privSurv.getSurveillanceOutcome().getName() : "");
+                String outcomeStr = (privSurv.getSurveillanceOutcome() != null
+                        ? privSurv.getSurveillanceOutcome().getName() : "");
                 if (outcomeToQuarterMap.get(outcomeStr) != null) {
                     outcomeToQuarterMap.get(outcomeStr).add(privSurv.getQuarterlyReport().getQuarter().getName());
                 } else {
