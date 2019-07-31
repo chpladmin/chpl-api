@@ -24,6 +24,7 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
@@ -140,7 +141,8 @@ public class AnnualReportManagerTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void createAnnualReportMissingAcb()
-            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException {
+            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
+            JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         AnnualReportDTO annualReport = new AnnualReportDTO();
         annualReport.setYear(2019);
@@ -152,7 +154,8 @@ public class AnnualReportManagerTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void createAnnualReportMissingYear()
-            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException {
+            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
+            JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         AnnualReportDTO annualReport = new AnnualReportDTO();
         CertificationBodyDTO acb = new CertificationBodyDTO();
@@ -166,7 +169,8 @@ public class AnnualReportManagerTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void createAnnualReportAsAnonymousUser()
-            throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException {
+            throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException,
+            JsonProcessingException {
         AnnualReportDTO annualReport = new AnnualReportDTO();
         annualReport.setYear(2019);
         CertificationBodyDTO acb = new CertificationBodyDTO();
@@ -179,7 +183,8 @@ public class AnnualReportManagerTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void createAnnualReportAsAtlUser()
-            throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException {
+            throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException,
+            JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(atlUser);
         AnnualReportDTO annualReport = new AnnualReportDTO();
         annualReport.setYear(2019);
@@ -194,7 +199,8 @@ public class AnnualReportManagerTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void createAnnualReportAsOncUser()
-            throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException {
+            throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException,
+            JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(oncUser);
         AnnualReportDTO annualReport = new AnnualReportDTO();
         annualReport.setYear(2019);
@@ -209,7 +215,8 @@ public class AnnualReportManagerTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void createAnnualReportAsCmsUser()
-            throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException {
+            throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException,
+            JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(cmsUser);
         AnnualReportDTO annualReport = new AnnualReportDTO();
         annualReport.setYear(2019);
@@ -224,7 +231,8 @@ public class AnnualReportManagerTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void createAnnualReportForBadAcbAsAcbUser()
-            throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException {
+            throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException,
+            JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(acbUser);
         AnnualReportDTO annualReport = new AnnualReportDTO();
         annualReport.setYear(2019);
@@ -239,7 +247,8 @@ public class AnnualReportManagerTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void createAnnualReportForAllowedAcbAsAcbUser()
-            throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException {
+            throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException,
+            JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(acbUser);
         AnnualReportDTO annualReport = new AnnualReportDTO();
         annualReport.setYear(2019);
@@ -253,7 +262,8 @@ public class AnnualReportManagerTest extends TestCase {
     @Test
     @Rollback(true)
     @Transactional
-    public void updateReportChangeFindingsSummary() throws EntityCreationException, EntityRetrievalException {
+    public void updateReportChangeFindingsSummary() throws EntityCreationException, EntityRetrievalException,
+        JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         String updatedFindingsSummary = "new summary";
         AnnualReportDTO report = createReport();
@@ -268,7 +278,8 @@ public class AnnualReportManagerTest extends TestCase {
     @Test
     @Rollback(true)
     @Transactional
-    public void updateReportChangeReactiveSummary() throws EntityCreationException, EntityRetrievalException {
+    public void updateReportChangeReactiveSummary() throws EntityCreationException, EntityRetrievalException,
+        JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         String updatedObstacleSummary = "new summary";
         AnnualReportDTO report = createReport();
@@ -283,7 +294,7 @@ public class AnnualReportManagerTest extends TestCase {
     @Test(expected = EntityRetrievalException.class)
     @Rollback(true)
     @Transactional
-    public void deleteReport() throws EntityCreationException, EntityRetrievalException {
+    public void deleteReport() throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         AnnualReportDTO report = createReport();
         reportManager.deleteAnnualReport(report.getId());

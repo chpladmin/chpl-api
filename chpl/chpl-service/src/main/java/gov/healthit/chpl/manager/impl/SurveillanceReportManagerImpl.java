@@ -604,6 +604,9 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
         JobDTO createdJob = jobManager.getJobById(insertedJob.getId());
         jobManager.start(createdJob);
         JobDTO startedJob = jobManager.getJobById(insertedJob.getId());
+        QuarterlyReportDTO report = quarterlyDao.getById(id);
+        activityManager.addActivity(ActivityConcept.QUARTERLY_REPORT, id,
+                "Exported quarterly report.", report, report);
         return startedJob;
     }
 
