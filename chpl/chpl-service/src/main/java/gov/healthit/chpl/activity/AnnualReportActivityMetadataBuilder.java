@@ -85,9 +85,7 @@ public class AnnualReportActivityMetadataBuilder extends ActivityMetadataBuilder
 
     private void parseReportMetadata(final AnnualReportActivityMetadata metadata, final AnnualReportDTO report) {
         if (report.getAcb() != null) {
-            CertificationBody acb = new CertificationBody();
-            acb.setId(report.getAcb().getId());
-            acb.setName(report.getAcb().getName());
+            CertificationBody acb = new CertificationBody(report.getAcb());
             metadata.setAcb(acb);
         }
         metadata.setYear(report.getYear());

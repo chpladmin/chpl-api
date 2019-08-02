@@ -114,9 +114,7 @@ public class QuarterlyReportActivityMetadataBuilder extends ActivityMetadataBuil
 
     private void parseReportMetadata(final QuarterlyReportActivityMetadata metadata, final QuarterlyReportDTO report) {
         if (report.getAcb() != null) {
-            CertificationBody acb = new CertificationBody();
-            acb.setId(report.getAcb().getId());
-            acb.setName(report.getAcb().getName());
+            CertificationBody acb = new CertificationBody(report.getAcb());
             metadata.setAcb(acb);
         }
         if (report.getQuarter() != null) {
