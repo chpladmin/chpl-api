@@ -133,8 +133,9 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
         }
 
         AnnualReportDTO created = annualDao.create(toCreate);
+        AnnualReportDTO afterAnnualReport = annualDao.getById(created.getId());
         activityManager.addActivity(ActivityConcept.ANNUAL_REPORT, created.getId(),
-                "Created annual report.", null, created);
+                "Created annual report.", null, afterAnnualReport);
         return created;
     }
 
@@ -218,7 +219,7 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
 
         AnnualReportDTO report = annualDao.getById(id);
         activityManager.addActivity(ActivityConcept.ANNUAL_REPORT, id,
-                "Exported annual report.", null, currentUser);
+                "Exported annual report.", null, report);
         return startedJob;
     }
 
@@ -257,8 +258,9 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
         }
         QuarterlyReportDTO created = quarterlyDao.create(toCreate);
         copyPreviousReportDataIntoNextReport(created);
+        QuarterlyReportDTO afterQuarterlyReport = quarterlyDao.getById(created.getId());
         activityManager.addActivity(ActivityConcept.QUARTERLY_REPORT, created.getId(),
-                "Created quarterly report.", null, created);
+                "Created quarterly report.", null, afterQuarterlyReport);
         return created;
     }
 
@@ -385,8 +387,7 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).DELETE_QUARTERLY, #reportId)")
     public void deleteQuarterlyReportExclusion(final Long reportId, final Long listingId) 
         throws JsonProcessingException, EntityRetrievalException, EntityCreationException {
-        QuarterlyReportDTO report = new QuarterlyReportDTO();
-        report.setId(reportId);
+        QuarterlyReportDTO report = quarterlyDao.getById(reportId);
         //make sure there is already an exclusion for this report and listing
         QuarterlyReportExclusionDTO existingExclusion =
                 quarterlyDao.getExclusion(reportId, listingId);
@@ -607,7 +608,7 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
         JobDTO startedJob = jobManager.getJobById(insertedJob.getId());
         QuarterlyReportDTO report = quarterlyDao.getById(id);
         activityManager.addActivity(ActivityConcept.QUARTERLY_REPORT, id,
-                "Exported quarterly report.", null, currentUser);
+                "Exported quarterly report.", null, report);
         return startedJob;
     }
 

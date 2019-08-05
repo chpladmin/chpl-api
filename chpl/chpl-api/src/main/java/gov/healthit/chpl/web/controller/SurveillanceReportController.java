@@ -301,6 +301,7 @@ public class SurveillanceReportController {
         PrivilegedSurveillanceDTO toUpdate = new PrivilegedSurveillanceDTO();
         toUpdate.setQuarterlyReport(quarterlyReport);
         toUpdate.setId(surveillanceId);
+        toUpdate.setCertifiedProductId(updateRequest.getCertifiedProductId());
         toUpdate.setK1Reviewed(updateRequest.getK1Reviewed());
         toUpdate.setGroundsForInitiating(updateRequest.getGroundsForInitiating());
         toUpdate.setNonconformityCauses(updateRequest.getNonconformityCauses());
