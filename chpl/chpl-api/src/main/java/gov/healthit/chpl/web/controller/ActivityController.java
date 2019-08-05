@@ -498,10 +498,14 @@ public class ActivityController {
     produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForComplaints(@RequestParam final Long start,
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
-        Date startDate = new Date(start);
-        Date endDate = new Date(end);
-        validateActivityDatesAndDateRange(start, end);
-        return activityMetadataManager.getComplaintActivityMetadata(startDate, endDate);
+        if (ff4j.check(FeatureList.COMPLAINTS)) {
+            Date startDate = new Date(start);
+            Date endDate = new Date(end);
+            validateActivityDatesAndDateRange(start, end);
+            return activityMetadataManager.getComplaintActivityMetadata(startDate, endDate);
+        } else {
+            throw new NotImplementedException();
+        }
     }
 
     @ApiOperation(value = "Get metadata about auditable records in the system for quarterly reports.",
