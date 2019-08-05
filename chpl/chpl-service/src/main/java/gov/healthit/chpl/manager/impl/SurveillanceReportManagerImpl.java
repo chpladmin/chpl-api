@@ -378,7 +378,7 @@ public class SurveillanceReportManagerImpl extends SecuredManager implements Sur
         QuarterlyReportDTO report = quarterlyDao.getById(id);
         quarterlyDao.delete(id);
         activityManager.addActivity(ActivityConcept.QUARTERLY_REPORT, id,
-                "Deleted quarterly report.", report, id);
+                "Deleted quarterly report.", report, null);
     }
 
     @Override
