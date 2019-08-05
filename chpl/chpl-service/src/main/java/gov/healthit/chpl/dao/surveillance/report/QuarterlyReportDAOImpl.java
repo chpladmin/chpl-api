@@ -206,12 +206,10 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
                 + "LEFT JOIN FETCH surv.surveillanceType "
                 + "WHERE listing.id = :listingId "
                 + "AND listing.deleted = false "
-                + "AND surv.startDate <= :endDate "
-                + "AND (surv.endDate IS NULL OR surv.endDate >= :startDate)";
+                + "AND listing.certificationBodyId = :acbId ";
         Query query = entityManager.createQuery(queryStr);
         query.setParameter("listingId", listingId);
-        query.setParameter("startDate", quarterlyReport.getStartDate());
-        query.setParameter("endDate", quarterlyReport.getEndDate());
+        query.setParameter("acbId", quarterlyReport.getAcb().getId());
         List<ListingWithPrivilegedSurveillanceEntity> entities = query.getResultList();
 
         QuarterlyReportRelevantListingDTO relevantListing = null;

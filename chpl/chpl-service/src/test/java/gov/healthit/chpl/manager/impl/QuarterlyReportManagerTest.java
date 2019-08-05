@@ -25,6 +25,7 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
@@ -156,7 +157,7 @@ public class QuarterlyReportManagerTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void createExclusionListingNotRelevantTest() throws EntityCreationException,
-        InvalidArgumentsException, EntityRetrievalException {
+        InvalidArgumentsException, EntityRetrievalException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         QuarterlyReportDTO createdReport = createReport();
         QuarterlyReportExclusionDTO exclusion = reportManager.createQuarterlyReportExclusion(createdReport, 10L, "Test");
@@ -170,7 +171,7 @@ public class QuarterlyReportManagerTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void createExclusion() throws EntityCreationException,
-        InvalidArgumentsException, EntityRetrievalException {
+        InvalidArgumentsException, EntityRetrievalException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         Long listingId = 1L;
         String reason = "test";
@@ -203,7 +204,7 @@ public class QuarterlyReportManagerTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void createExclusionAlreadyExists() throws EntityCreationException,
-        InvalidArgumentsException, EntityRetrievalException {
+        InvalidArgumentsException, EntityRetrievalException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         QuarterlyReportDTO createdReport = createReport();
         //need a relevant surveillance
@@ -219,7 +220,7 @@ public class QuarterlyReportManagerTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void addPrivilegedSurveillanceData() throws EntityCreationException,
-        InvalidArgumentsException, EntityRetrievalException {
+        InvalidArgumentsException, EntityRetrievalException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         Long listingId = 1L;
         QuarterlyReportDTO createdReport = createReport();
@@ -258,7 +259,7 @@ public class QuarterlyReportManagerTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void createQuarterlyReportMissingAcb()
-            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException {
+            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         QuarterlyReportDTO toCreate = new QuarterlyReportDTO();
         QuarterDTO quarter = quarterDao.getById(1L);
@@ -272,7 +273,7 @@ public class QuarterlyReportManagerTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void createQuarterlyReportMissingYear()
-            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException {
+            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         QuarterlyReportDTO toCreate = new QuarterlyReportDTO();
         QuarterDTO quarter = quarterDao.getById(1L);
@@ -287,7 +288,8 @@ public class QuarterlyReportManagerTest extends TestCase {
     @Test(expected = InvalidArgumentsException.class)
     @Rollback(true)
     @Transactional
-    public void createQuarterlyReportMissingQuarter() throws EntityCreationException, InvalidArgumentsException {
+    public void createQuarterlyReportMissingQuarter()
+            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         QuarterlyReportDTO toCreate = new QuarterlyReportDTO();
         toCreate.setYear(2019);
@@ -301,7 +303,8 @@ public class QuarterlyReportManagerTest extends TestCase {
     @Test(expected = InvalidArgumentsException.class)
     @Rollback(true)
     @Transactional
-    public void createQuarterlyReportInvalidQuarter() throws EntityCreationException, InvalidArgumentsException {
+    public void createQuarterlyReportInvalidQuarter()
+            throws EntityCreationException, EntityRetrievalException, JsonProcessingException, InvalidArgumentsException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         QuarterlyReportDTO toCreate = new QuarterlyReportDTO();
         toCreate.setYear(2019);
@@ -319,7 +322,7 @@ public class QuarterlyReportManagerTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void createQuarterlyReportWithoutQuarterId()
-            throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException {
+            throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         String quarterName = "Q1";
 
@@ -349,7 +352,7 @@ public class QuarterlyReportManagerTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void createQuarterlyReportAsAnonymousUser()
-            throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException {
+            throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException, JsonProcessingException {
         QuarterDTO quarter = new QuarterDTO();
         quarter.setName("Q1");
         QuarterlyReportDTO toCreate = new QuarterlyReportDTO();
@@ -365,7 +368,7 @@ public class QuarterlyReportManagerTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void createQuarterlyReportAsAtlUser()
-            throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException {
+            throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(atlUser);
         QuarterDTO quarter = new QuarterDTO();
         quarter.setName("Q1");
@@ -383,7 +386,7 @@ public class QuarterlyReportManagerTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void createQuarterlyReportAsOncUser()
-            throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException {
+            throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(oncUser);
         QuarterDTO quarter = new QuarterDTO();
         quarter.setName("Q1");
@@ -401,7 +404,7 @@ public class QuarterlyReportManagerTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void createQuarterlyReportAsCmsUser()
-            throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException {
+            throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(cmsUser);
         QuarterDTO quarter = new QuarterDTO();
         quarter.setName("Q1");
@@ -419,7 +422,7 @@ public class QuarterlyReportManagerTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void createQuarterlyReportForBadAcbAsAcbUser()
-            throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException {
+            throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(acbUser);
         QuarterDTO quarter = new QuarterDTO();
         quarter.setName("Q1");
@@ -437,7 +440,7 @@ public class QuarterlyReportManagerTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void createQuarterlyReportForAllowedAcbAsAcbUser()
-            throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException {
+            throws EntityRetrievalException, EntityCreationException, InvalidArgumentsException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(acbUser);
         QuarterDTO quarter = new QuarterDTO();
         quarter.setName("Q1");
@@ -456,7 +459,8 @@ public class QuarterlyReportManagerTest extends TestCase {
     @Test
     @Rollback(true)
     @Transactional
-    public void updateReportChangePrioritizedElementSummary() throws EntityCreationException, EntityRetrievalException {
+    public void updateReportChangePrioritizedElementSummary()
+            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         String updatedPrioritizedElementSummary = "new summary";
         QuarterlyReportDTO report = createReport();
@@ -471,7 +475,8 @@ public class QuarterlyReportManagerTest extends TestCase {
     @Test
     @Rollback(true)
     @Transactional
-    public void updateReportChangeReactiveSummary() throws EntityCreationException, EntityRetrievalException {
+    public void updateReportChangeReactiveSummary()
+            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         String updatedReactiveSummary = "new summary";
         QuarterlyReportDTO report = createReport();
@@ -486,7 +491,8 @@ public class QuarterlyReportManagerTest extends TestCase {
     @Test
     @Rollback(true)
     @Transactional
-    public void updateReportChangeTransparencyDisclosureSummary() throws EntityCreationException, EntityRetrievalException {
+    public void updateReportChangeTransparencyDisclosureSummary()
+            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         String updatedTransparencyDisclosureSummary = "new summary";
         QuarterlyReportDTO report = createReport();
@@ -502,7 +508,7 @@ public class QuarterlyReportManagerTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void updateExclusionChangeReason() throws EntityCreationException,
-        InvalidArgumentsException, EntityRetrievalException {
+        InvalidArgumentsException, EntityRetrievalException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         Long listingId = 1L;
         String reason = "test";
@@ -526,7 +532,7 @@ public class QuarterlyReportManagerTest extends TestCase {
     @Test(expected = EntityRetrievalException.class)
     @Rollback(true)
     @Transactional
-    public void deleteReport() throws EntityCreationException, EntityRetrievalException {
+    public void deleteReport() throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         QuarterlyReportDTO report = createReport();
         reportManager.deleteQuarterlyReport(report.getId());
@@ -538,7 +544,7 @@ public class QuarterlyReportManagerTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void deleteExclusion() throws EntityCreationException,
-        InvalidArgumentsException, EntityRetrievalException {
+        InvalidArgumentsException, EntityRetrievalException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         Long listingId = 1L;
         String reason = "test";
