@@ -12,8 +12,10 @@ import java.util.Set;
 
 import javax.persistence.EntityNotFoundException;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -29,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonParseException;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
@@ -98,6 +101,8 @@ public class ActivityController {
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
     @Autowired
     private ResourcePermissions resourcePermissions;
+    @Autowired
+    private FF4j ff4j;
 
     @Autowired private MessageSource messageSource;
 
@@ -493,10 +498,14 @@ public class ActivityController {
     produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForComplaints(@RequestParam final Long start,
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
-        Date startDate = new Date(start);
-        Date endDate = new Date(end);
-        validateActivityDatesAndDateRange(start, end);
-        return activityMetadataManager.getComplaintActivityMetadata(startDate, endDate);
+        if (ff4j.check(FeatureList.COMPLAINTS)) {
+            Date startDate = new Date(start);
+            Date endDate = new Date(end);
+            validateActivityDatesAndDateRange(start, end);
+            return activityMetadataManager.getComplaintActivityMetadata(startDate, endDate);
+        } else {
+            throw new NotImplementedException();
+        }
     }
     
     @ApiOperation(value = "Get metadata about auditable records in the system for pending listings.",
