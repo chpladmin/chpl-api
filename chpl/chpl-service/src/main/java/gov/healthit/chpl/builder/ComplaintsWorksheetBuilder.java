@@ -27,13 +27,15 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.dao.surveillance.report.PrivilegedSurveillanceDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ComplaintSurveillanceMap;
-import gov.healthit.chpl.domain.SurveillanceBasic;
 import gov.healthit.chpl.domain.complaint.Complaint;
 import gov.healthit.chpl.domain.complaint.ComplaintCriterionMap;
 import gov.healthit.chpl.domain.complaint.ComplaintListingMap;
+import gov.healthit.chpl.domain.surveillance.SurveillanceBasic;
+import gov.healthit.chpl.dto.surveillance.report.PrivilegedSurveillanceDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
@@ -42,7 +44,7 @@ import gov.healthit.chpl.manager.ComplaintManager;
 @Component
 public class ComplaintsWorksheetBuilder {
     private static final Logger LOGGER = LogManager.getLogger(ComplaintsWorksheetBuilder.class);
-    private static final int LAST_DATA_COLUMN = 20;
+    private static final int LAST_DATA_COLUMN = 21;
 
     private static final int COL_COMPLAINT_DATE = 1;
     private static final int COL_ACB_COMPLAINT_ID = 2;
@@ -54,7 +56,6 @@ public class ComplaintsWorksheetBuilder {
     private static final int COL_CRITERIA_ID = 8;
     private static final int COL_CHPL_ID = 9;
     private static final int COL_SURV_ID = 10;
-    //columns 11 - 14 get hidden
     private static final int COL_DEVELOPER = 11;
     private static final int COL_PRODUCT = 12;
     private static final int COL_VERSION = 13;
@@ -64,18 +65,23 @@ public class ComplaintsWorksheetBuilder {
     private static final int COL_ATL_CONTACTED = 17;
     private static final int COL_COMPLAINT_STATUS = 18;
     private static final int COL_FLAGGED_FOR_ONC = 19;
+    private static final int[] HIDDEN_COLS =
+        {COL_DEVELOPER, COL_PRODUCT, COL_VERSION, COL_FLAGGED_FOR_ONC};
 
     private ComplaintManager complaintManager;
-    private CertifiedProductDetailsManager cpdManager; 
+    private CertifiedProductDetailsManager cpdManager;
+    private PrivilegedSurveillanceDAO survDao;
     private int lastDataRow;
     private SimpleDateFormat dateFormatter;
     private PropertyTemplate pt;
 
     @Autowired
     public ComplaintsWorksheetBuilder(final ComplaintManager complaintManager,
-            final CertifiedProductDetailsManager cpdManager) {
+            final CertifiedProductDetailsManager cpdManager,
+            final PrivilegedSurveillanceDAO survDao) {
         this.complaintManager = complaintManager;
         this.cpdManager = cpdManager;
+        this.survDao = survDao;
         dateFormatter = new SimpleDateFormat("MM/dd/yyyy");
     }
 
@@ -202,13 +208,13 @@ public class ComplaintsWorksheetBuilder {
         validation.setShowErrorBox(false);
         sheet.addValidationData(validation);
 
-        //hide some rows the ACBs are not expected to fill out (columns E-J)
-        for (int i = 10; i < 13; i++) {
-            sheet.setColumnHidden(i, true);
+        //hide some rows the ACBs are not expected to fill out
+        for (int i = 0; i < HIDDEN_COLS.length; i++) {
+            sheet.setColumnHidden(HIDDEN_COLS[i], true);
         }
 
         //apply the borders after the sheet has been created
-        pt.drawBorders(new CellRangeAddress(1, getLastDataRow(), 1, LAST_DATA_COLUMN-1),
+        pt.drawBorders(new CellRangeAddress(1, getLastDataRow(), 1, LAST_DATA_COLUMN - 1),
                 BorderStyle.MEDIUM, BorderExtent.OUTSIDE);
         pt.applyBorders(sheet);
         return sheet;
@@ -258,14 +264,20 @@ public class ComplaintsWorksheetBuilder {
         int addedRows = 0;
         int rowNum = 2;
 
-        List<Complaint> allComplaints = new ArrayList<Complaint>();
+        List<Complaint> uniqueComplaints = new ArrayList<Complaint>();
         //get the complaints for each quarterly report
+        //a complaint could be relevant to multiple quarterly reports so filter out duplicates
         for (QuarterlyReportDTO report : quarterlyReports) {
-            allComplaints.addAll(complaintManager.getAllComplaintsBetweenDates(
-                    report.getAcb(), report.getStartDate(), report.getEndDate()));
+            List<Complaint> complaintsRelevantToReport = complaintManager.getAllComplaintsBetweenDates(
+                    report.getAcb(), report.getStartDate(), report.getEndDate());
+            for (Complaint relevantComplaint : complaintsRelevantToReport) {
+                if (!uniqueComplaints.contains(relevantComplaint)) {
+                    uniqueComplaints.add(relevantComplaint);
+                }
+            }
         }
-        //sort the complaints with oldest receied date first
-        allComplaints.sort(new Comparator<Complaint>() {
+        //sort the complaints with oldest received date first
+        uniqueComplaints.sort(new Comparator<Complaint>() {
             @Override
             public int compare(final Complaint o1, final Complaint o2) {
                 if (o1.getReceivedDate().getTime() < o2.getReceivedDate().getTime()) {
@@ -278,7 +290,7 @@ public class ComplaintsWorksheetBuilder {
             }
         });
 
-        for (Complaint complaint : allComplaints) {
+        for (Complaint complaint : uniqueComplaints) {
             boolean isFirstRowForComplaint = true;
             Row row = workbook.getRow(sheet, rowNum++);
             addComplaintData(workbook, row, complaint);
@@ -409,7 +421,7 @@ public class ComplaintsWorksheetBuilder {
                     addDataCell(workbook, row, COL_PRODUCT, "?");
                     addDataCell(workbook, row, COL_VERSION, "?");
                 }
-                addDataCell(workbook, row, COL_SURV_OUTCOME, "TBD");
+                addDataCell(workbook, row, COL_SURV_OUTCOME, getSurveillanceOutcome(quarterlyReports, surv.getId()));
                 pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, LAST_DATA_COLUMN - 1),
                     BorderStyle.HAIR, BorderExtent.HORIZONTAL);
                 isFirstRowForComplaint = false;
@@ -418,12 +430,33 @@ public class ComplaintsWorksheetBuilder {
         return addedRows;
     }
 
-    private int getNumberOfComplainantTypes() {
-        return complaintManager.getComplainantTypes().size();
-    }
-
-    private int getNumberOfComplaintStatusTypes() {
-        return complaintManager.getComplaintStatusTypes().size();
+    private String getSurveillanceOutcome(final List<QuarterlyReportDTO> reports, final Long survId) {
+        List<Long> reportIds = new ArrayList<Long>();
+        for (QuarterlyReportDTO report : reports) {
+            reportIds.add(report.getId());
+        }
+        String result = "";
+        List<PrivilegedSurveillanceDTO> privSurvs = survDao.getByReportsAndSurveillance(reportIds, survId);
+        if (reportIds.size() == 1 && privSurvs.size() > 0) {
+            PrivilegedSurveillanceDTO privSurv = privSurvs.get(0);
+            result =  (privSurv.getSurveillanceOutcome() != null
+                    ? privSurv.getSurveillanceOutcome().getName() : "");
+        } else if (privSurvs.size() > 0) {
+            Map<String, ArrayList<String>> outcomeToQuarterMap = new LinkedHashMap<String, ArrayList<String>>();
+            for (PrivilegedSurveillanceDTO privSurv : privSurvs) {
+                String outcomeStr = (privSurv.getSurveillanceOutcome() != null
+                        ? privSurv.getSurveillanceOutcome().getName() : "");
+                if (outcomeToQuarterMap.get(outcomeStr) != null) {
+                    outcomeToQuarterMap.get(outcomeStr).add(privSurv.getQuarterlyReport().getQuarter().getName());
+                } else {
+                    ArrayList<String> quarterNames = new ArrayList<String>();
+                    quarterNames.add(privSurv.getQuarterlyReport().getQuarter().getName());
+                    outcomeToQuarterMap.put(outcomeStr, quarterNames);
+                }
+            }
+            result = MultiQuarterWorksheetBuilderUtil.buildStringFromMap(outcomeToQuarterMap);
+        }
+        return result;
     }
 
     private void addComplaintData(final SurveillanceReportWorkbookWrapper workbook,
@@ -455,5 +488,13 @@ public class ComplaintsWorksheetBuilder {
         Cell cell = workbook.createCell(row, cellNum);
         cell.setCellValue(cellText);
         return cell;
+    }
+
+    private int getNumberOfComplainantTypes() {
+        return complaintManager.getComplainantTypes().size();
+    }
+
+    private int getNumberOfComplaintStatusTypes() {
+        return complaintManager.getComplaintStatusTypes().size();
     }
 }

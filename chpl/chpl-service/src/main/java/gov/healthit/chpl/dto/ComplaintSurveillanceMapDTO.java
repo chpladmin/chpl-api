@@ -6,6 +6,7 @@ import java.util.Date;
 import org.springframework.beans.BeanUtils;
 
 import gov.healthit.chpl.domain.ComplaintSurveillanceMap;
+import gov.healthit.chpl.dto.surveillance.SurveillanceBasicDTO;
 import gov.healthit.chpl.entity.ComplaintSurveillanceMapEntity;
 
 public class ComplaintSurveillanceMapDTO implements Serializable {

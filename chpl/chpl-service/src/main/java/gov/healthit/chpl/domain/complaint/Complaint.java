@@ -208,6 +208,30 @@ public class Complaint implements Serializable {
     }
 
     @Override
+    public boolean equals(Object another) {
+        if (another == null) {
+            return false;
+        }
+        if (!(another instanceof Complaint)) {
+            return false;
+        }
+        Complaint anotherComplaint = (Complaint) another;
+        if (this.getId() != null && anotherComplaint.getId() == null
+                || this.getId() == null && anotherComplaint.getId() != null) {
+            return false;
+        }
+        return this.getId().equals(anotherComplaint.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        if (this.getId() == null) {
+            return -1;
+        }
+        return this.getId().hashCode();
+    }
+
+    @Override
     public String toString() {
         return "Complaint [id=" + id + ", certificationBody=" + certificationBody + ", complainantType="
                 + complainantType + ", complainantTypeOther=" + complainantTypeOther + ", complaintStatusType="

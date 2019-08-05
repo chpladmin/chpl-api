@@ -11,7 +11,7 @@ public class ComplaintActivityMetadata extends ActivityMetadata {
         return certificationBody;
     }
 
-    public void setCertificationBody(CertificationBody certificationBody) {
+    public void setCertificationBody(final CertificationBody certificationBody) {
         this.certificationBody = certificationBody;
     }
 

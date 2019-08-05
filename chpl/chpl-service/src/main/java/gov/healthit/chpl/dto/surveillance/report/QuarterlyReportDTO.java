@@ -3,9 +3,12 @@ package gov.healthit.chpl.dto.surveillance.report;
 import java.util.Calendar;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.entity.surveillance.report.QuarterlyReportEntity;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class QuarterlyReportDTO {
 
     private Long id;

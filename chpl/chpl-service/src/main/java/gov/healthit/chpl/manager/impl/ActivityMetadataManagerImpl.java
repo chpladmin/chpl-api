@@ -162,6 +162,39 @@ public class ActivityMetadataManagerImpl extends SecuredManager implements Activ
         return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.COMPLAINT, startDate, endDate);
     }
 
+    @Override
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_QUARTERLY_REPORT_METADATA)")
+    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_QUARTERLY_REPORT_METADATA, filterObject)")
+    @Transactional
+    public List<ActivityMetadata> getQuarterlyReportActivityMetadata(final Date startDate, final Date endDate)
+            throws IOException {
+        return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.QUARTERLY_REPORT, startDate, endDate);
+    }
+
+    @Override
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_QUARTERLY_REPORT_METADATA)")
+    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_QUARTERLY_REPORT_METADATA, filterObject)")
+    @Transactional
+    public List<ActivityMetadata> getQuarterlyReportListingActivityMetadata(final Date startDate, final Date endDate)
+            throws IOException {
+        return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.QUARTERLY_REPORT_LISTING, startDate, endDate);
+    }
+
+    @Override
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_ANNUAL_REPORT_METADATA)")
+    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_ANNUAL_REPORT_METADATA, filterObject)")
+    @Transactional
+    public List<ActivityMetadata> getAnnualReportActivityMetadata(final Date startDate, final Date endDate)
+            throws IOException {
+        return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.ANNUAL_REPORT, startDate, endDate);
+    }
+
     private List<ActivityMetadata> getActivityMetadataByConceptWithoutSecurity(final ActivityConcept concept,
             final Date startDate, final Date endDate) throws JsonParseException, IOException {
         LOGGER.info("Getting " + concept.name() + " activity from " + startDate + " through " + endDate);

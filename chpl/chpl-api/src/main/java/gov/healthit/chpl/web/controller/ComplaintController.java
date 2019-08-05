@@ -62,7 +62,7 @@ public class ComplaintController {
             ValidationException error = new ValidationException();
             //Make sure there is an ACB
             if (complaint.getCertificationBody() == null || complaint.getCertificationBody().getId() == null) {
-                error.getErrorMessages().add(errorMessageUtil.getMessage("complaints.update.acbRequired"));
+                error.getErrorMessages().add(errorMessageUtil.getMessage("complaints.create.acbRequired"));
                 throw error;
             }
 
@@ -75,8 +75,14 @@ public class ComplaintController {
     @ApiOperation(value = "Update complaint for use in Surveillance Quarterly Report.",
             notes = "")
     @RequestMapping(value = "/{complaintId}", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
-    public @ResponseBody Complaint update(@RequestBody final Complaint complaint) throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
+    public @ResponseBody Complaint update(@RequestBody final Complaint complaint)
+            throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
         if (ff4j.check(FeatureList.COMPLAINTS)) {
+            ValidationException error = new ValidationException();
+            if (complaint.getCertificationBody() == null || complaint.getCertificationBody().getId() == null) {
+                error.getErrorMessages().add(errorMessageUtil.getMessage("complaints.update.acbRequired"));
+                throw error;
+            }
             return complaintManager.update(complaint);
         } else {
             throw new NotImplementedException();
@@ -86,8 +92,9 @@ public class ComplaintController {
     @ApiOperation(value = "Delete complaint for use in Surveillance Quarterly Report.",
             notes = "")
     @RequestMapping(value = "/{complaintId}", method = RequestMethod.DELETE, produces = "application/json; charset=utf-8")
-    public @ResponseBody void delete(@PathVariable("complaintId") final Long complaintId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
-        if (ff4j.check(FeatureList.COMPLAINTS)) { 
+    public @ResponseBody void delete(@PathVariable("complaintId") final Long complaintId)
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+        if (ff4j.check(FeatureList.COMPLAINTS)) {
             complaintManager.delete(complaintId);
         } else {
             throw new NotImplementedException();

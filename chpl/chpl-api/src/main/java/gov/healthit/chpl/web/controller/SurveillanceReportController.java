@@ -20,9 +20,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.Job;
 import gov.healthit.chpl.domain.complaint.Complaint;
+import gov.healthit.chpl.domain.surveillance.privileged.PrivilegedSurveillance;
+import gov.healthit.chpl.domain.surveillance.privileged.SurveillanceOutcome;
+import gov.healthit.chpl.domain.surveillance.privileged.SurveillanceProcessType;
 import gov.healthit.chpl.domain.surveillance.report.AnnualReport;
 import gov.healthit.chpl.domain.surveillance.report.QuarterlyReport;
 import gov.healthit.chpl.domain.surveillance.report.RelevantListing;
@@ -33,6 +38,9 @@ import gov.healthit.chpl.dto.surveillance.report.QuarterDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportExclusionDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportRelevantListingDTO;
+import gov.healthit.chpl.dto.surveillance.report.PrivilegedSurveillanceDTO;
+import gov.healthit.chpl.dto.surveillance.report.SurveillanceOutcomeDTO;
+import gov.healthit.chpl.dto.surveillance.report.SurveillanceProcessTypeDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -96,7 +104,8 @@ public class SurveillanceReportController {
     @RequestMapping(value = "/annual", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public synchronized AnnualReport createAnnualReport(
         @RequestBody(required = true) final AnnualReport createRequest)
-                throws AccessDeniedException, InvalidArgumentsException, EntityCreationException {
+                throws AccessDeniedException, InvalidArgumentsException, EntityCreationException,
+                JsonProcessingException, EntityRetrievalException {
         if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
             throw new NotImplementedException();
         }
@@ -123,7 +132,8 @@ public class SurveillanceReportController {
     @RequestMapping(value = "/annual", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public synchronized AnnualReport updateAnnualReport(
         @RequestBody(required = true) final AnnualReport updateRequest)
-    throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException {
+    throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
+    EntityCreationException {
         if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
             throw new NotImplementedException();
         }
@@ -144,7 +154,7 @@ public class SurveillanceReportController {
     @RequestMapping(value = "/annual/{annualReportId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public void deleteAnnualReport(@PathVariable final Long annualReportId)
-            throws EntityRetrievalException {
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
             throw new NotImplementedException();
         }
@@ -199,7 +209,8 @@ public class SurveillanceReportController {
     }
 
     @ApiOperation(value = "Get listings that are relevant to a specific quarterly report. "
-            + "These are listings that had surveillance during the quarter.",
+            + "These are listings belonging to the ACB associtaed with the report "
+            + "that had a status of <TBD>. at any point during the quarter",
             notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative "
                     + "authority on the ACB associated with the report.")
     @RequestMapping(value = "/quarterly/{quarterlyReportId}/listings",
@@ -247,7 +258,8 @@ public class SurveillanceReportController {
     @RequestMapping(value = "/quarterly", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public synchronized QuarterlyReport createQuarterlyReport(
             @RequestBody(required = true) final QuarterlyReport createRequest)
-    throws AccessDeniedException, InvalidArgumentsException, EntityCreationException {
+    throws AccessDeniedException, InvalidArgumentsException, EntityCreationException,
+    JsonProcessingException, EntityRetrievalException {
         if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
             throw new NotImplementedException();
         }
@@ -272,6 +284,52 @@ public class SurveillanceReportController {
         return new QuarterlyReport(createdReport);
     }
 
+    @ApiOperation(value = "Updates surveillance data that is tied to the quarterly report. ",
+            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
+                    + "authority on the ACB associated with the report.")
+    @RequestMapping(value = "/quarterly/{quarterlyReportId}/surveillance/{surveillanceId}", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
+    public synchronized PrivilegedSurveillance updatePrivilegedSurveillanceData(
+            @PathVariable final Long quarterlyReportId,
+            @PathVariable final Long surveillanceId,
+            @RequestBody(required = true) final PrivilegedSurveillance updateRequest)
+                throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException,
+                EntityCreationException, JsonProcessingException {
+        if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
+            throw new NotImplementedException();
+        }
+        QuarterlyReportDTO quarterlyReport = reportManager.getQuarterlyReport(quarterlyReportId);
+        PrivilegedSurveillanceDTO toUpdate = new PrivilegedSurveillanceDTO();
+        toUpdate.setQuarterlyReport(quarterlyReport);
+        toUpdate.setId(surveillanceId);
+        toUpdate.setCertifiedProductId(updateRequest.getCertifiedProductId());
+        toUpdate.setK1Reviewed(updateRequest.getK1Reviewed());
+        toUpdate.setGroundsForInitiating(updateRequest.getGroundsForInitiating());
+        toUpdate.setNonconformityCauses(updateRequest.getNonconformityCauses());
+        toUpdate.setNonconformityNature(updateRequest.getNonconformityNature());
+        toUpdate.setStepsToSurveil(updateRequest.getStepsToSurveil());
+        toUpdate.setStepsToEngage(updateRequest.getStepsToEngage());
+        toUpdate.setAdditionalCostsEvaluation(updateRequest.getAdditionalCostsEvaluation());
+        toUpdate.setLimitationsEvaluation(updateRequest.getLimitationsEvaluation());
+        toUpdate.setNondisclosureEvaluation(updateRequest.getNondisclosureEvaluation());
+        toUpdate.setDirectionDeveloperResolution(updateRequest.getDirectionDeveloperResolution());
+        toUpdate.setCompletedCapVerification(updateRequest.getCompletedCapVerification());
+        if (updateRequest.getSurveillanceOutcome() != null) {
+            SurveillanceOutcomeDTO survOutcome = new SurveillanceOutcomeDTO();
+            survOutcome.setId(updateRequest.getSurveillanceOutcome().getId());
+            toUpdate.setSurveillanceOutcome(survOutcome);
+        }
+        toUpdate.setSurveillanceOutcomeOther(updateRequest.getSurveillanceOutcomeOther());
+        if (updateRequest.getSurveillanceProcessType() != null) {
+            SurveillanceProcessTypeDTO processType = new SurveillanceProcessTypeDTO();
+            processType.setId(updateRequest.getSurveillanceProcessType().getId());
+            toUpdate.setSurveillanceProcessType(processType);
+        }
+        toUpdate.setSurveillanceProcessTypeOther(updateRequest.getSurveillanceProcessTypeOther());
+        PrivilegedSurveillanceDTO updated =
+                reportManager.createOrUpdateQuarterlyReportSurveillanceMap(toUpdate);
+        return new PrivilegedSurveillance(updated);
+    }
+
     @ApiOperation(value = "Updates whether a relevant listing is marked as excluded from a quarterly "
             + "report. If it's being excluded then the reason is required.",
             notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
@@ -280,7 +338,8 @@ public class SurveillanceReportController {
     public synchronized RelevantListing updateRelevantListing(@PathVariable final Long quarterlyReportId,
             @PathVariable final Long listingId,
             @RequestBody(required = true) final RelevantListing updateExclusionRequest)
-                throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException, EntityCreationException {
+                throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException, EntityCreationException,
+                JsonProcessingException {
         if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
             throw new NotImplementedException();
         }
@@ -321,7 +380,8 @@ public class SurveillanceReportController {
     @RequestMapping(value = "/quarterly", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public synchronized QuarterlyReport updateQuarterlyReport(
         @RequestBody(required = true) final QuarterlyReport updateRequest)
-    throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException {
+    throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
+    EntityCreationException {
         if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
             throw new NotImplementedException();
         }
@@ -344,7 +404,7 @@ public class SurveillanceReportController {
     @RequestMapping(value = "/quarterly/{quarterlyReportId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public void deleteQuarterlyReport(@PathVariable final Long quarterlyReportId)
-            throws EntityRetrievalException {
+            throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
         if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
             throw new NotImplementedException();
         }

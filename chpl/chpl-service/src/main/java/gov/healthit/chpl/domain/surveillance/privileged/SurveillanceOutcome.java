@@ -1,8 +1,10 @@
-package gov.healthit.chpl.domain.privileged.surveillance;
+package gov.healthit.chpl.domain.surveillance.privileged;
 
 import java.io.Serializable;
 
 import org.apache.commons.lang3.StringUtils;
+
+import gov.healthit.chpl.dto.surveillance.report.SurveillanceOutcomeDTO;
 
 public class SurveillanceOutcome implements Serializable {
     private static final long serialVersionUID = 5788880200952752783L;
@@ -18,6 +20,11 @@ public class SurveillanceOutcome implements Serializable {
     private String name;
 
     public SurveillanceOutcome() {
+    }
+
+    public SurveillanceOutcome(final SurveillanceOutcomeDTO dto) {
+        this.id = dto.getId();
+        this.name = dto.getName();
     }
 
     /**
