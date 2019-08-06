@@ -20,7 +20,7 @@ $ git clone https://github.com/chpladmin/chpl-api.git
 
 ## Load the data model
 
-See the instructions in [the Open Data CHPL data model README](chpl-data-model/README.md).
+See the instructions in [the Open Data CHPL data model README](https://github.com/chpladmin/chpl-data-model/blob/master/README.md).
 
 ## Authentication token & testing databases
 
