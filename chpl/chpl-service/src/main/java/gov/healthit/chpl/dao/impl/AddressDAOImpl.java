@@ -140,15 +140,6 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
         return dto;
     }
 
-    // @Override
-    // public AddressDTO getByValues(AddressDTO address) {
-    // AddressEntity ae = this.searchEntities(address);
-    // if (ae == null) {
-    // return null;
-    // }
-    // return new AddressDTO(ae);
-    // }
-
     @Override
     public AddressEntity saveAddress(AddressDTO addressDto) throws EntityRetrievalException, EntityCreationException {
         AddressEntity address = null;
