@@ -140,17 +140,17 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
         return dto;
     }
 
-    @Override
-    public AddressDTO getByValues(AddressDTO address) {
-        AddressEntity ae = this.searchEntities(address);
-        if (ae == null) {
-            return null;
-        }
-        return new AddressDTO(ae);
-    }
+    // @Override
+    // public AddressDTO getByValues(AddressDTO address) {
+    // AddressEntity ae = this.searchEntities(address);
+    // if (ae == null) {
+    // return null;
+    // }
+    // return new AddressDTO(ae);
+    // }
 
     @Override
-    public AddressEntity mergeAddress(AddressDTO addressDto) throws EntityRetrievalException, EntityCreationException {
+    public AddressEntity saveAddress(AddressDTO addressDto) throws EntityRetrievalException, EntityCreationException {
         AddressEntity address = null;
         if (addressDto.getId() != null) {
             // update the address
@@ -165,15 +165,8 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
                 address = update(toUpdate);
             }
         } else {
-            address = getEntityByValues(addressDto);
-        }
-
-        if (address == null) {
-            // if we didn't find it, create and save a new address entity before
-            // setting it on the developer
             address = create(addressDto);
         }
-
         return address;
     }
 
@@ -193,40 +186,6 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
         if (result.size() > 1) {
             throw new EntityRetrievalException("Data error. Duplicate address id in database.");
         } else if (result.size() == 1) {
-            entity = result.get(0);
-        }
-
-        return entity;
-    }
-
-    private AddressEntity getEntityByValues(AddressDTO address) {
-        return this.searchEntities(address);
-    }
-
-    private AddressEntity searchEntities(AddressDTO toSearch) {
-        AddressEntity entity = null;
-
-        String addressQuery = "from AddressEntity a where (NOT deleted = true) " + " AND (street_line_1 = :line1) "
-                + " AND (city = :city)" + " AND (state = :state)" + " AND (zipcode = :zipcode)"
-                + " AND (country = :country)";
-        if (toSearch.getStreetLineTwo() != null) {
-            addressQuery += " AND (street_line_2 = :line2)";
-        } else {
-            addressQuery += " AND (street_line_2 IS NULL)";
-        }
-        Query query = entityManager.createQuery(addressQuery, AddressEntity.class);
-        query.setParameter("line1", toSearch.getStreetLineOne());
-        query.setParameter("city", toSearch.getCity());
-        query.setParameter("state", toSearch.getState());
-        query.setParameter("zipcode", toSearch.getZipcode());
-        query.setParameter("country", toSearch.getCountry());
-        if (toSearch.getStreetLineTwo() != null) {
-            query.setParameter("line2", toSearch.getStreetLineTwo());
-        }
-
-        List<AddressEntity> result = query.getResultList();
-
-        if (result.size() >= 1) {
             entity = result.get(0);
         }
 

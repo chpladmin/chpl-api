@@ -52,7 +52,8 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
     private ContactDAO contactDao;
     @Autowired
     private DeveloperStatusDAO statusDao;
-    @Autowired private ErrorMessageUtil msgUtil;
+    @Autowired
+    private ErrorMessageUtil msgUtil;
 
     @Override
     public DeveloperDTO create(DeveloperDTO dto) throws EntityCreationException, EntityRetrievalException {
@@ -72,7 +73,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
             entity = new DeveloperEntity();
 
             if (dto.getAddress() != null) {
-                entity.setAddress(addressDao.mergeAddress(dto.getAddress()));
+                entity.setAddress(addressDao.saveAddress(dto.getAddress()));
             }
             if (dto.getContact() != null) {
                 if (dto.getContact().getId() != null) {
@@ -190,7 +191,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 
         if (dto.getAddress() != null) {
             try {
-                entity.setAddress(addressDao.mergeAddress(dto.getAddress()));
+                entity.setAddress(addressDao.saveAddress(dto.getAddress()));
             } catch (final EntityCreationException ex) {
                 LOGGER.error("Could not create new address in the database.", ex);
                 entity.setAddress(null);
@@ -251,8 +252,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
     @Override
     public void createDeveloperStatusEvent(final DeveloperStatusEventDTO statusEventDto)
             throws EntityCreationException {
-        if (statusEventDto.getStatus() != null
-                && !StringUtils.isEmpty(statusEventDto.getStatus().getStatusName())
+        if (statusEventDto.getStatus() != null && !StringUtils.isEmpty(statusEventDto.getStatus().getStatusName())
                 && statusEventDto.getStatusDate() != null) {
             DeveloperStatusEventEntity statusEvent = new DeveloperStatusEventEntity();
             statusEvent.setDeveloperId(statusEventDto.getDeveloperId());
@@ -280,19 +280,16 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
     }
 
     @Override
-    public void updateDeveloperStatusEvent(DeveloperStatusEventDTO statusEventDto)
-            throws EntityRetrievalException {
-        DeveloperStatusEventEntity entityToUpdate =
-                entityManager.find(DeveloperStatusEventEntity.class, statusEventDto.getId());
+    public void updateDeveloperStatusEvent(DeveloperStatusEventDTO statusEventDto) throws EntityRetrievalException {
+        DeveloperStatusEventEntity entityToUpdate = entityManager.find(DeveloperStatusEventEntity.class,
+                statusEventDto.getId());
         if (entityToUpdate == null) {
             String msg = msgUtil.getMessage("developer.updateStatus.idNotFound", statusEventDto.getId());
             LOGGER.error(msg);
             throw new EntityRetrievalException(msg);
         } else {
-            if (statusEventDto.getStatus() != null
-                    && statusEventDto.getStatus().getStatusName() != null) {
-                DeveloperStatusEntity newStatus = getStatusByName(
-                        statusEventDto.getStatus().getStatusName());
+            if (statusEventDto.getStatus() != null && statusEventDto.getStatus().getStatusName() != null) {
+                DeveloperStatusEntity newStatus = getStatusByName(statusEventDto.getStatus().getStatusName());
                 if (newStatus != null && newStatus.getId() != null) {
                     entityToUpdate.setDeveloperStatus(newStatus);
                     entityToUpdate.setReason(statusEventDto.getReason());
@@ -306,10 +303,9 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
     }
 
     @Override
-    public void deleteDeveloperStatusEvent(DeveloperStatusEventDTO statusEventDto)
-            throws EntityRetrievalException {
-        DeveloperStatusEventEntity statusEventEntity =
-                entityManager.find(DeveloperStatusEventEntity.class, statusEventDto.getId());
+    public void deleteDeveloperStatusEvent(DeveloperStatusEventDTO statusEventDto) throws EntityRetrievalException {
+        DeveloperStatusEventEntity statusEventEntity = entityManager.find(DeveloperStatusEventEntity.class,
+                statusEventDto.getId());
         if (statusEventEntity == null) {
             String msg = msgUtil.getMessage("developer.updateStatus.idNotFound", statusEventDto.getId());
             LOGGER.error(msg);
@@ -495,19 +491,19 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
         Query bannedListingsQuery = entityManager.createQuery(
                 "FROM CertifiedProductDetailsEntity "
                         + "WHERE developerStatusName IN (:banned) AND deleted = false AND acbIsRetired = false",
-                        CertifiedProductDetailsEntity.class);
+                CertifiedProductDetailsEntity.class);
         bannedListingsQuery.setParameter("banned", String.valueOf(DeveloperStatusType.UnderCertificationBanByOnc));
         List<CertifiedProductDetailsEntity> bannedListings = bannedListingsQuery.getResultList();
         List<DecertifiedDeveloperDTODeprecated> decertifiedDevelopers = new ArrayList<DecertifiedDeveloperDTODeprecated>();
         // populate dtoList from result
         for (CertifiedProductDetailsEntity currListing : bannedListings) {
-            LOGGER.debug("CertifiedProductDetailsEntity: " + currListing.getDeveloperId() + " " + currListing.getCertificationBodyId() + " "
-                    + currListing.getMeaningfulUseUsers());
+            LOGGER.debug("CertifiedProductDetailsEntity: " + currListing.getDeveloperId() + " "
+                    + currListing.getCertificationBodyId() + " " + currListing.getMeaningfulUseUsers());
             Boolean devExists = false;
             if (decertifiedDevelopers.size() > 0) {
                 for (DecertifiedDeveloperDTODeprecated currDev : decertifiedDevelopers) {
-                    LOGGER.debug("DeveloperDecertifiedDTO: " + currDev.getDeveloperId() + " " + currDev.getAcbIdList() + " "
-                            + currDev.getNumMeaningfulUse());
+                    LOGGER.debug("DeveloperDecertifiedDTO: " + currDev.getDeveloperId() + " " + currDev.getAcbIdList()
+                            + " " + currDev.getNumMeaningfulUse());
                     // if developer already exists, update it to include ACB and
                     // aggregate numMeaningfulUse
                     if (currDev.getDeveloperId().equals(currListing.getDeveloperId())) {
@@ -524,21 +520,25 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
                         }
                         LOGGER.debug("added acb " + currListing.getCertificationBodyId() + " to dto with dev id == "
                                 + currDev.getDeveloperId());
-                        //aggregate meaningful use count for existing developer
+                        // aggregate meaningful use count for existing developer
                         if (currListing.getMeaningfulUseUsers() != null) {
                             currDev.incrementNumMeaningfulUse(currListing.getMeaningfulUseUsers());
-                            LOGGER.debug("added numMeaningfulUse to dto with value " + currListing.getMeaningfulUseUsers());
+                            LOGGER.debug(
+                                    "added numMeaningfulUse to dto with value " + currListing.getMeaningfulUseUsers());
                         }
-                        //check earliest vs latest meaningful use dates for existing developer
+                        // check earliest vs latest meaningful use dates for
+                        // existing developer
                         if (currListing.getMeaningfulUseUsersDate() != null) {
                             if (currDev.getEarliestNumMeaningfulUseDate() == null) {
                                 currDev.setEarliestNumMeaningfulUseDate(currListing.getMeaningfulUseUsersDate());
-                            } else if (currListing.getMeaningfulUseUsersDate().getTime() < currDev.getEarliestNumMeaningfulUseDate().getTime()) {
+                            } else if (currListing.getMeaningfulUseUsersDate().getTime() < currDev
+                                    .getEarliestNumMeaningfulUseDate().getTime()) {
                                 currDev.setEarliestNumMeaningfulUseDate(currListing.getMeaningfulUseUsersDate());
                             }
                             if (currDev.getLatestNumMeaningfulUseDate() == null) {
                                 currDev.setLatestNumMeaningfulUseDate(currListing.getMeaningfulUseUsersDate());
-                            } else if (currListing.getMeaningfulUseUsersDate().getTime() > currDev.getLatestNumMeaningfulUseDate().getTime()) {
+                            } else if (currListing.getMeaningfulUseUsersDate().getTime() > currDev
+                                    .getLatestNumMeaningfulUseDate().getTime()) {
                                 currDev.setLatestNumMeaningfulUseDate(currListing.getMeaningfulUseUsersDate());
                             }
                         }
@@ -550,8 +550,9 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
             if (!devExists) {
                 List<Long> acbList = new ArrayList<Long>();
                 acbList.add(currListing.getCertificationBodyId());
-                DecertifiedDeveloperDTODeprecated decertDev = new DecertifiedDeveloperDTODeprecated(currListing.getDeveloperId(), acbList,
-                        currListing.getDeveloperStatusName(), currListing.getDeveloperStatusDate(), currListing.getMeaningfulUseUsers());
+                DecertifiedDeveloperDTODeprecated decertDev = new DecertifiedDeveloperDTODeprecated(
+                        currListing.getDeveloperId(), acbList, currListing.getDeveloperStatusName(),
+                        currListing.getDeveloperStatusDate(), currListing.getMeaningfulUseUsers());
                 decertDev.setEarliestNumMeaningfulUseDate(currListing.getMeaningfulUseUsersDate());
                 decertDev.setLatestNumMeaningfulUseDate(currListing.getMeaningfulUseUsersDate());
                 decertifiedDevelopers.add(decertDev);
@@ -564,9 +565,8 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
     @Override
     public List<DecertifiedDeveloperDTO> getDecertifiedDeveloperCollection() {
 
-        Query query = entityManager.createQuery(
-                "FROM ListingsFromBannedDevelopersEntity ",
-                        ListingsFromBannedDevelopersEntity.class);
+        Query query = entityManager.createQuery("FROM ListingsFromBannedDevelopersEntity ",
+                ListingsFromBannedDevelopersEntity.class);
         List<ListingsFromBannedDevelopersEntity> listingsFromBannedDevelopers = query.getResultList();
         List<DecertifiedDeveloperDTO> decertifiedDevelopers = new ArrayList<DecertifiedDeveloperDTO>();
         for (ListingsFromBannedDevelopersEntity currListing : listingsFromBannedDevelopers) {
@@ -619,7 +619,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
                         + "LEFT OUTER JOIN FETCH v.contact " + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
                         + "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
                         + "LEFT OUTER JOIN FETCH v.developerCertificationStatuses " + "where (NOT v.deleted = true)",
-                        DeveloperEntity.class).getResultList();
+                DeveloperEntity.class).getResultList();
         return result;
     }
 
@@ -640,13 +640,9 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
     private DeveloperEntity getEntityById(final Long id, final boolean includeDeleted) throws EntityRetrievalException {
 
         DeveloperEntity entity = null;
-        String queryStr = "SELECT DISTINCT v FROM "
-                        + "DeveloperEntity v "
-                        + "LEFT OUTER JOIN FETCH v.address "
-                        + "LEFT OUTER JOIN FETCH v.contact "
-                        + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
-                        + "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
-                        + "WHERE v.id = :entityid ";
+        String queryStr = "SELECT DISTINCT v FROM " + "DeveloperEntity v " + "LEFT OUTER JOIN FETCH v.address "
+                + "LEFT OUTER JOIN FETCH v.contact " + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
+                + "LEFT OUTER JOIN FETCH statusEvents.developerStatus " + "WHERE v.id = :entityid ";
         if (!includeDeleted) {
             queryStr += " AND v.deleted = false";
         }
