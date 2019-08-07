@@ -21,7 +21,5 @@ public interface AddressDAO {
 
     AddressEntity getEntityById(Long id) throws EntityRetrievalException;
 
-    // AddressDTO getByValues(AddressDTO address);
-
     AddressEntity saveAddress(AddressDTO addressDto) throws EntityRetrievalException, EntityCreationException;
 }
