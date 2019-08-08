@@ -6,7 +6,7 @@ import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.UserDeveloperMapEntity;
 
 public class UserDeveloperMapDTO implements Serializable {
-    private static final long serialVersionUID = 1316069925338614100L;
+    private static final long serialVersionUID = -8936439652132642011L;
 
     private Long id;
     private UserDTO user;
