@@ -9,8 +9,10 @@ import java.util.Set;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.authentication.Authenticator;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
@@ -36,6 +39,7 @@ import gov.healthit.chpl.domain.auth.AuthorizeCredentials;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UserInvitation;
 import gov.healthit.chpl.domain.auth.UsersResponse;
+import gov.healthit.chpl.domain.complaint.Complaint;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.auth.InvitationDTO;
@@ -58,6 +62,7 @@ import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.web.controller.results.ComplaintResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -77,6 +82,9 @@ public class UserManagementController {
 
     @Autowired
     private ActivityManager activityManager;
+
+    @Autowired
+    private FF4j ff4j;
 
     @Autowired
     private Environment env;
@@ -283,6 +291,11 @@ public class UserManagementController {
     public UserInvitation inviteUser(@RequestBody final UserInvitation invitation)
             throws InvalidArgumentsException, UserCreationException, UserRetrievalException,
             UserPermissionRetrievalException, AddressException, MessagingException {
+
+        if (!ff4j.check(FeatureList.ROLE_DEVELOPER) && invitation.getRole().equals(Authority.ROLE_DEVELOPER)) {
+            throw new NotImplementedException();
+        }
+
         InvitationDTO createdInvite = null;
         if (invitation.getRole().equals(Authority.ROLE_ADMIN)) {
             createdInvite = invitationManager.inviteAdmin(invitation.getEmailAddress());
