@@ -53,7 +53,7 @@ public class TestingLabDAOImpl extends BaseDAOImpl implements TestingLabDAO {
             entity = new TestingLabEntity();
 
             if (dto.getAddress() != null) {
-                entity.setAddress(addressDao.mergeAddress(dto.getAddress()));
+                entity.setAddress(addressDao.saveAddress(dto.getAddress()));
             }
 
             entity.setName(dto.getName());
@@ -82,7 +82,7 @@ public class TestingLabDAOImpl extends BaseDAOImpl implements TestingLabDAO {
 
         if (dto.getAddress() != null) {
             try {
-                entity.setAddress(addressDao.mergeAddress(dto.getAddress()));
+                entity.setAddress(addressDao.saveAddress(dto.getAddress()));
             } catch (final EntityCreationException ex) {
                 LOGGER.error("Could not create new address in the database.", ex);
                 entity.setAddress(null);

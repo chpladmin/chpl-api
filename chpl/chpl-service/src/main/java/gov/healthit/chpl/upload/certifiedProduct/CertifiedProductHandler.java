@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CQMCriterion;
-import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.ContactDTO;
@@ -26,13 +25,11 @@ import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
-import gov.healthit.chpl.entity.AddressEntity;
 import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTestingLabMapEntity;
-import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -53,13 +50,14 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
 
     @Override
     public abstract PendingCertifiedProductEntity handle() throws InvalidArgumentsException;
+
     public abstract TemplateColumnIndexMap getColumnIndexMap();
+
     public abstract String[] getCriteriaNames();
 
     public String getErrorMessage(final String errorField) {
-        return String.format(
-                messageSource.getMessage(new DefaultMessageSourceResolvable(errorField),
-                        LocaleContextHolder.getLocale()));
+        return String.format(messageSource.getMessage(new DefaultMessageSourceResolvable(errorField),
+                LocaleContextHolder.getLocale()));
     }
 
     protected void parseUniqueId(final PendingCertifiedProductEntity pendingCertifiedProduct, final CSVRecord record) {
@@ -143,22 +141,6 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         if (foundContact != null) {
             pendingCertifiedProduct.setDeveloperContactId(foundContact.getId());
         }
-
-        AddressDTO toFind = new AddressDTO();
-        toFind.setStreetLineOne(developerStreetAddress);
-        toFind.setCity(developerCity);
-        toFind.setState(developerState);
-        toFind.setZipcode(developerZipcode);
-        AddressDTO foundAddress = addressDao.getByValues(toFind);
-        if (foundAddress != null) {
-            AddressEntity addressEntity = null;
-            try {
-                addressEntity = addressDao.getEntityById(foundAddress.getId());
-            } catch (final EntityRetrievalException ex) {
-                addressEntity = null;
-            }
-            pendingCertifiedProduct.setDeveloperAddress(addressEntity);
-        }
     }
 
     protected void parseEdition(final String expected, final PendingCertifiedProductEntity pendingCertifiedProduct,
@@ -167,9 +149,9 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         pendingCertifiedProduct.setCertificationEdition(certificaitonYear);
         if (!pendingCertifiedProduct.getCertificationEdition().equals(expected.trim())) {
             pendingCertifiedProduct.getErrorMessages()
-            .add("Expecting certification year " + expected.trim() + " but found '"
-                    + pendingCertifiedProduct.getCertificationEdition() + "' for product "
-                    + pendingCertifiedProduct.getUniqueId());
+                    .add("Expecting certification year " + expected.trim() + " but found '"
+                            + pendingCertifiedProduct.getCertificationEdition() + "' for product "
+                            + pendingCertifiedProduct.getUniqueId());
         }
         CertificationEditionDTO foundEdition = editionDao.getByYear(certificaitonYear);
         if (foundEdition != null) {
@@ -179,12 +161,11 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
 
     protected void parseAcbCertificationId(final PendingCertifiedProductEntity pendingCertifiedProduct,
             final CSVRecord record) {
-        pendingCertifiedProduct.setAcbCertificationId(record.get(getColumnIndexMap()
-                .getAcbCertificationIdIndex()).trim());
+        pendingCertifiedProduct
+                .setAcbCertificationId(record.get(getColumnIndexMap().getAcbCertificationIdIndex()).trim());
     }
 
-    protected void parseAcb(final PendingCertifiedProductEntity pendingCertifiedProduct,
-            final CSVRecord record) {
+    protected void parseAcb(final PendingCertifiedProductEntity pendingCertifiedProduct, final CSVRecord record) {
         String acbName = record.get(getColumnIndexMap().getAcbIndex()).trim();
         pendingCertifiedProduct.setCertificationBodyName(acbName);
         CertificationBodyDTO foundAcb = acbDao.getByName(acbName);
@@ -192,17 +173,19 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
             pendingCertifiedProduct.setCertificationBodyId(foundAcb.getId());
         } else {
             pendingCertifiedProduct.getErrorMessages()
-            .add("No certification body with name " + acbName + " could be found.");
+                    .add("No certification body with name " + acbName + " could be found.");
         }
     }
 
     /**
      * Parse ATL(s).
-     * @param pendingCertifiedProduct the pending product
-     * @param record the record to parse
+     * 
+     * @param pendingCertifiedProduct
+     *            the pending product
+     * @param record
+     *            the record to parse
      */
-    protected void parseAtl(final PendingCertifiedProductEntity pendingCertifiedProduct,
-            final CSVRecord record) {
+    protected void parseAtl(final PendingCertifiedProductEntity pendingCertifiedProduct, final CSVRecord record) {
         String atlName = record.get(getColumnIndexMap().getAtlIndex()).trim();
         if (!StringUtils.isEmpty(atlName)) {
             TestingLabDTO foundAtl = atlDao.getByName(atlName);
@@ -213,7 +196,7 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
                 tlEntity.setTestingLabName(foundAtl.getName());
             } else {
                 pendingCertifiedProduct.getErrorMessages()
-                .add("No testing lab with name " + atlName + " could be found.");
+                        .add("No testing lab with name " + atlName + " could be found.");
             }
             pendingCertifiedProduct.getTestingLabs().add(tlEntity);
         }
@@ -256,10 +239,10 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
 
     protected void parseTransparencyAttestation(final PendingCertifiedProductEntity pendingCertifiedProduct,
             final CSVRecord record) {
-        //(k)(1) attestation url
+        // (k)(1) attestation url
         pendingCertifiedProduct.setTransparencyAttestationUrl(record.get(getColumnIndexMap().getK1Index()).trim());
 
-        //(k)(2) attestation status
+        // (k)(2) attestation status
         String k2AttestationStr = record.get(getColumnIndexMap().getK2Index()).trim();
         if (!StringUtils.isEmpty(k2AttestationStr)) {
             if ("0".equals(k2AttestationStr.trim())) {
@@ -285,7 +268,6 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         return criteria;
     }
 
-
     /**
      * look up the certification criteria by name and throw an error if we can't
      * find it
@@ -296,8 +278,7 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
      * @throws InvalidArgumentsException
      */
     protected PendingCertificationResultEntity getCertificationResult(final String criterionName,
-            final String columnValue)
-                    throws InvalidArgumentsException {
+            final String columnValue) throws InvalidArgumentsException {
         CertificationCriterionEntity certEntity = certDao.getEntityByName(criterionName);
         if (certEntity == null) {
             throw new InvalidArgumentsException("Could not find a certification criterion matching " + criterionName);
