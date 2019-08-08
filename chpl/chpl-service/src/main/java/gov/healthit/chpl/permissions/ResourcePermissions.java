@@ -19,6 +19,7 @@ import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.dao.UserCertificationBodyMapDAO;
+import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.dao.UserTestingLabMapDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.auth.Authority;
@@ -26,6 +27,7 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
+import gov.healthit.chpl.dto.UserDeveloperMapDTO;
 import gov.healthit.chpl.dto.UserTestingLabMapDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserPermissionDTO;
@@ -39,9 +41,10 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 public class ResourcePermissions {
     private PermissionEvaluator permissionEvaluator;
     private UserCertificationBodyMapDAO userCertificationBodyMapDAO;
+    private UserTestingLabMapDAO userTestingLabMapDAO;
+    private UserDeveloperMapDAO userDeveloperMapDAO;
     private ErrorMessageUtil errorMessageUtil;
     private CertificationBodyDAO acbDAO;
-    private UserTestingLabMapDAO userTestingLabMapDAO;
     private TestingLabDAO atlDAO;
     private UserDAO userDAO;
     private DeveloperDAO developerDAO;
@@ -164,6 +167,24 @@ public class ResourcePermissions {
     }
 
     @Transactional(readOnly = true)
+    public List<DeveloperDTO> getAllDevelopersForCurrentUser() {
+        User user = AuthUtil.getCurrentUser();
+        List<DeveloperDTO> developers = new ArrayList<DeveloperDTO>();
+
+        if (user != null) {
+            if (isUserRoleAdmin() || isUserRoleOnc() || isUserRoleAcbAdmin()) {
+                developers = developerDAO.findAll();
+            } else {
+                List<UserDeveloperMapDTO> dtos = userDeveloperMapDAO.getByUserId(user.getId());
+                for (UserDeveloperMapDTO dto : dtos) {
+                    developers.add(dto.getDeveloper());
+                }
+            }
+        }
+        return developers;
+    }
+
+    @Transactional(readOnly = true)
     public CertificationBodyDTO getAcbIfPermissionById(final Long id) throws EntityRetrievalException {
         try {
             acbDAO.getById(id);
@@ -210,10 +231,33 @@ public class ResourcePermissions {
     }
 
     @Transactional(readOnly = true)
+    public DeveloperDTO getDeveloperIfPermissionById(final Long id) throws EntityRetrievalException {
+        try {
+            developerDAO.getById(id);
+        } catch (final EntityRetrievalException ex) {
+            throw new EntityRetrievalException(errorMessageUtil.getMessage("developer.notFound"));
+        }
+
+        List<DeveloperDTO> dtos = getAllDevelopersForCurrentUser();
+        CollectionUtils.filter(dtos, new Predicate<DeveloperDTO>() {
+            @Override
+            public boolean evaluate(final DeveloperDTO object) {
+                return object.getId().equals(id);
+            }
+
+        });
+
+        if (dtos.size() == 0) {
+            throw new AccessDeniedException(errorMessageUtil.getMessage("access.denied"));
+        }
+        return dtos.get(0);
+    }
+
+    @Transactional(readOnly = true)
     public UserPermissionDTO getRoleByUserId(final Long userId) {
         try {
             UserDTO user = userDAO.getById(userId);
-        return user.getPermission();
+            return user.getPermission();
         } catch (UserRetrievalException ex) { }
         return null;
     }
@@ -236,7 +280,7 @@ public class ResourcePermissions {
      * Acb can access any other ROLE_ACB user who is also on their ACB.
      * Atl can access any other ROLE_ATL user who is also on their ATL.
      * All users can access themselves.
-     * @param user
+     * @param user user to check permissions on
      * @return
      */
     @Transactional(readOnly = true)
@@ -289,6 +333,10 @@ public class ResourcePermissions {
 
     public boolean isUserRoleAtlAdmin() {
         return doesUserHaveRole(Authority.ROLE_ATL);
+    }
+
+    public boolean isUserRoleDeveloperAdmin() {
+        return doesUserHaveRole(Authority.ROLE_DEVELOPER);
     }
 
     public boolean isUserRoleUserCreator() {

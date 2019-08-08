@@ -27,7 +27,10 @@ public interface InvitationManager {
     InvitationDTO inviteWithAtlAccess(String emailAddress, Long atlId)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException;
 
-    InvitationDTO getByInvitationHash(String hash);
+    InvitationDTO inviteWithDeveloperAccess(String emailAddress, Long developerId)
+            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException;
+
+   InvitationDTO getByInvitationHash(String hash);
 
     InvitationDTO getById(Long id) throws UserRetrievalException;
 

@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
@@ -42,8 +43,18 @@ public abstract class ActionPermissions {
         return false;
     }
 
+    public boolean isDeveloperValidForCurrentUser(final Long developerId) {
+        List<DeveloperDTO> developers = resourcePermissions.getAllDevelopersForCurrentUser();
+        for (DeveloperDTO dto : developers) {
+            if (dto.getId().equals(developerId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Transactional(readOnly = true)
-    public boolean doesCurrentUserHaveAccessToAllOfDevelopersListings(Long developerId) {
+    public boolean doesCurrentUserHaveAccessToAllOfDevelopersListings(final Long developerId) {
         List<CertifiedProductDetailsDTO> cpDtos = certifiedProductDAO.findByDeveloperId(developerId);
         for (CertifiedProductDetailsDTO cpDto : cpDtos) {
             if (!isAcbValidForCurrentUser(cpDto.getCertificationBodyId())) {
@@ -54,7 +65,7 @@ public abstract class ActionPermissions {
     }
 
     @Transactional(readOnly = true)
-    public boolean doesCurrentUserHaveAccessToAllOfProductListings(Long productId) {
+    public boolean doesCurrentUserHaveAccessToAllOfProductListings(final Long productId) {
         List<CertifiedProductDetailsDTO> cpDtos = certifiedProductDAO.getDetailsByProductId(productId);
         for (CertifiedProductDetailsDTO cpDto : cpDtos) {
             if (!isAcbValidForCurrentUser(cpDto.getCertificationBodyId())) {

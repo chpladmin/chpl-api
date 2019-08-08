@@ -298,7 +298,11 @@ public class UserManagementController {
                     && invitation.getPermissionObjectId() != null) {
                 createdInvite = invitationManager.inviteWithAtlAccess(invitation.getEmailAddress(),
                         invitation.getPermissionObjectId());
-        }
+        } else if (invitation.getRole().equals(Authority.ROLE_DEVELOPER)
+                && invitation.getPermissionObjectId() != null) {
+            createdInvite = invitationManager.inviteWithDeveloperAccess(invitation.getEmailAddress(),
+                    invitation.getPermissionObjectId());
+    }
 
         // send email
         String htmlMessage = "<p>Hi,</p>" + "<p>You have been granted a new role on ONC's CHPL "
