@@ -64,7 +64,7 @@ public class UserDeveloperMapDAOImpl extends BaseDAOImpl implements UserDevelope
                         + "join fetch u.permission perm "
                         + "join fetch u.contact contact "
                         + "where (udm.deleted != true) "
-                        + "AND (cb.id = :developerId) ",
+                        + "AND (developer.id = :developerId) ",
                 UserDeveloperMapEntity.class);
         query.setParameter("developerId", developerId);
         List<UserDeveloperMapEntity> result = query.getResultList();
