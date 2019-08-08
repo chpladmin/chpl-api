@@ -15,16 +15,17 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.UserCertificationBodyMapDAO;
+import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.dao.UserTestingLabMapDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
+import gov.healthit.chpl.dto.UserDeveloperMapDTO;
 import gov.healthit.chpl.dto.UserTestingLabMapDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.exception.UserManagementException;
-import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.manager.auth.UserManager;
@@ -35,17 +36,19 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
 
     private UserCertificationBodyMapDAO userCertificationBodyMapDAO;
     private UserTestingLabMapDAO userTestingLabMapDAO;
+    private UserDeveloperMapDAO userDeveloperMapDAO;
     private UserDAO userDAO;
     private UserManager userManager;
     private MutableAclService mutableAclService;
 
     @Autowired
     public UserPermissionsManagerImpl(final UserCertificationBodyMapDAO userCertificationBodyMapDAO,
-            final UserTestingLabMapDAO userTestingLabMapDAO, final UserDAO userDAO,
-            final UserManager userManager, final MutableAclService mutableAclService) {
+            final UserTestingLabMapDAO userTestingLabMapDAO, final UserDeveloperMapDAO userDeveloperMapDAO,
+            final UserDAO userDAO, final UserManager userManager, final MutableAclService mutableAclService) {
 
         this.userCertificationBodyMapDAO = userCertificationBodyMapDAO;
         this.userTestingLabMapDAO = userTestingLabMapDAO;
+        this.userDeveloperMapDAO = userDeveloperMapDAO;
         this.userDAO = userDAO;
         this.userManager = userManager;
         this.mutableAclService = mutableAclService;
@@ -146,6 +149,25 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
         removeUserIfPermissionless(userId);
     }
 
+    @Override
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).USER_PERMISSIONS, "
+            + "T(gov.healthit.chpl.permissions.domains.UserPermissionsDomainPermissions).ADD_DEVELOPER, #developer)")
+    public void addDeveloperPermission(final DeveloperDTO developer, final Long userId)
+            throws EntityRetrievalException, UserRetrievalException {
+
+        if (doesUserDeveloperMapExist(developer.getId(), userId)) {
+            LOGGER.info("User (" + userId + ") already has permission to Developer (" + developer.getId() + ").");
+        } else {
+            UserDeveloperMapDTO dto = new UserDeveloperMapDTO();
+            dto.setDeveloper(developer);
+            UserDTO user = userDAO.getById(userId);
+            dto.setUser(user);
+
+            userDeveloperMapDAO.create(dto);
+        }
+    }
+
     private Boolean doesUserCertificationBodyMapExist(final Long acbId, final Long userId) {
         List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByUserId(userId);
 
@@ -177,6 +199,24 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
             public boolean evaluate(final Object object) {
                 return ((UserTestingLabMapDTO) object).getTestingLab().getId().equals(atlId)
                         && ((UserTestingLabMapDTO) object).getUser().getId().equals(userId);
+            }
+        });
+
+        return dtos.size() > 0;
+    }
+
+    private Boolean doesUserDeveloperMapExist(final Long developerId, final Long userId) {
+        List<UserDeveloperMapDTO> dtos = userDeveloperMapDAO.getByUserId(userId);
+
+        if (dtos == null || dtos.size() == 0) {
+            LOGGER.error("Could not locate the UserDeveloperMap object for Userid: " + userId + ", Developer: " + developerId);
+        }
+
+        CollectionUtils.filter(dtos, new Predicate() {
+            @Override
+            public boolean evaluate(final Object object) {
+                return ((UserDeveloperMapDTO) object).getDeveloper().getId().equals(developerId)
+                        && ((UserDeveloperMapDTO) object).getUser().getId().equals(userId);
             }
         });
 

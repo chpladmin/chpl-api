@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.permissions.domains.secureduser.ImpersonateUserActionPermissions;
 import gov.healthit.chpl.permissions.domains.userpermissions.AddAcbActionPermissions;
 import gov.healthit.chpl.permissions.domains.userpermissions.AddAtlActionPermissions;
+import gov.healthit.chpl.permissions.domains.userpermissions.AddDeveloperActionPermissions;
 import gov.healthit.chpl.permissions.domains.userpermissions.DeleteAcbActionPermissions;
 import gov.healthit.chpl.permissions.domains.userpermissions.DeleteAllAcbPermissionsForUserActionPermissions;
 import gov.healthit.chpl.permissions.domains.userpermissions.DeleteAllAtlPermissionsForUserActionPermissions;
@@ -29,6 +30,7 @@ public class UserPermissionsDomainPermissions extends DomainPermissions {
     public static final String DELETE_ALL_ATLS_FOR_USER = "DELETE_ALL_ATLS_FOR_USER";
     /** Permission to impersonate another user. */
     public static final String IMPERSONATE_USER = "IMPERSONATE_USER";
+    public static final String ADD_DEVELOPER = "ADD_DEVELOPER";
 
     @Autowired
     public UserPermissionsDomainPermissions(
@@ -38,7 +40,8 @@ public class UserPermissionsDomainPermissions extends DomainPermissions {
             @Qualifier("userPermissionsImpersonateUserActionPermissions") final ImpersonateUserActionPermissions impersonateUserActionPermissions,
             @Qualifier("userPermissionsAddAtlActionPermissions") final AddAtlActionPermissions addAtlActionPermissions,
             @Qualifier("userPermissionsDeleteAtlActionPermissions") final DeleteAtlActionPermissions deleteAtlActionPermissions,
-            @Qualifier("userPermissionsDeleteAllAtlPermissionsForUserActionPermissions") final DeleteAllAtlPermissionsForUserActionPermissions deleteAllAtlPermissionsForUserActionPermissions) {
+            @Qualifier("userPermissionsDeleteAllAtlPermissionsForUserActionPermissions") final DeleteAllAtlPermissionsForUserActionPermissions deleteAllAtlPermissionsForUserActionPermissions,
+            @Qualifier("userPermissionsAddDeveloperActionPermissions") final AddDeveloperActionPermissions addDeveloperActionPermissions) {
 
         getActionPermissions().put(ADD_ACB, addAcbActionPermissions);
         getActionPermissions().put(DELETE_ACB, deleteAcbActionPermissions);
@@ -47,5 +50,6 @@ public class UserPermissionsDomainPermissions extends DomainPermissions {
         getActionPermissions().put(DELETE_ATL, deleteAtlActionPermissions);
         getActionPermissions().put(DELETE_ALL_ATLS_FOR_USER, deleteAllAtlPermissionsForUserActionPermissions);
         getActionPermissions().put(IMPERSONATE_USER, impersonateUserActionPermissions);
+        getActionPermissions().put(ADD_DEVELOPER, addDeveloperActionPermissions);
     }
 }
