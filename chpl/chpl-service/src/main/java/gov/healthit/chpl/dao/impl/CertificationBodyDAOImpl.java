@@ -76,7 +76,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 
         if (dto.getAddress() != null) {
             try {
-                entity.setAddress(addressDao.create(dto.getAddress()));
+                entity.setAddress(addressDao.saveAddress(dto.getAddress()));
             } catch (final EntityCreationException ex) {
                 LOGGER.error("Could not create new address in the database.", ex);
                 entity.setAddress(null);
