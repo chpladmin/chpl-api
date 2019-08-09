@@ -12,6 +12,7 @@ import gov.healthit.chpl.permissions.domains.UserPermissionsDomainPermissions;
 import gov.healthit.chpl.permissions.domains.secureduser.ImpersonateUserActionPermissions;
 import gov.healthit.chpl.permissions.domains.userpermissions.AddAcbActionPermissions;
 import gov.healthit.chpl.permissions.domains.userpermissions.AddAtlActionPermissions;
+import gov.healthit.chpl.permissions.domains.userpermissions.AddDeveloperActionPermissions;
 import gov.healthit.chpl.permissions.domains.userpermissions.DeleteAcbActionPermissions;
 import gov.healthit.chpl.permissions.domains.userpermissions.DeleteAllAcbPermissionsForUserActionPermissions;
 import gov.healthit.chpl.permissions.domains.userpermissions.DeleteAllAtlPermissionsForUserActionPermissions;
@@ -27,7 +28,7 @@ public class UserPermissionsDomainPermissionsTest {
 
     @Test
     public void setupTest() {
-        assertTrue(permissions.getActionPermissions().size() == 7);
+        assertTrue(permissions.getActionPermissions().size() == 8);
 
         assertTrue(permissions.getActionPermissions()
                 .get(UserPermissionsDomainPermissions.ADD_ACB) instanceof AddAcbActionPermissions);
@@ -46,6 +47,9 @@ public class UserPermissionsDomainPermissionsTest {
 
         assertTrue(permissions.getActionPermissions().get(
                 UserPermissionsDomainPermissions.DELETE_ALL_ATLS_FOR_USER) instanceof DeleteAllAtlPermissionsForUserActionPermissions);
+
+        assertTrue(permissions.getActionPermissions()
+                .get(UserPermissionsDomainPermissions.ADD_DEVELOPER) instanceof AddDeveloperActionPermissions);
 
         assertTrue(permissions.getActionPermissions()
                 .get(UserPermissionsDomainPermissions.IMPERSONATE_USER) instanceof ImpersonateUserActionPermissions);
