@@ -73,7 +73,7 @@ public class SurveillanceExperienceWorksheetBuilder {
 
         row = workbook.getRow(sheet, 2);
         cell = workbook.createCell(row, 1, workbook.getTopAlignedWrappedStyle());
-        cell.setCellValue(report.getObstacleSummary().trim());
+        cell.setCellValue(report.getObstacleSummary() == null ? "" : report.getObstacleSummary().trim());
         sheet.addMergedRegion(new CellRangeAddress(2, 2, 1, 3));
         //this is user-entered text that wraps so we should try to resize the height
         //of the row to show all the lines of text.
@@ -91,7 +91,7 @@ public class SurveillanceExperienceWorksheetBuilder {
 
         row = workbook.getRow(sheet, 2);
         cell = workbook.createCell(row, 5, workbook.getTopAlignedWrappedStyle());
-        cell.setCellValue(report.getFindingsSummary().trim());
+        cell.setCellValue(report.getFindingsSummary() == null ? "" : report.getFindingsSummary().trim());
         //this is user-entered text that wraps so we should try to resize the height
         //of the row to show all the lines of text.
         int lineCount = workbook.calculateLineCount(cell.getStringCellValue(), sheet, 5, 5);
