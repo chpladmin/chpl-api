@@ -12,6 +12,7 @@ import gov.healthit.chpl.permissions.domains.InvitationDomainPermissions;
 import gov.healthit.chpl.permissions.domains.invitation.InviteAcbActionPermissions;
 import gov.healthit.chpl.permissions.domains.invitation.InviteAdminActionPermissions;
 import gov.healthit.chpl.permissions.domains.invitation.InviteAtlActionPermissions;
+import gov.healthit.chpl.permissions.domains.invitation.InviteDeveloperActionPermissions;
 import gov.healthit.chpl.permissions.domains.invitation.InviteOncActionPermissions;
 import gov.healthit.chpl.permissions.domains.invitation.UpdateFromInvitationActionPermissions;
 
@@ -25,7 +26,7 @@ public class InvitationDomainPermissionsTest {
 
     @Test
     public void setupTest() {
-        assertTrue(permissions.getActionPermissions().size() == 6);
+        assertTrue(permissions.getActionPermissions().size() == 7);
 
         assertTrue(permissions.getActionPermissions()
                 .get(InvitationDomainPermissions.INVITE_ACB) instanceof InviteAcbActionPermissions);
@@ -38,6 +39,9 @@ public class InvitationDomainPermissionsTest {
 
         assertTrue(permissions.getActionPermissions()
                 .get(InvitationDomainPermissions.INVITE_ATL) instanceof InviteAtlActionPermissions);
+
+        assertTrue(permissions.getActionPermissions()
+                .get(InvitationDomainPermissions.INVITE_DEVELOPER) instanceof InviteDeveloperActionPermissions);
 
         assertTrue(permissions.getActionPermissions()
                 .get(InvitationDomainPermissions.UPDATE_FROM_INVITATION) instanceof UpdateFromInvitationActionPermissions);
