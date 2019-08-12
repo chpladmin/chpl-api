@@ -27,17 +27,22 @@ import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.SplitDeveloperRequest;
 import gov.healthit.chpl.domain.TransparencyAttestationMap;
 import gov.healthit.chpl.domain.UpdateDevelopersRequest;
+import gov.healthit.chpl.domain.auth.User;
+import gov.healthit.chpl.domain.auth.UsersResponse;
 import gov.healthit.chpl.dto.AddressDTO;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.MissingReasonException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
@@ -211,6 +216,51 @@ public class DeveloperController {
             responseHeaders.set("CHPL-Id-Changed", buf.toString());
         }
         return new ResponseEntity<SplitDeveloperResponse>(response, responseHeaders, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Remove user permissions from an ACB.",
+            notes = "The logged in user must have ROLE_ADMIN or ROLE_ACB and have administrative authority on the "
+                    + " specified ACB. The user specified in the request will have all authorities "
+                    + " removed that are associated with the specified ACB.")
+    @RequestMapping(value = "{acbId}/users/{userId}", method = RequestMethod.DELETE,
+    produces = "application/json; charset=utf-8")
+    public String deleteUserFromAcb(@PathVariable final Long acbId, @PathVariable final Long userId)
+            throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
+        UserDTO user = userManager.getById(userId);
+        CertificationBodyDTO acb = resourcePermissions.getAcbIfPermissionById(acbId);
+
+        if (user == null || acb == null) {
+            throw new InvalidArgumentsException("Could not find either ACB or User specified");
+        }
+
+        // delete all permissions on that acb
+        userPermissionsManager.deleteAcbPermission(acb, userId);
+
+        return "{\"userDeleted\" : true}";
+    }
+
+    @ApiOperation(value = "List users with permissions on a specified ACB.",
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or have administrative "
+                    + "or read authority on the specified ACB")
+    @RequestMapping(value = "/{acbId}/users", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public @ResponseBody UsersResponse getUsers(@PathVariable("acbId") final Long acbId)
+            throws InvalidArgumentsException, EntityRetrievalException {
+        CertificationBodyDTO acb = resourcePermissions.getAcbIfPermissionById(acbId);
+        if (acb == null) {
+            throw new InvalidArgumentsException("Could not find the ACB specified.");
+        }
+
+        List<UserDTO> users = resourcePermissions.getAllUsersOnAcb(acb);
+        List<User> acbUsers = new ArrayList<User>(users.size());
+        for (UserDTO userDto : users) {
+            User acbUser = new User(userDto);
+            acbUsers.add(acbUser);
+        }
+
+        UsersResponse results = new UsersResponse();
+        results.setUsers(acbUsers);
+        return results;
     }
 
     private synchronized ResponseEntity<Developer> update(final UpdateDevelopersRequest developerInfo)
