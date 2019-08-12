@@ -14,10 +14,12 @@ public class AddDeveloperActionPermissions extends ActionPermissions {
     }
 
     @Override
-    public boolean hasAccess(Object obj) {
+    public boolean hasAccess(final Object obj) {
         if (!(obj instanceof DeveloperDTO)) {
             return false;
-        } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc() || getResourcePermissions().isUserRoleAcbAdmin()
+        } else if (getResourcePermissions().isUserRoleAdmin()
+                || getResourcePermissions().isUserRoleOnc()
+                || getResourcePermissions().isUserRoleAcbAdmin()
                 || getResourcePermissions().isUserRoleInvitedUserCreator()) {
             return true;
         } else if (getResourcePermissions().isUserRoleDeveloperAdmin()) {

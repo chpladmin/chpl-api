@@ -23,6 +23,7 @@ import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
+import gov.healthit.chpl.domain.PermissionDeletedResponse;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.SplitDeveloperRequest;
 import gov.healthit.chpl.domain.TransparencyAttestationMap;
@@ -46,6 +47,9 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
+import gov.healthit.chpl.manager.UserPermissionsManager;
+import gov.healthit.chpl.manager.auth.UserManager;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.web.controller.results.DeveloperResults;
@@ -58,14 +62,30 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/developers")
 public class DeveloperController {
 
-    @Autowired
     private DeveloperManager developerManager;
-    @Autowired
     private CertifiedProductManager cpManager;
-    @Autowired
     private ErrorMessageUtil msgUtil;
-    @Autowired
     private ChplProductNumberUtil chplProductNumberUtil;
+    private ResourcePermissions resourcePermissions;
+    private UserPermissionsManager userPermissionsManager;
+    private UserManager userManager;
+
+    @Autowired
+    public DeveloperController(final DeveloperManager developerManager,
+            final CertifiedProductManager cpManager,
+            final UserManager userManager,
+            final UserPermissionsManager userPermissionsManager,
+            final ResourcePermissions resourcePermissions,
+            final ErrorMessageUtil msgUtil,
+            final ChplProductNumberUtil chplProductNumberUtil) {
+        this.developerManager = developerManager;
+        this.cpManager = cpManager;
+        this.userManager = userManager;
+        this.userPermissionsManager = userPermissionsManager;
+        this.resourcePermissions = resourcePermissions;
+        this.msgUtil = msgUtil;
+        this.chplProductNumberUtil = chplProductNumberUtil;
+    }
 
     @ApiOperation(value = "List all developers in the system.",
             notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, and ROLE_ACB can see deleted "
@@ -218,48 +238,39 @@ public class DeveloperController {
         return new ResponseEntity<SplitDeveloperResponse>(response, responseHeaders, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Remove user permissions from an ACB.",
-            notes = "The logged in user must have ROLE_ADMIN or ROLE_ACB and have administrative authority on the "
-                    + " specified ACB. The user specified in the request will have all authorities "
-                    + " removed that are associated with the specified ACB.")
-    @RequestMapping(value = "{acbId}/users/{userId}", method = RequestMethod.DELETE,
+    @ApiOperation(value = "Remove user permissions from a developer.",
+            notes = "The logged in user must have ROLE_ADMIN, ROLE_ONC, ROLE_ACB, or ROLE_DEVELOPER "
+                    + "and have administrative authority on the "
+                    + " specified developer. The user specified in the request will have all authorities "
+                    + " removed that are associated with the specified developer.")
+    @RequestMapping(value = "{developerId}/users/{userId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
-    public String deleteUserFromAcb(@PathVariable final Long acbId, @PathVariable final Long userId)
-            throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
-        UserDTO user = userManager.getById(userId);
-        CertificationBodyDTO acb = resourcePermissions.getAcbIfPermissionById(acbId);
-
-        if (user == null || acb == null) {
-            throw new InvalidArgumentsException("Could not find either ACB or User specified");
-        }
-
-        // delete all permissions on that acb
-        userPermissionsManager.deleteAcbPermission(acb, userId);
-
-        return "{\"userDeleted\" : true}";
+    public PermissionDeletedResponse deleteUserFromDeveloper(
+            @PathVariable final Long developerId, @PathVariable final Long userId)
+        throws EntityRetrievalException {
+        // delete all permissions on that developer
+        userPermissionsManager.deleteDeveloperPermission(developerId, userId);
+        PermissionDeletedResponse response = new PermissionDeletedResponse();
+        response.setPermissionDeleted(true);
+        return response;
     }
 
-    @ApiOperation(value = "List users with permissions on a specified ACB.",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or have administrative "
-                    + "or read authority on the specified ACB")
-    @RequestMapping(value = "/{acbId}/users", method = RequestMethod.GET,
+    @ApiOperation(value = "List users with permissions on a specified developer.",
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ACB, or have administrative "
+                    + "authority on the specified developer.")
+    @RequestMapping(value = "/{developerId}/users", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
-    public @ResponseBody UsersResponse getUsers(@PathVariable("acbId") final Long acbId)
+    public @ResponseBody UsersResponse getUsers(@PathVariable("developerId") final Long developerId)
             throws InvalidArgumentsException, EntityRetrievalException {
-        CertificationBodyDTO acb = resourcePermissions.getAcbIfPermissionById(acbId);
-        if (acb == null) {
-            throw new InvalidArgumentsException("Could not find the ACB specified.");
-        }
-
-        List<UserDTO> users = resourcePermissions.getAllUsersOnAcb(acb);
-        List<User> acbUsers = new ArrayList<User>(users.size());
+        List<UserDTO> users = developerManager.getAllUsersOnDeveloper(developerId);
+        List<User> domainUsers = new ArrayList<User>(users.size());
         for (UserDTO userDto : users) {
-            User acbUser = new User(userDto);
-            acbUsers.add(acbUser);
+            User domainUser = new User(userDto);
+            domainUsers.add(domainUser);
         }
 
         UsersResponse results = new UsersResponse();
-        results.setUsers(acbUsers);
+        results.setUsers(domainUsers);
         return results;
     }
 

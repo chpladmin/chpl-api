@@ -28,7 +28,6 @@ import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.UserPermissionsManager;
-import gov.healthit.chpl.manager.auth.UserManager;
 
 @Component
 public class UserPermissionsManagerImpl extends SecuredManager implements UserPermissionsManager {
@@ -38,19 +37,17 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
     private UserTestingLabMapDAO userTestingLabMapDAO;
     private UserDeveloperMapDAO userDeveloperMapDAO;
     private UserDAO userDAO;
-    private UserManager userManager;
     private MutableAclService mutableAclService;
 
     @Autowired
     public UserPermissionsManagerImpl(final UserCertificationBodyMapDAO userCertificationBodyMapDAO,
             final UserTestingLabMapDAO userTestingLabMapDAO, final UserDeveloperMapDAO userDeveloperMapDAO,
-            final UserDAO userDAO, final UserManager userManager, final MutableAclService mutableAclService) {
+            final UserDAO userDAO, final MutableAclService mutableAclService) {
 
         this.userCertificationBodyMapDAO = userCertificationBodyMapDAO;
         this.userTestingLabMapDAO = userTestingLabMapDAO;
         this.userDeveloperMapDAO = userDeveloperMapDAO;
         this.userDAO = userDAO;
-        this.userManager = userManager;
         this.mutableAclService = mutableAclService;
     }
 
@@ -100,7 +97,6 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
         LOGGER.info("Deleted ACB: " + acb.getId() + " for user: " + userId);
         removeUserIfPermissionless(userId);
     }
-
 
     @Override
     @Transactional
@@ -166,6 +162,34 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
 
             userDeveloperMapDAO.create(dto);
         }
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).USER_PERMISSIONS, "
+            + "T(gov.healthit.chpl.permissions.domains.UserPermissionsDomainPermissions).DELETE_DEVELOPER, #developerId)")
+    public void deleteDeveloperPermission(final Long developerId, final Long userId)
+            throws EntityRetrievalException {
+        List<UserDeveloperMapDTO> dtos = userDeveloperMapDAO.getByUserId(userId);
+
+        if (dtos == null || dtos.size() == 0) {
+            LOGGER.error("Could not locate the UserDeveloperMapDTO object for Userid: " + userId + ", Developer: "
+                    + developerId);
+        }
+
+        CollectionUtils.filter(dtos, new Predicate() {
+            @Override
+            public boolean evaluate(final Object object) {
+                return ((UserDeveloperMapDTO) object).getDeveloper().getId().equals(developerId);
+            }
+        });
+
+        for (UserDeveloperMapDTO dto : dtos) {
+            userDeveloperMapDAO.delete(dto);
+        }
+
+        LOGGER.info("Deleted Developer: " + developerId + " for user: " + userId);
+        removeUserIfPermissionless(userId);
     }
 
     private Boolean doesUserCertificationBodyMapExist(final Long acbId, final Long userId) {
@@ -251,8 +275,10 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
     private boolean doesUserHaveAnyPermissions(final Long userId) {
         List<UserCertificationBodyMapDTO> acbPermissions = userCertificationBodyMapDAO.getByUserId(userId);
         List<UserTestingLabMapDTO> atlPermissions = userTestingLabMapDAO.getByUserId(userId);
+        List<UserDeveloperMapDTO> devPermissions = userDeveloperMapDAO.getByUserId(userId);
 
         return (acbPermissions != null && acbPermissions.size() > 0)
-                || (atlPermissions != null && atlPermissions.size() > 0);
+                || (atlPermissions != null && atlPermissions.size() > 0)
+                || (devPermissions != null && devPermissions.size() > 0);
     }
 }
